@@ -1,6 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder,  printContract } from './contract';
+import { ContractBuilder } from './contract';
+import { printContract } from './print';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
