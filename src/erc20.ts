@@ -5,6 +5,7 @@ interface ERC20Options {
   symbol: string;
   burnable?: boolean;
   snapshots?: boolean;
+  pausable?: boolean;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -18,6 +19,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (opts.snapshots) {
     addSnapshot(c);
+  }
+
+  if (opts.pausable) {
+    addPausable(c);
   }
 
   return c;
@@ -49,6 +54,15 @@ function addSnapshot(c: ContractBuilder) {
   });
 
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
+}
+
+function addPausable(c: ContractBuilder) {
+  c.addParent({
+    name: 'Pausable',
+    path: '@openzeppelin/contracts/utils/Pausable.sol',
+  });
+
+  c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
 }
 
 const functions = {
