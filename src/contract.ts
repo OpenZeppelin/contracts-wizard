@@ -16,13 +16,13 @@ export  interface ParentContract {
   path: string;
 }
 
-export interface ParentFunction {
+export interface BaseFunction {
   name: string;
   args: FunctionArgument[];
   kind: FunctionKind;
 }
 
-export interface ContractFunction extends ParentFunction {
+export interface ContractFunction extends BaseFunction {
   override: string[];
   modifiers: string[];
 }
@@ -52,23 +52,23 @@ export class ContractBuilder implements Contract {
     this.parents.push({ contract, params });
   }
 
-  addOverride(parent: string, parentFn: ParentFunction) {
-    const fn = this.addFunction(parentFn);
+  addOverride(parent: string, baseFn: BaseFunction) {
+    const fn = this.addFunction(baseFn);
     fn.override.push(parent);
   }
 
-  addModifier(modifier: string, parentFn: ParentFunction) {
-    const fn = this.addFunction(parentFn);
+  addModifier(modifier: string, baseFn: BaseFunction) {
+    const fn = this.addFunction(baseFn);
     fn.modifiers.push(modifier);
   }
 
-  private addFunction(parentFn: ParentFunction): ContractFunction {
-    const signature = [parentFn.name, '(', ...parentFn.args.map(a => a.name), ')'].join('');
+  private addFunction(baseFn: BaseFunction): ContractFunction {
+    const signature = [baseFn.name, '(', ...baseFn.args.map(a => a.name), ')'].join('');
     const got = this.functionMap.get(signature);
     if (got !== undefined) {
       return got;
     } else {
-      const fn = { ...parentFn, override: [], modifiers: [] };
+      const fn = { ...baseFn, override: [], modifiers: [] };
       this.functionMap.set(signature, fn);
       return fn;
     }
