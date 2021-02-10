@@ -3,6 +3,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   functions: ContractFunction[];
+  constructorCode: string[];
 }
 
 export interface Parent {
@@ -37,6 +38,8 @@ export class ContractBuilder implements Contract {
   license = 'MIT';
 
   readonly parents: Parent[] = [];
+  readonly constructorCode: string[] = [];
+
   private functionMap: Map<string, ContractFunction> = new Map();
 
   constructor(readonly name: string) {}
@@ -69,5 +72,9 @@ export class ContractBuilder implements Contract {
       this.functionMap.set(signature, fn);
       return fn;
     }
+  }
+
+  addConstructorCode(code: string) {
+    this.constructorCode.push(code);
   }
 }

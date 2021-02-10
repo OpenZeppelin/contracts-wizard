@@ -77,6 +77,20 @@ test('contract with a modifier', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with constructor code', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addConstructorCode('_mint(msg.sender, 10 ether);');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with constructor code and a parent', t => {
+  const Foo = new ContractBuilder('Foo');
+  const Bar = { name: 'Bar', path: './Bar.sol' };
+  Foo.addParent(Bar, ["param1", "param2"]);
+  Foo.addConstructorCode('_mint(msg.sender, 10 ether);');
+  t.snapshot(printContract(Foo));
+});
+
 const _beforeTokenTransfer = {
   name: '_beforeTokenTransfer',
   kind: 'internal' as const,

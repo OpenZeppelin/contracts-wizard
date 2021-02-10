@@ -41,13 +41,17 @@ function printInheritance(contract: Contract): [] | [string] {
 }
 
 function printConstructor(contract: Contract): Lines {
-  if (contract.parents.some(p => p.params.length > 0)) {
+  const hasParentParams = contract.parents.some(p => p.params.length > 0);
+  const hasConstructorCode = contract.constructorCode.length > 0;
+  if (hasParentParams || hasConstructorCode) {
     return [
       [
         `constructor()`,
         ...contract.parents.flatMap(printParentConstructor),
-        `{}`,
+        `{`,
       ].join(' '),
+      contract.constructorCode,
+      `}`
     ];
   } else {
     return [];
