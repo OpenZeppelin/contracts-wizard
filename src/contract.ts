@@ -23,6 +23,7 @@ export interface ParentFunction {
 
 export interface ContractFunction extends ParentFunction {
   override: string[];
+  modifiers: string[];
 }
 
 export type FunctionKind = 'internal' | 'public';
@@ -53,13 +54,18 @@ export class ContractBuilder implements Contract {
     fn.override.push(parent);
   }
 
+  addModifier(modifier: string, parentFn: ParentFunction) {
+    const fn = this.addFunction(parentFn);
+    fn.modifiers.push(modifier);
+  }
+
   private addFunction(parentFn: ParentFunction): ContractFunction {
     const signature = [parentFn.name, '(', ...parentFn.args.map(a => a.name), ')'].join('');
     const got = this.functionMap.get(signature);
     if (got !== undefined) {
       return got;
     } else {
-      const fn = { ...parentFn, override: [] };
+      const fn = { ...parentFn, override: [], modifiers: [] };
       this.functionMap.set(signature, fn);
       return fn;
     }

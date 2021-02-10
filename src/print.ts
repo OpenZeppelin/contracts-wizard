@@ -65,10 +65,16 @@ function printParentConstructor({ contract, params }: Parent): [] | [string] {
 }
 
 function printFunction(fn: ContractFunction): Lines {
+  const modifiers = [...fn.modifiers];
+
   if (fn.override.length > 1) {
+    modifiers.push(`override(${fn.override.join(', ')})`);
+  }
+
+  if (modifiers.length > 0) {
     return [
       `function ${fn.name}(${fn.args.map(printArgument).join(', ')})`,
-      [fn.kind, `override(${fn.override.join(', ')})`],
+      [fn.kind, ...modifiers],
       '{',
       [`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`],
       '}',

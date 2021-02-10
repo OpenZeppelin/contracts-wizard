@@ -57,15 +57,6 @@ test('contract with an override', t => {
 
 test('contract with two overrides', t => {
   const Foo = new ContractBuilder('Foo');
-  const _beforeTokenTransfer = {
-    name: '_beforeTokenTransfer',
-    kind: 'internal' as const,
-    args: [
-      { name: 'from', type: 'address' },
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  };
   Foo.addOverride('ERC20', _beforeTokenTransfer);
   Foo.addOverride('ERC20Snapshot', _beforeTokenTransfer);
   t.snapshot(printContract(Foo));
@@ -73,23 +64,30 @@ test('contract with two overrides', t => {
 
 test('contract with two different overrides', t => {
   const Foo = new ContractBuilder('Foo');
-  const _beforeTokenTransfer = {
-    name: '_beforeTokenTransfer',
-    kind: 'internal' as const,
-    args: [
-      { name: 'from', type: 'address' },
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  };
-  const otherFunction = {
-    name: '_otherFunction',
-    kind: 'internal' as const,
-    args: [],
-  };
   Foo.addOverride('ERC20', _beforeTokenTransfer);
   Foo.addOverride('OtherParent', _beforeTokenTransfer);
-  Foo.addOverride('ERC20', otherFunction);
-  Foo.addOverride('OtherParent', otherFunction);
+  Foo.addOverride('ERC20', _otherFunction);
+  Foo.addOverride('OtherParent', _otherFunction);
   t.snapshot(printContract(Foo));
 });
+
+test('contract with a modifier', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addModifier('whenNotPaused', _beforeTokenTransfer);
+  t.snapshot(printContract(Foo));
+});
+
+const _beforeTokenTransfer = {
+  name: '_beforeTokenTransfer',
+  kind: 'internal' as const,
+  args: [
+    { name: 'from', type: 'address' },
+    { name: 'to', type: 'address' },
+    { name: 'amount', type: 'uint256' },
+  ],
+};
+const _otherFunction = {
+  name: '_otherFunction',
+  kind: 'internal' as const,
+  args: [],
+};
