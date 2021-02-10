@@ -68,3 +68,12 @@ test('erc20 burnable pausable with snapshots', t => {
   });
   t.snapshot(printContract(c));
 });
+
+test('erc20 preminted', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '1000',
+  });
+  t.snapshot(printContract(c));
+});

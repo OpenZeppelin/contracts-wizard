@@ -6,6 +6,7 @@ interface ERC20Options {
   burnable?: boolean;
   snapshots?: boolean;
   pausable?: boolean;
+  premint?: string;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -23,6 +24,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (opts.pausable) {
     addPausable(c);
+  }
+
+  if (opts.premint) {
+    addPremint(c, opts.premint);
   }
 
   return c;
@@ -63,6 +68,10 @@ function addPausable(c: ContractBuilder) {
   });
 
   c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
+}
+
+function addPremint(c: ContractBuilder, amount: string) {
+  c.addConstructorCode(`_mint(msg.sender, ${amount});`);
 }
 
 const functions = {
