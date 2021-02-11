@@ -53,11 +53,6 @@
 		font-weight: 100;
 	}
 
-    textarea {
-      width: 50vw;
-      height: 50vh;
-    }
-
     pre {
       font-size: 1.5em;
     }
