@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
 
 import { formatLines, newline, Lines } from './utils/format-lines';
 import { intersperse } from './utils/intersperse';

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["dom", "es2019.array"],
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "../core/src/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+}
