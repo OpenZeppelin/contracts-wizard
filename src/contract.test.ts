@@ -73,7 +73,15 @@ test('contract with two different overrides', t => {
 
 test('contract with a modifier', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addModifier('whenNotPaused', _beforeTokenTransfer);
+  Foo.addModifier('whenNotPaused', _otherFunction);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with a modifier and override', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addModifier('whenNotPaused', _otherFunction);
+  Foo.addOverride('ERC20', _otherFunction);
+  Foo.addOverride('OtherParent', _otherFunction);
   t.snapshot(printContract(Foo));
 });
 
