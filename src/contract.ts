@@ -25,6 +25,7 @@ export interface BaseFunction {
 export interface ContractFunction extends BaseFunction {
   override: string[];
   modifiers: string[];
+  code: string[];
 }
 
 export type FunctionKind = 'internal' | 'public';
@@ -68,7 +69,7 @@ export class ContractBuilder implements Contract {
     if (got !== undefined) {
       return got;
     } else {
-      const fn = { ...baseFn, override: [], modifiers: [] };
+      const fn = { ...baseFn, override: [], modifiers: [], code: [] };
       this.functionMap.set(signature, fn);
       return fn;
     }
@@ -76,5 +77,10 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
+  }
+
+  addFunctionCode(code: string, baseFn: BaseFunction) {
+    const fn = this.addFunction(baseFn);
+    fn.code.push(code);
   }
 }

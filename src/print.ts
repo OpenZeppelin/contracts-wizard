@@ -70,17 +70,22 @@ function printParentConstructor({ contract, params }: Parent): [] | [string] {
 
 function printFunction(fn: ContractFunction): Lines {
   const modifiers = [...fn.modifiers];
+  const code = [...fn.code];
 
   if (fn.override.length > 1) {
     modifiers.push(`override(${fn.override.join(', ')})`);
   }
 
-  if (modifiers.length > 0) {
+  if (fn.override.length > 0) {
+    code.push(`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`);
+  }
+
+  if (modifiers.length + fn.code.length > 0) {
     return [
       `function ${fn.name}(${fn.args.map(printArgument).join(', ')})`,
       [fn.kind, ...modifiers],
       '{',
-      [`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`],
+      code,
       '}',
     ];
   } else {

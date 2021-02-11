@@ -40,7 +40,7 @@ test('contract with two parents only one with parameters', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with an override', t => {
+test('contract with one override', t => {
   const Foo = new ContractBuilder('Foo');
   const _beforeTokenTransfer = {
     name: '_beforeTokenTransfer',
@@ -88,6 +88,19 @@ test('contract with constructor code and a parent', t => {
   const Bar = { name: 'Bar', path: './Bar.sol' };
   Foo.addParent(Bar, ["param1", "param2"]);
   Foo.addConstructorCode('_mint(msg.sender, 10 ether);');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with function code', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addFunctionCode('_mint(msg.sender, 10 ether);', _otherFunction);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with overriden function with code', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addOverride('Bar', _otherFunction);
+  Foo.addFunctionCode('_mint(msg.sender, 10 ether);', _otherFunction);
   t.snapshot(printContract(Foo));
 });
 
