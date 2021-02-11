@@ -113,6 +113,7 @@ const _beforeTokenTransfer = {
     { name: 'amount', type: 'uint256' },
   ],
 };
+
 const _otherFunction = {
   name: '_otherFunction',
   kind: 'internal' as const,

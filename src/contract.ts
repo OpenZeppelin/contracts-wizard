@@ -11,7 +11,7 @@ export interface Parent {
   params: string[];
 }
 
-export  interface ParentContract {
+export interface ParentContract {
   name: string;
   path: string;
 }
