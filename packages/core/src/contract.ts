@@ -38,19 +38,23 @@ export interface FunctionArgument {
 export class ContractBuilder implements Contract {
   license = 'MIT';
 
-  readonly parents: Parent[] = [];
   readonly constructorCode: string[] = [];
 
+  private parentMap: Map<string, Parent> = new Map();
   private functionMap: Map<string, ContractFunction> = new Map();
 
   constructor(readonly name: string) {}
+
+  get parents(): Parent[] {
+    return [...this.parentMap.values()];
+  }
 
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
   }
 
   addParent(contract: ParentContract, params: string[] = []) {
-    this.parents.push({ contract, params });
+    this.parentMap.set(contract.name, { contract, params });
   }
 
   addOverride(parent: string, baseFn: BaseFunction) {

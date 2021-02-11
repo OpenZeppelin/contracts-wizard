@@ -74,7 +74,9 @@ function addPausable(c: ContractBuilder) {
 
   c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
 
+  c.addParent(parents.Ownable);
   c.addFunctionCode('_pause();', functions.pause);
+  c.addModifier('onlyOwner', functions.pause);
 }
 
 function addPremint(c: ContractBuilder, amount: string) {
@@ -82,13 +84,17 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 function addMintable(c: ContractBuilder) {
-  c.addParent({
-    name: 'Ownable',
-    path: '@openzeppelin/contracts/access/Ownable.sol',
-  });
+  c.addParent(parents.Ownable);
   c.addFunctionCode('_mint(to, amount);', functions.mint);
   c.addModifier('onlyOwner', functions.mint);
 }
+
+const parents = {
+  Ownable: {
+    name: 'Ownable',
+    path: '@openzeppelin/contracts/access/Ownable.sol',
+  },
+};
 
 const functions = {
   _beforeTokenTransfer: {
