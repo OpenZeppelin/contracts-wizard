@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 
-interface ERC20Options {
+export interface ERC20Options {
   name: string;
   symbol: string;
   burnable?: boolean;

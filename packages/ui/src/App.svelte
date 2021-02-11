@@ -1,19 +1,48 @@
 <script lang="ts">
-	export let name: string;
+    import type { ERC20Options } from '@openzeppelin/wizard';
+    import { buildERC20, printContract } from '@openzeppelin/wizard';
 
-    import { value } from '@openzeppelin/wizard';
+    const opts: ERC20Options = {
+      name: "MyToken",
+      symbol: "MTK",
+      burnable: false,
+      snapshots: false,
+      pausable: false,
+      premint: undefined,
+      mintable: false,
+    };
+
+    let code: string = '';
+
+    $: code = printContract(buildERC20(opts));
 </script>
 
 <main>
-  <h1>Hello {name}! ({value})</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+  <h1>OpenZeppelin Wizard</h1>
+
+  <p>
+  <label><input type="radio" checked> ERC20</label>
+  <input bind:value={opts.name}>
+  <br>
+  <input bind:value={opts.symbol}>
+  <br>
+  <label><input type="checkbox" bind:checked={opts.burnable}> Burnable</label>
+  <label><input type="checkbox" bind:checked={opts.snapshots}> Snapshots</label>
+  <label><input type="checkbox" bind:checked={opts.pausable}> Pausable</label>
+  <label><input type="checkbox" bind:checked={opts.mintable}> Mintable</label>
+  <input bind:value={opts.premint} placeholder="Premint">
+  </p>
+
+  <pre>
+  <code>
+  {code}
+  </code>
+  </pre>
 </main>
 
 <style>
 	main {
-		text-align: center;
 		padding: 1em;
-		max-width: 240px;
 		margin: 0 auto;
 	}
 
@@ -24,9 +53,12 @@
 		font-weight: 100;
 	}
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+    textarea {
+      width: 50vw;
+      height: 50vh;
+    }
+
+    pre {
+      font-size: 1.5em;
+    }
 </style>
