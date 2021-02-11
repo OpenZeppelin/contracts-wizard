@@ -7,6 +7,7 @@ interface ERC20Options {
   snapshots?: boolean;
   pausable?: boolean;
   premint?: string;
+  mintable?: boolean;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -28,6 +29,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (opts.premint) {
     addPremint(c, opts.premint);
+  }
+
+  if (opts.mintable) {
+    addMintable(c);
   }
 
   return c;
@@ -74,12 +79,30 @@ function addPremint(c: ContractBuilder, amount: string) {
   c.addConstructorCode(`_mint(msg.sender, ${amount});`);
 }
 
+function addMintable(c: ContractBuilder) {
+  c.addParent({
+    name: 'Ownable',
+    path: '@openzeppelin/contracts/access/Ownable.sol',
+  });
+  c.addFunctionCode('_mint(to, amount);', functions.mint);
+  c.addModifier('onlyOwner', functions.mint);
+}
+
 const functions = {
   _beforeTokenTransfer: {
     name: '_beforeTokenTransfer',
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  mint: {
+    name: 'mint',
+    kind: 'public' as const,
+    args: [
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],

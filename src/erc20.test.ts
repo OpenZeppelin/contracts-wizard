@@ -77,3 +77,12 @@ test('erc20 preminted', t => {
   });
   t.snapshot(printContract(c));
 });
+
+test('erc20 mintable', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    mintable: true,
+  });
+  t.snapshot(printContract(c));
+});
