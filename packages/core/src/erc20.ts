@@ -73,6 +73,8 @@ function addPausable(c: ContractBuilder) {
   });
 
   c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
+
+  c.addFunctionCode('_pause();', functions.pause);
 }
 
 function addPremint(c: ContractBuilder, amount: string) {
@@ -106,5 +108,11 @@ const functions = {
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],
+  },
+
+  pause: {
+    name: 'pause',
+    kind: 'public' as const,
+    args: [],
   },
 };
