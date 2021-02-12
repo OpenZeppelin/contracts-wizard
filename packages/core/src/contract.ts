@@ -4,6 +4,7 @@ export interface Contract {
   parents: Parent[];
   functions: ContractFunction[];
   constructorCode: string[];
+  variables: string[];
 }
 
 export interface Parent {
@@ -39,6 +40,7 @@ export class ContractBuilder implements Contract {
   license = 'MIT';
 
   readonly constructorCode: string[] = [];
+  readonly variables: string[] = [];
 
   private parentMap: Map<string, Parent> = new Map();
   private functionMap: Map<string, ContractFunction> = new Map();
@@ -86,5 +88,9 @@ export class ContractBuilder implements Contract {
   addFunctionCode(code: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.code.push(code);
+  }
+
+  addVariable(code: string) {
+    this.variables.push(code);
   }
 }

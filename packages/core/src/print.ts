@@ -21,6 +21,8 @@ export function printContract(contract: Contract): string {
 
     [`contract ${contract.name}`, ...printInheritance(contract), '{'].join(' '),
 
+    contract.variables,
+
     printConstructor(contract),
 
     ...intersperse(

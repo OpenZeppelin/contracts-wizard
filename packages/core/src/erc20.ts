@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { Contract, ContractBuilder, BaseFunction } from './contract';
 
 export interface ERC20Options {
   name: string;
@@ -8,10 +8,15 @@ export interface ERC20Options {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
+  access?: Access;
 }
+
+type Access = 'ownable' | 'roles';
 
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
+
+  const { access = 'ownable' } = opts;
 
   addBase(c, opts.name, opts.symbol);
 
@@ -24,7 +29,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (opts.pausable) {
-    addPausable(c);
+    addPausable(c, access);
   }
 
   if (opts.premint) {
@@ -32,7 +37,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (opts.mintable) {
-    addMintable(c);
+    addMintable(c, access);
   }
 
   return c;
@@ -66,7 +71,7 @@ function addSnapshot(c: ContractBuilder) {
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
 }
 
-function addPausable(c: ContractBuilder) {
+function addPausable(c: ContractBuilder, access: Access) {
   c.addParent({
     name: 'Pausable',
     path: '@openzeppelin/contracts/utils/Pausable.sol',
@@ -74,25 +79,44 @@ function addPausable(c: ContractBuilder) {
 
   c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
 
-  c.addParent(parents.Ownable);
+  setAccessControl(c, functions.pause, access, 'PAUSER');
   c.addFunctionCode('_pause();', functions.pause);
-  c.addModifier('onlyOwner', functions.pause);
 }
 
 function addPremint(c: ContractBuilder, amount: string) {
   c.addConstructorCode(`_mint(msg.sender, ${amount});`);
 }
 
-function addMintable(c: ContractBuilder) {
-  c.addParent(parents.Ownable);
+function addMintable(c: ContractBuilder, access: Access) {
+  setAccessControl(c, functions.mint, access, 'MINTER');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
-  c.addModifier('onlyOwner', functions.mint);
+}
+
+function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+  switch (access) {
+    case 'ownable': {
+      c.addParent(parents.Ownable);
+      c.addModifier('onlyOwner', fn);
+      break;
+    }
+    case 'roles': {
+      const roleId = role + '_ROLE';
+      c.addParent(parents.AccessControl);
+      c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      c.addFunctionCode(`require(hasRole(${roleId}, msg.sender))`, fn);
+      break;
+    }
+  }
 }
 
 const parents = {
   Ownable: {
     name: 'Ownable',
     path: '@openzeppelin/contracts/access/Ownable.sol',
+  },
+  AccessControl: {
+    name: 'AccessControl',
+    path: '@openzeppelin/contracts/access/AccessControl.sol',
   },
 };
 

@@ -44,6 +44,17 @@ test('erc20 pausable', t => {
     name: 'MyToken',
     symbol: 'MTK',
     pausable: true,
+    access: 'ownable',
+  });
+  t.snapshot(printContract(c));
+});
+
+test('erc20 pausable with roles', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    pausable: true,
+    access: 'roles',
   });
   t.snapshot(printContract(c));
 });
@@ -83,6 +94,17 @@ test('erc20 mintable', t => {
     name: 'MyToken',
     symbol: 'MTK',
     mintable: true,
+    access: 'ownable',
+  });
+  t.snapshot(printContract(c));
+});
+
+test('erc20 mintable with roles', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    mintable: true,
+    access: 'roles',
   });
   t.snapshot(printContract(c));
 });
