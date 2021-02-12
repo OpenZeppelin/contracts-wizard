@@ -23,7 +23,7 @@
 </script>
 
 <main>
-  <h1>OpenZeppelin Wizard</h1>
+  <h1>OpenZeppelin Contracts Wizard</h1>
 
   <div class="app">
     <div class="form">
