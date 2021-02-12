@@ -2,35 +2,32 @@ import 'array.prototype.flatmap/auto';
 
 import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
 
-import { formatLines, newline, Lines } from './utils/format-lines';
-import { intersperse } from './utils/intersperse';
+import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 
 const SOLIDITY_VERSION = '0.8.0';
 
 export function printContract(contract: Contract): string {
   return formatLines(
-    `// SPDX-License-Identifier: ${contract.license}`,
+    ...spaceBetween(
+      [
+        `// SPDX-License-Identifier: ${contract.license}`,
+        `pragma solidity ^${SOLIDITY_VERSION};`,
+      ],
 
-    `pragma solidity ^${SOLIDITY_VERSION};`,
+      contract.parents.map(p => `import "${p.contract.path}";`),
 
-    newline,
+      [
+        [`contract ${contract.name}`, ...printInheritance(contract), '{'].join(' '),
 
-    ...contract.parents.map(p => `import "${p.contract.path}";`),
+        spaceBetween(
+          contract.variables,
+          printConstructor(contract),
+          ...contract.functions.map(printFunction),
+        ),
 
-    newline,
-
-    [`contract ${contract.name}`, ...printInheritance(contract), '{'].join(' '),
-
-    contract.variables,
-
-    printConstructor(contract),
-
-    ...intersperse(
-      contract.functions.map(printFunction),
-      newline,
+        `}`,
+      ],
     ),
-
-    `}`,
   );
 }
 
@@ -42,7 +39,7 @@ function printInheritance(contract: Contract): [] | [string] {
   }
 }
 
-function printConstructor(contract: Contract): Lines {
+function printConstructor(contract: Contract): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
@@ -70,7 +67,7 @@ function printParentConstructor({ contract, params }: Parent): [] | [string] {
   }
 }
 
-function printFunction(fn: ContractFunction): Lines {
+function printFunction(fn: ContractFunction): Lines[] {
   const modifiers = [...fn.modifiers];
   const code = [...fn.code];
 

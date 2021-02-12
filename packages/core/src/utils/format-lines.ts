@@ -1,15 +1,17 @@
-export type Lines = string | typeof newline | Lines[];
+import 'array.prototype.flatmap/auto';
 
-export const newline = Symbol('newline');
+export type Lines = string | Lines[] | typeof whitespace;
+
+const whitespace = Symbol('whitespace');
 
 export function formatLines(...lines: Lines[]): string {
-  return [...materializeNewlines(indentEach(0, lines))].join('\n') + '\n';
+  return [...indentEach(0, lines)].join('\n') + '\n';
 }
 
-function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof newline> {
+function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof whitespace> {
   for (const line of lines) {
-    if (line === newline) {
-      yield line;
+    if (line === whitespace) {
+      yield '';
     } else if (Array.isArray(line)) {
       yield* indentEach(indent + 1, line);
     } else {
@@ -18,15 +20,6 @@ function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof 
   }
 }
 
-function* materializeNewlines(lines: Generator<string | typeof newline>): Generator<string> {
-  let wasNewline = false;
-  for (const line of lines) {
-    if (line !== newline) {
-      yield line;
-      wasNewline = false;
-    } else if (!wasNewline) {
-      yield '';
-      wasNewline = true;
-    }
-  }
+export function spaceBetween(...lines: Lines[][]): Lines[] {
+  return lines.filter(l => l.length > 0).flatMap<Lines>(l => [whitespace, ...l]).slice(1);
 }
