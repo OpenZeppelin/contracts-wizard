@@ -112,6 +112,19 @@ test('contract with overriden function with code', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with one variable', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addVariable('uint value = 42;');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with two variables', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addVariable('uint value = 42;');
+  Foo.addVariable('string name = "john";');
+  t.snapshot(printContract(Foo));
+});
+
 const _beforeTokenTransfer = {
   name: '_beforeTokenTransfer',
   kind: 'internal' as const,
