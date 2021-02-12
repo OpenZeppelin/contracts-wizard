@@ -103,7 +103,7 @@ function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, 
       const roleId = role + '_ROLE';
       c.addParent(parents.AccessControl);
       c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-      c.addFunctionCode(`require(hasRole(${roleId}, msg.sender))`, fn);
+      c.addFunctionCode(`require(hasRole(${roleId}, msg.sender));`, fn);
       break;
     }
   }
