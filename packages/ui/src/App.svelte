@@ -1,4 +1,8 @@
 <script lang="ts">
+    import 'highlight.js/styles/github.css';
+
+    import hljs from './highlightjs';
+
     import type { ERC20Options } from '@openzeppelin/wizard';
     import { buildERC20, printContract } from '@openzeppelin/wizard';
 
@@ -15,7 +19,7 @@
 
     let code: string = '';
 
-    $: code = printContract(buildERC20(opts));
+    $: code = hljs.highlight('solidity', printContract(buildERC20(opts))).value;
 </script>
 
 <main>
@@ -42,8 +46,8 @@
     </div>
 
     <pre class="output">
-    <code>
-    {code}
+    <code class="hljs">
+    {@html code}
     </code>
     </pre>
   </div>

@@ -1,6 +1,7 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
@@ -56,7 +57,15 @@ export default {
       dedupe: ['svelte'],
       mainFields: ['ts:main', 'module', 'main'],
     }),
+
+    replace({ 
+      include: '../../**/node_modules/highlightjs-solidity/solidity.js',
+      delimiters: ['', ''],
+      'var module = module ? module : {};': '',
+    }),
+
     commonjs(),
+
     typescript({
       include: [
         'src/**/*.ts',
