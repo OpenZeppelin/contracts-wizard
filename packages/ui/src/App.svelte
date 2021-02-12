@@ -21,44 +21,55 @@
 <main>
   <h1>OpenZeppelin Wizard</h1>
 
-  <p>
-  <label><input type="radio" checked> ERC20</label>
-  <input bind:value={opts.name}>
-  <br>
-  <input bind:value={opts.symbol}>
-  <br>
-  <label><input type="checkbox" bind:checked={opts.burnable}> Burnable</label>
-  <label><input type="checkbox" bind:checked={opts.snapshots}> Snapshots</label>
-  <label><input type="checkbox" bind:checked={opts.pausable}> Pausable</label>
-  <label><input type="checkbox" bind:checked={opts.mintable}> Mintable</label>
-  <input bind:value={opts.premint} placeholder="Premint">
-  <br>
-  Access Control
-  <label><input type="radio" bind:group={opts.access} value="ownable"> Ownable</label>
-  <label><input type="radio" bind:group={opts.access} value="roles"> Roles</label>
-  </p>
+  <div class="app">
+    <div class="form">
+      <p>
+      <label><input type="radio" checked> ERC20</label>
+      <input bind:value={opts.name}>
+      <br>
+      <input bind:value={opts.symbol}>
+      <br>
+      <label><input type="checkbox" bind:checked={opts.burnable}> Burnable</label>
+      <label><input type="checkbox" bind:checked={opts.snapshots}> Snapshots</label>
+      <label><input type="checkbox" bind:checked={opts.pausable}> Pausable</label>
+      <label><input type="checkbox" bind:checked={opts.mintable}> Mintable</label>
+      <input bind:value={opts.premint} placeholder="Premint">
+      <br>
+      Access Control
+      <label><input type="radio" bind:group={opts.access} value="ownable"> Ownable</label>
+      <label><input type="radio" bind:group={opts.access} value="roles"> Roles</label>
+      </p>
+    </div>
 
-  <pre>
-  <code>
-  {code}
-  </code>
-  </pre>
+    <pre class="output">
+    <code>
+    {code}
+    </code>
+    </pre>
+  </div>
 </main>
 
 <style>
-	main {
-		padding: 1em;
-		margin: 0 auto;
-	}
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+  .app {
+    display: flex;
+    width: 1100px;
+  }
 
-    pre {
-      font-size: 1.5em;
-    }
+  .form {
+    flex: 1;
+  }
+
+  .output {
+    flex: 2;
+  }
+
+  pre {
+    font-size: 1.5em;
+  }
 </style>
