@@ -10,6 +10,7 @@
       pausable: false,
       premint: undefined,
       mintable: false,
+      access: 'ownable',
     };
 
     let code: string = '';
@@ -31,6 +32,10 @@
   <label><input type="checkbox" bind:checked={opts.pausable}> Pausable</label>
   <label><input type="checkbox" bind:checked={opts.mintable}> Mintable</label>
   <input bind:value={opts.premint} placeholder="Premint">
+  <br>
+  Access Control
+  <label><input type="radio" bind:group={opts.access} value="ownable"> Ownable</label>
+  <label><input type="radio" bind:group={opts.access} value="roles"> Roles</label>
   </p>
 
   <pre>
