@@ -65,12 +65,9 @@
     width: 1100px;
   }
 
-  .form {
-    flex: 1;
-  }
-
   .output {
-    flex: 2;
+    margin-left: 1em;
+    flex: 1;
   }
 
   pre {
