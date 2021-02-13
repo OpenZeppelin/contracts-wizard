@@ -43,15 +43,12 @@ function printConstructor(contract: Contract): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
-    return [
-      [
-        `constructor()`,
-        ...contract.parents.flatMap(printParentConstructor),
-        `{`,
-      ].join(' '),
+    return printFunction2(
+      'constructor',
+      [],
+      contract.parents.flatMap(printParentConstructor),
       contract.constructorCode,
-      `}`
-    ];
+    );
   } else {
     return [];
   }
@@ -68,7 +65,7 @@ function printParentConstructor({ contract, params }: Parent): [] | [string] {
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
-  const modifiers = [...fn.modifiers];
+  const modifiers = [fn.kind, ...fn.modifiers];
   const code = [...fn.code];
 
   if (fn.override.length > 1) {
@@ -79,17 +76,35 @@ function printFunction(fn: ContractFunction): Lines[] {
     code.push(`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`);
   }
 
-  if (modifiers.length + fn.code.length > 0) {
-    return [
-      `function ${fn.name}(${fn.args.map(printArgument).join(', ')})`,
-      [fn.kind, ...modifiers],
-      '{',
-      code,
-      '}',
-    ];
+  if (modifiers.length + fn.code.length > 1) {
+    return printFunction2('function ' + fn.name, fn.args.map(printArgument), modifiers, code);
   } else {
     return [];
   }
+}
+
+// generic for functions and constructors
+// kindedName = 'function foo' or 'constructor'
+function printFunction2(kindedName: string, args: string[], modifiers: string[], code: string[]): Lines[] {
+  const fn = [];
+
+  const headingLength = [kindedName, ...args, ...modifiers]
+    .map(s => s.length)
+    .reduce((a, b) => a + b);
+
+  const braces = code.length > 0 ? '{' : '{}';
+
+  if (headingLength <= 72) {
+    fn.push([`${kindedName}(${args.join(', ')})`, ...modifiers, braces].join(' '));
+  } else {
+    fn.push(`${kindedName}(${args.join(', ')})`, modifiers, braces);
+  }
+
+  if (code.length > 0) {
+    fn.push(code, '}');
+  }
+
+  return fn;
 }
 
 function printArgument(arg: FunctionArgument): string {
