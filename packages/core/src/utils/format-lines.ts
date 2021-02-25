@@ -1,8 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-export type Lines = string | Lines[];
-
-type LinesOrWhitespace = string | typeof whitespace | LinesOrWhitespace[];
+export type Lines = string | typeof whitespace | Lines[];
 
 const whitespace = Symbol('whitespace');
 
@@ -12,7 +10,7 @@ export function formatLines(...lines: Lines[]): string {
 
 function* indentEach(
   indent: number,
-  lines: LinesOrWhitespace[],
+  lines: Lines[],
 ): Generator<string | typeof whitespace> {
   for (const line of lines) {
     if (line === whitespace) {
@@ -28,6 +26,6 @@ function* indentEach(
 export function spaceBetween(...lines: Lines[][]): Lines[] {
   return lines
     .filter(l => l.length > 0)
-    .flatMap<LinesOrWhitespace>(l => [whitespace, ...l])
+    .flatMap<Lines>(l => [whitespace, ...l])
     .slice(1);
 }
