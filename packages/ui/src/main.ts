@@ -1,11 +1,12 @@
+import '@csstools/normalize.css';
+
 import type {} from 'svelte';
 import App from './App.svelte';
 
-const app = new App({
-	target: document.body,
-	props: {
-		name: 'world'
-	}
-});
+const target = document.getElementById('app');
 
-export default app;
+if (target === null) {
+  throw new Error('Missing container element (div#app)');
+}
+
+export default new App({ target: target });
