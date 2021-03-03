@@ -1,5 +1,3 @@
-import '@csstools/normalize.css';
-
 import type {} from 'svelte';
 import App from './App.svelte';
 

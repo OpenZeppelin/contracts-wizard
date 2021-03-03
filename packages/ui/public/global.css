@@ -1,6 +1,23 @@
+/* Normalize */
+
 *, *:before, *:after {
   box-sizing: border-box;
 }
+
+button, input, select {
+  margin: 0
+}
+
+button {
+  text-transform: none;
+}
+
+code {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+/* General */
 
 html, body {
   position: relative;
@@ -14,7 +31,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-input, button, select, textarea {
+button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
 }
@@ -36,16 +53,19 @@ input, button, select, textarea {
 }
 
 /* Hide up and down arrows in numeric input fields */
+
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
 }
 
 /* Layout Utilities */
+
 .flex-hor {
   display: flex;
   flex-direction: row;
