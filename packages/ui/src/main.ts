@@ -1,10 +1,17 @@
 import type {} from 'svelte';
 import App from './App.svelte';
+import { postMessage } from './post-message';
 
-const target = document.getElementById('app');
-
-if (target === null) {
-  throw new Error('Missing container element (div#app)');
+function postResize() {
+  postMessage({
+    kind: 'oz-wizard-resize',
+    height: document.body.scrollHeight,
+  });
 }
 
-export default new App({ target: target });
+window.onload = postResize;
+
+const resizeObserver = new ResizeObserver(postResize);
+resizeObserver.observe(document.body);
+
+export default new App({ target: document.body });

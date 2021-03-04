@@ -35,59 +35,88 @@ function serve() {
   };
 }
 
-export default {
-  input: 'src/main.ts',
-  output: {
-    sourcemap: true,
-    format: 'iife',
-    name: 'app',
-    file: 'public/build/bundle.js',
+export default [
+  {
+    input: 'src/main.ts',
+    output: {
+      sourcemap: true,
+      format: 'iife',
+      name: 'app',
+      file: 'public/build/bundle.js',
+    },
+    plugins: [
+      svelte({
+        preprocess: sveltePreprocess({ sourceMap: !production }),
+        compilerOptions: {
+          dev: !production,
+        },
+      }),
+      css({ output: 'bundle.css' }),
+
+      resolve({
+        browser: true,
+        dedupe: ['svelte'],
+        mainFields: ['ts:main', 'module', 'main'],
+      }),
+
+      replace({
+        include: '../../**/node_modules/highlightjs-solidity/solidity.js',
+        delimiters: ['', ''],
+        'var module = module ? module : {};': '',
+      }),
+
+      commonjs(),
+
+      typescript({
+        include: ['src/**/*.ts', '../core/src/**/*.ts'],
+        sourceMap: true,
+        inlineSources: !production,
+      }),
+
+      // In dev mode, call `npm run start` once
+      // the bundle has been generated
+      !production && serve(),
+
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production && livereload({
+        watch: 'public',
+        port: 35730,
+      }),
+
+      // If we're building for production (npm run build
+      // instead of npm run dev), minify
+      production && terser(),
+    ],
+    watch: {
+      clearScreen: false,
+    },
   },
-  plugins: [
-    svelte({
-      preprocess: sveltePreprocess({ sourceMap: !production }),
-      compilerOptions: {
-        dev: !production,
-      },
-    }),
-    css({ output: 'bundle.css' }),
+  {
+    input: 'src/embed.ts',
+    output: {
+      sourcemap: true,
+      format: 'iife',
+      name: 'embed',
+      file: 'public/build/embed.js',
+    },
+    plugins: [
+      typescript({
+        include: ['src/**/*.ts'],
+        sourceMap: true,
+        inlineSources: !production,
+      }),
 
-    resolve({
-      browser: true,
-      dedupe: ['svelte'],
-      mainFields: ['ts:main', 'module', 'main'],
-    }),
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production && livereload({
+        watch: 'public',
+        port: 35731,
+      }),
 
-    replace({ 
-      include: '../../**/node_modules/highlightjs-solidity/solidity.js',
-      delimiters: ['', ''],
-      'var module = module ? module : {};': '',
-    }),
-
-    commonjs(),
-
-    typescript({
-      include: [
-        'src/**/*.ts',
-        '../core/src/**/*.ts',
-      ],
-      sourceMap: true,
-      inlineSources: !production,
-    }),
-
-    // In dev mode, call `npm run start` once
-    // the bundle has been generated
-    !production && serve(),
-
-    // Watch the `public` directory and refresh the
-    // browser on changes when not in production
-    !production && livereload('public'),
-
-    // If we're building for production (npm run build
-    // instead of npm run dev), minify
-    production && terser(),
-  ],
-  watch: {
-    clearScreen: false,
+      // If we're building for production (npm run build
+      // instead of npm run dev), minify
+      production && terser(),
+    ],
   },
-};
+];

@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "lib": ["dom", "es2019.array"],
+    "lib": ["dom", "dom.iterable", "es2019.array"],
     "sourceMap": true,
     "skipLibCheck": true
   },
