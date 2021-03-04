@@ -36,10 +36,6 @@ button, input, select, textarea {
   font-size: inherit;
 }
 
-#app {
-  width: 1100px;
-}
-
 :root {
   --gray-1: #f9fafb;
   --gray-2: #eff1f3;
@@ -92,6 +88,10 @@ input[type=number] {
   gap: 1em;
 }
 
+.pad-lg {
+  padding: 1em;
+}
+
 .grow {
   flex-grow: 1;
 }
@@ -102,3 +102,6 @@ input[type=number] {
   column-gap: 1ex;
 }
 
+.scrollable {
+  overflow: auto;
+}
