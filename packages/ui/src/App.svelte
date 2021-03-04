@@ -30,7 +30,7 @@
     const copyHandler = () => navigator.clipboard.writeText(code);
 </script>
 
-<div class="container flex-ver gap-lg pad-lg scrollable">
+<div class="container flex-ver gap-lg pad-lg">
   <div class="header flex-hor justify">
     <div class="kind flex-hor justify align-center gap">
       <button class="selected">ERC20</button>
@@ -49,8 +49,8 @@
     </div>
   </div>
 
-  <div class="flex-hor gap-lg grow scrollable">
-    <div class="controls scrollable">
+  <div class="flex-hor gap-lg grow">
+    <div class="controls">
       <section class="settings">
         <h1>Settings</h1>
 
@@ -100,7 +100,7 @@
 
     <div class="output flex-ver grow scrollable">
     <pre class="flex-ver grow scrollable">
-    <code class="grow hljs">
+    <code class="hljs grow basis-0 scrollable">
     {@html highlightedCode}
     </code>
     </pre>
@@ -179,7 +179,6 @@
   .controls, .output {
     border-radius: 5px;
     box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
-    margin: 3px;
   }
 
   .controls section + section {
