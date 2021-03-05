@@ -71,7 +71,7 @@ export default [
       typescript({
         include: ['src/**/*.ts', '../core/src/**/*.ts'],
         sourceMap: true,
-        inlineSources: !production,
+        inlineSources: true,
       }),
 
       // In dev mode, call `npm run start` once
@@ -105,7 +105,7 @@ export default [
       typescript({
         include: ['src/**/*.ts'],
         sourceMap: true,
-        inlineSources: !production,
+        inlineSources: true,
       }),
 
       // Watch the `public` directory and refresh the
