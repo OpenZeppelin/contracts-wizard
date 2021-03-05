@@ -3,7 +3,6 @@
   "compilerOptions": {
     "noEmit": true,
     "lib": ["dom", "dom.iterable", "es2019", "es2019.array"],
-    "sourceMap": true,
     "skipLibCheck": true
   },
   "include": ["src/**/*", "../core/src/**/*"],

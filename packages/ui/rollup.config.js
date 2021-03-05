@@ -60,6 +60,7 @@ export default [
       }),
 
       replace({
+        preventAssignment: true,
         include: '../../**/node_modules/highlightjs-solidity/solidity.js',
         delimiters: ['', ''],
         'var module = module ? module : {};': '',
