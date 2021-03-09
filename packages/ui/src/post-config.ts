@@ -1,5 +1,10 @@
 import type { ERC20Options } from '@openzeppelin/wizard';
+import { v4 as uuid } from 'uuid';
 
+const instance = uuid();
+
+// NOTE: We have to make sure any fields sent in the body are defined in the
+// hidden form in public/index.html.
 export async function postConfig(opts: Required<ERC20Options>) {
   await fetch('/config', {
     method: 'POST',
@@ -8,6 +13,7 @@ export async function postConfig(opts: Required<ERC20Options>) {
     },
     body: encode({
       'form-name': 'config',
+      instance,
       data: JSON.stringify(opts),
     }),
   });

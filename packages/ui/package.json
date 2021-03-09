@@ -15,6 +15,7 @@
     "@rollup/plugin-typescript": "^8.2.0",
     "@tsconfig/svelte": "^1.0.0",
     "@types/resize-observer-browser": "^0.1.5",
+    "@types/uuid": "^8.3.0",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
@@ -30,6 +31,7 @@
     "@mdi/js": "^5.9.55",
     "highlight.js": "^10.6.0",
     "highlightjs-solidity": "^1.0.21",
-    "sirv-cli": "^1.0.0"
+    "sirv-cli": "^1.0.0",
+    "uuid": "^8.3.2"
   }
 }
