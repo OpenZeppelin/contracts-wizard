@@ -175,6 +175,7 @@
   }
 
   .controls {
+    flex-shrink: 0;
     width: 16em;
     background-color: white;
     padding: 1em;
