@@ -3,9 +3,11 @@ import { v4 as uuid } from 'uuid';
 
 const instance = uuid();
 
+export type Action = 'copy';
+
 // NOTE: We have to make sure any fields sent in the body are defined in the
 // hidden form in public/index.html.
-export async function postConfig(opts: Required<ERC20Options>) {
+export async function postConfig(opts: Required<ERC20Options>, action: Action) {
   await fetch('/config', {
     method: 'POST',
     headers: {
