@@ -9,8 +9,9 @@
 
     import type { ERC20Options } from '@openzeppelin/wizard';
     import { buildERC20, printContract } from '@openzeppelin/wizard';
+    import { postConfig as _postConfig} from './post-config';
 
-    const opts: ERC20Options = {
+    const opts: Required<ERC20Options> = {
       name: "MyToken",
       symbol: "MTK",
       burnable: false,
@@ -28,6 +29,7 @@
     $: highlightedCode = hljs.highlight('solidity', code).value;
 
     const copyHandler = () => navigator.clipboard.writeText(code);
+    const postConfig = () => _postConfig(opts);
 </script>
 
 <div class="container flex-ver gap-lg pad-lg">
@@ -41,7 +43,7 @@
     </div>
 
     <div class="action">
-      <button on:click={copyHandler}>
+      <button on:click={copyHandler} on:click={postConfig}>
         <SvgIcon path={mdiContentCopy}>
           Copy to Clipboard
         </SvgIcon>
