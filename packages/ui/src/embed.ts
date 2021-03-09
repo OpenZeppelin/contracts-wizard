@@ -17,7 +17,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
   }
 });
 
-document.addEventListener('DOMContentLoaded', function (e) {
+onDOMContentLoaded(function () {
   const wizards = document.querySelectorAll<HTMLElement>('oz-wizard');
 
   for (const w of wizards) {
@@ -35,5 +35,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
     }
   }
 });
+
+function onDOMContentLoaded(callback: () => void) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback();
+  }
+}
 
 export {};
