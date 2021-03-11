@@ -5,6 +5,7 @@
 
     import LabeledInput from './LabeledInput.svelte';
     import SvgIcon from './SvgIcon.svelte';
+    import Tooltip from './Tooltip.svelte';
     import { mdiContentCopy } from '@mdi/js';
 
     import type { ERC20Options } from '@openzeppelin/wizard';
@@ -73,10 +74,16 @@
         <label class="checkbox" class:checked={opts.burnable}>
           <input type="checkbox" bind:checked={opts.burnable}>
           Burnable
+          <Tooltip>
+            Provide a function for holders to destroy their tokens. <a target="_top" href="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">Read more.</a>
+          </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.snapshots}>
           <input type="checkbox" bind:checked={opts.snapshots}>
           Snapshots
+          <Tooltip>
+            Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting. <a target="_top" href="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">Read more.</a>
+          </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.pausable}>
           <input type="checkbox" bind:checked={opts.pausable}>
@@ -146,7 +153,7 @@
     border-radius: 5px;
     background-color: var(--gray-5);
     color: var(--gray-1);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+    box-shadow: var(--shadow);
     transition: opacity .25s ease-out .25s;
   }
 
@@ -183,7 +190,7 @@
 
   .controls, .output {
     border-radius: 5px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+    box-shadow: var(--shadow);
   }
 
   .controls section + section {

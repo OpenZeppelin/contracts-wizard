@@ -37,9 +37,16 @@ button, input, select, textarea {
   --gray-4: #818998;
   --gray-5: #575c66;
   --gray-6: #2c374b;
+
   --blue-1: #f5f6ff;
   --blue-2: #4e5de4;
   --blue-3: #343f9d;
+
+  --yellow-1: #fffaeb;
+  --yellow-2: #ffcc33;
+  --yellow-3: #b27700;
+
+  --shadow: 0 2px 3px rgba(0, 0, 0, .1);
 }
 
 /* Hide up and down arrows in numeric input fields */
