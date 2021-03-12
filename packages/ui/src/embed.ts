@@ -12,7 +12,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source && e.data.kind === 'oz-wizard-resize') {
     const iframe = iframes.get(e.source);
     if (iframe) {
-      iframe.height = e.data.height.toString();
+      iframe.height = Math.ceil(e.data.height).toString();
     }
   }
 });

@@ -3,10 +3,8 @@ import App from './App.svelte';
 import { postMessage } from './post-message';
 
 function postResize() {
-  postMessage({
-    kind: 'oz-wizard-resize',
-    height: document.body.scrollHeight,
-  });
+  const { height } = document.documentElement.getBoundingClientRect();
+  postMessage({ kind: 'oz-wizard-resize', height });
 }
 
 window.onload = postResize;
