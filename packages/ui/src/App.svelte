@@ -70,7 +70,7 @@
             </label>
           </div>
           <label class="text-input">
-            <span>Premint</span>
+            <span>Premint <Tooltip>Create an initial amount of tokens for the deployer.</Tooltip></span>
             <input bind:value={opts.premint} placeholder="Amount" type="number" min="0">
           </label>
         </div>
@@ -115,10 +115,16 @@
         <label class="checkbox" class:checked={opts.access === 'ownable'}>
           <input type="radio" bind:group={opts.access} value="ownable">
           Ownable
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
+            Simple mechanism where there is a single account authorized for all privileged actions.
+          </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.access === 'roles'}>
           <input type="radio" bind:group={opts.access} value="roles">
           Roles
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#AccessControl">
+            More advanced mechanism with a role for each privileged action. Many accounts can have the same role.
+          </Tooltip>
         </label>
       </section>
     </div>
