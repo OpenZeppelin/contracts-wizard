@@ -16,6 +16,7 @@ export async function postConfig(opts: Required<ERC20Options>, action: Action) {
     body: encode({
       'form-name': 'config',
       instance,
+      action,
       data: JSON.stringify(opts),
     }),
   });
