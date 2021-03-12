@@ -30,7 +30,7 @@
       );
     }
 
-    if (contentRect.bottom > viewportHeight) {
+    if (contentRect.top < 0) {
       reverse = true;
     }
   };
@@ -57,7 +57,7 @@
 <style>
   .tooltip {
     display: inline-flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     justify-content: center;
   }
@@ -73,6 +73,7 @@
 
   .content {
     position: absolute;
+    bottom: 0;
     width: 15em;
     transform: translateX(-50%);
     background-color: var(--yellow-1);
@@ -84,10 +85,11 @@
   }
 
   .tooltip.reverse {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
   .tooltip.reverse .content {
-    bottom: 0;
+    bottom: unset;
+    top: 0;
   }
 </style>
