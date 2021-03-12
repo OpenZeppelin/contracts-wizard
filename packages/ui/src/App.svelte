@@ -74,24 +74,30 @@
         <label class="checkbox" class:checked={opts.burnable}>
           <input type="checkbox" bind:checked={opts.burnable}>
           Burnable
-          <Tooltip>
-            Provide a function for holders to destroy their tokens. <a target="_top" href="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">Read more.</a>
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
+            Provide a function for holders to destroy their tokens.
           </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.snapshots}>
           <input type="checkbox" bind:checked={opts.snapshots}>
           Snapshots
-          <Tooltip>
-            Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting. <a target="_top" href="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">Read more.</a>
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
+            Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting.
           </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.pausable}>
           <input type="checkbox" bind:checked={opts.pausable}>
           Pausable
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
+            Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
+          </Tooltip>
         </label>
         <label class="checkbox" class:checked={opts.mintable}>
           <input type="checkbox" bind:checked={opts.mintable}>
           Mintable
+          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
+            Makes the token mintable by privileged accounts.
+          </Tooltip>
         </label>
       </section>
 

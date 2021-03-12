@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  export let link: string | undefined;
+
   let tooltipElement, contentElement;
 
   let reverse = false;
@@ -50,6 +52,9 @@
   <div class="content-container">
     <div class="content" bind:this={contentElement}>
       <slot></slot>
+      {#if link}
+        <a target="_top" href={link}>Read more.</a>
+      {/if}
     </div>
   </div>
 </span>
