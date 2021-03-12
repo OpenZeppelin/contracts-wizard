@@ -3,7 +3,6 @@
 
     import hljs from './highlightjs';
 
-    import LabeledInput from './LabeledInput.svelte';
     import SvgIcon from './SvgIcon.svelte';
     import Tooltip from './Tooltip.svelte';
     import { mdiContentCopy } from '@mdi/js';
@@ -61,10 +60,19 @@
 
         <div class="flex-ver gap-lg">
           <div class="cols-2-1">
-            <LabeledInput label="Name" bind:value={opts.name} />
-            <LabeledInput label="Symbol" bind:value={opts.symbol} />
+            <label class="text-input">
+              <span>Name</span>
+              <input bind:value={opts.name}>
+            </label>
+            <label class="text-input">
+              <span>Symbol</span>
+              <input bind:value={opts.symbol}>
+            </label>
           </div>
-          <LabeledInput label="Premint" bind:value={opts.premint} placeholder="Amount" type="number" min="0" />
+          <label class="text-input">
+            <span>Premint</span>
+            <input bind:value={opts.premint} placeholder="Amount" type="number" min="0">
+          </label>
         </div>
       </section>
 
@@ -224,6 +232,17 @@
 
   .controls .checkbox.checked {
     background-color: var(--blue-1);
+  }
+
+  .controls .text-input span {
+    display: block;
+    margin-bottom: .25em;
+    font-size: .9em;
+  }
+
+  .controls .text-input input {
+    display: block;
+    width: 100%;
   }
 
   .output pre {
