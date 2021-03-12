@@ -17,7 +17,7 @@
       burnable: false,
       snapshots: false,
       pausable: false,
-      premint: undefined,
+      premint: 0,
       mintable: false,
       access: 'ownable',
     };

@@ -6,7 +6,7 @@ export interface ERC20Options {
   burnable?: boolean;
   snapshots?: boolean;
   pausable?: boolean;
-  premint?: string;
+  premint?: number | string;
   mintable?: boolean;
   access?: Access;
 }
@@ -83,8 +83,10 @@ function addPausable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_pause();', functions.pause);
 }
 
-function addPremint(c: ContractBuilder, amount: string) {
-  c.addConstructorCode(`_mint(msg.sender, ${amount});`);
+function addPremint(c: ContractBuilder, amount: number | string) {
+  if (Number(amount) > 0) {
+    c.addConstructorCode(`_mint(msg.sender, ${amount});`);
+  }
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
