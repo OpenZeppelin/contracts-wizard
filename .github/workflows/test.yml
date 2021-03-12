@@ -15,6 +15,9 @@ jobs:
           node-version: 10.x
       - name: Install dependencies
         run: yarn
+      - name: Compile TypeScript
+        run: yarn tsc
+        working-directory: packages/core
       - name: Check Svelte
         run: yarn svelte-check
         working-directory: packages/ui
