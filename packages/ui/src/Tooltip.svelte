@@ -86,7 +86,7 @@
     box-shadow: var(--shadow);
     border-radius: 5px;
     padding: 1em;
-    font-size: .9em;
+    font-size: .9rem;
   }
 
   .tooltip.reverse {
