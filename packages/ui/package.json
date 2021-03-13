@@ -28,7 +28,6 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@mdi/js": "^5.9.55",
     "highlight.js": "^10.6.0",
     "highlightjs-solidity": "^1.0.21",
     "sirv-cli": "^1.0.0",

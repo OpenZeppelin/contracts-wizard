@@ -3,9 +3,9 @@
 
     import hljs from './highlightjs';
 
-    import SvgIcon from './SvgIcon.svelte';
     import Tooltip from './Tooltip.svelte';
-    import { mdiContentCopy } from '@mdi/js';
+
+    import CopyIcon from './icons/CopyIcon.svelte';
 
     import type { ERC20Options } from '@openzeppelin/wizard';
     import { buildERC20, printContract } from '@openzeppelin/wizard';
@@ -36,7 +36,7 @@
 
 <div class="container flex-ver gap-lg pad-lg">
   <div class="header flex-hor justify">
-    <div class="kind flex-hor justify align-center gap">
+    <div class="kind flex-hor align-center gap">
       <button class="selected">ERC20</button>
       <button disabled>ERC721</button>
       <button disabled>ERC777</button>
@@ -44,11 +44,10 @@
       <div class="coming-soon">Coming soon!</div>
     </div>
 
-    <div class="action">
-      <button on:click={copyHandler}>
-        <SvgIcon path={mdiContentCopy}>
-          Copy to Clipboard
-        </SvgIcon>
+    <div class="action flex-hor gap">
+      <button class="flex-hor align-center" on:click={copyHandler}>
+        <CopyIcon />
+        Copy to Clipboard
       </button>
     </div>
   </div>

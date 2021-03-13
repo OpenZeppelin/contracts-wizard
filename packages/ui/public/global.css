@@ -30,6 +30,14 @@ button, input, select, textarea {
   font-size: inherit;
 }
 
+svg.icon {
+  flex-shrink: 0;
+  height: 1em;
+  width: 1em;
+  margin-right: .3em;
+  fill: currentColor;
+}
+
 :root {
   --gray-1: #f9fafb;
   --gray-2: #eff1f3;
