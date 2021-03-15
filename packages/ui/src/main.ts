@@ -1,3 +1,5 @@
+import './global.css';
+
 import type {} from 'svelte';
 import App from './App.svelte';
 import { postMessage } from './post-message';
