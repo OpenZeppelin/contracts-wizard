@@ -25,7 +25,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (opts.snapshots) {
-    addSnapshot(c);
+    addSnapshot(c, access);
   }
 
   if (opts.pausable) {
@@ -62,13 +62,16 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addSnapshot(c: ContractBuilder) {
+function addSnapshot(c: ContractBuilder, access: Access) {
   c.addParent({
     name: 'ERC20Snapshot',
     path: '@openzeppelin/contracts/token/ERC20/ERC20Snapshot.sol',
   });
 
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
+
+  setAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
+  c.addFunctionCode('_snapshot();', functions.snapshot);
 }
 
 function addPausable(c: ContractBuilder, access: Access) {
@@ -153,6 +156,12 @@ const functions = {
 
   unpause: {
     name: 'unpause',
+    kind: 'public' as const,
+    args: [],
+  },
+
+  snapshot: {
+    name: 'snapshot',
     kind: 'public' as const,
     args: [],
   },
