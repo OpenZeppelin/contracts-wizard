@@ -50,7 +50,7 @@
     <div class="content" style="--offset: {offset}px" bind:this={contentElement}>
       <slot></slot>
       {#if link}
-        <a target="_top" href={link}>Read more.</a>
+        <a target="_blank" href={link}>Read more.</a>
       {/if}
     </div>
   </div>
