@@ -1,5 +1,6 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
 import { Access, setAccessControl } from './access';
+import { addPausable } from './pausable';
 
 export interface ERC20Options {
   name: string;
@@ -28,7 +29,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (opts.pausable) {
-    addPausable(c, access);
+    addPausable(c, access, [functions._beforeTokenTransfer]);
   }
 
   if (opts.premint) {
@@ -71,21 +72,6 @@ function addSnapshot(c: ContractBuilder, access: Access) {
 
   setAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
   c.addFunctionCode('_snapshot();', functions.snapshot);
-}
-
-function addPausable(c: ContractBuilder, access: Access) {
-  c.addParent({
-    name: 'Pausable',
-    path: '@openzeppelin/contracts/utils/Pausable.sol',
-  });
-
-  c.addModifier('whenNotPaused', functions._beforeTokenTransfer);
-
-  setAccessControl(c, functions.pause, access, 'PAUSER');
-  c.addFunctionCode('_pause();', functions.pause);
-
-  setAccessControl(c, functions.unpause, access, 'PAUSER');
-  c.addFunctionCode('_unpause();', functions.unpause);
 }
 
 function addPremint(c: ContractBuilder, amount: number | string) {
