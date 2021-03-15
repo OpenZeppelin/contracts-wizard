@@ -81,6 +81,9 @@ function addPausable(c: ContractBuilder, access: Access) {
 
   setAccessControl(c, functions.pause, access, 'PAUSER');
   c.addFunctionCode('_pause();', functions.pause);
+
+  setAccessControl(c, functions.unpause, access, 'PAUSER');
+  c.addFunctionCode('_unpause();', functions.unpause);
 }
 
 function addPremint(c: ContractBuilder, amount: number | string) {
@@ -144,6 +147,12 @@ const functions = {
 
   pause: {
     name: 'pause',
+    kind: 'public' as const,
+    args: [],
+  },
+
+  unpause: {
+    name: 'unpause',
     kind: 'public' as const,
     args: [],
   },
