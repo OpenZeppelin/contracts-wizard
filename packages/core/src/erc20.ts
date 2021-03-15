@@ -1,4 +1,5 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
+import { Access, setAccessControl } from './access';
 
 export interface ERC20Options {
   name: string;
@@ -10,8 +11,6 @@ export interface ERC20Options {
   mintable?: boolean;
   access?: Access;
 }
-
-type Access = 'ownable' | 'roles';
 
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
@@ -99,34 +98,6 @@ function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access, 'MINTER');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
-
-function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
-  switch (access) {
-    case 'ownable': {
-      c.addParent(parents.Ownable);
-      c.addModifier('onlyOwner', fn);
-      break;
-    }
-    case 'roles': {
-      const roleId = role + '_ROLE';
-      c.addParent(parents.AccessControl);
-      c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-      c.addFunctionCode(`require(hasRole(${roleId}, msg.sender));`, fn);
-      break;
-    }
-  }
-}
-
-const parents = {
-  Ownable: {
-    name: 'Ownable',
-    path: '@openzeppelin/contracts/access/Ownable.sol',
-  },
-  AccessControl: {
-    name: 'AccessControl',
-    path: '@openzeppelin/contracts/access/AccessControl.sol',
-  },
-};
 
 const functions = {
   _beforeTokenTransfer: {
