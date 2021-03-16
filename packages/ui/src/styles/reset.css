@@ -1,0 +1,10 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+code {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}

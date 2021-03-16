@@ -6,7 +6,10 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
-import postcss from 'rollup-plugin-postcss';
+import styles from 'rollup-plugin-styles';
+
+import postcssNested from 'postcss-nested';
+import autoprefixer from 'autoprefixer';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -43,6 +46,7 @@ export default [
       format: 'iife',
       name: 'app',
       file: 'public/build/bundle.js',
+      assetFileNames: '[name][extname]',
     },
     plugins: [
       svelte({
@@ -52,11 +56,12 @@ export default [
         },
       }),
 
-      postcss({
-        extract: 'bundle.css',
+      styles({
+        mode: ['extract', 'bundle.css'],
         sourceMap: true,
         plugins: [
-          require('postcss-extend-rule'),
+          postcssNested,
+          production && autoprefixer,
         ],
       }),
 
@@ -87,10 +92,11 @@ export default [
 
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
-      !production && livereload({
-        watch: 'public',
-        port: 35730,
-      }),
+      !production &&
+        livereload({
+          watch: 'public',
+          port: 35730,
+        }),
 
       // If we're building for production (npm run build
       // instead of npm run dev), minify
@@ -117,10 +123,11 @@ export default [
 
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
-      !production && livereload({
-        watch: 'public',
-        port: 35731,
-      }),
+      !production &&
+        livereload({
+          watch: 'public',
+          port: 35731,
+        }),
 
       // If we're building for production (npm run build
       // instead of npm run dev), minify
