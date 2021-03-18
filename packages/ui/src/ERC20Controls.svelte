@@ -1,0 +1,91 @@
+<script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+
+  import type { ERC20Options } from '@openzeppelin/wizard';
+
+  export let opts: Required<ERC20Options> = {
+    name: "MyToken",
+    symbol: "MTK",
+    burnable: false,
+    snapshots: false,
+    pausable: false,
+    premint: 0,
+    mintable: false,
+    access: 'ownable',
+  };
+</script>
+
+<section class="settings controls-section">
+  <h1>Settings</h1>
+
+    <div class="grid grid-cols-2-1 gap-2">
+      <label class="labeled-input">
+        <span>Name</span>
+        <input bind:value={opts.name}>
+      </label>
+      <label class="labeled-input">
+        <span>Symbol</span>
+        <input bind:value={opts.symbol}>
+      </label>
+    </div>
+    <label class="labeled-input">
+      <span class="flex justify-between pr-2">Premint <Tooltip>Create an initial amount of tokens for the deployer.</Tooltip></span>
+      <input bind:value={opts.premint} placeholder="Amount" type="number" min="0">
+    </label>
+</section>
+
+<section class="controls-section">
+  <h1>Features</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable}>
+      Burnable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
+        Provide a function for holders to destroy their tokens.
+      </Tooltip>
+    </label>
+    <label class:checked={opts.snapshots}>
+      <input type="checkbox" bind:checked={opts.snapshots}>
+      Snapshots
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
+        Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting.
+      </Tooltip>
+    </label>
+    <label class:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable}>
+      Pausable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
+        Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
+      </Tooltip>
+    </label>
+    <label class:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable}>
+      Mintable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
+        Makes the token mintable by privileged accounts.
+      </Tooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>Access Control</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.access === 'ownable'}>
+      <input type="radio" bind:group={opts.access} value="ownable">
+      Ownable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
+        Simple mechanism where there is a single account authorized for all privileged actions.
+      </Tooltip>
+    </label>
+    <label class:checked={opts.access === 'roles'}>
+      <input type="radio" bind:group={opts.access} value="roles">
+      Roles
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#AccessControl">
+        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+      </Tooltip>
+    </label>
+  </div>
+</section>

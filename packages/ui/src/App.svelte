@@ -3,30 +3,22 @@
 
     import hljs from './highlightjs';
 
-    import Tooltip from './Tooltip.svelte';
-
+    import ERC20Controls from './ERC20Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
 
     import type { ERC20Options } from '@openzeppelin/wizard';
     import { buildERC20, printContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
 
-    const opts: Required<ERC20Options> = {
-      name: "MyToken",
-      symbol: "MTK",
-      burnable: false,
-      snapshots: false,
-      pausable: false,
-      premint: 0,
-      mintable: false,
-      access: 'ownable',
-    };
+    let opts: Required<ERC20Options>;
 
     let code: string = '';
     let highlightedCode: string = '';
 
-    $: code = printContract(buildERC20(opts));
-    $: highlightedCode = hljs.highlight('solidity', code).value;
+    $: if (opts) {
+      code = printContract(buildERC20(opts));
+      highlightedCode = hljs.highlight('solidity', code).value;
+    }
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
@@ -34,9 +26,9 @@
     }
 </script>
 
-<div class="container flex-ver gap-lg pad-lg">
-  <div class="header flex-hor justify">
-    <div class="kind flex-hor align-center gap">
+<div class="container flex flex-col gap-4 p-4">
+  <div class="header flex flex-row justify-between">
+    <div class="kind flex flex-row items-center gap-2">
       <button class="selected">ERC20</button>
       <button disabled>ERC721</button>
       <button disabled>ERC777</button>
@@ -44,93 +36,22 @@
       <div class="coming-soon">Coming soon!</div>
     </div>
 
-    <div class="action flex-hor gap">
-      <button class="flex-hor align-center" on:click={copyHandler}>
+    <div class="action flex flex-row gap-2">
+      <button class="flex flex-row items-center" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
       </button>
     </div>
   </div>
 
-  <div class="flex-hor gap-lg grow">
-    <div class="controls">
-      <section class="settings">
-        <h1>Settings</h1>
-
-        <div class="flex-ver gap-lg">
-          <div class="cols-2-1">
-            <label class="text-input">
-              <span>Name</span>
-              <input bind:value={opts.name}>
-            </label>
-            <label class="text-input">
-              <span>Symbol</span>
-              <input bind:value={opts.symbol}>
-            </label>
-          </div>
-          <label class="text-input">
-            <span>Premint <Tooltip>Create an initial amount of tokens for the deployer.</Tooltip></span>
-            <input bind:value={opts.premint} placeholder="Amount" type="number" min="0">
-          </label>
-        </div>
-      </section>
-
-      <section>
-        <h1>Features</h1>
-
-        <label class="checkbox" class:checked={opts.burnable}>
-          <input type="checkbox" bind:checked={opts.burnable}>
-          Burnable
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
-            Provide a function for holders to destroy their tokens.
-          </Tooltip>
-        </label>
-        <label class="checkbox" class:checked={opts.snapshots}>
-          <input type="checkbox" bind:checked={opts.snapshots}>
-          Snapshots
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
-            Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting.
-          </Tooltip>
-        </label>
-        <label class="checkbox" class:checked={opts.pausable}>
-          <input type="checkbox" bind:checked={opts.pausable}>
-          Pausable
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
-            Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
-          </Tooltip>
-        </label>
-        <label class="checkbox" class:checked={opts.mintable}>
-          <input type="checkbox" bind:checked={opts.mintable}>
-          Mintable
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
-            Makes the token mintable by privileged accounts.
-          </Tooltip>
-        </label>
-      </section>
-
-      <section>
-        <h1>Access Control</h1>
-
-        <label class="checkbox" class:checked={opts.access === 'ownable'}>
-          <input type="radio" bind:group={opts.access} value="ownable">
-          Ownable
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
-            Simple mechanism where there is a single account authorized for all privileged actions.
-          </Tooltip>
-        </label>
-        <label class="checkbox" class:checked={opts.access === 'roles'}>
-          <input type="radio" bind:group={opts.access} value="roles">
-          Roles
-          <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#AccessControl">
-            More advanced mechanism with a role for each privileged action. Many accounts can have the same role.
-          </Tooltip>
-        </label>
-      </section>
+  <div class="flex flex-row gap-4 flex-grow">
+    <div class="controls w-64 flex flex-col flex-shrink-0 gap-4">
+      <ERC20Controls bind:opts />
     </div>
 
-    <div class="output flex-ver grow scrollable">
-    <pre class="flex-ver grow scrollable">
-    <code class="hljs grow basis-0 scrollable">
+    <div class="output flex flex-col flex-grow overflow-auto">
+    <pre class="flex flex-col flex-grow flex-basis-0 overflow-auto">
+    <code class="hljs flex-grow overflow-auto">
     {@html highlightedCode}
     </code>
     </pre>
@@ -201,8 +122,6 @@
   }
 
   .controls {
-    flex-shrink: 0;
-    width: 16em;
     background-color: white;
     padding: 1em;
   }
@@ -210,44 +129,6 @@
   .controls, .output {
     border-radius: 5px;
     box-shadow: var(--shadow);
-  }
-
-  .controls section + section {
-    margin-top: 1.5em;
-    padding-top: 1em;
-    border-top: 1px solid var(--gray-2);
-  }
-
-  .controls h1 {
-    margin-top: 0;
-    margin-bottom: 1em;
-    text-transform: lowercase;
-    font-variant: small-caps;
-    font-size: 1em;
-    color: var(--gray-4);
-  }
-
-  .controls label {
-    display: block;
-  }
-
-  .controls .checkbox {
-    padding: .5em;
-  }
-
-  .controls .checkbox.checked {
-    background-color: var(--blue-1);
-  }
-
-  .controls .text-input span {
-    display: block;
-    margin-bottom: .25em;
-    font-size: .9em;
-  }
-
-  .controls .text-input input {
-    display: block;
-    width: 100%;
   }
 
   .output pre {
