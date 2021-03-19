@@ -15,6 +15,12 @@ testERC721('basic', {
   symbol: 'MTK',
 });
 
+testERC721('base uri', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  baseUri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
+});
+
 testERC721('enumerable', {
   name: 'MyToken',
   symbol: 'MTK',

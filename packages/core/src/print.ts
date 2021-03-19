@@ -73,7 +73,9 @@ function printFunction(fn: ContractFunction): Lines[] {
   }
 
   if (fn.override.length > 0) {
-    code.push(`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`);
+    if (!fn.final) {
+      code.push(`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`);
+    }
   }
 
   if (modifiers.length + fn.code.length > 1) {

@@ -5,6 +5,7 @@ import { addPausable } from './pausable';
 export interface ERC721Options {
   name: string;
   symbol: string;
+  baseUri?: string;
   enumerable?: boolean;
   uriStorage?: boolean;
   burnable?: boolean;
@@ -18,6 +19,10 @@ export function buildERC721(opts: ERC721Options): Contract {
   const { access = 'ownable' } = opts;
 
   addBase(c, opts.name, opts.symbol);
+
+  if (opts.baseUri) {
+    addBaseURI(c, opts.baseUri);
+  }
 
   if (opts.enumerable) {
     addEnumerable(c);
@@ -48,6 +53,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride('ERC721', functions._beforeTokenTransfer);
+}
+
+function addBaseURI(c: ContractBuilder, baseUri: string) {
+  c.addOverride('ERC721', functions._baseURI);
+  c.setFunctionBody(`return ${JSON.stringify(baseUri)};`, functions._baseURI);
 }
 
 function addEnumerable(c: ContractBuilder) {
@@ -93,5 +103,11 @@ const functions = {
     args: [
       { name: 'tokenId', type: 'uint256' },
     ],
+  },
+
+  _baseURI: {
+    name: '_baseURI',
+    kind: 'internal' as const,
+    args: [],
   },
 };
