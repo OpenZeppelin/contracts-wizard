@@ -4,7 +4,6 @@ import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import styles from 'rollup-plugin-styles';
 
@@ -46,18 +45,7 @@ export default [
       assetFileNames: '[name][extname]',
     },
     plugins: [
-      svelte({
-        preprocess: sveltePreprocess({
-          sourceMap: !production,
-          postcss: true,
-          defaults: {
-            style: 'postcss',
-          }
-        }),
-        compilerOptions: {
-          dev: !production,
-        },
-      }),
+      svelte(require('./svelte.config')),
 
       styles({
         mode: ['extract', 'bundle.css'],
