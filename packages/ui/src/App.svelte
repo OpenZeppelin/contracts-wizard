@@ -1,6 +1,4 @@
 <script lang="ts">
-    import 'highlight.js/styles/atom-one-dark.css';
-
     import hljs from './highlightjs';
 
     import ERC20Controls from './ERC20Controls.svelte';
@@ -37,7 +35,7 @@
     </div>
 
     <div class="action flex flex-row gap-2">
-      <button class="flex flex-row items-center" on:click={copyHandler}>
+      <button class="flex flex-row gap-1 items-center" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
       </button>
@@ -51,7 +49,7 @@
 
     <div class="output flex flex-col flex-grow overflow-auto">
     <pre class="flex flex-col flex-grow flex-basis-0 overflow-auto">
-    <code class="hljs flex-grow overflow-auto">
+    <code class="hljs flex-grow overflow-auto p-4">
     {@html highlightedCode}
     </code>
     </pre>
@@ -64,10 +62,11 @@
     background-color: var(--gray-1);
     border: 1px solid var(--gray-2);
     border-radius: 10px;
+    min-width: var(--size-128);
   }
 
   .header button {
-    padding: .5em .7em;
+    padding: var(--size-2) var(--size-3);
     border-radius: 5px;
     font-weight: bold;
   }
@@ -123,15 +122,11 @@
 
   .controls {
     background-color: white;
-    padding: 1em;
+    padding: var(--size-4);
   }
 
   .controls, .output {
     border-radius: 5px;
     box-shadow: var(--shadow);
-  }
-
-  .output pre {
-    margin: 0;
   }
 </style>

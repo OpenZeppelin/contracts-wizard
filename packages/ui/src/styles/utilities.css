@@ -50,6 +50,10 @@
   width: var(--size-64);
 }
 
+.gap-1 {
+  gap: var(--size-1);
+}
+
 .gap-2 {
   gap: var(--size-2);
 }
