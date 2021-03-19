@@ -8,3 +8,9 @@ code {
   font-family: monospace, monospace;
   font-size: 1em;
 }
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+

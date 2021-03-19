@@ -11,10 +11,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-button, input, select, textarea {
-  font-family: inherit;
-}
-
 svg.icon {
   flex: 0 0 auto;
   height: 1em;
@@ -22,15 +18,21 @@ svg.icon {
   fill: currentColor;
 }
 
+input:not([type]), input[type="text"], input[type="number"] {
+  border: 1px solid var(--gray-3);
+  padding: var(--size-1) var(--size-2);
+  border-radius: 5px;
+}
+
 /* Hide up and down arrows in numeric input fields */
 
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
