@@ -12,8 +12,9 @@
     uriStorage: false,
     burnable: false,
     pausable: false,
+    mintable: false,
     access: 'ownable',
-  },
+  };
 </script>
 
 <section class="controls-section">

@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
-import type { Access } from './set-access-control';
+import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 
 export interface ERC721Options {
@@ -10,6 +10,7 @@ export interface ERC721Options {
   uriStorage?: boolean;
   burnable?: boolean;
   pausable?: boolean;
+  mintable?: boolean;
   access?: Access;
 }
 
@@ -38,6 +39,10 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (opts.burnable) {
     addBurnable(c);
+  }
+
+  if (opts.mintable) {
+    addMintable(c, access);
   }
 
   return c;
@@ -83,6 +88,11 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
+function addMintable(c: ContractBuilder, access: Access) {
+  setAccessControl(c, functions.safeMint, access, 'MINTER');
+  c.addFunctionCode('_safeMint(to, tokenId);', functions.safeMint);
+}
+
 const functions = {
   _beforeTokenTransfer: {
     name: '_beforeTokenTransfer',
@@ -107,4 +117,14 @@ const functions = {
     kind: 'internal' as const,
     args: [],
   },
+
+  safeMint: {
+    name: 'safeMint',
+    kind: 'public' as const,
+    args: [
+      { name: 'to', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+    ],
+  },
+
 };
