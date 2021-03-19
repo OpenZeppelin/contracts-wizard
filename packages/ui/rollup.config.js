@@ -8,9 +8,6 @@ import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import styles from 'rollup-plugin-styles';
 
-import postcssNested from 'postcss-nested';
-import autoprefixer from 'autoprefixer';
-
 const production = !process.env.ROLLUP_WATCH;
 
 function serve() {
@@ -50,7 +47,13 @@ export default [
     },
     plugins: [
       svelte({
-        preprocess: sveltePreprocess({ sourceMap: !production }),
+        preprocess: sveltePreprocess({
+          sourceMap: !production,
+          postcss: true,
+          defaults: {
+            style: 'postcss',
+          }
+        }),
         compilerOptions: {
           dev: !production,
         },
@@ -59,10 +62,6 @@ export default [
       styles({
         mode: ['extract', 'bundle.css'],
         sourceMap: true,
-        plugins: [
-          postcssNested,
-          production && autoprefixer,
-        ],
       }),
 
       resolve({
