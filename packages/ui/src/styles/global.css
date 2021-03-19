@@ -91,3 +91,12 @@ input[type=number] {
     width: 100%;
   }
 }
+
+.checkbox-group > *,
+.labeled-input {
+  --tooltip-opacity: .15;
+
+  &:hover {
+    --tooltip-opacity: .5;
+  }
+}

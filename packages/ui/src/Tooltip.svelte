@@ -64,6 +64,14 @@
     justify-content: center;
   }
 
+  svg {
+    opacity: var(--tooltip-opacity, 1);
+
+    .tooltip:hover & {
+      opacity: 1;
+    }
+  }
+
   .content-container {
     display: none;
     position: relative;
