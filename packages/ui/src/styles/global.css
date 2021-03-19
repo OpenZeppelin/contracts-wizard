@@ -50,7 +50,7 @@ input[type="number"] {
   }
 
   > * + * {
-    margin-top: var(--size-2);
+    margin-top: var(--size-3);
   }
 
   h1 {
