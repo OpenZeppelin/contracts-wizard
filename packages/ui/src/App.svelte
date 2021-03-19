@@ -2,11 +2,14 @@
     import hljs from './highlightjs';
 
     import ERC20Controls from './ERC20Controls.svelte';
+    import ERC721Controls from './ERC721Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
     import { buildGeneric, printContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
+
+    let controls = ERC20Controls;
 
     let opts: Required<GenericOptions>;
 
@@ -27,8 +30,12 @@
 <div class="container flex flex-col flex-col-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind">
-      <button class:selected={opts?.kind === 'ERC20'}>ERC20</button>
-      <button disabled>ERC721</button>
+      <button class:selected={opts?.kind === 'ERC20'} on:click={() => controls = ERC20Controls}>
+        ERC20
+      </button>
+      <button class:selected={opts?.kind === 'ERC721'} on:click={() => controls = ERC721Controls}>
+        ERC721
+      </button>
       <button disabled>ERC777</button>
       <button disabled>ERC1155</button>
       <span class="coming-soon">Coming soon!</span>
@@ -44,7 +51,7 @@
 
   <div class="flex flex-row flex-row-gap-4 flex-grow">
     <div class="controls w-64 flex flex-col flex-shrink-0">
-      <ERC20Controls bind:opts />
+      <svelte:component this={controls} bind:opts />
     </div>
 
     <div class="output flex flex-col flex-grow overflow-auto">

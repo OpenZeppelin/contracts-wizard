@@ -73,7 +73,6 @@ function addURIStorage(c: ContractBuilder) {
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol',
   });
 
-  c.addOverride('ERC721URIStorage', functions._beforeTokenTransfer);
   c.addOverride('ERC721URIStorage', functions._burn);
 }
 
@@ -82,8 +81,6 @@ function addBurnable(c: ContractBuilder) {
     name: 'ERC721Burnable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol',
   });
-
-  c.addOverride('ERC721Burnable', functions._burn);
 }
 
 const functions = {
