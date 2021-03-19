@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
-import { Access, setAccessControl } from './access';
-import { addPausable } from './pausable';
+import { Access, setAccessControl } from './set-access-control';
+import { addPausable } from './add-pausable';
 
 export interface ERC20Options {
   name: string;

@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
-import type { Access } from './access';
-import { addPausable } from './pausable';
+import type { Access } from './set-access-control';
+import { addPausable } from './add-pausable';
 
 export interface ERC721Options {
   name: string;
