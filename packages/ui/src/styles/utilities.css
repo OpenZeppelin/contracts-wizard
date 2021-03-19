@@ -50,18 +50,23 @@
   width: var(--size-64);
 }
 
-.gap-1 {
-  gap: var(--size-1);
+.flex-row-gap-4 {
+  & > * + * {
+    margin-left: var(--size-4);
+  }
 }
 
-.gap-2 {
-  gap: var(--size-2);
-}
-
-.gap-4 {
-  gap: var(--size-4);
+.flex-col-gap-4 {
+  & > * + * {
+    margin-top: var(--size-4);
+  }
 }
 
 .grid-cols-2-1 {
   grid-template-columns: 2fr 1fr;
 }
+
+.grid-gap-2 {
+  gap: var(--size-2);
+}
+

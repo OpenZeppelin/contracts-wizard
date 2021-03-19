@@ -18,7 +18,7 @@
 <section class="settings controls-section">
   <h1>Settings</h1>
 
-    <div class="grid grid-cols-2-1 gap-2">
+    <div class="grid grid-cols-2-1 grid-gap-2">
       <label class="labeled-input">
         <span>Name</span>
         <input bind:value={opts.name}>
