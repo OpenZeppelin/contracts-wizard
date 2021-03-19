@@ -1,11 +1,12 @@
 <script lang="ts">
   import Tooltip from './Tooltip.svelte';
 
-  import type { ERC20Options } from '@openzeppelin/wizard';
+  import type { GenericOptions } from '@openzeppelin/wizard';
 
-  export let opts: Required<ERC20Options> = {
-    name: "MyToken",
-    symbol: "MTK",
+  export const opts: Required<GenericOptions> = {
+    kind: 'ERC20',
+    name: 'MyToken',
+    symbol: 'MTK',
     burnable: false,
     snapshots: false,
     pausable: false,
@@ -15,7 +16,7 @@
   };
 </script>
 
-<section class="settings controls-section">
+<section class="controls-section">
   <h1>Settings</h1>
 
     <div class="grid grid-cols-2-1 grid-gap-2">

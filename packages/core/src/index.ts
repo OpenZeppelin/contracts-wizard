@@ -1,4 +1,4 @@
-export type { ERC20Options } from './erc20';
-export { buildERC20 } from './erc20';
+export type { GenericOptions } from './build-generic';
+export { buildGeneric } from './build-generic';
 
 export { printContract } from './print';

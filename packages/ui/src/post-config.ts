@@ -1,4 +1,4 @@
-import type { ERC20Options } from '@openzeppelin/wizard';
+import type { GenericOptions } from '@openzeppelin/wizard';
 import { v4 as uuid } from 'uuid';
 
 const instance = uuid();
@@ -7,7 +7,7 @@ export type Action = 'copy' | 'remix';
 
 // NOTE: We have to make sure any fields sent in the body are defined in the
 // hidden form in public/index.html.
-export async function postConfig(opts: Required<ERC20Options>, action: Action) {
+export async function postConfig(opts: Required<GenericOptions>, action: Action) {
   await fetch('/config', {
     method: 'POST',
     headers: {

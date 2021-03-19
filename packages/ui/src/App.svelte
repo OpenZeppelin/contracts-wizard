@@ -4,17 +4,17 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
 
-    import type { ERC20Options } from '@openzeppelin/wizard';
-    import { buildERC20, printContract } from '@openzeppelin/wizard';
+    import type { GenericOptions } from '@openzeppelin/wizard';
+    import { buildGeneric, printContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
 
-    let opts: Required<ERC20Options>;
+    let opts: Required<GenericOptions>;
 
     let code: string = '';
     let highlightedCode: string = '';
 
     $: if (opts) {
-      code = printContract(buildERC20(opts));
+      code = printContract(buildGeneric(opts));
       highlightedCode = hljs.highlight('solidity', code).value;
     }
 
@@ -27,7 +27,7 @@
 <div class="container flex flex-col flex-col-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind">
-      <button class="selected">ERC20</button>
+      <button class:selected={opts?.kind === 'ERC20'}>ERC20</button>
       <button disabled>ERC721</button>
       <button disabled>ERC777</button>
       <button disabled>ERC1155</button>
