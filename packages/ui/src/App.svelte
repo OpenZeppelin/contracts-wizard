@@ -9,7 +9,7 @@
     import { buildGeneric, printContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
 
-    let controls = ERC20Controls;
+    let controls: typeof ERC20Controls | typeof ERC721Controls = ERC20Controls;
 
     let opts: Required<GenericOptions>;
 
