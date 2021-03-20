@@ -3,12 +3,17 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateERC20Options } from './erc20';
+import { generateERC721Options } from './erc721';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 
 function* generateSources(): Generator<string> {
   for (const opts of generateERC20Options()) {
     yield printContract(buildGeneric({ kind: 'ERC20', ...opts }));
+  }
+
+  for (const opts of generateERC721Options()) {
+    yield printContract(buildGeneric({ kind: 'ERC721', ...opts }));
   }
 }
 

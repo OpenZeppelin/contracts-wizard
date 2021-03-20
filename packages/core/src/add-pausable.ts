@@ -4,7 +4,7 @@ import { Access, setAccessControl } from './set-access-control';
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
   c.addParent({
     name: 'Pausable',
-    path: '@openzeppelin/contracts/utils/Pausable.sol',
+    path: '@openzeppelin/contracts/security/Pausable.sol',
   });
 
   for (const fn of pausableFns) {

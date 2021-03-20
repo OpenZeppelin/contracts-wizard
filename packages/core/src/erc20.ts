@@ -58,14 +58,14 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20Burnable',
-    path: '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol',
   });
 }
 
 function addSnapshot(c: ContractBuilder, access: Access) {
   c.addParent({
     name: 'ERC20Snapshot',
-    path: '@openzeppelin/contracts/token/ERC20/ERC20Snapshot.sol',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol',
   });
 
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
