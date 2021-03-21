@@ -125,6 +125,11 @@ test('contract with two variables', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('name with special characters', t => {
+  const Foo = new ContractBuilder('foo bar baz');
+  t.snapshot(printContract(Foo));
+});
+
 const _beforeTokenTransfer = {
   name: '_beforeTokenTransfer',
   kind: 'internal' as const,

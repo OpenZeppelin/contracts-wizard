@@ -1,3 +1,5 @@
+import { toIdentifier } from './utils/to-identifier';
+
 export interface Contract {
   name: string;
   license: string;
@@ -51,7 +53,8 @@ export interface FunctionArgument {
 }
 
 export class ContractBuilder implements Contract {
-  license = 'MIT';
+  readonly license = 'MIT';
+  readonly name: string;
 
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
@@ -59,7 +62,9 @@ export class ContractBuilder implements Contract {
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
 
-  constructor(readonly name: string) {}
+  constructor(name: string) {
+    this.name = toIdentifier(name, true);
+  }
 
   get parents(): Parent[] {
     return [...this.parentMap.values()];
