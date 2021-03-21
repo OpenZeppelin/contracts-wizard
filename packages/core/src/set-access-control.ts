@@ -14,7 +14,9 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
     }
     case 'roles': {
       const roleId = role + '_ROLE';
-      c.addParent(parents.AccessControl);
+      if (c.addParent(parents.AccessControl)) {
+        c.addConstructorCode('_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);');
+      }
       c.addOverride(parents.AccessControl.name, supportsInterface);
       c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
       c.addFunctionCode(`require(hasRole(${roleId}, msg.sender));`, fn);

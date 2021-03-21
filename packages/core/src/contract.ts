@@ -78,8 +78,10 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ParentContract, params: string[] = []) {
+  addParent(contract: ParentContract, params: string[] = []): boolean {
+    const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
+    return !present;
   }
 
   addOverride(parent: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
