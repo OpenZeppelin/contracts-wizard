@@ -51,3 +51,16 @@ testERC721('pausable', {
   symbol: 'MTK',
   pausable: true,
 });
+
+testERC721('mintable', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+});
+
+testERC721('mintable + roles', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  access: 'roles',
+});

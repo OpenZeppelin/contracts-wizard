@@ -140,7 +140,9 @@ export class ContractBuilder implements Contract {
     fn.final = true;
   }
 
-  addVariable(code: string) {
+  addVariable(code: string): boolean {
+    const present = this.variableSet.has(code);
     this.variableSet.add(code);
+    return !present;
   }
 }
