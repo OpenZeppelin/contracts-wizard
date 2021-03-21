@@ -13,7 +13,7 @@ task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {
     quiet,
   });
 
-  if (output.errors?.length) {
+  if (output.errors && output.errors.length > 0) {
     throw new HardhatError(ERRORS.BUILTIN_TASKS.COMPILE_FAILURE);
   }
 });
