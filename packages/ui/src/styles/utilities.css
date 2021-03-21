@@ -50,13 +50,13 @@
   width: var(--size-64);
 }
 
-.flex-row-gap-4 {
+.flex-col-gap-4 {
   & > * + * {
     margin-left: var(--size-4);
   }
 }
 
-.flex-col-gap-4 {
+.flex-row-gap-4 {
   & > * + * {
     margin-top: var(--size-4);
   }

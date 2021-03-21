@@ -27,7 +27,7 @@
     }
 </script>
 
-<div class="container flex flex-col flex-col-gap-4 p-4">
+<div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind">
       <button class:selected={opts?.kind === 'ERC20'} on:click={() => controls = ERC20Controls}>
@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <div class="flex flex-row flex-row-gap-4 flex-grow">
+  <div class="flex flex-row flex-col-gap-4 flex-grow">
     <div class="controls w-64 flex flex-col flex-shrink-0">
       <svelte:component this={controls} bind:opts />
     </div>
