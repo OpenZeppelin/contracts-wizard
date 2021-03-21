@@ -65,17 +65,31 @@ function printParentConstructor({ contract, params }: Parent): [] | [string] {
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
-  const modifiers = [fn.kind, ...fn.modifiers];
-  const code = [...fn.code];
-
-  if (fn.override.length > 1) {
-    modifiers.push(`override(${fn.override.join(', ')})`);
+  if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
+    return []
   }
 
-  if (fn.override.length > 0) {
-    if (!fn.final) {
-      code.push(`super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`);
-    }
+  const modifiers: string[] = [fn.kind, ...fn.modifiers];
+
+  if (fn.mutability !== 'nonpayable') {
+    modifiers.splice(1, 0, fn.mutability);
+  }
+
+  if (fn.override.size === 1) {
+    modifiers.push(`override`);
+  } else if (fn.override.size > 1) {
+    modifiers.push(`override(${[...fn.override].join(', ')})`);
+  }
+
+  if (fn.returns?.length) {
+    modifiers.push(`returns (${fn.returns.join(', ')})`);
+  }
+
+  const code = [...fn.code];
+
+  if (fn.override.size > 0 && !fn.final) {
+    const superCall = `super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`;
+    code.push(fn.returns?.length ? 'return ' + superCall : superCall);
   }
 
   if (modifiers.length + fn.code.length > 1) {

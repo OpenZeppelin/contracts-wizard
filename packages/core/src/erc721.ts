@@ -1,6 +1,7 @@
 import { Contract, ContractBuilder, BaseFunction } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
+import { supportsInterface } from './common-functions';
 
 export interface ERC721Options {
   name: string;
@@ -58,6 +59,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride('ERC721', functions._beforeTokenTransfer);
+  c.addOverride('ERC721', functions._burn);
+  c.addOverride('ERC721', functions.tokenURI);
+  c.addOverride('ERC721', supportsInterface);
 }
 
 function addBaseURI(c: ContractBuilder, baseUri: string) {
@@ -70,6 +74,9 @@ function addEnumerable(c: ContractBuilder) {
     name: 'ERC721Enumerable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol',
   });
+
+  c.addOverride('ERC721Enumerable', functions._beforeTokenTransfer);
+  c.addOverride('ERC721Enumerable', supportsInterface);
 }
 
 function addURIStorage(c: ContractBuilder) {
@@ -79,6 +86,7 @@ function addURIStorage(c: ContractBuilder) {
   });
 
   c.addOverride('ERC721URIStorage', functions._burn);
+  c.addOverride('ERC721URIStorage', functions.tokenURI);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -112,10 +120,22 @@ const functions = {
     ],
   },
 
+  tokenURI: {
+    name: 'tokenURI',
+    kind: 'public' as const,
+    args: [
+      { name: 'tokenId', type: 'uint256' },
+    ],
+    returns: ['string memory'],
+    mutability: 'view' as const,
+  },
+
   _baseURI: {
     name: '_baseURI',
     kind: 'internal' as const,
     args: [],
+    returns: ['string memory'],
+    mutability: 'pure' as const,
   },
 
   safeMint: {

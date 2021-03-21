@@ -20,17 +20,30 @@ export interface ParentContract {
 export interface BaseFunction {
   name: string;
   args: FunctionArgument[];
+  returns?: string[];
   kind: FunctionKind;
+  mutability?: FunctionMutability;
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: string[];
+  override: Set<String>;
   modifiers: string[];
   code: string[];
+  mutability: FunctionMutability;
   final: boolean;
 }
 
 export type FunctionKind = 'internal' | 'public';
+export type FunctionMutability = typeof mutabilityRank[number];
+
+// Order is important
+const mutabilityRank = ['pure', 'view', 'nonpayable', 'payable'] as const;
+
+function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMutability {
+  return mutabilityRank[
+    Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))
+  ]!;
+}
 
 export interface FunctionArgument {
   type: string;
@@ -41,9 +54,9 @@ export class ContractBuilder implements Contract {
   license = 'MIT';
 
   readonly constructorCode: string[] = [];
-  readonly variables: string[] = [];
+  readonly variableSet: Set<string> = new Set();
 
-  private parentMap: Map<string, Parent> = new Map();
+  private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
 
   constructor(readonly name: string) {}
@@ -56,13 +69,20 @@ export class ContractBuilder implements Contract {
     return [...this.functionMap.values()];
   }
 
+  get variables(): string[] {
+    return [...this.variableSet];
+  }
+
   addParent(contract: ParentContract, params: string[] = []) {
     this.parentMap.set(contract.name, { contract, params });
   }
 
-  addOverride(parent: string, baseFn: BaseFunction) {
+  addOverride(parent: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
-    fn.override.push(parent);
+    fn.override.add(parent);
+    if (mutability) {
+      fn.mutability = maxMutability(fn.mutability, mutability);
+    }
   }
 
   addModifier(modifier: string, baseFn: BaseFunction) {
@@ -76,7 +96,14 @@ export class ContractBuilder implements Contract {
     if (got !== undefined) {
       return got;
     } else {
-      const fn = { ...baseFn, override: [], modifiers: [], code: [], final: false };
+      const fn: ContractFunction = {
+        override: new Set<string>(),
+        modifiers: [],
+        code: [],
+        mutability: 'nonpayable',
+        final: false,
+        ...baseFn,
+      };
       this.functionMap.set(signature, fn);
       return fn;
     }
@@ -86,12 +113,15 @@ export class ContractBuilder implements Contract {
     this.constructorCode.push(code);
   }
 
-  addFunctionCode(code: string, baseFn: BaseFunction) {
+  addFunctionCode(code: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     if (fn.final) {
       throw new Error(`Function ${baseFn.name} is already finalized`);
     }
     fn.code.push(code);
+    if (mutability) {
+      fn.mutability = maxMutability(fn.mutability, mutability);
+    }
   }
 
   setFunctionBody(code: string, baseFn: BaseFunction) {
@@ -104,6 +134,6 @@ export class ContractBuilder implements Contract {
   }
 
   addVariable(code: string) {
-    this.variables.push(code);
+    this.variableSet.add(code);
   }
 }

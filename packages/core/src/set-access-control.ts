@@ -1,4 +1,5 @@
 import type { ContractBuilder, BaseFunction } from './contract';
+import { supportsInterface } from './common-functions';
 
 export const accessOptions = ['ownable', 'roles'] as const;
 
@@ -14,6 +15,7 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
     case 'roles': {
       const roleId = role + '_ROLE';
       c.addParent(parents.AccessControl);
+      c.addOverride(parents.AccessControl.name, supportsInterface);
       c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
       c.addFunctionCode(`require(hasRole(${roleId}, msg.sender));`, fn);
       break;
