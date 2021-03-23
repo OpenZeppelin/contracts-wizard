@@ -131,7 +131,8 @@
     background-color: var(--gray-1);
     border: 1px solid var(--gray-2);
     border-radius: 10px;
-    min-width: var(--size-128);
+    min-width: 32rem;
+    min-height: 40rem;
   }
 
   .kind button, .action-button {
@@ -190,6 +191,7 @@
   }
 
   .controls {
+    align-self: flex-start;
     background-color: white;
     padding: var(--size-4);
   }

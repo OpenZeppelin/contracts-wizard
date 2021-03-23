@@ -54,6 +54,34 @@ function serve() {
 
 export default [
   {
+    input: 'src/embed.ts',
+    output: {
+      sourcemap: true,
+      format: 'iife',
+      name: 'embed',
+      file: 'public/build/embed.js',
+    },
+    plugins: [
+      typescript({
+        include: ['src/**/*.ts'],
+        sourceMap: true,
+        inlineSources: true,
+      }),
+
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production &&
+        livereload({
+          watch: 'public',
+          port: 35731,
+        }),
+
+      // If we're building for production (npm run build
+      // instead of npm run dev), minify
+      production && terser(),
+    ],
+  },
+  {
     input: 'src/main.ts',
     output: {
       sourcemap: true,
@@ -115,33 +143,5 @@ export default [
     watch: {
       clearScreen: false,
     },
-  },
-  {
-    input: 'src/embed.ts',
-    output: {
-      sourcemap: true,
-      format: 'iife',
-      name: 'embed',
-      file: 'public/build/embed.js',
-    },
-    plugins: [
-      typescript({
-        include: ['src/**/*.ts'],
-        sourceMap: true,
-        inlineSources: true,
-      }),
-
-      // Watch the `public` directory and refresh the
-      // browser on changes when not in production
-      !production &&
-        livereload({
-          watch: 'public',
-          port: 35731,
-        }),
-
-      // If we're building for production (npm run build
-      // instead of npm run dev), minify
-      production && terser(),
-    ],
   },
 ];

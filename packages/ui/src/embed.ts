@@ -12,7 +12,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source && e.data.kind === 'oz-wizard-resize') {
     const iframe = iframes.get(e.source);
     if (iframe) {
-      iframe.height = Math.ceil(e.data.height).toString();
+      iframe.style.height = Math.ceil(e.data.height).toString() + 'px';
     }
   }
 });
@@ -27,6 +27,7 @@ onDOMContentLoaded(function () {
     iframe.src = currentScript.origin + '/embed';
     iframe.style.border = '0';
     iframe.style.width = '100%';
+    iframe.style.height = '40rem';
 
     w.appendChild(iframe);
 
