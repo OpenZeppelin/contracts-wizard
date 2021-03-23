@@ -4,10 +4,16 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
+    import DownloadIcon from './icons/DownloadIcon.svelte';
+    import ZipIcon from './icons/ZipIcon.svelte';
+    import FileIcon from './icons/FileIcon.svelte';
+    import Dropdown from './Dropdown.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
-    import { buildGeneric, printContract } from '@openzeppelin/wizard';
+    import { buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
+
+    import { saveAs } from 'file-saver';
 
     let controls: typeof ERC20Controls | typeof ERC721Controls = ERC20Controls;
 
@@ -24,7 +30,20 @@
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
       await postConfig(opts, 'copy');
-    }
+    };
+
+    const downloadNpmHandler = async () => {
+      const blob = new Blob([code], { type: 'text/plain' });
+      saveAs(blob, opts.name + '.sol');
+      await postConfig(opts, 'download-npm');
+    };
+
+    const downloadVendoredHandler = async () => {
+      const zip = zipContract(buildGeneric(opts));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveAs(blob, 'contracts.zip');
+      await postConfig(opts, 'download-vendored');
+    };
 </script>
 
 <div class="container flex flex-col flex-row-gap-4 p-4">
@@ -41,11 +60,41 @@
       <span class="coming-soon">Coming soon!</span>
     </div>
 
-    <div class="action">
-      <button on:click={copyHandler}>
+    <div class="action flex flex-row flex-col-gap-4">
+      <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
       </button>
+      <Dropdown>
+        <button class="action-button" slot="button" let:show on:click={show} on:focus={show}>
+          <DownloadIcon />
+          Download
+        </button>
+
+        <button class="download-option" on:click={downloadNpmHandler}>
+          <span>
+            <FileIcon />
+            Single file
+          </span>
+          <span>
+            Requires installation of npm package (<code>@openzeppelin/contracts</code>).
+            <br>
+            Simple to receive updates.
+          </span>
+        </button>
+
+        <button class="download-option" on:click={downloadVendoredHandler}>
+          <span>
+            <ZipIcon />
+            Vendored ZIP
+          </span>
+          <span>
+            Does not require npm package.
+            <br>
+            Must be updated manually.
+          </span>
+        </button>
+      </Dropdown>
     </div>
   </div>
 
@@ -72,7 +121,7 @@
     min-width: var(--size-128);
   }
 
-  .header button {
+  .kind button, .action-button {
     padding: var(--size-2) var(--size-3);
     border-radius: 5px;
     font-weight: bold;
@@ -80,7 +129,7 @@
 
   .kind button {
     border: 0;
-    background-color: transparent;
+    background-color: var(--gray-1);
   }
 
   .kind button:hover {
@@ -112,19 +161,19 @@
     transition: opacity .1s ease-out 0s;
   }
 
-  .action button {
+  .action-button {
     background-color: transparent;
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
     cursor: pointer;
   }
 
-  .action button:hover {
-    background-color: var(--gray-1);
+  .action-button:active {
+    background-color: var(--gray-2);
   }
 
-  .action button:active {
-    background-color: var(--gray-2);
+  .action-button :global(.icon) {
+    margin-right: var(--size-1);
   }
 
   .controls {
@@ -135,5 +184,36 @@
   .controls, .output {
     border-radius: 5px;
     box-shadow: var(--shadow);
+  }
+
+  .download-option {
+    display: flex;
+    flex-direction: column;
+    padding: var(--size-3);
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--gray-1);
+    }
+
+    &:not(:first-child) {
+      border-top: 1px solid var(--gray-2);
+    }
+
+    & > :first-child {
+      font-weight: bold;
+
+      :global(.icon) {
+        float: right;
+      }
+    }
+
+    & > :not(:first-child) {
+      margin-top: var(--size-1);
+      font-size: var(--text-small);
+    }
   }
 </style>
