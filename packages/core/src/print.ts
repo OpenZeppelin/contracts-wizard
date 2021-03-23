@@ -6,7 +6,13 @@ import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 
 const SOLIDITY_VERSION = '0.8.0';
 
-export function printContract(contract: Contract): string {
+interface PrintOptions {
+  transformImport?: (path: string) => string;
+}
+
+export function printContract(contract: Contract, opts?: PrintOptions): string {
+  const transformImport = opts?.transformImport ?? (p => p);
+
   return formatLines(
     ...spaceBetween(
       [
@@ -14,7 +20,7 @@ export function printContract(contract: Contract): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.parents.map(p => `import "${p.contract.path}";`),
+      contract.parents.map(p => `import "${transformImport(p.contract.path)}";`),
 
       [
         [`contract ${contract.name}`, ...printInheritance(contract), '{'].join(' '),
