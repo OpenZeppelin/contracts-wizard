@@ -3,6 +3,8 @@
 
   import type { GenericOptions } from '@openzeppelin/wizard';
 
+  import AccessControlSection from './AccessControlSection.svelte';
+
   export const opts: Required<GenericOptions> = {
     kind: 'ERC721',
     name: 'MyToken',
@@ -77,23 +79,4 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>Access Control</h1>
-
-  <div class="checkbox-group">
-    <label class:checked={opts.access === 'ownable'}>
-      <input type="radio" bind:group={opts.access} value="ownable">
-      Ownable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
-        Simple mechanism where there is a single account authorized for all privileged actions.
-      </Tooltip>
-    </label>
-    <label class:checked={opts.access === 'roles'}>
-      <input type="radio" bind:group={opts.access} value="roles">
-      Roles
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#AccessControl">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
-      </Tooltip>
-    </label>
-  </div>
-</section>
+<AccessControlSection bind:access={opts.access} />
