@@ -40,13 +40,13 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.burnable}>
+    <label class:checked={opts.enumerable}>
       <input type="checkbox" bind:checked={opts.enumerable}>
       Enumerable
       <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
         Provide functions to enumerate all tokens or those owned by an account.
       </Tooltip>
-    </label><label class:checked={opts.burnable}>
+    </label><label class:checked={opts.uriStorage}>
       <input type="checkbox" bind:checked={opts.uriStorage}>
       URI Storage
       <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
