@@ -14,10 +14,10 @@ import { mapValues } from '../utils/map-values';
 import { transitiveClosure } from '../utils/transitive-closure';
 
 async function main() {
-  // await rimraf(hre.config.paths.sources);
-  // await rimraf(hre.config.paths.artifacts);
-  // await writeGeneratedSources(hre.config.paths.sources);
-  // await hre.run('compile', { force: true });
+  await rimraf(hre.config.paths.sources);
+  await rimraf(hre.config.paths.artifacts);
+  await writeGeneratedSources(hre.config.paths.sources);
+  await hre.run('compile', { force: true });
 
   const buildInfoPaths = await hre.artifacts.getBuildInfoPaths();
   if (buildInfoPaths.length !== 1) {
