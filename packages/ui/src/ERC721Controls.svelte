@@ -22,20 +22,20 @@
 <section class="controls-section">
   <h1>Settings</h1>
 
-    <div class="grid grid-cols-2-1 grid-gap-2">
-      <label class="labeled-input">
-        <span>Name</span>
-        <input bind:value={opts.name}>
-      </label>
-      <label class="labeled-input">
-        <span>Symbol</span>
-        <input bind:value={opts.symbol}>
-      </label>
-    </div>
+  <div class="grid grid-cols-2-1 grid-gap-2">
     <label class="labeled-input">
-      <span>Base URI</span>
-      <input bind:value={opts.baseUri}>
+      <span>Name</span>
+      <input bind:value={opts.name}>
     </label>
+    <label class="labeled-input">
+      <span>Symbol</span>
+      <input bind:value={opts.symbol}>
+    </label>
+  </div>
+  <label class="labeled-input">
+    <span>Base URI</span>
+    <input bind:value={opts.baseUri}>
+  </label>
 </section>
 
 <section class="controls-section">
