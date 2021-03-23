@@ -42,17 +42,11 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable}>
-      Enumerable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
-        Provide functions to enumerate all tokens or those owned by an account.
-      </Tooltip>
-    </label><label class:checked={opts.uriStorage}>
-      <input type="checkbox" bind:checked={opts.uriStorage}>
-      URI Storage
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
-        Add internal functions that update token URIs for individual token IDs.
+    <label class:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable}>
+      Mintable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Mintable">
+        Makes the token mintable by privileged accounts.
       </Tooltip>
     </label>
     <label class:checked={opts.burnable}>
@@ -69,11 +63,17 @@
         Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
       </Tooltip>
     </label>
-    <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
-      Mintable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Mintable">
-        Makes the token mintable by privileged accounts.
+    <label class:checked={opts.enumerable}>
+      <input type="checkbox" bind:checked={opts.enumerable}>
+      Enumerable
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
+        Provide functions to enumerate all tokens or those owned by an account.
+      </Tooltip>
+    </label><label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage}>
+      URI Storage
+      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
+        Add internal functions that update token URIs for individual token IDs.
       </Tooltip>
     </label>
   </div>
