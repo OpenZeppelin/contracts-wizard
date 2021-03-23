@@ -2,6 +2,7 @@
   import Tooltip from './Tooltip.svelte';
 
   import type { GenericOptions } from '@openzeppelin/wizard';
+  import { premintPattern } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
 
@@ -12,7 +13,7 @@
     burnable: false,
     snapshots: false,
     pausable: false,
-    premint: 0,
+    premint: '',
     mintable: false,
     access: 'ownable',
   };
@@ -33,7 +34,7 @@
     </div>
     <label class="labeled-input">
       <span class="flex justify-between pr-2">Premint <Tooltip>Create an initial amount of tokens for the deployer.</Tooltip></span>
-      <input bind:value={opts.premint} placeholder="Amount" type="number" min="0">
+      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
     </label>
 </section>
 

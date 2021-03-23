@@ -7,3 +7,5 @@ export { printContract } from './print';
 export { zipContract } from './zip';
 
 export type { Access } from './set-access-control';
+
+export { premintPattern } from './erc20';
