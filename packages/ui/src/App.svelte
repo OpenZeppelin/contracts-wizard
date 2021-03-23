@@ -4,6 +4,7 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
+    import RemixIcon from './icons/RemixIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
@@ -12,6 +13,7 @@
     import type { GenericOptions } from '@openzeppelin/wizard';
     import { buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
+    import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
 
@@ -30,6 +32,11 @@
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
       await postConfig(opts, 'copy');
+    };
+
+    const remixHandler = async () => {
+      window.open(remixURL(code).toString(), '_blank');
+      await postConfig(opts, 'remix');
     };
 
     const downloadNpmHandler = async () => {
@@ -65,6 +72,12 @@
         <CopyIcon />
         Copy to Clipboard
       </button>
+
+      <button class="action-button" on:click={remixHandler}>
+        <RemixIcon />
+        Open in Remix
+      </button>
+
       <Dropdown>
         <button class="action-button" slot="button" let:show on:click={show} on:focus={show}>
           <DownloadIcon />
