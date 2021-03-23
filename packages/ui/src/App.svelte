@@ -11,7 +11,7 @@
     import Dropdown from './Dropdown.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
-    import { buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
+    import { ContractBuilder, buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -21,13 +21,9 @@
 
     let opts: Required<GenericOptions>;
 
-    let code: string = '';
-    let highlightedCode: string = '';
-
-    $: if (opts) {
-      code = printContract(buildGeneric(opts));
-      highlightedCode = hljs.highlight('solidity', code).value;
-    }
+    $: contract = opts ? buildGeneric(opts) : new ContractBuilder('MyToken');
+    $: code = printContract(contract);
+    $: highlightedCode = hljs.highlight('solidity', code).value;
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
@@ -46,7 +42,7 @@
     };
 
     const downloadVendoredHandler = async () => {
-      const zip = zipContract(buildGeneric(opts));
+      const zip = zipContract(contract);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');
       await postConfig(opts, 'download-vendored');

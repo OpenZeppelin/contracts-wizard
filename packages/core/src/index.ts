@@ -1,6 +1,8 @@
 export type { GenericOptions } from './build-generic';
 export { buildGeneric } from './build-generic';
 
+export { ContractBuilder } from './contract';
+
 export { printContract } from './print';
 export { zipContract } from './zip';
 
