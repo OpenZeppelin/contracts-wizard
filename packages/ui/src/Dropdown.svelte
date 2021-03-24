@@ -1,19 +1,16 @@
 <script lang="ts">
-  let element: HTMLElement;
+  let dropdownElement: HTMLElement;
   let active = false;
 
-  interface ShowEvent {
-    currentTarget: HTMLElement | null;
-  }
-
-  const show = (e: ShowEvent) => {
-    active = true;
-    e.currentTarget?.focus();
+  const handleFocusout = (e: FocusEvent) => {
+    if (active && (!e.relatedTarget || !dropdownElement.contains(e.relatedTarget as Node))) {
+      active = false;
+    }
   };
 
-  const handleFocusout = (e: FocusEvent) => {
-    if (active && (!e.relatedTarget || !element.contains(e.relatedTarget as Node))) {
-      active = false;
+  const handleClick = (e: MouseEvent) => {
+    if (e.target.matches('[slot="button"]')) {
+      active = !active;
     }
   };
 
@@ -26,11 +23,11 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="dropdown" bind:this={element} on:focusout={handleFocusout}>
-  <slot name="button" {show}></slot>
+<div class="dropdown" bind:this={dropdownElement} on:focusout={handleFocusout} on:click={handleClick}>
+  <slot name="button"></slot>
 
   <div class="dropdown-items" class:active>
-    <slot></slot>
+    <slot {active}></slot>
   </div>
 </div>
 

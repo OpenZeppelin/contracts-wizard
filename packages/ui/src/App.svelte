@@ -74,8 +74,8 @@
         Open in Remix
       </button>
 
-      <Dropdown>
-        <button class="action-button" slot="button" let:show on:click={show} on:focus={show}>
+      <Dropdown let:active>
+        <button class="action-button" class:active slot="button">
           <DownloadIcon />
           Download
         </button>
@@ -178,7 +178,7 @@
     cursor: pointer;
   }
 
-  .action-button:active {
+  .action-button:active, .action-button.active {
     background-color: var(--gray-2);
   }
 
