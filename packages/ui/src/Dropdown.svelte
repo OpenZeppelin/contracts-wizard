@@ -9,7 +9,7 @@
   };
 
   const handleClick = (e: MouseEvent) => {
-    if (e.target.matches('[slot="button"]')) {
+    if (e.target instanceof Element && e.target.matches('[slot="button"]')) {
       active = !active;
     }
   };
