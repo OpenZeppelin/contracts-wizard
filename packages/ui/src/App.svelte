@@ -82,8 +82,8 @@
 
         <button class="download-option" on:click={downloadNpmHandler}>
           <span>
-            <FileIcon />
             Single file
+            <FileIcon />
           </span>
           <span>
             Requires installation of npm package (<code>@openzeppelin/contracts</code>).
@@ -94,8 +94,8 @@
 
         <button class="download-option" on:click={downloadVendoredHandler}>
           <span>
-            <ZipIcon />
             Vendored ZIP
+            <ZipIcon />
           </span>
           <span>
             Does not require npm package.
@@ -216,6 +216,9 @@
 
     & > :first-child {
       font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
       :global(.icon) {
         float: right;
