@@ -1,106 +1,114 @@
 <script lang="ts">
-  export let link: string | undefined = undefined;
+  import tippy from 'tippy.js';
+  import 'tippy.js/dist/tippy.css';
 
-  let contentElement: HTMLElement;
+  import { onMount } from 'svelte';
 
-  let offset = 0;
-  let reverse = false;
+  let content: HTMLElement;
+  let triggerWrapperElement: HTMLElement;
 
-  const resetPosition = () => {
-    offset = 0;
-    reverse = false;
-  };
-
-  const adjustPosition = () => {
-    const viewportWidth = window.top.document.documentElement.clientWidth;
-
-    const frameRect = window.frameElement?.getBoundingClientRect() ?? { left: 0, top: 0 };
-    const contentRect = contentElement.getBoundingClientRect();
-
-    const contentLeft = frameRect.left + contentRect.left;
-    const contentRight = frameRect.left + contentRect.right 
-    const contentTop = frameRect.top + contentRect.top;
-
-    if (contentLeft < 0) {
-      offset -= contentLeft;
-    } else if (contentRight > viewportWidth) {
-      offset += Math.max(
-        viewportWidth - contentRight,
-        - contentLeft,
-      );
+  onMount(() => {
+    const triggerElement = triggerWrapperElement.querySelector('[slot="trigger"]');
+    if (triggerElement) {
+      tippy(triggerElement, { ...$$restProps, content });
+      content.style.removeProperty('display');
     }
-
-    if (contentTop < 0) {
-      reverse = true;
-    }
-  };
+  });
 </script>
 
-<span
-  class="tooltip"
-  class:reverse
-  on:mouseenter={adjustPosition}
-  on:mouseleave={resetPosition}
->
-  <svg style="width:1rem;height:1rem;" viewBox="0 0 24 24">
-    <path fill="currentColor" d="M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"></path>
-  </svg>
-
-  <div class="content-container">
-    <div class="content" style="--offset: {offset}px" bind:this={contentElement}>
-      <slot></slot>
-      {#if link}
-        <a target="_blank" href={link}>Read more.</a>
-      {/if}
-    </div>
-  </div>
+<span class="display-contents" bind:this={triggerWrapperElement}>
+  <slot name="trigger"></slot>
 </span>
 
+<div style="display: none;" bind:this={content}>
+  <slot></slot>
+</div>
+
 <style>
-  .tooltip {
-    display: inline-flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    justify-content: center;
-  }
-
-  svg {
-    opacity: var(--tooltip-opacity, 1);
-
-    .tooltip:hover & {
-      opacity: 1;
+  :global {
+    :root {
+      --tippy-background: #333;
+      --tippy-text: var(--gray-3);
+      --tippy-border: rgba(0, 8, 16, 0.15);
     }
-  }
 
-  .content-container {
-    display: none;
-    position: relative;
-  }
+    .tippy-box[data-theme~="light"] {
+      --tippy-background: #fff;
+      --tippy-text: #333;
+    }
 
-  .tooltip:hover .content-container {
-    display: block;
-  }
+    .tippy-box[data-theme~="light-yellow"] {
+      --tippy-background: var(--yellow-1);
+      --tippy-text: #333;
+    }
 
-  .content {
-    --offset: 0px;
-    position: absolute;
-    bottom: 0;
-    width: 15em;
-    transform: translateX(-50%) translateX(var(--offset)) ;
-    background-color: var(--yellow-1);
-    border: 1px solid rgba(0, 0, 0, .1);
-    box-shadow: var(--shadow);
-    border-radius: 5px;
-    padding: 1em;
-    font-size: .9rem;
-  }
+    .tippy-box {
+      background-color: var(--tippy-background);
+      background-clip: padding-box;
+      color: var(--tippy-text);
+      box-shadow: var(--shadow);
+    }
 
-  .tooltip.reverse {
-    flex-direction: column;
-  }
+    .tippy-box[data-theme~="border"] {
+      border: 1px solid var(--tippy-border);
+    }
 
-  .tooltip.reverse .content {
-    bottom: unset;
-    top: 0;
+    .tippy-box > .tippy-backdrop {
+      background-color: var(--tippy-background);
+    }
+
+    .tippy-box[data-theme~="border"] > .tippy-arrow:after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      border-color: transparent;
+      border-style: solid;
+    }
+
+    .tippy-box[data-placement^="top"] > .tippy-arrow:before {
+      border-top-color: var(--tippy-background);
+    }
+
+    .tippy-box[data-placement^="bottom"] > .tippy-arrow:before {
+      border-bottom-color: var(--tippy-background);
+      bottom: 16px;
+    }
+
+    .tippy-box[data-placement^="left"] > .tippy-arrow:before {
+      border-left-color: var(--tippy-background);
+    }
+
+    .tippy-box[data-placement^="right"] > .tippy-arrow:before {
+      border-right-color: var(--tippy-background);
+      right: 16px;
+    }
+
+    .tippy-box[data-theme~="border"][data-placement^="top"] > .tippy-arrow:after {
+      border-top-color: var(--tippy-border);
+      border-width: 7px 7px 0;
+      top: 17px;
+      left: 1px;
+    }
+
+    .tippy-box[data-theme~="border"][data-placement^="bottom"] > .tippy-arrow:after {
+      border-bottom-color: var(--tippy-border);
+      border-width: 0 7px 7px;
+      bottom: 17px;
+      left: 1px;
+    }
+
+    .tippy-box[data-theme~="border"][data-placement^="left"] > .tippy-arrow:after {
+      border-left-color: var(--tippy-border);
+      border-width: 7px 0 7px 7px;
+      left: 17px;
+      top: 1px;
+    }
+
+    .tippy-box[data-theme~="border"][data-placement^="right"] > .tippy-arrow:after {
+      border-width: 7px 7px 7px 0;
+      right: 17px;
+      top: 1px;
+      border-right-color: var(--tippy-border);
+    }
   }
 </style>

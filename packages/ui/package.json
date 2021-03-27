@@ -37,6 +37,7 @@
     "highlight.js": "^10.6.0",
     "highlightjs-solidity": "^1.0.21",
     "sirv-cli": "^1.0.0",
+    "tippy.js": "^6.3.1",
     "uuid": "^8.3.2"
   }
 }

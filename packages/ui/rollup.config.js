@@ -12,6 +12,8 @@ import events from 'events';
 
 const production = !process.env.ROLLUP_WATCH;
 
+process.env.NODE_ENV = production ? 'production' : 'development';
+
 function onStartRun(cmd, ...args) {
   let ran = false;
   return {
@@ -112,6 +114,12 @@ export default [
         include: '../../**/node_modules/highlightjs-solidity/solidity.js',
         delimiters: ['', ''],
         'var module = module ? module : {};': '',
+      }),
+
+      replace({
+        preventAssignment: true,
+        include: '../../**/node_modules/**/*',
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
 
       json(),

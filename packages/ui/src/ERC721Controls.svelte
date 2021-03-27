@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tooltip from './Tooltip.svelte';
+  import HelpTooltip from './HelpTooltip.svelte';
 
   import type { GenericOptions } from '@openzeppelin/wizard';
 
@@ -45,36 +45,36 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Mintable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Mintable">
         Makes the token mintable by privileged accounts.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Burnable">
         Provide a function for holders to destroy their tokens.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
         Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
       <input type="checkbox" bind:checked={opts.enumerable}>
       Enumerable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
         Provide functions to enumerate all tokens or those owned by an account.
-      </Tooltip>
+      </HelpTooltip>
     </label><label class:checked={opts.uriStorage}>
       <input type="checkbox" bind:checked={opts.uriStorage}>
       URI Storage
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
         Add internal functions that update token URIs for individual token IDs.
-      </Tooltip>
+      </HelpTooltip>
     </label>
   </div>
 </section>

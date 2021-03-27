@@ -9,6 +9,7 @@
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
     import Dropdown from './Dropdown.svelte';
+    import Tooltip from './Tooltip.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
@@ -17,53 +18,67 @@
 
     import { saveAs } from 'file-saver';
 
-    let controls: typeof ERC20Controls | typeof ERC721Controls = ERC20Controls;
+    type Kind = GenericOptions['kind'];
+    let kind: Kind = 'ERC20';
+    let allOpts: { [k in Kind]?: Required<GenericOptions> } = {};
 
-    let opts: Required<GenericOptions>;
-
+    $: opts = allOpts[kind];
     $: contract = opts ? buildGeneric(opts) : new ContractBuilder('MyToken');
     $: code = printContract(contract);
     $: highlightedCode = hljs.highlight('solidity', code).value;
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
-      await postConfig(opts, 'copy');
+      if (opts) {
+        await postConfig(opts, 'copy');
+      }
     };
 
     const remixHandler = async () => {
       window.open(remixURL(code).toString(), '_blank');
-      await postConfig(opts, 'remix');
+      if (opts) {
+        await postConfig(opts, 'remix');
+      }
     };
 
     const downloadNpmHandler = async () => {
       const blob = new Blob([code], { type: 'text/plain' });
-      saveAs(blob, opts.name + '.sol');
-      await postConfig(opts, 'download-npm');
+      if (opts) {
+        saveAs(blob, opts.name + '.sol');
+        await postConfig(opts, 'download-npm');
+      }
     };
 
     const downloadVendoredHandler = async () => {
       const zip = zipContract(contract);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');
-      await postConfig(opts, 'download-vendored');
+      if (opts) {
+        await postConfig(opts, 'download-vendored');
+      }
     };
 </script>
 
 <div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind">
-      <button class:selected={opts?.kind === 'ERC20'} on:click={() => controls = ERC20Controls}>
+      <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
         ERC20
       </button>
-      <button class:selected={opts?.kind === 'ERC721'} on:click={() => controls = ERC721Controls}>
+      <button class:selected={kind === 'ERC721'} on:click={() => kind = 'ERC721'}>
         ERC721
       </button>
-      <button disabled>ERC777</button>
-      <button disabled>ERC1155</button>
-      <span class="coming-soon">Coming soon!</span>
+      <Tooltip>
+        <button slot="trigger" class="disabled" aria-disabled="true">ERC777</button>
+        Coming soon!
+      </Tooltip>
+      <Tooltip>
+        <button slot="trigger" class="disabled" aria-disabled="true">ERC1155</button>
+        Coming soon!
+      </Tooltip>
     </div>
 
-    <div class="action flex flex-row flex-col-gap-4">
+    <div class="action flex flex-row flex-col-gap-4 flex-shrink-0">
       <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
@@ -109,7 +124,12 @@
 
   <div class="flex flex-row flex-col-gap-4 flex-grow">
     <div class="controls w-64 flex flex-col flex-shrink-0">
-      <svelte:component this={controls} bind:opts />
+      <div class={kind === 'ERC20' ? 'display-contents' : 'display-none'}>
+        <ERC20Controls bind:opts={allOpts.ERC20} />
+      </div>
+      <div class={kind === 'ERC721' ? 'display-contents' : 'display-none'}>
+        <ERC721Controls bind:opts={allOpts.ERC721} />
+      </div>
     </div>
 
     <div class="output flex flex-col flex-grow overflow-auto">
@@ -129,6 +149,10 @@
     border-radius: 10px;
     min-width: 32rem;
     min-height: 40rem;
+  }
+
+  .kind {
+    color: var(--gray-5);
   }
 
   .kind button, .action-button {
@@ -151,24 +175,12 @@
     color: white;
   }
 
-  .coming-soon {
-    opacity: 0;
-    font-size: .8em;
-    padding: .4em 1em;
-    border-radius: 5px;
-    background-color: var(--gray-5);
-    color: var(--gray-1);
-    box-shadow: var(--shadow);
-    transition: opacity .25s ease-out .25s;
+  .kind button.disabled {
+    opacity: .5;
   }
 
-  .kind button[disabled]:hover {
+  .kind button.disabled:hover {
     cursor: not-allowed;
-  }
-
-  .kind button[disabled]:hover ~ .coming-soon {
-    opacity: 1;
-    transition: opacity .1s ease-out 0s;
   }
 
   .action-button {

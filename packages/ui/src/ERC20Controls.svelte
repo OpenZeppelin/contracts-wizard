@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tooltip from './Tooltip.svelte';
+  import HelpTooltip from './HelpTooltip.svelte';
 
   import type { GenericOptions } from '@openzeppelin/wizard';
   import { premintPattern } from '@openzeppelin/wizard';
@@ -33,7 +33,7 @@
       </label>
     </div>
     <label class="labeled-input">
-      <span class="flex justify-between pr-2">Premint <Tooltip>Create an initial amount of tokens for the deployer.</Tooltip></span>
+      <span class="flex justify-between pr-2">Premint <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip></span>
       <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
     </label>
 </section>
@@ -45,30 +45,30 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
         Makes the token mintable by privileged accounts.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
         Provide a function for holders to destroy their tokens.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
         Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
-      </Tooltip>
+      </HelpTooltip>
     </label>
     <label class:checked={opts.snapshots}>
       <input type="checkbox" bind:checked={opts.snapshots}>
       Snapshots
-      <Tooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
         Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting.
-      </Tooltip>
+      </HelpTooltip>
     </label>
   </div>
 </section>
