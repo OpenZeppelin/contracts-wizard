@@ -15,33 +15,32 @@ import { transitiveClosure } from '../utils/transitive-closure';
 
 async function main() {
   await rimraf(hre.config.paths.sources);
-  await rimraf(hre.config.paths.artifacts);
   await writeGeneratedSources(hre.config.paths.sources);
-  await hre.run('compile', { force: true });
-
-  const buildInfoPaths = await hre.artifacts.getBuildInfoPaths();
-  if (buildInfoPaths.length !== 1) {
-    throw new Error('Wrong number of build-info files');
-  }
-  const buildInfo: BuildInfo = JSON.parse(
-    await fs.readFile(buildInfoPaths[0]!, 'utf8'),
-  );
+  await hre.run('compile');
 
   const dependencies: Record<string, Set<string>> = {};
 
-  for (const [sourceFile, { ast }] of Object.entries(buildInfo.output.sources)) {
-    if (sourceFile.startsWith('@openzeppelin/contracts')) {
-      const sourceDependencies = (dependencies[sourceFile] ??= new Set());
-      for (const imp of findAll('ImportDirective', ast)) {
-        sourceDependencies.add(imp.absolutePath);
+  const buildInfoPaths = await hre.artifacts.getBuildInfoPaths();
+  const sources: Record<string, string> = {};
+
+  for (const buildInfoPath of await hre.artifacts.getBuildInfoPaths()) {
+    const buildInfo: BuildInfo = JSON.parse(
+      await fs.readFile(buildInfoPath, 'utf8'),
+    );
+
+    for (const [sourceFile, { ast }] of Object.entries(buildInfo.output.sources)) {
+      if (sourceFile.startsWith('@openzeppelin/contracts')) {
+        const sourceDependencies = (dependencies[sourceFile] ??= new Set());
+        for (const imp of findAll('ImportDirective', ast)) {
+          sourceDependencies.add(imp.absolutePath);
+        }
       }
     }
-  }
 
-  const sources: Record<string, string> = {};
-  for (const [sourceFile, { content }] of Object.entries(buildInfo.input.sources)) {
-    if (sourceFile.startsWith('@openzeppelin/contracts')) {
-      sources[sourceFile] = content;
+    for (const [sourceFile, { content }] of Object.entries(buildInfo.input.sources)) {
+      if (sourceFile.startsWith('@openzeppelin/contracts')) {
+        sources[sourceFile] = content;
+      }
     }
   }
 
