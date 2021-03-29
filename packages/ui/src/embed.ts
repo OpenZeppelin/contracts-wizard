@@ -22,9 +22,11 @@ onDOMContentLoaded(function () {
 
   for (const w of wizards) {
     w.style.display = 'block';
+    w.style.minHeight = '40rem';
 
     const iframe = document.createElement('iframe');
     iframe.src = currentScript.origin + '/embed';
+    iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
     iframe.style.height = '40rem';
