@@ -46,6 +46,10 @@
   overflow: auto;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .pr-2 {
   padding-right: var(--size-2);
 }

@@ -10,6 +10,7 @@
     import FileIcon from './icons/FileIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import Tooltip from './Tooltip.svelte';
+    import OverflowMenu from './OverflowMenu.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
@@ -61,19 +62,21 @@
 
 <div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
-    <div class="kind">
-      <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
-        ERC20
-      </button>
-      <button class:selected={kind === 'ERC721'} on:click={() => kind = 'ERC721'}>
-        ERC721
-      </button>
-      <Tooltip let:trigger text="Coming soon!">
-        <button use:trigger class="disabled" aria-disabled="true">ERC777</button>
-      </Tooltip>
-      <Tooltip let:trigger text="Coming soon!">
-        <button use:trigger class="disabled" aria-disabled="true">ERC1155</button>
-      </Tooltip>
+    <div class="kind overflow-hidden">
+      <OverflowMenu let:overflow>
+        <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
+          ERC20
+        </button>
+        <button class:selected={kind === 'ERC721'} on:click={() => kind = 'ERC721'}>
+          ERC721
+        </button>
+        <Tooltip let:trigger text="Coming soon!" placement={overflow ? 'left' : 'bottom'}>
+          <button use:trigger class="disabled" aria-disabled="true">ERC777</button>
+        </Tooltip>
+        <Tooltip let:trigger text="Coming soon!" placement={overflow ? 'left' : 'bottom'}>
+          <button use:trigger class="disabled" aria-disabled="true">ERC1155</button>
+        </Tooltip>
+      </OverflowMenu>
     </div>
 
     <div class="action flex flex-row flex-col-gap-4 flex-shrink-0">
@@ -153,28 +156,29 @@
     color: var(--gray-5);
   }
 
-  .kind button, .action-button {
+  .kind button, .action-button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
     border-radius: 5px;
     font-weight: bold;
   }
 
-  .kind button {
+  .kind button, :global(.overflow-btn) {
     border: 0;
-    background-color: var(--gray-1);
+    background-color: transparent;
   }
 
-  .kind button:hover {
+  .kind button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
 
   .kind button.selected {
     background-color: var(--blue-2);
     color: white;
+    order: -1;
   }
 
   .kind button.disabled {
-    opacity: .5;
+    color: var(--gray-3);
   }
 
   .kind button.disabled:hover {
@@ -182,7 +186,7 @@
   }
 
   .action-button {
-    background-color: transparent;
+    background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
     cursor: pointer;
