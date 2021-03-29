@@ -10,7 +10,7 @@
 
   const getItems = () =>
     Array.from(container.children).filter(
-      (c): c is HTMLElement => c !== button && !('tippyRoot' in c.dataset) && c instanceof HTMLElement
+      (c): c is HTMLElement => c instanceof HTMLElement && c !== button && !('tippyRoot' in c.dataset)
     );
 
   const getMenuItems = () =>
@@ -36,16 +36,19 @@
 
     for (const [i, item] of items.entries()) {
       const itemRight = itemsRights[i]!;
+      const menuItem = menuItems[i];
 
       if (itemRight > mainRight) {
         item.style.visibility = 'hidden';
         item.style.order = '2';
         anyHidden = true;
-        menuItems[i].style.removeProperty('display');
+        menuItem?.style.removeProperty('display');
       } else {
         item.style.visibility = 'visible';
         item.style.order = '-1';
-        menuItems[i].style.display = 'none';
+        if (menuItem) {
+          menuItem.style.display = 'none';
+        }
       }
     }
 
