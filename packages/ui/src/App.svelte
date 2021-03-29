@@ -68,13 +68,11 @@
       <button class:selected={kind === 'ERC721'} on:click={() => kind = 'ERC721'}>
         ERC721
       </button>
-      <Tooltip>
-        <button slot="trigger" class="disabled" aria-disabled="true">ERC777</button>
-        Coming soon!
+      <Tooltip let:trigger text="Coming soon!">
+        <button use:trigger class="disabled" aria-disabled="true">ERC777</button>
       </Tooltip>
-      <Tooltip>
-        <button slot="trigger" class="disabled" aria-disabled="true">ERC1155</button>
-        Coming soon!
+      <Tooltip let:trigger text="Coming soon!">
+        <button use:trigger class="disabled" aria-disabled="true">ERC1155</button>
       </Tooltip>
     </div>
 

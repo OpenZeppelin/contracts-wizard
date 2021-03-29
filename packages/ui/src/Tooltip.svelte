@@ -4,24 +4,23 @@
 
   import { onMount } from 'svelte';
 
+  export let text = '';
+
+  let target: Element;
   let content: HTMLElement;
-  let triggerWrapperElement: HTMLElement;
+
+  const trigger = (node: Element) => { target = node; };
 
   onMount(() => {
-    const triggerElement = triggerWrapperElement.querySelector('[slot="trigger"]');
-    if (triggerElement) {
-      tippy(triggerElement, { ...$$restProps, content });
-      content.style.removeProperty('display');
-    }
+    tippy(target, { ...$$restProps, content });
+    content.style.removeProperty('display');
   });
 </script>
 
-<span class="display-contents" bind:this={triggerWrapperElement}>
-  <slot name="trigger"></slot>
-</span>
+<slot {trigger}></slot>
 
 <div style="display: none;" bind:this={content}>
-  <slot></slot>
+  <slot name="content">{text}</slot>
 </div>
 
 <style>
