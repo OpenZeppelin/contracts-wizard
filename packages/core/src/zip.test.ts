@@ -11,6 +11,7 @@ test('erc20 basic', t => {
   t.deepEqual(files, [
     '@openzeppelin/',
     '@openzeppelin/contracts/',
+    '@openzeppelin/contracts/README.md',
     '@openzeppelin/contracts/token/',
     '@openzeppelin/contracts/token/ERC20/',
     '@openzeppelin/contracts/token/ERC20/ERC20.sol',
