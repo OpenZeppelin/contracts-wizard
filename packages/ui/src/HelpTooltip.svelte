@@ -12,6 +12,7 @@
   <div slot="content">
     <slot></slot>
     {#if link}
+      <br>
       <a target="_blank" href={link}>Read more.</a>
     {/if}
   </div>

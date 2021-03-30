@@ -33,7 +33,10 @@
       </label>
     </div>
     <label class="labeled-input">
-      <span class="flex justify-between pr-2">Premint <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip></span>
+      <span class="flex justify-between pr-2">
+        Premint
+        <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+      </span>
       <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
     </label>
 </section>
@@ -46,28 +49,30 @@
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
-        Makes the token mintable by privileged accounts.
+        Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
-        Provide a function for holders to destroy their tokens.
+        Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
-        Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked as <code>whenPaused</code>.
+        Useful for emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.snapshots}>
       <input type="checkbox" bind:checked={opts.snapshots}>
       Snapshots
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
-        Ability to store snapshots of balances that can be retrieved later. Useful for weighted voting.
+        Privileged accounts will be able to store snapshots of balances that can be retrieved later.
+        Useful for on-chain voting.
       </HelpTooltip>
     </label>
   </div>

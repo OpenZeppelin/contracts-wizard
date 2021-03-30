@@ -33,8 +33,11 @@
     </label>
   </div>
   <label class="labeled-input">
-    <span>Base URI</span>
-    <input bind:value={opts.baseUri}>
+    <span class="flex justify-between pr-2">
+      Base URI
+      <HelpTooltip>Will be concatenated with token IDs to generate the token URIs.</HelpTooltip>
+    </span>
+    <input bind:value={opts.baseUri} placeholder="https://...">
   </label>
 </section>
 
@@ -46,34 +49,36 @@
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Mintable">
-        Makes the token mintable by privileged accounts.
+        Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Burnable">
-        Provide a function for holders to destroy their tokens.
+        Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
-        Provides a modifier that can pause contract functionality when requested by a privileged account. Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked as <code>whenPaused</code>.
+        Useful for emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
       <input type="checkbox" bind:checked={opts.enumerable}>
       Enumerable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721Enumerable">
-        Provide functions to enumerate all tokens or those owned by an account.
+        Allows on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.
       </HelpTooltip>
-    </label><label class:checked={opts.uriStorage}>
+    </label>
+    <label class:checked={opts.uriStorage}>
       <input type="checkbox" bind:checked={opts.uriStorage}>
       URI Storage
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721URIStorage">
-        Add internal functions that update token URIs for individual token IDs.
+        Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>
   </div>

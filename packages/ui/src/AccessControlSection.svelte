@@ -14,7 +14,7 @@
       <input type="radio" bind:group={access} value="ownable">
       Ownable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
-        Simple mechanism where there is a single account authorized for all privileged actions.
+        Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
