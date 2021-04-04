@@ -110,7 +110,10 @@
 
         <button class="download-option" on:click={downloadVendoredHandler}>
           <span>
-            Vendored ZIP
+            <span>
+              Vendored ZIP
+              <span class="download-zip-beta">Beta</span>
+            </span>
             <ZipIcon />
           </span>
           <span>
@@ -243,5 +246,14 @@
       margin-top: var(--size-1);
       font-size: var(--text-small);
     }
+  }
+
+  .download-zip-beta {
+    text-transform: uppercase;
+    padding: 0 .2em;
+    border: 1px solid;
+    border-radius: 5px;
+    font-size: .8em;
+    margin-left: .25em;
   }
 </style>
