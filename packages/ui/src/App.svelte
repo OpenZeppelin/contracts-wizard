@@ -180,6 +180,10 @@
     order: -1;
   }
 
+  :global(.overflow-menu) button.selected {
+    order: unset;
+  }
+
   .kind button.disabled {
     color: var(--gray-3);
   }

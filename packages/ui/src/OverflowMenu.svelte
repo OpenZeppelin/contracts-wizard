@@ -79,7 +79,7 @@
       <MenuDownIcon />
     </button>
 
-    <div slot="content" bind:this={menu} class="flex flex-col">
+    <div slot="content" bind:this={menu} class="flex flex-col overflow-menu">
       <slot overflow={true}></slot>
     </div>
   </Tooltip>
