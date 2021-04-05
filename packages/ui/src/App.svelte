@@ -214,7 +214,6 @@
   }
 
   .controls {
-    /* align-self: flex-start; */
     background-color: white;
     padding: var(--size-4);
   }

@@ -48,7 +48,7 @@
     box-shadow: var(--shadow);
     border-radius: 5px;
     border: 1px solid var(--gray-2);
-    padding: var(--size-2);
+    padding: var(--size-1);
   }
 
   .dropdown-items:not(.active) {
