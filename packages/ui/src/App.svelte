@@ -135,10 +135,6 @@
     </pre>
     </div>
   </div>
-
-  <div class="footer">
-    <p>For secure operations of your smart contracts sign up free at <a href="https://defender.openzeppelin.com/">defender.openzeppelin.com</a></p>
-  </div>
 </div>
 
 <style>
