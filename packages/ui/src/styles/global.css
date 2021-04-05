@@ -21,8 +21,9 @@ svg.icon {
 
 input:not([type]), input[type="text"], input[type="number"] {
   border: 1px solid var(--gray-3);
-  padding: var(--size-1) var(--size-2);
-  border-radius: 5px;
+  padding: var(--size-2) var(--size-3);
+  border-radius: 6px;
+  color: var(--gray-5);
 }
 
 /* Hide up and down arrows in numeric input fields */
@@ -46,11 +47,11 @@ input[type="number"] {
   & + & {
     margin-top: var(--size-4);
     padding-top: var(--size-4);
-    border-top: 1px solid var(--gray-2);
+    border-top: 1px solid var(--gray-3);
   }
 
   > * + * {
-    margin-top: var(--size-3);
+    margin-top: var(--size-2);
   }
 
   h1 {
@@ -58,8 +59,9 @@ input[type="number"] {
     margin-bottom: 0;
     text-transform: lowercase;
     font-variant: small-caps;
-    font-size: inherit;
+    font-size: .9rem;
     color: var(--gray-4);
+    font-weight: 600;
   }
 }
 
@@ -71,8 +73,7 @@ input[type="number"] {
     height: var(--size-8);
     display: flex;
     align-items: center;
-    padding-left: var(--size-2);
-    padding-right: var(--size-2);
+    padding: var(--size-1) var(--size-2);
   }
 
   input {
@@ -94,6 +95,7 @@ input[type="number"] {
 
   span {
     font-size: var(--text-small);
+    font-weight: 500;
   }
 
   input {

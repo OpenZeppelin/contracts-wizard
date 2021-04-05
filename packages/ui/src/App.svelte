@@ -161,6 +161,7 @@
 
   .kind {
     color: var(--gray-5);
+    cursor: pointer;
   }
 
   .kind button, .action-button, :global(.overflow-btn) {
@@ -201,6 +202,7 @@
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
     cursor: pointer;
+    font-size: .9rem;
   }
 
   .action-button:active, .action-button.active {
