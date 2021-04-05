@@ -23,7 +23,6 @@ input:not([type]), input[type="text"], input[type="number"] {
   border: 1px solid var(--gray-3);
   padding: var(--size-2) var(--size-3);
   border-radius: 6px;
-  color: var(--gray-5);
 }
 
 /* Hide up and down arrows in numeric input fields */
@@ -95,7 +94,6 @@ input[type="number"] {
 
   span {
     font-size: var(--text-small);
-    font-weight: 500;
   }
 
   input {
