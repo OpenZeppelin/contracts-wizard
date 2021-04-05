@@ -48,21 +48,21 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Mintable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Mintable">
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenPaused</code>.
         Useful for emergency response.
       </HelpTooltip>
@@ -70,7 +70,7 @@
     <label class:checked={opts.snapshots}>
       <input type="checkbox" bind:checked={opts.snapshots}>
       Snapshots
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/token/erc20#ERC20Snapshot">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Snapshot">
         Privileged accounts will be able to store snapshots of balances that can be retrieved later.
         Useful for on-chain voting.
       </HelpTooltip>

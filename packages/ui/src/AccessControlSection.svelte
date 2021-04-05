@@ -13,14 +13,14 @@
     <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable">
       Ownable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#Ownable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable">
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
       <input type="radio" bind:group={access} value="roles">
       Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/3.x/api/access#AccessControl">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/access#AccessControl">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
