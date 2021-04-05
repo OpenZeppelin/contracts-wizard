@@ -261,7 +261,6 @@
 
     p {
       margin: 0 0 var(--size-1);
-      /* font-size: var(--text-small); */
     }
   }
 
