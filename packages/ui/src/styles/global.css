@@ -12,7 +12,7 @@ body {
 }
 
 svg.icon {
-  vertical-align: -.125em;
+  vertical-align: calc(-1 * var(--icon-adjust));
   flex: 0 0 auto;
   height: 1em;
   width: 1em;

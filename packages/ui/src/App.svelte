@@ -97,22 +97,18 @@
         </button>
 
         <button class="download-option" on:click={downloadNpmHandler}>
-          <div>
-            <FileIcon />
-          </div>
-          <div class="content">
-            <h4>Single file</h4>
+          <FileIcon />
+          <div class="download-option-content">
+            <p>Single file</p>
             <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
             <p>Simple to receive updates.</p>
           </div>
         </button>
 
         <button class="download-option" on:click={downloadVendoredHandler}>
-          <div>
-            <ZipIcon />
-          </div>
-          <div class="content">
-            <h4>Vendored ZIP <span class="download-zip-beta">Beta</span></h4>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
             <p>Does not require npm package.</p>
             <p>Must be updated manually.</p>
           </div>
@@ -227,14 +223,18 @@
 
   .download-option {
     display: flex;
-    padding: var(--size-4);
+    padding: var(--size-2);
     text-align: left;
     background: none;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
 
-    &:not(:first-child) {
+    :global(.icon) {
+      margin-top: var(--icon-adjust);
+    }
+
+    :not(:hover) + & {
       border-top: 1px solid var(--gray-2);
     }
 
@@ -249,19 +249,19 @@
     }
   }
 
-  .download-option .content {
+  .download-option-content {
     margin-left: var(--size-3);
-    color: var(--gray-5);
     font-size: var(--text-small);
 
-    h4 {
-      color: var(--gray-6);
-      line-height: 1rem;
+    & > :first-child {
       margin-bottom: var(--size-2);
+      color: var(--gray-6);
+      font-weight: bold;
     }
 
-    p {
-      margin: 0 0 var(--size-1);
+    & > :not(:first-child) {
+      margin-top: var(--size-1);
+      color: var(--gray-5);
     }
   }
 
