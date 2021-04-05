@@ -154,9 +154,12 @@
     min-height: 40rem;
   }
 
+  .header {
+    font-size: .9rem;
+  }
+
   .kind {
     color: var(--gray-5);
-    font-size: .9rem;
   }
 
   .kind button, .action-button, :global(.overflow-btn) {
@@ -198,7 +201,6 @@
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
     cursor: pointer;
-    font-size: .9rem;
   }
 
   .action-button:hover {
