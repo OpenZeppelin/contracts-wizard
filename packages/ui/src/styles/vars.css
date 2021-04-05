@@ -28,10 +28,12 @@
 
   /* Font Sizes */
 
-  --text-small: 0.875rem;
+  --text-small: 0.9rem;
 
   /* Utilities */
 
   --shadow: 0 2px 3px rgba(0, 0, 0, .1);
+
+  --icon-adjust: 0.125em;
 
 }

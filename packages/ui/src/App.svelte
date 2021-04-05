@@ -79,7 +79,7 @@
       </OverflowMenu>
     </div>
 
-    <div class="action flex flex-row flex-col-gap-4 flex-shrink-0">
+    <div class="action flex flex-row flex-col-gap-2 flex-shrink-0">
       <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
@@ -97,30 +97,21 @@
         </button>
 
         <button class="download-option" on:click={downloadNpmHandler}>
-          <span>
-            Single file
-            <FileIcon />
-          </span>
-          <span>
-            Requires installation of npm package (<code>@openzeppelin/contracts</code>).
-            <br>
-            Simple to receive updates.
-          </span>
+          <FileIcon />
+          <div class="download-option-content">
+            <p>Single file</p>
+            <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+            <p>Simple to receive updates.</p>
+          </div>
         </button>
 
         <button class="download-option" on:click={downloadVendoredHandler}>
-          <span>
-            <span>
-              Vendored ZIP
-              <span class="download-zip-beta">Beta</span>
-            </span>
-            <ZipIcon />
-          </span>
-          <span>
-            Does not require npm package.
-            <br>
-            Must be updated manually.
-          </span>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
+            <p>Does not require npm package.</p>
+            <p>Must be updated manually.</p>
+          </div>
         </button>
       </Dropdown>
     </div>
@@ -155,14 +146,19 @@
     min-height: 40rem;
   }
 
+  .header {
+    font-size: var(--text-small);
+  }
+
   .kind {
     color: var(--gray-5);
   }
 
   .kind button, .action-button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
-    border-radius: 5px;
+    border-radius: 6px;
     font-weight: bold;
+    cursor: pointer;
   }
 
   .kind button, :global(.overflow-btn) {
@@ -199,6 +195,10 @@
     cursor: pointer;
   }
 
+  .action-button:hover {
+    background-color: var(--gray-2);
+  }
+
   .action-button:active, .action-button.active {
     background-color: var(--gray-2);
   }
@@ -208,7 +208,6 @@
   }
 
   .controls {
-    align-self: flex-start;
     background-color: white;
     padding: var(--size-4);
   }
@@ -220,35 +219,45 @@
 
   .download-option {
     display: flex;
-    flex-direction: column;
-    padding: var(--size-3);
+    padding: var(--size-2);
     text-align: left;
     background: none;
-    border: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
     cursor: pointer;
 
-    &:hover {
-      background-color: var(--gray-1);
+    :global(.icon) {
+      margin-top: var(--icon-adjust);
     }
 
-    &:not(:first-child) {
+    :not(:hover) + & {
       border-top: 1px solid var(--gray-2);
     }
 
-    & > :first-child {
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    &:hover,
+    &:focus, {
+      background-color: var(--gray-1);
+      border: 1px solid var(--gray-3);
+    }
 
-      :global(.icon) {
-        float: right;
-      }
+    & div {
+      display: block;
+    }
+  }
+
+  .download-option-content {
+    margin-left: var(--size-3);
+    font-size: var(--text-small);
+
+    & > :first-child {
+      margin-bottom: var(--size-2);
+      color: var(--gray-6);
+      font-weight: bold;
     }
 
     & > :not(:first-child) {
       margin-top: var(--size-1);
-      font-size: var(--text-small);
+      color: var(--gray-5);
     }
   }
 
@@ -256,7 +265,7 @@
     text-transform: uppercase;
     padding: 0 .2em;
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: .8em;
     margin-left: .25em;
   }
