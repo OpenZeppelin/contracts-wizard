@@ -161,13 +161,13 @@
 
   .kind {
     color: var(--gray-5);
-    cursor: pointer;
   }
 
   .kind button, .action-button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
-    border-radius: 5px;
+    border-radius: 6px;
     font-weight: bold;
+    cursor: pointer;
   }
 
   .kind button, :global(.overflow-btn) {
