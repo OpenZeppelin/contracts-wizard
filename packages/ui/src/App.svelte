@@ -79,7 +79,7 @@
       </OverflowMenu>
     </div>
 
-    <div class="action flex flex-row flex-col-gap-3 flex-shrink-0">
+    <div class="action flex flex-row flex-col-gap-2 flex-shrink-0">
       <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
