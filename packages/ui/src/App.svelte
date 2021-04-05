@@ -147,7 +147,7 @@
   }
 
   .header {
-    font-size: .9rem;
+    font-size: var(--text-small);
   }
 
   .kind {

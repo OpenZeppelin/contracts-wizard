@@ -58,7 +58,7 @@ input[type="number"] {
     margin-bottom: 0;
     text-transform: lowercase;
     font-variant: small-caps;
-    font-size: .9rem;
+    font-size: var(--text-small);
     color: var(--gray-4);
     font-weight: 600;
   }
