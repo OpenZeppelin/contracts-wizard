@@ -41,13 +41,14 @@
     top: 100%;
     right: 0;
     margin-top: var(--size-1);
-    width: var(--size-64);
+    width: 20rem;
     display: flex;
     flex-direction: column;
     background-color: white;
     box-shadow: var(--shadow);
     border-radius: 5px;
     border: 1px solid var(--gray-2);
+    padding: var(--size-2);
   }
 
   .dropdown-items:not(.active) {

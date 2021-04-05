@@ -79,7 +79,7 @@
       </OverflowMenu>
     </div>
 
-    <div class="action flex flex-row flex-col-gap-4 flex-shrink-0">
+    <div class="action flex flex-row flex-col-gap-3 flex-shrink-0">
       <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
@@ -97,30 +97,25 @@
         </button>
 
         <button class="download-option" on:click={downloadNpmHandler}>
-          <span>
-            Single file
+          <div>
             <FileIcon />
-          </span>
-          <span>
-            Requires installation of npm package (<code>@openzeppelin/contracts</code>).
-            <br>
-            Simple to receive updates.
-          </span>
+          </div>
+          <div class="content">
+            <h4>Single file</h4>
+            <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+            <p>Simple to receive updates.</p>
+          </div>
         </button>
 
         <button class="download-option" on:click={downloadVendoredHandler}>
-          <span>
-            <span>
-              Vendored ZIP
-              <span class="download-zip-beta">Beta</span>
-            </span>
+          <div>
             <ZipIcon />
-          </span>
-          <span>
-            Does not require npm package.
-            <br>
-            Must be updated manually.
-          </span>
+          </div>
+          <div class="content">
+            <h4>Vendored ZIP <span class="download-zip-beta">Beta</span></h4>
+            <p>Does not require npm package.</p>
+            <p>Must be updated manually.</p>
+          </div>
         </button>
       </Dropdown>
     </div>
@@ -161,6 +156,7 @@
 
   .kind {
     color: var(--gray-5);
+    font-size: .9rem;
   }
 
   .kind button, .action-button, :global(.overflow-btn) {
@@ -205,6 +201,10 @@
     font-size: .9rem;
   }
 
+  .action-button:hover {
+    background-color: var(--gray-2);
+  }
+
   .action-button:active, .action-button.active {
     background-color: var(--gray-2);
   }
@@ -226,35 +226,42 @@
 
   .download-option {
     display: flex;
-    flex-direction: column;
-    padding: var(--size-3);
+    padding: var(--size-4);
     text-align: left;
     background: none;
-    border: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
-
-    &:hover {
-      background-color: var(--gray-1);
-    }
 
     &:not(:first-child) {
       border-top: 1px solid var(--gray-2);
     }
 
-    & > :first-child {
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      :global(.icon) {
-        float: right;
-      }
+    &:hover,
+    &:focus, {
+      background-color: var(--gray-1);
+      border: 1px solid var(--gray-3);
     }
 
-    & > :not(:first-child) {
-      margin-top: var(--size-1);
-      font-size: var(--text-small);
+    & div {
+      display: block;
+    }
+  }
+
+  .download-option .content {
+    margin-left: var(--size-3);
+    color: var(--gray-5);
+    font-size: var(--text-small);
+
+    h4 {
+      color: var(--gray-6);
+      line-height: 1rem;
+      margin-bottom: var(--size-2);
+    }
+
+    p {
+      margin: 0 0 var(--size-1);
+      /* font-size: var(--text-small); */
     }
   }
 
@@ -262,8 +269,8 @@
     text-transform: uppercase;
     padding: 0 .2em;
     border: 1px solid;
-    border-radius: 5px;
-    font-size: .8em;
+    border-radius: 4px;
+    font-size: var(--size-3);
     margin-left: .25em;
   }
 </style>
