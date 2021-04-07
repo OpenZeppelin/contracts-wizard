@@ -28,7 +28,7 @@ export function printContract(contract: Contract, opts?: PrintOptions): string {
         spaceBetween(
           contract.variables,
           printConstructor(contract),
-          ...contract.functions.map(printFunction),
+          ...sortedFunctions(contract).map(printFunction),
         ),
 
         `}`,
@@ -58,6 +58,14 @@ function printConstructor(contract: Contract): Lines[] {
   } else {
     return [];
   }
+}
+
+// Functions with code first, then those with modifiers, then the rest
+function sortedFunctions(contract: Contract): ContractFunction[] {
+  return Array.from(contract.functions).sort(
+    (a, b) =>
+      b.code.length - a.code.length || b.modifiers.length - a.modifiers.length,
+  );
 }
 
 function printParentConstructor({ contract, params }: Parent): [] | [string] {
