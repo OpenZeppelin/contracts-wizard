@@ -9,15 +9,25 @@ import typescript from '@rollup/plugin-typescript';
 import styles from 'rollup-plugin-styles';
 import proc from 'child_process';
 import events from 'events';
+import serve from './rollup.server';
 
 const production = !process.env.ROLLUP_WATCH;
 
 process.env.NODE_ENV = production ? 'production' : 'development';
 
+// Watch the `public` directory and refresh the
+// browser on changes when not in production
+const livereloader =
+  !production &&
+  livereload({
+    watch: 'public',
+    port: 35731,
+  });
+
 function onStartRun(cmd, ...args) {
   let ran = false;
   return {
-    async buildStart(opts) {
+    async buildStart() {
       if (ran) return;
       const child = proc.spawn(cmd, args, { stdio: 'inherit' });
       const [code, signal] = await events.once(child, 'exit');
@@ -25,31 +35,6 @@ function onStartRun(cmd, ...args) {
         throw new Error(`Command \`${cmd}\` failed`);
       }
       ran = true;
-    }
-  };
-}
-
-function serve() {
-  let server;
-
-  function toExit() {
-    if (server) server.kill(0);
-  }
-
-  return {
-    writeBundle() {
-      if (server) return;
-      server = require('child_process').spawn(
-        'npm',
-        ['run', 'start', '--', '--dev'],
-        {
-          stdio: ['ignore', 'inherit', 'inherit'],
-          shell: true,
-        },
-      );
-
-      process.on('SIGTERM', toExit);
-      process.on('exit', toExit);
     },
   };
 }
@@ -70,13 +55,7 @@ export default [
         inlineSources: true,
       }),
 
-      // Watch the `public` directory and refresh the
-      // browser on changes when not in production
-      !production &&
-        livereload({
-          watch: 'public',
-          port: 35731,
-        }),
+      livereloader,
 
       // If we're building for production (npm run build
       // instead of npm run dev), minify
@@ -136,13 +115,7 @@ export default [
       // the bundle has been generated
       !production && serve(),
 
-      // Watch the `public` directory and refresh the
-      // browser on changes when not in production
-      !production &&
-        livereload({
-          watch: 'public',
-          port: 35730,
-        }),
+      livereloader,
 
       // If we're building for production (npm run build
       // instead of npm run dev), minify
