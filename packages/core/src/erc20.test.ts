@@ -117,3 +117,12 @@ test('erc20 mintable with roles', t => {
   });
   t.snapshot(printContract(c));
 });
+
+test('erc20 permit', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    permit: true,
+  });
+  t.snapshot(printContract(c));
+});

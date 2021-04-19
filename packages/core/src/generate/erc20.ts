@@ -11,6 +11,7 @@ const blueprint = {
   snapshots: booleans,
   pausable: booleans,
   mintable: booleans,
+  permit: booleans,
   premint: ['1'],
   access: accessOptions,
 };

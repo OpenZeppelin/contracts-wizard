@@ -15,6 +15,7 @@
     pausable: false,
     premint: '',
     mintable: false,
+    permit: false,
     access: 'ownable',
   };
 </script>
@@ -73,6 +74,15 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Snapshot">
         Privileged accounts will be able to store snapshots of balances that can be retrieved later.
         Useful for on-chain voting.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.permit}>
+      <input type="checkbox" bind:checked={opts.permit}>
+      Permit
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Permit">
+        Without paying gas, token holders will be able to allow third parties to transfer from their account.
+        <br>
+        <a href="https://eips.ethereum.org/EIPS/eip-2612">EIP</a> is still Draft and may change.
       </HelpTooltip>
     </label>
   </div>

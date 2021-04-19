@@ -10,6 +10,7 @@ export interface ERC20Options {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
+  permit?: boolean;
   access?: Access;
 }
 
@@ -38,6 +39,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (opts.mintable) {
     addMintable(c, access);
+  }
+
+  if (opts.permit) {
+    addPermit(c, opts.name);
   }
 
   return c;
@@ -96,6 +101,13 @@ function addPremint(c: ContractBuilder, amount: string) {
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access, 'MINTER');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
+}
+
+function addPermit(c: ContractBuilder, name: string) {
+  c.addParent({
+    name: 'ERC20Permit',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol',
+  }, [name]);
 }
 
 const functions = {
