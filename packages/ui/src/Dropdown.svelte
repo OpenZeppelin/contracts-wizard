@@ -31,7 +31,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   .dropdown {
     position: relative;
   }

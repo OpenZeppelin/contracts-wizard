@@ -18,7 +18,7 @@
   </div>
 </Tooltip>
 
-<style>
+<style lang="postcss">
   svg {
     opacity: var(--tooltip-opacity, 1);
   }

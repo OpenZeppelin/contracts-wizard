@@ -23,7 +23,7 @@
   <slot name="content">{text}</slot>
 </div>
 
-<style>
+<style lang="postcss">
   :global {
     :root {
       --tippy-background: #333;
