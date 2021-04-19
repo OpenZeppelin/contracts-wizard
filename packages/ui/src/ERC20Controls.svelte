@@ -63,7 +63,7 @@
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenPaused</code>.
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
