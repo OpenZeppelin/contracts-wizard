@@ -83,14 +83,14 @@ const functions = {
 
   setURI: {
     name: 'setURI',
-    kind: 'internal' as const,
+    kind: 'public' as const,
     args: [
       { name: 'newuri', type: 'string memory' },
     ],
   },
 
   mint: {
-    name: 'safeMint',
+    name: 'mint',
     kind: 'public' as const,
     args: [
       { name: 'account', type: 'address' },
@@ -101,7 +101,7 @@ const functions = {
   },
 
   mintBatch: {
-    name: 'safeMint',
+    name: 'mintBatch',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
