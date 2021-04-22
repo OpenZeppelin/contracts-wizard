@@ -1,0 +1,86 @@
+body{
+  background: #f9fafb;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  line-height: 1.8;
+}
+
+/* Hero */
+.hero {
+  background: white;
+  text-align: center;
+  padding: 5rem 0 10rem;
+}
+.hero img {
+  margin: auto;
+}
+.hero h1 {
+  margin: 0;
+  color: #282846;
+}
+
+/* Wizard */
+.wizard-container {
+  margin-top: -6rem;
+}
+.wizard {
+  margin: auto;
+  box-shadow: 0px 8px 40px rgba(44, 55, 75, 0.1);
+}
+
+/* FAQ */
+.faq {
+  max-width: 45rem;
+  margin: 4rem auto 2rem;
+}
+.faq li {
+  padding: 1rem 0;
+  border-bottom: solid 1px #E1E1E2;
+  list-style: none;
+}
+.faq li:last-child {
+  border: none;
+}
+.faq h3 {
+  color: #282846;
+  font-family: 'silka', Arial, Helvetica, sans-serif;
+  margin: 0; 
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.faq p {
+  color: #56566E;
+  margin-top: .5rem;
+}
+
+/* Defender */
+.defender {
+  max-width: 48rem;
+  background-color: #2e42ad;
+  background-image: linear-gradient(45deg, #2e42ad 0%, #4158d0 46%, #70f2ff 100%);
+  box-shadow: 0px 10px 30px rgba(43, 105, 219, 0.3);
+  border-radius: 1rem;
+  padding: 3rem 4rem;
+  margin: 0 auto 4rem;
+  color: white;
+}
+
+.defender h3 {
+  margin: 0;
+}
+
+.defender button {
+    padding: .75rem 1.25rem;
+    font-size: 1rem;
+    color: #282846;
+    background: white;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: .5rem;
+}
+
+/* Legal footer */
+footer p {
+  text-align: center;
+}

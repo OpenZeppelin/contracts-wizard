@@ -12,13 +12,44 @@
 	<script defer src='/build/embed.js'></script>
 </head>
 <body>
-  <h1 style="font-family: sans-serif; color: #282846;">
-    <img src="/logo.svg" style="height: 1em; vertical-align: -.125em;" alt="">
-    OpenZeppelin Contracts Wizard
-  </h1>
+  <div class="hero">
+    <img src="/logo.svg" style="height: 1em;" alt="">
+    <h1>Contracts Wizard</h1>
+    <p>Not sure where to start? Use the interactive generator below to bootstrap your contract and learn about the components offered in OpenZeppelin Contracts</p>
+  </div>
 
-  <oz-wizard style="width: 1100px"></oz-wizard>
+  <div class="wizard-container">
+    <oz-wizard style="width: 1100px" class="wizard"></oz-wizard>
+  </div>
+  
+  <div class="faq">
+    <ul>
+      <li>
+        <h3>What is this?</h3>
+        <p>Contracts Wizard is an interface to interactively build a contract out of components from OpenZeppelin Contracts.</p>
+      </li>
+      <li>
+        <h3>How can I use this?</h3>
+        <p>Select the kind of contract that you want (current support for ERC20 and ERC721), set your parameters and desired features (token name, symbol, premint amount, access control, etc.), and Contracts Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.</p>
+      </li>
+      <li>
+        <h3>What can I do with the code?</h3>
+        <p>There’s several options for how to proceed with it that will be useful in different circumstances. “Copy to Clipboard” as well as the standard “Download” will work well with local development workflows (such as using Hardhat or Truffle), whereas “Open in Remix” will be ideal for anyone working on Remix IDE.</p>
+      </li>
+    </ul>
+  </div>
 
+  <div class="defender">
+    <h3>Ship faster with the security of OpenZeppelin</h3>
+    <p>After deploying your contract you can upload it to OpenZeppelin Defender to automate your smart contract operations and deliver high-quality products faster with lower risk to users.</p>
+    <button>SIGN UP FOR FREE</button>
+  </div>
+
+  <footer>
+    <p>
+      © OpenZeppelin 2017-2019 |&nbsp;<a href="https://openzeppelin.com/privacy">Privacy </a> |&nbsp;<a href="https://openzeppelin.com/tos">Terms of Service</a>
+    </p>
+  </footer>
   <!-- Hidden form necessary for Netlify Forms -->
   <form hidden action="/config" method="POST" name="config" data-netlify="true" data-netlify-honeypot="other">
     <input type="text" name="instance">
