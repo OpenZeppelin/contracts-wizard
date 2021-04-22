@@ -63,8 +63,8 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions._setURI, access, 'URI_SETTER');
-  c.addFunctionCode('_setURI(newuri);', functions._setURI);
+  setAccessControl(c, functions.setURI, access, 'URI_SETTER');
+  c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 
 const functions = {
@@ -81,8 +81,8 @@ const functions = {
     ],
   },
 
-  _setURI: {
-    name: '_setURI',
+  setURI: {
+    name: 'setURI',
     kind: 'internal' as const,
     args: [
       { name: 'newuri', type: 'string memory' },
