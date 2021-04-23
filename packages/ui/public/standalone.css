@@ -162,7 +162,7 @@ body{
   text-decoration: none;
   border-radius: .75rem;
   padding: 1rem 2rem;    
-  max-width: fit-content;
+  width: fit-content;
   margin: auto;
 }
 .defender a:hover,
