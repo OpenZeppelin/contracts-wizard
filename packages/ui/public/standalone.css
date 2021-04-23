@@ -78,9 +78,33 @@ body{
     font-weight: bold;
     text-transform: uppercase;
     border-radius: .5rem;
+/* Footer */
+footer div {
+  display: flex;
+  width: fit-content;
+  margin: auto;
 }
 
-/* Legal footer */
+footer img {
+  height: 2rem;
+  width: 2rem;
+  padding: .5rem;
+}
+
 footer p {
   text-align: center;
+  color: #757588;
+  font-family: 'silka', Arial, Helvetica, sans-serif;
+  font-size: .8rem;
+  text-decoration: none;
+  margin: 0 auto 2rem;
+}
+footer a {
+  color: #757588;
+  font-family: 'silka', Arial, Helvetica, sans-serif;
+}
+footer a:hover,
+footer a:focus {
+  color: #4e5de4;
+  text-decoration: underline;
 }
