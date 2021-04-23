@@ -6,6 +6,40 @@ body{
   box-sizing: border-box;
 }
 
+@font-face {
+	font-family: 'silka';
+	src: url('../fonts/silka-regular-webfont.eot');
+	src: url('../fonts/silka-regular-webfont.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/silka-regular-webfont.woff2') format('woff2'),
+    url('../fonts/silka-regular-webfont.woff') format('woff'),
+    url('../fonts/silka-regular-webfont.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'silka';
+	src: url('../fonts/silka-semibold-webfont.eot');
+	src: url('../fonts/silka-semibold-webfont.eot?#iefix') format('embedded-opentype'),
+	url('../fonts/silka-semibold-webfont.woff2') format('woff2'),
+	url('../fonts/silka-semibold-webfont.woff') format('woff'),
+	url('../fonts/silka-semibold-webfont.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'silka';
+	src: url('../fonts/silka-bold-webfont.eot');
+	src: url('../fonts/silka-bold-webfont.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/silka-bold-webfont.woff2') format('woff2'),
+    url('../fonts/silka-bold-webfont.woff') format('woff'),
+    url('../fonts/silka-bold-webfont.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+}
+
+
 /* Hero */
 .hero {
   text-align: center;
@@ -77,7 +111,7 @@ body{
   font-family: 'silka', Arial, Helvetica, sans-serif;
   margin: 0; 
   font-size: 1.3rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .faq p {
   color: #818998;
