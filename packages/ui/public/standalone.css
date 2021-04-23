@@ -177,6 +177,7 @@ footer div {
   display: flex;
   width: fit-content;
   margin: auto;
+  padding: 0 1rem;
 }
 
 footer img {
