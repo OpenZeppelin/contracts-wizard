@@ -107,7 +107,7 @@ body{
   border: none;
 }
 .faq h3 {
-  color: #2c374b;
+  color: #3d4a5c;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   margin: 0; 
   font-size: 1.3rem;
@@ -135,6 +135,7 @@ body{
   font-size: 1.2rem;
   line-height: 1.5;
   max-width: 45rem;
+  color: #f0f6fe;
 }
 .defender a {  
   display: block;
