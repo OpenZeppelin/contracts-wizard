@@ -54,8 +54,9 @@ body{
 
 /* Wizard */
 .wizard {
-  margin: -12rem auto 4rem;
+  margin: -12rem auto 5rem;
   box-shadow: 0px 8px 40px rgb(64 88 125 / 20%);
+  border-radius: 1rem;
 }
 
 /* FAQ */
@@ -101,16 +102,17 @@ body{
   line-height: 1.5;
   max-width: 45rem;
 }
-.defender button {
+.defender a {
   cursor: pointer;
   padding: 1rem 2rem;
   font-size: 1rem;
-  color: #305edd;
+  color: #3586f0;
   background: white;
   border: none;
   font-weight: bold;
   text-transform: uppercase;
   border-radius: .75rem;
+  text-decoration: none;
 }
 
 /* Footer */
