@@ -173,10 +173,9 @@ body{
 }
 
 /* Footer */
-footer div {
+.footer-icons {
   display: flex;
-  width: fit-content;
-  margin: auto;
+  justify-content: center;
 }
 footer img {
   height: 2rem;
