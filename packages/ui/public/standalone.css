@@ -1,37 +1,67 @@
 body{
   background: #f9fafb;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   margin: 0;
   line-height: 1.8;
+  box-sizing: border-box;
 }
 
 /* Hero */
 .hero {
-  background: white;
   text-align: center;
-  padding: 5rem 0 10rem;
+  padding: 5rem 0 16rem;
+  margin: auto;
+  color: #2c374b;
+  font-family: 'silka', Arial, Helvetica, sans-serif;
+  background: white;
 }
 .hero img {
-  margin: auto;
+  height: 2rem;
 }
 .hero h1 {
-  margin: 0;
-  color: #282846;
+  margin: 1rem;
+  font-size: 3.5rem;
+  font-weight: 500;
+  color: transparent;
+  background: linear-gradient(-60deg, #4e5de4, #49a5fa, #51d4ff, #49a5fa, #51d4ff);
+  background-size: 200% 200%;
+	animation: Gradient 8s ease infinite;
+	-moz-animation: Gradient 8s ease infinite;
+	-webkit-animation: Gradient 8s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+@-webkit-keyframes Gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.hero p {
+  margin: 0 auto;
+  font-size: 1.35em;
+  line-height: 1.4;
+  color: #798294;
+  font-weight: 400;
+  max-width: 40rem;
 }
 
 /* Wizard */
-.wizard-container {
-  margin-top: -6rem;
-}
 .wizard {
-  margin: auto;
-  box-shadow: 0px 8px 40px rgba(44, 55, 75, 0.1);
+  margin: -12rem auto 4rem;
+  box-shadow: 0px 8px 40px rgb(64 88 125 / 20%);
 }
 
 /* FAQ */
 .faq {
   max-width: 45rem;
-  margin: 4rem auto 2rem;
+  margin: 2rem auto;
 }
 .faq li {
   padding: 1rem 0;
@@ -42,42 +72,47 @@ body{
   border: none;
 }
 .faq h3 {
-  color: #282846;
+  color: #2c374b;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   margin: 0; 
   font-size: 1.3rem;
   font-weight: 600;
 }
 .faq p {
-  color: #56566E;
+  color: #818998;
   margin-top: .5rem;
 }
 
 /* Defender */
 .defender {
-  max-width: 48rem;
-  background-color: #2e42ad;
-  background-image: linear-gradient(45deg, #2e42ad 0%, #4158d0 46%, #70f2ff 100%);
+  max-width: 45rem;
+  background-color: #21D4FD;
+  background-image: linear-gradient(19deg, #21D4FD 0%, #4e5de4 100%);
   box-shadow: 0px 10px 30px rgba(43, 105, 219, 0.3);
   border-radius: 1rem;
-  padding: 3rem 4rem;
+  padding: 3rem 6rem;
   margin: 0 auto 4rem;
   color: white;
+  text-align: center;
 }
-
-.defender h3 {
-  margin: 0;
+.defender p {
+  margin: 0 auto 2rem;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  max-width: 45rem;
 }
-
 .defender button {
-    padding: .75rem 1.25rem;
-    font-size: 1rem;
-    color: #282846;
-    background: white;
-    border: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-radius: .5rem;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  color: #305edd;
+  background: white;
+  border: none;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: .75rem;
+}
+
 /* Footer */
 footer div {
   display: flex;
