@@ -55,7 +55,7 @@ body{
 /* Wizard */
 .wizard {
   margin: -12rem auto 5rem;
-  box-shadow: 0px 8px 40px rgb(64 88 125 / 20%);
+  box-shadow: 0px 10px 40px rgb(108 133 171 / 20%);
   border-radius: 1rem;
 }
 
@@ -102,17 +102,25 @@ body{
   line-height: 1.5;
   max-width: 45rem;
 }
-.defender a {
-  cursor: pointer;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  color: #3586f0;
+.defender a {  
+  display: block;
   background: white;
-  border: none;
+  font-size: 1rem;
+  line-height: 1;
+  color: #3586f0;
   font-weight: bold;
   text-transform: uppercase;
-  border-radius: .75rem;
   text-decoration: none;
+  border-radius: .75rem;
+  padding: 1rem 2rem;    
+  max-width: fit-content;
+  margin: auto;
+}
+.defender a:hover,
+.defender a:focus {
+  box-shadow: 0px 0px 12px rgb(255 255 255 / 80%);
+  outline: none;
+  border: none;
 }
 
 /* Footer */
