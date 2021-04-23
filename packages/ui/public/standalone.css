@@ -1,4 +1,4 @@
-body{
+body {
   background: #f9fafb;
   font-family: Helvetica, Arial, sans-serif;
   margin: 0;
@@ -7,38 +7,37 @@ body{
 }
 
 @font-face {
-	font-family: 'silka';
-	src: url('../fonts/silka-regular-webfont.eot');
-	src: url('../fonts/silka-regular-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/silka-regular-webfont.woff2') format('woff2'),
-    url('../fonts/silka-regular-webfont.woff') format('woff'),
-    url('../fonts/silka-regular-webfont.ttf') format('truetype');
-	font-weight: 400;
-	font-style: normal;
+  font-family: 'silka';
+  src: url('../fonts/silka-regular-webfont.eot');
+  src: url('../fonts/silka-regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/silka-regular-webfont.woff2') format('woff2'),
+       url('../fonts/silka-regular-webfont.woff') format('woff'),
+       url('../fonts/silka-regular-webfont.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'silka';
-	src: url('../fonts/silka-semibold-webfont.eot');
-	src: url('../fonts/silka-semibold-webfont.eot?#iefix') format('embedded-opentype'),
-	url('../fonts/silka-semibold-webfont.woff2') format('woff2'),
-	url('../fonts/silka-semibold-webfont.woff') format('woff'),
-	url('../fonts/silka-semibold-webfont.ttf') format('truetype');
-	font-weight: 500;
-	font-style: normal;
+  font-family: 'silka';
+  src: url('../fonts/silka-semibold-webfont.eot');
+  src: url('../fonts/silka-semibold-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/silka-semibold-webfont.woff2') format('woff2'),
+       url('../fonts/silka-semibold-webfont.woff') format('woff'),
+       url('../fonts/silka-semibold-webfont.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'silka';
-	src: url('../fonts/silka-bold-webfont.eot');
-	src: url('../fonts/silka-bold-webfont.eot?#iefix') format('embedded-opentype'),
+  font-family: 'silka';
+  src: url('../fonts/silka-bold-webfont.eot');
+  src: url('../fonts/silka-bold-webfont.eot?#iefix') format('embedded-opentype'),
     url('../fonts/silka-bold-webfont.woff2') format('woff2'),
     url('../fonts/silka-bold-webfont.woff') format('woff'),
     url('../fonts/silka-bold-webfont.ttf') format('truetype');
-	font-weight: 600;
-	font-style: normal;
+  font-weight: 600;
+  font-style: normal;
 }
-
 
 /* Hero */
 .hero {
@@ -61,22 +60,22 @@ body{
   color: transparent;
   background: linear-gradient(-60deg, #4e5de4, #49a5fa, #51d4ff, #49a5fa, #51d4ff);
   background-size: 200% 200%;
-	animation: Gradient 8s ease infinite;
-	-moz-animation: Gradient 8s ease infinite;
-	-webkit-animation: Gradient 8s ease infinite;
+  animation: Gradient 8s ease infinite;
+  -moz-animation: Gradient 8s ease infinite;
+  -webkit-animation: Gradient 8s ease infinite;
   -webkit-background-clip: text;
   background-clip: text;
 }
 @-webkit-keyframes Gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero p {
@@ -114,7 +113,7 @@ body{
 }
 .faq li {
   padding: 1rem 0;
-  border-bottom: solid 1px #E1E1E2;
+  border-bottom: solid 1px #e1e1e2;
   list-style: none;
 }
 .faq li:last-child {
@@ -123,20 +122,20 @@ body{
 .faq h3 {
   color: #3d4a5c;
   font-family: 'silka', Arial, Helvetica, sans-serif;
-  margin: 0; 
+  margin: 0;
   font-size: 1.3rem;
   font-weight: 500;
 }
 .faq p {
   color: #818998;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 /* Defender */
 .defender {
   max-width: 45rem;
-  background-color: #21D4FD;
-  background-image: linear-gradient(19deg, #21D4FD 0%, #4e5de4 100%);
+  background-color: #21d4fd;
+  background-image: linear-gradient(19deg, #21d4fd 0%, #4e5de4 100%);
   box-shadow: 0px 10px 30px rgba(181, 185, 192, 0.3);
   border-radius: 1rem;
   padding: 3rem 6rem;
@@ -151,7 +150,7 @@ body{
   max-width: 45rem;
   color: #f0f6fe;
 }
-.defender a {  
+.defender a {
   display: block;
   background: white;
   font-size: 1rem;
@@ -160,8 +159,8 @@ body{
   font-weight: bold;
   text-transform: uppercase;
   text-decoration: none;
-  border-radius: .75rem;
-  padding: 1rem 2rem;    
+  border-radius: 0.75rem;
+  padding: 1rem 2rem;
   width: fit-content;
   margin: auto;
 }
@@ -180,13 +179,13 @@ body{
 footer img {
   height: 2rem;
   width: 2rem;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 footer p {
   text-align: center;
   color: #757588;
   font-family: 'silka', Arial, Helvetica, sans-serif;
-  font-size: .8rem;
+  font-size: 0.8rem;
   margin: 0 auto 2rem;
   padding: 0 1rem;
 }
@@ -202,7 +201,7 @@ footer a:focus {
 }
 
 @media screen and (max-width: 768px) {
-  .defender { 
+  .defender {
     margin-left: 1rem;
     margin-right: 1rem;
     padding: 3rem;
