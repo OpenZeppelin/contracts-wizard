@@ -178,13 +178,11 @@ footer div {
   width: fit-content;
   margin: auto;
 }
-
 footer img {
   height: 2rem;
   width: 2rem;
   padding: .5rem;
 }
-
 footer p {
   text-align: center;
   color: #757588;
