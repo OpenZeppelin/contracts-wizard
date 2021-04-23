@@ -3,6 +3,7 @@
 
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
+    import ERC1155Controls from './ERC1155Controls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
     import RemixIcon from './icons/RemixIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
@@ -73,9 +74,9 @@
         <Tooltip let:trigger text="Coming soon!" placement={overflow ? 'left' : 'bottom'}>
           <button use:trigger class="disabled" aria-disabled="true">ERC777</button>
         </Tooltip>
-        <Tooltip let:trigger text="Coming soon!" placement={overflow ? 'left' : 'bottom'}>
-          <button use:trigger class="disabled" aria-disabled="true">ERC1155</button>
-        </Tooltip>
+        <button class:selected={kind === 'ERC1155'} on:click={() => kind = 'ERC1155'}>
+          ERC1155
+        </button>
       </OverflowMenu>
     </div>
 
@@ -124,6 +125,9 @@
       </div>
       <div class={kind === 'ERC721' ? 'display-contents' : 'display-none'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
+      </div>
+      <div class={kind === 'ERC1155' ? 'display-contents' : 'display-none'}>
+        <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
     </div>
 
