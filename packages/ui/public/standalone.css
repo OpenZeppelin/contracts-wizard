@@ -106,7 +106,7 @@ body{
 /* FAQ */
 .faq {
   max-width: 45rem;
-  margin: 2rem auto;
+  margin: 0 auto 2rem;
   padding: 0 2rem;
 }
 .faq ul {
