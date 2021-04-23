@@ -177,7 +177,6 @@ footer div {
   display: flex;
   width: fit-content;
   margin: auto;
-  padding: 0 1rem;
 }
 
 footer img {
@@ -192,6 +191,7 @@ footer p {
   font-family: 'silka', Arial, Helvetica, sans-serif;
   font-size: .8rem;
   margin: 0 auto 2rem;
+  padding: 0 1rem;
 }
 footer a {
   color: #757588;
