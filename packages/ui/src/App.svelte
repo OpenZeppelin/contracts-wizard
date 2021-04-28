@@ -9,6 +9,8 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
+    import DocsIcon from './icons/DocsIcon.svelte';
+    import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import Tooltip from './Tooltip.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
@@ -119,7 +121,7 @@
   </div>
 
   <div class="flex flex-row flex-col-gap-4 flex-grow">
-    <div class="controls w-64 flex flex-col flex-shrink-0">
+    <div class="controls w-64 flex flex-col flex-shrink-0 justify-between">
       <div class={kind === 'ERC20' ? 'display-contents' : 'display-none'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
@@ -128,6 +130,14 @@
       </div>
       <div class={kind === 'ERC1155' ? 'display-contents' : 'display-none'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
+      </div>
+      <div class="controls-footer">
+        <a href="https://forum.openzeppelin.com/" target="_blank">
+          <ForumIcon/> Forum
+        </a>
+        <a href="https://docs.openzeppelin.com/" target="_blank">
+          <DocsIcon/> Docs
+        </a>
       </div>
     </div>
 
@@ -147,7 +157,7 @@
     border: 1px solid var(--gray-2);
     border-radius: 10px;
     min-width: 32rem;
-    min-height: 40rem;
+    min-height: 42rem;
   }
 
   .header {
@@ -219,6 +229,34 @@
   .controls, .output {
     border-radius: 5px;
     box-shadow: var(--shadow);
+  }
+
+  .controls-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    color: var(--gray-5);
+    margin-top: var(--size-3);
+    padding: 0 var(--size-2);
+    font-size: var(--text-small);
+
+    & > * + * {
+      margin-left: var(--size-3);
+    }
+
+    :global(.icon) {
+      margin-right: 0.2em;
+      opacity: .8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: #333;
+      }
+    }
   }
 
   .download-option {
