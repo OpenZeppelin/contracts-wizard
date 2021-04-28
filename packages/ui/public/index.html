@@ -1,23 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width,initial-scale=1'>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>OpenZeppelin Contracts Wizard</title>
 
-	<title>OpenZeppelin Contracts Wizard</title>
+  <!-- Twitter card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@OpenZeppelin">
+  <meta name="twitter:title" content="OpenZeppelin Contracts Wizard">
+  <meta name="twitter:description" content="An interactive contract generator based on OpenZeppelin Contracts.">
+  <meta name="twitter:image" content="/tw-card.png">
 
-	<link rel='icon' type='image/png' href='/favicon.png'>
-	<link rel='stylesheet' href='/standalone.css'>
+  <!-- Favicons -->
+  <link rel='icon' type='image/png' href='/favicons/favicon.ico'>
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-icon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-icon-60x60.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-icon-76x76.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-icon-114x114.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-icon-120x120.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-icon-144x144.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-icon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-icon-180x180.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicons/favicon-192x192.png" />
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
 
-	<script defer src='/build/embed.js'></script>
+  <!-- Scripts and CSS -->
+  <link rel='stylesheet' href='/standalone.css'>
+  <script defer src='/build/embed.js'></script>
 </head>
 <body>
-  <h1 style="font-family: sans-serif; color: #282846;">
-    <img src="/logo.svg" style="height: 1em; vertical-align: -.125em;" alt="">
-    OpenZeppelin Contracts Wizard
-  </h1>
+  <div class="hero">
+    <img src="/logo.svg" alt="OpenZeppelin logo">
+    <h1>Contracts Wizard</h1>
+    <p>Use the interactive generator below to bootstrap your contract and learn about <a href="https://openzeppelin.com/contracts">OpenZeppelin Contracts</a>.</p>
+  </div>
 
-  <oz-wizard style="width: 1100px"></oz-wizard>
+  <div class="wizard-container">
+    <oz-wizard class="wizard"></oz-wizard>
+  </div>
+
+  <div class="faq">
+    <ul>
+      <li>
+        <h3>What is this?</h3>
+        <p>Contracts Wizard is an interface to interactively build a contract out of components from OpenZeppelin Contracts.</p>
+      </li>
+      <li>
+        <h3>How can I use this?</h3>
+        <p>Select the kind of contract that you want (current support for ERC20 and ERC721), set your parameters and desired features (token name, symbol, premint amount, access control, etc.), and Contracts Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.</p>
+      </li>
+      <li>
+        <h3>What can I do with the code?</h3>
+        <p>There’s several options for how to proceed with it that will be useful in different circumstances. “Copy to Clipboard” as well as the standard “Download” will work well with local development workflows (such as using Hardhat or Truffle), whereas “Open in Remix” will be ideal for anyone working on Remix IDE.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="defender">
+    <h2>Ship faster with the security of OpenZeppelin Defender</h2>
+    <p>After deploying your contract you can upload it to OpenZeppelin Defender and automate your operations delivering high-quality products with lower risk to users.</p>
+    <a href="https://defender.openzeppelin.com/" target="_blank">Sign up for free</a>
+  </div>
+
+  <footer>
+    <div class="footer-icons">
+      <a href="https://forum.openzeppelin.com/" target="_blank"><img src="icons/forum.svg" alt="forum"></a>
+      <a href="https://docs.openzeppelin.com/" target="_blank"><img src="icons/docs.svg" alt="forum"></a>
+      <a href="https://github.com/OpenZeppelin/openzeppelin-contracts" target="_blank"><img src="icons/github.svg" alt="forum"></a>
+      <a href="https://twitter.com/openzeppelin/" target="_blank"><img src="icons/twitter.svg" alt="forum"></a>
+    </div>
+    <p>© <a href="https://openzeppelin.com" target="_blank">OpenZeppelin</a> 2017-2021 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank">Terms of Service</a></p>
+  </footer>
 
   <!-- Hidden form necessary for Netlify Forms -->
   <form hidden action="/config" method="POST" name="config" data-netlify="true" data-netlify-honeypot="other">
