@@ -51,6 +51,9 @@ body {
 .hero img {
   height: 2rem;
 }
+.hero a {
+  color: inherit;
+}
 .hero h1 {
   font-size: 3.5rem;
   line-height: 1.25;
