@@ -1,6 +1,7 @@
-import { Contract, ContractBuilder, BaseFunction } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
+import { defineFunctions } from './utils/define-functions';
 
 export interface ERC20Options {
   name: string;
@@ -110,9 +111,8 @@ function addPermit(c: ContractBuilder, name: string) {
   }, [name]);
 }
 
-const functions = {
+const functions = defineFunctions({
   _beforeTokenTransfer: {
-    name: '_beforeTokenTransfer',
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
@@ -122,7 +122,6 @@ const functions = {
   },
 
   mint: {
-    name: 'mint',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
@@ -131,20 +130,17 @@ const functions = {
   },
 
   pause: {
-    name: 'pause',
     kind: 'public' as const,
     args: [],
   },
 
   unpause: {
-    name: 'unpause',
     kind: 'public' as const,
     args: [],
   },
 
   snapshot: {
-    name: 'snapshot',
     kind: 'public' as const,
     args: [],
   },
-};
+});

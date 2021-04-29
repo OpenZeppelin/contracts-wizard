@@ -1,7 +1,8 @@
-import { Contract, ContractBuilder, BaseFunction } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
+import { defineFunctions } from './utils/define-functions';
 
 export interface ERC721Options {
   name: string;
@@ -101,9 +102,8 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_safeMint(to, tokenId);', functions.safeMint);
 }
 
-const functions = {
+const functions = defineFunctions({
   _beforeTokenTransfer: {
-    name: '_beforeTokenTransfer',
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
@@ -113,7 +113,6 @@ const functions = {
   },
 
   _burn: {
-    name: '_burn',
     kind: 'internal' as const,
     args: [
       { name: 'tokenId', type: 'uint256' },
@@ -121,7 +120,6 @@ const functions = {
   },
 
   tokenURI: {
-    name: 'tokenURI',
     kind: 'public' as const,
     args: [
       { name: 'tokenId', type: 'uint256' },
@@ -131,7 +129,6 @@ const functions = {
   },
 
   _baseURI: {
-    name: '_baseURI',
     kind: 'internal' as const,
     args: [],
     returns: ['string memory'],
@@ -139,7 +136,6 @@ const functions = {
   },
 
   safeMint: {
-    name: 'safeMint',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
@@ -147,4 +143,4 @@ const functions = {
     ],
   },
 
-};
+});

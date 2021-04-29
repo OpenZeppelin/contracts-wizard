@@ -1,7 +1,8 @@
-import { Contract, ContractBuilder, BaseFunction } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
+import { defineFunctions } from './utils/define-functions';
 
 export interface ERC1155Options {
   name: string;
@@ -67,9 +68,8 @@ function addSetUri(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 
-const functions = {
+const functions = defineFunctions({
   _beforeTokenTransfer: {
-    name: '_beforeTokenTransfer',
     kind: 'internal' as const,
     args: [
       { name: 'operator', type: 'address' },
@@ -82,7 +82,6 @@ const functions = {
   },
 
   setURI: {
-    name: 'setURI',
     kind: 'public' as const,
     args: [
       { name: 'newuri', type: 'string memory' },
@@ -90,7 +89,6 @@ const functions = {
   },
 
   mint: {
-    name: 'mint',
     kind: 'public' as const,
     args: [
       { name: 'account', type: 'address' },
@@ -101,7 +99,6 @@ const functions = {
   },
 
   mintBatch: {
-    name: 'mintBatch',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
@@ -111,4 +108,4 @@ const functions = {
     ],
   },
 
-};
+});
