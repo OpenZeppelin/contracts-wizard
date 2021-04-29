@@ -46,7 +46,7 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155#ERC1155Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
