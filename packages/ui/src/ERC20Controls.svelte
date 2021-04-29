@@ -49,7 +49,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Mintable">
+      <HelpTooltip>
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
