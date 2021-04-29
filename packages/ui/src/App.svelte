@@ -122,13 +122,13 @@
 
   <div class="flex flex-row flex-col-gap-4 flex-grow">
     <div class="controls w-64 flex flex-col flex-shrink-0 justify-between">
-      <div class={kind === 'ERC20' ? 'display-contents' : 'display-none'}>
+      <div class:display-none={kind !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
-      <div class={kind === 'ERC721' ? 'display-contents' : 'display-none'}>
+      <div class:display-none={kind !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
       </div>
-      <div class={kind === 'ERC1155' ? 'display-contents' : 'display-none'}>
+      <div class:display-none={kind !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class="controls-footer">
