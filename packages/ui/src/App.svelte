@@ -16,7 +16,7 @@
     import OverflowMenu from './OverflowMenu.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
-    import { ContractBuilder, buildGeneric, printContract, zipContract } from '@openzeppelin/wizard';
+    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, zipContract } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -39,7 +39,8 @@
     };
 
     const remixHandler = async () => {
-      window.open(remixURL(code).toString(), '_blank');
+      const versionedCode = printContractVersioned(contract);
+      window.open(remixURL(versionedCode).toString(), '_blank');
       if (opts) {
         await postConfig(opts, 'remix');
       }
