@@ -16,6 +16,8 @@ test('erc20 basic', t => {
     '@openzeppelin/contracts/token/ERC20/',
     '@openzeppelin/contracts/token/ERC20/ERC20.sol',
     '@openzeppelin/contracts/token/ERC20/IERC20.sol',
+    '@openzeppelin/contracts/token/ERC20/extensions/',
+    '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol',
     '@openzeppelin/contracts/utils/',
     '@openzeppelin/contracts/utils/Context.sol',
     'MyToken.sol',
