@@ -1,4 +1,3 @@
-import fs from 'fs';
 import JSZip from 'jszip';
 
 import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
