@@ -130,6 +130,15 @@ test('name with special characters', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('using for statement', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addUsing({
+    name: 'Counters',
+    path: './Counters.sol',
+  }, 'Counters.Counter');
+  t.snapshot(printContract(Foo));
+});
+
 const _beforeTokenTransfer = {
   name: '_beforeTokenTransfer',
   kind: 'internal' as const,
