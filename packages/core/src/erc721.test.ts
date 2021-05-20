@@ -64,3 +64,10 @@ testERC721('mintable + roles', {
   mintable: true,
   access: 'roles',
 });
+
+testERC721('mintable + incremental', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  incremental: true,
+});

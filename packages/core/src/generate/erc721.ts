@@ -13,6 +13,7 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   mintable: booleans,
+  incremental: booleans,
   access: accessOptions,
 };
 
