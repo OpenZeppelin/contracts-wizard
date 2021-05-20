@@ -64,6 +64,11 @@ input[type="number"] {
   }
 }
 
+.subcontrol::before {
+  content: '└';
+  color: var(--gray-3);
+}
+
 .checkbox-group {
   display: flex;
   flex-direction: column;
