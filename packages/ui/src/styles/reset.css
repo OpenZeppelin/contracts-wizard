@@ -10,7 +10,7 @@ html {
 }
 
 code {
-  font-family: monospace, monospace;
+  font-family: var(--monospace);
   font-size: 1em;
 }
 

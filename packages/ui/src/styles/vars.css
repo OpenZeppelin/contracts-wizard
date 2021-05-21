@@ -1,5 +1,7 @@
 :root {
 
+  --monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
   /* Colors */
 
   --gray-1: #f9fafb;
