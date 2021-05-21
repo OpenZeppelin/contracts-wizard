@@ -158,7 +158,7 @@
     border: 1px solid var(--gray-2);
     border-radius: 10px;
     min-width: 32rem;
-    min-height: 42rem;
+    min-height: 44rem;
   }
 
   .header {
