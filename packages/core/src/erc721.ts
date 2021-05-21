@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseFunction, Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
@@ -13,6 +13,7 @@ export interface ERC721Options {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  incremental?: boolean;
   access?: Access;
 }
 
@@ -44,7 +45,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (opts.mintable) {
-    addMintable(c, access);
+    addMintable(c, access, opts.incremental);
   }
 
   return c;
@@ -97,9 +98,20 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.safeMint, access, 'MINTER');
-  c.addFunctionCode('_safeMint(to, tokenId);', functions.safeMint);
+function addMintable(c: ContractBuilder, access: Access, incremental = false) {
+  const fn = incremental ? mintFunctions.incremental : mintFunctions.regular;
+  setAccessControl(c, fn, access, 'MINTER');
+  if (incremental) {
+    c.addUsing({
+      name: 'Counters',
+      path: '@openzeppelin/contracts/utils/Counters.sol',
+    }, 'Counters.Counter');
+    c.addVariable('Counters.Counter private _tokenIdCounter;');
+    c.addFunctionCode('_safeMint(to, _tokenIdCounter.current());', fn);
+    c.addFunctionCode('_tokenIdCounter.increment();', fn);
+  } else {
+    c.addFunctionCode('_safeMint(to, tokenId);', fn);
+  }
 }
 
 const functions = defineFunctions({
@@ -134,8 +146,11 @@ const functions = defineFunctions({
     returns: ['string memory'],
     mutability: 'pure' as const,
   },
+});
 
-  safeMint: {
+const mintFunctions = {
+  regular: {
+    name: 'safeMint',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
@@ -143,4 +158,11 @@ const functions = defineFunctions({
     ],
   },
 
-});
+  incremental: {
+    name: 'safeMint',
+    kind: 'public' as const,
+    args: [
+      { name: 'to', type: 'address' },
+    ],
+  },
+};

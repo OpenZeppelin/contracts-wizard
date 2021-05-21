@@ -20,12 +20,13 @@ export function printContract(contract: Contract, opts?: PrintOptions): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.parents.map(p => `import "${transformImport(p.contract.path)}";`),
+      contract.imports.map(p => `import "${transformImport(p)}";`),
 
       [
         [`contract ${contract.name}`, ...printInheritance(contract), '{'].join(' '),
 
         spaceBetween(
+          printUsingFor(contract),
           contract.variables,
           printConstructor(contract),
           ...sortedFunctions(contract).map(printFunction),
@@ -43,6 +44,10 @@ function printInheritance(contract: Contract): [] | [string] {
   } else {
     return [];
   }
+}
+
+function printUsingFor(contract: Contract): string[] {
+  return contract.using.map(u => `using ${u.library.name} for ${u.usingFor};`);
 }
 
 function printConstructor(contract: Contract): Lines[] {

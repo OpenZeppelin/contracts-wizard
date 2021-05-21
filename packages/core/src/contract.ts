@@ -4,6 +4,8 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
+  using: Using[];
+  imports: string[];
   functions: ContractFunction[];
   constructorCode: string[];
   variables: string[];
@@ -17,6 +19,11 @@ export interface Parent {
 export interface ParentContract {
   name: string;
   path: string;
+}
+
+export interface Using {
+  library: ParentContract;
+  usingFor: string;
 }
 
 export interface BaseFunction {
@@ -56,6 +63,8 @@ export class ContractBuilder implements Contract {
   readonly license = 'MIT';
   readonly name: string;
 
+  readonly using: Using[] = [];
+
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
@@ -70,6 +79,13 @@ export class ContractBuilder implements Contract {
     return [...this.parentMap.values()];
   }
 
+  get imports(): string[] {
+    return [
+      ...[...this.parentMap.values()].map(p => p.contract.path),
+      ...this.using.map(u => u.library.path),
+    ];
+  }
+
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
   }
@@ -82,6 +98,10 @@ export class ContractBuilder implements Contract {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
     return !present;
+  }
+
+  addUsing(library: ParentContract, usingFor: string) {
+    this.using.push({ library, usingFor });
   }
 
   addOverride(parent: string, baseFn: BaseFunction, mutability?: FunctionMutability) {

@@ -15,8 +15,25 @@
     burnable: false,
     pausable: false,
     mintable: false,
+    incremental: false,
     access: 'ownable',
   };
+
+  let wasMintable = opts.mintable;
+  let wasIncremental = opts.incremental;
+
+  $: {
+    if (wasMintable && !opts.mintable) {
+      opts.incremental = false;
+    }
+
+    if (opts.incremental && !wasIncremental) {
+      opts.mintable = true;
+    }
+
+    wasMintable = opts.mintable;
+    wasIncremental = opts.incremental;
+  }
 </script>
 
 <section class="controls-section">
@@ -49,7 +66,14 @@
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
       <HelpTooltip>
-        Privileged accounts will be able to create more supply.
+        Privileged accounts will be able to emit new tokens.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.incremental} class="subcontrol">
+      <input type="checkbox" bind:checked={opts.incremental}>
+      Auto Increment Ids
+      <HelpTooltip>
+        New tokens will be automatically assigned an incremental id.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
