@@ -4371,7 +4371,7 @@ rustbn.js@~0.2.0:
   resolved "https://registry.yarnpkg.com/rustbn.js/-/rustbn.js-0.2.0.tgz#8082cb886e707155fd1cb6f23bd591ab8d55d0ca"
   integrity sha512-4VlvkRUuCJvr2J6Y0ImW7NvTCriMi7ErOAqWk1y69vAdoNIzCF3yPmgeNzx+RQTLEDFq5sHfscn1MwHxP9hNfA==
 
-sade@^1.6.0:
+sade@^1.6.0, sade@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/sade/-/sade-1.7.4.tgz#ea681e0c65d248d2095c90578c03ca0bb1b54691"
   integrity sha512-y5yauMD93rX840MwUJr7C1ysLFBgMspsdTo4UVrDg3fXDvtwOyIqykhVAAm6fk/3au77773itJStObgK+LKaiA==
@@ -4832,16 +4832,17 @@ supports-color@^7.0.0, supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-svelte-check@^1.0.0:
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/svelte-check/-/svelte-check-1.5.4.tgz#9e37a36c30dbf75caa729f507e925424c67a237b"
-  integrity sha512-0rnBT2uqgYQeVsLJYZqAjkZn0k2TiphbOv7p602QmRMPT5VqFrkAaomZm5l4K3coxGSJlC0tDEVCKCQJ6i2jqw==
+svelte-check@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/svelte-check/-/svelte-check-2.0.0.tgz#c125bd69c204f5f0bb0b000247001400b7e27037"
+  integrity sha512-72xHHZG2DUgt1QzKKKvirzvYYDKLfK5L2lJsCCbW87fd383VqZJ08RLKNf6pfEZQJl8yk2rUsTU6krgntB9TXQ==
   dependencies:
     chalk "^4.0.0"
     chokidar "^3.4.1"
     glob "^7.1.6"
     import-fresh "^3.2.1"
     minimist "^1.2.5"
+    sade "^1.7.4"
     source-map "^0.7.3"
     svelte-preprocess "^4.0.0"
     typescript "*"
