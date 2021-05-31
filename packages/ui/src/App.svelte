@@ -235,7 +235,7 @@
   .controls-footer {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: flex-end;
     color: var(--gray-5);
     margin-top: var(--size-3);
     padding: 0 var(--size-2);
