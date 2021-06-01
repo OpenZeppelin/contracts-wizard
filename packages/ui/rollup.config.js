@@ -39,6 +39,7 @@ function onStartRun(cmd, ...args) {
   };
 }
 
+/** @type import('rollup').RollupOptions */
 export default [
   {
     input: 'src/embed.ts',
@@ -63,12 +64,13 @@ export default [
     ],
   },
   {
+    preserveEntrySignatures: false,
     input: 'src/main.ts',
     output: {
       sourcemap: true,
-      format: 'iife',
-      name: 'app',
-      file: 'public/build/bundle.js',
+      format: 'es',
+      dir: 'public/build',
+      chunkFileNames: '[name].js',
       assetFileNames: '[name][extname]',
     },
     plugins: [

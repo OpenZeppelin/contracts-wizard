@@ -16,7 +16,7 @@
     import OverflowMenu from './OverflowMenu.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
-    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, zipContract } from '@openzeppelin/wizard';
+    import { ContractBuilder, buildGeneric, printContract, printContractVersioned } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -54,7 +54,10 @@
       }
     };
 
+    const zipModule = import('@openzeppelin/wizard/zip');
+
     const downloadVendoredHandler = async () => {
+      const { zipContract } = await zipModule;
       const zip = zipContract(contract);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');

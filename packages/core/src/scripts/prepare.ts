@@ -5,6 +5,7 @@ import type { SourceUnit } from 'solidity-ast';
 import { findAll } from 'solidity-ast/utils';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
+import { version } from "@openzeppelin/contracts/package.json";
 
 const rimraf = promisify(_rimraf);
 
@@ -43,8 +44,6 @@ async function main() {
       }
     }
   }
-
-  const version: string = require('@openzeppelin/contracts/package.json').version;
 
   const contracts: OpenZeppelinContracts = {
     version,
