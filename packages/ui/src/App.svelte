@@ -80,9 +80,6 @@
         <button class:selected={kind === 'ERC1155'} on:click={() => kind = 'ERC1155'}>
           ERC1155
         </button>
-        <Tooltip let:trigger text="Coming soon!" placement={overflow ? 'left' : 'bottom'}>
-          <button use:trigger class="disabled" aria-disabled="true">ERC777</button>
-        </Tooltip>
       </OverflowMenu>
     </div>
 
