@@ -9,3 +9,13 @@ Wizard is an interface to interactively build a contract out of components from 
 `packages/core` contains the code generation logic.
 
 `packages/ui` is the interface built in Svelte. `yarn dev` spins up a local server to develop the UI.
+
+## Embedding
+
+To embed Contracts Wizard on your site, first include the script tag:
+
+```html
+<script async src="https://wizard.openzeppelin.com/build/embed.js"></script>
+```
+
+Then place `<oz-wizard></oz-wizard>` in the body where you want Contracts Wizard to load.
