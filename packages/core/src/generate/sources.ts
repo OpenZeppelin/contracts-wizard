@@ -24,15 +24,17 @@ function* generateOptions(): Generator<GenericOptions> {
 export async function writeGeneratedSources(dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
 
-  for (const opts of generateOptions()) {
-    const source = printContract(buildGeneric(opts));
+  for (const buildOpts of generateOptions()) {
+    for (const printOpts of [{}, { upgradeable: true }]) {
+      const source = printContract(buildGeneric(buildOpts), printOpts);
 
-    const name = crypto
-      .createHash('sha1')
-      .update(source)
-      .digest()
-      .toString('hex');
+      const name = crypto
+        .createHash('sha1')
+        .update(JSON.stringify({ buildOpts, printOpts }))
+        .digest()
+        .toString('hex');
 
-    await fs.writeFile(path.format({ dir, name, ext: '.sol' }), source);
+      await fs.writeFile(path.format({ dir, name, ext: '.sol' }), source);
+    }
   }
 }

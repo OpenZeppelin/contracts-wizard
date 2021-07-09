@@ -35,7 +35,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: Set<String>;
+  override: Set<string>;
   modifiers: string[];
   code: string[];
   mutability: FunctionMutability;
