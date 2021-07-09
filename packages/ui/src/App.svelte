@@ -195,14 +195,6 @@
     order: unset;
   }
 
-  .kind button.disabled {
-    color: var(--gray-3);
-  }
-
-  .kind button.disabled:hover {
-    cursor: not-allowed;
-  }
-
   .action-button {
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
