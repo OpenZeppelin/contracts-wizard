@@ -5,26 +5,28 @@ import crypto from 'crypto';
 import { generateERC20Options } from './erc20';
 import { generateERC721Options } from './erc721';
 import { generateERC1155Options } from './erc1155';
-import { buildGeneric } from '../build-generic';
+import { buildGeneric, GenericOptions } from '../build-generic';
 import { printContract } from '../print';
 
-function* generateSources(): Generator<string> {
-  for (const opts of generateERC20Options()) {
-    yield printContract(buildGeneric({ kind: 'ERC20', ...opts }));
+function* generateOptions(): Generator<GenericOptions> {
+  for (const kindOpts of generateERC20Options()) {
+    yield { kind: 'ERC20', ...kindOpts };
   }
 
-  for (const opts of generateERC721Options()) {
-    yield printContract(buildGeneric({ kind: 'ERC721', ...opts }));
+  for (const kindOpts of generateERC721Options()) {
+    yield { kind: 'ERC721', ...kindOpts };
   }
-  for (const opts of generateERC1155Options()) {
-    yield printContract(buildGeneric({ kind: 'ERC1155', ...opts }));
+  for (const kindOpts of generateERC1155Options()) {
+    yield { kind: 'ERC1155', ...kindOpts };
   }
 }
 
 export async function writeGeneratedSources(dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
 
-  for (const source of generateSources()) {
+  for (const opts of generateOptions()) {
+    const source = printContract(buildGeneric(opts));
+
     const name = crypto
       .createHash('sha1')
       .update(source)
