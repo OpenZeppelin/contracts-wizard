@@ -3,8 +3,9 @@ import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
+import { CommonOptions, withCommonDefaults } from './common-options';
 
-export interface ERC721Options {
+export interface ERC721Options extends CommonOptions {
   name: string;
   symbol: string;
   baseUri?: string;
@@ -14,13 +15,12 @@ export interface ERC721Options {
   pausable?: boolean;
   mintable?: boolean;
   incremental?: boolean;
-  access?: Access;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
   const c = new ContractBuilder(opts.name);
 
-  const { access = 'ownable' } = opts;
+  const { access } = withCommonDefaults(opts);
 
   addBase(c, opts.name, opts.symbol);
 
