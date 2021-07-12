@@ -9,6 +9,7 @@ export interface Contract {
   functions: ContractFunction[];
   constructorCode: string[];
   variables: string[];
+  upgradeable: boolean;
 }
 
 export interface Parent {
@@ -62,6 +63,7 @@ export interface FunctionArgument {
 export class ContractBuilder implements Contract {
   readonly license = 'MIT';
   readonly name: string;
+  upgradeable = false;
 
   readonly using: Using[] = [];
 
@@ -151,12 +153,12 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  setFunctionBody(code: string, baseFn: BaseFunction) {
+  setFunctionBody(code: string[], baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {
       throw new Error(`Function ${baseFn.name} has additional code`);
     }
-    fn.code.push(code);
+    fn.code.push(...code);
     fn.final = true;
   }
 

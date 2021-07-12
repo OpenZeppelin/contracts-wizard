@@ -4,6 +4,7 @@ import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults } from './common-options';
+import { setUpgradeable } from './set-upgradeable';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -20,7 +21,7 @@ export interface ERC721Options extends CommonOptions {
 export function buildERC721(opts: ERC721Options): Contract {
   const c = new ContractBuilder(opts.name);
 
-  const { access } = withCommonDefaults(opts);
+  const { access, upgradeable } = withCommonDefaults(opts);
 
   addBase(c, opts.name, opts.symbol);
 
@@ -48,6 +49,8 @@ export function buildERC721(opts: ERC721Options): Contract {
     addMintable(c, access, opts.incremental);
   }
 
+  setUpgradeable(c, upgradeable, access);
+
   return c;
 }
 
@@ -68,7 +71,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 
 function addBaseURI(c: ContractBuilder, baseUri: string) {
   c.addOverride('ERC721', functions._baseURI);
-  c.setFunctionBody(`return ${JSON.stringify(baseUri)};`, functions._baseURI);
+  c.setFunctionBody([`return ${JSON.stringify(baseUri)};`], functions._baseURI);
 }
 
 function addEnumerable(c: ContractBuilder) {

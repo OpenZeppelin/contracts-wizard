@@ -7,7 +7,7 @@ import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 
 const SOLIDITY_VERSION = '0.8.0';
 
-const upgradeableName = (n: string) => n.replace(/(?=\.|$)/, n => n + "Upgradeable");
+const upgradeableName = (n: string) => n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
 
 const upgradeableImport = (p: string) => {
   const { dir, ext, name } = path.parse(p);
@@ -20,16 +20,16 @@ const upgradeableImport = (p: string) => {
 
 interface PrintOptions {
   transformImport?: (path: string) => string;
-  upgradeable?: boolean;
 }
 
 interface PrintHelpers extends Required<PrintOptions> {
+  upgradeable: boolean;
   transformName: (name: string) => string;
   transformVariable: (code: string) => string;
 }
 
-function withHelpers(opts: PrintOptions = {}): PrintHelpers {
-  const upgradeable = opts.upgradeable ?? false;
+function withHelpers(contract: Contract, opts: PrintOptions = {}): PrintHelpers {
+  const upgradeable = contract.upgradeable;
   const transformName = (n: string) => upgradeable ? upgradeableName(n) : n;
   return {
     upgradeable,
@@ -43,7 +43,7 @@ function withHelpers(opts: PrintOptions = {}): PrintHelpers {
 }
 
 export function printContract(contract: Contract, opts?: PrintOptions): string {
-  const helpers = withHelpers(opts);
+  const helpers = withHelpers(contract, opts);
 
   return formatLines(
     ...spaceBetween(
