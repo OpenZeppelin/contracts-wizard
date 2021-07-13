@@ -29,7 +29,7 @@
   <h1>
     <label class="flex items-center flex-col-gap-1">
       <span>Upgradeability</span>
-      <input type="checkbox" bind:checked={enabled}>
+      <input type="checkbox" bind:checked={enabled} style="margin-top: var(--icon-adjust)">
     </label>
   </h1>
 
