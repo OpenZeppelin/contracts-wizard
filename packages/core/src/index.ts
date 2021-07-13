@@ -7,5 +7,6 @@ export { printContract } from './print';
 export { printContractVersioned } from './print-versioned';
 
 export type { Access } from './set-access-control';
+export type { Upgradeable } from './set-upgradeable';
 
 export { premintPattern } from './erc20';

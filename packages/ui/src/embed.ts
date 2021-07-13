@@ -22,14 +22,14 @@ onDOMContentLoaded(function () {
 
   for (const w of wizards) {
     w.style.display = 'block';
-    w.style.minHeight = '42rem';
+    w.style.minHeight = '53rem';
 
     const iframe = document.createElement('iframe');
     iframe.src = currentScript.origin + '/embed';
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = '44rem';
+    iframe.style.height = '53rem';
 
     w.appendChild(iframe);
 

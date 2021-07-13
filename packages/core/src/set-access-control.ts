@@ -21,7 +21,7 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
       if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
         c.addConstructorCode(`_setupRole(${roleId}, msg.sender);`);
       }
-      c.addFunctionCode(`require(hasRole(${roleId}, msg.sender));`, fn);
+      c.addModifier(`onlyRole(${roleId})`, fn);
       break;
     }
   }

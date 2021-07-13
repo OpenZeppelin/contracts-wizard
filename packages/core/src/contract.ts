@@ -9,6 +9,7 @@ export interface Contract {
   functions: ContractFunction[];
   constructorCode: string[];
   variables: string[];
+  upgradeable: boolean;
 }
 
 export interface Parent {
@@ -35,7 +36,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: Set<String>;
+  override: Set<string>;
   modifiers: string[];
   code: string[];
   mutability: FunctionMutability;
@@ -62,6 +63,7 @@ export interface FunctionArgument {
 export class ContractBuilder implements Contract {
   readonly license = 'MIT';
   readonly name: string;
+  upgradeable = false;
 
   readonly using: Using[] = [];
 
@@ -76,7 +78,15 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()];
+    return [...this.parentMap.values()].sort((a, b) => {
+      if (a.contract.name === 'Initializable') {
+        return -1;
+      } else if (b.contract.name === 'Initializable') {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   get imports(): string[] {
@@ -151,12 +161,12 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  setFunctionBody(code: string, baseFn: BaseFunction) {
+  setFunctionBody(code: string[], baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {
       throw new Error(`Function ${baseFn.name} has additional code`);
     }
-    fn.code.push(code);
+    fn.code.push(...code);
     fn.final = true;
   }
 

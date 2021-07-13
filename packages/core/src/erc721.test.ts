@@ -71,3 +71,23 @@ testERC721('mintable + incremental', {
   mintable: true,
   incremental: true,
 });
+
+testERC721('full upgradeable transparent', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  enumerable: true,
+  pausable: true,
+  burnable: true,
+  upgradeable: 'transparent',
+});
+
+testERC721('full upgradeable uups', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  enumerable: true,
+  pausable: true,
+  burnable: true,
+  upgradeable: 'uups',
+});

@@ -5,6 +5,7 @@
   import { premintPattern } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
 
   export const opts: Required<GenericOptions> = {
     kind: 'ERC20',
@@ -17,6 +18,7 @@
     mintable: false,
     permit: false,
     access: 'ownable',
+    upgradeable: false,
   };
 </script>
 
@@ -89,3 +91,5 @@
 </section>
 
 <AccessControlSection bind:access={opts.access} />
+
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />

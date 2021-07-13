@@ -126,3 +126,35 @@ test('erc20 permit', t => {
   });
   t.snapshot(printContract(c));
 });
+
+test('erc20 full upgradeable transparent', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    snapshots: true,
+    permit: true,
+    upgradeable: 'transparent',
+  });
+  t.snapshot(printContract(c));
+});
+
+test('erc20 full upgradeable uups', t => {
+  const c = buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    snapshots: true,
+    permit: true,
+    upgradeable: 'uups',
+  });
+  t.snapshot(printContract(c));
+});

@@ -62,6 +62,12 @@
   width: var(--size-64);
 }
 
+.flex-col-gap-1 {
+  & > * + * {
+    margin-left: var(--size-1);
+  }
+}
+
 .flex-col-gap-2 {
   & > * + * {
     margin-left: var(--size-2);

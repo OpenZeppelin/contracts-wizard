@@ -12,7 +12,6 @@
     import DocsIcon from './icons/DocsIcon.svelte';
     import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
-    import Tooltip from './Tooltip.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
@@ -70,7 +69,7 @@
 <div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind overflow-hidden">
-      <OverflowMenu let:overflow>
+      <OverflowMenu>
         <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
           ERC20
         </button>
@@ -158,7 +157,7 @@
     border: 1px solid var(--gray-2);
     border-radius: 10px;
     min-width: 32rem;
-    min-height: 44rem;
+    min-height: 53rem;
   }
 
   .header {
@@ -193,14 +192,6 @@
 
   :global(.overflow-menu) button.selected {
     order: unset;
-  }
-
-  .kind button.disabled {
-    color: var(--gray-3);
-  }
-
-  .kind button.disabled:hover {
-    cursor: not-allowed;
   }
 
   .action-button {

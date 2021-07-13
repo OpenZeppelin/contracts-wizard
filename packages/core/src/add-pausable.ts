@@ -1,5 +1,6 @@
 import type { ContractBuilder, BaseFunction } from './contract';
 import { Access, setAccessControl } from './set-access-control';
+import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
   c.addParent({
@@ -18,16 +19,14 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
   c.addFunctionCode('_unpause();', functions.unpause);
 }
 
-const functions = {
+const functions = defineFunctions({
   pause: {
-    name: 'pause',
     kind: 'public' as const,
     args: [],
   },
 
   unpause: {
-    name: 'unpause',
     kind: 'public' as const,
     args: [],
   },
-};
+});

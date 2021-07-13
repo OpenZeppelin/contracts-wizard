@@ -50,3 +50,23 @@ testERC1155('mintable + roles', {
   mintable: true,
   access: 'roles',
 });
+
+testERC1155('full upgradeable transparent', {
+  name: 'MyToken',
+  uri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
+  mintable: true,
+  access: 'roles',
+  burnable: true,
+  pausable: true,
+  upgradeable: 'transparent',
+});
+
+testERC1155('full upgradeable uups', {
+  name: 'MyToken',
+  uri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
+  mintable: true,
+  access: 'roles',
+  burnable: true,
+  pausable: true,
+  upgradeable: 'uups',
+});

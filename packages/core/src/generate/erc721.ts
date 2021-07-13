@@ -1,5 +1,6 @@
 import type { ERC721Options } from '../erc721';
 import { accessOptions } from '../set-access-control';
+import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
@@ -15,6 +16,7 @@ const blueprint = {
   mintable: booleans,
   incremental: booleans,
   access: accessOptions,
+  upgradeable: upgradeableOptions,
 };
 
 export function* generateERC721Options(): Generator<Required<ERC721Options>> {

@@ -2,8 +2,10 @@ import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
+import { CommonOptions, withCommonDefaults } from './common-options';
+import { setUpgradeable } from './set-upgradeable';
 
-export interface ERC20Options {
+export interface ERC20Options extends CommonOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
@@ -12,13 +14,12 @@ export interface ERC20Options {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
-  access?: Access;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
 
-  const { access = 'ownable' } = opts;
+  const { access, upgradeable } = withCommonDefaults(opts);
 
   addBase(c, opts.name, opts.symbol);
 
@@ -45,6 +46,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   if (opts.permit) {
     addPermit(c, opts.name);
   }
+
+  setUpgradeable(c, upgradeable, access);
 
   return c;
 }
