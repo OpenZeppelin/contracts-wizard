@@ -12,7 +12,6 @@
     import DocsIcon from './icons/DocsIcon.svelte';
     import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
-    import Tooltip from './Tooltip.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
 
     import type { GenericOptions } from '@openzeppelin/wizard';
@@ -70,7 +69,7 @@
 <div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="kind overflow-hidden">
-      <OverflowMenu let:overflow>
+      <OverflowMenu>
         <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
           ERC20
         </button>
