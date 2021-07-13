@@ -58,6 +58,14 @@
   padding: var(--size-4);
 }
 
+.ml-1 {
+  margin-left: var(--size-1);
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
 .w-64 {
   width: var(--size-64);
 }

@@ -27,9 +27,12 @@
 
 <section class="controls-section">
   <h1>
-    <label class="flex items-center flex-col-gap-1">
+    <label class="flex items-center tooltip-container pr-2">
       <span>Upgradeability</span>
-      <input type="checkbox" bind:checked={enabled} style="margin-top: var(--icon-adjust)">
+      <input type="checkbox" bind:checked={enabled} class="ml-1" style="margin-top: var(--icon-adjust)">
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/openzeppelin/upgrades">
+      Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
+      </HelpTooltip>
     </label>
   </h1>
 

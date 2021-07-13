@@ -246,7 +246,7 @@
       text-decoration: none;
 
       &:hover {
-        color: #333;
+        color: var(--text-color);
       }
     }
   }

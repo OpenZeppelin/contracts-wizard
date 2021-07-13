@@ -46,6 +46,9 @@
       background-clip: padding-box;
       color: var(--tippy-text);
       box-shadow: var(--shadow);
+      font-weight: initial;
+      font-variant: initial;
+      text-transform: none;
     }
 
     .tippy-box[data-theme~="border"] {
