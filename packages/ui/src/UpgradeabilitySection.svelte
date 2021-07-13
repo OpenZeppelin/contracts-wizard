@@ -27,8 +27,8 @@
 
 <section class="controls-section">
   <h1>
-    <label>
-      Upgradeability
+    <label class="flex items-center flex-col-gap-1">
+      <span>Upgradeability</span>
       <input type="checkbox" bind:checked={enabled}>
     </label>
   </h1>
