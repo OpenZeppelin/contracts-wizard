@@ -13,6 +13,11 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 
   c.upgradeable = true;
 
+  c.addParent({
+    name: 'Initializable',
+    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
+  });
+
   switch (upgradeable) {
     case 'transparent': break;
 

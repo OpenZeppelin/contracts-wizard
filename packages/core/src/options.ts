@@ -2,7 +2,13 @@ import path from 'path';
 
 import type { Contract } from './contract';
 
-const upgradeableName = (n: string) => n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
+const upgradeableName = (n: string) => {
+  if (n === 'Initializable') {
+    return n;
+  } else {
+    return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
+  }
+}
 
 const upgradeableImport = (p: string) => {
   const { dir, ext, name } = path.parse(p);

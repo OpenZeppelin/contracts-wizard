@@ -78,7 +78,15 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()];
+    return [...this.parentMap.values()].sort((a, b) => {
+      if (a.contract.name === 'Initializable') {
+        return -1;
+      } else if (b.contract.name === 'Initializable') {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   get imports(): string[] {

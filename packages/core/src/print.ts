@@ -53,16 +53,19 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
-    const parents = contract.parents.flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? [] : parents;
+    const parents = contract.parents
+      .filter(p => p.contract.name !== 'Initializable')
+      .flatMap(p => printParentConstructor(p, helpers));
+    const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
     const body = helpers.upgradeable
       ? spaceBetween(
         parents.map(p => p + ';'),
         contract.constructorCode,
       )
       : contract.constructorCode;
+    const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     return printFunction2(
-      'constructor',
+      head,
       [],
       modifiers,
       body,
