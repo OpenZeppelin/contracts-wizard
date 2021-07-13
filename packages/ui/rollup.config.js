@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import alias from '@rollup/plugin-alias';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
@@ -84,10 +85,17 @@ export default [
         sourceMap: true,
       }),
 
+      alias({
+        entries: {
+          path: 'path-browserify',
+        },
+      }),
+
       resolve({
         browser: true,
         dedupe: ['svelte'],
         mainFields: ['ts:main', 'module', 'main'],
+        preferBuiltins: false,
       }),
 
       replace({

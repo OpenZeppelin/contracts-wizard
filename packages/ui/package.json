@@ -9,6 +9,7 @@
     "validate": "svelte-check"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
@@ -17,6 +18,7 @@
     "@types/file-saver": "^2.0.1",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/uuid": "^8.3.0",
+    "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
     "postcss-load-config": "^3.0.1",
     "postcss-nested": "^5.0.5",
