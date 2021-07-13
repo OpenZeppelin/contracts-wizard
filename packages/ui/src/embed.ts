@@ -29,7 +29,7 @@ onDOMContentLoaded(function () {
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = '44rem';
+    iframe.style.height = '51rem';
 
     w.appendChild(iframe);
 
