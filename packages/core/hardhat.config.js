@@ -10,6 +10,8 @@ const {
 require('array.prototype.flat/auto');
 
 const WARN_UNUSED_PARAMETER = '5667';
+const WARN_CODE_SIZE = '5574';
+const IGNORED_WARNINGS = [WARN_UNUSED_PARAMETER, WARN_CODE_SIZE];
 
 // Overriding this task so that warnings are considered errors.
 task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {
@@ -20,7 +22,7 @@ task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {
 
   // Consider warnings as errors, except for unused parameter warnings, which
   // are caused by OpenZeppelin Upgradeable Contracts.
-  if (output.errors && output.errors.some(e => e.errorCode !== WARN_UNUSED_PARAMETER)) {
+  if (output.errors && output.errors.some(e => !IGNORED_WARNINGS.includes(e.errorCode))) {
     throw new HardhatError(ERRORS.BUILTIN_TASKS.COMPILE_FAILURE);
   }
 });
