@@ -1,48 +1,13 @@
 import 'array.prototype.flatmap/auto';
-import path from 'path';
 
 import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
+import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 
 const SOLIDITY_VERSION = '0.8.0';
 
-const upgradeableName = (n: string) => n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
-
-const upgradeableImport = (p: string) => {
-  const { dir, ext, name } = path.parse(p);
-  return path.format({
-    ext,
-    dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
-    name: upgradeableName(name),
-  });
-};
-
-interface PrintOptions {
-  transformImport?: (path: string) => string;
-}
-
-interface PrintHelpers extends Required<PrintOptions> {
-  upgradeable: boolean;
-  transformName: (name: string) => string;
-  transformVariable: (code: string) => string;
-}
-
-function withHelpers(contract: Contract, opts: PrintOptions = {}): PrintHelpers {
-  const upgradeable = contract.upgradeable;
-  const transformName = (n: string) => upgradeable ? upgradeableName(n) : n;
-  return {
-    upgradeable,
-    transformName,
-    transformImport: p1 => {
-      const p2 = upgradeable ? upgradeableImport(p1) : p1;
-      return opts.transformImport?.(p2) ?? p2;
-    },
-    transformVariable: v => v.replace(/[A-Z]\w*(?=\.|$)/, transformName),
-  };
-}
-
-export function printContract(contract: Contract, opts?: PrintOptions): string {
+export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
   return formatLines(
@@ -70,7 +35,7 @@ export function printContract(contract: Contract, opts?: PrintOptions): string {
   );
 }
 
-function printInheritance(contract: Contract, { transformName }: PrintHelpers): [] | [string] {
+function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
   if (contract.parents.length > 0) {
     return ['is ' + contract.parents.map(p => transformName(p.contract.name)).join(', ')];
   } else {
@@ -78,13 +43,13 @@ function printInheritance(contract: Contract, { transformName }: PrintHelpers): 
   }
 }
 
-function printUsingFor(contract: Contract, { transformName }: PrintHelpers): string[] {
+function printUsingFor(contract: Contract, { transformName }: Helpers): string[] {
   return contract.using.map(
     u => `using ${transformName(u.library.name)} for ${transformName(u.usingFor)};`,
   );
 }
 
-function printConstructor(contract: Contract, helpers: PrintHelpers): Lines[] {
+function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
@@ -115,7 +80,7 @@ function sortedFunctions(contract: Contract): ContractFunction[] {
   );
 }
 
-function printParentConstructor({ contract, params }: Parent, helpers: PrintHelpers): [] | [string] {
+function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
   const fn = helpers.upgradeable ? `__${contract.name}_init` : contract.name;
   if (helpers.upgradeable || params.length > 0) {
     return [
@@ -126,7 +91,7 @@ function printParentConstructor({ contract, params }: Parent, helpers: PrintHelp
   }
 }
 
-function printFunction(fn: ContractFunction, { transformName }: PrintHelpers): Lines[] {
+function printFunction(fn: ContractFunction, { transformName }: Helpers): Lines[] {
   if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
     return []
   }

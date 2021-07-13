@@ -5,8 +5,9 @@ import { printContract } from './print';
 import { reachable } from './utils/transitive-closure';
 
 import contracts from '../openzeppelin-contracts';
+import { withHelpers } from './options';
 
-const readme = `\
+const readme = (variant: string) => `\
 # OpenZeppelin Contracts
 
 The files in this directory were sourced unmodified from OpenZeppelin Contracts v${contracts.version}.
@@ -15,17 +16,20 @@ They are not meant to be edited.
 
 The originals can be found on [GitHub] and [npm].
 
-[GitHub]: https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v${contracts.version}
-[npm]: https://www.npmjs.com/package/@openzeppelin/contracts/v/${contracts.version}
+[GitHub]: https://github.com/OpenZeppelin/openzeppelin-contracts${variant}/tree/v${contracts.version}
+[npm]: https://www.npmjs.com/package/@openzeppelin/contracts${variant}/v/${contracts.version}
 
 Generated with OpenZeppelin Contracts Wizard (https://zpl.in/wizard).
 `;
 
 export function zipContract(c: Contract): JSZip {
+  const { transformImport } = withHelpers(c);
+  const contractsVariant = c.upgradeable ? '-upgradeable' : '';
+
   const fileName = c.name + '.sol';
 
   const dependencies = {
-    [fileName]: c.parents.map(p => p.contract.path),
+    [fileName]: c.parents.map(p => transformImport(p.contract.path)),
     ...contracts.dependencies,
   };
 
@@ -35,7 +39,7 @@ export function zipContract(c: Contract): JSZip {
 
   zip.file(fileName, printContract(c, { transformImport: p => './' + p }));
 
-  zip.file('@openzeppelin/contracts/README.md', readme);
+  zip.file(`@openzeppelin/contracts${contractsVariant}/README.md`, readme(contractsVariant));
 
   for (const importPath of allImports) {
     const source = contracts.sources[importPath];
