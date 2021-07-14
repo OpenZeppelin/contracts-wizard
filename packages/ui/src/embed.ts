@@ -31,7 +31,7 @@ onDOMContentLoaded(function () {
     }
 
     const iframe = document.createElement('iframe');
-    iframe.src = src;
+    iframe.src = src.toString();
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
