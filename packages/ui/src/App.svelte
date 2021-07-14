@@ -18,14 +18,17 @@
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
+    import type { Kind } from './kind';
+    import { sanitizeKind } from './kind';
 
     import { saveAs } from 'file-saver';
 
-    type Kind = GenericOptions['kind'];
-    let kind: Kind = 'ERC20';
+    export let tab: Kind = 'ERC20';
+    $: tab = sanitizeKind(tab);
+
     let allOpts: { [k in Kind]?: Required<GenericOptions> } = {};
 
-    $: opts = allOpts[kind];
+    $: opts = allOpts[tab];
     $: contract = opts ? buildGeneric(opts) : new ContractBuilder('MyToken');
     $: code = printContract(contract);
     $: highlightedCode = hljs.highlight('solidity', code).value;
@@ -68,15 +71,15 @@
 
 <div class="container flex flex-col flex-row-gap-4 p-4">
   <div class="header flex flex-row justify-between">
-    <div class="kind overflow-hidden">
+    <div class="tab overflow-hidden">
       <OverflowMenu>
-        <button class:selected={kind === 'ERC20'} on:click={() => kind = 'ERC20'}>
+        <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
           ERC20
         </button>
-        <button class:selected={kind === 'ERC721'} on:click={() => kind = 'ERC721'}>
+        <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
           ERC721
         </button>
-        <button class:selected={kind === 'ERC1155'} on:click={() => kind = 'ERC1155'}>
+        <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
       </OverflowMenu>
@@ -122,13 +125,13 @@
 
   <div class="flex flex-row flex-col-gap-4 flex-grow">
     <div class="controls w-64 flex flex-col flex-shrink-0 justify-between">
-      <div class:display-none={kind !== 'ERC20'}>
+      <div class:display-none={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
-      <div class:display-none={kind !== 'ERC721'}>
+      <div class:display-none={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
       </div>
-      <div class:display-none={kind !== 'ERC1155'}>
+      <div class:display-none={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class="controls-footer">
@@ -164,27 +167,27 @@
     font-size: var(--text-small);
   }
 
-  .kind {
+  .tab {
     color: var(--gray-5);
   }
 
-  .kind button, .action-button, :global(.overflow-btn) {
+  .tab button, .action-button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
   }
 
-  .kind button, :global(.overflow-btn) {
+  .tab button, :global(.overflow-btn) {
     border: 0;
     background-color: transparent;
   }
 
-  .kind button:hover, :global(.overflow-btn):hover {
+  .tab button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
 
-  .kind button.selected {
+  .tab button.selected {
     background-color: var(--blue-2);
     color: white;
     order: -1;

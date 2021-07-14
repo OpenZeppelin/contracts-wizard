@@ -24,8 +24,14 @@ onDOMContentLoaded(function () {
     w.style.display = 'block';
     w.style.minHeight = '53rem';
 
+    const src = new URL('embed', currentScript.origin);
+    const tab = w.getAttribute('tab');
+    if (tab) {
+      src.searchParams.set('tab', tab)
+    }
+
     const iframe = document.createElement('iframe');
-    iframe.src = currentScript.origin + '/embed';
+    iframe.src = src;
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';

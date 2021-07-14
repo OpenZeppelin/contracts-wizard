@@ -14,4 +14,6 @@ window.onload = postResize;
 const resizeObserver = new ResizeObserver(postResize);
 resizeObserver.observe(document.body);
 
-export default new App({ target: document.body });
+const tab = new URLSearchParams(window.location.search).get('tab');
+
+export default new App({ target: document.body, props: { tab } });
