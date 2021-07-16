@@ -76,6 +76,10 @@ testERC20('erc20 votes', {
   votes: true,
 });
 
+testERC20('erc20 flashmint', {
+  flashmint: true,
+});
+
 testERC20('erc20 full upgradeable transparent', {
   premint: '2000',
   access: 'roles',
@@ -85,6 +89,7 @@ testERC20('erc20 full upgradeable transparent', {
   snapshots: true,
   permit: true,
   votes: true,
+  flashmint: true,
   upgradeable: 'transparent',
 });
 
@@ -97,5 +102,6 @@ testERC20('erc20 full upgradeable uups', {
   snapshots: true,
   permit: true,
   votes: true,
+  flashmint: true,
   upgradeable: 'uups',
 });

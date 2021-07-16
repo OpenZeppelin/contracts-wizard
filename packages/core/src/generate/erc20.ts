@@ -14,6 +14,7 @@ const blueprint = {
   mintable: booleans,
   permit: booleans,
   votes: booleans,
+  flashmint: booleans,
   premint: ['1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,

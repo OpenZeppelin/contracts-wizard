@@ -15,6 +15,7 @@ export interface ERC20Options extends CommonOptions {
   mintable?: boolean;
   permit?: boolean;
   votes?: boolean;
+  flashmint?: boolean;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -51,6 +52,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (opts.votes) {
     addVotes(c);
+  }
+
+  if (opts.flashmint) {
+    addFlashMint(c);
   }
 
   setUpgradeable(c, upgradeable, access);
@@ -135,6 +140,13 @@ function addVotes(c: ContractBuilder) {
   c.addOverride('ERC20Votes', functions._mint);
   c.addOverride('ERC20Votes', functions._burn);
   c.addOverride('ERC20Votes', functions._afterTokenTransfer);
+}
+
+function addFlashMint(c: ContractBuilder) {
+  c.addParent({
+    name: 'ERC20FlashMint',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20FlashMint.sol',
+  });
 }
 
 const functions = defineFunctions({
