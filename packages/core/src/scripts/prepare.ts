@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import path from 'path';
 import hre from 'hardhat';
 import type { BuildInfo } from 'hardhat/types';
 import type { SourceUnit } from 'solidity-ast';
@@ -15,8 +16,9 @@ import { mapValues } from '../utils/map-values';
 import { transitiveClosure } from '../utils/transitive-closure';
 
 async function main() {
-  await rimraf(hre.config.paths.sources);
-  await writeGeneratedSources(hre.config.paths.sources);
+  const generatedSourcesPath = path.join(hre.config.paths.sources, 'generated');
+  await rimraf(generatedSourcesPath);
+  await writeGeneratedSources(generatedSourcesPath);
   await hre.run('compile');
 
   const dependencies: Record<string, Set<string>> = {};

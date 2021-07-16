@@ -14,6 +14,7 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
+  votes?: boolean;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -43,8 +44,13 @@ export function buildERC20(opts: ERC20Options): Contract {
     addMintable(c, access);
   }
 
-  if (opts.permit) {
+  // Note: Votes requires Permit
+  if (opts.permit || opts.votes) {
     addPermit(c, opts.name);
+  }
+
+  if (opts.votes) {
+    addVotes(c);
   }
 
   setUpgradeable(c, upgradeable, access);
@@ -62,6 +68,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride('ERC20', functions._beforeTokenTransfer);
+  c.addOverride('ERC20', functions._afterTokenTransfer);
+  c.addOverride('ERC20', functions._mint);
+  c.addOverride('ERC20', functions._burn);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -114,11 +123,50 @@ function addPermit(c: ContractBuilder, name: string) {
   }, [name]);
 }
 
+function addVotes(c: ContractBuilder) {
+  if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
+    throw new Error('Missing ERC20Permit requirement for ERC20Votes');
+  }
+
+  c.addParent({
+    name: 'ERC20Votes',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
+  });
+  c.addOverride('ERC20Votes', functions._mint);
+  c.addOverride('ERC20Votes', functions._burn);
+  c.addOverride('ERC20Votes', functions._afterTokenTransfer);
+}
+
 const functions = defineFunctions({
   _beforeTokenTransfer: {
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  _afterTokenTransfer: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  _burn: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'account', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  _mint: {
+    kind: 'internal' as const,
+    args: [
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],

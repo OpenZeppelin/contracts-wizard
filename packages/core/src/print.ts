@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
+import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -54,7 +54,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
     const parents = contract.parents
-      .filter(p => p.contract.name !== 'Initializable')
+      .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
     const body = helpers.upgradeable
@@ -73,6 +73,13 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   } else {
     return [];
   }
+}
+
+function hasInitializer(parent: Parent) {
+  // CAUTION
+  // This list is validated by compilation of SafetyCheck.sol.
+  // Always keep this list and that file in sync.
+  return !['Initializable', 'ERC20Votes'].includes(parent.contract.name);
 }
 
 // Functions with code first, then those with modifiers, then the rest

@@ -1,4 +1,4 @@
 /cache
 /artifacts
-/contracts
+/contracts/generated
 /openzeppelin-contracts.json
