@@ -1,160 +1,122 @@
 import test from 'ava';
 
-import { buildERC20 } from './erc20';
+import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
 
-test('basic erc20', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
+function testERC20(title: string, opts: ERC20Options) {
+  test(title, t => {
+    const c = buildERC20(opts);
+    t.snapshot(printContract(c));
   });
-  t.snapshot(printContract(c));
+}
+
+testERC20('basic erc20', {
+  name: 'MyToken',
+  symbol: 'MTK',
 });
 
-test('erc20 with snapshots', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    snapshots: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 with snapshots', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  snapshots: true,
 });
 
-test('erc20 burnable', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 burnable', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: true,
 });
 
-test('erc20 burnable with snapshots', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: true,
-    snapshots: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 burnable with snapshots', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: true,
+  snapshots: true,
 });
 
-test('erc20 pausable', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    pausable: true,
-    access: 'ownable',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 pausable', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  pausable: true,
+  access: 'ownable',
 });
 
-test('erc20 pausable with roles', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    pausable: true,
-    access: 'roles',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 pausable with roles', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  pausable: true,
+  access: 'roles',
 });
 
-test('erc20 burnable pausable', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: true,
-    pausable: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 burnable pausable', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: true,
+  pausable: true,
 });
 
-test('erc20 burnable pausable with snapshots', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: true,
-    pausable: true,
-    snapshots: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 burnable pausable with snapshots', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: true,
+  pausable: true,
+  snapshots: true,
 });
 
-test('erc20 preminted', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '1000',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 preminted', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  premint: '1000',
 });
 
-test('erc20 premint of 0', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '0',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 premint of 0', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  premint: '0',
 });
 
-test('erc20 mintable', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    mintable: true,
-    access: 'ownable',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 mintable', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  access: 'ownable',
 });
 
-test('erc20 mintable with roles', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    mintable: true,
-    access: 'roles',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 mintable with roles', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  mintable: true,
+  access: 'roles',
 });
 
-test('erc20 permit', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    permit: true,
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 permit', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  permit: true,
 });
 
-test('erc20 full upgradeable transparent', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '2000',
-    access: 'roles',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-    snapshots: true,
-    permit: true,
-    upgradeable: 'transparent',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 full upgradeable transparent', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  snapshots: true,
+  permit: true,
+  upgradeable: 'transparent',
 });
 
-test('erc20 full upgradeable uups', t => {
-  const c = buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '2000',
-    access: 'roles',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-    snapshots: true,
-    permit: true,
-    upgradeable: 'uups',
-  });
-  t.snapshot(printContract(c));
+testERC20('erc20 full upgradeable uups', {
+  name: 'MyToken',
+  symbol: 'MTK',
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  snapshots: true,
+  permit: true,
+  upgradeable: 'uups',
 });
