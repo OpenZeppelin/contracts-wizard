@@ -7,5 +7,5 @@ export default {
     'cache',
   ],
   typescript: { rewritePaths: { 'src/': 'dist/' } },
-  timeout: '1m',
+  timeout: '3m',
 };
