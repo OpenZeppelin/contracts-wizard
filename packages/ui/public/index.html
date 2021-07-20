@@ -48,6 +48,9 @@
 
   <div class="wizard-container">
     <oz-wizard class="wizard"></oz-wizard>
+    <script>
+      document.querySelector('oz-wizard').setAttribute('tab', window.location.hash.replace('#', ''));
+    </script>
   </div>
 
   <div class="faq">
