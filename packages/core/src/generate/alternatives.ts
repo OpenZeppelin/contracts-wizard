@@ -1,3 +1,5 @@
+import { mapValues } from "../utils/map-values";
+
 type Blueprint = Record<string, readonly unknown[]>;
 
 type Alternatives<B extends Blueprint> = {
@@ -6,8 +8,11 @@ type Alternatives<B extends Blueprint> = {
 
 export function* generateAlternatives<B extends Blueprint>(
   blueprint: B,
+  forceTrue = false,
 ): Generator<Alternatives<B>> {
-  const entries = Object.entries(blueprint).map(([key, values]) => ({
+  const realBlueprint = withForcedTrue(blueprint, forceTrue);
+
+  const entries = Object.entries(realBlueprint).map(([key, values]) => ({
     key,
     values,
     current: 0,
@@ -33,4 +38,16 @@ export function* generateAlternatives<B extends Blueprint>(
       }
     }
   }
+}
+
+function withForcedTrue(blueprint: Blueprint, forceTrue: boolean): Blueprint {
+  return mapValues(blueprint, values => {
+    if (!forceTrue) {
+      return values;
+    } else if (values.length === 2 && values.includes(true) && values.includes(false)) {
+      return [true];
+    } else {
+      return values;
+    }
+  });
 }

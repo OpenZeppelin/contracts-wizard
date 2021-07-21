@@ -18,7 +18,7 @@ import { transitiveClosure } from '../utils/transitive-closure';
 async function main() {
   const generatedSourcesPath = path.join(hre.config.paths.sources, 'generated');
   await rimraf(generatedSourcesPath);
-  await writeGeneratedSources(generatedSourcesPath);
+  await writeGeneratedSources(generatedSourcesPath, 'only-maximal');
   await hre.run('compile');
 
   const dependencies: Record<string, Set<string>> = {};

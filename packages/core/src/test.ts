@@ -10,8 +10,7 @@ import { writeGeneratedSources } from './generate/sources';
 
 test('result compiles', async t => {
   const generatedSourcesPath = path.join(hre.config.paths.sources, 'generated');
-  await rimraf(generatedSourcesPath);
-  await writeGeneratedSources(generatedSourcesPath);
+  await writeGeneratedSources(generatedSourcesPath, 'all');
   await hre.run('compile', { force: true });
   t.pass();
 });
