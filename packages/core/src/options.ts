@@ -37,9 +37,7 @@ export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
     upgradeable,
     transformName,
     transformImport: p1 => {
-      const p2 = upgradeable
-        ? upgradeableImport(p1)
-        : p1.replace(/^@openzeppelin\/contracts/, 'openzeppelin-solidity/contracts');
+      const p2 = upgradeable ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
     transformVariable: v => v.replace(/[A-Z]\w*(?=\.|$)/, transformName),

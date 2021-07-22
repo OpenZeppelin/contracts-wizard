@@ -32,7 +32,7 @@ async function main() {
     );
 
     for (const [sourceFile, { ast }] of Object.entries(buildInfo.output.sources)) {
-      if (sourceFile.startsWith('openzeppelin-solidity')) {
+      if (sourceFile.startsWith('@openzeppelin/contracts')) {
         const sourceDependencies = (dependencies[sourceFile] ??= new Set());
         for (const imp of findAll('ImportDirective', ast)) {
           sourceDependencies.add(imp.absolutePath);
@@ -41,7 +41,7 @@ async function main() {
     }
 
     for (const [sourceFile, { content }] of Object.entries(buildInfo.input.sources)) {
-      if (sourceFile.startsWith('openzeppelin-solidity')) {
+      if (sourceFile.startsWith('@openzeppelin/contracts')) {
         sources[sourceFile] = content;
       }
     }

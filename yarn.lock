@@ -3673,10 +3673,6 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"openzeppelin-solidity@github:OpenZeppelin/openzeppelin-contracts":
-  version "4.2.0"
-  resolved "https://codeload.github.com/OpenZeppelin/openzeppelin-contracts/tar.gz/7e41bf2259950c33e55604015875b7780b6a2e63"
-
 "opts@>= 1.2.0":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/opts/-/opts-2.0.2.tgz#a17e189fbbfee171da559edd8a42423bc5993ce1"
