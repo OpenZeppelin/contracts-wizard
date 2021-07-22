@@ -2,6 +2,7 @@
   "name": "@openzeppelin/wizard",
   "version": "0.1.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
+  "license": "MIT",
   "repository": "github:OpenZeppelin/wizard",
   "main": "dist/index.js",
   "ts:main": "src/index.ts",
@@ -18,7 +19,6 @@
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
-    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-contracts",
     "@openzeppelin/contracts": "4.2.0",
     "@openzeppelin/contracts-upgradeable": "4.2.0",
     "@types/node": "^10.17.51",
@@ -28,12 +28,13 @@
     "fgbg": "^0.1.5",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
+    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-contracts",
     "rimraf": "^3.0.2",
     "solidity-ast": "^0.4.18",
     "typescript": "^4.1.3"
   },
-  "license": "MIT",
   "dependencies": {
-    "array.prototype.flatmap": "^1.2.4"
+    "array.prototype.flatmap": "^1.2.4",
+    "dayjs": "^1.10.6"
   }
 }

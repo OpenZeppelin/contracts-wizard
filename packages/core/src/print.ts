@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument } from './contract';
+import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument, Value } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -57,6 +57,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
+    const args = contract.constructorArgs.map(printArgument);
     const body = helpers.upgradeable
       ? spaceBetween(
         parents.map(p => p + ';'),
@@ -66,7 +67,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     return printFunction2(
       head,
-      [],
+      args,
       modifiers,
       body,
     );
@@ -94,10 +95,24 @@ function printParentConstructor({ contract, params }: Parent, helpers: Helpers):
   const fn = helpers.upgradeable ? `__${contract.name}_init` : contract.name;
   if (helpers.upgradeable || params.length > 0) {
     return [
-      fn + '(' + params.map(x => '"' + x + '"').join(', ') + ')',
+      fn + '(' + params.map(printValue).join(', ') + ')',
     ];
   } else {
     return [];
+  }
+}
+
+export function printValue(value: Value): string {
+  if (typeof value === 'object' && 'ref' in value) {
+    return value.ref;
+  } else if (typeof value === 'number') {
+    if (Number.isSafeInteger(value)) {
+      return value.toFixed(0);
+    } else {
+      throw new Error(`Number not representable (${value})`);
+    }
+  } else {
+    return JSON.stringify(value);
   }
 }
 
