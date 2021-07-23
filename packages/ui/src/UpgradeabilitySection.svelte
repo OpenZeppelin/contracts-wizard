@@ -9,6 +9,7 @@
 
 <section class="controls-section">
   <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
       <span>Upgradeability</span>
       <span class="ml-1">
