@@ -10,7 +10,7 @@ const blueprint = {
   delay: ['1 week'],
   period: ['1 week'],
   blockTime: [defaults.blockTime],
-  proposalThreshold: ['1000e18'],
+  proposalThreshold: ['0', '1000e18'],
   quorum: [
     { mode: 'percent', percent: 30 },
     { mode: 'absolute', votes: '1000e18' },

@@ -76,7 +76,15 @@ function setParameters(c: ContractBuilder, opts: GovernorOptions) {
   const periodBlocks = durationToBlocks(opts.period, opts.blockTime);
   c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
 
-  c.setFunctionBody([`return ${opts.proposalThreshold};`], functions.proposalThreshold);
+  if (parseFloat(opts.proposalThreshold) !== 0 && !opts.bravo) {
+    throw new OptionsValidationError({
+      proposalThreshold: 'Proposal threshold only available for Bravo',
+    });
+  }
+
+  if (opts.bravo) {
+    c.setFunctionBody([`return ${opts.proposalThreshold};`], functions.proposalThreshold);
+  }
 }
 
 function addCounting(c: ContractBuilder, { bravo }: GovernorOptions) {
