@@ -181,7 +181,6 @@ function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
   }, [{ ref: timelockArg }]);
-  c.addOverride('IGovernor', functions.state);
   c.addOverride('IGovernor', functions.propose);
   c.addOverride(parentName, functions._execute);
   c.addOverride(parentName, functions._cancel);
@@ -202,6 +201,7 @@ function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
       name: 'GovernorCompatibilityBravo',
       path: '@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol',
     });
+    c.addOverride('IGovernor', functions.state);
     c.addOverride('GovernorCompatibilityBravo', functions.propose);
     c.addOverride('IERC165', supportsInterface);
   }
