@@ -8,9 +8,8 @@ export function sanitizeKind(kind: unknown): Kind {
     if (isKind(sanitized)) {
       return sanitized;
     }
-  } else {
-    return 'ERC20';
   }
+  return 'ERC20';
 }
 
 function isKind<T>(value: Kind | T): value is Kind {
