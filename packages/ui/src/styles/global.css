@@ -115,3 +115,8 @@ input[type="number"] {
     --tooltip-opacity: .5;
   }
 }
+
+input.input-inline {
+  padding: .1em;
+  height: 1.5em;
+}

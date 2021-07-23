@@ -1,3 +1,7 @@
+.text-small {
+  font-size: var(--text-small);
+}
+
 .flex {
   display: flex;
 }

@@ -4,6 +4,7 @@
   import type { GenericOptions } from '@openzeppelin/wizard';
   import { premintPattern, governorDefaults } from '@openzeppelin/wizard';
 
+  import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
 
   export const opts: Required<GenericOptions> = {
@@ -14,8 +15,8 @@
     blockTime: governorDefaults.blockTime,
     proposalThreshold: '1000e18',
     quorum: {
-      mode: 'percent',
-      percent: 30,
+      mode: 'absolute',
+      votes: '1000e18',
     },
     votes: 'erc20votes',
     timelock: 'openzeppelin',
@@ -44,12 +45,20 @@
     </label>
   </div>
 
+  <p>
+    <label class="text-small">
+      1 block =
+      <input type="number" step="0.01" bind:value={opts.blockTime} class="input-inline" style="width: 3em; text-align: center;">
+      seconds
+    </label>
+  </p>
+
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Proposal Threshold
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+    <input bind:value={opts.proposalThreshold} placeholder="0" pattern={premintPattern.source}>
   </label>
 
   <div class="checkbox-group">
@@ -89,7 +98,9 @@
   <h1>
     <label class="flex items-center tooltip-container pr-2">
       <span>Timelock</span>
-      <input type="checkbox" bind:checked={opts.timelock} class="ml-1" style="margin-top: var(--icon-adjust)">
+      <span class="ml-1">
+        <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
+      </span>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/openzeppelin/upgrades">
       Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
       </HelpTooltip>
