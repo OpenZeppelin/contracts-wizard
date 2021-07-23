@@ -98,6 +98,10 @@
   grid-template-columns: 2fr 1fr;
 }
 
+.grid-cols-1-1 {
+  grid-template-columns: 1fr 1fr;
+}
+
 .grid-gap-2 {
   gap: var(--size-2);
 }

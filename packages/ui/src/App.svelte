@@ -4,6 +4,7 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
+    import GovernorControls from './GovernorControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
     import RemixIcon from './icons/RemixIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
@@ -82,6 +83,9 @@
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
+        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
+          Governor
+        </button>
       </OverflowMenu>
     </div>
 
@@ -133,6 +137,9 @@
       </div>
       <div class:display-none={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
+      </div>
+      <div class:display-none={tab !== 'Governor'}>
+        <GovernorControls bind:opts={allOpts.Governor} />
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">

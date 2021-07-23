@@ -10,3 +10,4 @@ export type { Access } from './set-access-control';
 export type { Upgradeable } from './set-upgradeable';
 
 export { premintPattern } from './erc20';
+export { defaults as governorDefaults } from './governor';

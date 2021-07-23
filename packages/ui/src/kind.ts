@@ -3,10 +3,11 @@ import type { GenericOptions } from '@openzeppelin/wizard';
 export type Kind = GenericOptions['kind'];
 
 export function sanitizeKind(kind: unknown): Kind {
-  const uppercase = typeof kind === 'string' ? kind.toUpperCase() : kind;
-
-  if (isKind(uppercase)) {
-    return uppercase;
+  if (typeof kind === 'string') {
+    const sanitized = kind.replace(/^(ERC|.)/i, c => c.toUpperCase());
+    if (isKind(sanitized)) {
+      return sanitized;
+    }
   } else {
     return 'ERC20';
   }
@@ -17,6 +18,7 @@ function isKind<T>(value: Kind | T): value is Kind {
     case 'ERC20':
     case 'ERC1155':
     case 'ERC721':
+    case 'Governor':
       return true;
 
     default: {

@@ -40,10 +40,10 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addBase(c, opts);
   setParameters(c, opts);
   addCounting(c, opts);
+  addBravo(c, opts);
   addVotes(c, opts);
   addQuorum(c, opts);
   addTimelock(c, opts);
-  addBravo(c, opts);
 
   return c;
 }
