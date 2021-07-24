@@ -13,7 +13,7 @@
     delay: '1 block',
     period: '1 week',
     blockTime: governorDefaults.blockTime,
-    proposalThreshold: '1000e18',
+    proposalThreshold: '0',
     quorum: {
       mode: 'absolute',
       votes: '1000e18',
