@@ -119,7 +119,7 @@
 
     <label class:checked={opts.timelock === 'compound'}>
       <input type="radio" bind:group={opts.timelock} value="compound">
-      COMP
+      Compound
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
