@@ -1,4 +1,4 @@
-import type { GenericOptions } from '@openzeppelin/wizard';
+import type { GenericOptions } from './build-generic';
 
 export type Kind = GenericOptions['kind'];
 
@@ -27,3 +27,4 @@ function isKind<T>(value: Kind | T): value is Kind {
     }
   }
 }
+

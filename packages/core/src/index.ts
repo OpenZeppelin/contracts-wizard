@@ -11,3 +11,6 @@ export type { Upgradeable } from './set-upgradeable';
 
 export { premintPattern } from './erc20';
 export { defaults as governorDefaults } from './governor';
+
+export type { Kind } from './kind';
+export { sanitizeKind } from './kind';

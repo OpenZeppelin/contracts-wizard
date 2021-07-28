@@ -15,12 +15,10 @@
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
 
-    import type { GenericOptions } from '@openzeppelin/wizard';
-    import { ContractBuilder, buildGeneric, printContract, printContractVersioned } from '@openzeppelin/wizard';
+    import type { GenericOptions, Kind } from '@openzeppelin/wizard';
+    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
-    import type { Kind } from './kind';
-    import { sanitizeKind } from './kind';
 
     import { saveAs } from 'file-saver';
 
