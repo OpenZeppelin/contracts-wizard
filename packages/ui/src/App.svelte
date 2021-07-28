@@ -15,7 +15,7 @@
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
 
-    import type { GenericOptions, Kind } from '@openzeppelin/wizard';
+    import type { KindedOptions, Kind } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
@@ -25,7 +25,7 @@
     export let tab: Kind = 'ERC20';
     $: tab = sanitizeKind(tab);
 
-    let allOpts: { [k in Kind]?: Required<GenericOptions> } = {};
+    let allOpts: { [k in Kind]?: Required<KindedOptions<k>> } = {};
 
     $: opts = allOpts[tab];
     $: contract = opts ? buildGeneric(opts) : new ContractBuilder('MyToken');

@@ -3,11 +3,14 @@ import { ERC721Options, buildERC721 } from './erc721';
 import { ERC1155Options, buildERC1155 } from './erc1155';
 import { GovernorOptions, buildGovernor } from './governor';
 
-export type GenericOptions =
-  | { kind: 'ERC20' } & ERC20Options
-  | { kind: 'ERC721' } & ERC721Options
-  | { kind: 'ERC1155' } & ERC1155Options
-  | { kind: 'Governor' } & GovernorOptions;
+export interface KindedOptions {
+  ERC20:    { kind: 'ERC20' }    & ERC20Options;
+  ERC721:   { kind: 'ERC721' }   & ERC721Options;
+  ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
+  Governor: { kind: 'Governor' } & GovernorOptions;
+}
+
+export type GenericOptions = KindedOptions[keyof KindedOptions];
 
 export function buildGeneric(opts: GenericOptions) {
   switch (opts.kind) {
