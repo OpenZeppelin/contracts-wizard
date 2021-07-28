@@ -1,13 +1,14 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { GenericOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { premintPattern, governorDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import { error } from './error-tooltip';
 
-  export const opts: Required<GenericOptions> = {
+  export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
     name: 'Governor',
     delay: '1 block',
@@ -23,6 +24,8 @@
     bravo: false,
     upgradeable: false,
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 </script>
 
 <section class="controls-section">
@@ -36,12 +39,12 @@
   <div class="grid grid-cols-1-1 grid-gap-2">
     <label class="labeled-input">
       <span>Voting Delay</span>
-      <input bind:value={opts.delay}>
+      <input bind:value={opts.delay} use:error={errors?.delay}>
     </label>
 
     <label class="labeled-input">
       <span>Voting Period</span>
-      <input bind:value={opts.period}>
+      <input bind:value={opts.period} use:error={errors?.period}>
     </label>
   </div>
 
@@ -58,7 +61,7 @@
       Proposal Threshold
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.proposalThreshold} placeholder="0" pattern={premintPattern.source}>
+    <input bind:value={opts.proposalThreshold} placeholder="0" pattern={premintPattern.source} use:error={errors?.proposalThreshold}>
   </label>
 
   <div class="checkbox-group">

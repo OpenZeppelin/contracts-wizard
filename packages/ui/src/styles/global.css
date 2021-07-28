@@ -3,6 +3,7 @@
 @import "./reset.css";
 @import "./vars.css";
 @import "./utilities.css";
+@import "./tippy.css";
 
 /* General */
 
@@ -119,4 +120,8 @@ input[type="number"] {
 input.input-inline {
   padding: .1em;
   height: 1.5em;
+}
+
+.has-error {
+  box-shadow: 0 0 var(--size-1) red;
 }

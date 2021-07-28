@@ -1,7 +1,7 @@
 import { supportsInterface } from "./common-functions";
 import type { CommonOptions } from "./common-options";
 import { ContractBuilder, Contract } from "./contract";
-import { OptionsValidationError } from "./error";
+import { OptionsError } from "./error";
 import { printValue } from "./print";
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
@@ -70,14 +70,26 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
 }
 
 function setParameters(c: ContractBuilder, opts: GovernorOptions) {
-  const delayBlocks = durationToBlocks(opts.delay, opts.blockTime);
-  c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
+  try {
+    const delayBlocks = durationToBlocks(opts.delay, opts.blockTime);
+    c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
+  } catch (e) {
+    throw new OptionsError({
+      delay: e.message,
+    });
+  }
 
-  const periodBlocks = durationToBlocks(opts.period, opts.blockTime);
-  c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
+  try {
+    const periodBlocks = durationToBlocks(opts.period, opts.blockTime);
+    c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
+  } catch (e) {
+    throw new OptionsError({
+      period: e.message,
+    });
+  }
 
   if (parseFloat(opts.proposalThreshold) !== 0 && !opts.bravo) {
-    throw new OptionsValidationError({
+    throw new OptionsError({
       proposalThreshold: 'Proposal threshold only available for Bravo',
     });
   }
@@ -128,7 +140,7 @@ export const numberPattern = /(\d*)(?:\.(\d+))?(?:e(\d+))?/;
 function addQuorum(c: ContractBuilder, opts: GovernorOptions) {
   if (opts.quorum.mode === 'percent') {
     if (opts.votes !== 'erc20votes') {
-      throw new OptionsValidationError({
+      throw new OptionsError({
         quorum: 'Percent-based quorum is only available for ERC20Votes',
       });
     }
@@ -142,7 +154,7 @@ function addQuorum(c: ContractBuilder, opts: GovernorOptions) {
 
   else if (opts.quorum.mode === 'absolute') {
     if (!numberPattern.test(opts.quorum.votes)) {
-      throw new OptionsValidationError({
+      throw new OptionsError({
         quorum: 'Quorum is not a valid number',
       });
     }
@@ -192,7 +204,7 @@ function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
 function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
   if (bravo) {
     if (timelock === false) {
-      throw new OptionsValidationError({
+      throw new OptionsError({
         timelokc: 'GovernorBravo compatibility requires a timelock',
       });
     }

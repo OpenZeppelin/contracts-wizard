@@ -5,10 +5,10 @@ dayjs.extend(dayjsDuration);
 export { dayjs };
 
 type DurationUnit = 'blocks' | keyof dayjsDuration.DurationUnitsObjectType;
-export const durationPattern = /(\d+(?:\.\d+)?) +(block|second|minute|hour|day|week|month|year)s?/;
+export const durationPattern = /^(\d+(?:\.\d+)?) +(block|second|minute|hour|day|week|month|year)s?$/;
 
 export function durationToBlocks(duration: string, blockTime: number): number {
-  const match = duration.match(durationPattern);
+  const match = duration.trim().match(durationPattern);
 
   if (!match) {
     throw new Error('Bad duration format');

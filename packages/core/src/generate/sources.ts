@@ -8,7 +8,7 @@ import { generateERC1155Options } from './erc1155';
 import { buildGeneric, GenericOptions } from '../build-generic';
 import { printContract } from '../print';
 import { generateGovernorOptions } from './governor';
-import { OptionsValidationError } from '../error';
+import { OptionsError } from '../error';
 
 type Subset = 'all' | 'only-maximal';
 
@@ -48,7 +48,7 @@ export async function writeGeneratedSources(dir: string, subset: Subset): Promis
 
       await fs.writeFile(path.format({ dir, name, ext: '.sol' }), source);
     } catch (e: unknown) {
-      if (e instanceof OptionsValidationError) {
+      if (e instanceof OptionsError) {
         continue;
       } else {
         throw e;

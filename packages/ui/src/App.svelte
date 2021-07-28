@@ -15,8 +15,8 @@
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
 
-    import type { KindedOptions, Kind } from '@openzeppelin/wizard';
-    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind } from '@openzeppelin/wizard';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
+    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -25,10 +25,28 @@
     export let tab: Kind = 'ERC20';
     $: tab = sanitizeKind(tab);
 
-    let allOpts: { [k in Kind]?: Required<KindedOptions<k>> } = {};
+    let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
+    let errors: { [k in Kind]?: OptionsErrorMessages } = {};
+
+    let contract: Contract = new ContractBuilder('MyToken');
 
     $: opts = allOpts[tab];
-    $: contract = opts ? buildGeneric(opts) : new ContractBuilder('MyToken');
+
+    $: {
+      if (opts) {
+        try {
+          contract = buildGeneric(opts);
+          errors[tab] = undefined;
+        } catch (e: unknown) {
+          if (e instanceof OptionsError) {
+            errors[tab] = e.messages;
+          } else {
+            throw e;
+          }
+        }
+      }
+    }
+
     $: code = printContract(contract);
     $: highlightedCode = hljs.highlight('solidity', code).value;
 
@@ -137,7 +155,7 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:display-none={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} />
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">
