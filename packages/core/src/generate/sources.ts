@@ -27,7 +27,7 @@ export function* generateOptions(subset: Subset): Generator<GenericOptions> {
     yield { kind: 'ERC1155', ...kindOpts };
   }
 
-  for (const kindOpts of generateGovernorOptions(forceTrue)) {
+  for (const kindOpts of generateGovernorOptions()) {
     yield { kind: 'Governor', ...kindOpts };
   }
 }
