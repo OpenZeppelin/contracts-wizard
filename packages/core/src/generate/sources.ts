@@ -32,7 +32,6 @@ export function* generateOptions(subset: Subset): Generator<GenericOptions> {
   }
 }
 
-// If max = true, will only generate the "maximal" contracts, i.e. those that include all features.
 export async function writeGeneratedSources(dir: string, subset: Subset): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
 
