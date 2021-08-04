@@ -32,20 +32,24 @@ export function* generateOptions(subset: Subset): Generator<GenericOptions> {
   }
 }
 
-export async function writeGeneratedSources(dir: string, subset: Subset): Promise<void> {
-  await fs.mkdir(dir, { recursive: true });
+interface GeneratedSource {
+  id: string;
+  options: GenericOptions;
+  source: string;
+}
 
-  for (const opts of generateOptions(subset)) {
+export function* generateSources(subset: Subset): Generator<GeneratedSource> {
+  for (const options of generateOptions(subset)) {
     try {
-      const source = printContract(buildGeneric(opts));
+      const source = printContract(buildGeneric(options));
 
-      const name = crypto
+      const id = crypto
         .createHash('sha1')
-        .update(JSON.stringify(opts))
+        .update(JSON.stringify(options))
         .digest()
         .toString('hex');
 
-      await fs.writeFile(path.format({ dir, name, ext: '.sol' }), source);
+      yield { id, source, options };
     } catch (e: unknown) {
       if (e instanceof OptionsError) {
         continue;
@@ -53,5 +57,13 @@ export async function writeGeneratedSources(dir: string, subset: Subset): Promis
         throw e;
       }
     }
+  }
+}
+
+export async function writeGeneratedSources(dir: string, subset: Subset): Promise<void> {
+  await fs.mkdir(dir, { recursive: true });
+
+  for (const { id, source } of generateSources(subset)) {
+    await fs.writeFile(path.format({ dir, name: id, ext: '.sol' }), source);
   }
 }

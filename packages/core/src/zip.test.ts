@@ -2,7 +2,7 @@ import test from 'ava';
 
 import { zipContract } from './zip';
 import { buildERC20 } from './erc20';
-import { generateOptions } from './generate/sources';
+import { generateSources } from './generate/sources';
 import { buildGeneric } from './build-generic';
 
 test('erc20 basic', t => {
@@ -27,7 +27,7 @@ test('erc20 basic', t => {
 });
 
 test('can zip all combinations', t => {
-  for (const options of generateOptions('all')) {
+  for (const { options } of generateSources('all')) {
     const c = buildGeneric(options);
     zipContract(c);
   }
