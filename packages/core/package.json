@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "prepare": "tsc && node dist/scripts/prepare.js",
-    "prepublish": "rimraf dist *.tsbuildinfo",
+    "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "tsc && ava",
     "test:watch": "fgbg 'ava --watch' 'tsc --watch' --"
   },
