@@ -1,8 +1,9 @@
 import { supportsInterface } from "./common-functions";
-import type { CommonOptions } from "./common-options";
+import { CommonOptions, withCommonDefaults } from "./common-options";
 import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
 import { printValue } from "./print";
+import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
 
@@ -37,6 +38,8 @@ export interface GovernorOptions extends Omit<CommonOptions, 'access'> {
 export function buildGovernor(opts: GovernorOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
+  const { access, upgradeable } = withCommonDefaults(opts);
+
   addBase(c, opts);
   setParameters(c, opts);
   addCounting(c, opts);
@@ -44,6 +47,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addVotes(c, opts);
   addQuorum(c, opts);
   addTimelock(c, opts);
+
+  setUpgradeable(c, upgradeable, access);
 
   return c;
 }
