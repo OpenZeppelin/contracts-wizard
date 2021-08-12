@@ -15,7 +15,6 @@ const blueprint = {
     { mode: 'percent', percent: 30 },
     { mode: 'absolute', votes: '1000e18' },
   ] as const,
-  supplyForQuorum: ['auto' as const, 1000e18],
   votes: votesOptions,
   timelock: timelockOptions,
   bravo: booleans,
