@@ -57,7 +57,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
-    const args = contract.constructorArgs.map(printArgument);
+    const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
         parents.map(p => p + ';'),
@@ -116,7 +116,9 @@ export function printValue(value: Value): string {
   }
 }
 
-function printFunction(fn: ContractFunction, { transformName }: Helpers): Lines[] {
+function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
+  const { transformName } = helpers;
+
   if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
     return []
   }
@@ -145,7 +147,12 @@ function printFunction(fn: ContractFunction, { transformName }: Helpers): Lines[
   }
 
   if (modifiers.length + fn.code.length > 1) {
-    return printFunction2('function ' + fn.name, fn.args.map(printArgument), modifiers, code);
+    return printFunction2(
+      'function ' + fn.name,
+      fn.args.map(a => printArgument(a, helpers)),
+      modifiers,
+      code,
+    );
   } else {
     return [];
   }
@@ -175,6 +182,7 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
   return fn;
 }
 
-function printArgument(arg: FunctionArgument): string {
-  return [arg.type, arg.name].join(' ');
+function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
+  const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
+  return [type, arg.name].join(' ');
 }
