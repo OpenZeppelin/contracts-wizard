@@ -95,7 +95,7 @@ function setParameters(c: ContractBuilder, opts: GovernorOptions) {
 
   if (parseFloat(opts.proposalThreshold) !== 0 && !opts.bravo) {
     throw new OptionsError({
-      proposalThreshold: 'Proposal threshold only available for Bravo',
+      proposalThreshold: 'Not a valid number',
     });
   }
 
@@ -160,7 +160,7 @@ function addQuorum(c: ContractBuilder, opts: GovernorOptions) {
   else if (opts.quorum.mode === 'absolute') {
     if (!numberPattern.test(opts.quorum.votes)) {
       throw new OptionsError({
-        quorum: 'Quorum is not a valid number',
+        quorum: 'Not a valid number',
       });
     }
 
@@ -210,7 +210,7 @@ function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
   if (bravo) {
     if (timelock === false) {
       throw new OptionsError({
-        timelokc: 'GovernorBravo compatibility requires a timelock',
+        timelock: 'GovernorBravo compatibility requires a timelock',
       });
     }
 
