@@ -11,7 +11,7 @@
 
   export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
-    name: 'Governor',
+    name: 'MyGovernor',
     delay: '1 block',
     period: '1 week',
     blockTime: governorDefaults.blockTime,
