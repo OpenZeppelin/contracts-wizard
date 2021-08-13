@@ -30,8 +30,15 @@
   let quorumAbsoluteInput: HTMLInputElement;
   const focusQuorumAbsolute = () => {
     if (errors) {
+      const prevErrors = errors;
+      const prevQuorumError = errors.quorumAbsolute;
       errors.quorumAbsolute = undefined;
       quorumAbsoluteInput.focus();
+      setTimeout(() => {
+        if (errors === prevErrors) {
+          errors.quorumAbsolute = prevQuorumError;
+        }
+      }, 1000);
     }
   };
 
