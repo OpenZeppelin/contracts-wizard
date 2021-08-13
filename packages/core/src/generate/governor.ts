@@ -24,6 +24,5 @@ const blueprint = {
 };
 
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {
-  // forceTrue is not relevant here. The only boolean is bravo and we need to build both on and off.
   yield* generateAlternatives(blueprint);
 }
