@@ -22,6 +22,10 @@
   --yellow-2: #ffcc33;
   --yellow-3: #b27700;
 
+  --red-1: #feecec;
+  --red-2: #f53d3d;
+  --red-3: #aa0909;
+
   /* Dimensions (scale taken from Tailwind) */
 
   --size-1: 0.25rem;

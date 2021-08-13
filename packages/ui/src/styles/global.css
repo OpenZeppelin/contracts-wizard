@@ -126,5 +126,5 @@ input.input-inline {
 }
 
 .has-error {
-  box-shadow: 0 0 var(--size-1) red;
+  box-shadow: 0 0 var(--size-1) var(--red-2);
 }

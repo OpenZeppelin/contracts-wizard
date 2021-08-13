@@ -16,6 +16,11 @@
   --tippy-text: #333;
 }
 
+.tippy-box[data-theme~="light-red"] {
+  --tippy-background: var(--red-1);
+  --tippy-text: #333;
+}
+
 .tippy-box {
   background-color: var(--tippy-background);
   background-clip: padding-box;
