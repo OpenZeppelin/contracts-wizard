@@ -4,11 +4,19 @@ import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgume
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import { mapValues } from './utils/map-values';
 
 const SOLIDITY_VERSION = '0.8.2';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
+
+  const fns = mapValues(
+    sortedFunctions(contract),
+    fns => fns.map(fn => printFunction(fn, helpers)),
+  );
+
+  const hasOverrides = fns.override.some(l => l.length > 0);
 
   return formatLines(
     ...spaceBetween(
@@ -26,7 +34,10 @@ export function printContract(contract: Contract, opts?: Options): string {
           printUsingFor(contract, helpers),
           contract.variables.map(helpers.transformVariable),
           printConstructor(contract, helpers),
-          ...sortedFunctions(contract).map(f => printFunction(f, helpers)),
+          ...fns.code,
+          ...fns.modifiers,
+          hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
+          ...fns.override,
         ),
 
         `}`,
@@ -83,12 +94,23 @@ function hasInitializer(parent: Parent) {
   return !['Initializable', 'ERC20Votes'].includes(parent.contract.name);
 }
 
+type SortedFunctions = Record<'code' | 'modifiers' | 'override', ContractFunction[]>;
+
 // Functions with code first, then those with modifiers, then the rest
-function sortedFunctions(contract: Contract): ContractFunction[] {
-  return Array.from(contract.functions).sort(
-    (a, b) =>
-      b.code.length - a.code.length || b.modifiers.length - a.modifiers.length,
-  );
+function sortedFunctions(contract: Contract): SortedFunctions {
+  const fns: SortedFunctions = { code: [], modifiers: [], override: [] };
+
+  for (const fn of contract.functions) {
+    if (fn.code.length > 0) {
+      fns.code.push(fn);
+    } else if (fn.modifiers.length > 0) {
+      fns.modifiers.push(fn);
+    } else {
+      fns.override.push(fn);
+    }
+  }
+
+  return fns;
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
