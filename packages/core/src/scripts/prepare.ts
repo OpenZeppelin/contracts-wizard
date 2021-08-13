@@ -22,8 +22,6 @@ async function main() {
   await hre.run('compile');
 
   const dependencies: Record<string, Set<string>> = {};
-
-  const buildInfoPaths = await hre.artifacts.getBuildInfoPaths();
   const sources: Record<string, string> = {};
 
   for (const buildInfoPath of await hre.artifacts.getBuildInfoPaths()) {
