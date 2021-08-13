@@ -1,26 +1,35 @@
-import dayjs from 'dayjs';
-import dayjsDuration from 'dayjs/plugin/duration';
-dayjs.extend(dayjsDuration);
+const durationUnits = ['block', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year'] as const;
+type DurationUnit = typeof durationUnits[number];
+export const durationPattern = new RegExp(`^(\\d+(?:\\.\\d+)?) +(${durationUnits.join('|')})s?`);
 
-export { dayjs };
-
-type DurationUnit = 'blocks' | keyof dayjsDuration.DurationUnitsObjectType;
-export const durationPattern = /^(\d+(?:\.\d+)?) +(block|second|minute|hour|day|week|month|year)s?$/;
+const second = 1;
+const minute = 60 * second;
+const hour = 60 * minute;
+const day = 24 * hour;
+const week = 7 * day;
+const month = 30 * day;
+const year = 365 * day;
+const secondsForUnit = { second, minute, hour, day, week, month, year };
 
 export function durationToBlocks(duration: string, blockTime: number): number {
   const match = duration.trim().match(durationPattern);
 
   if (!match) {
+    console.log(duration, durationPattern);
     throw new Error('Bad duration format');
   }
 
   const value = parseFloat(match[1]!);
-  const unit = match[2]! + 's' as DurationUnit;
+  const unit = match[2]! as DurationUnit;
 
-  if (unit === 'blocks') {
+  if (unit === 'block') {
+    if (!Number.isInteger(value)) {
+      throw new Error('Invalid number of blocks');
+    }
+
     return value;
   }
 
-  const durationSeconds = dayjs.duration(value, unit).asSeconds();
+  const durationSeconds = value * secondsForUnit[unit];
   return Math.round(durationSeconds / blockTime);
 }
