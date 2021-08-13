@@ -11,6 +11,7 @@ const blueprint = {
   period: ['1 week'],
   blockTime: [defaults.blockTime],
   proposalThreshold: ['0', '1000e18'],
+  decimals: [18],
   quorum: [
     { mode: 'percent', percent: 30 },
     { mode: 'absolute', votes: '1000e18' },

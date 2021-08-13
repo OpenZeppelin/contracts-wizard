@@ -15,7 +15,8 @@
     delay: '1 block',
     period: '1 week',
     blockTime: governorDefaults.blockTime,
-    proposalThreshold: '0',
+    proposalThreshold: '',
+    decimals: 18,
     quorum: {
       mode: 'absolute',
       votes: '1000e18',
@@ -62,8 +63,15 @@
       Proposal Threshold
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.proposalThreshold} placeholder="0" pattern={premintPattern.source} use:error={errors?.proposalThreshold}>
+    <input bind:value={opts.proposalThreshold} placeholder="0" use:error={errors?.proposalThreshold}>
   </label>
+
+  <p>
+    <label class="text-small">
+      decimals =
+      <input type="number" bind:value={opts.decimals} class="input-inline" use:resizeToFit>
+    </label>
+  </p>
 
   <div class="checkbox-group">
     <label class:checked={opts.bravo}>
