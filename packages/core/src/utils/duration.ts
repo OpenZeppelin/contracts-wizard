@@ -1,6 +1,6 @@
 const durationUnits = ['block', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year'] as const;
 type DurationUnit = typeof durationUnits[number];
-export const durationPattern = new RegExp(`^(\\d+(?:\\.\\d+)?) +(${durationUnits.join('|')})s?`);
+export const durationPattern = new RegExp(`^(\\d+(?:\\.\\d+)?) +(${durationUnits.join('|')})s?$`);
 
 const second = 1;
 const minute = 60 * second;
