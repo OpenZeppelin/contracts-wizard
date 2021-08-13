@@ -8,7 +8,7 @@ import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
 
 export const defaults = {
-  blockTime: 13.14,
+  blockTime: 13.2,
 };
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
