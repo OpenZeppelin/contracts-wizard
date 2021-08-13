@@ -118,8 +118,11 @@ input[type="number"] {
 }
 
 input.input-inline {
-  padding: .1em;
+  padding: .25em;
   height: 1.5em;
+  width: 2em;
+  max-width: 100%;
+  text-align: center;
 }
 
 .has-error {

@@ -7,6 +7,7 @@
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import { error } from './error-tooltip';
+  import { resizeToFit } from './resize-to-fit';
 
   export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
@@ -51,7 +52,7 @@
   <p>
     <label class="text-small">
       1 block =
-      <input type="number" step="0.01" bind:value={opts.blockTime} class="input-inline" style="width: 3em; text-align: center;">
+      <input type="number" step="0.01" bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
       seconds
     </label>
   </p>
