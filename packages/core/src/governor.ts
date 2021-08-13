@@ -10,7 +10,7 @@ import { durationToBlocks } from "./utils/duration";
 export const defaults = {
   blockTime: 13.2,
   decimals: 18,
-  percent: 4,
+  quorumPercent: 4,
 };
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
@@ -27,7 +27,7 @@ export interface GovernorOptions extends CommonOptions {
   proposalThreshold: string;
   decimals?: number;
   quorumMode: 'percent' | 'absolute';
-  quorumPercent: number;
+  quorumPercent?: number;
   quorumAbsolute: string;
   votes: VotesOptions;
   timelock: TimelockOptions;
@@ -40,6 +40,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     ...withCommonDefaults(opts),
     decimals: opts.decimals || defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
+    quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
   };
 }
 

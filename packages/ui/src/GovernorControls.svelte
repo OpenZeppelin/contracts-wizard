@@ -27,6 +27,14 @@
     access: 'ownable',
   };
 
+  let quorumAbsoluteInput: HTMLInputElement;
+  const focusQuorumAbsolute = () => {
+    if (errors) {
+      errors.quorumAbsolute = undefined;
+      quorumAbsoluteInput.focus();
+    }
+  };
+
   export let errors: undefined | OptionsErrorMessages;
 </script>
 
@@ -66,28 +74,28 @@
     <input bind:value={opts.proposalThreshold} placeholder="0" use:error={errors?.proposalThreshold}>
   </label>
 
-  <p>
-    <label class="text-small">
-      decimals =
-      <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
-    </label>
-  </p>
-
   <label class="labeled-input" for="quorum-input">
     <span class="flex justify-between pr-2">
       <span>
         Quorum
         <label>% <input type="radio" bind:group={opts.quorumMode} value="percent"></label>
-        <label># <input type="radio" bind:group={opts.quorumMode} value="absolute"></label>
+        <label># <input type="radio" bind:group={opts.quorumMode} value="absolute" on:change={focusQuorumAbsolute}></label>
       </span>
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
     {#if opts.quorumMode === 'percent'}
-      <input id="quorum-input" type="number" bind:value={opts.quorumPercent} placeholder="0" use:error={errors?.quorumPercent}>
+      <input id="quorum-input" type="number" bind:value={opts.quorumPercent} placeholder={defaults.quorumPercent.toString()} use:error={errors?.quorumPercent}>
     {:else}
-      <input id="quorum-input" bind:value={opts.quorumAbsolute} use:error={errors?.quorumAbsolute}>
+      <input id="quorum-input" bind:value={opts.quorumAbsolute} use:error={errors?.quorumAbsolute} bind:this={quorumAbsoluteInput}>
     {/if}
   </label>
+
+  <p>
+    <label class="text-small">
+      Token decimals:
+      <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
+    </label>
+  </p>
 
   <div class="checkbox-group">
     <label class:checked={opts.bravo}>
