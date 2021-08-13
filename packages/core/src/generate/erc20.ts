@@ -20,6 +20,6 @@ const blueprint = {
   upgradeable: upgradeableOptions,
 };
 
-export function* generateERC20Options(forceTrue: boolean): Generator<Required<ERC20Options>> {
-  yield* generateAlternatives(blueprint, forceTrue);
+export function* generateERC20Options(): Generator<Required<ERC20Options>> {
+  yield* generateAlternatives(blueprint);
 }

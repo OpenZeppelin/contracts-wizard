@@ -19,6 +19,6 @@ const blueprint = {
   upgradeable: upgradeableOptions,
 };
 
-export function* generateERC721Options(forceTrue: boolean): Generator<Required<ERC721Options>> {
-  yield* generateAlternatives(blueprint, forceTrue);
+export function* generateERC721Options(): Generator<Required<ERC721Options>> {
+  yield* generateAlternatives(blueprint);
 }

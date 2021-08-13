@@ -15,6 +15,6 @@ const blueprint = {
   upgradeable: upgradeableOptions,
 };
 
-export function* generateERC1155Options(forceTrue: boolean): Generator<Required<ERC1155Options>> {
-  yield* generateAlternatives(blueprint, forceTrue);
+export function* generateERC1155Options(): Generator<Required<ERC1155Options>> {
+  yield* generateAlternatives(blueprint);
 }
