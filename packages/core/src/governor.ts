@@ -140,7 +140,7 @@ function addVotes(c: ContractBuilder, { votes }: GovernorOptions) {
   c.addOverride(parentName, functions.getVotes);
 }
 
-export const numberPattern = /(\d*)(?:\.(\d+))?(?:e(\d+))?/;
+export const numberPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: GovernorOptions) {
   if (opts.quorum.mode === 'percent') {
