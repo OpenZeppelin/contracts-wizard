@@ -114,7 +114,7 @@
 
     <label class:checked={opts.votes === 'comp'}>
       <input type="radio" bind:group={opts.votes} value="comp">
-      COMP
+      COMP-like
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
