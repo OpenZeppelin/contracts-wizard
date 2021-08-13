@@ -12,10 +12,9 @@ const blueprint = {
   blockTime: [defaults.blockTime],
   proposalThreshold: ['0', '1000e18'],
   decimals: [18],
-  quorum: [
-    { mode: 'percent', percent: 30 },
-    { mode: 'absolute', votes: '1000e18' },
-  ] as const,
+  quorumMode: ['percent', 'absolute'] as const,
+  quorumPercent: [4],
+  quorumAbsolute: ['1000e18'],
   votes: votesOptions,
   timelock: timelockOptions,
   bravo: booleans,

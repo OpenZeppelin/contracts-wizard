@@ -10,6 +10,7 @@ import { durationToBlocks } from "./utils/duration";
 export const defaults = {
   blockTime: 13.2,
   decimals: 18,
+  percent: 4,
 };
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
@@ -25,13 +26,9 @@ export interface GovernorOptions extends CommonOptions {
   blockTime?: number;
   proposalThreshold: string;
   decimals?: number;
-  quorum: {
-    mode: 'percent';
-    percent: number;
-  } | {
-    mode: 'absolute';
-    votes: string;
-  };
+  quorumMode: 'percent' | 'absolute';
+  quorumPercent: number;
+  quorumAbsolute: string;
   votes: VotesOptions;
   timelock: TimelockOptions;
   bravo: boolean;
@@ -166,32 +163,38 @@ function addVotes(c: ContractBuilder, { votes }: GovernorOptions) {
   c.addOverride(parentName, functions.getVotes);
 }
 
-export const numberPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
+export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
-function addQuorum(c: ContractBuilder, opts: GovernorOptions) {
-  if (opts.quorum.mode === 'percent') {
+function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
+  if (opts.quorumMode === 'percent') {
     if (opts.votes !== 'erc20votes') {
       throw new OptionsError({
-        quorum: 'Percent-based quorum is only available for ERC20Votes',
+        quorumPercent: 'Percent-based quorum is only available for ERC20Votes',
+      });
+    }
+
+    if (opts.quorumPercent > 100) {
+      throw new OptionsError({
+        quorumPercent: 'Invalid percentage',
       });
     }
 
     c.addParent({
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-    }, [opts.quorum.percent]);
+    }, [opts.quorumPercent]);
     c.addOverride('GovernorVotesQuorumFraction', functions.quorum);
   }
 
-  else if (opts.quorum.mode === 'absolute') {
-    if (!numberPattern.test(opts.quorum.votes)) {
+  else if (opts.quorumMode === 'absolute') {
+    if (!numberPattern.test(opts.quorumAbsolute)) {
       throw new OptionsError({
-        quorum: 'Not a valid number',
+        quorumAbsolute: 'Not a valid number',
       });
     }
 
     c.setFunctionBody([
-      `return ${opts.quorum.votes};`,
+      `return ${opts.quorumAbsolute}e${opts.decimals};`,
     ], functions.quorum, 'pure');
   }
 }

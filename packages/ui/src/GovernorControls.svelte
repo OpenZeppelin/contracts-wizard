@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, governorDefaults } from '@openzeppelin/wizard';
+  import { premintPattern, governorDefaults as defaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -14,17 +14,17 @@
     name: 'MyGovernor',
     delay: '1 block',
     period: '1 week',
-    blockTime: governorDefaults.blockTime,
+    blockTime: defaults.blockTime,
     proposalThreshold: '',
     decimals: 18,
-    quorum: {
-      mode: 'absolute',
-      votes: '1000e18',
-    },
+    quorumMode: 'percent',
+    quorumPercent: defaults.percent,
+    quorumAbsolute: '',
     votes: 'erc20votes',
     timelock: 'openzeppelin',
     bravo: false,
     upgradeable: false,
+    access: 'ownable',
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -53,7 +53,7 @@
   <p>
     <label class="text-small">
       1 block =
-      <input type="number" step="0.01" placeholder={governorDefaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
+      <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
       seconds
     </label>
   </p>
@@ -69,9 +69,25 @@
   <p>
     <label class="text-small">
       decimals =
-      <input type="number" bind:value={opts.decimals} placeholder={governorDefaults.decimals.toString()} class="input-inline" use:resizeToFit>
+      <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
     </label>
   </p>
+
+  <label class="labeled-input" for="quorum-input">
+    <span class="flex justify-between pr-2">
+      <span>
+        Quorum
+        <label>% <input type="radio" bind:group={opts.quorumMode} value="percent"></label>
+        <label># <input type="radio" bind:group={opts.quorumMode} value="absolute"></label>
+      </span>
+      <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+    </span>
+    {#if opts.quorumMode === 'percent'}
+      <input id="quorum-input" type="number" bind:value={opts.quorumPercent} placeholder="0" use:error={errors?.quorumPercent}>
+    {:else}
+      <input id="quorum-input" bind:value={opts.quorumAbsolute} use:error={errors?.quorumAbsolute}>
+    {/if}
+  </label>
 
   <div class="checkbox-group">
     <label class:checked={opts.bravo}>
