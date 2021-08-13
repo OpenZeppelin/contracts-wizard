@@ -15,7 +15,6 @@ export function durationToBlocks(duration: string, blockTime: number): number {
   const match = duration.trim().match(durationPattern);
 
   if (!match) {
-    console.log(duration, durationPattern);
     throw new Error('Bad duration format');
   }
 
