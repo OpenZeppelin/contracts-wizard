@@ -9,6 +9,7 @@ import { durationToBlocks } from "./utils/duration";
 
 export const defaults = {
   blockTime: 13.2,
+  decimals: 18,
 };
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
@@ -17,13 +18,13 @@ export type VotesOptions = typeof votesOptions[number];
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
 export type TimelockOptions = typeof timelockOptions[number];
 
-export interface GovernorOptions extends Omit<CommonOptions, 'access'> {
+export interface GovernorOptions extends CommonOptions {
   name: string;
   delay: string;
   period: string;
-  blockTime: number;
+  blockTime?: number;
   proposalThreshold: string;
-  decimals: number;
+  decimals?: number;
   quorum: {
     mode: 'percent';
     percent: number;
@@ -36,21 +37,30 @@ export interface GovernorOptions extends Omit<CommonOptions, 'access'> {
   bravo: boolean;
 }
 
+function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    decimals: opts.decimals || defaults.decimals,
+    blockTime: opts.blockTime || defaults.blockTime,
+  };
+}
+
 export function buildGovernor(opts: GovernorOptions): Contract {
-  const c = new ContractBuilder(opts.name);
+  const allOpts = withDefaults(opts);
 
-  const { access, upgradeable } = withCommonDefaults(opts);
+  const c = new ContractBuilder(allOpts.name);
 
-  addBase(c, opts);
-  setVotingParameters(c, opts);
-  setProposalThreshold(c, opts);
-  addCounting(c, opts);
-  addBravo(c, opts);
-  addVotes(c, opts);
-  addQuorum(c, opts);
-  addTimelock(c, opts);
+  addBase(c, allOpts);
+  setVotingParameters(c, allOpts);
+  setProposalThreshold(c, allOpts);
+  addCounting(c, allOpts);
+  addBravo(c, allOpts);
+  addVotes(c, allOpts);
+  addQuorum(c, allOpts);
+  addTimelock(c, allOpts);
 
-  setUpgradeable(c, upgradeable, access);
+  setUpgradeable(c, allOpts.upgradeable, allOpts.access);
 
   return c;
 }
@@ -75,7 +85,7 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   c.addOverride('Governor', supportsInterface);
 }
 
-function setVotingParameters(c: ContractBuilder, opts: GovernorOptions) {
+function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
   try {
     const delayBlocks = durationToBlocks(opts.delay, opts.blockTime);
     c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);

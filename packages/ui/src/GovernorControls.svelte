@@ -53,7 +53,7 @@
   <p>
     <label class="text-small">
       1 block =
-      <input type="number" step="0.01" bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
+      <input type="number" step="0.01" placeholder={governorDefaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
       seconds
     </label>
   </p>
@@ -69,7 +69,7 @@
   <p>
     <label class="text-small">
       decimals =
-      <input type="number" bind:value={opts.decimals} class="input-inline" use:resizeToFit>
+      <input type="number" bind:value={opts.decimals} placeholder={governorDefaults.decimals.toString()} class="input-inline" use:resizeToFit>
     </label>
   </p>
 

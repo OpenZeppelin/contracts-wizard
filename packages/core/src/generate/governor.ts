@@ -20,6 +20,7 @@ const blueprint = {
   timelock: timelockOptions,
   bravo: booleans,
   upgradeable: upgradeableOptions,
+  access: accessOptions,
 };
 
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {
