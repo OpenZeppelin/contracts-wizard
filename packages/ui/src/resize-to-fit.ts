@@ -6,8 +6,8 @@ export function resizeToFit(node: HTMLInputElement) {
 
     const style = window.getComputedStyle(node);
     const font = ['font-size', 'font-family'].map(p => style.getPropertyValue(p)).join(' ');
-    const textWidth = measureTextWidth(node.value, style) + 'px';
-    const minWidth = measureTextWidth(node.placeholder, style) + 'px';
+    const textWidth = measureTextWidth(node.value, style);
+    const minWidth = measureTextWidth(node.placeholder, style);
     const padding = ['padding-left', 'padding-right', 'border-left-width', 'border-right-width'].map(p => style.getPropertyValue(p));
     const result = `calc(5px + max(${minWidth}, ${textWidth}) + ${padding.join(' + ')})`;
     node.style.setProperty('width', result);
@@ -17,9 +17,9 @@ export function resizeToFit(node: HTMLInputElement) {
   node.addEventListener('input', resize);
 }
 
-function measureTextWidth(text: string, style: CSSStyleDeclaration) {
+function measureTextWidth(text: string, style: CSSStyleDeclaration): string {
   const font = ['font-size', 'font-family'].map(p => style.getPropertyValue(p)).join(' ');
   const ctx = document.createElement('canvas').getContext('2d')!;
   ctx.font = font;
-  return ctx.measureText(text).width;
+  return ctx.measureText(text).width + 'px';
 }
