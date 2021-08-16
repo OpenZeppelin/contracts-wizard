@@ -6,6 +6,9 @@ export default {
     'artifacts',
     'cache',
   ],
-  typescript: { rewritePaths: { 'src/': 'dist/' } },
+  typescript: {
+    rewritePaths: { 'src/': 'dist/' },
+    compile: false,
+  },
   timeout: '3m',
 };
