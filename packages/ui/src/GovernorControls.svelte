@@ -18,7 +18,7 @@
     proposalThreshold: '',
     decimals: 18,
     quorumMode: 'percent',
-    quorumPercent: defaults.percent,
+    quorumPercent: defaults.quorumPercent,
     quorumAbsolute: '',
     votes: 'erc20votes',
     timelock: 'openzeppelin',
@@ -55,28 +55,39 @@
 
   <div class="grid grid-cols-1-1 grid-gap-2">
     <label class="labeled-input">
-      <span>Voting Delay</span>
+      <span class="flex justify-between">
+        <span>Voting Delay</span>
+        <HelpTooltip>Delay since proposal is created until voting starts.</HelpTooltip>
+      </span>
       <input bind:value={opts.delay} use:error={errors?.delay}>
     </label>
 
     <label class="labeled-input">
-      <span>Voting Period</span>
+      <span class="flex justify-between">
+        <span>Voting Period</span>
+        <HelpTooltip>Length of period during which people can cast their vote.</HelpTooltip>
+      </span>
       <input bind:value={opts.period} use:error={errors?.period}>
     </label>
   </div>
 
-  <p>
+  <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-small">
       1 block =
       <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
       seconds
     </label>
+    <HelpTooltip>
+      Assumed block time for converting above time periods into block numbers.
+      <br>
+      Block time may drift and impact these periods in the future.
+    </HelpTooltip>
   </p>
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Proposal Threshold
-      <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+      <HelpTooltip>Minimum number of votes an account must have to create a proposal.</HelpTooltip>
     </span>
     <input bind:value={opts.proposalThreshold} placeholder="0" use:error={errors?.proposalThreshold}>
   </label>
@@ -88,7 +99,7 @@
         <label>% <input type="radio" bind:group={opts.quorumMode} value="percent"></label>
         <label># <input type="radio" bind:group={opts.quorumMode} value="absolute" on:change={focusQuorumAbsolute}></label>
       </span>
-      <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+      <HelpTooltip>Quorum required for a proposal to pass.</HelpTooltip>
     </span>
     {#if opts.quorumMode === 'percent'}
       <input id="quorum-input" type="number" bind:value={opts.quorumPercent} placeholder={defaults.quorumPercent.toString()} use:error={errors?.quorumPercent}>
@@ -97,11 +108,12 @@
     {/if}
   </label>
 
-  <p>
+  <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-small">
       Token decimals:
       <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
     </label>
+    <HelpTooltip>Token amounts above will be extended with this number of zeroes.</HelpTooltip>
   </p>
 
   <div class="checkbox-group">
@@ -109,7 +121,7 @@
       <input type="checkbox" bind:checked={opts.bravo}>
       Bravo Compatible
       <HelpTooltip>
-        Privileged accounts will be able to create more supply.
+        Include full compatibility with <code>GovernorBravo</code>.
       </HelpTooltip>
     </label>
   </div>
@@ -122,16 +134,16 @@
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes">
       ERC20Votes
-      <HelpTooltip>
-        Privileged accounts will be able to create more supply.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Votes">
+        Represent voting power with an ERC20 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
 
     <label class:checked={opts.votes === 'comp'}>
       <input type="radio" bind:group={opts.votes} value="comp">
       COMP-like
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Burnable">
-        Token holders will be able to destroy their tokens.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20VotesComp">
+        Similar to <code>ERC20Votes</code>, but based on COMP token or <code>ERC20VotesComp</code>.
       </HelpTooltip>
     </label>
   </div>
@@ -140,13 +152,15 @@
 <section class="controls-section">
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Timelock</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
+    <label class="flex justify-between items-center tooltip-container pr-2">
+      <span>
+        <span>Timelock</span>
+        <span class="ml-1">
+          <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
+        </span>
       </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/openzeppelin/upgrades">
-      Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
+      <HelpTooltip>
+        Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions.
       </HelpTooltip>
     </label>
   </h1>
@@ -155,16 +169,17 @@
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
       TimelockController
-      <HelpTooltip>
-        Privileged accounts will be able to create more supply.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorTimelockControl">
+        Module compatible with OpenZeppelin's <code>TimelockController</code>.
+        Allows multiple proposers and executors, in addition to the Governor itself.
       </HelpTooltip>
     </label>
 
     <label class:checked={opts.timelock === 'compound'}>
       <input type="radio" bind:group={opts.timelock} value="compound">
       Compound
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Burnable">
-        Token holders will be able to destroy their tokens.
+      <HelpTooltip link="https://github.com/compound-finance/compound-protocol/blob/master/contracts/Timelock.sol">
+        Module compatible with Compound's <code>Timelock</code> contract. Useful if assets and roles are already held in this contract.
       </HelpTooltip>
     </label>
   </div>
