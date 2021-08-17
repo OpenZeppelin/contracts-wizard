@@ -3,6 +3,7 @@
 @import "./reset.css";
 @import "./vars.css";
 @import "./utilities.css";
+@import "./tippy.css";
 
 /* General */
 
@@ -114,4 +115,16 @@ input[type="number"] {
   &:hover {
     --tooltip-opacity: .5;
   }
+}
+
+input.input-inline {
+  padding: .25em;
+  height: 1.5em;
+  width: 2em;
+  max-width: 100%;
+  text-align: center;
+}
+
+.has-error {
+  box-shadow: 0 0 var(--size-1) var(--red-2);
 }

@@ -8,13 +8,16 @@ export interface Contract {
   imports: string[];
   functions: ContractFunction[];
   constructorCode: string[];
+  constructorArgs: FunctionArgument[];
   variables: string[];
   upgradeable: boolean;
 }
 
+export type Value = string | number | { ref: string };
+
 export interface Parent {
   contract: ParentContract;
-  params: string[];
+  params: Value[];
 }
 
 export interface ParentContract {
@@ -67,6 +70,7 @@ export class ContractBuilder implements Contract {
 
   readonly using: Using[] = [];
 
+  readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
@@ -104,7 +108,7 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ParentContract, params: string[] = []): boolean {
+  addParent(contract: ParentContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
     return !present;
@@ -146,6 +150,10 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  addConstructorArgument(arg: FunctionArgument) {
+    this.constructorArgs.push(arg);
+  }
+
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
   }
@@ -161,13 +169,16 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  setFunctionBody(code: string[], baseFn: BaseFunction) {
+  setFunctionBody(code: string[], baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {
       throw new Error(`Function ${baseFn.name} has additional code`);
     }
     fn.code.push(...code);
     fn.final = true;
+    if (mutability) {
+      fn.mutability = mutability;
+    }
   }
 
   addVariable(code: string): boolean {

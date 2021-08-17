@@ -97,7 +97,7 @@ function addSnapshot(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_snapshot();', functions.snapshot);
 }
 
-export const premintPattern = /(\d*)(?:\.(\d+))?(?:e(\d+))?/;
+export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addPremint(c: ContractBuilder, amount: string) {
   const m = amount.match(premintPattern);

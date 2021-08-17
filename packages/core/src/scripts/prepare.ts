@@ -18,12 +18,10 @@ import { transitiveClosure } from '../utils/transitive-closure';
 async function main() {
   const generatedSourcesPath = path.join(hre.config.paths.sources, 'generated');
   await rimraf(generatedSourcesPath);
-  await writeGeneratedSources(generatedSourcesPath, 'only-maximal');
+  await writeGeneratedSources(generatedSourcesPath, 'minimal-cover');
   await hre.run('compile');
 
   const dependencies: Record<string, Set<string>> = {};
-
-  const buildInfoPaths = await hre.artifacts.getBuildInfoPaths();
   const sources: Record<string, string> = {};
 
   for (const buildInfoPath of await hre.artifacts.getBuildInfoPaths()) {

@@ -1,14 +1,22 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument } from './contract';
+import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument, Value } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import { mapValues } from './utils/map-values';
 
 const SOLIDITY_VERSION = '0.8.2';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
+
+  const fns = mapValues(
+    sortedFunctions(contract),
+    fns => fns.map(fn => printFunction(fn, helpers)),
+  );
+
+  const hasOverrides = fns.override.some(l => l.length > 0);
 
   return formatLines(
     ...spaceBetween(
@@ -26,7 +34,10 @@ export function printContract(contract: Contract, opts?: Options): string {
           printUsingFor(contract, helpers),
           contract.variables.map(helpers.transformVariable),
           printConstructor(contract, helpers),
-          ...sortedFunctions(contract).map(f => printFunction(f, helpers)),
+          ...fns.code,
+          ...fns.modifiers,
+          hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
+          ...fns.override,
         ),
 
         `}`,
@@ -57,6 +68,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
+    const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
         parents.map(p => p + ';'),
@@ -66,7 +78,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     return printFunction2(
       head,
-      [],
+      args,
       modifiers,
       body,
     );
@@ -82,26 +94,53 @@ function hasInitializer(parent: Parent) {
   return !['Initializable', 'ERC20Votes'].includes(parent.contract.name);
 }
 
+type SortedFunctions = Record<'code' | 'modifiers' | 'override', ContractFunction[]>;
+
 // Functions with code first, then those with modifiers, then the rest
-function sortedFunctions(contract: Contract): ContractFunction[] {
-  return Array.from(contract.functions).sort(
-    (a, b) =>
-      b.code.length - a.code.length || b.modifiers.length - a.modifiers.length,
-  );
+function sortedFunctions(contract: Contract): SortedFunctions {
+  const fns: SortedFunctions = { code: [], modifiers: [], override: [] };
+
+  for (const fn of contract.functions) {
+    if (fn.code.length > 0) {
+      fns.code.push(fn);
+    } else if (fn.modifiers.length > 0) {
+      fns.modifiers.push(fn);
+    } else {
+      fns.override.push(fn);
+    }
+  }
+
+  return fns;
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
   const fn = helpers.upgradeable ? `__${contract.name}_init` : contract.name;
   if (helpers.upgradeable || params.length > 0) {
     return [
-      fn + '(' + params.map(x => '"' + x + '"').join(', ') + ')',
+      fn + '(' + params.map(printValue).join(', ') + ')',
     ];
   } else {
     return [];
   }
 }
 
-function printFunction(fn: ContractFunction, { transformName }: Helpers): Lines[] {
+export function printValue(value: Value): string {
+  if (typeof value === 'object' && 'ref' in value) {
+    return value.ref;
+  } else if (typeof value === 'number') {
+    if (Number.isSafeInteger(value)) {
+      return value.toFixed(0);
+    } else {
+      throw new Error(`Number not representable (${value})`);
+    }
+  } else {
+    return JSON.stringify(value);
+  }
+}
+
+function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
+  const { transformName } = helpers;
+
   if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
     return []
   }
@@ -130,7 +169,12 @@ function printFunction(fn: ContractFunction, { transformName }: Helpers): Lines[
   }
 
   if (modifiers.length + fn.code.length > 1) {
-    return printFunction2('function ' + fn.name, fn.args.map(printArgument), modifiers, code);
+    return printFunction2(
+      'function ' + fn.name,
+      fn.args.map(a => printArgument(a, helpers)),
+      modifiers,
+      code,
+    );
   } else {
     return [];
   }
@@ -160,6 +204,7 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
   return fn;
 }
 
-function printArgument(arg: FunctionArgument): string {
-  return [arg.type, arg.name].join(' ');
+function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
+  const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
+  return [type, arg.name].join(' ');
 }

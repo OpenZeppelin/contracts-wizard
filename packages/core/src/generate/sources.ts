@@ -7,38 +7,85 @@ import { generateERC721Options } from './erc721';
 import { generateERC1155Options } from './erc1155';
 import { buildGeneric, GenericOptions } from '../build-generic';
 import { printContract } from '../print';
+import { generateGovernorOptions } from './governor';
+import { OptionsError } from '../error';
+import { findCover } from '../utils/find-cover';
+import type { Contract } from '../contract';
 
-type Subset = 'all' | 'only-maximal';
+type Subset = 'all' | 'minimal-cover';
 
-export function* generateOptions(subset: Subset): Generator<GenericOptions> {
-  const forceTrue = subset === 'only-maximal';
-
-  for (const kindOpts of generateERC20Options(forceTrue)) {
+export function* generateOptions(): Generator<GenericOptions> {
+  for (const kindOpts of generateERC20Options()) {
     yield { kind: 'ERC20', ...kindOpts };
   }
 
-  for (const kindOpts of generateERC721Options(forceTrue)) {
+  for (const kindOpts of generateERC721Options()) {
     yield { kind: 'ERC721', ...kindOpts };
   }
 
-  for (const kindOpts of generateERC1155Options(forceTrue)) {
+  for (const kindOpts of generateERC1155Options()) {
     yield { kind: 'ERC1155', ...kindOpts };
+  }
+
+  for (const kindOpts of generateGovernorOptions()) {
+    yield { kind: 'Governor', ...kindOpts };
   }
 }
 
-// If max = true, will only generate the "maximal" contracts, i.e. those that include all features.
-export async function writeGeneratedSources(dir: string, subset: Subset): Promise<void> {
-  await fs.mkdir(dir, { recursive: true });
+interface GeneratedContract {
+  id: string;
+  options: GenericOptions;
+  contract: Contract;
+}
 
-  for (const opts of generateOptions(subset)) {
-    const source = printContract(buildGeneric(opts));
+interface GeneratedSource extends GeneratedContract {
+  source: string;
+}
 
-    const name = crypto
+function generateContractSubset(subset: Subset): GeneratedContract[] {
+  const contracts = [];
+
+  for (const options of generateOptions()) {
+    const id = crypto
       .createHash('sha1')
-      .update(JSON.stringify(opts))
+      .update(JSON.stringify(options))
       .digest()
       .toString('hex');
 
-    await fs.writeFile(path.format({ dir, name, ext: '.sol' }), source);
+    try {
+      const contract = buildGeneric(options);
+      contracts.push({ id, options, contract });
+    } catch (e: unknown) {
+      if (e instanceof OptionsError) {
+        continue;
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  if (subset === 'all') {
+    return contracts;
+  } else {
+    const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.contract.path);
+    return [
+      ...findCover(contracts.filter(c => c.options.upgradeable), getParents),
+      ...findCover(contracts.filter(c => !c.options.upgradeable), getParents),
+    ];
+  }
+}
+
+export function* generateSources(subset: Subset): Generator<GeneratedSource> {
+  for (const c of generateContractSubset(subset)) {
+    const source = printContract(c.contract);
+    yield { ...c, source };
+  }
+}
+
+export async function writeGeneratedSources(dir: string, subset: Subset): Promise<void> {
+  await fs.mkdir(dir, { recursive: true });
+
+  for (const { id, source } of generateSources(subset)) {
+    await fs.writeFile(path.format({ dir, name: id, ext: '.sol' }), source);
   }
 }

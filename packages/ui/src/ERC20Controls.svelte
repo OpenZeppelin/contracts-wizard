@@ -1,13 +1,13 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { GenericOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions } from '@openzeppelin/wizard';
   import { premintPattern } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
 
-  export const opts: Required<GenericOptions> = {
+  export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
     name: 'MyToken',
     symbol: 'MTK',
