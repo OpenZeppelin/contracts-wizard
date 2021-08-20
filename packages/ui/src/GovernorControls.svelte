@@ -122,6 +122,8 @@
       Bravo Compatible
       <HelpTooltip>
         Include full compatibility with <code>GovernorBravo</code>.
+        <br>
+        May require enabling Solidity optimizer to avoid hitting contract size limit.
       </HelpTooltip>
     </label>
   </div>
