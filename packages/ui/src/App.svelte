@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { createEventDispatcher } from 'svelte';
+
     import hljs from './highlightjs';
 
     import ERC20Controls from './ERC20Controls.svelte';
@@ -22,8 +24,13 @@
 
     import { saveAs } from 'file-saver';
 
+    const dispatch = createEventDispatcher();
+
     export let tab: Kind = 'ERC20';
-    $: tab = sanitizeKind(tab);
+    $: {
+      tab = sanitizeKind(tab);
+      dispatch('tab-change', tab);
+    };
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};

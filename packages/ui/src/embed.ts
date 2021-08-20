@@ -25,9 +25,19 @@ onDOMContentLoaded(function () {
     w.style.minHeight = '53rem';
 
     const src = new URL('embed', currentScript.origin);
-    const tab = w.getAttribute('tab');
+
+    const tab = w.getAttribute('data-tab') ?? w.getAttribute('tab');
+    const sync = w.getAttribute('data-sync-url');
+
     if (tab) {
       src.searchParams.set('tab', tab)
+    }
+
+    if (sync === 'fragment') {
+      const fragment = window.location.hash.replace('#', '');
+      if (fragment) {
+        src.searchParams.set('tab', fragment);
+      }
     }
 
     const iframe = document.createElement('iframe');
@@ -41,6 +51,16 @@ onDOMContentLoaded(function () {
 
     if (iframe.contentWindow !== null) {
       iframes.set(iframe.contentWindow, iframe);
+    }
+
+    if (sync === 'fragment') {
+      window.addEventListener('message', (e: MessageEvent<Message>) => {
+        if (e.source && e.data.kind === 'oz-wizard-tab-change') {
+          if (iframe === iframes.get(e.source)) {
+            window.location.hash = e.data.tab;
+          }
+        }
+      });
     }
   }
 });

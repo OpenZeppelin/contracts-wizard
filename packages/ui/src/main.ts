@@ -16,4 +16,10 @@ resizeObserver.observe(document.body);
 
 const tab = new URLSearchParams(window.location.search).get('tab');
 
-export default new App({ target: document.body, props: { tab } });
+const app = new App({ target: document.body, props: { tab } });
+
+app.$on('tab-change', (e: CustomEvent) => {
+  postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
+});
+
+export default app;
