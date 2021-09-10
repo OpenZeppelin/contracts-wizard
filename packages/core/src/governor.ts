@@ -88,18 +88,26 @@ function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>
     const delayBlocks = durationToBlocks(opts.delay, opts.blockTime);
     c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
   } catch (e) {
-    throw new OptionsError({
-      delay: e.message,
-    });
+    if (e instanceof Error) {
+      throw new OptionsError({
+        delay: e.message,
+      });
+    } else {
+      throw e;
+    }
   }
 
   try {
     const periodBlocks = durationToBlocks(opts.period, opts.blockTime);
     c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
   } catch (e) {
-    throw new OptionsError({
-      period: e.message,
-    });
+    if (e instanceof Error) {
+      throw new OptionsError({
+        period: e.message,
+      });
+    } else {
+      throw e;
+    }
   }
 }
 
