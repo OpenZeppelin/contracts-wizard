@@ -6,9 +6,6 @@ module.exports = {
   preprocess: sveltePreprocess({
     sourceMap: !production,
     postcss: true,
-    defaults: {
-      style: 'postcss',
-    }
   }),
   compilerOptions: {
     dev: !production,
