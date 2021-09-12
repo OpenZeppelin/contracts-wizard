@@ -36,7 +36,7 @@
   "dependencies": {
     "file-saver": "^2.0.5",
     "highlight.js": "^11.0.0",
-    "highlightjs-solidity": "^1.0.21",
+    "highlightjs-solidity": "^2.0.0",
     "sirv-cli": "^1.0.0",
     "tippy.js": "^6.3.1",
     "uuid": "^8.3.2"
