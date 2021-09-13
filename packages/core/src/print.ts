@@ -76,12 +76,23 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
-    return printFunction2(
+    const constructor = printFunction2(
       head,
       args,
       modifiers,
       body,
     );
+    if (!helpers.upgradeable) {
+      return constructor;
+    } else {
+      return spaceBetween(
+        [
+          '/// @custom:oz-upgrades-unsafe-allow constructor',
+          'constructor() initializer {}',
+        ],
+        constructor,
+      );
+    }
   } else {
     return [];
   }
