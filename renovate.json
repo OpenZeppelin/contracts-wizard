@@ -5,7 +5,7 @@
   "packageRules": [
     {
       "matchPackageNames": ["@openzeppelin/contracts", "@openzeppelin/contracts-upgradeable"],
-      "groupName": "openzeppelin contracts"
+      "groupName": "OpenZeppelin Contracts"
     }
   ]
 }
