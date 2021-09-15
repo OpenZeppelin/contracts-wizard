@@ -1,5 +1,11 @@
 {
   "extends": [
     "github>OpenZeppelin/code-style"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["@openzeppelin/contracts", "@openzeppelin/contracts-upgradeable"],
+      "groupName": "openzeppelin contracts"
+    }
   ]
 }
