@@ -222,5 +222,5 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
 }
 
 function printNatspecTags(tags: NatspecTag[]): string[] {
-  return tags.map(({ key, value }) => `/// ${key}: ${value}`);
+  return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
