@@ -10,5 +10,5 @@ export default {
     rewritePaths: { 'src/': 'dist/' },
     compile: false,
   },
-  timeout: '5m',
+  timeout: '10m',
 };

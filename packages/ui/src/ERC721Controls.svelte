@@ -5,6 +5,7 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import InfoSection from './InfoSection.svelte';
 
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
@@ -19,6 +20,7 @@
     incremental: false,
     access: 'ownable',
     upgradeable: false,
+    info: { license: 'MIT '},
   };
 
   let wasMintable = opts.mintable;
@@ -113,3 +115,5 @@
 <AccessControlSection bind:access={opts.access} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+
+<InfoSection bind:info={opts.info} />

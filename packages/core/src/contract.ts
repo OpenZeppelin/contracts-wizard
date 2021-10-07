@@ -5,6 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   using: Using[];
+  natspecTags: NatspecTag[];
   imports: string[];
   functions: ContractFunction[];
   constructorCode: string[];
@@ -63,12 +64,18 @@ export interface FunctionArgument {
   name: string;
 }
 
+export interface NatspecTag {
+  key: string;
+  value: string;
+}
+
 export class ContractBuilder implements Contract {
-  readonly license = 'MIT';
   readonly name: string;
+  license: string = 'MIT';
   upgradeable = false;
 
   readonly using: Using[] = [];
+  readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
@@ -129,6 +136,11 @@ export class ContractBuilder implements Contract {
   addModifier(modifier: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.modifiers.push(modifier);
+  }
+
+  addNatspecTag(key: string, value: string) {
+    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid natspec key: ${key}`);
+    this.natspecTags.push({ key, value });
   }
 
   private addFunction(baseFn: BaseFunction): ContractFunction {

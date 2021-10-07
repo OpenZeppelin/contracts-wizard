@@ -1,5 +1,6 @@
 import type { ERC20Options } from '../erc20';
 import { accessOptions } from '../set-access-control';
+import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
@@ -18,6 +19,7 @@ const blueprint = {
   premint: ['1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,
+  info: infoOptions,
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {

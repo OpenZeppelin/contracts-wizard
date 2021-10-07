@@ -4,6 +4,7 @@ import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
+import { setInfo } from './set-info';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -21,7 +22,7 @@ export interface ERC20Options extends CommonOptions {
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
 
-  const { access, upgradeable } = withCommonDefaults(opts);
+  const { access, upgradeable, info } = withCommonDefaults(opts);
 
   addBase(c, opts.name, opts.symbol);
 
@@ -59,6 +60,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   setUpgradeable(c, upgradeable, access);
+  
+  setInfo(c, info);
 
   return c;
 }

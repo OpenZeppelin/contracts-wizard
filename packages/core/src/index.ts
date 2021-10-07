@@ -9,6 +9,7 @@ export { printContractVersioned } from './print-versioned';
 
 export type { Access } from './set-access-control';
 export type { Upgradeable } from './set-upgradeable';
+export type { Info } from './set-info';
 
 export { premintPattern } from './erc20';
 export { defaults as governorDefaults } from './governor';

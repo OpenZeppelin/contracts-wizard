@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ParentContract, ContractFunction, FunctionArgument, Value } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -28,6 +28,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       contract.imports.map(p => `import "${helpers.transformImport(p)}";`),
 
       [
+        ...printNatspecTags(contract.natspecTags),
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
@@ -218,4 +219,8 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
   const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
   return [type, arg.name].join(' ');
+}
+
+function printNatspecTags(tags: NatspecTag[]): string[] {
+  return tags.map(({ key, value }) => `/// ${key}: ${value}`);
 }
