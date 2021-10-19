@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, governorDefaults as defaults } from '@openzeppelin/wizard';
+  import { premintPattern, governorDefaults as defaults, infoDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -27,7 +27,7 @@
     bravo: false,
     upgradeable: false,
     access: 'ownable',
-    info: { license: 'MIT '},
+    info: { ...infoDefaults },
   };
 
   let quorumAbsoluteInput: HTMLInputElement;

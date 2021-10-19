@@ -13,6 +13,7 @@ export type { Info } from './set-info';
 
 export { premintPattern } from './erc20';
 export { defaults as governorDefaults } from './governor';
+export { defaults as infoDefaults } from './set-info';
 
 export type { OptionsErrorMessages } from './error';
 export { OptionsError } from './error';

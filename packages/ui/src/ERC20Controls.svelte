@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { premintPattern } from '@openzeppelin/wizard';
+  import { premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -22,7 +22,7 @@
     flashmint: false,
     access: 'ownable',
     upgradeable: false,
-    info: { license: 'MIT' },
+    info: { ...infoDefaults },
   };
 </script>
 

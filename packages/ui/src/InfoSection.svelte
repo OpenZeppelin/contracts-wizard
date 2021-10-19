@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Info } from '@openzeppelin/wizard';
+  import { infoDefaults } from '@openzeppelin/wizard';
 
   import HelpTooltip from './HelpTooltip.svelte';
 
@@ -26,7 +27,7 @@
 
   <label class="labeled-input">
     <span>License</span>
-    <input bind:value={info.license} />
+    <input bind:value={info.license} placeholder={infoDefaults.license} />
   </label>
 </section>
 
