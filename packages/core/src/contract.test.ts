@@ -2,6 +2,7 @@ import test from 'ava';
 
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { TAG_SECURITY_CONTACT } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -138,6 +139,13 @@ test('using for statement', t => {
   }, 'Counters.Counter');
   t.snapshot(printContract(Foo));
 });
+
+test('contract with info', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addNatspecTag(TAG_SECURITY_CONTACT, 'security@example.com');
+  t.snapshot(printContract(Foo));
+});
+
 
 const _beforeTokenTransfer = {
   name: '_beforeTokenTransfer',

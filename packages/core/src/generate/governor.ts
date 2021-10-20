@@ -1,5 +1,6 @@
 import { defaults, GovernorOptions, timelockOptions, votesOptions } from '../governor';
 import { accessOptions } from '../set-access-control';
+import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
@@ -20,6 +21,7 @@ const blueprint = {
   bravo: booleans,
   upgradeable: upgradeableOptions,
   access: accessOptions,
+  info: infoOptions,
 };
 
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {

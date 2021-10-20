@@ -2,9 +2,12 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-
+  import { infoDefaults } from '@openzeppelin/wizard';
+  
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import InfoSection from './InfoSection.svelte';
+  
 
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
@@ -19,6 +22,7 @@
     incremental: false,
     access: 'ownable',
     upgradeable: false,
+    info: { ...infoDefaults },
   };
 
   let wasMintable = opts.mintable;
@@ -113,3 +117,5 @@
 <AccessControlSection bind:access={opts.access} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+
+<InfoSection bind:info={opts.info} />

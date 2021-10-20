@@ -5,6 +5,7 @@ import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
+import { setInfo } from './set-info';
 
 export interface ERC1155Options extends CommonOptions {
   name: string;
@@ -17,7 +18,7 @@ export interface ERC1155Options extends CommonOptions {
 export function buildERC1155(opts: ERC1155Options): Contract {
   const c = new ContractBuilder(opts.name);
 
-  const { access, upgradeable } = withCommonDefaults(opts);
+  const { access, upgradeable, info } = withCommonDefaults(opts);
 
   addBase(c, opts.uri);
   addSetUri(c, access);
@@ -35,6 +36,8 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   }
 
   setUpgradeable(c, upgradeable, access);
+
+  setInfo(c, info);
 
   return c;
 }

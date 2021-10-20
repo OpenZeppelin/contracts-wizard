@@ -3,6 +3,7 @@ import { CommonOptions, withCommonDefaults } from "./common-options";
 import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
 import { printValue } from "./print";
+import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
@@ -59,6 +60,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addTimelock(c, allOpts);
 
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
+
+  setInfo(c, allOpts.info);
 
   return c;
 }

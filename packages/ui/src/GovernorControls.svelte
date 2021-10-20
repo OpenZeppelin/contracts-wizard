@@ -2,10 +2,12 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, governorDefaults as defaults } from '@openzeppelin/wizard';
+  import { premintPattern, governorDefaults as defaults, infoDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import InfoSection from './InfoSection.svelte';
+  
   import { error } from './error-tooltip';
   import { resizeToFit } from './resize-to-fit';
 
@@ -25,6 +27,7 @@
     bravo: false,
     upgradeable: false,
     access: 'ownable',
+    info: { ...infoDefaults },
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -188,3 +191,5 @@
 </section>
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+
+<InfoSection bind:info={opts.info} />
