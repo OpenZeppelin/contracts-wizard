@@ -113,8 +113,9 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false) {
       path: '@openzeppelin/contracts/utils/Counters.sol',
     }, 'Counters.Counter');
     c.addVariable('Counters.Counter private _tokenIdCounter;');
-    c.addFunctionCode('_safeMint(to, _tokenIdCounter.current());', fn);
+    c.addFunctionCode('uint256 tokenId = _tokenIdCounter.current();', fn);
     c.addFunctionCode('_tokenIdCounter.increment();', fn);
+    c.addFunctionCode('_safeMint(to, tokenId);', fn);
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   }
