@@ -47,7 +47,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (opts.mintable) {
-    addMintable(c, access, opts.incremental);
+    addMintable(c, access, opts.incremental, opts.uriStorage);
   }
 
   setUpgradeable(c, upgradeable, access);
@@ -104,9 +104,10 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false) {
-  const fn = incremental ? mintFunctions.incremental : mintFunctions.regular;
+function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
+  const fn = getMintFunction(incremental, uriStorage);
   setAccessControl(c, fn, access, 'MINTER');
+
   if (incremental) {
     c.addUsing({
       name: 'Counters',
@@ -118,6 +119,10 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false) {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
+  }
+
+  if (uriStorage) {
+    c.addFunctionCode('_setTokenURI(tokenId, uri);', fn);
   }
 }
 
@@ -155,21 +160,22 @@ const functions = defineFunctions({
   },
 });
 
-const mintFunctions = {
-  regular: {
+function getMintFunction(incremental: boolean, uriStorage: boolean) {
+  const fn = {
     name: 'safeMint',
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
-      { name: 'tokenId', type: 'uint256' },
     ],
-  },
+  };
 
-  incremental: {
-    name: 'safeMint',
-    kind: 'public' as const,
-    args: [
-      { name: 'to', type: 'address' },
-    ],
-  },
-};
+  if (!incremental) {
+    fn.args.push({ name: 'tokenId', type: 'uint256' });
+  }
+
+  if (uriStorage) {
+    fn.args.push({ name: 'uri', type: 'string memory' });
+  }
+
+  return fn;
+}

@@ -28,6 +28,17 @@ testERC721('uri storage', {
   uriStorage: true,
 });
 
+testERC721('mintable + uri storage', {
+  mintable: true,
+  uriStorage: true,
+});
+
+testERC721('mintable + uri storage + incremental', {
+  mintable: true,
+  uriStorage: true,
+  incremental: true,
+});
+
 testERC721('burnable', {
   burnable: true,
 });
