@@ -16,6 +16,7 @@
     import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
+    import Tooltip from './Tooltip.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -118,10 +119,15 @@
         Copy to Clipboard
       </button>
 
-      <button class="action-button" on:click={remixHandler}>
-        <RemixIcon />
-        Open in Remix
-      </button>
+      <Tooltip let:trigger theme="light-red border" disabled={!opts?.upgradeable}>
+        <button use:trigger class="action-button" on:click={remixHandler}>
+          <RemixIcon />
+          Open in Remix
+        </button>
+        <span slot="content">
+          Upgradeable contracts are not supported on Remix.
+        </span>
+      </Tooltip>
 
       <Dropdown let:active>
         <button class="action-button" class:active slot="button">
