@@ -119,14 +119,15 @@
         Copy to Clipboard
       </button>
 
-      <Tooltip let:trigger theme="light-red border" disabled={!opts?.upgradeable}>
+      <Tooltip let:trigger disabled={!opts?.upgradeable} theme="light-red border" interactive>
         <button use:trigger class="action-button" on:click={remixHandler}>
           <RemixIcon />
           Open in Remix
         </button>
-        <span slot="content">
+        <div slot="content">
           Upgradeable contracts are not supported on Remix.
-        </span>
+          Use Hardhat or Truffle with <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
+        </div>
       </Tooltip>
 
       <Dropdown let:active>
