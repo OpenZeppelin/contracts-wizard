@@ -18,7 +18,7 @@
     "test:watch": "fgbg 'ava --watch' 'tsc --watch' --"
   },
   "devDependencies": {
-    "@ava/typescript": "^2.0.0",
+    "@ava/typescript": "^3.0.0",
     "@openzeppelin/contracts": "4.3.3",
     "@openzeppelin/contracts-upgradeable": "4.3.3",
     "@types/node": "^10.17.51",
