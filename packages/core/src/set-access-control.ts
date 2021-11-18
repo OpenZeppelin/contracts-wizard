@@ -15,11 +15,11 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
     case 'roles': {
       const roleId = role + '_ROLE';
       if (c.addParent(parents.AccessControl)) {
-        c.addConstructorCode('_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);');
+        c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);');
       }
       c.addOverride(parents.AccessControl.name, supportsInterface);
       if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
-        c.addConstructorCode(`_setupRole(${roleId}, msg.sender);`);
+        c.addConstructorCode(`_grantRole(${roleId}, msg.sender);`);
       }
       c.addModifier(`onlyRole(${roleId})`, fn);
       break;
