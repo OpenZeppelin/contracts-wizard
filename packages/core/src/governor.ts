@@ -9,10 +9,15 @@ import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
 
 export const defaults = {
+  votes: 'erc20votes',
+  timelock: 'openzeppelin',
   blockTime: 13.2,
   decimals: 18,
+  quorumMode: 'percent',
   quorumPercent: 4,
-};
+  bravo: false,
+  settings: true,
+} as const;
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
 export type VotesOptions = typeof votesOptions[number];
@@ -25,15 +30,15 @@ export interface GovernorOptions extends CommonOptions {
   delay: string;
   period: string;
   blockTime?: number;
-  proposalThreshold: string;
+  proposalThreshold?: string;
   decimals?: number;
   quorumMode: 'percent' | 'absolute';
   quorumPercent?: number;
-  quorumAbsolute: string;
+  quorumAbsolute?: string;
   votes: VotesOptions;
   timelock: TimelockOptions;
-  bravo: boolean;
-  settings: boolean;
+  bravo?: boolean;
+  settings?: boolean;
 }
 
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
@@ -43,7 +48,10 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     decimals: opts.decimals || defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
-    settings: opts.settings ?? true,
+    quorumAbsolute: opts.quorumAbsolute ?? '',
+    proposalThreshold: opts.proposalThreshold || '0',
+    settings: opts.settings ?? defaults.settings,
+    bravo: opts.bravo ?? defaults.bravo,
   };
 }
 
@@ -138,19 +146,17 @@ function getVotingPeriod(opts: Required<GovernorOptions>): number {
   }
 }
 
-function getProposalThreshold(opts: Required<GovernorOptions>): string {
-  const threshold = opts.proposalThreshold || '0';
-
-  if (!/^\d+$/.test(threshold)) {
+function getProposalThreshold({ proposalThreshold, decimals }: Required<GovernorOptions>): string {
+  if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
     });
   }
 
-  if (/^0+$/.test(threshold)) {
-    return threshold;
+  if (/^0+$/.test(proposalThreshold)) {
+    return proposalThreshold;
   } else {
-    return `${threshold}e${opts.decimals}`;
+    return `${proposalThreshold}e${decimals}`;
   }
 }
 
