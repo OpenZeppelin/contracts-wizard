@@ -137,8 +137,14 @@ function printParentConstructor({ contract, params }: Parent, helpers: Helpers):
 }
 
 export function printValue(value: Value): string {
-  if (typeof value === 'object' && 'ref' in value) {
-    return value.ref;
+  if (typeof value === 'object') {
+    if ('lit' in value) {
+      return value.lit;
+    } else if ('note' in value) {
+      return `${printValue(value.value)} /* ${value.note} */`;
+    } else {
+      throw Error('Unknown value type');
+    }
   } else if (typeof value === 'number') {
     if (Number.isSafeInteger(value)) {
       return value.toFixed(0);

@@ -14,7 +14,7 @@ export interface Contract {
   upgradeable: boolean;
 }
 
-export type Value = string | number | { ref: string };
+export type Value = string | number | { lit: string } | { note: string, value: Value };
 
 export interface Parent {
   contract: ParentContract;

@@ -25,6 +25,7 @@
     votes: 'erc20votes',
     timelock: 'openzeppelin',
     bravo: false,
+    settings: true,
     upgradeable: false,
     access: 'ownable',
     info: { ...infoDefaults },
@@ -120,6 +121,14 @@
   </p>
 
   <div class="checkbox-group">
+    <label class:checked={opts.settings}>
+      <input type="checkbox" bind:checked={opts.settings}>
+      Updatable Settings
+      <HelpTooltip>
+        Allow governance to update voting settings (delay, period, proposal threshold).
+      </HelpTooltip>
+    </label>
+
     <label class:checked={opts.bravo}>
       <input type="checkbox" bind:checked={opts.bravo}>
       Bravo Compatible
