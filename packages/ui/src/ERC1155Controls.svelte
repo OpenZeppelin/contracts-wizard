@@ -15,6 +15,7 @@
     burnable: false,
     pausable: false,
     mintable: false,
+    supply: false,
     access: 'ownable',
     upgradeable: false,
     info: { ...infoDefaults },
@@ -53,6 +54,13 @@
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155#ERC1155Burnable">
         Token holders will be able to destroy their tokens.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply}>
+      Supply Tracking
+      <HelpTooltip>
+        Keeps track of total supply of tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>

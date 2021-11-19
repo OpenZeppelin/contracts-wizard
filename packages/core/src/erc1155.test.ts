@@ -37,6 +37,10 @@ testERC1155('mintable + roles', {
   access: 'roles',
 });
 
+testERC1155('supply tracking', {
+  supply: true,
+});
+
 testERC1155('full upgradeable transparent', {
   mintable: true,
   access: 'roles',
