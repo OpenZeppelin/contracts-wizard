@@ -13,6 +13,7 @@ export interface ERC1155Options extends CommonOptions {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  supply?: boolean;
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -33,6 +34,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   if (opts.mintable) {
     addMintable(c, access);
+  }
+
+  if (opts.supply) {
+    addSupply(c);
   }
 
   setUpgradeable(c, upgradeable, access);
@@ -72,6 +77,14 @@ function addMintable(c: ContractBuilder, access: Access) {
 function addSetUri(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.setURI, access, 'URI_SETTER');
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
+}
+
+function addSupply(c: ContractBuilder) {
+  c.addParent({
+    name: 'ERC1155Supply',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
+  });
+  c.addOverride('ERC1155Supply', functions._beforeTokenTransfer);
 }
 
 const functions = defineFunctions({
