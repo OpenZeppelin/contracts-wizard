@@ -19,8 +19,8 @@
   },
   "devDependencies": {
     "@ava/typescript": "^2.0.0",
-    "@openzeppelin/contracts": "4.3.3",
-    "@openzeppelin/contracts-upgradeable": "4.3.3",
+    "@openzeppelin/contracts": "^4.4.0",
+    "@openzeppelin/contracts-upgradeable": "^4.4.0",
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",

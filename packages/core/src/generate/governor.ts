@@ -19,6 +19,7 @@ const blueprint = {
   votes: votesOptions,
   timelock: timelockOptions,
   bravo: booleans,
+  settings: booleans,
   upgradeable: upgradeableOptions,
   access: accessOptions,
   info: infoOptions,

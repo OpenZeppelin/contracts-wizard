@@ -9,10 +9,15 @@ import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
 
 export const defaults = {
+  votes: 'erc20votes',
+  timelock: 'openzeppelin',
   blockTime: 13.2,
   decimals: 18,
+  quorumMode: 'percent',
   quorumPercent: 4,
-};
+  bravo: false,
+  settings: true,
+} as const;
 
 export const votesOptions = ['erc20votes', 'comp'] as const;
 export type VotesOptions = typeof votesOptions[number];
@@ -25,14 +30,15 @@ export interface GovernorOptions extends CommonOptions {
   delay: string;
   period: string;
   blockTime?: number;
-  proposalThreshold: string;
+  proposalThreshold?: string;
   decimals?: number;
   quorumMode: 'percent' | 'absolute';
   quorumPercent?: number;
-  quorumAbsolute: string;
+  quorumAbsolute?: string;
   votes: VotesOptions;
   timelock: TimelockOptions;
-  bravo: boolean;
+  bravo?: boolean;
+  settings?: boolean;
 }
 
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
@@ -42,6 +48,10 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     decimals: opts.decimals || defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
+    quorumAbsolute: opts.quorumAbsolute ?? '',
+    proposalThreshold: opts.proposalThreshold || '0',
+    settings: opts.settings ?? defaults.settings,
+    bravo: opts.bravo ?? defaults.bravo,
   };
 }
 
@@ -51,8 +61,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   const c = new ContractBuilder(allOpts.name);
 
   addBase(c, allOpts);
-  setVotingParameters(c, allOpts);
-  setProposalThreshold(c, allOpts);
+  addSettings(c, allOpts);
   addCounting(c, allOpts);
   addBravo(c, allOpts);
   addVotes(c, allOpts);
@@ -80,16 +89,38 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   c.addOverride('IGovernor', functions.getVotes);
   c.addOverride('Governor', functions.state);
   c.addOverride('Governor', functions.propose);
+  c.addOverride('Governor', functions.proposalThreshold);
   c.addOverride('Governor', functions._execute);
   c.addOverride('Governor', functions._cancel);
   c.addOverride('Governor', functions._executor);
   c.addOverride('Governor', supportsInterface);
 }
 
-function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
+function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+  if (allOpts.settings) {
+    c.addParent(
+      {
+        name: 'GovernorSettings',
+        path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
+      },
+      [
+        { value: getVotingDelay(allOpts), note: allOpts.delay },
+        { value: getVotingPeriod(allOpts), note: allOpts.period },
+        { lit: getProposalThreshold(allOpts) },
+      ],
+    );
+    c.addOverride('GovernorSettings', functions.votingDelay, 'view');
+    c.addOverride('GovernorSettings', functions.votingPeriod, 'view');
+    c.addOverride('GovernorSettings', functions.proposalThreshold, 'view');
+  } else {
+    setVotingParameters(c, allOpts);
+    setProposalThreshold(c, allOpts);
+  }
+}
+
+function getVotingDelay(opts: Required<GovernorOptions>): number {
   try {
-    const delayBlocks = durationToBlocks(opts.delay, opts.blockTime);
-    c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
+    return durationToBlocks(opts.delay, opts.blockTime);
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
@@ -99,10 +130,11 @@ function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>
       throw e;
     }
   }
+}
 
+function getVotingPeriod(opts: Required<GovernorOptions>): number {
   try {
-    const periodBlocks = durationToBlocks(opts.period, opts.blockTime);
-    c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
+    return durationToBlocks(opts.period, opts.blockTime);
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
@@ -114,28 +146,34 @@ function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>
   }
 }
 
-function setProposalThreshold(c: ContractBuilder, opts: GovernorOptions) {
-  const threshold = opts.proposalThreshold || '0';
-
-  if (!/^\d+$/.test(threshold)) {
+function getProposalThreshold({ proposalThreshold, decimals }: Required<GovernorOptions>): string {
+  if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
     });
   }
 
+  if (/^0+$/.test(proposalThreshold)) {
+    return proposalThreshold;
+  } else {
+    return `${proposalThreshold}e${decimals}`;
+  }
+}
+
+function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
+  const delayBlocks = getVotingDelay(opts);
+  c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
+
+  const periodBlocks = getVotingPeriod(opts);
+  c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
+}
+
+function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions>) {
+  const threshold = getProposalThreshold(opts);
   const nonZeroThreshold = parseInt(threshold) !== 0;
 
-  if (nonZeroThreshold && !opts.bravo) {
-    c.addParent({
-      name: 'GovernorProposalThreshold',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorProposalThreshold.sol',
-    });
-    c.addOverride('GovernorProposalThreshold', functions.proposalThreshold);
-    c.addOverride('GovernorProposalThreshold', functions.propose);
-  }
-
-  if (nonZeroThreshold || opts.bravo) {
-    c.setFunctionBody([`return ${threshold}e${opts.decimals};`], functions.proposalThreshold);
+  if (nonZeroThreshold) {
+    c.setFunctionBody([`return ${threshold};`], functions.proposalThreshold);
   }
 }
 
@@ -171,7 +209,7 @@ function addVotes(c: ContractBuilder, { votes }: GovernorOptions) {
   c.addParent({
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
-  }, [{ ref: tokenArg }]);
+  }, [{ lit: tokenArg }]);
   c.addOverride(parentName, functions.getVotes);
 }
 
@@ -238,7 +276,7 @@ function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
   c.addParent({
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
-  }, [{ ref: timelockArg }]);
+  }, [{ lit: timelockArg }]);
   c.addOverride('IGovernor', functions.propose);
   c.addOverride(parentName, functions._execute);
   c.addOverride(parentName, functions._cancel);
@@ -261,7 +299,6 @@ function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
     });
     c.addOverride('IGovernor', functions.state);
     c.addOverride('GovernorCompatibilityBravo', functions.propose);
-    c.addOverride('GovernorCompatibilityBravo', functions.proposalThreshold);
     c.addOverride('IERC165', supportsInterface);
   }
 }
