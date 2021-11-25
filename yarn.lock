@@ -315,15 +315,15 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openzeppelin/contracts-upgradeable@^4.4.0-rc.1":
-  version "4.4.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.4.0-rc.1.tgz#e7064c5ead578cb8007621fd598dc2642f51d9ea"
-  integrity sha512-LntmcuZPn8rFyu7PnzmQTzjZ7X+Ev0R5cu8V42ZN+VQ9VLw9BpM0y5cXlhHOXpjb75Ob0KRWwObwl8ZZcmUgfw==
+"@openzeppelin/contracts-upgradeable@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.4.0.tgz#85161d87c840c5bce2b6ed0c727b407e774852ae"
+  integrity sha512-hIEyWJHu7bDTv6ckxOaV+K3+7mVzhjtyvp3QSaz56Rk5PscXtPAbkiNTb3yz6UJCWHPWpxVyULVgZ6RubuFEZg==
 
-"@openzeppelin/contracts@^4.4.0-rc.1":
-  version "4.4.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.4.0-rc.1.tgz#abdc959f5943bfaf5147e982c167b35712efe5e4"
-  integrity sha512-45krr970Q7Q6aax2v6TwrT91Cif2XGZrBPmjQ7UtcSwGDqlinvC2qDw3jMtH/fAQTpZkzPplfEV6ru26ub6NbA==
+"@openzeppelin/contracts@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.4.0.tgz#4a1df71f736c31230bbbd634dfb006a756b51e6b"
+  integrity sha512-dlKiZmDvJnGRLHojrDoFZJmsQVeltVeoiRN7RK+cf2FmkhASDEblE0RiaYdxPNsUZa6mRG8393b9bfyp+V5IAw==
 
 "@polka/url@^1.0.0-next.20":
   version "1.0.0-next.21"
