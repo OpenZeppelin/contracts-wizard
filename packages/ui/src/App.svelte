@@ -65,7 +65,9 @@
       }
     };
 
-    const remixHandler = async () => {
+    const remixHandler = async (e: MouseEvent) => {
+      e.preventDefault();
+      if ((e.target as Element)?.classList.contains('disabled')) return;
       const versionedCode = printContractVersioned(contract);
       window.open(remixURL(versionedCode).toString(), '_blank');
       if (opts) {
@@ -119,14 +121,16 @@
         Copy to Clipboard
       </button>
 
-      <Tooltip let:trigger disabled={!opts?.upgradeable} theme="light-red border" interactive>
-        <button use:trigger class="action-button" on:click={remixHandler}>
+      <Tooltip let:trigger disabled={!opts?.upgradeable} theme="light-red border" interactive hideOnClick={false}>
+        <button use:trigger class="action-button" class:disabled={opts?.upgradeable} on:click={remixHandler}>
           <RemixIcon />
           Open in Remix
         </button>
         <div slot="content">
           Upgradeable contracts are not supported on Remix.
           Use Hardhat or Truffle with <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
+          <br>
+          <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
         </div>
       </Tooltip>
 
@@ -239,18 +243,22 @@
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
     cursor: pointer;
-  }
 
-  .action-button:hover {
-    background-color: var(--gray-2);
-  }
+    &:hover {
+      background-color: var(--gray-2);
+    }
 
-  .action-button:active, .action-button.active {
-    background-color: var(--gray-2);
-  }
+    &:active, &.active {
+      background-color: var(--gray-2);
+    }
 
-  .action-button :global(.icon) {
-    margin-right: var(--size-1);
+    &.disabled {
+      color: var(--gray-4);
+    }
+
+    :global(.icon) {
+      margin-right: var(--size-1);
+    }
   }
 
   .controls {
