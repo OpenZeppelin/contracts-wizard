@@ -130,6 +130,7 @@
           Upgradeable contracts are not supported on Remix.
           Use Hardhat or Truffle with <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
           <br>
+          <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
         </div>
       </Tooltip>
