@@ -57,7 +57,7 @@
     <input bind:value={opts.name}>
   </label>
 
-  <div class="grid grid-cols-1-1 grid-gap-2">
+  <div class="grid grid-cols-2 gap-2">
     <label class="labeled-input">
       <span class="flex justify-between">
         <span>Voting Delay</span>
@@ -76,7 +76,7 @@
   </div>
 
   <p class="tooltip-container flex justify-between items-center pr-2">
-    <label class="text-small">
+    <label class="text-sm">
       1 block =
       <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
       seconds
@@ -113,7 +113,7 @@
   </label>
 
   <p class="tooltip-container flex justify-between items-center pr-2">
-    <label class="text-small">
+    <label class="text-sm">
       Token decimals:
       <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
     </label>

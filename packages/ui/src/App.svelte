@@ -96,7 +96,7 @@
     };
 </script>
 
-<div class="container flex flex-col flex-row-gap-4 p-4">
+<div class="container flex flex-col gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
@@ -115,7 +115,7 @@
       </OverflowMenu>
     </div>
 
-    <div class="action flex flex-row flex-col-gap-2 flex-shrink-0">
+    <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button" on:click={copyHandler}>
         <CopyIcon />
         Copy to Clipboard
@@ -162,18 +162,18 @@
     </div>
   </div>
 
-  <div class="flex flex-row flex-col-gap-4 flex-grow">
-    <div class="controls w-64 flex flex-col flex-shrink-0 justify-between">
-      <div class:display-none={tab !== 'ERC20'}>
+  <div class="flex flex-row gap-4 grow">
+    <div class="controls w-64 flex flex-col shrink-0 justify-between">
+      <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
-      <div class:display-none={tab !== 'ERC721'}>
+      <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
       </div>
-      <div class:display-none={tab !== 'ERC1155'}>
+      <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
-      <div class:display-none={tab !== 'Governor'}>
+      <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class="controls-footer">
@@ -186,9 +186,9 @@
       </div>
     </div>
 
-    <div class="output flex flex-col flex-grow overflow-auto">
-    <pre class="flex flex-col flex-grow flex-basis-0 overflow-auto">
-    <code class="hljs flex-grow overflow-auto p-4">
+    <div class="output flex flex-col grow overflow-auto">
+    <pre class="flex flex-col grow basis-0 overflow-auto">
+    <code class="hljs grow overflow-auto p-4">
     {@html highlightedCode}
     </code>
     </pre>

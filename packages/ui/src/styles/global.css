@@ -1,8 +1,9 @@
 @import "highlight.js/styles/atom-one-dark.css";
 
+@tailwind utilities;
+
 @import "./reset.css";
 @import "./vars.css";
-@import "./utilities.css";
 @import "./tippy.css";
 
 /* General */
