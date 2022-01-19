@@ -24,7 +24,7 @@
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
-    "ava": "^3.15.0",
+    "ava": "^4.0.0",
     "fgbg": "^0.1.5",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
