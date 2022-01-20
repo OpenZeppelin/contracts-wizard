@@ -7,4 +7,5 @@ module.exports = {
     'cache',
   ],
   timeout: '10m',
+  workerThreads: false,
 };
