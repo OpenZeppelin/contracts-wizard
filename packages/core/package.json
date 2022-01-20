@@ -14,22 +14,21 @@
   "scripts": {
     "prepare": "tsc && node dist/scripts/prepare.js",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
-    "test": "tsc && ava",
-    "test:watch": "fgbg 'ava --watch' 'tsc --watch' --"
+    "test": "ava",
+    "test:watch": "ava --watch"
   },
   "devDependencies": {
-    "@ava/typescript": "^2.0.0",
     "@openzeppelin/contracts": "4.4.2",
     "@openzeppelin/contracts-upgradeable": "4.4.2",
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
     "ava": "^4.0.0",
-    "fgbg": "^0.1.5",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
     "rimraf": "^3.0.2",
     "solidity-ast": "^0.4.18",
+    "ts-node": "^10.4.0",
     "typescript": "^4.1.3"
   },
   "dependencies": {

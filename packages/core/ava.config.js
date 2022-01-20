@@ -1,14 +1,10 @@
-export default {
-  verbose: true,
+module.exports = {
+  extensions: ['ts'],
+  require: ['ts-node/register'],
   ignoredByWatcher: [
-    '**/*.{ts,map,tsbuildinfo}',
     'contracts',
     'artifacts',
     'cache',
   ],
-  typescript: {
-    rewritePaths: { 'src/': 'dist/' },
-    compile: false,
-  },
   timeout: '10m',
 };
