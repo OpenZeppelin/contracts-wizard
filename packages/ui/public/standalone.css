@@ -215,38 +215,6 @@ footer a:focus {
     width: max-content;
   }
 }
-.category-logo.aspect-image {
-    --max-height: 3em;
-}
-
-.category-list td:first-of-type {
-    padding-left: 12px;
-}
-
-code {
-    font-size: 85%;
-    padding: .2em .4em;
-    border-radius: 3px;
-}
-
-.d-header #site-logo {
-    height: 1.7em;
-}
-
-[data-wrap="attention"] {
-    background-color: var(--tertiary-low);
-    padding: 0.8em;
-}
-
-[data-wrap="attention"] p {
-    margin: 0;
-}
-
-.tag-hide-post-links .post-links-container {
-    display: none;
-}
-
-
 
 /* To reset HubSpot Popup Banner's default animation effect */
 body .leadinModal.leadinModal-theme-top {
@@ -254,7 +222,6 @@ body .leadinModal.leadinModal-theme-top {
   bottom: 0;
   z-index: 99999999999;
 }
-
 .leadinModal.leadinModal-theme-top .leadinModal-content {
  animation-name: leadinModal-reset!important;
 }
@@ -262,6 +229,7 @@ body .leadinModal.leadinModal-theme-top {
 .leadinModal.leadinModal-theme-top.leadinModal-closing .leadinModal-content{
     animation-name: leadinModal-fadeout!important;
 }
+
 @keyframes leadinModal-reset {
     0% {
       transform: translateY(0);
