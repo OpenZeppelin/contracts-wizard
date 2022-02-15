@@ -1,7 +1,7 @@
 import type { ContractBuilder, BaseFunction } from './contract';
 import { supportsInterface } from './common-functions';
 
-export const access = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable', 'roles'] as const;
 
 export type Access = typeof accessOptions[number];
 
