@@ -87,17 +87,22 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       return constructor;
     } else {
       return spaceBetween(
-        [
-          '/// @custom:oz-upgrades-unsafe-allow constructor',
-          'constructor() initializer {}',
-        ],
+        INITIALIZE_IMPLEMENTATION,
         constructor,
       );
     }
-  } else {
+  } else if (!helpers.upgradeable) {
     return [];
+  } else {
+    return INITIALIZE_IMPLEMENTATION;
   }
 }
+
+const INITIALIZE_IMPLEMENTATION = 
+[
+  '/// @custom:oz-upgrades-unsafe-allow constructor',
+  'constructor() initializer {}',
+];
 
 function hasInitializer(parent: Parent) {
   // CAUTION

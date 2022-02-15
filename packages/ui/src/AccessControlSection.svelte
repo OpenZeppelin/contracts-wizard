@@ -1,13 +1,25 @@
 <script lang="ts">
   import type { Access } from '@openzeppelin/wizard';
 
+  import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
 
   export let access: Access;
 </script>
 
 <section class="controls-section">
-  <h1>Access Control</h1>
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Access Control</span>
+      <span class="ml-1">
+        <ToggleRadio bind:value={access} defaultValue="ownable" />
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/4.x/api/access">
+        Restrict who can access the functions of a contract or when they can do it.
+      </HelpTooltip>
+    </label>
+  </h1>
 
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
