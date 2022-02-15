@@ -64,9 +64,9 @@ function printUsingFor(contract: Contract, { transformName }: Helpers): string[]
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasParentParams || hasConstructorCode) {
-    const parents = contract.parents
-      .filter(hasInitializer)
+  const parentsWithInitializers = contract.parents.filter(hasInitializer);
+  if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
+    const parents = parentsWithInitializers
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
     const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));

@@ -15,9 +15,22 @@ export function buildGeneral(opts: GeneralOptions): Contract {
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 
+  const fn = getGeneralFunction();
+  setAccessControl(c, fn, access, 'CUSTOM');
+
   setUpgradeable(c, upgradeable, access);
   
   setInfo(c, info);
 
   return c;
+}
+
+function getGeneralFunction() {
+  const fn = {
+    name: 'myFunction',
+    kind: 'public' as const,
+    args: [],
+  };
+
+  return fn;
 }
