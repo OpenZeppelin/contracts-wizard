@@ -1,13 +1,12 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
-import { defineFunctions } from './utils/define-functions';
+import { setAccessControl } from './set-access-control';
 import { CommonOptions, withCommonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 
 export interface GeneralOptions extends CommonOptions {
   name: string;
+  functionName: string;
 }
 
 export function buildGeneral(opts: GeneralOptions): Contract {
@@ -15,7 +14,7 @@ export function buildGeneral(opts: GeneralOptions): Contract {
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 
-  const fn = getGeneralFunction();
+  const fn = getGeneralFunction(opts.functionName);
   setAccessControl(c, fn, access, 'CUSTOM');
 
   setUpgradeable(c, upgradeable, access);
@@ -25,9 +24,9 @@ export function buildGeneral(opts: GeneralOptions): Contract {
   return c;
 }
 
-function getGeneralFunction() {
+function getGeneralFunction(functionName: string) {
   const fn = {
-    name: 'myFunction',
+    name: functionName,
     kind: 'public' as const,
     args: [],
   };

@@ -12,6 +12,7 @@
     kind: 'General',
     name: 'MyContract',
     access: 'ownable',
+    functionName: 'myFunction',
     upgradeable: false,
     info: { ...infoDefaults },
   };
@@ -29,7 +30,7 @@
 
 </section>
 
-<AccessControlSection bind:access={opts.access} showSampleFunction='true' />
+<AccessControlSection bind:access={opts.access} showSampleFunction='true' bind:functionName={opts.functionName} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
