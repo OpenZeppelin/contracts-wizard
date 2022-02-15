@@ -29,7 +29,7 @@
 
 </section>
 
-<AccessControlSection bind:access={opts.access} />
+<AccessControlSection bind:access={opts.access} showSampleFunction='true' />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

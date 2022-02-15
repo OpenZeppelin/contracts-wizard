@@ -4,6 +4,7 @@
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
 
+  export let showSampleFunction: string | undefined = undefined;
   export let access: Access;
 </script>
 
@@ -37,5 +38,15 @@
       </HelpTooltip>
     </label>
   </div>
+
+  {#if showSampleFunction === 'true'}
+  <div class="grid grid-cols-[2fr,1fr] gap-2">
+    <label class="labeled-input">
+      <span>Function Name</span>
+      <input>
+    </label>
+  </div>
+  {/if}
+
 </section>
 
