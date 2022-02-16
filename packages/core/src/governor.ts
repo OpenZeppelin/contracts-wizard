@@ -188,7 +188,7 @@ function addCounting(c: ContractBuilder, { bravo }: GovernorOptions) {
 
 const votesModules = {
   erc20votes: {
-    tokenType: 'ERC20Votes',
+    tokenType: 'IVotes',
     parentName: 'GovernorVotes',
   },
   comp: {
