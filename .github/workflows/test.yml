@@ -25,3 +25,5 @@ jobs:
       - name: Run tests
         run: yarn test
         working-directory: packages/core
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
