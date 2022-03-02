@@ -28,6 +28,17 @@ task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {
   }
 });
 
+task(TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS, async ({ compilationJobs }, _, runSuper) => {
+  const CHUNK_SIZE = 100;
+  const chunks = [];
+  for (let i = 0; i < compilationJobs.length - 1; i += CHUNK_SIZE) {
+    chunks.push(compilationJobs.slice(i, i + CHUNK_SIZE));
+  }
+  const mergedChunks = await Promise.all(chunks.map(cj => runSuper({ compilationJobs: cj })));
+  return mergedChunks.flat();
+});
+
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
