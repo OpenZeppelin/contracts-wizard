@@ -232,7 +232,10 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
     let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
 
     if (quorumFractionDenominator !== undefined) {
-      c.addFunctionCode(`return ${quorumFractionDenominator};`, functions.quorumDenominator);
+      c.addOverride('GovernorVotesQuorumFraction', functions.quorumDenominator);
+      c.setFunctionBody([
+        `return ${quorumFractionDenominator};`
+      ], functions.quorumDenominator, 'pure');
     }
 
     c.addParent({
