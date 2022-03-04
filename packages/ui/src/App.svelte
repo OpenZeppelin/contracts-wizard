@@ -187,11 +187,7 @@
     </div>
 
     <div class="output flex flex-col grow overflow-auto">
-    <pre class="flex flex-col grow basis-0 overflow-auto">
-    <code class="hljs grow overflow-auto p-4">
-    {@html highlightedCode}
-    </code>
-    </pre>
+    <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
 </div>
