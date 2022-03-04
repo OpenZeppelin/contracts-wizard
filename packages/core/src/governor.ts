@@ -229,10 +229,19 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       });
     }
 
+    let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
+
+    if (quorumFractionDenominator !== undefined) {
+      c.addOverride('GovernorVotesQuorumFraction', functions.quorumDenominator);
+      c.setFunctionBody([
+        `return ${quorumFractionDenominator};`
+      ], functions.quorumDenominator, 'pure');
+    }
+
     c.addParent({
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-    }, [opts.quorumPercent]);
+    }, [quorumFractionNumerator]);
     c.addOverride('GovernorVotesQuorumFraction', functions.quorum);
   }
 
@@ -259,6 +268,26 @@ const timelockModules = {
     parentName: 'GovernorTimelockCompound',
   },
 } as const;
+
+function getQuorumFractionComponents(quorumPercent: number): {quorumFractionNumerator: number, quorumFractionDenominator: string | undefined} {
+  let quorumFractionNumerator = quorumPercent;
+  let quorumFractionDenominator = undefined;
+
+  const quorumPercentSegments = quorumPercent.toString().split(".");
+  if (quorumPercentSegments.length > 2) {
+    throw new OptionsError({
+      quorumPercent: 'Invalid percentage',
+    });
+  } else if (quorumPercentSegments.length == 2 && quorumPercentSegments[0] !== undefined && quorumPercentSegments[1] !== undefined) {
+    quorumFractionNumerator = parseInt(quorumPercentSegments[0].concat(quorumPercentSegments[1]));
+    const decimals = quorumPercentSegments[1].length;
+    quorumFractionDenominator = '100';
+    while (quorumFractionDenominator.length < decimals + 3) {
+      quorumFractionDenominator += '0';
+    }
+  }
+  return { quorumFractionNumerator, quorumFractionDenominator };
+}
 
 function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
   if (timelock === false) {
@@ -326,6 +355,12 @@ const functions = defineFunctions({
     args: [
       { name: 'blockNumber', type: 'uint256' },
     ],
+    returns: ['uint256'],
+    kind: 'public',
+    mutability: 'view',
+  },
+  quorumDenominator: {
+    args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',

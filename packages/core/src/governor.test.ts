@@ -56,6 +56,11 @@ testGovernor('governor with percent quorum', {
   quorumPercent: 6,
 });
 
+testGovernor('governor with fractional percent quorum', {
+  quorumMode: 'percent',
+  quorumPercent: 0.5,
+});
+
 testGovernor('governor with openzeppelin timelock', {
   timelock: 'openzeppelin',
 });
