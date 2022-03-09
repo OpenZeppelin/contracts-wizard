@@ -69,7 +69,7 @@
         const relativePath = match[3];
         const quotes = match[4];
         if (line !== undefined && ozPrefix !== undefined && contractsLibrary !== undefined && relativePath !== undefined && quotes !== undefined) {
-          const replacedImportLine = '<a href=\'https://github.com/OpenZeppelin/openzeppelin-' + contractsLibrary + '/blob/master/contracts' + relativePath + '\' target=\'blank\'>' + ozPrefix + contractsLibrary + relativePath + '</a>' + quotes;
+          const replacedImportLine = '<a href=\'https://github.com/OpenZeppelin/openzeppelin-' + contractsLibrary + '/blob/master/contracts' + relativePath + '\' target=\'blank\' style=\'color: #98c379\'>' + ozPrefix + contractsLibrary + relativePath + '</a>' + quotes;
           result = result.replace(line, replacedImportLine);
         }
         match = importRegex.exec(code);
