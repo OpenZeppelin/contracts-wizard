@@ -56,7 +56,26 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = hljs.highlight('solidity', code).value;
+    $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+
+    function injectHyperlinks(code: string) {
+      const importRegex = /(@openzeppelin\/)(contracts-upgradeable|contracts)(\/.*)(&quot;)/gm // we are modifying HTML, so use HTML escaped chars
+      let result = code;
+      let match = importRegex.exec(code);
+      while (match != null) {
+        const line = match[0];
+        const ozPrefix = match[1];
+        const contractsLibrary = match[2];
+        const relativePath = match[3];
+        const quotes = match[4];
+        if (line !== undefined && ozPrefix !== undefined && contractsLibrary !== undefined && relativePath !== undefined && quotes !== undefined) {
+          const replacedImportLine = '<a href=\'https://github.com/OpenZeppelin/openzeppelin-' + contractsLibrary + '/blob/master/contracts' + relativePath + '\' target=\'blank\'>' + ozPrefix + contractsLibrary + relativePath + '</a>' + quotes;
+          result = result.replace(line, replacedImportLine);
+        }
+        match = importRegex.exec(code);
+      }
+      return result;
+    }
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
