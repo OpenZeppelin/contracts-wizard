@@ -19,6 +19,7 @@ const blueprint = {
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
+  votes: booleans,
 };
 
 export function* generateERC721Options(): Generator<Required<ERC721Options>> {
