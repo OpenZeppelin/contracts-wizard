@@ -52,7 +52,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (opts.votes) {
-    addVotes(c);
+    addVotes(c, opts.name);
   }
 
   setUpgradeable(c, upgradeable, access);
@@ -132,11 +132,20 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   }
 }
 
-function addVotes(c: ContractBuilder) {
-  c.addParent({
-    name: 'ERC721Votes',
-    path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
-  });
+function addVotes(c: ContractBuilder, name: string) {
+  c.addParent(
+    {
+      name: 'ERC721Votes',
+      path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
+    });
+  c.addParent(
+    {
+      name: 'EIP712',
+      path: '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol',
+    },
+    [name, { lit: '"1"' }],
+    true,
+  );
   c.addOverride('ERC721Votes', functions._afterTokenTransfer);
   c.addOverride('ERC721Votes', functions._getVotingUnits);
 }
