@@ -22,6 +22,7 @@
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
+    import { version as contractsVersion } from "@openzeppelin/contracts/package.json";
 
     import { saveAs } from 'file-saver';
 
@@ -69,7 +70,7 @@
         const relativePath = match[3];
         const quotes = match[4];
         if (line !== undefined && ozPrefix !== undefined && contractsLibrary !== undefined && relativePath !== undefined && quotes !== undefined) {
-          const replacedImportLine = `<a href='https://github.com/OpenZeppelin/openzeppelin-${contractsLibrary}blob/master/contracts/${relativePath}' target='_blank' rel='noopener noreferrer' style='color: inherit'>${ozPrefix}${contractsLibrary}${relativePath}</a>${quotes}`;
+          const replacedImportLine = `<a href='https://github.com/OpenZeppelin/openzeppelin-${contractsLibrary}blob/v${contractsVersion}/contracts/${relativePath}' target='_blank' rel='noopener noreferrer' style='color: inherit'>${ozPrefix}${contractsLibrary}${relativePath}</a>${quotes}`;
           result = result.replace(line, replacedImportLine);
         }
         match = importRegex.exec(code);
