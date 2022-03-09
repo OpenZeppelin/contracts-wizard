@@ -20,6 +20,7 @@
     pausable: false,
     mintable: false,
     incremental: false,
+    votes: false,
     access: 'ownable',
     upgradeable: false,
     info: { ...infoDefaults },
