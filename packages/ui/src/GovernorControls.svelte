@@ -149,7 +149,7 @@
       <input type="radio" bind:group={opts.votes} value="erc20votes">
       ERC20 or ERC721
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorVotes">
-        Represent voting power with an ERC20 or ERC721 token. Voters can entrust their voting power to a delegate.
+        Represent voting power with a votes-enabled ERC20 or ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
 
