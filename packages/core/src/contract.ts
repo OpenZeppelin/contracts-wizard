@@ -19,7 +19,6 @@ export type Value = string | number | { lit: string } | { note: string, value: V
 export interface Parent {
   contract: ParentContract;
   params: Value[];
-  transitive?: boolean;
 }
 
 export interface ParentContract {
@@ -103,7 +102,7 @@ export class ContractBuilder implements Contract {
 
   get imports(): string[] {
     return [
-      ...[...this.parentMap.values()].flatMap(p => p.transitive ? [] : p.contract.path),
+      ...[...this.parentMap.values()].map(p => p.contract.path),
       ...this.using.map(u => u.library.path),
     ];
   }
@@ -116,9 +115,9 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ParentContract, params: Value[] = [], transitive?: boolean): boolean {
+  addParent(contract: ParentContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params, transitive });
+    this.parentMap.set(contract.name, { contract, params });
     return !present;
   }
 

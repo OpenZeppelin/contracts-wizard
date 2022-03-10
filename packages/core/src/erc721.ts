@@ -135,19 +135,17 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
 function addVotes(c: ContractBuilder, name: string) {
   c.addParent(
     {
-      name: 'ERC721Votes',
-      path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
-    });
-  c.addParent(
-    {
       name: 'EIP712',
       path: '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol',
     },
-    [name, { lit: '"1"' }],
-    true,
+    [name, "1"]
   );
+  c.addParent(
+    {
+      name: 'ERC721Votes',
+      path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
+    });
   c.addOverride('ERC721Votes', functions._afterTokenTransfer);
-  c.addOverride('ERC721Votes', functions._getVotingUnits);
 }
 
 const functions = defineFunctions({
@@ -190,14 +188,6 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
-  },
-
-  _getVotingUnits: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'account', type: 'address' },
-    ],
-    returns: ['uint256'],
   },
 });
 

@@ -49,7 +49,7 @@ export function printContract(contract: Contract, opts?: Options): string {
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
   if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.flatMap(p => p.transitive ? [] : transformName(p.contract.name)).join(', ')];
+    return ['is ' + contract.parents.map(p => transformName(p.contract.name)).join(', ')];
   } else {
     return [];
   }
