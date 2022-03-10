@@ -219,7 +219,7 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
     if (opts.votes !== 'erc20votes') {
       throw new OptionsError({
-        quorumPercent: 'Percent-based quorum is only available for ERC20Votes',
+        quorumPercent: 'Percent-based quorum is only available for ERC20 or ERC721 votes',
       });
     }
 
