@@ -17,6 +17,7 @@ export interface ERC721Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   incremental?: boolean;
+  votes?: boolean;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -50,6 +51,10 @@ export function buildERC721(opts: ERC721Options): Contract {
     addMintable(c, access, opts.incremental, opts.uriStorage);
   }
 
+  if (opts.votes) {
+    addVotes(c, opts.name);
+  }
+
   setUpgradeable(c, upgradeable, access);
 
   setInfo(c, info);
@@ -67,6 +72,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride('ERC721', functions._beforeTokenTransfer);
+  c.addOverride('ERC721', functions._afterTokenTransfer);
   c.addOverride('ERC721', functions._burn);
   c.addOverride('ERC721', functions.tokenURI);
   c.addOverride('ERC721', supportsInterface);
@@ -126,8 +132,33 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   }
 }
 
+function addVotes(c: ContractBuilder, name: string) {
+  c.addParent(
+    {
+      name: 'EIP712',
+      path: '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol',
+    },
+    [name, "1"]
+  );
+  c.addParent(
+    {
+      name: 'ERC721Votes',
+      path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
+    });
+  c.addOverride('ERC721Votes', functions._afterTokenTransfer);
+}
+
 const functions = defineFunctions({
   _beforeTokenTransfer: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+    ],
+  },
+
+  _afterTokenTransfer: {
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },

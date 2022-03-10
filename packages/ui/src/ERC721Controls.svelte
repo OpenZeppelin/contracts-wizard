@@ -20,6 +20,7 @@
     pausable: false,
     mintable: false,
     incremental: false,
+    votes: false,
     access: 'ownable',
     upgradeable: false,
     info: { ...infoDefaults },
@@ -95,6 +96,13 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
         Useful for emergency response.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.votes}>
+      <input type="checkbox" bind:checked={opts.votes}>
+      Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Votes">
+        Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>

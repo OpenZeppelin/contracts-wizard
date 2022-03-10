@@ -66,11 +66,16 @@ testERC721('mintable + incremental', {
   incremental: true,
 });
 
+testERC721('votes', {
+  votes: true,
+});
+
 testERC721('full upgradeable transparent', {
   mintable: true,
   enumerable: true,
   pausable: true,
   burnable: true,
+  votes: true,
   upgradeable: 'transparent',
 });
 
@@ -79,5 +84,6 @@ testERC721('full upgradeable uups', {
   enumerable: true,
   pausable: true,
   burnable: true,
+  votes: true,
   upgradeable: 'uups',
 });
