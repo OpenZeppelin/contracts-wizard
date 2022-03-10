@@ -22,9 +22,9 @@
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
-    import { version as contractsVersion } from "@openzeppelin/contracts/package.json";
 
     import { saveAs } from 'file-saver';
+    import { injectHyperlinks } from './utils/inject-hyperlinks';
 
     const dispatch = createEventDispatcher();
 
@@ -58,21 +58,6 @@
 
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
-
-    function injectHyperlinks(code: string) {
-      const importRegex = /(@openzeppelin\/)(contracts-upgradeable\/|contracts\/)(.*)(&quot;)/gm // we are modifying HTML, so use HTML escaped chars
-      let result = code;
-      let match = importRegex.exec(code);
-      while (match != null) {
-        const [line, ozPrefix, contractsLibrary, relativePath, quotes] = match;
-        if (line !== undefined && ozPrefix !== undefined && contractsLibrary !== undefined && relativePath !== undefined && quotes !== undefined) {
-          const replacedImportLine = `<a href='https://github.com/OpenZeppelin/openzeppelin-${contractsLibrary}blob/v${contractsVersion}/contracts/${relativePath}' target='_blank' rel='noopener noreferrer' style='color: inherit'>${ozPrefix}${contractsLibrary}${relativePath}</a>${quotes}`;
-          result = result.replace(line, replacedImportLine);
-        }
-        match = importRegex.exec(code);
-      }
-      return result;
-    }
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);

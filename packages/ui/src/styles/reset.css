@@ -19,3 +19,12 @@ button, input, select, textarea {
   font-size: inherit;
   color: inherit;
 }
+
+a:link,
+a:visited {
+  color: inherit;
+}
+
+a:hover {
+  color: var(--blue-2);
+}
