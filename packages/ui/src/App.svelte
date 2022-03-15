@@ -24,6 +24,7 @@
     import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
+    import { injectHyperlinks } from './utils/inject-hyperlinks';
 
     const dispatch = createEventDispatcher();
 
@@ -56,7 +57,7 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = hljs.highlight('solidity', code).value;
+    $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
