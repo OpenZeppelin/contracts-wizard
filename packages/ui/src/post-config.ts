@@ -13,7 +13,7 @@ export type Action = 'copy' | 'remix' | 'download-npm' | 'download-vendored';
 // NOTE: We have to make sure any fields sent in the body are defined in the
 // hidden form in public/index.html.
 export async function postConfig(opts: Required<GenericOptions>, action: Action) {
-  console.log("running postConfig...");
+  console.log("running postConfig... ");
   sendAnalyticsToGTM(opts, action);
   await fetch('/config', {
     method: 'POST',
