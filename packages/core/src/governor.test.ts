@@ -45,6 +45,23 @@ testGovernor('governor with erc20votes', {
   votes: 'erc20votes',
 });
 
+testGovernor('governor with erc721votes', {
+  votes: 'erc721votes',
+});
+
+testGovernor('governor with erc721votes omit decimals', {
+  votes: 'erc721votes',
+  decimals: 6,
+  proposalThreshold: '1',
+});
+
+testGovernor('governor with erc721votes settings omit decimals', {
+  votes: 'erc721votes',
+  decimals: 6,
+  proposalThreshold: '10',
+  settings: true,
+});
+
 testGovernor('governor with comp', {
   votes: 'comp',
   quorumMode: 'absolute',
