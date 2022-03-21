@@ -147,9 +147,17 @@
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes">
-      ERC20 or ERC721
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorVotes">
-        Represent voting power with a votes-enabled ERC20 or ERC721 token. Voters can entrust their voting power to a delegate.
+      ERC20Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Votes">
+        Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.votes === 'erc721votes'}>
+      <input type="radio" bind:group={opts.votes} value="erc721votes">
+      ERC721Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Votes">
+        Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
 
