@@ -112,6 +112,7 @@
     {/if}
   </label>
 
+  {#if opts.votes !== 'erc721votes'}
   <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-sm">
       Token decimals:
@@ -119,6 +120,7 @@
     </label>
     <HelpTooltip>Token amounts above will be extended with this number of zeroes.</HelpTooltip>
   </p>
+  {/if}
 
   <div class="checkbox-group">
     <label class:checked={opts.settings}>

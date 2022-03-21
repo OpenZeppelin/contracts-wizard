@@ -146,14 +146,14 @@ function getVotingPeriod(opts: Required<GovernorOptions>): number {
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals }: Required<GovernorOptions>): string {
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
     });
   }
 
-  if (/^0+$/.test(proposalThreshold)) {
+  if (/^0+$/.test(proposalThreshold) || votes === 'erc721votes') {
     return proposalThreshold;
   } else {
     return `${proposalThreshold}e${decimals}`;
