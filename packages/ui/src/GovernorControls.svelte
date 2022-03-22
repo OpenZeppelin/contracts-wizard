@@ -47,6 +47,28 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  interface DecimalAttributes {
+    disabled?: boolean,
+  }
+
+  let wasERC721Votes = opts.votes === 'erc721votes';
+  let previousDecimals = opts.decimals;
+  let decimalsInputAttributes: DecimalAttributes = {};
+
+  $: {
+    if (wasERC721Votes && opts.votes !== 'erc721votes') {
+      opts.decimals = previousDecimals;
+      decimalsInputAttributes.disabled = false;
+    } else if (!wasERC721Votes && opts.votes === 'erc721votes') {
+      previousDecimals = opts.decimals;
+      opts.decimals = 0;     
+      decimalsInputAttributes.disabled = true;
+    }
+
+    wasERC721Votes = opts.votes === 'erc721votes';
+  }
+
 </script>
 
 <section class="controls-section">
@@ -112,15 +134,13 @@
     {/if}
   </label>
 
-  {#if opts.votes !== 'erc721votes'}
   <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-sm">
       Token decimals:
-      <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
+      <input {...decimalsInputAttributes} type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
     </label>
-    <HelpTooltip>Token amounts above will be extended with this number of zeroes.</HelpTooltip>
+    <HelpTooltip>Token amounts above will be extended with this number of zeroes. Does not apply to ERC721Votes.</HelpTooltip>
   </p>
-  {/if}
 
   <div class="checkbox-group">
     <label class:checked={opts.settings}>

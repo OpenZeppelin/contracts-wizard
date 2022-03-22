@@ -53,6 +53,8 @@ testGovernor('governor with erc721votes omit decimals', {
   votes: 'erc721votes',
   decimals: 6,
   proposalThreshold: '1',
+  quorumMode: 'absolute',
+  quorumAbsolute: '5',
 });
 
 testGovernor('governor with erc721votes settings omit decimals', {

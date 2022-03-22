@@ -45,7 +45,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
-    decimals: opts.decimals || defaults.decimals,
+    decimals: opts.decimals ?? defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? '',
@@ -153,7 +153,7 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
     });
   }
 
-  if (/^0+$/.test(proposalThreshold) || votes === 'erc721votes') {
+  if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
     return proposalThreshold;
   } else {
     return `${proposalThreshold}e${decimals}`;
@@ -256,8 +256,12 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       });
     }
 
+    let returnStatement = (opts.decimals === 0 || opts.votes === 'erc721votes') ? 
+      `return ${opts.quorumAbsolute};` :
+      `return ${opts.quorumAbsolute}e${opts.decimals};`;
+
     c.setFunctionBody([
-      `return ${opts.quorumAbsolute}e${opts.decimals};`,
+      returnStatement,
     ], functions.quorum, 'pure');
   }
 }
