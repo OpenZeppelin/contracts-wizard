@@ -137,7 +137,7 @@
   <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-sm">
       Token decimals:
-      <input {...decimalsInputAttributes} type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
+      <input {...decimalsInputAttributes} type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit use:error={errors?.decimals}>
     </label>
     <HelpTooltip>Token amounts above will be extended with this number of zeroes. Does not apply to ERC721Votes.</HelpTooltip>
   </p>

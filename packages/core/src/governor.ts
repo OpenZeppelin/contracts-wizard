@@ -60,6 +60,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
+  validateDecimals(allOpts.decimals);
+
   addBase(c, allOpts);
   addSettings(c, allOpts);
   addCounting(c, allOpts);
@@ -143,6 +145,14 @@ function getVotingPeriod(opts: Required<GovernorOptions>): number {
     } else {
       throw e;
     }
+  }
+}
+
+function validateDecimals(decimals: number) {
+  if (!/^\d+$/.test(decimals.toString())) {
+    throw new OptionsError({
+      decimals: 'Not a valid number',
+    });
   }
 }
 
