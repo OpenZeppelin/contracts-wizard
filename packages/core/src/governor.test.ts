@@ -32,6 +32,13 @@ testGovernor('governor with custom decimals', {
   quorumAbsolute: '1',
 });
 
+testGovernor('governor with 0 decimals', {
+  decimals: 0,
+  proposalThreshold: '1',
+  quorumMode: 'absolute',
+  quorumAbsolute: '1',
+});
+
 testGovernor('governor with settings', {
   settings: true,
   proposalThreshold: '1',
