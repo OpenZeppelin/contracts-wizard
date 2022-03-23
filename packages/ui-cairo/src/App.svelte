@@ -18,8 +18,8 @@
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
 
-    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/cairo-wizard';
-    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from '@openzeppelin/cairo-wizard';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from 'core-cairo';
+    import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from 'core-cairo';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -83,7 +83,7 @@
     //   }
     // };
 
-    // const zipModule = import('@openzeppelin/cairo-wizard/zip');
+    // const zipModule = import('core-cairo/zip');
 
     // const downloadVendoredHandler = async () => {
     //   const { zipContract } = await zipModule;

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Info } from '@openzeppelin/cairo-wizard';
-  import { infoDefaults } from '@openzeppelin/cairo-wizard';
+  import type { Info } from 'core-cairo';
+  import { infoDefaults } from 'core-cairo';
 
   import HelpTooltip from './HelpTooltip.svelte';
 

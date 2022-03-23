@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Upgradeable } from '@openzeppelin/cairo-wizard';
+  import type { Upgradeable } from 'core-cairo';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';

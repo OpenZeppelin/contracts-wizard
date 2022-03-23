@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/cairo-wizard';
-  import { premintPattern, governorDefaults as defaults, infoDefaults } from '@openzeppelin/cairo-wizard';
+  import type { KindedOptions, OptionsErrorMessages } from 'core-cairo';
+  import { premintPattern, governorDefaults as defaults, infoDefaults } from 'core-cairo';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';

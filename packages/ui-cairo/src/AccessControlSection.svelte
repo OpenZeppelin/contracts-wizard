@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Access } from '@openzeppelin/cairo-wizard';
+  import type { Access } from 'core-cairo';
 
   import HelpTooltip from './HelpTooltip.svelte';
 

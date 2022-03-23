@@ -1,4 +1,4 @@
-import type { GenericOptions } from '@openzeppelin/cairo-wizard';
+import type { GenericOptions } from 'core-cairo';
 import { v4 as uuid } from 'uuid';
 
 const instance = uuid();
