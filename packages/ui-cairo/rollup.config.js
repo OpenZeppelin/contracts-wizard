@@ -22,7 +22,7 @@ const livereloader =
   !production &&
   livereload({
     watch: 'public',
-    port: 35731,
+    port: 35732,
   });
 
 function onStartRun(cmd, ...args) {
