@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["dom", "dom.iterable", "es2019", "es2019.array"],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "../core_cairo/src/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+}
