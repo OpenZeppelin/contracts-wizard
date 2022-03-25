@@ -109,7 +109,7 @@ export default [
       commonjs(),
 
       typescript({
-        include: ['src/**/*.ts', '../core-cairo/src/**/*.ts'],
+        include: ['src/**/*.ts', '../core/src/**/*.ts', '../core-cairo/src/**/*.ts'],
         sourceMap: true,
         inlineSources: true,
       }),

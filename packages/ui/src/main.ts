@@ -1,7 +1,7 @@
 import './styles/global.css';
 
 import type {} from 'svelte';
-import App from './App.svelte';
+import App from './cairo/App.svelte';
 import { postMessage } from './post-message';
 
 function postResize() {
