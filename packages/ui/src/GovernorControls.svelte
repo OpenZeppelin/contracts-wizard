@@ -47,6 +47,24 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  let wasERC721Votes = opts.votes === 'erc721votes';
+  let previousDecimals = opts.decimals;
+  let disabledDecimals: boolean;
+
+  $: {
+    if (wasERC721Votes && opts.votes !== 'erc721votes') {
+      opts.decimals = previousDecimals;
+      disabledDecimals = false;
+    } else if (!wasERC721Votes && opts.votes === 'erc721votes') {
+      previousDecimals = opts.decimals;
+      opts.decimals = 0;     
+      disabledDecimals = true;
+    }
+
+    wasERC721Votes = opts.votes === 'erc721votes';
+  }
+
 </script>
 
 <section class="controls-section">
@@ -115,9 +133,9 @@
   <p class="tooltip-container flex justify-between items-center pr-2">
     <label class="text-sm">
       Token decimals:
-      <input type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit>
+      <input disabled={disabledDecimals} type="number" bind:value={opts.decimals} placeholder={defaults.decimals.toString()} class="input-inline" use:resizeToFit use:error={errors?.decimals}>
     </label>
-    <HelpTooltip>Token amounts above will be extended with this number of zeroes.</HelpTooltip>
+    <HelpTooltip>Token amounts above will be extended with this number of zeroes. Does not apply to ERC721Votes.</HelpTooltip>
   </p>
 
   <div class="checkbox-group">
@@ -147,9 +165,17 @@
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes">
-      ERC20 or ERC721
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/governance#GovernorVotes">
-        Represent voting power with a votes-enabled ERC20 or ERC721 token. Voters can entrust their voting power to a delegate.
+      ERC20Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Votes">
+        Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.votes === 'erc721votes'}>
+      <input type="radio" bind:group={opts.votes} value="erc721votes">
+      ERC721Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Votes">
+        Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
 

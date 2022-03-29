@@ -19,7 +19,7 @@ export const defaults = {
   settings: true,
 } as const;
 
-export const votesOptions = ['erc20votes', 'comp'] as const;
+export const votesOptions = ['erc20votes', 'erc721votes', 'comp'] as const;
 export type VotesOptions = typeof votesOptions[number];
 
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
@@ -45,7 +45,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
-    decimals: opts.decimals || defaults.decimals,
+    decimals: opts.decimals ?? defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? '',
@@ -59,6 +59,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);
+
+  validateDecimals(allOpts.decimals);
 
   addBase(c, allOpts);
   addSettings(c, allOpts);
@@ -146,14 +148,22 @@ function getVotingPeriod(opts: Required<GovernorOptions>): number {
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals }: Required<GovernorOptions>): string {
+function validateDecimals(decimals: number) {
+  if (!/^\d+$/.test(decimals.toString())) {
+    throw new OptionsError({
+      decimals: 'Not a valid number',
+    });
+  }
+}
+
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
     });
   }
 
-  if (/^0+$/.test(proposalThreshold)) {
+  if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
     return proposalThreshold;
   } else {
     return `${proposalThreshold}e${decimals}`;
@@ -191,6 +201,10 @@ const votesModules = {
     tokenType: 'IVotes',
     parentName: 'GovernorVotes',
   },
+  erc721votes: {
+    tokenType: 'IVotes',
+    parentName: 'GovernorVotes',
+  },
   comp: {
     tokenType: 'ERC20VotesComp',
     parentName: 'GovernorVotesComp',
@@ -217,9 +231,9 @@ export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
-    if (opts.votes !== 'erc20votes') {
+    if (opts.votes !== 'erc20votes' && opts.votes !== 'erc721votes') {
       throw new OptionsError({
-        quorumPercent: 'Percent-based quorum is only available for ERC20 or ERC721 votes',
+        quorumPercent: 'Percent-based quorum is only available for ERC20Votes or ERC721Votes',
       });
     }
 
@@ -252,8 +266,12 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       });
     }
 
+    let returnStatement = (opts.decimals === 0 || opts.votes === 'erc721votes') ? 
+      `return ${opts.quorumAbsolute};` :
+      `return ${opts.quorumAbsolute}e${opts.decimals};`;
+
     c.setFunctionBody([
-      `return ${opts.quorumAbsolute}e${opts.decimals};`,
+      returnStatement,
     ], functions.quorum, 'pure');
   }
 }
