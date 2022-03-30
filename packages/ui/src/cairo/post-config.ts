@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 const instance = uuid();
 
-export type Action = 'copy' | 'remix' | 'download-npm' | 'download-vendored';
+export type Action = 'copy-cairo' | 'download-cairo';
 
 // NOTE: We have to make sure any fields sent in the body are defined in the
 // hidden form in public/index.html.

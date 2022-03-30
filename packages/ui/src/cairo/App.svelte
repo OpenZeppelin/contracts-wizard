@@ -11,6 +11,7 @@
     import ForumIcon from '../icons/ForumIcon.svelte';
     import Dropdown from '../Dropdown.svelte';
     import OverflowMenu from '../OverflowMenu.svelte';
+    import FileIcon from '../icons/FileIcon.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from 'core-cairo';
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from 'core-cairo';
@@ -54,39 +55,18 @@
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
       if (opts) {
-        await postConfig(opts, 'copy');
+        await postConfig(opts, 'copy-cairo');
       }
     };
 
-    // const remixHandler = async (e: MouseEvent) => {
-    //   e.preventDefault();
-    //   if ((e.target as Element)?.classList.contains('disabled')) return;
-    //   const versionedCode = printContractVersioned(contract);
-    //   window.open(remixURL(versionedCode).toString(), '_blank');
-    //   if (opts) {
-    //     await postConfig(opts, 'remix');
-    //   }
-    // };
+    const downloadCairoHandler = async () => {
+      const blob = new Blob([code], { type: 'text/plain' });
+      if (opts) {
+        saveAs(blob, opts.name + '.cairo');
+        await postConfig(opts, 'download-cairo');
+      }
+    };
 
-    // const downloadNpmHandler = async () => {
-    //   const blob = new Blob([code], { type: 'text/plain' });
-    //   if (opts) {
-    //     saveAs(blob, opts.name + '.sol');
-    //     await postConfig(opts, 'download-npm');
-    //   }
-    // };
-
-    // const zipModule = import('core-cairo/zip');
-
-    // const downloadVendoredHandler = async () => {
-    //   const { zipContract } = await zipModule;
-    //   const zip = zipContract(contract);
-    //   const blob = await zip.generateAsync({ type: 'blob' });
-    //   saveAs(blob, 'contracts.zip');
-    //   if (opts) {
-    //     await postConfig(opts, 'download-vendored');
-    //   }
-    // };
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
@@ -99,12 +79,6 @@
         <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
           ERC721
         </button>
-        <!--<button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
-          ERC1155
-        </button>
-        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
-          Governor
-        </button> -->
       </OverflowMenu>
     </div>
 
@@ -114,43 +88,19 @@
         Copy to Clipboard
       </button>
 
-      <!-- <Tooltip let:trigger disabled={!opts?.upgradeable} theme="light-red border" interactive hideOnClick={false}>
-        <button use:trigger class="action-button" class:disabled={opts?.upgradeable} on:click={remixHandler}>
-          <RemixIcon />
-          Open in Remix
-        </button>
-        <div slot="content">
-          Upgradeable contracts are not supported on Remix.
-          Use Hardhat or Truffle with <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
-          <br> -->
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <!-- <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-        </div>
-      </Tooltip> -->
-
       <Dropdown let:active>
         <button class="action-button" class:active slot="button">
           <DownloadIcon />
           Download
         </button>
 
-        <!-- <button class="download-option" on:click={downloadNpmHandler}>
+        <button class="download-option" on:click={downloadCairoHandler}>
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
-            <p>Simple to receive updates.</p>
+            <p>Requires installation of Python package (<code>openzeppelin-cairo-contracts</code>).</p>
           </div>
         </button>
-
-        <button class="download-option" on:click={downloadVendoredHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
-            <p>Does not require npm package.</p>
-            <p>Must be updated manually.</p>
-          </div>
-        </button> -->
       </Dropdown>
     </div>
   </div>
