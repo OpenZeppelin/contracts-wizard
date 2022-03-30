@@ -18,7 +18,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
 });
 
 onDOMContentLoaded(function () {
-  const wizards = document.querySelectorAll<HTMLElement>('oz-wizard-cairo');
+  const wizards = document.querySelectorAll<HTMLElement>('oz-wizard');
 
   for (const w of wizards) {
     w.style.display = 'block';
