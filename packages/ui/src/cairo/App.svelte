@@ -5,23 +5,16 @@
 
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
-    import ERC1155Controls from './ERC1155Controls.svelte';
-    import GovernorControls from './GovernorControls.svelte';
-    import CopyIcon from './icons/CopyIcon.svelte';
-    import RemixIcon from './icons/RemixIcon.svelte';
-    import DownloadIcon from './icons/DownloadIcon.svelte';
-    import ZipIcon from './icons/ZipIcon.svelte';
-    import FileIcon from './icons/FileIcon.svelte';
-    import DocsIcon from './icons/DocsIcon.svelte';
-    import ForumIcon from './icons/ForumIcon.svelte';
-    import Dropdown from './Dropdown.svelte';
-    import OverflowMenu from './OverflowMenu.svelte';
-    import Tooltip from './Tooltip.svelte';
+    import CopyIcon from '../icons/CopyIcon.svelte';
+    import DownloadIcon from '../icons/DownloadIcon.svelte';
+    import DocsIcon from '../icons/DocsIcon.svelte';
+    import ForumIcon from '../icons/ForumIcon.svelte';
+    import Dropdown from '../Dropdown.svelte';
+    import OverflowMenu from '../OverflowMenu.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from 'core-cairo';
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from 'core-cairo';
     import { postConfig } from './post-config';
-    import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
 
@@ -169,12 +162,6 @@
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
-      </div>
-      <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} />
-      </div>
-      <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">

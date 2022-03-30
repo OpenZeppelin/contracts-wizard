@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../HelpTooltip.svelte';
 
   import type { KindedOptions } from 'core-cairo';
   import { premintPattern, infoDefaults } from 'core-cairo';

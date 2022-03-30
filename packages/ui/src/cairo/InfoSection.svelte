@@ -2,7 +2,7 @@
   import type { Info } from 'core-cairo';
   import { infoDefaults } from 'core-cairo';
 
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../HelpTooltip.svelte';
 
   export let info: Info;
 </script>

@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Upgradeable } from 'core-cairo';
 
-  import ToggleRadio from './inputs/ToggleRadio.svelte';
-  import HelpTooltip from './HelpTooltip.svelte';
+  import ToggleRadio from '../inputs/ToggleRadio.svelte';
+  import HelpTooltip from '../HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
 </script>

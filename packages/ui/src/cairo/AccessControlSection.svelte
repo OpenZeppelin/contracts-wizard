@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Access } from 'core-cairo';
 
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../HelpTooltip.svelte';
 
   export let access: Access;
 </script>
