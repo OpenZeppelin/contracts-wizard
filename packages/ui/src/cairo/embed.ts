@@ -1,4 +1,4 @@
-import type { Message } from './post-message';
+import type { Message } from '../post-message';
 
 if (!document.currentScript || !('src' in document.currentScript)) {
   throw new Error('Unknown script URL');
