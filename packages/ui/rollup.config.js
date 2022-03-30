@@ -65,6 +65,28 @@ export default [
     ],
   },
   {
+    input: 'src/cairo/embed.ts',
+    output: {
+      sourcemap: true,
+      format: 'iife',
+      name: 'embed',
+      file: 'public/build/cairo/embed.js',
+    },
+    plugins: [
+      typescript({
+        include: ['src/**/*.ts'],
+        sourceMap: true,
+        inlineSources: true,
+      }),
+
+      livereloader,
+
+      // If we're building for production (npm run build
+      // instead of npm run dev), minify
+      production && terser(),
+    ],
+  },
+  {
     preserveEntrySignatures: false,
     input: 'src/main.ts',
     output: {
