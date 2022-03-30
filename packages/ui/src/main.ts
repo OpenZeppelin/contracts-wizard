@@ -28,5 +28,5 @@ cairoApp.$on('tab-change', (e: CustomEvent) => {
   postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
 });
 
-export default cairoApp;
+export default app;
 
