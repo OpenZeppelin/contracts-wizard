@@ -17,14 +17,14 @@ resizeObserver.observe(document.body);
 
 const tab = new URLSearchParams(window.location.search).get('tab');
 
-const app = new App({ target: document.body, props: { tab } });
-const cairoApp = new CairoApp({ target: document.body, props: { tab } });
+let app;
+if (window.location.pathname === '/embed-cairo') {
+  app = new CairoApp({ target: document.body, props: { tab } });
+} else {
+  app = new App({ target: document.body, props: { tab } });
+}
 
 app.$on('tab-change', (e: CustomEvent) => {
-  postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
-});
-
-cairoApp.$on('tab-change', (e: CustomEvent) => {
   postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
 });
 

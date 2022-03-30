@@ -24,7 +24,7 @@ onDOMContentLoaded(function () {
     w.style.display = 'block';
     w.style.minHeight = '53rem';
 
-    const src = new URL('embed', currentScript.origin);
+    const src = new URL('embed-cairo', currentScript.origin);
 
     const tab = w.getAttribute('data-tab') ?? w.getAttribute('tab');
     const sync = w.getAttribute('data-sync-url');
