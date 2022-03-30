@@ -4,10 +4,8 @@ import crypto from 'crypto';
 
 import { generateERC20Options } from './erc20';
 import { generateERC721Options } from './erc721';
-import { generateERC1155Options } from './erc1155';
 import { buildGeneric, GenericOptions } from '../build-generic';
 import { printContract } from '../print';
-import { generateGovernorOptions } from './governor';
 import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
@@ -21,14 +19,6 @@ export function* generateOptions(): Generator<GenericOptions> {
 
   for (const kindOpts of generateERC721Options()) {
     yield { kind: 'ERC721', ...kindOpts };
-  }
-
-  for (const kindOpts of generateERC1155Options()) {
-    yield { kind: 'ERC1155', ...kindOpts };
-  }
-
-  for (const kindOpts of generateGovernorOptions()) {
-    yield { kind: 'Governor', ...kindOpts };
   }
 }
 

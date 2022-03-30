@@ -15,7 +15,7 @@
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from 'core-cairo';
     import { ContractBuilder, buildGeneric, printContract, printContractVersioned, sanitizeKind, OptionsError } from 'core-cairo';
-    import { postConfig } from './post-config';
+    import { postConfig } from '../post-config';
 
     import { saveAs } from 'file-saver';
 
