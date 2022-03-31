@@ -133,6 +133,9 @@ body {
     color: #818998;
     margin-top: 0.5rem;
   }
+  .faq a {
+    color: inherit;
+  }
   
   /* Defender */
   .defender {
