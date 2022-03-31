@@ -1,24 +1,4 @@
-import path from 'path';
-
 import type { Contract } from './contract';
-
-const upgradeableName = (n: string) => {
-  if (n === 'Initializable') {
-    return n;
-  } else {
-    return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
-  }
-}
-
-const upgradeableImport = (p: string) => {
-  const { dir, ext, name } = path.parse(p);
-  // Use path.posix to get forward slashes
-  return path.posix.format({
-    ext,
-    dir: dir.replace(/^openzeppelin\/contracts/, 'openzeppelin/contracts-upgradeable'),
-    name: upgradeableName(name),
-  });
-};
 
 function convertPathToImport(relativePath: string): string {
 	return relativePath.split('/').join('.');
