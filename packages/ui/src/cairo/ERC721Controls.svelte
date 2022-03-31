@@ -4,7 +4,6 @@
   import type { KindedOptions } from 'core-cairo';
   import { infoDefaults } from 'core-cairo';
   
-  import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   
@@ -92,8 +91,6 @@
     </label>
   </div>
 </section>
-
-<AccessControlSection bind:access={opts.access} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
