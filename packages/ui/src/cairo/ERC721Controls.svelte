@@ -63,29 +63,29 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip>
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#presets">
         Privileged accounts will be able to emit new tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Burnable">
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#presets">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#presets">
+        Privileged accounts will be able to pause the functionality marked as <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.uriStorage}>
       <input type="checkbox" bind:checked={opts.uriStorage}>
       URI Storage
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721URIStorage">
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#interpreting-erc721-uris">
         Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>

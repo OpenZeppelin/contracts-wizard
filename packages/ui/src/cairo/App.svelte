@@ -115,8 +115,8 @@
         <ERC721Controls bind:opts={allOpts.ERC721} />
       </div>
       <div class="controls-footer">
-        <a href="https://forum.openzeppelin.com/" target="_blank">
-          <ForumIcon/> Forum
+        <a href="https://github.com/OpenZeppelin/cairo-contracts/discussions" target="_blank">
+          <ForumIcon/> Discussions
         </a>
         <a href="https://github.com/OpenZeppelin/cairo-contracts/tree/main/docs" target="_blank">
           <DocsIcon/> Docs

@@ -15,7 +15,7 @@
       <span class="ml-1">
         <ToggleRadio bind:value={upgradeable} defaultValue="transparent" />
       </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/openzeppelin/upgrades">
+      <HelpTooltip align="right" link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Proxies.md#using-proxies">
       Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
       </HelpTooltip>
     </label>
