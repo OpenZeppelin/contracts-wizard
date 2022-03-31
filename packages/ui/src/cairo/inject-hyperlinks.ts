@@ -6,7 +6,7 @@ export function injectHyperlinks(code: string) {
     const [line, spaceBefore, ozPrefix, contractsLibrary, spaceAfter] = match;
     if (line !== undefined && spaceBefore !== undefined && ozPrefix !== undefined && contractsLibrary !== undefined && spaceAfter !== undefined) {
       const libraryRelativePath = contractsLibrary.replace(/\./g, '/');
-      const replacedImportLine = `${spaceBefore}<a href='https://github.com/OpenZeppelin/cairo-contracts/blob/main/src/${ozPrefix}${libraryRelativePath}.cairo' target='_blank' rel='noopener noreferrer'>${ozPrefix}${contractsLibrary}</a>${spaceAfter}`;
+      const replacedImportLine = `${spaceBefore}<a class="import-link" href='https://github.com/OpenZeppelin/cairo-contracts/blob/main/src/${ozPrefix}${libraryRelativePath}.cairo' target='_blank' rel='noopener noreferrer'>${ozPrefix}${contractsLibrary}</a>${spaceAfter}`;
       result = result.replace(line, replacedImportLine);
     }
     match = importRegex.exec(code);
