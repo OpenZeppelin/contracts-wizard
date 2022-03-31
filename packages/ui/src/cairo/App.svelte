@@ -18,6 +18,7 @@
     import { postConfig } from '../post-config';
 
     import { saveAs } from 'file-saver';
+    import { injectHyperlinks } from './inject-hyperlinks';
 
     const dispatch = createEventDispatcher();
 
@@ -50,7 +51,7 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = hljs.highlight(code, {language: 'python'}).value;
+    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'python'}).value);
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
