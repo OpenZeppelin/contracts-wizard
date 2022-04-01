@@ -24,7 +24,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       // find the corresponding import
       for (const parent of contract.parents) {
         if (parent.library.prefix === fn.module) {
-          const prefixedParentContractName = `${parent.library.prefix}_${fn.name}`;
+          const prefixedParentContractName = `${parent.library.prefix}_${fn.parentFunctionName ?? fn.name}`;
 
           baseImports.set(prefixedParentContractName, convertPathToImport(parent.library.modulePath));
           break;
@@ -293,7 +293,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   if (!fn.final) {
     const parentFunctionCall = fn.read ? 
     `${fn.module}_${fn.name}.read()` :
-    `${fn.module}_${fn.name}(${fn.args.map(a => a.name).join(', ')})`;
+    `${fn.module}_${fn.parentFunctionName ?? fn.name}(${fn.args.map(a => a.name).join(', ')})`;
     const callParentLine = fn.passthrough ? `let (${returnArgs}) = ${parentFunctionCall}` : `${parentFunctionCall}`;
     code.push(callParentLine);
   }

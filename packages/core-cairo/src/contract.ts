@@ -44,6 +44,7 @@ export interface BaseFunction {
   kind?: FunctionKind;
   passthrough?: boolean;
   read?: boolean;
+  parentFunctionName?: string;
 }
 
 export interface ContractFunction extends BaseFunction {

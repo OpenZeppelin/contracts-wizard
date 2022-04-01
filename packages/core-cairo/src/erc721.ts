@@ -26,16 +26,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   addBase(c, opts.name, opts.symbol);
 
-  c.addParentLibrary(
-    {
-      prefix: 'ERC165', // TODO add an import (rather than a parent library) to a map without relying on prefix, since prefix does not make sense in context of some libs such as utils
-      modulePath: 'openzeppelin.introspection.ERC165',
-    },
-    [],
-    ['ERC165_supports_interface'],
-    false
-  );
-  c.addFunction(functions.supports_interface);
+  addSupportsInterface(c);
 
   c.addFunction(functions.name);
   c.addFunction(functions.symbol);
@@ -84,6 +75,16 @@ export function buildERC721(opts: ERC721Options): Contract {
   setInfo(c, info);
 
   return c;
+}
+
+function addSupportsInterface(c: ContractBuilder) {
+  c.addParentLibrary(
+    {
+      prefix: 'ERC165',
+      modulePath: 'openzeppelin.introspection.ERC165',
+    }, [], [], false
+  );
+  c.addFunction(functions.supportsInterface);
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
@@ -202,7 +203,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   // --- view functions ---
 
 
-  supports_interface: {
+  supportsInterface: {
     module: 'ERC165',
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
@@ -211,7 +212,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     ],
     returns: [{ name: 'success', type: 'felt' }],
     passthrough: true,
-    // TODO support different library function name, and remove adding separate import
+    parentFunctionName: 'supports_interface',
   },
 
   name: {
