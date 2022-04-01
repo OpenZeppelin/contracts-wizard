@@ -12,12 +12,12 @@ export interface ERC20Options extends CommonOptions {
   burnable?: boolean;
   snapshots?: boolean;
   pausable?: boolean;
-  premint?: number;
+  premint?: string;
   mintable?: boolean;
   permit?: boolean;
   votes?: boolean;
   flashmint?: boolean;
-  decimals?: number;
+  decimals?: string;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -27,7 +27,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   // TODO add imports for starkware common libraries without initializer
 
-  addBase(c, opts.name, opts.symbol, opts.decimals ?? 18); // TODO define this default somewhere
+  addBase(c, opts.name, opts.symbol, opts.decimals ?? '18'); // TODO define this default somewhere
 
   c.addFunction(functions.name);
   c.addFunction(functions.symbol);
@@ -101,7 +101,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, decimals: number) {
+function addBase(c: ContractBuilder, name: string, symbol: string, decimals: string) {
   c.addParentLibrary(
     {
       prefix: 'ERC20',
@@ -144,7 +144,7 @@ function addBurnable(c: ContractBuilder) {
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
-function addPremint(c: ContractBuilder, amount: number, decimals: number) {
+function addPremint(c: ContractBuilder, amount: string, decimals: string) {
   // const m = amount.match(premintPattern);
   // if (m) {
   //   const integer = m[1]?.replace(/^0+/, '') ?? '';
@@ -161,9 +161,9 @@ function addPremint(c: ContractBuilder, amount: number, decimals: number) {
   //   }
   // }
 
-  if (amount !== undefined && amount !== 0) {
+  if (amount !== undefined && amount !== '0') {
     c.addConstructorArgument({ name:'recipient', type:'felt' });
-    c.addConstructorCode(`ERC20_mint(recipient, Uint256(${amount * Math.pow(10, decimals)}, 0))`); // TODO represent exponent in Cairo and/or handle floating point errors
+    c.addConstructorCode(`ERC20_mint(recipient, Uint256(${amount + "0".repeat(parseInt(decimals))}, 0))`); // TODO represent exponent in Cairo and/or handle floating point errors
   }
 
   c.addParentFunctionImport(

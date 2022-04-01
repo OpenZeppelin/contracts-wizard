@@ -42,7 +42,7 @@
 
       <label class="labeled-input">
         <span>Decimals</span>
-        <input bind:value={opts.decimals} type="number" >
+        <input bind:value={opts.decimals}>
       </label>
     </div>
 
@@ -52,7 +52,7 @@
           Premint
           <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
         </span>
-        <input bind:value={opts.premint} type="number" placeholder=0 pattern={premintPattern.source}>
+        <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
       </label>
   </div>
 </section>
