@@ -51,11 +51,11 @@ testERC20('erc20 burnable pausable with snapshots', {
 });
 
 testERC20('erc20 preminted', {
-  premint: 1000,
+  premint: '1000',
 });
 
 testERC20('erc20 premint of 0', {
-  premint: 0,
+  premint: '0',
 });
 
 testERC20('erc20 mintable', {
@@ -81,7 +81,7 @@ testERC20('erc20 flashmint', {
 });
 
 testERC20('erc20 full upgradeable transparent', {
-  premint: 2000,
+  premint: '2000',
   access: 'roles',
   burnable: true,
   mintable: true,
@@ -94,7 +94,7 @@ testERC20('erc20 full upgradeable transparent', {
 });
 
 testERC20('erc20 full upgradeable uups', {
-  premint: 2000,
+  premint: '2000',
   access: 'roles',
   burnable: true,
   mintable: true,

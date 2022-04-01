@@ -5,6 +5,7 @@ import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { OptionsError } from './error';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -74,7 +75,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (opts.premint) {
-    addPremint(c, opts.premint, opts.decimals ?? 18); // TODO define this default somewhere
+    addPremint(c, opts.premint, opts.decimals ?? '18'); // TODO define this default somewhere
   }
 
   if (opts.mintable) {
@@ -162,6 +163,15 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
   // }
 
   if (amount !== undefined && amount !== '0') {
+
+    if (!/^\d+$/.test(amount)) {
+      throw new OptionsError({
+        premint: 'Not a valid number',
+      });
+    } 
+    // TODO allow amount to be fractional
+    // TODO check the `decimals` field
+
     c.addConstructorArgument({ name:'recipient', type:'felt' });
     c.addConstructorCode(`ERC20_mint(recipient, Uint256(${amount + "0".repeat(parseInt(decimals))}, 0))`); // TODO represent exponent in Cairo and/or handle floating point errors
   }

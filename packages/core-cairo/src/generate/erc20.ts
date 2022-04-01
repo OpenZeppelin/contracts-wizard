@@ -16,11 +16,11 @@ const blueprint = {
   permit: booleans,
   votes: booleans,
   flashmint: booleans,
-  premint: [1],
+  premint: ['1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
-  decimals: [18]
+  decimals: ['18']
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {

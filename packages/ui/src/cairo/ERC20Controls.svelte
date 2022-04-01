@@ -1,11 +1,13 @@
 <script lang="ts">
   import HelpTooltip from '../HelpTooltip.svelte';
 
-  import type { KindedOptions } from 'core-cairo';
+  import type { KindedOptions, OptionsErrorMessages } from 'core-cairo'
+;
   import { premintPattern, infoDefaults } from 'core-cairo';
 
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import { error } from '../error-tooltip';
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
@@ -14,8 +16,8 @@
     burnable: false,
     snapshots: false,
     pausable: false,
-    premint: 0,
-    decimals: 18,
+    premint: '0',
+    decimals: '18',
     mintable: false,
     permit: false,
     votes: false,
@@ -24,6 +26,8 @@
     upgradeable: false,
     info: { ...infoDefaults },
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 </script>
 
 <section class="controls-section">
@@ -52,7 +56,7 @@
           Premint
           <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
         </span>
-        <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+        <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
       </label>
   </div>
 </section>
