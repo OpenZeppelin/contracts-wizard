@@ -21,12 +21,24 @@ export interface ERC20Options extends CommonOptions {
   decimals?: string;
 }
 
+function checkDecimals(decimals: string) {
+  if (!/^\d+$/.test(decimals)) {
+    throw new OptionsError({
+      decimals: 'Not a valid number',
+    });
+  } 
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 
   // TODO add imports for starkware common libraries without initializer
+
+  if (opts.decimals !== undefined) {
+    checkDecimals(opts.decimals);
+  }
 
   addBase(c, opts.name, opts.symbol, opts.decimals ?? '18'); // TODO define this default somewhere
 
@@ -143,7 +155,7 @@ function addBurnable(c: ContractBuilder) {
 //   c.addFunctionCode('_snapshot();', functions.snapshot);
 // }
 
-export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
+export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/; // TODO don't allow exponent?
 
 function addPremint(c: ContractBuilder, amount: string, decimals: string) {
   // const m = amount.match(premintPattern);
@@ -169,8 +181,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
         premint: 'Not a valid number',
       });
     } 
-    // TODO allow amount to be fractional
-    // TODO check the `decimals` field
+    // TODO allow amount to be fractional, make use of premintPattern?
 
     c.addConstructorArgument({ name:'recipient', type:'felt' });
     c.addConstructorCode(`ERC20_mint(recipient, Uint256(${amount + "0".repeat(parseInt(decimals))}, 0))`); // TODO represent exponent in Cairo and/or handle floating point errors

@@ -46,7 +46,7 @@
 
       <label class="labeled-input">
         <span>Decimals</span>
-        <input bind:value={opts.decimals}>
+        <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder="18">
       </label>
     </div>
 
