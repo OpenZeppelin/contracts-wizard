@@ -176,7 +176,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
 
   if (amount !== undefined && amount !== '0') {
 
-    if (!/^\d+$/.test(amount)) {
+    if (!/^(\d+\.?\d*)$/.test(amount)) {
       throw new OptionsError({
         premint: 'Not a valid number',
       });
