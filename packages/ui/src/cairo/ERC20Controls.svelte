@@ -33,32 +33,32 @@
 <section class="controls-section">
   <h1>Settings</h1>
 
-    <div class="grid grid-cols-[2fr,1fr] gap-2">
-      <label class="labeled-input">
-        <span>Name</span>
-        <input bind:value={opts.name}>
-      </label>
+  <div class="grid grid-cols-[2fr,1fr] gap-2">
+    <label class="labeled-input">
+      <span>Name</span>
+      <input bind:value={opts.name}>
+    </label>
 
-      <label class="labeled-input">
-        <span>Symbol</span>
-        <input bind:value={opts.symbol}>
-      </label>
-
-      <label class="labeled-input">
-        <span>Decimals</span>
-        <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder="18">
-      </label>
-    </div>
-
-    <div class="grid grid-cols-[2fr,1fr] gap-2">
-      <label class="labeled-input">
-        <span class="flex justify-between pr-2">
-          Premint
-          <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
-        </span>
-        <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
-      </label>
+    <label class="labeled-input">
+      <span>Symbol</span>
+      <input bind:value={opts.symbol}>
+    </label>
   </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Decimals
+    </span>
+    <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder="18">
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Premint
+      <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
+    </span>
+    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
+  </label>
 </section>
 
 <section class="controls-section">
