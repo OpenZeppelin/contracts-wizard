@@ -6,6 +6,7 @@ import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-op
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
+import BN from 'bn.js';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -158,44 +159,70 @@ function addBurnable(c: ContractBuilder) {
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/; // TODO don't allow exponent?
 
 function addPremint(c: ContractBuilder, amount: string, decimals: string) {
-  // const m = amount.match(premintPattern);
-  // if (m) {
-  //   const integer = m[1]?.replace(/^0+/, '') ?? '';
-  //   const decimals = m[2]?.replace(/0+$/, '') ?? '';
-  //   const exponent = Number(m[3] ?? 0);
-
-  //   if (Number(integer + decimals) > 0) {
-  //     const decimalPlace = decimals.length - exponent;
-  //     const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
-  //     const units = integer + decimals + zeroes;
-  //     const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
-  //     c.addConstructorArgument({ name:'recipient', type:'felt' });
-  //     c.addConstructorCode(`ERC20_mint(recipient, Uint256(${units} * 10 ** ${exp}, 0)`);
-  //   }
-  // }
-
   if (amount !== undefined && amount !== '0') {
 
-    if (!/^(\d+\.?\d*)$/.test(amount)) {
+    if (!/^(\d*\.?\d*)$/.test(amount)) {
       throw new OptionsError({
         premint: 'Not a valid number',
       });
     } 
-    // TODO allow amount to be fractional, make use of premintPattern?
 
-    c.addConstructorArgument({ name:'recipient', type:'felt' });
-    c.addConstructorCode(`ERC20_mint(recipient, Uint256(${amount + "0".repeat(parseInt(decimals))}, 0))`); // TODO represent exponent in Cairo and/or handle floating point errors
+    const premintAbsolute = getPremintAbsolute(amount, parseInt(decimals));
+    const premintBN = new BN(premintAbsolute, 10);
+    if (premintBN.bitLength() > 256) {
+      throw new OptionsError({
+        premint: 'Number too large',
+        decimals: 'Number too large',
+      });
+    } else if (premintAbsolute !== '0') {
+      const highBits = premintBN.shrn(128);
+      const lowBits = premintBN.maskn(128);
+  
+      c.addConstructorArgument({ name:'recipient', type:'felt' });
+      c.addConstructorCode(`ERC20_mint(recipient, Uint256(${lowBits}, ${highBits}))`);
+
+      c.addParentFunctionImport(
+        'ERC20',
+        `ERC20_mint`
+      );    
+    }
   }
-
-  c.addParentFunctionImport(
-    'ERC20',
-    `ERC20_mint`
-  );
-  // c.addConstructorArgument({ name:'decimals', type:'felt' });
-  // c.addConstructorArgument({ name:'initial_supply', type:'Uint256' });
-  // c.addConstructorArgument({ name:'recipient', type:'felt' });
-  // c.addConstructorCode('ERC20_mint(recipient, initial_supply)');
 }
+
+/**
+ * Gets premint amount, taking the decimals field into consideration.
+ * 
+ * @param premint Premint amount in token units, may be fractional
+ * @param decimals The number of decimals in the token
+ * @returns premint with zeros padded or removed
+ * @throws OptionsError if premint has more than one decimal character or is more precise than allowed by the decimals field
+ */
+function getPremintAbsolute(premint: string, decimals: number): string {
+  let result;
+  const premintSegments = premint.split(".");
+  if (premintSegments.length > 2) {
+    throw new OptionsError({
+      premint: 'Not a valid number',
+    });
+  } else {
+    let firstSegment = premintSegments[0] ?? '';
+    let lastSegment = premintSegments[1] ?? '';
+    if (decimals > lastSegment.length) {
+      lastSegment += "0".repeat(decimals - lastSegment.length);
+    } else if (decimals < lastSegment.length) {
+      throw new OptionsError({
+        premint: 'Too many decimals',
+      });
+    }
+    // concat segments without leading zeros
+    result = firstSegment.concat(lastSegment).replace(/^0+/, '');
+  }
+  if (result.length === 0) {
+    result = '0';
+  }
+  return result;
+}
+
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access, 'MINTER');
