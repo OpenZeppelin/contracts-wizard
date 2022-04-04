@@ -121,7 +121,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
       prefix: 'ERC20',
       modulePath: 'openzeppelin/token/erc20/library',
     },
-    [name, symbol, decimals],
+    [name, symbol, { lit: decimals } ],
     ['ERC20_transfer', 'ERC20_transferFrom', 'ERC20_approve', 'ERC20_increaseAllowance', 'ERC20_decreaseAllowance', 'ERC20_initializer'],
     // TODO use initializable boolean to determine if parent initializer is imported
   );
@@ -208,7 +208,14 @@ function getPremintAbsolute(premint: string, decimals: number): string {
     let firstSegment = premintSegments[0] ?? '';
     let lastSegment = premintSegments[1] ?? '';
     if (decimals > lastSegment.length) {
-      lastSegment += "0".repeat(decimals - lastSegment.length);
+      try {
+        lastSegment += "0".repeat(decimals - lastSegment.length);
+      } catch (e) {
+        // .repeat gives an error if number is too large
+        throw new OptionsError({
+          decimals: 'Number too large',
+        });
+      }
     } else if (decimals < lastSegment.length) {
       throw new OptionsError({
         premint: 'Too many decimals',
