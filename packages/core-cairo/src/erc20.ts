@@ -6,7 +6,7 @@ import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-op
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
