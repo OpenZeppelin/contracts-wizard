@@ -54,7 +54,11 @@ export default function(hljs: HLJSApi) {
     'func',
     'end',
     'struct',
-    'namespace'
+    'namespace',
+
+    // directives
+    'builtins',
+    'lang',
   ];
 
   const BUILT_INS = [
