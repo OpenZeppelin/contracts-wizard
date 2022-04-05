@@ -51,7 +51,7 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'python'}).value);
+    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
