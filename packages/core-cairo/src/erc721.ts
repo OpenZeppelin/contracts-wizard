@@ -319,7 +319,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
-      { name: '_from', type: 'felt' },
+      { name: 'from_', type: 'felt' },
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
     ],
@@ -330,7 +330,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
-      { name: '_from', type: 'felt' },
+      { name: 'from_', type: 'felt' },
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
       { name: 'data_len', type: 'felt' },

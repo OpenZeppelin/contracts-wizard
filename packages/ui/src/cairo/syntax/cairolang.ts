@@ -76,7 +76,7 @@ export default function(hljs: HLJSApi) {
   ];
 
   const KEYWORDS = {
-    $pattern: /[A-Za-z]\w+|_\w+/,
+    $pattern: /[A-Za-z]\w+|\w+_/,
     keyword: RESERVED_WORDS,
     built_in: BUILT_INS,
     literal: LITERALS,
