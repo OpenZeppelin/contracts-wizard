@@ -290,7 +290,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
     code.push(libraryCall);
   });
 
-  if (!fn.final) {
+  if (!fn.final && fn.module !== undefined) {
     const parentFunctionCall = fn.read ? 
     `${fn.module}_${fn.name}.read()` :
     `${fn.module}_${fn.parentFunctionName ?? fn.name}(${fn.args.map(a => a.name).join(', ')})`;

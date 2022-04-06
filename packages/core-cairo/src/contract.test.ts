@@ -20,8 +20,29 @@ test('contract with function code', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with library call', t => {
+  const Foo = new ContractBuilder();
+  Foo.addParentLibrary(
+    {
+      prefix: 'SomeLibrary',
+      modulePath: 'contracts/some/library',
+    },
+    [],
+    []
+  );
+  Foo.addFunction(_libraryFunction);
+  t.snapshot(printContract(Foo));
+});
+
 const _otherFunction = {
   name: 'otherFunction',
+  kind: 'external' as const,
+  args: [],
+};
+
+const _libraryFunction = {
+  module: 'SomeLibrary',
+  name: 'libraryFunction',
   kind: 'external' as const,
   args: [],
 };

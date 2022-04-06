@@ -31,7 +31,7 @@ function checkDecimals(decimals: string) {
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
-  const c = new ContractBuilder(opts.name);
+  const c = new ContractBuilder();
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 

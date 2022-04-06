@@ -15,7 +15,7 @@ export interface ERC721Options extends CommonOptions {
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
-  const c = new ContractBuilder(opts.name);
+  const c = new ContractBuilder();
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 
