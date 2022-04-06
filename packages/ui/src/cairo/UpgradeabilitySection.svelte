@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Upgradeable } from 'core-cairo';
 
-  import ToggleRadio from '../inputs/ToggleRadio.svelte';
   import HelpTooltip from '../HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
@@ -13,7 +12,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Upgradeability</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={upgradeable} defaultValue="transparent" />
+        <input type="checkbox" bind:checked={upgradeable}>
       </span>
       <HelpTooltip align="right" link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Proxies.md#using-proxies">
       Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
