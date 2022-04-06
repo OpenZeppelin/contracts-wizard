@@ -187,10 +187,6 @@
       background-color: var(--gray-2);
     }
 
-    &.disabled {
-      color: var(--gray-4);
-    }
-
     :global(.icon) {
       margin-right: var(--size-1);
     }
@@ -247,10 +243,6 @@
       margin-top: var(--icon-adjust);
     }
 
-    :not(:hover) + & {
-      border-top: 1px solid var(--gray-2);
-    }
-
     &:hover,
     &:focus, {
       background-color: var(--gray-1);
@@ -278,12 +270,4 @@
     }
   }
 
-  .download-zip-beta {
-    text-transform: uppercase;
-    padding: 0 .2em;
-    border: 1px solid;
-    border-radius: 4px;
-    font-size: .8em;
-    margin-left: .25em;
-  }
 </style>
