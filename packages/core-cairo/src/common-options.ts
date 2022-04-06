@@ -18,7 +18,9 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
 }
 
 export function withImplicitArgs(): FunctionArgument[] {
-  return [ { name: 'syscall_ptr', type: 'felt*' },
-  { name: 'pedersen_ptr', type: 'HashBuiltin*' },
-  { name: 'range_check_ptr' } ];
+  return [ 
+    { name: 'syscall_ptr', type: 'felt*' },
+    { name: 'pedersen_ptr', type: 'HashBuiltin*' },
+    { name: 'range_check_ptr' }
+  ];
 }
