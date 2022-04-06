@@ -175,8 +175,8 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
     const premintBN = new BN(premintAbsolute, 10);
     if (premintBN.bitLength() > 256) { // 256 bits
       throw new OptionsError({
-        premint: 'Number too large',
-        decimals: 'Number too large',
+        premint: 'Premint argument too large',
+        decimals: 'Premint argument too large',
       });
     } else if (premintAbsolute !== '0') {
       const highBits = premintBN.shrn(128);
@@ -215,7 +215,7 @@ function getPremintAbsolute(premint: string, decimals: number): string {
       try {
         lastSegment += "0".repeat(decimals - lastSegment.length);
       } catch (e) {
-        // .repeat gives an error if number is too large
+        // .repeat gives an error if number is too large, although this should not happen since decimals is limited to 256
         throw new OptionsError({
           decimals: 'Number too large',
         });
