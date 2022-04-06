@@ -15,9 +15,8 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 
   c.addFunction(functions.paused);
 
-  setAccessControl(c, functions.pause, access, 'PAUSER');
-
-  setAccessControl(c, functions.unpause, access, 'PAUSER');
+  setAccessControl(c, functions.pause, access);
+  setAccessControl(c, functions.unpause, access);
 }
 
 const functions = defineFunctions({
@@ -46,15 +45,6 @@ const functions = defineFunctions({
     args: [],
   },
   
-  // pause: {
-  //   kind: 'external' as const,
-  //   args: [],
-  // },
-
-  // unpause: {
-  //   kind: 'external' as const,
-  //   args: [],
-  // },
 });
 
 export function setPausable(c: ContractBuilder, fn: BaseFunction) {
