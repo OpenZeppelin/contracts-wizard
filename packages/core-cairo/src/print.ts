@@ -192,10 +192,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
 }
 
 function hasInitializer(parent: Parent) {
-  // CAUTION
-  // This list is validated by compilation of SafetyCheck.sol.
-  // Always keep this list and that file in sync.
-  return !['Initializable', 'ERC20Votes', 'Pausable'].includes(parent.library.prefix);
+  return !['Pausable'].includes(parent.library.prefix);
 }
 
 type SortedFunctions = Record<'code' | 'modifiers' | 'views' | 'externals', ContractFunction[]>;
