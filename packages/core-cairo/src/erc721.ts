@@ -48,9 +48,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   //   addEnumerable(c);
   // }
 
-  if (opts.uriStorage) {
-    addURIStorage(c, access);
-  }
+
+  addURIStorage(c, access);
 
   if (opts.pausable) {
     addPausable(c, access, [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom]);

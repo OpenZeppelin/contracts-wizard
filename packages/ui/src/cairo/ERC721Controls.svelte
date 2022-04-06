@@ -82,13 +82,6 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.uriStorage}>
-      <input type="checkbox" bind:checked={opts.uriStorage}>
-      URI Storage
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#interpreting-erc721-uris">
-        Allows updating token URIs for individual token IDs.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 
