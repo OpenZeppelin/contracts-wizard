@@ -27,6 +27,10 @@ function checkDecimals(decimals: string) {
     throw new OptionsError({
       decimals: 'Not a valid number',
     });
+  } else if (parseInt(decimals) >= 256) { // 8 bits
+    throw new OptionsError({
+      decimals: 'Number too large',
+    });
   } 
 }
 
@@ -169,7 +173,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
 
     const premintAbsolute = getPremintAbsolute(amount, parseInt(decimals));
     const premintBN = new BN(premintAbsolute, 10);
-    if (premintBN.bitLength() > 256) {
+    if (premintBN.bitLength() > 256) { // 256 bits
       throw new OptionsError({
         premint: 'Number too large',
         decimals: 'Number too large',
