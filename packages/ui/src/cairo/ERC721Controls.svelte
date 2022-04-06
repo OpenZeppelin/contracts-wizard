@@ -12,33 +12,13 @@
     kind: 'ERC721',
     name: 'MyToken',
     symbol: 'MTK',
-    baseUri: '',
-    enumerable: false,
-    uriStorage: false,
     burnable: false,
     pausable: false,
     mintable: false,
-    incremental: false,
     access: 'ownable',
     upgradeable: false,
     info: { ...infoDefaults },
   };
-
-  let wasMintable = opts.mintable;
-  let wasIncremental = opts.incremental;
-
-  $: {
-    if (wasMintable && !opts.mintable) {
-      opts.incremental = false;
-    }
-
-    if (opts.incremental && !wasIncremental) {
-      opts.mintable = true;
-    }
-
-    wasMintable = opts.mintable;
-    wasIncremental = opts.incremental;
-  }
 </script>
 
 <section class="controls-section">
