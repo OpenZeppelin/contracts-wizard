@@ -197,7 +197,7 @@ function getPremintAbsolute(premint: string, decimals: number): string {
 
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.mint, access, 'MINTER');
+  setAccessControl(c, functions.mint, access);
 }
 
 const functions = defineFunctions({
