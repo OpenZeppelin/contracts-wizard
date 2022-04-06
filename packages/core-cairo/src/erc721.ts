@@ -153,8 +153,11 @@ function addBurnable(c: ContractBuilder) {
     'ERC721_only_token_owner',
   );
   c.setFunctionBody(
-    ['ERC721_only_token_owner(tokenId)', 'ERC721_burn(tokenId)'],
-     functions.burn
+    [
+      'ERC721_only_token_owner(tokenId)',
+      'ERC721_burn(tokenId)'
+    ],
+    functions.burn
   );
 }
 
@@ -167,7 +170,13 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access, 'MINTER');
-  //c.addFunctionCode('_mint(to, amount);', functions.mint);
+  c.setFunctionBody(
+    [
+      'ERC721_mint(to, tokenId)', 
+      'ERC721_setTokenURI(tokenId, tokenURI)'
+    ],
+    functions.mint
+  );
 }
 
 // function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
@@ -354,6 +363,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     args: [
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
+      { name: 'tokenURI', type: 'felt' },
     ],
   },
   
