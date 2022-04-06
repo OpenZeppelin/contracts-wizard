@@ -2,7 +2,6 @@ import { withImplicitArgs } from './common-options';
 import { toIdentifier } from './utils/to-identifier';
 
 export interface Contract {
-  name: string;
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
@@ -66,7 +65,6 @@ export interface NatspecTag {
 }
 
 export class ContractBuilder implements Contract {
-  readonly name: string;
   license: string = 'MIT';
   upgradeable = false;
 
@@ -79,10 +77,6 @@ export class ContractBuilder implements Contract {
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
   readonly constructorImplicitArgs: FunctionArgument[] = withImplicitArgs();
-
-  constructor(name: string) {
-    this.name = toIdentifier(name, true);
-  }
 
   get parents(): Parent[] {
     return [...this.parentMap.values()].sort((a, b) => {
@@ -195,9 +189,4 @@ export class ContractBuilder implements Contract {
     // }
   }
 
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
-    return !present;
-  }
 }
