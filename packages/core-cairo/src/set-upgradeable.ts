@@ -3,7 +3,7 @@ import type { ContractBuilder } from './contract';
 //import { Access, setAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
-export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
+export const upgradeableOptions = [false, true] as const;
 
 export type Upgradeable = typeof upgradeableOptions[number];
 

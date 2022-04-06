@@ -33,16 +33,9 @@ testERC721('mintable + roles', {
   access: 'roles',
 });
 
-testERC721('full upgradeable transparent', {
+testERC721('full upgradeable', {
   mintable: true,
   pausable: true,
   burnable: true,
-  upgradeable: 'transparent',
-});
-
-testERC721('full upgradeable uups', {
-  mintable: true,
-  pausable: true,
-  burnable: true,
-  upgradeable: 'uups',
+  upgradeable: true,
 });

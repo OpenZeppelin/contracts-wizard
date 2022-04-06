@@ -90,7 +90,7 @@ testERC20('erc20 full upgradeable transparent', {
   permit: true,
   votes: true,
   flashmint: true,
-  upgradeable: 'transparent',
+  upgradeable: true,
 });
 
 testERC20('erc20 full upgradeable uups', {
@@ -103,5 +103,5 @@ testERC20('erc20 full upgradeable uups', {
   permit: true,
   votes: true,
   flashmint: true,
-  upgradeable: 'uups',
+  upgradeable: true,
 });
