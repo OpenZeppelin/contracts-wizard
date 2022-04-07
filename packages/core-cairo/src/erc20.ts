@@ -53,8 +53,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder();
 
-  const { access, upgradeable, info } = withCommonDefaults(opts);
-
   const allOpts = withDefaults(opts);
 
   // TODO add imports for starkware common libraries without initializer
@@ -91,7 +89,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance]);
+    addPausable(c, allOpts.access, [functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance]);
     if (allOpts.burnable) {
       setPausable(c, functions.burn);
     }
@@ -102,12 +100,12 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access);
+    addMintable(c, allOpts.access);
   }
 
-  setUpgradeable(c, upgradeable);
+  setUpgradeable(c, allOpts.upgradeable);
   
-  setInfo(c, info);
+  setInfo(c, allOpts.info);
 
   return c;
 }
