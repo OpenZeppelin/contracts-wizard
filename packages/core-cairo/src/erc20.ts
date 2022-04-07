@@ -8,6 +8,14 @@ import { setInfo } from './set-info';
 import { OptionsError } from './error';
 import BN from 'bn.js';
 
+export const defaults = {
+  burnable: false,
+  pausable: false,
+  premint: '0',
+  mintable: false,
+  decimals: '18',
+} as const;
+
 export interface ERC20Options extends CommonOptions {
   name: string;
   symbol: string;
@@ -30,18 +38,30 @@ function checkDecimals(decimals: string) {
   } 
 }
 
+function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    burnable: opts.burnable ?? defaults.burnable,
+    pausable: opts.pausable ?? defaults.pausable,
+    premint: opts.premint || defaults.premint,
+    mintable: opts.mintable ?? defaults.mintable,
+    decimals: opts.decimals || defaults.decimals,
+  };
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder();
 
   const { access, upgradeable, info } = withCommonDefaults(opts);
 
+  const allOpts = withDefaults(opts);
+
   // TODO add imports for starkware common libraries without initializer
 
-  if (opts.decimals !== undefined) {
-    checkDecimals(opts.decimals);
-  }
+  checkDecimals(allOpts.decimals);
 
-  addBase(c, opts.name, opts.symbol, opts.decimals ?? '18'); // TODO define this default somewhere
+  addBase(c, allOpts.name, allOpts.symbol, allOpts.decimals);
 
   c.addFunction(functions.name);
   c.addFunction(functions.symbol);
@@ -66,22 +86,22 @@ export function buildERC20(opts: ERC20Options): Contract {
     false
   );
 
-  if (opts.burnable) {
+  if (allOpts.burnable) {
     addBurnable(c);
   }
 
-  if (opts.pausable) {
+  if (allOpts.pausable) {
     addPausable(c, access, [functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance]);
-    if (opts.burnable) {
+    if (allOpts.burnable) {
       setPausable(c, functions.burn);
     }
   }
 
-  if (opts.premint) {
-    addPremint(c, opts.premint, opts.decimals ?? '18'); // TODO define this default somewhere
+  if (allOpts.premint) {
+    addPremint(c, allOpts.premint, allOpts.decimals);
   }
 
-  if (opts.mintable) {
+  if (allOpts.mintable) {
     addMintable(c, access);
   }
 
