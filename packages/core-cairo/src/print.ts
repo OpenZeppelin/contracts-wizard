@@ -33,7 +33,6 @@ export function printContract(contract: Contract, opts?: Options): string {
     }
   }
   const importStatementObjs = toImportStatements(baseImports);
-  const importLines = toImportLines(importStatementObjs);
 
   const parentImportsMap: Map<string, string[]> = new Map();
   for (const parent of contract.parents) {
@@ -49,14 +48,6 @@ export function printContract(contract: Contract, opts?: Options): string {
     }
   });
   const parentImportLines = toImportLines(parentImportsMap); 
-
-  // // this deletes the origs from importstatement map
-  // parentImportsMap.forEach((value, key) => {
-  //   importStatementObjs.delete(key);
-  // });
-
-
-
 
   return formatLines(
     ...spaceBetween(
@@ -118,15 +109,9 @@ function toImportStatements(baseImports: Map<string, string>) {
       importStatements.set(moduleName, [importName]);
     } else {
       existingModuleFunctions.push(importName);
-      //importStatements.set(moduleName, existingModuleFunctions);
     }
   }
   return importStatements;
-
-  // const importStatements : string[] = [];
-  // for (const moduleKeys of baseImports.keys()) {
-  //   getImportStatement(baseImports.)
-  // }
 }
 
 function toImportLines(importStatements: Map<string, string[]>) {
@@ -137,27 +122,6 @@ function toImportLines(importStatements: Map<string, string[]>) {
     lines.push(`)`);
   }
   return lines;
-}
-
-// function getBaseImportLines(baseImports: Map<string, string>) {
-//   const result:string[] = [];
-//   for (const [importName, moduleName] of baseImports.entries()) {
-//     result.push(`from ${moduleName} import ${importName}`)
-//   }
-//   return result;
-
-//   // const importStatements : string[] = [];
-//   // for (const moduleKeys of baseImports.keys()) {
-//   //   getImportStatement(baseImports.)
-//   // }
-// }
-
-function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
-  if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.library.prefix)).join(', ')];
-  } else {
-    return [];
-  }
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
@@ -197,16 +161,10 @@ function hasInitializer(parent: Parent) {
 
 type SortedFunctions = Record<'code' | 'modifiers' | 'views' | 'externals', ContractFunction[]>;
 
-// Functions with code first, then those with modifiers, then the rest
 function sortedFunctions(contract: Contract): SortedFunctions {
   const fns: SortedFunctions = { code: [], modifiers: [], views: [], externals: [] };
 
   for (const fn of contract.functions) {
-    // if (fn.code.length > 0) {
-    //   fns.code.push(fn);
-    // } else if (fn.libraryCalls.length > 0) {
-    //   fns.modifiers.push(fn);
-    // } else 
     if (fn.kind === undefined && fn.code.length > 0) { // fallback case, not sure if anything fits in this category
       fns.code.push(fn);
     } else if (fn.kind === 'view') {
@@ -245,39 +203,12 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else {
-    return `'${value}'`; //JSON.stringify(value);
+    return `'${value}'`;
   }
 }
 
 function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
-  const { transformName } = helpers;
-
-  // if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
-  //   return []
-  // }
-
-  // const modifiers: string[] = [fn.kind, ...fn.modifiers];
-
-  // if (fn.mutability !== 'nonpayable') {
-  //   modifiers.splice(1, 0, fn.mutability);
-  // }
-
-  // if (fn.override.size === 1) {
-  //   modifiers.push(`override`);
-  // } else if (fn.override.size > 1) {
-  //   modifiers.push(`override(${[...fn.override].map(transformName).join(', ')})`);
-  // }
-
-  // if (fn.returns?.length) {
-  //   modifiers.push(`returns (${fn.returns.join(', ')})`);
-  // }
-
   const code = [];
-
-  // if (fn.override.size > 0 && !fn.final) {
-  //   const superCall = `super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`;
-  //   code.push(fn.returns?.length ? 'return ' + superCall : superCall);
-  // }
 
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
 
@@ -299,19 +230,15 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 
   const returnVariables = fn.returnValue ? [fn.returnValue] : returnArgs;
 
-  //if (modifiers.length + fn.code.length > 1) {
-    return printFunction2(
-      'func ' + fn.name,
-      fn.implicitArgs?.map(a => printArgument(a, helpers)) ?? [],
-      fn.args.map(a => printArgument(a, helpers)),
-      [fn.kind ?? "kindNotFound"],
-      fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a, helpers)),
-      returnVariables,
-      code,
-    );
-  // } else {
-  //   return [];
-  // }
+  return printFunction2(
+    'func ' + fn.name,
+    fn.implicitArgs?.map(a => printArgument(a, helpers)) ?? [],
+    fn.args.map(a => printArgument(a, helpers)),
+    [fn.kind ?? "kindNotFound"],
+    fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a, helpers)),
+    returnVariables,
+    code,
+  );
 }
 
 // generic for functions and constructors
@@ -319,7 +246,6 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string[], returns: string[] | undefined, returnVariables: string[] | undefined, code: Lines[]): Lines[] {
   const fn = [];
 
-  //modifiers.forEach(modifier => fn.push(`@${modifier}`));
   fn.push(`@${kind}`);
   fn.push(`${kindedName}{`);
 
@@ -375,12 +301,8 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
   if (arg.type !== undefined) {
     const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
-    return `${arg.name}: ${type}`;//[type, arg.name].join(' ');  
+    return `${arg.name}: ${type}`;
   } else {
     return `${arg.name}`;
   }
-}
-
-function printNatspecTags(tags: NatspecTag[]): string[] {
-  return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
