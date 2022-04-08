@@ -69,10 +69,6 @@ export class ContractBuilder implements Contract {
   readonly variableSet: Set<string> = new Set();
 
   /**
-   * Library has { modulePath, prefix?, functions }
-   */
-
-  /**
    * Map of library prefix to Parent object
    */
   private parentMap: Map<string, Library> = new Map<string, Library>();

@@ -125,7 +125,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
 function addBurnable(c: ContractBuilder) {
   c.addParentLibrary(
     {
-      prefix: 'syscalls', // TODO add an import (rather than a parent library) to a map without relying on prefix, since prefix does not make sense in context of some libs such as utils
       path: 'starkware.starknet.common.syscalls',
     },
     [],
