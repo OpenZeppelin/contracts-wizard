@@ -16,7 +16,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
   c.addParentLibrary(
     {
-      prefix: 'Proxy',
+      name: 'Proxy',
       path: 'openzeppelin/upgrades/library',
     },
     [ {lit: 'proxy_admin' }],

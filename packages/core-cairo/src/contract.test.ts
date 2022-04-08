@@ -24,7 +24,7 @@ test('contract with library call', t => {
   const Foo = new ContractBuilder();
   Foo.addParentLibrary(
     {
-      prefix: 'SomeLibrary',
+      name: 'SomeLibrary',
       path: 'contracts/some/library',
     },
     [],

@@ -23,8 +23,8 @@ export function printContract(contract: Contract, opts?: Options): string {
     if (fn.module !== undefined) {
       // find the corresponding import
       for (const parent of contract.libraries) {
-        if (parent.module.prefix === fn.module) {
-          const prefixedParentContractName = `${parent.module.prefix}_${fn.parentFunctionName ?? fn.name}`;
+        if (parent.module.name === fn.module) {
+          const prefixedParentContractName = `${parent.module.name}_${fn.parentFunctionName ?? fn.name}`;
 
           baseImports.set(prefixedParentContractName, convertPathToImport(parent.module.path));
           break;
@@ -156,7 +156,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
 }
 
 function hasInitializer(parent: Library) {
-  return parent.initializer !== undefined && parent.module.prefix !== undefined;
+  return parent.initializer !== undefined && parent.module.name !== undefined;
 }
 
 type SortedFunctions = Record<'code' | 'modifiers' | 'views' | 'externals', ContractFunction[]>;
@@ -178,10 +178,10 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ module: contract, initializer }: Library, helpers: Helpers): [] | [string] {
-  if (initializer === undefined || contract.prefix === undefined) {
+  if (initializer === undefined || contract.name === undefined) {
     return [];
   }
-  const fn = `${contract.prefix}_initializer`;
+  const fn = `${contract.name}_initializer`;
   return [
     fn + '(' + initializer.params.map(printValue).join(', ') + ')',
   ];

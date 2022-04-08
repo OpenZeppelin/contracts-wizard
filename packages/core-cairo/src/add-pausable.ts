@@ -5,7 +5,7 @@ import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
   c.addParentLibrary({
-    prefix: 'Pausable',
+    name: 'Pausable',
     path: 'openzeppelin/security/pausable',    
   }, [], ['Pausable_pause', 'Pausable_unpause', 'Pausable_when_not_paused'], false);
 

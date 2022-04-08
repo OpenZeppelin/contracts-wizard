@@ -7,6 +7,7 @@ import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
 import BN from 'bn.js';
+import { defineModules } from './utils/define-modules';
 
 export const defaults = {
   burnable: false,
@@ -75,10 +76,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addFunction(functions.decreaseAllowance);
 
   c.addParentLibrary(
-    {
-      prefix: 'constants', // TODO add an import (rather than a parent library) to a map without relying on prefix, since prefix does not make sense in context of some libs such as utils
-      path: 'openzeppelin.utils.constants',
-    },
+    modules.bool,
     [],
     ['TRUE'],
     false
@@ -112,10 +110,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
 function addBase(c: ContractBuilder, name: string, symbol: string, decimals: string) {
   c.addParentLibrary(
-    {
-      prefix: 'ERC20',
-      path: 'openzeppelin/token/erc20/library',
-    },
+    modules.ERC20,
     [name, symbol, { lit: decimals } ],
     ['ERC20_transfer', 'ERC20_transferFrom', 'ERC20_approve', 'ERC20_increaseAllowance', 'ERC20_decreaseAllowance', 'ERC20_initializer'],
     // TODO use initializable boolean to determine if parent initializer is imported
@@ -124,9 +119,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
 
 function addBurnable(c: ContractBuilder) {
   c.addParentLibrary(
-    {
-      path: 'starkware.starknet.common.syscalls',
-    },
+    modules.syscalls,
     [],
     ['get_caller_address'],
     false
@@ -216,6 +209,20 @@ function getPremintAbsolute(premint: string, decimals: number): string {
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access);
 }
+
+const modules = defineModules( {
+  ERC20: {
+    path: 'openzeppelin/token/erc20/library'
+  },
+
+  syscalls: {
+    path: 'starkware.starknet.common.syscalls'
+  },
+
+  bool: {
+    path: 'starkware.cairo.common.bool'
+  }
+})
 
 const functions = defineFunctions({
 

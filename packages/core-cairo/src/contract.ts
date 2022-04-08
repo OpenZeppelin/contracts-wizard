@@ -21,8 +21,9 @@ export interface Library {
 }
 
 export interface Module {
+  name: string;
   path: string;
-  prefix?: string;
+  useNameAsPrefix?: boolean; // TODO make this default to true
 }
 
 export interface Initializer {
@@ -77,9 +78,9 @@ export class ContractBuilder implements Contract {
 
   get libraries(): Library[] {
     return [...this.parentMap.values()].sort((a, b) => {
-      if (a.module.prefix === 'Initializable') {
+      if (a.module.name === 'Initializable') {
         return -1;
-      } else if (b.module.prefix === 'Initializable') {
+      } else if (b.module.name === 'Initializable') {
         return 1;
       } else {
         return 0;
@@ -103,7 +104,7 @@ export class ContractBuilder implements Contract {
   }
 
   addParentLibrary(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
-    const key = module.prefix ?? module.path;
+    const key = module.name ?? module.path;
     const present = this.parentMap.has(key);
     const initializer = initializable ? { params } : undefined;
     this.parentMap.set(key, { module, functions, initializer });

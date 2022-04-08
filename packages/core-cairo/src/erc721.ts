@@ -63,7 +63,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 function addSupportsInterface(c: ContractBuilder) {
   c.addParentLibrary(
     {
-      prefix: 'ERC165',
+      name: 'ERC165',
       path: 'openzeppelin.introspection.ERC165',
     }, [], [], false
   );
@@ -73,7 +73,7 @@ function addSupportsInterface(c: ContractBuilder) {
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addParentLibrary(
     {
-      prefix: 'ERC721',
+      name: 'ERC721',
       path: 'openzeppelin/token/erc721/library',
     },
     [name, symbol],
