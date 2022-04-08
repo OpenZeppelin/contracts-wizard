@@ -21,7 +21,6 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   addBase(c, opts.name, opts.symbol);
   addSupportsInterface(c);
-  addURIStorage(c, access);
 
   c.addFunction(functions.name);
   c.addFunction(functions.symbol);
@@ -29,6 +28,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   c.addFunction(functions.ownerOf);
   c.addFunction(functions.getApproved);
   c.addFunction(functions.isApprovedForAll);
+  c.addFunction(functions.tokenURI);
 
   c.addFunction(functions.approve);
   c.addFunction(functions.setApprovalForAll);
@@ -82,12 +82,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 }
 
-function addURIStorage(c: ContractBuilder, access: Access) {
-  c.addFunction(functions.tokenURI);
-  setAccessControl(c, functions.setTokenURI, access);
-  c.addFunction(functions.setTokenURI);
-}
-
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
   c.addParentFunctionImport(
@@ -106,6 +100,11 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
+  c.addParentFunctionImport(
+    // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
+    'ERC721',
+    'ERC721_setTokenURI',
+  );
   c.setFunctionBody(
     [
       'ERC721_safeMint(to, tokenId, data_len, data)', 
@@ -250,16 +249,6 @@ function addMintable(c: ContractBuilder, access: Access) {
       { name: 'tokenId', type: 'Uint256' },
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
-    ],
-  },
-
-  setTokenURI: {
-    module: 'ERC721',
-    kind: 'external' as const,
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'tokenId', type: 'Uint256' },
-      { name: 'tokenURI', type: 'felt' },
     ],
   },
 
