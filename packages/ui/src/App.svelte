@@ -25,6 +25,7 @@
     import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
+    import { injectHyperlinks } from './utils/inject-hyperlinks';
 
     const dispatch = createEventDispatcher();
 
@@ -57,7 +58,7 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = hljs.highlight('solidity', code).value;
+    $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
@@ -194,11 +195,7 @@
     </div>
 
     <div class="output flex flex-col grow overflow-auto">
-    <pre class="flex flex-col grow basis-0 overflow-auto">
-    <code class="hljs grow overflow-auto p-4">
-    {@html highlightedCode}
-    </code>
-    </pre>
+    <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
 </div>

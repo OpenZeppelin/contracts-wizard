@@ -26,7 +26,7 @@
       <input type="radio" bind:group={upgradeable} value="transparent">
       Transparent
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy">
-      Uses more complex proxy with higher overhead, requires less changes in your contract.
+      Uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons.
       </HelpTooltip>
     </label>
     <label class:checked={upgradeable === 'uups'}>
