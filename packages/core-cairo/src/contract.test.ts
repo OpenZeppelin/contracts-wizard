@@ -34,7 +34,7 @@ test('contract with library call', t => {
 const someModule = {
   name: 'SomeLibrary',
   path: 'contracts/some/library',
-  useNameAsPrefix: true
+  usePrefix: true
 };
 
 const _otherFunction = {

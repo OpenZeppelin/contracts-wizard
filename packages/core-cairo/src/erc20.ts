@@ -213,17 +213,17 @@ function addMintable(c: ContractBuilder, access: Access) {
 const modules = defineModules( {
   ERC20: {
     path: 'openzeppelin/token/erc20/library',
-    useNameAsPrefix: true
+    usePrefix: true
   },
 
   syscalls: {
     path: 'starkware.starknet.common.syscalls',
-    useNameAsPrefix: false
+    usePrefix: false
   },
 
   bool: {
     path: 'starkware.cairo.common.bool',
-    useNameAsPrefix: false
+    usePrefix: false
   }
 })
 

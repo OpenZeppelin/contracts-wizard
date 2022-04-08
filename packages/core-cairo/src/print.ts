@@ -209,7 +209,7 @@ export function printValue(value: Value): string {
 }
 
 function getPrefix(module: Module): string {
-  return module.useNameAsPrefix ? `${module.name}_` : ``;
+  return module.usePrefix ? `${module.name}_` : ``;
 }
 
 function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {

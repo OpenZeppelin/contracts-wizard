@@ -23,7 +23,7 @@ export interface Library {
 export interface Module {
   name: string;
   path: string;
-  useNameAsPrefix: boolean;
+  usePrefix: boolean;
 }
 
 export interface Initializer {
