@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Library, ContractFunction, Argument, Value, } from './contract';
+import type { Contract, Library, ContractFunction, Argument, Value, Module, } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -23,8 +23,9 @@ export function printContract(contract: Contract, opts?: Options): string {
     if (fn.module !== undefined) {
       // find the corresponding import
       for (const parent of contract.libraries) {
-        if (parent.module.name === fn.module) {
-          const prefixedParentContractName = `${parent.module.name}_${fn.parentFunctionName ?? fn.name}`;
+        if (parent.module === fn.module) {
+          const prefix = getPrefix(fn.module);
+          const prefixedParentContractName = `${prefix}${fn.parentFunctionName ?? fn.name}`;
 
           baseImports.set(prefixedParentContractName, convertPathToImport(parent.module.path));
           break;
@@ -207,6 +208,10 @@ export function printValue(value: Value): string {
   }
 }
 
+function getPrefix(module: Module): string {
+  return module.useNameAsPrefix ? `${module.name}_` : ``;
+}
+
 function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   const code = [];
 
@@ -219,9 +224,11 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   });
 
   if (!fn.final && fn.module !== undefined) {
+    const prefix = getPrefix(fn.module);
+
     const parentFunctionCall = fn.read ? 
-    `${fn.module}_${fn.name}.read()` :
-    `${fn.module}_${fn.parentFunctionName ?? fn.name}(${fn.args.map(a => a.name).join(', ')})`;
+    `${prefix}${fn.name}.read()` :
+    `${prefix}${fn.parentFunctionName ?? fn.name}(${fn.args.map(a => a.name).join(', ')})`;
     const callParentLine = fn.passthrough ? `let (${returnArgs}) = ${parentFunctionCall}` : `${parentFunctionCall}`;
     code.push(callParentLine);
   }

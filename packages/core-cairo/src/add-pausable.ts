@@ -2,12 +2,10 @@ import { withImplicitArgs } from './common-options';
 import type { ContractBuilder, BaseFunction } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
+import { defineModules } from './utils/define-modules';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
-  c.addParentLibrary({
-    name: 'Pausable',
-    path: 'openzeppelin/security/pausable',    
-  }, [], ['Pausable_pause', 'Pausable_unpause', 'Pausable_when_not_paused'], false);
+  c.addParentLibrary(modules.Pausable, [], ['Pausable_pause', 'Pausable_unpause', 'Pausable_when_not_paused'], false);
 
   for (const fn of pausableFns) {
     setPausable(c, fn);
@@ -19,10 +17,17 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
   setAccessControl(c, functions.unpause, access);
 }
 
+const modules = defineModules( {
+  Pausable: {
+    path: 'openzeppelin/security/pausable', 
+    useNameAsPrefix: true
+  },
+});
+
 const functions = defineFunctions({
 
   paused: {
-    module: 'Pausable',
+    module: modules.Pausable,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
@@ -32,14 +37,14 @@ const functions = defineFunctions({
   },
 
   pause: {
-    module: 'Pausable',
+    module: modules.Pausable,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
   },
 
   unpause: {
-    module: 'Pausable',
+    module: modules.Pausable,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],

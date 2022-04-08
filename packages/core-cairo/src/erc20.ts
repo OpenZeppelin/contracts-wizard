@@ -157,7 +157,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       c.addConstructorCode(`ERC20_mint(recipient, Uint256(${lowBits}, ${highBits}))`);
 
       c.addParentFunctionImport(
-        'ERC20',
+        modules.ERC20,
         `ERC20_mint`
       );    
     }
@@ -212,15 +212,18 @@ function addMintable(c: ContractBuilder, access: Access) {
 
 const modules = defineModules( {
   ERC20: {
-    path: 'openzeppelin/token/erc20/library'
+    path: 'openzeppelin/token/erc20/library',
+    useNameAsPrefix: true
   },
 
   syscalls: {
-    path: 'starkware.starknet.common.syscalls'
+    path: 'starkware.starknet.common.syscalls',
+    useNameAsPrefix: false
   },
 
   bool: {
-    path: 'starkware.cairo.common.bool'
+    path: 'starkware.cairo.common.bool',
+    useNameAsPrefix: false
   }
 })
 
@@ -229,7 +232,7 @@ const functions = defineFunctions({
   // --- view functions ---
 
   name: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -239,7 +242,7 @@ const functions = defineFunctions({
   },
 
   symbol: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -249,7 +252,7 @@ const functions = defineFunctions({
   },
 
   totalSupply: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -259,7 +262,7 @@ const functions = defineFunctions({
   },
 
   decimals: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -269,7 +272,7 @@ const functions = defineFunctions({
   },
 
   balanceOf: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -280,7 +283,7 @@ const functions = defineFunctions({
   },
 
   allowance: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -294,7 +297,7 @@ const functions = defineFunctions({
   // --- external functions ---
 
   transfer: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -306,7 +309,7 @@ const functions = defineFunctions({
   },
 
   transferFrom: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -319,7 +322,7 @@ const functions = defineFunctions({
   },
 
   approve: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -331,7 +334,7 @@ const functions = defineFunctions({
   },
 
   increaseAllowance: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -343,7 +346,7 @@ const functions = defineFunctions({
   },
 
   decreaseAllowance: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -355,7 +358,7 @@ const functions = defineFunctions({
   },
 
   mint: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -365,7 +368,7 @@ const functions = defineFunctions({
   },
 
   burn: {
-    module: 'ERC20',
+    module: modules.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [

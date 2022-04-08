@@ -23,7 +23,7 @@ export interface Library {
 export interface Module {
   name: string;
   path: string;
-  useNameAsPrefix?: boolean; // TODO make this default to true
+  useNameAsPrefix: boolean;
 }
 
 export interface Initializer {
@@ -31,7 +31,7 @@ export interface Initializer {
 }
 
 export interface BaseFunction {
-  module?: string;
+  module?: Module;
   name: string;
   implicitArgs?: Argument[];
   args: Argument[];
@@ -72,9 +72,13 @@ export class ContractBuilder implements Contract {
   /**
    * Map of library prefix to Parent object
    */
-  private parentMap: Map<string, Library> = new Map<string, Library>();
+  private parentMap: Map<Module, Library> = new Map<Module, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
   readonly constructorImplicitArgs: Argument[] = withImplicitArgs();
+
+  // TODO create a list of modules
+  // in addParentLibrary, lookup from list
+
 
   get libraries(): Library[] {
     return [...this.parentMap.values()].sort((a, b) => {
@@ -104,17 +108,17 @@ export class ContractBuilder implements Contract {
   }
 
   addParentLibrary(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
-    const key = module.name ?? module.path;
+    const key = module;
     const present = this.parentMap.has(key);
     const initializer = initializable ? { params } : undefined;
-    this.parentMap.set(key, { module, functions, initializer });
+    this.parentMap.set(module, { module, functions, initializer });
     return !present;
   }
 
-  addParentFunctionImport(contractPrefix: string, addFunction: string) {
-    const existing = this.parentMap.get(contractPrefix);
+  addParentFunctionImport(module: Module, addFunction: string) {
+    const existing = this.parentMap.get(module);
     if (existing === undefined) {
-      throw new Error(`Parent contract ${contractPrefix} has not been added yet`);
+      throw new Error(`Module ${module} has not been added yet`);
     }
     existing.functions.push(addFunction);
   }

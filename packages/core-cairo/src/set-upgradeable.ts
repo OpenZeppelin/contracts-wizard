@@ -2,6 +2,7 @@ import { withImplicitArgs } from './common-options';
 import type { ContractBuilder } from './contract';
 //import { Access, setAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
+import { defineModules } from './utils/define-modules';
 
 export const upgradeableOptions = [false, true] as const;
 
@@ -15,12 +16,9 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
   c.upgradeable = true;
 
   c.addParentLibrary(
-    {
-      name: 'Proxy',
-      path: 'openzeppelin/upgrades/library',
-    },
+    modules.Proxy,
     [ {lit: 'proxy_admin' }],
-    ['Proxy_initializer', 'Proxy_only_admin', 'Proxy_set_implementation']
+    ['Proxy_initializer', 'Proxy_only_admin', 'Proxy_set_implementation'] // allow not adding prefixes if useNameAsModule is true 
   );
   c.addConstructorArgument({ name:'proxy_admin', type:'felt' });
 
@@ -29,6 +27,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
     'Proxy_set_implementation(new_implementation)'
   ], functions.upgrade);
 }
+
+const modules = defineModules( {
+  Proxy: {
+    path: 'openzeppelin/upgrades/library',
+    useNameAsPrefix: true
+  },
+});
 
 const functions = defineFunctions({
 

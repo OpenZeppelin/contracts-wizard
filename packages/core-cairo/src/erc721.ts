@@ -5,6 +5,7 @@ import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { defineModules } from './utils/define-modules';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -62,20 +63,14 @@ export function buildERC721(opts: ERC721Options): Contract {
 
 function addSupportsInterface(c: ContractBuilder) {
   c.addParentLibrary(
-    {
-      name: 'ERC165',
-      path: 'openzeppelin.introspection.ERC165',
-    }, [], [], false
+    modules.ERC165, [], [], false
   );
   c.addFunction(functions.supportsInterface);
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addParentLibrary(
-    {
-      name: 'ERC721',
-      path: 'openzeppelin/token/erc721/library',
-    },
+    modules.ERC721,
     [name, symbol],
     ['ERC721_approve', 'ERC721_setApprovalForAll', 'ERC721_transferFrom', 'ERC721_safeTransferFrom', 'ERC721_initializer', ],
     // TODO use initializable boolean to determine if parent initializer is imported
@@ -86,7 +81,7 @@ function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
   c.addParentFunctionImport(
     // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
-    'ERC721',
+    modules.ERC721,
     'ERC721_only_token_owner',
   );
   c.setFunctionBody(
@@ -102,7 +97,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
   c.addParentFunctionImport(
     // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
-    'ERC721',
+    modules.ERC721,
     'ERC721_setTokenURI',
   );
   c.setFunctionBody(
@@ -114,12 +109,24 @@ function addMintable(c: ContractBuilder, access: Access) {
   );
 }
 
- const functions = defineFunctions({
+const modules = defineModules( {
+  ERC165: {
+    path: 'openzeppelin.introspection.ERC165',
+    useNameAsPrefix: true
+  },
+
+  ERC721: {
+    path: 'openzeppelin/token/erc721/library',
+    useNameAsPrefix: true
+  },
+})
+
+const functions = defineFunctions({
 
   // --- view functions ---
 
   supportsInterface: {
-    module: 'ERC165',
+    module: modules.ERC165,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -131,7 +138,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   name: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -141,7 +148,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   symbol: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -151,7 +158,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   balanceOf: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -162,7 +169,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   ownerOf: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -173,7 +180,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   getApproved: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -184,7 +191,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   isApprovedForAll: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -196,7 +203,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   tokenURI: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -209,7 +216,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   // --- external functions ---
 
   approve: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -219,7 +226,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   setApprovalForAll: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -229,7 +236,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   transferFrom: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -240,7 +247,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   safeTransferFrom: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -253,7 +260,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
 
   safeMint: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -266,7 +273,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   },
   
   burn: {
-    module: 'ERC721',
+    module: modules.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
