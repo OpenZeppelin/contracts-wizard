@@ -1,7 +1,6 @@
 import 'array.prototype.flatmap/auto';
-import contracts from '../openzeppelin-contracts';
 
-import type { Contract, Library, ContractFunction, Argument, Value, NatspecTag } from './contract';
+import type { Contract, Library, ContractFunction, Argument, Value, } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
