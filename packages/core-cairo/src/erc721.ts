@@ -41,7 +41,7 @@ export function buildERC721(opts: ERC721Options): Contract {
       setPausable(c, functions.burn);
     }
     if (opts.mintable) {
-      setPausable(c, functions.mint);
+      setPausable(c, functions.safeMint);
     }
   }
 
@@ -105,13 +105,13 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.mint, access);
+  setAccessControl(c, functions.safeMint, access);
   c.setFunctionBody(
     [
-      'ERC721_mint(to, tokenId)', 
+      'ERC721_safeMint(to, tokenId, data_len, data)', 
       'ERC721_setTokenURI(tokenId, tokenURI)'
     ],
-    functions.mint
+    functions.safeMint
   );
 }
 
@@ -263,13 +263,15 @@ function addMintable(c: ContractBuilder, access: Access) {
     ],
   },
 
-  mint: {
+  safeMint: {
     module: 'ERC721',
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
+      { name: 'data_len', type: 'felt' },
+      { name: 'data', type: 'felt*' },
       { name: 'tokenURI', type: 'felt' },
     ],
   },
