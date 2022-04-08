@@ -25,7 +25,7 @@ test('contract with library call', t => {
   Foo.addParentLibrary(
     {
       prefix: 'SomeLibrary',
-      modulePath: 'contracts/some/library',
+      path: 'contracts/some/library',
     },
     [],
     []

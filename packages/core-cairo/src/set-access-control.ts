@@ -18,6 +18,6 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
 const parents = {
   Ownable: {
     prefix: 'Ownable',
-    modulePath: 'openzeppelin/access/ownable',
+    path: 'openzeppelin/access/ownable',
   },
 };

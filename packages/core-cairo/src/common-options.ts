@@ -1,4 +1,4 @@
-import type { FunctionArgument } from "./contract";
+import type { Argument } from "./contract";
 import type { Access } from "./set-access-control";
 import type { Info } from "./set-info";
 import type { Upgradeable } from "./set-upgradeable";
@@ -17,7 +17,7 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   };
 }
 
-export function withImplicitArgs(): FunctionArgument[] {
+export function withImplicitArgs(): Argument[] {
   return [ 
     { name: 'syscall_ptr', type: 'felt*' },
     { name: 'pedersen_ptr', type: 'HashBuiltin*' },

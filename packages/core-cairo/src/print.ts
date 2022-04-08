@@ -1,6 +1,7 @@
 import 'array.prototype.flatmap/auto';
+import contracts from '../openzeppelin-contracts';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag } from './contract';
+import type { Contract, Library, ContractFunction, Argument, Value, NatspecTag } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -22,11 +23,11 @@ export function printContract(contract: Contract, opts?: Options): string {
   for (const fn of contract.functions) {
     if (fn.module !== undefined) {
       // find the corresponding import
-      for (const parent of contract.parents) {
-        if (parent.library.prefix === fn.module) {
-          const prefixedParentContractName = `${parent.library.prefix}_${fn.parentFunctionName ?? fn.name}`;
+      for (const parent of contract.libraries) {
+        if (parent.module.prefix === fn.module) {
+          const prefixedParentContractName = `${parent.module.prefix}_${fn.parentFunctionName ?? fn.name}`;
 
-          baseImports.set(prefixedParentContractName, convertPathToImport(parent.library.modulePath));
+          baseImports.set(prefixedParentContractName, convertPathToImport(parent.module.path));
           break;
         }
       }
@@ -35,9 +36,9 @@ export function printContract(contract: Contract, opts?: Options): string {
   const importStatementObjs = toImportStatements(baseImports);
 
   const parentImportsMap: Map<string, string[]> = new Map();
-  for (const parent of contract.parents) {
+  for (const parent of contract.libraries) {
     if (parent.functions !== undefined) {
-      parentImportsMap.set(convertPathToImport(parent.library.modulePath), parent.functions);
+      parentImportsMap.set(convertPathToImport(parent.module.path), parent.functions);
     }
   }
   // TODO this is temporary measure to merge maps since we have duplicates
@@ -125,10 +126,10 @@ function toImportLines(importStatements: Map<string, string[]>) {
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
-  const hasParentParams = contract.parents.some(p => p.params.length > 0);
+  const hasParentParams = contract.libraries.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
-    const parents = contract.parents
+    const parents = contract.libraries
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['external'] : ['constructor'];
@@ -155,8 +156,8 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   }
 }
 
-function hasInitializer(parent: Parent) {
-  return !['Pausable'].includes(parent.library.prefix);
+function hasInitializer(parent: Library) {
+  return parent.initializer !== undefined && parent.module.prefix !== undefined;
 }
 
 type SortedFunctions = Record<'code' | 'modifiers' | 'views' | 'externals', ContractFunction[]>;
@@ -177,13 +178,13 @@ function sortedFunctions(contract: Contract): SortedFunctions {
   return fns;
 }
 
-function printParentConstructor({ library: contract, params, initializable }: Parent, helpers: Helpers): [] | [string] {
-  if (initializable === false) { // treat undefined as true
+function printParentConstructor({ module: contract, initializer }: Library, helpers: Helpers): [] | [string] {
+  if (initializer === undefined || contract.prefix === undefined) {
     return [];
   }
   const fn = `${contract.prefix}_initializer`;
   return [
-    fn + '(' + params.map(printValue).join(', ') + ')',
+    fn + '(' + initializer.params.map(printValue).join(', ') + ')',
   ];
 }
 
@@ -298,7 +299,7 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   return fn;
 }
 
-function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
+function printArgument(arg: Argument, { transformName }: Helpers): string {
   if (arg.type !== undefined) {
     const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
     return `${arg.name}: ${type}`;

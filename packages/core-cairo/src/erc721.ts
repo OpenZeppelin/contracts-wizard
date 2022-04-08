@@ -64,7 +64,7 @@ function addSupportsInterface(c: ContractBuilder) {
   c.addParentLibrary(
     {
       prefix: 'ERC165',
-      modulePath: 'openzeppelin.introspection.ERC165',
+      path: 'openzeppelin.introspection.ERC165',
     }, [], [], false
   );
   c.addFunction(functions.supportsInterface);
@@ -74,7 +74,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addParentLibrary(
     {
       prefix: 'ERC721',
-      modulePath: 'openzeppelin/token/erc721/library',
+      path: 'openzeppelin/token/erc721/library',
     },
     [name, symbol],
     ['ERC721_approve', 'ERC721_setApprovalForAll', 'ERC721_transferFrom', 'ERC721_safeTransferFrom', 'ERC721_initializer', ],

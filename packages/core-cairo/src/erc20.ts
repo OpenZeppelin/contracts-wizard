@@ -77,7 +77,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addParentLibrary(
     {
       prefix: 'constants', // TODO add an import (rather than a parent library) to a map without relying on prefix, since prefix does not make sense in context of some libs such as utils
-      modulePath: 'openzeppelin.utils.constants',
+      path: 'openzeppelin.utils.constants',
     },
     [],
     ['TRUE'],
@@ -114,7 +114,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
   c.addParentLibrary(
     {
       prefix: 'ERC20',
-      modulePath: 'openzeppelin/token/erc20/library',
+      path: 'openzeppelin/token/erc20/library',
     },
     [name, symbol, { lit: decimals } ],
     ['ERC20_transfer', 'ERC20_transferFrom', 'ERC20_approve', 'ERC20_increaseAllowance', 'ERC20_decreaseAllowance', 'ERC20_initializer'],
@@ -126,7 +126,7 @@ function addBurnable(c: ContractBuilder) {
   c.addParentLibrary(
     {
       prefix: 'syscalls', // TODO add an import (rather than a parent library) to a map without relying on prefix, since prefix does not make sense in context of some libs such as utils
-      modulePath: 'starkware.starknet.common.syscalls',
+      path: 'starkware.starknet.common.syscalls',
     },
     [],
     ['get_caller_address'],

@@ -57,7 +57,7 @@ function generateContractSubset(subset: Subset): GeneratedContract[] {
   if (subset === 'all') {
     return contracts;
   } else {
-    const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.library.modulePath);
+    const getParents = (c: GeneratedContract) => c.contract.libraries.map(p => p.module.path);
     return [
       ...findCover(contracts.filter(c => c.options.upgradeable), getParents),
       ...findCover(contracts.filter(c => !c.options.upgradeable), getParents),

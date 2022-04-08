@@ -3,42 +3,38 @@ import { toIdentifier } from './utils/to-identifier';
 
 export interface Contract {
   license: string;
-  parents: Parent[];
-  natspecTags: NatspecTag[];
-  imports: string[]; //
+  libraries: Library[];
   functions: ContractFunction[];
   constructorCode: string[];
-  constructorImplicitArgs?: FunctionArgument[];
-  constructorArgs: FunctionArgument[];
+  constructorImplicitArgs?: Argument[];
+  constructorArgs: Argument[];
   variables: string[];
   upgradeable: boolean; 
 }
 
 export type Value = string | number | { lit: string } | { note: string, value: Value };
 
-export interface Parent {
-  library: Library;
-  params: Value[];
-  functions: string[];
-  initializable?: boolean;
-}
-
-export interface StandaloneImport {
-  library: Library;
-  functions: string[];
-}
-
 export interface Library {
-  prefix: string;
-  modulePath: string;
+  module: Module;
+  functions: string[];
+  initializer?: Initializer;
+}
+
+export interface Module {
+  path: string;
+  prefix?: string;
+}
+
+export interface Initializer {
+  params: Value[];
 }
 
 export interface BaseFunction {
   module?: string;
   name: string;
-  implicitArgs?: FunctionArgument[];
-  args: FunctionArgument[];
-  returns?: FunctionArgument[];
+  implicitArgs?: Argument[];
+  args: Argument[];
+  returns?: Argument[];
   returnValue?: string;
   kind?: FunctionKind;
   passthrough?: boolean;
@@ -54,7 +50,7 @@ export interface ContractFunction extends BaseFunction {
 
 export type FunctionKind = 'view' | 'external';
 
-export interface FunctionArgument {
+export interface Argument {
   name: string;
   type?: string;
 }
@@ -68,21 +64,26 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly natspecTags: NatspecTag[] = [];
-
-  readonly constructorArgs: FunctionArgument[] = [];
+  readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
-  private parentMap: Map<string, Parent> = new Map<string, Parent>();
-  private functionMap: Map<string, ContractFunction> = new Map();
-  readonly constructorImplicitArgs: FunctionArgument[] = withImplicitArgs();
+  /**
+   * Library has { modulePath, prefix?, functions }
+   */
 
-  get parents(): Parent[] {
+  /**
+   * Map of library prefix to Parent object
+   */
+  private parentMap: Map<string, Library> = new Map<string, Library>();
+  private functionMap: Map<string, ContractFunction> = new Map();
+  readonly constructorImplicitArgs: Argument[] = withImplicitArgs();
+
+  get libraries(): Library[] {
     return [...this.parentMap.values()].sort((a, b) => {
-      if (a.library.prefix === 'Initializable') {
+      if (a.module.prefix === 'Initializable') {
         return -1;
-      } else if (b.library.prefix === 'Initializable') {
+      } else if (b.module.prefix === 'Initializable') {
         return 1;
       } else {
         return 0;
@@ -92,7 +93,7 @@ export class ContractBuilder implements Contract {
 
   get imports(): string[] {
     return [
-      ...[...this.parentMap.values()].map(p => p.library.modulePath),
+      ...[...this.parentMap.values()].map(p => p.module.path),
       // this is deleted, but figure out how to add the base functions here  ...this.using.map(u => u.library.path),
     ];
   }
@@ -105,9 +106,11 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParentLibrary(contract: Library, params: Value[] = [], functions: string[], initializable?: boolean): boolean {
-    const present = this.parentMap.has(contract.prefix);
-    this.parentMap.set(contract.prefix, { library: contract, params, functions, initializable });
+  addParentLibrary(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
+    const key = module.prefix ?? module.path;
+    const present = this.parentMap.has(key);
+    const initializer = initializable ? { params } : undefined;
+    this.parentMap.set(key, { module, functions, initializer });
     return !present;
   }
 
@@ -122,11 +125,6 @@ export class ContractBuilder implements Contract {
   addLibraryCall(modifier: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.libraryCalls.push(modifier);
-  }
-
-  addNatspecTag(key: string, value: string) {
-    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid natspec key: ${key}`);
-    this.natspecTags.push({ key, value });
   }
 
   addFunction(baseFn: BaseFunction): ContractFunction {
@@ -148,7 +146,7 @@ export class ContractBuilder implements Contract {
 
 
 
-  addConstructorArgument(arg: FunctionArgument) {
+  addConstructorArgument(arg: Argument) {
     // TODO fix this comparison
     let hasArg = false;
     this.constructorArgs.map(a => {
