@@ -131,12 +131,12 @@ function addBurnable(c: ContractBuilder) {
   );
 }
 
-export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/; // TODO don't allow exponent?
+export const premintPattern = /^(\d*\.?\d*)$/;
 
 function addPremint(c: ContractBuilder, amount: string, decimals: string) {
   if (amount !== undefined && amount !== '0') {
 
-    if (!/^(\d*\.?\d*)$/.test(amount)) {
+    if (!premintPattern.test(amount)) {
       throw new OptionsError({
         premint: 'Not a valid number',
       });
