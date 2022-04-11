@@ -62,24 +62,23 @@ export function buildERC721(opts: ERC721Options): Contract {
 }
 
 function addSupportsInterface(c: ContractBuilder) {
-  c.addParentLibrary(
+  c.addModule(
     modules.ERC165, [], [], false
   );
   c.addFunction(functions.supportsInterface);
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
-  c.addParentLibrary(
+  c.addModule(
     modules.ERC721,
     [name, symbol],
     ['ERC721_approve', 'ERC721_setApprovalForAll', 'ERC721_transferFrom', 'ERC721_safeTransferFrom', 'ERC721_initializer', ],
-    // TODO use initializable boolean to determine if parent initializer is imported
   );
 }
 
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
-  c.addParentFunctionImport(
+  c.addModuleFunction(
     // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
     modules.ERC721,
     'ERC721_only_token_owner',
@@ -95,7 +94,7 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
-  c.addParentFunctionImport(
+  c.addModuleFunction(
     // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
     modules.ERC721,
     'ERC721_setTokenURI',

@@ -22,7 +22,7 @@ test('contract with function code', t => {
 
 test('contract with library call', t => {
   const Foo = new ContractBuilder();
-  Foo.addParentLibrary(
+  Foo.addModule(
     someModule,
     [],
     []

@@ -75,7 +75,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addFunction(functions.increaseAllowance);
   c.addFunction(functions.decreaseAllowance);
 
-  c.addParentLibrary(
+  c.addModule(
     modules.bool,
     [],
     ['TRUE'],
@@ -109,7 +109,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string, decimals: string) {
-  c.addParentLibrary(
+  c.addModule(
     modules.ERC20,
     [name, symbol, { lit: decimals } ],
     ['ERC20_transfer', 'ERC20_transferFrom', 'ERC20_approve', 'ERC20_increaseAllowance', 'ERC20_decreaseAllowance', 'ERC20_initializer'],
@@ -118,16 +118,16 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addParentLibrary(
-    modules.syscalls,
-    [],
-    ['get_caller_address'],
-    false
-  ); 
+  c.addModule(
+    modules.syscalls, [], ['get_caller_address'], false
+  );
   c.addFunction(functions.burn);
   c.setFunctionBody(
-    ['let (owner) = get_caller_address()', 'ERC20_burn(owner, amount)'],
-     functions.burn
+    [
+      'let (owner) = get_caller_address()', 
+      'ERC20_burn(owner, amount)'
+    ],
+    functions.burn
   );
 }
 
@@ -156,7 +156,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       c.addConstructorArgument({ name:'recipient', type:'felt' });
       c.addConstructorCode(`ERC20_mint(recipient, Uint256(${lowBits}, ${highBits}))`);
 
-      c.addParentFunctionImport(
+      c.addModuleFunction(
         modules.ERC20,
         `ERC20_mint`
       );    

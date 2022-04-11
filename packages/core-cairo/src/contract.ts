@@ -107,7 +107,7 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParentLibrary(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
+  addModule(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
     const key = module;
     const present = this.parentMap.has(key);
     const initializer = initializable ? { params } : undefined;
@@ -115,7 +115,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addParentFunctionImport(module: Module, addFunction: string) {
+  addModuleFunction(module: Module, addFunction: string) {
     const existing = this.parentMap.get(module);
     if (existing === undefined) {
       throw new Error(`Module ${module} has not been added yet`);
