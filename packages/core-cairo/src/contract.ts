@@ -148,7 +148,7 @@ export class ContractBuilder implements Contract {
 
 
   addConstructorArgument(arg: Argument) {
-    // TODO fix this comparison
+    // TODO use a better way to determine if the constructor already has this arg
     let hasArg = false;
     this.constructorArgs.map(a => {
       if (a.name == arg.name) {
@@ -165,27 +165,21 @@ export class ContractBuilder implements Contract {
     this.constructorCode.push(code);
   }
 
-  addFunctionCode(code: string, baseFn: BaseFunction) {//}, mutability?: FunctionMutability) {
+  addFunctionCode(code: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (fn.final) {
       throw new Error(`Function ${baseFn.name} is already finalized`);
     }
     fn.code.push(code);
-    // if (mutability) {
-    //  fn.mutability = maxMutability(fn.mutability, mutability);
-    // }
   }
 
-  setFunctionBody(code: string[], baseFn: BaseFunction) {//}, mutability?: FunctionMutability) {
+  setFunctionBody(code: string[], baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {
       throw new Error(`Function ${baseFn.name} has additional code`);
     }
     fn.code.push(...code);
     fn.final = true;
-    // if (mutability) {
-    //   fn.mutability = mutability;
-    // }
   }
 
 }
