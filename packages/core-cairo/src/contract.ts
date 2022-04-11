@@ -93,13 +93,6 @@ export class ContractBuilder implements Contract {
     });
   }
 
-  get imports(): string[] {
-    return [
-      ...[...this.parentMap.values()].map(p => p.module.path),
-      // this is deleted, but figure out how to add the base functions here  ...this.using.map(u => u.library.path),
-    ];
-  }
-
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
   }
@@ -151,8 +144,6 @@ export class ContractBuilder implements Contract {
       return fn;
     }
   }
-
-
 
   addConstructorArgument(arg: Argument) {
     // TODO use a better way to determine if the constructor already has this arg
