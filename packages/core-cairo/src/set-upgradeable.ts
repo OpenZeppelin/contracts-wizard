@@ -15,11 +15,10 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
   c.upgradeable = true;
 
-  c.addModule(
-    modules.Proxy,
-    [ {lit: 'proxy_admin' }],
-    ['Proxy_initializer', 'Proxy_only_admin', 'Proxy_set_implementation'] // allow not adding prefixes if useNameAsModule is true 
-  );
+  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }]);
+  c.addModuleFunction(modules.Proxy, 'Proxy_only_admin');
+  c.addModuleFunction(modules.Proxy, 'Proxy_set_implementation');
+
   c.addConstructorArgument({ name:'proxy_admin', type:'felt' });
 
   c.setFunctionBody([

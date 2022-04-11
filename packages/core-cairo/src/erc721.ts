@@ -72,7 +72,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addModule(
     modules.ERC721,
     [name, symbol],
-    ['ERC721_approve', 'ERC721_setApprovalForAll', 'ERC721_transferFrom', 'ERC721_safeTransferFrom', 'ERC721_initializer', ],
+    [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom],
   );
 }
 

@@ -101,11 +101,24 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addModule(module: Module, params: Value[] = [], functions: string[], initializable: boolean = true): boolean {
+  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
     const key = module;
     const present = this.parentMap.has(key);
     const initializer = initializable ? { params } : undefined;
-    this.parentMap.set(module, { module, functions, initializer });
+
+    const functionStrings: string[] = [];
+    functions.forEach(fn => {
+      functionStrings.push(getFunctionName(fn));
+    });
+    if (initializable) {
+      functionStrings.push(getFunctionName({
+          module: module, 
+          name: 'initializer', 
+          args: []
+        }))
+    }
+
+    this.parentMap.set(module, { module, functions: functionStrings, initializer });
     return !present;
   }
 
@@ -114,7 +127,9 @@ export class ContractBuilder implements Contract {
     if (existing === undefined) {
       throw new Error(`Module ${module} has not been added yet`);
     }
-    existing.functions.push(addFunction);
+    if (!existing.functions.includes(addFunction)) {
+      existing.functions.push(addFunction);
+    }
   }
 
   addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {

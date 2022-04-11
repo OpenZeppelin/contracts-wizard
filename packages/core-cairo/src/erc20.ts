@@ -75,12 +75,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addFunction(functions.increaseAllowance);
   c.addFunction(functions.decreaseAllowance);
 
-  c.addModule(
-    modules.bool,
-    [],
-    ['TRUE'],
-    false
-  );
+  c.addModule(modules.bool, [], [], false);
+  c.addModuleFunction(modules.bool, 'TRUE');
 
   if (allOpts.burnable) {
     addBurnable(c);
@@ -111,16 +107,20 @@ export function buildERC20(opts: ERC20Options): Contract {
 function addBase(c: ContractBuilder, name: string, symbol: string, decimals: string) {
   c.addModule(
     modules.ERC20,
-    [name, symbol, { lit: decimals } ],
-    ['ERC20_transfer', 'ERC20_transferFrom', 'ERC20_approve', 'ERC20_increaseAllowance', 'ERC20_decreaseAllowance', 'ERC20_initializer'],
-    // TODO use initializable boolean to determine if parent initializer is imported
+    [
+      name, symbol, { lit: decimals } 
+    ],
+    [
+      functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance
+    ],
   );
 }
 
 function addBurnable(c: ContractBuilder) {
   c.addModule(
-    modules.syscalls, [], ['get_caller_address'], false
+    modules.syscalls, [], [], false
   );
+  c.addModuleFunction(modules.syscalls, 'get_caller_address');
   c.addFunction(functions.burn);
   c.setFunctionBody(
     [

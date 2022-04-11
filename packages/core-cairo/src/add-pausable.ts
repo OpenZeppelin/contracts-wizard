@@ -5,7 +5,7 @@ import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
-  c.addModule(modules.Pausable, [], ['Pausable_pause', 'Pausable_unpause'], false);
+  c.addModule(modules.Pausable, [], [functions.pause, functions.unpause], false);
 
   for (const fn of pausableFns) {
     setPausable(c, fn);

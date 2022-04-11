@@ -25,7 +25,8 @@ test('contract with library call', t => {
   Foo.addModule(
     someModule,
     [],
-    []
+    [],
+    false
   );
   Foo.addFunction(_libraryFunction);
   t.snapshot(printContract(Foo));

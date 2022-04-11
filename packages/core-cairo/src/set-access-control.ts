@@ -9,7 +9,10 @@ export type Access = typeof accessOptions[number];
 export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access) {
   switch (access) {
     case 'ownable': {
-      c.addModule(modules.Ownable, [{ lit:'owner' }], ['Ownable_initializer']);
+      c.addModule(modules.Ownable, [{ lit:'owner' }]);
+      c.addModuleFunction(
+        modules.Ownable, 'Ownable_initializer'
+      );
       c.addConstructorArgument({ name: 'owner', type: 'felt'});
       c.addLibraryCall(functions.only_owner, fn);
       break;
