@@ -123,9 +123,9 @@ export class ContractBuilder implements Contract {
     existing.functions.push(addFunction);
   }
 
-  addLibraryCall(modifier: string, baseFn: BaseFunction) {
+  addLibraryCall(callFn: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
-    fn.libraryCalls.push(modifier);
+    fn.libraryCalls.push(callFn);
   }
 
   addFunction(baseFn: BaseFunction): ContractFunction {
