@@ -5,7 +5,7 @@ import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
-  c.addModule(modules.Pausable, [], ['Pausable_pause', 'Pausable_unpause', 'Pausable_when_not_paused'], false);
+  c.addModule(modules.Pausable, [], ['Pausable_pause', 'Pausable_unpause'], false);
 
   for (const fn of pausableFns) {
     setPausable(c, fn);
@@ -49,10 +49,16 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [],
   },
+
+  // --- library-only calls ---
+
+  when_not_paused: {
+    module: modules.Pausable,
+    args: [],
+  },
   
 });
 
 export function setPausable(c: ContractBuilder, fn: BaseFunction) {
-    // TODO add these base functions to parent imports automatically
-    c.addLibraryCall('Pausable_when_not_paused()', fn);
+    c.addLibraryCall(functions.when_not_paused, fn);
 }

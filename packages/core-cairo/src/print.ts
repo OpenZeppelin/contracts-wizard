@@ -5,6 +5,7 @@ import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
+import { getFunctionName } from './utils/module-prefix';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -24,10 +25,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       // find the corresponding import
       for (const parent of contract.libraries) {
         if (parent.module === fn.module) {
-          const prefix = getPrefix(fn.module);
-          const prefixedParentContractName = `${prefix}${fn.parentFunctionName ?? fn.name}`;
-
-          baseImports.set(prefixedParentContractName, convertPathToImport(parent.module.path));
+          baseImports.set(getFunctionName(fn), convertPathToImport(parent.module.path));
           break;
         }
       }
@@ -208,26 +206,21 @@ export function printValue(value: Value): string {
   }
 }
 
-function getPrefix(module: Module): string {
-  return module.usePrefix ? `${module.name}_` : ``;
-}
-
 function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   const code = [];
 
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
 
-  fn.libraryCalls.forEach(library => {
-    const libraryCall = `${library}`;
+  fn.libraryCalls.forEach(callFn => {
+    const libraryCall = `${getFunctionName(callFn)}()`;
     code.push(libraryCall);
   });
 
   if (!fn.final && fn.module !== undefined) {
-    const prefix = getPrefix(fn.module);
-
+    const fnName = getFunctionName(fn);
     const parentFunctionCall = fn.read ? 
-    `${prefix}${fn.name}.read()` :
-    `${prefix}${fn.parentFunctionName ?? fn.name}(${fn.args.map(a => a.name).join(', ')})`;
+    `${fnName}.read()` :
+    `${fnName}(${fn.args.map(a => a.name).join(', ')})`;
     const callParentLine = fn.passthrough ? `let (${returnArgs}) = ${parentFunctionCall}` : `${parentFunctionCall}`;
     code.push(callParentLine);
   }

@@ -1,4 +1,5 @@
 import { withImplicitArgs } from './common-options';
+import { getFunctionName } from './utils/module-prefix';
 import { toIdentifier } from './utils/to-identifier';
 
 export interface Contract {
@@ -44,7 +45,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  libraryCalls: string[];
+  libraryCalls: BaseFunction[];
   code: string[];
   final: boolean;
 }
@@ -123,8 +124,14 @@ export class ContractBuilder implements Contract {
     existing.functions.push(addFunction);
   }
 
-  addLibraryCall(callFn: string, baseFn: BaseFunction) {
+  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
+    if (callFn.module !== undefined) {
+      this.addModuleFunction(callFn.module, getFunctionName(callFn));
+    }
+    if (callFn.args.length > 0) {
+      throw new Error(`Library call with functions is not supported yet`);
+    }
     fn.libraryCalls.push(callFn);
   }
 
