@@ -18,13 +18,7 @@ export function printContract(contract: Contract, opts?: Options): string {
   const hasViews = fns.views.some(l => l.length > 0);
   const hasExternals = fns.externals.some(l => l.length > 0);
 
-  const modulesToParentFunctions = getModulesToParentFunctions(contract);
-  const modulesToLibraryFunctions = getModulesToLibraryFunctions(contract);
-  mergeToLibraryFunctions(modulesToParentFunctions, modulesToLibraryFunctions);
-  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
-
-  const starkwareImports = toImportLines(starkwareImportsMap); 
-  const ozImports = toImportLines(ozImportsMap); 
+  const { starkwareImports, ozImports } = printImports(contract); 
 
   return formatLines(
     ...spaceBetween(
@@ -70,6 +64,17 @@ export function printContract(contract: Contract, opts?: Options): string {
       ),
     ),
   );
+}
+
+function printImports(contract: Contract) {
+  const modulesToParentFunctions = getModulesToParentFunctions(contract);
+  const modulesToLibraryFunctions = getModulesToLibraryFunctions(contract);
+  mergeToLibraryFunctions(modulesToParentFunctions, modulesToLibraryFunctions);
+  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
+
+  const starkwareImports = toImportLines(starkwareImportsMap);
+  const ozImports = toImportLines(ozImportsMap);
+  return { starkwareImports, ozImports };
 }
 
 function mergeToLibraryFunctions(modulesToParentFunctions: Map<string, string[]>, modulesToLibraryFunctions: Map<string, string[]>) {
