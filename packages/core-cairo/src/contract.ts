@@ -69,12 +69,12 @@ export class ContractBuilder implements Contract {
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
-  private parentMap: Map<Module, Library> = new Map<Module, Library>();
+  private librariesMap: Map<Module, Library> = new Map<Module, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
   readonly constructorImplicitArgs: Argument[] = withImplicitArgs();
 
   get libraries(): Library[] {
-    return [...this.parentMap.values()];
+    return [...this.librariesMap.values()];
   }
 
   get functions(): ContractFunction[] {
@@ -87,7 +87,7 @@ export class ContractBuilder implements Contract {
 
   addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
     const key = module;
-    const present = this.parentMap.has(key);
+    const present = this.librariesMap.has(key);
     const initializer = initializable ? { params } : undefined;
 
     const functionStrings: string[] = [];
@@ -102,12 +102,12 @@ export class ContractBuilder implements Contract {
         }))
     }
 
-    this.parentMap.set(module, { module, functions: functionStrings, initializer });
+    this.librariesMap.set(module, { module, functions: functionStrings, initializer });
     return !present;
   }
 
   addModuleFunction(module: Module, addFunction: string) {
-    const existing = this.parentMap.get(module);
+    const existing = this.librariesMap.get(module);
     if (existing === undefined) {
       throw new Error(`Module ${module} has not been added yet`);
     }
