@@ -18,33 +18,10 @@ export function printContract(contract: Contract, opts?: Options): string {
   const hasViews = fns.views.some(l => l.length > 0);
   const hasExternals = fns.externals.some(l => l.length > 0);
 
-	// map of functions to the module it was imported from
-	const baseImports : Map<string, string> = new Map();
-  for (const fn of contract.functions) {
-    if (fn.module !== undefined) {
-      baseImports.set(getFunctionName(fn), convertPathToImport(fn.module.path));      
-    }
-  }
-  const importStatementObjs = toImportStatements(baseImports);
-
-  const parentImportsMap: Map<string, string[]> = new Map();
-  for (const parent of contract.libraries) {
-    if (parent.functions !== undefined) {
-      parentImportsMap.set(convertPathToImport(parent.module.path), parent.functions);
-    }
-  }
-  // TODO this is temporary measure to merge maps since we have duplicates
-  importStatementObjs.forEach((value, key) => {
-    const parentValue = parentImportsMap.get(key);
-    if (parentValue !== undefined) {
-      parentImportsMap.set(key, Array.from(new Set(parentValue.concat(value))));
-    }
-  });
-
-
-
-
-  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(parentImportsMap);
+  const modulesToParentFunctions = getModulesToParentFunctions(contract);
+  const modulesToLibraryFunctions = getModulesToLibraryFunctions(contract);
+  mergeToLibraryFunctions(modulesToParentFunctions, modulesToLibraryFunctions);
+  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
 
   const starkwareImports = toImportLines(starkwareImportsMap); 
   const ozImports = toImportLines(ozImportsMap); 
@@ -95,21 +72,51 @@ export function printContract(contract: Contract, opts?: Options): string {
   );
 }
 
+function mergeToLibraryFunctions(modulesToParentFunctions: Map<string, string[]>, modulesToLibraryFunctions: Map<string, string[]>) {
+  modulesToParentFunctions.forEach((value, key) => {
+    const functionsToMerge = modulesToLibraryFunctions.get(key);
+    if (functionsToMerge !== undefined) {
+      modulesToLibraryFunctions.set(key, Array.from(new Set(functionsToMerge.concat(value))));
+    }
+  });
+}
+
+function getModulesToLibraryFunctions(contract: Contract) {
+  const modulesToLibraryFunctions: Map<string, string[]> = new Map();
+  for (const parent of contract.libraries) {
+    if (parent.functions !== undefined) {
+      modulesToLibraryFunctions.set(convertPathToImport(parent.module.path), parent.functions);
+    }
+  }
+  return modulesToLibraryFunctions;
+}
+
+function getModulesToParentFunctions(contract: Contract) {
+  const functionsToModules: Map<string, string> = new Map();
+  for (const fn of contract.functions) {
+    if (fn.module !== undefined) {
+      functionsToModules.set(getFunctionName(fn), convertPathToImport(fn.module.path));
+    }
+  }
+  const modulesToFunctions = invertMap(functionsToModules);
+  return modulesToFunctions;
+}
+
 function convertPathToImport(relativePath: any): string {
 	return relativePath.split('/').join('.');
 }
 
-function toImportStatements(baseImports: Map<string, string>) {
-  const importStatements: Map<string, string[]> = new Map();
-  for (const [importName, moduleName] of baseImports.entries()) {
-    const existingModuleFunctions = importStatements.get(moduleName);
-    if (existingModuleFunctions === undefined) {
-      importStatements.set(moduleName, [importName]);
+function invertMap(functionsToModules: Map<string, string>) {
+  const modulesToFunctions: Map<string, string[]> = new Map();
+  for (const [functionName, moduleName] of functionsToModules.entries()) {
+    const moduleFunctions = modulesToFunctions.get(moduleName);
+    if (moduleFunctions === undefined) {
+      modulesToFunctions.set(moduleName, [functionName]);
     } else {
-      existingModuleFunctions.push(importName);
+      moduleFunctions.push(functionName);
     }
   }
-  return importStatements;
+  return modulesToFunctions;
 }
 
 function toImportLines(importStatements: Map<string, string[]>) {
