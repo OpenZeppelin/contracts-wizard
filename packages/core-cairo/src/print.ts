@@ -26,11 +26,7 @@ export function printContract(contract: Contract): string {
       [
         `# SPDX-License-Identifier: ${contract.license}`,
       ],
-      
-      [
-        `# WARNING! This contains highly experimental code. Do not use in production.`
-      ],
-      
+            
       [
         `%lang starknet`
       ],
