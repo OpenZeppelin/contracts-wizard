@@ -46,7 +46,11 @@ export function printContract(contract: Contract, opts?: Options): string {
       parentImportsMap.set(key, Array.from(new Set(parentValue.concat(value))));
     }
   });
-  const parentImportLines = toImportLines(parentImportsMap); 
+
+  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(parentImportsMap);
+
+  const starkwareImports = toImportLines(starkwareImportsMap); 
+  const ozImports = toImportLines(ozImportsMap); 
 
   return formatLines(
     ...spaceBetween(
@@ -65,9 +69,10 @@ export function printContract(contract: Contract, opts?: Options): string {
       [
         `from starkware.cairo.common.cairo_builtins import HashBuiltin`,
         `from starkware.cairo.common.uint256 import Uint256`,
+        ...starkwareImports,
       ],
 
-      parentImportLines,
+      ozImports,
 
       spaceBetween(
         contract.variables.map(helpers.transformVariable),
@@ -122,6 +127,19 @@ function toImportLines(importStatements: Map<string, string[]>) {
     }
   }
   return lines;
+}
+
+function getVendoredImports(parentImportsMap: Map<string, string[]>) {
+  const starkwareImportsMap: Map<string, string[]> = new Map<string, string[]>();
+  const ozImportsMap: Map<string, string[]> = new Map<string, string[]>();
+  for (let [key, value] of parentImportsMap) {
+    if (key.startsWith('starkware')) {
+      starkwareImportsMap.set(key, value);
+    } else {
+      ozImportsMap.set(key, value);
+    }
+  }
+  return { starkwareImportsMap, ozImportsMap };
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
