@@ -65,8 +65,9 @@ export function printContract(contract: Contract, opts?: Options): string {
       [
         `from starkware.cairo.common.cairo_builtins import HashBuiltin`,
         `from starkware.cairo.common.uint256 import Uint256`,
-        ...parentImportLines,
       ],
+
+      parentImportLines,
 
       spaceBetween(
         contract.variables.map(helpers.transformVariable),
