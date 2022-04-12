@@ -1,19 +1,19 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Library, ContractFunction, Argument, Value, Module, } from './contract';
-import { Options, Helpers, withHelpers } from './options';
+import type { Contract, Library, ContractFunction, Argument, Value, } from './contract';
+import { Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getImportsMap } from './utils/imports-map';
 import { mapValues } from './utils/map-values';
 import { getFunctionName } from './utils/module-prefix';
 
-export function printContract(contract: Contract, opts?: Options): string {
-  const helpers = withHelpers(contract, opts);
+export function printContract(contract: Contract): string {
+  const helpers = withHelpers(contract);
 
   const fns = mapValues(
     sortedFunctions(contract),
-    fns => fns.map(fn => printFunction(fn, helpers)),
+    fns => fns.map(fn => printFunction(fn)),
   );
 
   const hasViews = fns.views.some(l => l.length > 0);
@@ -185,7 +185,7 @@ export function printValue(value: Value): string {
   }
 }
 
-function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
+function printFunction(fn: ContractFunction): Lines[] {
   const code = [];
 
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
@@ -229,16 +229,7 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   }
   fn.push(`${kindedName}{`);
   
-  // TODO move this formatting out to printFunction()
-  const implicitArgsFormatted: string[] = [];
-  implicitArgs.forEach((implicitArg, index, arr) => 
-  {
-    if (index < arr.length - 1) {
-      implicitArgsFormatted.push(`${implicitArg},`);
-    } else {
-      implicitArgsFormatted.push(`${implicitArg}`);
-    }
-  });
+  const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
   fn.push([implicitArgsFormatted]);
   
   const formattedArgs = args.join(', ');
@@ -262,6 +253,18 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   fn.push('end');
 
   return fn;
+}
+
+function formatImplicitArgs(implicitArgs: string[]) {
+  const implicitArgsFormatted: string[] = [];
+  implicitArgs.forEach((implicitArg, index, arr) => {
+    if (index < arr.length - 1) {
+      implicitArgsFormatted.push(`${implicitArg},`);
+    } else {
+      implicitArgsFormatted.push(`${implicitArg}`);
+    }
+  });
+  return implicitArgsFormatted;
 }
 
 function printArgument(arg: Argument): string {
