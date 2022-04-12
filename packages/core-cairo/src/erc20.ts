@@ -56,8 +56,6 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  // TODO add imports for starkware common libraries without initializer
-
   checkDecimals(allOpts.decimals);
 
   addBase(c, allOpts.name, allOpts.symbol, allOpts.decimals);

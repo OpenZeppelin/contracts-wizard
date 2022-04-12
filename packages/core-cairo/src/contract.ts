@@ -1,6 +1,5 @@
 import { withImplicitArgs } from './common-options';
 import { getFunctionName } from './utils/module-prefix';
-import { toIdentifier } from './utils/to-identifier';
 
 export interface Contract {
   license: string;
@@ -70,16 +69,9 @@ export class ContractBuilder implements Contract {
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
-  /**
-   * Map of library prefix to Parent object
-   */
   private parentMap: Map<Module, Library> = new Map<Module, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
   readonly constructorImplicitArgs: Argument[] = withImplicitArgs();
-
-  // TODO create a list of modules
-  // in addParentLibrary, lookup from list
-
 
   get libraries(): Library[] {
     return [...this.parentMap.values()].sort((a, b) => {
@@ -161,17 +153,12 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorArgument(arg: Argument) {
-    // TODO use a better way to determine if the constructor already has this arg
-    let hasArg = false;
-    this.constructorArgs.map(a => {
-      if (a.name == arg.name) {
-        hasArg = true;
-        // TODO can't break out of this
+    for (const existingArg of this.constructorArgs) {
+      if (existingArg.name == arg.name) {
+        return;
       }
-    });
-    if (!hasArg) {
-      this.constructorArgs.push(arg);
     }
+    this.constructorArgs.push(arg);
   }
 
   addConstructorCode(code: string) {
