@@ -53,10 +53,12 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
+    const language = 'cairo';
+
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
       if (opts) {
-        await postConfig(opts, 'copy-cairo');
+        await postConfig(opts, 'copy', language);
       }
     };
 
@@ -64,7 +66,7 @@
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
         saveAs(blob, opts.name + '.cairo');
-        await postConfig(opts, 'download-cairo');
+        await postConfig(opts, 'download-npm', language);
       }
     };
 

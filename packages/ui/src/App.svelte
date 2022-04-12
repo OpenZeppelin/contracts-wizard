@@ -59,10 +59,12 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
+    const language = 'solidity';
+
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
       if (opts) {
-        await postConfig(opts, 'copy');
+        await postConfig(opts, 'copy', language);
       }
     };
 
@@ -72,7 +74,7 @@
       const versionedCode = printContractVersioned(contract);
       window.open(remixURL(versionedCode).toString(), '_blank');
       if (opts) {
-        await postConfig(opts, 'remix');
+        await postConfig(opts, 'remix', language);
       }
     };
 
@@ -80,7 +82,7 @@
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
         saveAs(blob, opts.name + '.sol');
-        await postConfig(opts, 'download-npm');
+        await postConfig(opts, 'download-npm', language);
       }
     };
 
@@ -92,7 +94,7 @@
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');
       if (opts) {
-        await postConfig(opts, 'download-vendored');
+        await postConfig(opts, 'download-vendored', language);
       }
     };
 </script>
