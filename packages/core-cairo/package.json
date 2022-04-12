@@ -1,7 +1,7 @@
 {
   "name": "core-cairo",
   "version": "0.0.1",
-  "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
+  "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Cairo",
   "license": "MIT",
   "repository": "github:OpenZeppelin/wizard",
   "main": "dist/index.js",
@@ -12,8 +12,8 @@
     "!*.test.{js,d.ts}{,.map}"
   ],
   "scripts": {
-    "prepare": "tsc && node dist/scripts/prepare.js",
-    "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
+    "prepare": "tsc",
+    "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
     "test:watch": "ava --watch"
   },
@@ -25,10 +25,8 @@
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
     "ava": "^4.0.0",
-    "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
     "rimraf": "^3.0.2",
-    "solidity-ast": "^0.4.18",
     "ts-node": "^10.4.0",
     "typescript": "^4.1.3"
   },
