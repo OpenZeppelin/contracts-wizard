@@ -78,11 +78,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
-  c.addModuleFunction(
-    // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
-    modules.ERC721,
-    'ERC721_only_token_owner',
-  );
+  c.addModuleFunction(modules.ERC721, 'ERC721_only_token_owner');
   c.setFunctionBody(
     [
       'ERC721_only_token_owner(tokenId)',
@@ -94,11 +90,7 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
-  c.addModuleFunction(
-    // TODO have a way when defining the function to specify that this has multiple "base" functions (e.g. multiple parents)
-    modules.ERC721,
-    'ERC721_setTokenURI',
-  );
+  c.addModuleFunction(modules.ERC721, 'ERC721_setTokenURI');
   c.setFunctionBody(
     [
       'ERC721_safeMint(to, tokenId, data_len, data)', 
