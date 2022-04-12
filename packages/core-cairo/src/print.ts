@@ -4,6 +4,7 @@ import type { Contract, Library, ContractFunction, Argument, Value, Module, } fr
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import { getImportsMap } from './utils/imports-map';
 import { mapValues } from './utils/map-values';
 import { getFunctionName } from './utils/module-prefix';
 
@@ -67,76 +68,12 @@ export function printContract(contract: Contract, opts?: Options): string {
 }
 
 function printImports(contract: Contract) {
-  const modulesToParentFunctions = getModulesToParentFunctions(contract);
-  const modulesToLibraryFunctions = getModulesToLibraryFunctions(contract);
-  mergeToLibraryFunctions(modulesToParentFunctions, modulesToLibraryFunctions);
+  const modulesToLibraryFunctions = getImportsMap(contract);
   const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
 
-  const starkwareImports = toImportLines(starkwareImportsMap);
-  const ozImports = toImportLines(ozImportsMap);
+  const starkwareImports = printImportLines(starkwareImportsMap);
+  const ozImports = printImportLines(ozImportsMap);
   return { starkwareImports, ozImports };
-}
-
-function mergeToLibraryFunctions(modulesToParentFunctions: Map<string, Set<string>>, modulesToLibraryFunctions: Map<string, Set<string>>) {
-  modulesToParentFunctions.forEach((value, key) => {
-    const functionsToMerge = modulesToLibraryFunctions.get(key);
-    if (functionsToMerge !== undefined) {
-      functionsToMerge.forEach(fn => { value.add(fn) });
-      modulesToLibraryFunctions.set(key, value);
-    }
-  });
-}
-
-function getModulesToLibraryFunctions(contract: Contract) {
-  const modulesToLibraryFunctions: Map<string, Set<string>> = new Map();
-  for (const parent of contract.libraries) {
-    if (parent.functions !== undefined) {
-      modulesToLibraryFunctions.set(convertPathToImport(parent.module.path), new Set(parent.functions));
-    }
-  }
-  return modulesToLibraryFunctions;
-}
-
-function getModulesToParentFunctions(contract: Contract) {
-  const functionsToModules: Map<string, string> = new Map();
-  for (const fn of contract.functions) {
-    if (fn.module !== undefined) {
-      functionsToModules.set(getFunctionName(fn), convertPathToImport(fn.module.path));
-    }
-  }
-  const modulesToFunctions = invertMapToSet(functionsToModules);
-  return modulesToFunctions;
-}
-
-function convertPathToImport(relativePath: any): string {
-	return relativePath.split('/').join('.');
-}
-
-function invertMapToSet(functionsToModules: Map<string, string>): Map<string, Set<string>> {
-  const modulesToFunctions: Map<string, Set<string>> = new Map();
-  for (const [functionName, moduleName] of functionsToModules.entries()) {
-    const moduleFunctions = modulesToFunctions.get(moduleName);
-    if (moduleFunctions === undefined) {
-      modulesToFunctions.set(moduleName, new Set<string>().add(functionName));
-    } else {
-      moduleFunctions.add(functionName);
-    }
-  }
-  return modulesToFunctions;
-}
-
-function toImportLines(importStatements: Map<string, Set<string>>) {
-  const lines = [];
-  for (const [module, fns] of importStatements.entries()) {
-    if (fns.size > 1) {
-      lines.push(`from ${module} import (`);
-      lines.push(Array.from(fns).map(p => `${p},`));
-      lines.push(`)`);
-    } else if (fns.size === 1) {
-      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
-    }
-  }
-  return lines;
 }
 
 function getVendoredImports(parentImportsMap: Map<string, Set<string>>) {
@@ -150,6 +87,20 @@ function getVendoredImports(parentImportsMap: Map<string, Set<string>>) {
     }
   }
   return { starkwareImportsMap, ozImportsMap };
+}
+
+function printImportLines(importStatements: Map<string, Set<string>>) {
+  const lines = [];
+  for (const [module, fns] of importStatements.entries()) {
+    if (fns.size > 1) {
+      lines.push(`from ${module} import (`);
+      lines.push(Array.from(fns).map(p => `${p},`));
+      lines.push(`)`);
+    } else if (fns.size === 1) {
+      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
+    }
+  }
+  return lines;
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
