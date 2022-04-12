@@ -109,10 +109,10 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const parents = contract.libraries
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['external'] : ['constructor'];
+    const modifier = helpers.upgradeable ? 'external' : 'constructor';
     const head = helpers.upgradeable ? 'func initializer' : 'func constructor';
-    const args = contract.constructorArgs.map(a => printArgument(a, helpers));
-    const implicitArgs = contract.constructorImplicitArgs?.map(a => printArgument(a, helpers));
+    const args = contract.constructorArgs.map(a => printArgument(a));
+    const implicitArgs = contract.constructorImplicitArgs?.map(a => printArgument(a));
     const body = spaceBetween(
         parents,
         contract.constructorCode,
@@ -122,7 +122,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       head,
       implicitArgs ?? [],
       args,
-      modifiers,
+      modifier,
       undefined,
       undefined,
       body,
@@ -210,24 +210,24 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 
   return printFunction2(
     'func ' + fn.name,
-    fn.implicitArgs?.map(a => printArgument(a, helpers)) ?? [],
-    fn.args.map(a => printArgument(a, helpers)),
-    [fn.kind ?? "kindNotFound"],
-    fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a, helpers)),
+    fn.implicitArgs?.map(a => printArgument(a)) ?? [],
+    fn.args.map(a => printArgument(a)),
+    fn.kind,
+    fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a)),
     returnVariables,
     code,
   );
 }
 
 // generic for functions and constructors
-// kindedName = 'function foo' or 'constructor'
-function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string[], returns: string[] | undefined, returnVariables: string[] | undefined, code: Lines[]): Lines[] {
+// kindedName = 'func foo'
+function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnVariables: string[] | undefined, code: Lines[]): Lines[] {
   const fn = [];
 
-  fn.push(`@${kind}`);
+  if (kind !== undefined) {
+    fn.push(`@${kind}`);
+  }
   fn.push(`${kindedName}{`);
-
-  //fn.push([implicitArgs]);
   
   // TODO move this formatting out to printFunction()
   const implicitArgsFormatted: string[] = [];
@@ -250,18 +250,6 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
     fn.push([`}(${formattedArgs}):`]);
   }
 
-  // const headingLength = [kindedName, ...args, ...modifiers]
-  //   .map(s => s.length)
-  //   .reduce((a, b) => a + b);
-
-  // if (headingLength <= 72) {
-  //   fn.push([`(${args.join(', ')})`, ...modifiers, ':'].join(' '));
-  // } else {
-  //   fn.push(`(${args.join(', ')})`, modifiers, ':');
-  // }
-
-//  fn.push(`(${args.join(', ')})`, modifiers, ':');
-
   fn.push(code);
 
   if (returnVariables !== undefined) {
@@ -276,9 +264,9 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   return fn;
 }
 
-function printArgument(arg: Argument, { transformName }: Helpers): string {
+function printArgument(arg: Argument): string {
   if (arg.type !== undefined) {
-    const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
+    const type = arg.type;
     return `${arg.name}: ${type}`;
   } else {
     return `${arg.name}`;
