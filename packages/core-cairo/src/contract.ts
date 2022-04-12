@@ -8,7 +8,6 @@ export interface Contract {
   constructorCode: string[];
   constructorImplicitArgs?: Argument[];
   constructorArgs: Argument[];
-  variables: string[];
   upgradeable: boolean; 
 }
 
@@ -67,7 +66,6 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
   private librariesMap: Map<Module, Library> = new Map<Module, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
@@ -79,10 +77,6 @@ export class ContractBuilder implements Contract {
 
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
-  }
-
-  get variables(): string[] {
-    return [...this.variableSet];
   }
 
   addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {

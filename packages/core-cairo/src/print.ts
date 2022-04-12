@@ -44,7 +44,6 @@ export function printContract(contract: Contract, opts?: Options): string {
       ozImports,
 
       spaceBetween(
-        contract.variables.map(helpers.transformVariable),
         printConstructor(contract, helpers),
         ...fns.code,
         ...fns.modifiers,
