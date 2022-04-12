@@ -66,7 +66,8 @@ export default function(hljs: HLJSApi) {
     'SignatureBuiltin',
     'BitwiseBuiltin',
     'EcOpBuiltin',
-    'Uint256'
+    'Uint256',
+    'TRUE',
   ];
 
   const LITERALS: string[] = [];
