@@ -64,13 +64,9 @@ export function printContract(contract: Contract, opts?: Options): string {
 
       [
         `from starkware.cairo.common.cairo_builtins import HashBuiltin`,
-        `from starkware.cairo.common.uint256 import Uint256`
+        `from starkware.cairo.common.uint256 import Uint256`,
+        ...parentImportLines,
       ],
-
-      //contract.imports.map(p => `from ${helpers.transformImport(p)}`),
-
-      // here we should print any imports (including any base library functions)
-      parentImportLines,
 
       spaceBetween(
         contract.variables.map(helpers.transformVariable),
