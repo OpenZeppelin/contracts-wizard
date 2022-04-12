@@ -77,20 +77,21 @@ function printImports(contract: Contract) {
   return { starkwareImports, ozImports };
 }
 
-function mergeToLibraryFunctions(modulesToParentFunctions: Map<string, string[]>, modulesToLibraryFunctions: Map<string, string[]>) {
+function mergeToLibraryFunctions(modulesToParentFunctions: Map<string, Set<string>>, modulesToLibraryFunctions: Map<string, Set<string>>) {
   modulesToParentFunctions.forEach((value, key) => {
     const functionsToMerge = modulesToLibraryFunctions.get(key);
     if (functionsToMerge !== undefined) {
-      modulesToLibraryFunctions.set(key, Array.from(new Set(functionsToMerge.concat(value))));
+      functionsToMerge.forEach(fn => { value.add(fn) });
+      modulesToLibraryFunctions.set(key, value);
     }
   });
 }
 
 function getModulesToLibraryFunctions(contract: Contract) {
-  const modulesToLibraryFunctions: Map<string, string[]> = new Map();
+  const modulesToLibraryFunctions: Map<string, Set<string>> = new Map();
   for (const parent of contract.libraries) {
     if (parent.functions !== undefined) {
-      modulesToLibraryFunctions.set(convertPathToImport(parent.module.path), parent.functions);
+      modulesToLibraryFunctions.set(convertPathToImport(parent.module.path), new Set(parent.functions));
     }
   }
   return modulesToLibraryFunctions;
@@ -103,7 +104,7 @@ function getModulesToParentFunctions(contract: Contract) {
       functionsToModules.set(getFunctionName(fn), convertPathToImport(fn.module.path));
     }
   }
-  const modulesToFunctions = invertMap(functionsToModules);
+  const modulesToFunctions = invertMapToSet(functionsToModules);
   return modulesToFunctions;
 }
 
@@ -111,36 +112,36 @@ function convertPathToImport(relativePath: any): string {
 	return relativePath.split('/').join('.');
 }
 
-function invertMap(functionsToModules: Map<string, string>) {
-  const modulesToFunctions: Map<string, string[]> = new Map();
+function invertMapToSet(functionsToModules: Map<string, string>): Map<string, Set<string>> {
+  const modulesToFunctions: Map<string, Set<string>> = new Map();
   for (const [functionName, moduleName] of functionsToModules.entries()) {
     const moduleFunctions = modulesToFunctions.get(moduleName);
     if (moduleFunctions === undefined) {
-      modulesToFunctions.set(moduleName, [functionName]);
+      modulesToFunctions.set(moduleName, new Set<string>().add(functionName));
     } else {
-      moduleFunctions.push(functionName);
+      moduleFunctions.add(functionName);
     }
   }
   return modulesToFunctions;
 }
 
-function toImportLines(importStatements: Map<string, string[]>) {
+function toImportLines(importStatements: Map<string, Set<string>>) {
   const lines = [];
   for (const [module, fns] of importStatements.entries()) {
-    if (fns.length > 1) {
+    if (fns.size > 1) {
       lines.push(`from ${module} import (`);
-      lines.push(fns.map(p => `${p},`));
+      lines.push(Array.from(fns).map(p => `${p},`));
       lines.push(`)`);
-    } else if (fns.length === 1) {
-      lines.push(`from ${module} import ${fns[0]}`);
+    } else if (fns.size === 1) {
+      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
     }
   }
   return lines;
 }
 
-function getVendoredImports(parentImportsMap: Map<string, string[]>) {
-  const starkwareImportsMap: Map<string, string[]> = new Map<string, string[]>();
-  const ozImportsMap: Map<string, string[]> = new Map<string, string[]>();
+function getVendoredImports(parentImportsMap: Map<string, Set<string>>) {
+  const starkwareImportsMap: Map<string, Set<string>> = new Map<string, Set<string>>();
+  const ozImportsMap: Map<string, Set<string>> = new Map<string, Set<string>>();
   for (let [key, value] of parentImportsMap) {
     if (key.startsWith('starkware')) {
       starkwareImportsMap.set(key, value);
