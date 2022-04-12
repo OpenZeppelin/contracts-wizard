@@ -22,13 +22,7 @@ export function printContract(contract: Contract, opts?: Options): string {
 	const baseImports : Map<string, string> = new Map();
   for (const fn of contract.functions) {
     if (fn.module !== undefined) {
-      // find the corresponding import
-      for (const parent of contract.libraries) {
-        if (parent.module === fn.module) {
-          baseImports.set(getFunctionName(fn), convertPathToImport(parent.module.path));
-          break;
-        }
-      }
+      baseImports.set(getFunctionName(fn), convertPathToImport(fn.module.path));      
     }
   }
   const importStatementObjs = toImportStatements(baseImports);
@@ -46,6 +40,9 @@ export function printContract(contract: Contract, opts?: Options): string {
       parentImportsMap.set(key, Array.from(new Set(parentValue.concat(value))));
     }
   });
+
+
+
 
   const { starkwareImportsMap, ozImportsMap } = getVendoredImports(parentImportsMap);
 
