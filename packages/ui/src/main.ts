@@ -15,10 +15,13 @@ window.onload = postResize;
 const resizeObserver = new ResizeObserver(postResize);
 resizeObserver.observe(document.body);
 
-const tab = new URLSearchParams(window.location.search).get('tab');
+const params = new URLSearchParams(window.location.search);
+
+const tab = params.get('tab');
+const lang = params.get('lang');
 
 let app;
-if (window.location.pathname === '/embed-cairo') {
+if (lang === 'cairo') {
   app = new CairoApp({ target: document.body, props: { tab } });
 } else {
   app = new App({ target: document.body, props: { tab } });

@@ -21,3 +21,5 @@ To embed Contracts Wizard on your site, first include the script tag:
 Then place `<oz-wizard></oz-wizard>` in the body where you want Contracts Wizard to load.
 
 Optionally focus on specific tab with the `data-tab` attribute as in `<oz-wizard data-tab="ERC721"></oz-wizard>`.
+
+For Cairo, use the `data-lang` attribute: `<oz-wizard data-lang="cairo"></oz-wizard>`.
