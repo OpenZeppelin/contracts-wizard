@@ -69,6 +69,22 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
 }
+.hero-cairo h1 {
+  font-size: 3.5rem;
+  line-height: 1.25;
+  padding: 2rem 0;
+  margin: 0;
+  font-weight: 500;
+  color: transparent;
+  background: linear-gradient(-60deg, #e55233, #f6643c, #e55233, #f6643c);
+  background-size: 200% 200%;
+  animation: Gradient 8s ease infinite;
+  -moz-animation: Gradient 8s ease infinite;
+  -webkit-animation: Gradient 8s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 @-webkit-keyframes Gradient {
   0% {
     background-position: 0% 50%;
