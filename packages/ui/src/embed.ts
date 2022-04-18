@@ -26,12 +26,9 @@ onDOMContentLoaded(function () {
 
     const src = new URL('embed', currentScript.origin);
 
-    const tab = w.getAttribute('data-tab') ?? w.getAttribute('tab');
+    setSearchParam(w, src.searchParams, 'data-lang', 'lang');
+    setSearchParam(w, src.searchParams, 'data-tab', 'tab');
     const sync = w.getAttribute('data-sync-url');
-
-    if (tab) {
-      src.searchParams.set('tab', tab)
-    }
 
     if (sync === 'fragment') {
       const fragment = window.location.hash.replace('#', '');
@@ -64,6 +61,13 @@ onDOMContentLoaded(function () {
     }
   }
 });
+
+function setSearchParam(w: HTMLElement, searchParams: URLSearchParams, dataParam: string, param: string) {
+  const value = w.getAttribute(dataParam) ?? w.getAttribute(param);
+  if (value) {
+    searchParams.set(param, value);
+  }
+}
 
 function onDOMContentLoaded(callback: () => void) {
   if (document.readyState === 'loading') {

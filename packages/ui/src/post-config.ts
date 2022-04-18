@@ -1,4 +1,5 @@
 import type { GenericOptions } from '@openzeppelin/wizard';
+import type { GenericOptions as CairoOptions } from 'core-cairo';
 import { v4 as uuid } from 'uuid';
 
 declare global {
@@ -9,11 +10,12 @@ declare global {
 const instance = uuid();
 
 export type Action = 'copy' | 'remix' | 'download-npm' | 'download-vendored';
+export type Language = 'solidity' | 'cairo';
 
 // NOTE: We have to make sure any fields sent in the body are defined in the
 // hidden form in public/index.html.
-export async function postConfig(opts: Required<GenericOptions>, action: Action) {
-  sendAnalyticsToGTM(opts, action);
+export async function postConfig(opts: Required<GenericOptions> | Required<CairoOptions>, action: Action, language: Language) {
+  sendAnalyticsToGTM(opts, action, language);
   await fetch('/config', {
     method: 'POST',
     headers: {
@@ -24,10 +26,11 @@ export async function postConfig(opts: Required<GenericOptions>, action: Action)
       instance,
       action,
       data: JSON.stringify(opts),
+      language
     }),
   });
 }
-function sendAnalyticsToGTM(opts: any, action : Action){
+function sendAnalyticsToGTM(opts: any, action: Action, language: Language) {
   var currentObject = opts;
   
   if (typeof window.gtag === 'undefined') {
@@ -35,6 +38,7 @@ function sendAnalyticsToGTM(opts: any, action : Action){
   } 
    
   opts.action = action;
+  opts.language = language;
   window.gtag("event", "wizard_action", opts);
 }
 function encode<K extends string, V extends string | number | boolean>(

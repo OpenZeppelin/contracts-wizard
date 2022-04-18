@@ -19,7 +19,7 @@ export const defaults = {
   settings: true,
 } as const;
 
-export const votesOptions = ['erc20votes', 'comp'] as const;
+export const votesOptions = ['erc20votes', 'erc721votes', 'comp'] as const;
 export type VotesOptions = typeof votesOptions[number];
 
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
@@ -45,7 +45,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
-    decimals: opts.decimals || defaults.decimals,
+    decimals: opts.decimals ?? defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? '',
@@ -59,6 +59,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);
+
+  validateDecimals(allOpts.decimals);
 
   addBase(c, allOpts);
   addSettings(c, allOpts);
@@ -146,14 +148,22 @@ function getVotingPeriod(opts: Required<GovernorOptions>): number {
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals }: Required<GovernorOptions>): string {
+function validateDecimals(decimals: number) {
+  if (!/^\d+$/.test(decimals.toString())) {
+    throw new OptionsError({
+      decimals: 'Not a valid number',
+    });
+  }
+}
+
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
     });
   }
 
-  if (/^0+$/.test(proposalThreshold)) {
+  if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
     return proposalThreshold;
   } else {
     return `${proposalThreshold}e${decimals}`;
@@ -188,7 +198,11 @@ function addCounting(c: ContractBuilder, { bravo }: GovernorOptions) {
 
 const votesModules = {
   erc20votes: {
-    tokenType: 'ERC20Votes',
+    tokenType: 'IVotes',
+    parentName: 'GovernorVotes',
+  },
+  erc721votes: {
+    tokenType: 'IVotes',
     parentName: 'GovernorVotes',
   },
   comp: {
@@ -217,9 +231,9 @@ export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
-    if (opts.votes !== 'erc20votes') {
+    if (opts.votes !== 'erc20votes' && opts.votes !== 'erc721votes') {
       throw new OptionsError({
-        quorumPercent: 'Percent-based quorum is only available for ERC20Votes',
+        quorumPercent: 'Percent-based quorum is only available for ERC20Votes or ERC721Votes',
       });
     }
 
@@ -229,10 +243,19 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       });
     }
 
+    let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
+
+    if (quorumFractionDenominator !== undefined) {
+      c.addOverride('GovernorVotesQuorumFraction', functions.quorumDenominator);
+      c.setFunctionBody([
+        `return ${quorumFractionDenominator};`
+      ], functions.quorumDenominator, 'pure');
+    }
+
     c.addParent({
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-    }, [opts.quorumPercent]);
+    }, [quorumFractionNumerator]);
     c.addOverride('GovernorVotesQuorumFraction', functions.quorum);
   }
 
@@ -243,8 +266,12 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       });
     }
 
+    let returnStatement = (opts.decimals === 0 || opts.votes === 'erc721votes') ? 
+      `return ${opts.quorumAbsolute};` :
+      `return ${opts.quorumAbsolute}e${opts.decimals};`;
+
     c.setFunctionBody([
-      `return ${opts.quorumAbsolute}e${opts.decimals};`,
+      returnStatement,
     ], functions.quorum, 'pure');
   }
 }
@@ -259,6 +286,26 @@ const timelockModules = {
     parentName: 'GovernorTimelockCompound',
   },
 } as const;
+
+function getQuorumFractionComponents(quorumPercent: number): {quorumFractionNumerator: number, quorumFractionDenominator: string | undefined} {
+  let quorumFractionNumerator = quorumPercent;
+  let quorumFractionDenominator = undefined;
+
+  const quorumPercentSegments = quorumPercent.toString().split(".");
+  if (quorumPercentSegments.length > 2) {
+    throw new OptionsError({
+      quorumPercent: 'Invalid percentage',
+    });
+  } else if (quorumPercentSegments.length == 2 && quorumPercentSegments[0] !== undefined && quorumPercentSegments[1] !== undefined) {
+    quorumFractionNumerator = parseInt(quorumPercentSegments[0].concat(quorumPercentSegments[1]));
+    const decimals = quorumPercentSegments[1].length;
+    quorumFractionDenominator = '100';
+    while (quorumFractionDenominator.length < decimals + 3) {
+      quorumFractionDenominator += '0';
+    }
+  }
+  return { quorumFractionNumerator, quorumFractionDenominator };
+}
 
 function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
   if (timelock === false) {
@@ -326,6 +373,12 @@ const functions = defineFunctions({
     args: [
       { name: 'blockNumber', type: 'uint256' },
     ],
+    returns: ['uint256'],
+    kind: 'public',
+    mutability: 'view',
+  },
+  quorumDenominator: {
+    args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
