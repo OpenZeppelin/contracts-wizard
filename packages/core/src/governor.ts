@@ -88,7 +88,6 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   c.addOverride('IGovernor', functions.votingDelay);
   c.addOverride('IGovernor', functions.votingPeriod);
   c.addOverride('IGovernor', functions.quorum);
-  c.addOverride('IGovernor', functions.getVotes);
   c.addOverride('Governor', functions.state);
   c.addOverride('Governor', functions.propose);
   c.addOverride('Governor', functions.proposalThreshold);
@@ -224,7 +223,6 @@ function addVotes(c: ContractBuilder, { votes }: GovernorOptions) {
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
   }, [{ lit: tokenArg }]);
-  c.addOverride(parentName, functions.getVotes);
 }
 
 export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
@@ -379,15 +377,6 @@ const functions = defineFunctions({
   },
   quorumDenominator: {
     args: [],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'view',
-  },
-  getVotes: {
-    args: [
-      { name: 'account', type: 'address' },
-      { name: 'blockNumber', type: 'uint256' },
-    ],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
