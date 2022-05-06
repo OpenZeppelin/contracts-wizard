@@ -89,7 +89,11 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       return spaceBetween(
         [
           '/// @custom:oz-upgrades-unsafe-allow constructor',
-          'constructor() initializer {}',
+          'constructor() {',
+          [
+            '_disableInitializers();'
+          ],
+          '}'
         ],
         constructor,
       );
