@@ -24,7 +24,7 @@ export const defaults: Required<ERC20Options> = {
   info: commonDefaults.info
 } as const;
 
-export function printERC20(opts: ERC20Options): string {
+export function printERC20(opts: ERC20Options = defaults): string {
   return printContract(buildERC20(opts));
 }
 

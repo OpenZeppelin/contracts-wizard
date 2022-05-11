@@ -20,7 +20,7 @@ export const defaults: Required<ERC721Options> = {
   info: commonDefaults.info
 } as const;
 
-export function printERC721(opts: ERC721Options): string {
+export function printERC721(opts: ERC721Options = defaults): string {
   return printContract(buildERC721(opts));
 }
 
