@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from '../HelpTooltip.svelte';
 
-  import type { KindedOptions } from 'core-cairo';
-  import { infoDefaults } from 'core-cairo';
+  import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+  import { infoDefaults } from '@openzeppelin/wizard-cairo';
   
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';

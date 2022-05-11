@@ -13,8 +13,8 @@
     import OverflowMenu from '../OverflowMenu.svelte';
     import FileIcon from '../icons/FileIcon.svelte';
 
-    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from 'core-cairo';
-    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from 'core-cairo';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
+    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
     import { postConfig } from '../post-config';
 
     import { saveAs } from 'file-saver';

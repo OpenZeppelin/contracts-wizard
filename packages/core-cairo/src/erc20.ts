@@ -8,14 +8,25 @@ import { setInfo } from './set-info';
 import { OptionsError } from './error';
 import BN from 'bn.js';
 import { defineModules } from './utils/define-modules';
+import { defaults as commonDefaults } from './common-options';
+import { printContract } from './print';
 
-export const defaults = {
+export const defaults: Required<ERC20Options> = {
+  name: 'MyToken',
+  symbol: 'MTK',
   burnable: false,
   pausable: false,
   premint: '0',
-  mintable: false,
   decimals: '18',
+  mintable: false,
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info
 } as const;
+
+export function printERC20(opts: ERC20Options): string {
+  return printContract(buildERC20(opts));
+}
 
 export interface ERC20Options extends CommonOptions {
   name: string;

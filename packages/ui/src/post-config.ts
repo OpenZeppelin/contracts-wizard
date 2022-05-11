@@ -1,5 +1,5 @@
 import type { GenericOptions } from '@openzeppelin/wizard';
-import type { GenericOptions as CairoOptions } from 'core-cairo';
+import type { GenericOptions as CairoOptions } from '@openzeppelin/wizard-cairo';
 import { v4 as uuid } from 'uuid';
 
 declare global {

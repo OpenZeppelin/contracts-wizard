@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "MIT",
-  "repository": "github:OpenZeppelin/wizard",
+  "repository": "github:OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
   "ts:main": "src/index.ts",
   "files": [

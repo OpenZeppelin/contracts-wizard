@@ -1,9 +1,9 @@
 <script lang="ts">
   import HelpTooltip from '../HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from 'core-cairo'
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo'
 ;
-  import { premintPattern, infoDefaults } from 'core-cairo';
+  import { premintPattern, erc20defaults } from '@openzeppelin/wizard-cairo';
 
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
@@ -11,16 +11,8 @@
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: false,
-    pausable: false,
-    premint: '0',
-    decimals: '18',
-    mintable: false,
-    access: 'ownable',
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...erc20defaults,
+    premint: '', // default to empty premint in UI instead of 0
   };
 
   export let errors: undefined | OptionsErrorMessages;
