@@ -2,22 +2,14 @@
   import HelpTooltip from '../HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard-cairo';
-  import { infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { erc721defaults } from '@openzeppelin/wizard-cairo';
   
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   
-
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: false,
-    pausable: false,
-    mintable: false,
-    access: 'ownable',
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...erc721defaults,
   };
 </script>
 
