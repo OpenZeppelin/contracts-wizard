@@ -6,7 +6,9 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 ## Development
 
-`packages/core` contains the code generation logic.
+`packages/core` contains the code generation logic for Solidity.
+
+`packages/core-cairo` contains the code generation logic for Cairo.
 
 `packages/ui` is the interface built in Svelte. `yarn dev` spins up a local server to develop the UI.
 
@@ -23,3 +25,7 @@ Then place `<oz-wizard></oz-wizard>` in the body where you want Contracts Wizard
 Optionally focus on specific tab with the `data-tab` attribute as in `<oz-wizard data-tab="ERC721"></oz-wizard>`.
 
 For Cairo, use the `data-lang` attribute: `<oz-wizard data-lang="cairo"></oz-wizard>`.
+
+## API
+
+See [API documentation](docs/API.md) for provided APIs.

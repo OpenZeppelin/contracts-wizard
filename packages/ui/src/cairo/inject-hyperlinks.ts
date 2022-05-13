@@ -1,4 +1,4 @@
-import { contractsVersion } from "core-cairo/src";
+import { contractsVersion } from "@openzeppelin/wizard-cairo/src";
 
 export function injectHyperlinks(code: string) {
   const importRegex = /( )(openzeppelin|starkware)([^\s]*)( )/g

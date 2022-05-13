@@ -6,6 +6,23 @@ import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-op
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { defineModules } from './utils/define-modules';
+import { defaults as commonDefaults } from './common-options';
+import { printContract } from './print';
+
+export const defaults: Required<ERC721Options> = {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: false,
+  pausable: false,
+  mintable: false,
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info
+} as const;
+
+export function printERC721(opts: ERC721Options = defaults): string {
+  return printContract(buildERC721(opts));
+}
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -15,12 +32,22 @@ export interface ERC721Options extends CommonOptions {
   mintable?: boolean;
 }
 
+function withDefaults(opts: ERC721Options): Required<ERC721Options> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    burnable: opts.burnable ?? defaults.burnable,
+    pausable: opts.pausable ?? defaults.pausable,
+    mintable: opts.mintable ?? defaults.mintable,
+  };
+}
+
 export function buildERC721(opts: ERC721Options): Contract {
   const c = new ContractBuilder();
 
-  const { access, upgradeable, info } = withCommonDefaults(opts);
+  const allOpts = withDefaults(opts);
 
-  addBase(c, opts.name, opts.symbol);
+  addBase(c, allOpts.name, allOpts.symbol);
   addSupportsInterface(c);
 
   c.addFunction(functions.name);
@@ -36,27 +63,27 @@ export function buildERC721(opts: ERC721Options): Contract {
   c.addFunction(functions.transferFrom);
   c.addFunction(functions.safeTransferFrom);
 
-  if (opts.pausable) {
-    addPausable(c, access, [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom]);
-    if (opts.burnable) {
+  if (allOpts.pausable) {
+    addPausable(c, allOpts.access, [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom]);
+    if (allOpts.burnable) {
       setPausable(c, functions.burn);
     }
-    if (opts.mintable) {
+    if (allOpts.mintable) {
       setPausable(c, functions.safeMint);
     }
   }
 
-  if (opts.burnable) {
+  if (allOpts.burnable) {
     addBurnable(c);
   }
 
-  if (opts.mintable) {
-    addMintable(c, access);
+  if (allOpts.mintable) {
+    addMintable(c, allOpts.access);
   }
 
-  setUpgradeable(c, upgradeable);
+  setUpgradeable(c, allOpts.upgradeable);
 
-  setInfo(c, info);
+  setInfo(c, allOpts.info);
 
   return c;
 }
