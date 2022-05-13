@@ -35,3 +35,7 @@ The default options that are used for [`printERC20`](#printerc20).
 const erc721defaults: Required<ERC721Options>
 ```
 The default options that are used for [`printERC721`](#printerc721).
+
+## Solidity
+
+Contracts Wizard API for Solidity is not available yet. Please reach out to us on [issue #129](https://github.com/OpenZeppelin/contracts-wizard/issues/129) if you would be interested in it.
