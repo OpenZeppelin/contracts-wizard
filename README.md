@@ -28,4 +28,12 @@ For Cairo, use the `data-lang` attribute: `<oz-wizard data-lang="cairo"></oz-wiz
 
 ## API
 
-See [API documentation](docs/API.md) for provided APIs.
+The following describes how to use the Contracts Wizard programmatic API in your own applications.
+
+#### Cairo
+
+See [Contracts Wizard API for Cairo](packages/core-cairo/README.md).
+
+#### Solidity
+
+Contracts Wizard API for Solidity is not available yet. Please reach out to us on [issue #129](https://github.com/OpenZeppelin/contracts-wizard/issues/129) if you would be interested in it.
