@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { buildERC721, ERC721Options,  } from './erc721';
+import { buildERC721, ERC721Options } from './erc721';
 import { printContract } from './print';
 
 import { printERC721, erc721defaults } from '.';
