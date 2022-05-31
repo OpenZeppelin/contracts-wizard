@@ -111,6 +111,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>© <a href="https://openzeppelin.com" target="_blank">OpenZeppelin</a> 2017-2021 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank">Terms of Service</a></p>
   </footer>
 
+  <!-- Hidden form necessary for Netlify Forms -->
+  <form hidden action="/config" method="POST" name="config" data-netlify="true" data-netlify-honeypot="other" data-netlify-recaptcha="true">
+    <input type="text" name="instance">
+    <input type="text" name="data">
+    <input type="text" name="action">
+    <input type="text" name="other">
+    <input type="submit">
+    <div data-netlify-recaptcha="true"></div>
+  </form>
+
 <!-- This site is converting visitors into subscribers and customers with OptinMonster - https://optinmonster.com -->
 <script type="text/javascript" src="https://c295b7.openzeppelin.com/app/js/api.min.js" data-account="144063" data-user="131584" data-api="campaigns" async></script>
 <!-- / OptinMonster -->
