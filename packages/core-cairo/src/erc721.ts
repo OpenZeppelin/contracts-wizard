@@ -8,6 +8,7 @@ import { setInfo } from './set-info';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
+import { defineNamespaces } from './utils/define-namespaces';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -139,12 +140,23 @@ const modules = defineModules( {
   },
 })
 
+const namespaces = defineNamespaces( {
+  ERC165: {
+    module: modules.ERC165,
+  },
+
+  ERC721: {
+    module: modules.ERC721,
+  },
+})
+
 const functions = defineFunctions({
 
   // --- view functions ---
 
   supportsInterface: {
     module: modules.ERC165,
+    namespace: namespaces.ERC165,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
