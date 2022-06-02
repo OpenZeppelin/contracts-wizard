@@ -395,6 +395,7 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'amount', type: 'Uint256' },
     ],
+    parentFunctionName: '_mint'
   },
 
   burn: {
@@ -405,6 +406,7 @@ const functions = defineFunctions({
     args: [
       { name: 'amount', type: 'Uint256' },
     ],
+    parentFunctionName: '_burn'
   },
 
 });
