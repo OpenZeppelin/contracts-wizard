@@ -275,6 +275,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'totalSupply', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'total_supply',
   },
 
   decimals: {
@@ -298,6 +299,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'balance', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'balance_of',
   },
 
   allowance: {
@@ -340,6 +342,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'transfer_from',
   },
 
   approve: {
@@ -366,6 +369,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'increase_allowance',
   },
 
   decreaseAllowance: {
@@ -379,6 +383,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'decrease_allowance',
   },
 
   mint: {

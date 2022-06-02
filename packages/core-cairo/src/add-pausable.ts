@@ -41,7 +41,7 @@ const functions = defineFunctions({
     args: [],
     returns: [{ name: 'paused', type: 'felt' }],
     passthrough: true,
-    read: true
+    parentFunctionName: 'is_paused',
   },
 
   pause: {
@@ -50,6 +50,7 @@ const functions = defineFunctions({
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
+    parentFunctionName: '_pause',
   },
 
   unpause: {
@@ -58,6 +59,7 @@ const functions = defineFunctions({
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
+    parentFunctionName: '_unpause',
   },
 
   // --- library-only calls ---
