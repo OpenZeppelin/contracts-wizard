@@ -10,6 +10,7 @@ import BN from 'bn.js';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
+import { defineNamespaces } from './utils/define-namespaces';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -122,6 +123,8 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
     [
       functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance
     ],
+    true,
+    namespaces.ERC20
   );
 }
 
@@ -134,7 +137,7 @@ function addBurnable(c: ContractBuilder) {
   c.setFunctionBody(
     [
       'let (owner) = get_caller_address()', 
-      'ERC20_burn(owner, amount)'
+      'ERC20._burn(owner, amount)'
     ],
     functions.burn
   );
@@ -163,12 +166,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       const lowBits = premintBN.maskn(128);
   
       c.addConstructorArgument({ name:'recipient', type:'felt' });
-      c.addConstructorCode(`ERC20_mint(recipient, Uint256(${lowBits}, ${highBits}))`);
-
-      c.addModuleFunction(
-        modules.ERC20,
-        `ERC20_mint`
-      );    
+      c.addConstructorCode(`ERC20._mint(recipient, Uint256(${lowBits}, ${highBits}))`);
     }
   }
 }
@@ -236,12 +234,19 @@ const modules = defineModules( {
   }
 })
 
+const namespaces = defineNamespaces( {
+  ERC20: {
+    module: modules.ERC20,
+  },
+})
+
 const functions = defineFunctions({
 
   // --- view functions ---
 
   name: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -252,6 +257,7 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -262,6 +268,7 @@ const functions = defineFunctions({
 
   totalSupply: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -272,6 +279,7 @@ const functions = defineFunctions({
 
   decimals: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -282,6 +290,7 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -293,6 +302,7 @@ const functions = defineFunctions({
 
   allowance: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -307,6 +317,7 @@ const functions = defineFunctions({
 
   transfer: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -319,6 +330,7 @@ const functions = defineFunctions({
 
   transferFrom: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -332,6 +344,7 @@ const functions = defineFunctions({
 
   approve: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -344,6 +357,7 @@ const functions = defineFunctions({
 
   increaseAllowance: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -356,6 +370,7 @@ const functions = defineFunctions({
 
   decreaseAllowance: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -368,6 +383,7 @@ const functions = defineFunctions({
 
   mint: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -378,6 +394,7 @@ const functions = defineFunctions({
 
   burn: {
     module: modules.ERC20,
+    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [

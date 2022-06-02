@@ -1,5 +1,5 @@
 import type { Contract } from "../contract";
-import { getFunctionName } from "./module-prefix";
+import { getFunctionName, getImportName } from "./module-prefix";
 
 export function getImportsMap(contract: Contract) {
   const modulesToParentFunctions = getModulesToParentFunctions(contract);
@@ -32,7 +32,7 @@ function getModulesToParentFunctions(contract: Contract) {
   const functionsToModules: Map<string, string> = new Map();
   for (const fn of contract.functions) {
     if (fn.module !== undefined) {
-      functionsToModules.set(getFunctionName(fn), convertPathToImport(fn.module.path));
+      functionsToModules.set(getImportName(fn), convertPathToImport(fn.module.path));
     }
   }
   const modulesToFunctions = invertMapToSet(functionsToModules);

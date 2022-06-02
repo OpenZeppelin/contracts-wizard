@@ -155,7 +155,7 @@ function printParentConstructor({ module: contract, initializer }: Library, help
   if (initializer === undefined || contract.name === undefined) {
     return [];
   }
-  const fn = `${contract.name}_initializer`;
+  const fn = initializer.namespace !== undefined ? `${contract.name}.initializer` : `${contract.name}_initializer`;
   return [
     fn + '(' + initializer.params.map(printValue).join(', ') + ')',
   ];

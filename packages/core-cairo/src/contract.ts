@@ -1,5 +1,5 @@
 import { withImplicitArgs } from './common-options';
-import { getFunctionName } from './utils/module-prefix';
+import { getFunctionName, getImportName } from './utils/module-prefix';
 
 export interface Contract {
   license: string;
@@ -27,6 +27,12 @@ export interface Module {
 
 export interface Initializer {
   params: Value[];
+  namespace?: Namespace;
+}
+
+export interface Namespace {
+  module: Module;
+  name: string;
 }
 
 export interface BaseFunction {
@@ -40,6 +46,7 @@ export interface BaseFunction {
   passthrough?: boolean;
   read?: boolean;
   parentFunctionName?: string;
+  namespace?: Namespace;
 }
 
 export interface ContractFunction extends BaseFunction {
@@ -79,18 +86,19 @@ export class ContractBuilder implements Contract {
     return [...this.functionMap.values()];
   }
 
-  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
+  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true, initializerNamespace?: Namespace): boolean {
     const key = module;
     const present = this.librariesMap.has(key);
-    const initializer = initializable ? { params } : undefined;
+    const initializer = initializable ? { params, namespace: initializerNamespace } : undefined;
 
     const functionStrings: string[] = [];
     functions.forEach(fn => {
-      functionStrings.push(getFunctionName(fn));
+      functionStrings.push(getImportName(fn));
     });
     if (initializable) {
-      functionStrings.push(getFunctionName({
-          module: module, 
+      functionStrings.push(getImportName({
+          module: module,
+          namespace: initializerNamespace,
           name: 'initializer', 
           args: []
         }))
