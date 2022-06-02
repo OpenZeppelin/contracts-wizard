@@ -3,6 +3,7 @@ import type { ContractBuilder, BaseFunction } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
+import { defineNamespaces } from './utils/define-namespaces';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
   c.addModule(modules.Pausable, [], [functions.pause, functions.unpause], false);
@@ -24,10 +25,17 @@ const modules = defineModules( {
   },
 });
 
+const namespaces = defineNamespaces( {
+  Pausable: {
+    module: modules.Pausable,
+  },
+})
+
 const functions = defineFunctions({
 
   paused: {
     module: modules.Pausable,
+    namespace: namespaces.Pausable,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
@@ -38,6 +46,7 @@ const functions = defineFunctions({
 
   pause: {
     module: modules.Pausable,
+    namespace: namespaces.Pausable,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
@@ -45,6 +54,7 @@ const functions = defineFunctions({
 
   unpause: {
     module: modules.Pausable,
+    namespace: namespaces.Pausable,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
@@ -52,13 +62,14 @@ const functions = defineFunctions({
 
   // --- library-only calls ---
 
-  when_not_paused: {
+  assert_not_paused: {
     module: modules.Pausable,
+    namespace: namespaces.Pausable,
     args: [],
   },
   
 });
 
 export function setPausable(c: ContractBuilder, fn: BaseFunction) {
-    c.addLibraryCall(functions.when_not_paused, fn);
+    c.addLibraryCall(functions.assert_not_paused, fn);
 }

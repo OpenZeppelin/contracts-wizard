@@ -121,7 +121,7 @@ export class ContractBuilder implements Contract {
   addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (callFn.module !== undefined) {
-      this.addModuleFunction(callFn.module, getFunctionName(callFn));
+      this.addModuleFunction(callFn.module, getImportName(callFn));
     }
     if (callFn.args.length > 0) {
       throw new Error(`Library call with functions is not supported yet`);
