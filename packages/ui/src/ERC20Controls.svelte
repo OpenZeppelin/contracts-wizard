@@ -10,19 +10,9 @@
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: false,
-    snapshots: false,
-    pausable: false,
-    premint: '',
-    mintable: false,
-    permit: false,
-    votes: false,
-    flashmint: false,
-    access: 'ownable',
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...erc20defaults,
+    premint: '', // default to empty premint in UI instead of 0
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
 </script>
 

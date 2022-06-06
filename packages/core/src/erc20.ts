@@ -2,9 +2,10 @@ import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults } from './common-options';
+import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { printContract } from './print';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -17,6 +18,26 @@ export interface ERC20Options extends CommonOptions {
   permit?: boolean;
   votes?: boolean;
   flashmint?: boolean;
+}
+
+export const defaults: Required<ERC20Options> = {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: false,
+  snapshots: false,
+  pausable: false,
+  premint: '0',
+  mintable: false,
+  permit: false,
+  votes: false,
+  flashmint: false,
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info,
+};
+
+export function printERC20(opts: ERC20Options = defaults): string {
+  return printContract(buildERC20(opts));
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
