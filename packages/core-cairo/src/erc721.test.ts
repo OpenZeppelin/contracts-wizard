@@ -16,9 +16,16 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
   });
 }
 
-function testERC721API(title: string, opts?: ERC721Options) {
+/**
+ * Tests external API for equivalence with internal API
+ */
+ function testAPIEquivalence(title: string, opts?: ERC721Options) {
   test(title, t => {
-    t.snapshot(printERC721(opts));
+    t.is(printERC721(opts), printContract(buildERC721({
+      name: 'MyToken',
+      symbol: 'MTK',
+      ...opts,
+    })));
   });
 }
 
@@ -43,11 +50,11 @@ testERC721('full upgradeable', {
   upgradeable: true,
 });
 
-testERC721API('API default');
+testAPIEquivalence('API default');
 
-testERC721API('API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
 
-testERC721API('API full upgradeable', {
+testAPIEquivalence('API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   burnable: true,

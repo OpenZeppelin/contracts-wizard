@@ -16,9 +16,16 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
   });
 }
 
-function testERC20API(title: string, opts?: ERC20Options) {
+/**
+ * Tests external API for equivalence with internal API
+ */
+function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.snapshot(printERC20(opts));
+    t.is(printERC20(opts), printContract(buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      ...opts,
+    })));
   });
 }
 
@@ -60,11 +67,11 @@ testERC20('erc20 full upgradeable', {
   upgradeable: true,
 });
 
-testERC20API('erc20 API default');
+testAPIEquivalence('erc20 API default');
 
-testERC20API('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
 
-testERC20API('erc20 API full upgradeable', {
+testAPIEquivalence('erc20 API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   premint: '2000',
