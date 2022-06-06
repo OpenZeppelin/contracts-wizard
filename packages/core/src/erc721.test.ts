@@ -1,4 +1,5 @@
 import test from 'ava';
+import { erc721defaults, printERC721 } from '.';
 
 import { buildERC721, ERC721Options } from './erc721';
 import { printContract } from './print';
@@ -11,6 +12,19 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
       ...opts,
     });
     t.snapshot(printContract(c));
+  });
+}
+
+/**
+ * Tests external API for equivalence with internal API
+ */
+ function testAPIEquivalence(title: string, opts?: ERC721Options) {
+  test(title, t => {
+    t.is(printERC721(opts), printContract(buildERC721({
+      name: 'MyToken',
+      symbol: 'MTK',
+      ...opts,
+    })));
   });
 }
 
@@ -86,4 +100,23 @@ testERC721('full upgradeable uups', {
   burnable: true,
   votes: true,
   upgradeable: 'uups',
+});
+
+testAPIEquivalence('API default');
+
+testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
+
+testAPIEquivalence('API full upgradeable', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  mintable: true,
+  enumerable: true,
+  pausable: true,
+  burnable: true,
+  votes: true,
+  upgradeable: 'uups',
+});
+
+test('API assert defaults', async t => {
+  t.is(printERC721(erc721defaults), printERC721());
 });
