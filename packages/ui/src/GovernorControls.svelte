@@ -14,8 +14,8 @@
   export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
     ...defaults,
-    proposalThreshold: '', // default to empty in UI instead of 0
-    quorumAbsolute: '', // default to empty in UI instead of 0
+    proposalThreshold: '', // default to empty in UI
+    quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 

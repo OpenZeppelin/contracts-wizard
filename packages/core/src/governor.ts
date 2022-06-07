@@ -20,7 +20,7 @@ export const defaults: Required<GovernorOptions> = {
   proposalThreshold: '0',
   quorumMode: 'percent',
   quorumPercent: 4,
-  quorumAbsolute: '0',
+  quorumAbsolute: '',
   bravo: false,
   settings: true,
   
