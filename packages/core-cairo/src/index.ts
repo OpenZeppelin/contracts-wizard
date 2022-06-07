@@ -10,7 +10,7 @@ export type { Access } from './set-access-control';
 export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
 
-export { premintPattern, defaults as erc20defaults, printERC20 } from './erc20';
+export { premintPattern, defaults as erc20defaults, printERC20, getInitialSupply } from './erc20';
 export { defaults as erc721defaults, printERC721 } from './erc721';
 
 export { defaults as infoDefaults } from './set-info';

@@ -35,3 +35,15 @@ The default options that are used for [`printERC20`](#printerc20).
 const erc721defaults: Required<ERC721Options>
 ```
 The default options that are used for [`printERC721`](#printerc721).
+
+### Utils
+
+#### `getInitialSupply`
+
+Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
+
+- `premint` Premint amount in token units, may be fractional
+- `decimals` The number of decimals in the token
+
+Returns `premint` with zeros padded or removed based on `decimals`.
+Throws an error if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.

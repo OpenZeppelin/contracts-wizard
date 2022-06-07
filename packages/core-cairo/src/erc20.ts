@@ -151,7 +151,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       });
     } 
 
-    const premintAbsolute = getPremintAbsolute(amount, parseInt(decimals));
+    const premintAbsolute = getInitialSupply(amount, parseInt(decimals));
     const premintBN = new BN(premintAbsolute, 10);
     if (premintBN.bitLength() > 256) { // 256 bits
       throw new OptionsError({
@@ -174,14 +174,14 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
 }
 
 /**
- * Gets premint amount, taking the decimals field into consideration.
+ * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
  * 
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
- * @returns premint with zeros padded or removed
- * @throws OptionsError if premint has more than one decimal character or is more precise than allowed by the decimals field
+ * @returns `premint` with zeros padded or removed based on `decimals`.
+ * @throws OptionsError if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
  */
-function getPremintAbsolute(premint: string, decimals: number): string {
+export function getInitialSupply(premint: string, decimals: number): string {
   let result;
   const premintSegments = premint.split(".");
   if (premintSegments.length > 2) {
@@ -213,7 +213,6 @@ function getPremintAbsolute(premint: string, decimals: number): string {
   }
   return result;
 }
-
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access);
