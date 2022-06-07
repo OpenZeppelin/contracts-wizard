@@ -1,4 +1,5 @@
 import test from 'ava';
+import { governorDefaults, printGovernor } from '.';
 
 import { buildGovernor, defaults, GovernorOptions } from './governor';
 import { printContract } from './print';
@@ -14,6 +15,21 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
       ...opts,
     });
     t.snapshot(printContract(c));
+  });
+}
+
+/**
+ * Tests external API for equivalence with internal API
+ */
+ function testAPIEquivalence(title: string, opts?: GovernorOptions) {
+  test(title, t => {
+    t.is(printGovernor(opts), printContract(buildGovernor({
+      ...defaults,
+      name: 'MyGovernor',
+      delay: '1 block',
+      period: '1 week',
+      ...opts,
+    })));
   });
 }
 
@@ -93,4 +109,14 @@ testGovernor('governor with openzeppelin timelock', {
 
 testGovernor('governor with compound timelock', {
   timelock: 'compound',
+});
+
+testAPIEquivalence('API default');
+
+testAPIEquivalence('API basic', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week', quorumMode: 'absolute', votes: 'erc20votes', timelock: 'openzeppelin' });
+
+testAPIEquivalence('API basic upgradeable', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week', quorumMode: 'absolute', votes: 'erc20votes', timelock: 'openzeppelin', upgradeable: 'uups' });
+
+test('API assert defaults', async t => {
+  t.is(printGovernor(governorDefaults), printGovernor());
 });

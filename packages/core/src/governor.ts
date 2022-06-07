@@ -1,22 +1,32 @@
 import { supportsInterface } from "./common-functions";
-import { CommonOptions, withCommonDefaults } from "./common-options";
+import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from "./common-options";
 import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
-import { printValue } from "./print";
+import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
 
-export const defaults = {
+export const defaults: Required<GovernorOptions> = {
+  name: 'MyGovernor',
+  delay: '1 block',
+  period: '1 week',
+
   votes: 'erc20votes',
   timelock: 'openzeppelin',
   blockTime: 13.2,
   decimals: 18,
+  proposalThreshold: '0',
   quorumMode: 'percent',
   quorumPercent: 4,
+  quorumAbsolute: '0',
   bravo: false,
   settings: true,
+  
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info
 } as const;
 
 export const votesOptions = ['erc20votes', 'erc721votes', 'comp'] as const;
@@ -24,6 +34,10 @@ export type VotesOptions = typeof votesOptions[number];
 
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
 export type TimelockOptions = typeof timelockOptions[number];
+
+export function printGovernor(opts: GovernorOptions = defaults): string {
+  return printContract(buildGovernor(opts));
+}
 
 export interface GovernorOptions extends CommonOptions {
   name: string;
@@ -48,8 +62,8 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     decimals: opts.decimals ?? defaults.decimals,
     blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
-    quorumAbsolute: opts.quorumAbsolute ?? '',
-    proposalThreshold: opts.proposalThreshold || '0',
+    quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
+    proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
     bravo: opts.bravo ?? defaults.bravo,
   };

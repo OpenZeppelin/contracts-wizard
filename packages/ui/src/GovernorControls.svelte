@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, governorDefaults as defaults, infoDefaults } from '@openzeppelin/wizard';
+  import { governorDefaults as defaults, infoDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -13,22 +13,10 @@
 
   export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
-    name: 'MyGovernor',
-    delay: '1 block',
-    period: '1 week',
-    blockTime: defaults.blockTime,
-    proposalThreshold: '',
-    decimals: defaults.decimals,
-    quorumMode: 'percent',
-    quorumPercent: defaults.quorumPercent,
-    quorumAbsolute: '',
-    votes: defaults.votes,
-    timelock: defaults.timelock,
-    bravo: defaults.bravo,
-    settings: defaults.settings,
-    upgradeable: false,
-    access: 'ownable',
-    info: { ...infoDefaults },
+    ...defaults,
+    proposalThreshold: '', // default to empty in UI instead of 0
+    quorumAbsolute: '', // default to empty in UI instead of 0
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
