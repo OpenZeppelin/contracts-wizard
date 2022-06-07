@@ -46,11 +46,11 @@ export interface GovernorOptions extends CommonOptions {
   blockTime?: number;
   proposalThreshold?: string;
   decimals?: number;
-  quorumMode: 'percent' | 'absolute';
+  quorumMode?: 'percent' | 'absolute';
   quorumPercent?: number;
   quorumAbsolute?: string;
-  votes: VotesOptions;
-  timelock: TimelockOptions;
+  votes?: VotesOptions;
+  timelock?: TimelockOptions;
   bravo?: boolean;
   settings?: boolean;
 }
@@ -66,6 +66,9 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
     bravo: opts.bravo ?? defaults.bravo,
+    quorumMode: opts.quorumMode ?? defaults.quorumMode,
+    votes: opts.votes ?? defaults.votes,
+    timelock: opts.timelock ?? defaults.timelock
   };
 }
 
@@ -224,7 +227,7 @@ const votesModules = {
   },
 } as const;
 
-function addVotes(c: ContractBuilder, { votes }: GovernorOptions) {
+function addVotes(c: ContractBuilder, { votes }: Required<GovernorOptions>) {
   const tokenArg = '_token';
   const { tokenType, parentName } = votesModules[votes];
 
@@ -319,7 +322,7 @@ function getQuorumFractionComponents(quorumPercent: number): {quorumFractionNume
   return { quorumFractionNumerator, quorumFractionDenominator };
 }
 
-function addTimelock(c: ContractBuilder, { timelock }: GovernorOptions) {
+function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>) {
   if (timelock === false) {
     return;
   }

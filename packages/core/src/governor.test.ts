@@ -1,13 +1,12 @@
 import test from 'ava';
 import { governorDefaults, printGovernor } from '.';
 
-import { buildGovernor, defaults, GovernorOptions } from './governor';
+import { buildGovernor, GovernorOptions } from './governor';
 import { printContract } from './print';
 
 function testGovernor(title: string, opts: Partial<GovernorOptions>) {
   test(title, t => {
     const c = buildGovernor({
-      ...defaults,
       name: 'MyGovernor',
       delay: '1 week',
       period: '1 week',
@@ -24,7 +23,6 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
  function testAPIEquivalence(title: string, opts?: GovernorOptions) {
   test(title, t => {
     t.is(printGovernor(opts), printContract(buildGovernor({
-      ...defaults,
       name: 'MyGovernor',
       delay: '1 block',
       period: '1 week',
@@ -113,9 +111,9 @@ testGovernor('governor with compound timelock', {
 
 testAPIEquivalence('API default');
 
-testAPIEquivalence('API basic', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week', quorumMode: 'absolute', votes: 'erc20votes', timelock: 'openzeppelin' });
+testAPIEquivalence('API basic', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week' });
 
-testAPIEquivalence('API basic upgradeable', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week', quorumMode: 'absolute', votes: 'erc20votes', timelock: 'openzeppelin', upgradeable: 'uups' });
+testAPIEquivalence('API basic upgradeable', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week', upgradeable: 'uups' });
 
 test('API assert defaults', async t => {
   t.is(printGovernor(governorDefaults), printGovernor());
