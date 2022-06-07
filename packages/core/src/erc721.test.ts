@@ -1,5 +1,5 @@
 import test from 'ava';
-import { erc721defaults, printERC721 } from '.';
+import { erc721 } from '.';
 
 import { buildERC721, ERC721Options } from './erc721';
 import { printContract } from './print';
@@ -20,7 +20,7 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
  */
  function testAPIEquivalence(title: string, opts?: ERC721Options) {
   test(title, t => {
-    t.is(printERC721(opts), printContract(buildERC721({
+    t.is(erc721.print(opts), printContract(buildERC721({
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
@@ -118,5 +118,5 @@ testAPIEquivalence('API full upgradeable', {
 });
 
 test('API assert defaults', async t => {
-  t.is(printERC721(erc721defaults), printERC721());
+  t.is(erc721.print(erc721.defaults), erc721.print());
 });

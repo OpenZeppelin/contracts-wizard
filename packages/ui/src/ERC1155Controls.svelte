@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { erc1155defaults, infoDefaults } from '@openzeppelin/wizard';
+  import { erc1155, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -10,7 +10,7 @@
 
   export const opts: Required<KindedOptions['ERC1155']> = {
     kind: 'ERC1155',
-    ...erc1155defaults,
+    ...erc1155.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 </script>

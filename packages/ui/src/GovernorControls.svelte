@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { governorDefaults as defaults, infoDefaults } from '@openzeppelin/wizard';
+  import { governor, infoDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -10,6 +10,8 @@
   
   import { error } from './error-tooltip';
   import { resizeToFit } from './resize-to-fit';
+
+  const defaults = governor.defaults;
 
   export const opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',

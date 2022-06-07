@@ -1,5 +1,5 @@
 import test from 'ava';
-import { erc20defaults, printERC20 } from '.';
+import { erc20 } from '.';
 
 import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
@@ -20,7 +20,7 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
  */
  function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.is(printERC20(opts), printContract(buildERC20({
+    t.is(erc20.print(opts), printContract(buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
@@ -140,5 +140,5 @@ testAPIEquivalence('erc20 API full upgradeable', {
 });
 
 test('erc20 API assert defaults', async t => {
-  t.is(printERC20(erc20defaults), printERC20());
+  t.is(erc20.print(erc20.defaults), erc20.print());
 });

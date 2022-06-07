@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { erc20defaults, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -10,7 +10,7 @@
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
-    ...erc20defaults,
+    ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
