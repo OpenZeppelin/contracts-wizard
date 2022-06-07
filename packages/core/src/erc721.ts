@@ -37,43 +37,60 @@ export const defaults: Required<ERC721Options> = {
   info: commonDefaults.info
 } as const;
 
+function withDefaults(opts: ERC721Options): Required<ERC721Options> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    baseUri: opts.baseUri ?? defaults.baseUri,
+    enumerable: opts.enumerable ?? defaults.enumerable,
+    uriStorage: opts.uriStorage ?? defaults.uriStorage,
+    burnable: opts.burnable ?? defaults.burnable,
+    pausable: opts.pausable ?? defaults.pausable,
+    mintable: opts.mintable ?? defaults.mintable,
+    incremental: opts.incremental ?? defaults.incremental,
+    votes: opts.votes ?? defaults.votes,
+  };
+}
+
 export function printERC721(opts: ERC721Options = defaults): string {
   return printContract(buildERC721(opts));
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
-  const c = new ContractBuilder(opts.name);
+  const allOpts = withDefaults(opts);
 
-  const { access, upgradeable, info } = withCommonDefaults(opts);
+  const c = new ContractBuilder(allOpts.name);
 
-  addBase(c, opts.name, opts.symbol);
+  const { access, upgradeable, info } = allOpts;
 
-  if (opts.baseUri) {
-    addBaseURI(c, opts.baseUri);
+  addBase(c, allOpts.name, allOpts.symbol);
+
+  if (allOpts.baseUri) {
+    addBaseURI(c, allOpts.baseUri);
   }
 
-  if (opts.enumerable) {
+  if (allOpts.enumerable) {
     addEnumerable(c);
   }
 
-  if (opts.uriStorage) {
+  if (allOpts.uriStorage) {
     addURIStorage(c);
   }
 
-  if (opts.pausable) {
+  if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);
   }
 
-  if (opts.burnable) {
+  if (allOpts.burnable) {
     addBurnable(c);
   }
 
-  if (opts.mintable) {
-    addMintable(c, access, opts.incremental, opts.uriStorage);
+  if (allOpts.mintable) {
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage);
   }
 
-  if (opts.votes) {
-    addVotes(c, opts.name);
+  if (allOpts.votes) {
+    addVotes(c, allOpts.name);
   }
 
   setUpgradeable(c, upgradeable, access);
