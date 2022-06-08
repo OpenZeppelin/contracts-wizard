@@ -8,54 +8,69 @@ This package provides a programmatic API. For a web interface, see https://wizar
 
 `npm install @openzeppelin/wizard`
 
+### Contract types
+
+The following contract types are supported:
+- `erc20`
+- `erc721`
+- `erc1155`
+- `governor`
+
+Each contract type has a `print` function and a `defaults` constant as defined below.
+
 ### Functions
 
-#### `printERC20`
+#### `print`
 ```js
-function printERC20(opts?: ERC20Options): string
+function print(opts?: ERC20Options): string
 ```
-Returns a string representation of an ERC20 contract generated using the provided options. If `opts` is not provided, uses [`erc20defaults`](#erc20defaults).
-
-#### `printERC721`
 ```js
-function printERC721(opts?: ERC721Options): string
+function print(opts?: ERC721Options): string
 ```
-Returns a string representation of an ERC721 contract generated using the provided options. If `opts` is not provided, uses [`erc721defaults`](#erc721defaults).
-
-#### `printERC1155`
 ```js
-function printERC1155(opts?: ERC1155Options): string
+function print(opts?: ERC1155Options): string
 ```
-Returns a string representation of an ERC1155 contract generated using the provided options. If `opts` is not provided, uses [`erc1155defaults`](#erc1155defaults).
-
-#### `printGovernor`
 ```js
-function printGovernor(opts?: GovernorOptions): string
+function print(opts?: GovernorOptions): string
 ```
-Returns a string representation of a Governor contract generated using the provided options. If `opts` is not provided, uses [`governorDefaults`](#governorDefaults).
+Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
-### Defaults
-
-#### `erc20defaults`
+#### `defaults`
 ```js
-const erc20defaults: Required<ERC20Options>
+const defaults: Required<ERC20Options>
 ```
-The default options that are used for [`printERC20`](#printerc20).
-
-#### `erc721defaults`
 ```js
-const erc721defaults: Required<ERC721Options>
+const defaults: Required<ERC721Options>
 ```
-The default options that are used for [`printERC721`](#printerc721).
-
-#### `erc1155defaults`
 ```js
-const erc1155defaults: Required<ERC1155Options>
+const defaults: Required<ERC1155Options>
 ```
-The default options that are used for [`printERC1155`](#printERC1155).
-
-#### `governorDefaults`
 ```js
-const governorDefaults: Required<GovernorOptions>
+const defaults: Required<GovernorOptions>
 ```
-The default options that are used for [`printGovernor`](#printGovernor).
+The default options that are used for [`print`](#print).
+
+### Examples
+
+To generate the source code for an ERC20 contract with all of the default settings:
+```js
+const contract = erc20.print();
+```
+
+To generate the source code for an ERC20 contract with a custom name and symbol, along with some custom settings:
+```js
+const contract = erc20.print({
+  name: 'ExampleToken',
+  symbol: 'ETK',
+  burnable: true,
+  premint: '1000000',
+});
+```
+
+To generate the source code for an ERC20 contract with all of the defaults but is upgradeable using the UUPS proxy pattern:
+```js
+const contract = erc20.print({
+  ...erc20.defaults,
+  upgradeable: 'uups',
+});
+```
