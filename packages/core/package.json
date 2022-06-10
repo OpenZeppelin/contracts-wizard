@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "MIT",
-  "repository": "github:OpenZeppelin/wizard",
+  "repository": "github:OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
   "ts:main": "src/index.ts",
   "files": [
@@ -18,8 +18,8 @@
     "test:watch": "ava --watch"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "4.5.0",
-    "@openzeppelin/contracts-upgradeable": "4.5.0",
+    "@openzeppelin/contracts": "4.6.0",
+    "@openzeppelin/contracts-upgradeable": "4.6.0",
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",

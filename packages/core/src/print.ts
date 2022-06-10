@@ -101,14 +101,18 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
 const INITIALIZE_IMPLEMENTATION = 
 [
   '/// @custom:oz-upgrades-unsafe-allow constructor',
-  'constructor() initializer {}',
+  'constructor() {',
+  [
+    '_disableInitializers();'
+  ],
+  '}'
 ];
 
 function hasInitializer(parent: Parent) {
   // CAUTION
   // This list is validated by compilation of SafetyCheck.sol.
   // Always keep this list and that file in sync.
-  return !['Initializable', 'ERC20Votes'].includes(parent.contract.name);
+  return !['Initializable'].includes(parent.contract.name);
 }
 
 type SortedFunctions = Record<'code' | 'modifiers' | 'override', ContractFunction[]>;

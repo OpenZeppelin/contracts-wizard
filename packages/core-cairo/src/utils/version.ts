@@ -1,0 +1,1 @@
+export const contractsVersion = "0.1.0";

@@ -7,6 +7,12 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        package:
+          - core
+          - core-cairo
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,10 +24,10 @@ jobs:
         run: yarn install
       - name: Compile TypeScript
         run: yarn tsc
-        working-directory: packages/core
+        working-directory: packages/${{matrix.package}}
       - name: Check Svelte
         run: yarn svelte-check
         working-directory: packages/ui
       - name: Run tests
         run: yarn test
-        working-directory: packages/core
+        working-directory: packages/${{matrix.package}}

@@ -5,6 +5,23 @@
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <title>OpenZeppelin Contracts Wizard</title>
 
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PBBPJ9T');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BTMVCGVJ51"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-BTMVCGVJ51');
+  </script>
   <!-- Twitter card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:creator" content="@OpenZeppelin">
@@ -38,12 +55,19 @@
   <script async src='/build/embed.js'></script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PBBPJ9T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <div class="hero">
     <a href="https://openzeppelin.com/">
       <img src="/logo.svg" alt="OpenZeppelin">
     </a>
+
     <h1>Contracts Wizard</h1>
     <p>Use the interactive generator below to bootstrap your smart contract and learn about <a href="https://openzeppelin.com/contracts">OpenZeppelin Contracts</a>.</p>
+    <br/>
+    <p><small>Looking for Cairo? Go to the <a href="/cairo">Contracts Wizard for Cairo</a>.</small></p>
   </div>
 
   <div class="wizard-container">
@@ -63,6 +87,10 @@
       <li>
         <h3>What can I do with the code?</h3>
         <p>There’s several options for how to proceed with it that will be useful in different circumstances. “Copy to Clipboard” as well as the standard “Download” will work well with local development workflows (such as using Hardhat or Truffle), whereas “Open in Remix” will be ideal for anyone working on Remix IDE.</p>
+      </li>
+      <li>
+        <h3>What other languages are supported?</h3>
+        <p>If you're developing Cairo smart contracts for StarkNet, check out the <a href="/cairo">Contracts Wizard for Cairo</a>.</p>
       </li>
     </ul>
   </div>
@@ -84,13 +112,15 @@
   </footer>
 
   <!-- Hidden form necessary for Netlify Forms -->
-  <form hidden action="/config" method="POST" name="config" data-netlify="true" data-netlify-honeypot="other">
+  <form hidden action="/config" method="POST" name="config" data-netlify="true" data-netlify-honeypot="other" data-netlify-recaptcha="true">
     <input type="text" name="instance">
     <input type="text" name="data">
     <input type="text" name="action">
     <input type="text" name="other">
     <input type="submit">
+    <div data-netlify-recaptcha="true"></div>
   </form>
+
 <!-- This site is converting visitors into subscribers and customers with OptinMonster - https://optinmonster.com -->
 <script type="text/javascript" src="https://c295b7.openzeppelin.com/app/js/api.min.js" data-account="144063" data-user="131584" data-api="campaigns" async></script>
 <!-- / OptinMonster -->
