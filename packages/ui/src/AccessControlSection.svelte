@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { Access } from '@openzeppelin/wizard';
+  import type { Access, OptionsErrorMessages } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
 
   export let access: Access;
+  export let errors: undefined | OptionsErrorMessages;
 </script>
 
 <section class="controls-section">
@@ -13,7 +14,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Access Control</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={access} defaultValue="ownable" />
+        <ToggleRadio bind:value={access} defaultValue="ownable" errorMessage={errors?.accessControl} />
       </span>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/4.x/api/access">
         Restrict who can access the functions of a contract or when they can do it.

@@ -1,7 +1,7 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { infoDefaults } from '@openzeppelin/wizard';
   
   import AccessControlSection from './AccessControlSection.svelte';
@@ -41,6 +41,8 @@
     wasMintable = opts.mintable;
     wasIncremental = opts.incremental;
   }
+
+  export let errors: undefined | OptionsErrorMessages;
 </script>
 
 <section class="controls-section">
@@ -122,7 +124,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} />
+<AccessControlSection bind:access={opts.access} errors={errors} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

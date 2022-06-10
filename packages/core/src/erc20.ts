@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, setAccessControlForContract, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults } from './common-options';
@@ -59,8 +59,8 @@ export function buildERC20(opts: ERC20Options): Contract {
     addFlashMint(c);
   }
 
+  setAccessControlForContract(c, access);
   setUpgradeable(c, upgradeable, access);
-  
   setInfo(c, info);
 
   return c;

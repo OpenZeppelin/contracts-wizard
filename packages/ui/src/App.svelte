@@ -172,19 +172,19 @@
   <div class="flex flex-row gap-4 grow">
     <div class="controls w-64 flex flex-col shrink-0 justify-between">
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} />
+        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} />
+        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} />
+        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155}/>
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class:hidden={tab !== 'General'}>
-        <GeneralControls bind:opts={allOpts.General} />
+        <GeneralControls bind:opts={allOpts.General} errors={errors.General}/>
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">

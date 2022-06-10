@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { error } from "../error-tooltip";
+
   export let value: false | string = false;
   export let enabled = value !== false;
   export let defaultValue: string;
@@ -20,6 +22,8 @@
     wasEnabled = enabled;
     wasValue = value || wasValue;
   }
+
+  export let errorMessage: string | undefined = undefined;
 </script>
 
-<input type="checkbox" bind:checked={enabled}>
+<input type="checkbox" bind:checked={enabled} use:error={errorMessage}>
