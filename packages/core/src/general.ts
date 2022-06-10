@@ -6,7 +6,6 @@ import { setAccessControlForContract } from './set-access-control';
 
 export interface GeneralOptions extends CommonOptions {
   name: string;
-  functionName: string;
 }
 
 export function buildGeneral(opts: GeneralOptions): Contract {
