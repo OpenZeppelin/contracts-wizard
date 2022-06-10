@@ -5,8 +5,6 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   export let access: Access;
-  export let showSampleFunction: string | undefined = undefined;
-  export let functionName: string | undefined = undefined;
 </script>
 
 <section class="controls-section">
@@ -39,15 +37,6 @@
       </HelpTooltip>
     </label>
   </div>
-
-  {#if showSampleFunction === 'true'}
-  <div class="grid grid-cols-[2fr,1fr] gap-2">
-    <label class="labeled-input">
-      <span>Function Name</span>
-      <input bind:value={functionName}>
-    </label>
-  </div>
-  {/if}
 
 </section>
 
