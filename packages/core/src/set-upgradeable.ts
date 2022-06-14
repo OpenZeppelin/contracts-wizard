@@ -1,5 +1,5 @@
 import type { ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, enableAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
@@ -22,7 +22,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
     case 'transparent': break;
 
     case 'uups': {
-      setAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER');
+      enableAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER');
       c.addParent({
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',

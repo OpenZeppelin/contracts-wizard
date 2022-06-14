@@ -1,6 +1,5 @@
 import type { ContractBuilder, BaseFunction } from './contract';
 import { supportsInterface } from './common-functions';
-import { OptionsError } from './error';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
 
@@ -26,13 +25,11 @@ export function setAccessControlForContract(c: ContractBuilder, access: Access) 
 }
 
 /**
- * Sets access control for the contract and restricts the given function with access control.
+ * Enables access control for the contract and restricts the given function with access control.
  */
-export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+export function enableAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
   if (access === false) {
-    throw new OptionsError({
-      accessControl: 'Selected features require access control',
-    });
+    access = 'ownable';
   }
   
   setAccessControlForContract(c, access);

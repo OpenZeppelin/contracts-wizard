@@ -10,7 +10,7 @@ export interface CommonOptions {
 
 export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
   return {
-    access: opts.access ?? 'ownable',
+    access: opts.access ?? false,
     upgradeable: opts.upgradeable ?? false,
     info: opts.info ?? {},
   };

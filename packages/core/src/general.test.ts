@@ -36,13 +36,8 @@ testGeneral('access control roles', {
   access: 'roles',
 });
 
-test('upgradeable uups with access control disabled', async t => {
-  let error = t.throws(() => {
-    printContract(buildGeneral({
-      name: 'MyContract',
-      access: false,
-      upgradeable: 'uups',
-    }));
-  });
-  t.is((error as OptionsError).messages.accessControl, 'Selected features require access control');
-}); 
+testGeneral('upgradeable uups with access control disabled', {
+  // API should override access to true since it is required for UUPS
+  access: false,
+  upgradeable: 'uups',
+});
