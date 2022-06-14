@@ -52,6 +52,12 @@ The default options that are used for [`print`](#print).
 
 ### Examples
 
+Import the contract type(s) that you want to use from the `@openzeppelin/wizard` package:
+
+```js
+import { erc20 } from '@openzeppelin/wizard';
+```
+
 To generate the source code for an ERC20 contract with all of the default settings:
 ```js
 const contract = erc20.print();
