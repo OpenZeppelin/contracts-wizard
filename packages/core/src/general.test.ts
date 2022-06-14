@@ -16,6 +16,10 @@ function testGeneral(title: string, opts: Partial<GeneralOptions>) {
 
 testGeneral('general', {});
 
+testGeneral('pausable', {
+  pausable: true,
+});
+
 testGeneral('upgradeable transparent', {
   upgradeable: 'transparent',
 });
