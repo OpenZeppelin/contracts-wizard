@@ -27,7 +27,7 @@ export function setAccessControlForContract(c: ContractBuilder, access: Access) 
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function enableAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
   if (access === false) {
     access = 'ownable';
   }

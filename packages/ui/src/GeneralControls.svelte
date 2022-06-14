@@ -16,9 +16,9 @@
     info: { ...infoDefaults },
   };
 
-  let forceAccessControl: boolean;
+  let requireAccessControl: boolean;
   $: {
-    forceAccessControl = opts.upgradeable === 'uups';
+    requireAccessControl = opts.upgradeable === 'uups';
   }
 </script>
 
@@ -31,7 +31,7 @@
   </label>
 </section>
 
-<AccessControlSection bind:access={opts.access} forceAccessControl={forceAccessControl} />
+<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

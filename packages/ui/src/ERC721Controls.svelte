@@ -42,9 +42,9 @@
     wasIncremental = opts.incremental;
   }
 
-  let forceAccessControl: boolean;
+  let requireAccessControl: boolean;
   $: {
-    forceAccessControl = opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+    requireAccessControl = opts.mintable || opts.pausable || opts.upgradeable === 'uups';
   }
 </script>
 
@@ -127,7 +127,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} forceAccessControl={forceAccessControl} />
+<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

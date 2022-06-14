@@ -21,7 +21,7 @@
     info: { ...infoDefaults },
   };
 
-  let forceAccessControl = true;
+  let requireAccessControl = true;
 </script>
 
 <section class="controls-section">
@@ -76,7 +76,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} forceAccessControl={forceAccessControl} />
+<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

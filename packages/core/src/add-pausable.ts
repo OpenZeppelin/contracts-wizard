@@ -1,5 +1,5 @@
 import type { ContractBuilder, BaseFunction } from './contract';
-import { Access, enableAccessControl } from './set-access-control';
+import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
@@ -12,10 +12,10 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
     c.addModifier('whenNotPaused', fn);
   }
 
-  enableAccessControl(c, functions.pause, access, 'PAUSER');
+  requireAccessControl(c, functions.pause, access, 'PAUSER');
   c.addFunctionCode('_pause();', functions.pause);
 
-  enableAccessControl(c, functions.unpause, access, 'PAUSER');
+  requireAccessControl(c, functions.unpause, access, 'PAUSER');
   c.addFunctionCode('_unpause();', functions.unpause);
 }
 

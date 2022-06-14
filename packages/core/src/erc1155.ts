@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControlForContract, enableAccessControl } from './set-access-control';
+import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -68,14 +68,14 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  enableAccessControl(c, functions.mint, access, 'MINTER');
-  enableAccessControl(c, functions.mintBatch, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mintBatch, access, 'MINTER');
   c.addFunctionCode('_mint(account, id, amount, data);', functions.mint);
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  enableAccessControl(c, functions.setURI, access, 'URI_SETTER');
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER');
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 

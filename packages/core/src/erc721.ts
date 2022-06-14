@@ -1,5 +1,5 @@
 import { BaseFunction, Contract, ContractBuilder } from './contract';
-import { Access, setAccessControlForContract, enableAccessControl } from './set-access-control';
+import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -112,7 +112,7 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
   const fn = getMintFunction(incremental, uriStorage);
-  enableAccessControl(c, fn, access, 'MINTER');
+  requireAccessControl(c, fn, access, 'MINTER');
 
   if (incremental) {
     c.addUsing({

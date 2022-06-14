@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControlForContract, enableAccessControl } from './set-access-control';
+import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults } from './common-options';
@@ -96,7 +96,7 @@ function addSnapshot(c: ContractBuilder, access: Access) {
 
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
 
-  enableAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
+  requireAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
   c.addFunctionCode('_snapshot();', functions.snapshot);
 }
 
@@ -120,7 +120,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  enableAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 
