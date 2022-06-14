@@ -5,7 +5,13 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   export let access: Access;
-  export let errors: undefined | OptionsErrorMessages;
+  export let forceAccessControl: boolean;
+
+  $: {
+    if (access === false && forceAccessControl) {
+      access = 'ownable';
+    }
+  }
 </script>
 
 <section class="controls-section">
@@ -14,7 +20,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Access Control</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={access} defaultValue="ownable" errorMessage={errors?.accessControl} />
+        <ToggleRadio bind:value={access} defaultValue="ownable" disabled={forceAccessControl} />
       </span>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/4.x/api/access">
         Restrict who can access the functions of a contract or when they can do it.

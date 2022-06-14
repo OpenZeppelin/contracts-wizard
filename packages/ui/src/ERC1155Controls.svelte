@@ -16,12 +16,12 @@
     pausable: false,
     mintable: false,
     supply: false,
-    access: false,
+    access: 'ownable',
     upgradeable: false,
     info: { ...infoDefaults },
   };
 
-  export let errors: undefined | OptionsErrorMessages;
+  let forceAccessControl = true;
 </script>
 
 <section class="controls-section">
@@ -76,7 +76,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} errors={errors} />
+<AccessControlSection bind:access={opts.access} forceAccessControl={forceAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

@@ -42,7 +42,10 @@
     wasIncremental = opts.incremental;
   }
 
-  export let errors: undefined | OptionsErrorMessages;
+  let forceAccessControl: boolean;
+  $: {
+    forceAccessControl = opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  }
 </script>
 
 <section class="controls-section">
@@ -124,7 +127,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} errors={errors} />
+<AccessControlSection bind:access={opts.access} forceAccessControl={forceAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
