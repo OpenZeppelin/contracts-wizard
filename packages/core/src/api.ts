@@ -4,30 +4,22 @@ import { printERC721, defaults as erc721defaults, ERC721Options } from './erc721
 import { printERC1155, defaults as erc1155defaults, ERC1155Options } from './erc1155';
 import { printGovernor, defaults as governorDefaults, GovernorOptions } from './governor';
 
-export interface WizardContractAPI {
+export interface WizardContractAPI<Options extends CommonOptions> {
   /**
    * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
    */
-  print: (opts?: any) => string,
+  print: (opts?: Options) => string,
   
   /**
    * The default options that are used for `print`.
    */
-  defaults: CommonOptions;
+  defaults: Options;
 }
 
-export interface ERC20 extends WizardContractAPI {
-  defaults: Required<ERC20Options>;
-}
-export interface ERC721 extends WizardContractAPI {
-  defaults: Required<ERC721Options>;
-}
-export interface ERC1155 extends WizardContractAPI {
-  defaults: Required<ERC1155Options>;
-}
-export interface Governor extends WizardContractAPI {
-  defaults: Required<GovernorOptions>;
-}
+export type ERC20 = WizardContractAPI<ERC20Options>;
+export type ERC721 = WizardContractAPI<ERC721Options>;
+export type ERC1155 = WizardContractAPI<ERC1155Options>;
+export type Governor = WizardContractAPI<GovernorOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,
