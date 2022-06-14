@@ -13,7 +13,7 @@ export interface WizardContractAPI<Options extends CommonOptions> {
   /**
    * The default options that are used for `print`.
    */
-  defaults: Options;
+  defaults: Required<Options>;
 }
 
 export type ERC20 = WizardContractAPI<ERC20Options>;
