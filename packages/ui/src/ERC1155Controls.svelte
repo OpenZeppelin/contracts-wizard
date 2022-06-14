@@ -16,7 +16,7 @@
     pausable: false,
     mintable: false,
     supply: false,
-    access: 'ownable',
+    access: false,
     upgradeable: false,
     info: { ...infoDefaults },
   };

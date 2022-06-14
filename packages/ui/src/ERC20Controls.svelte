@@ -20,7 +20,7 @@
     permit: false,
     votes: false,
     flashmint: false,
-    access: 'ownable',
+    access: false,
     upgradeable: false,
     info: { ...infoDefaults },
   };

@@ -27,7 +27,7 @@
     bravo: defaults.bravo,
     settings: defaults.settings,
     upgradeable: false,
-    access: 'ownable',
+    access: false,
     info: { ...infoDefaults },
   };
 

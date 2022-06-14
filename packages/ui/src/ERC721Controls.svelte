@@ -21,7 +21,7 @@
     mintable: false,
     incremental: false,
     votes: false,
-    access: 'ownable',
+    access: false,
     upgradeable: false,
     info: { ...infoDefaults },
   };

@@ -11,7 +11,7 @@
   export const opts: Required<KindedOptions['General']> = {
     kind: 'General',
     name: 'MyContract',
-    access: 'ownable',
+    access: false,
     upgradeable: false,
     info: { ...infoDefaults },
   };
