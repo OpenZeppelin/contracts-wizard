@@ -3,6 +3,7 @@ import { printERC20, defaults as erc20defaults, ERC20Options } from './erc20';
 import { printERC721, defaults as erc721defaults, ERC721Options } from './erc721';
 import { printERC1155, defaults as erc1155defaults, ERC1155Options } from './erc1155';
 import { printGovernor, defaults as governorDefaults, GovernorOptions } from './governor';
+import { printGeneral, defaults as generalDefaults, GeneralOptions } from './general';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
@@ -20,6 +21,7 @@ export type ERC20 = WizardContractAPI<ERC20Options>;
 export type ERC721 = WizardContractAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options>;
 export type Governor = WizardContractAPI<GovernorOptions>;
+export type General = WizardContractAPI<GeneralOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,
@@ -36,4 +38,8 @@ export const erc1155: ERC1155 = {
 export const governor: Governor = {
   print: printGovernor,
   defaults: governorDefaults
+}
+export const general: General = {
+  print: printGeneral,
+  defaults: generalDefaults
 }

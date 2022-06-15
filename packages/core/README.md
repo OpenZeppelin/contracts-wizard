@@ -15,6 +15,7 @@ The following contract types are supported:
 - `erc721`
 - `erc1155`
 - `governor`
+- `general`
 
 Each contract type has a `print` function and a `defaults` constant as defined below.
 
@@ -33,6 +34,9 @@ function print(opts?: ERC1155Options): string
 ```js
 function print(opts?: GovernorOptions): string
 ```
+```js
+function print(opts?: GeneralOptions): string
+```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
 #### `defaults`
@@ -47,6 +51,9 @@ const defaults: Required<ERC1155Options>
 ```
 ```js
 const defaults: Required<GovernorOptions>
+```
+```js
+const defaults: Required<GeneralOptions>
 ```
 The default options that are used for [`print`](#print).
 
