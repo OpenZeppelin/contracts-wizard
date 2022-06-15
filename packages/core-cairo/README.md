@@ -36,9 +36,32 @@ const defaults: Required<ERC721Options>
 ```
 The default options that are used for [`print`](#print).
 
+### Contract specific functions
+
+#### `erc20.getInitialSupply`
+
+Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
+
+- `premint` Premint amount in token units, may be fractional
+- `decimals` The number of decimals in the token
+
+Returns `premint` with zeros padded or removed based on `decimals`.
+Throws an error if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
+
+### Utility functions
+
+#### `utils.toUint256`
+
+Returns Uint256 components for low and high bits based on a given number in string format.
+
+- `num` Number in string format
+
+Returns an object with lowBits and highBits.
+Throws an error if the provided number is larger than 256 bits.
+
 ### Examples
 
-Import the contract type(s) that you want to use from the `@openzeppelin/wizard-cairo` package:
+Import the contract type(s) or function categories (e.g. `erc20`, `erc721`, or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:
 
 ```js
 import { erc20 } from '@openzeppelin/wizard-cairo';
