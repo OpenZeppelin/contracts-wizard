@@ -2,4 +2,4 @@
 
 ## Unreleased
 
-- Initial API for Solidity. ([#129](https://github.com/OpenZeppelin/contracts-wizard/issues/129))
+- Initial API for Solidity. ([#136](https://github.com/OpenZeppelin/contracts-wizard/pull/136))
