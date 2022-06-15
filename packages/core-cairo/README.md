@@ -61,7 +61,7 @@ Throws an error if the provided number is larger than 256 bits.
 
 ### Examples
 
-Import the contract type(s) that you want to use from the `@openzeppelin/wizard-cairo` package:
+Import the contract type(s) or function categories (e.g. `erc20`, `erc721`, or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:
 
 ```js
 import { erc20 } from '@openzeppelin/wizard-cairo';
