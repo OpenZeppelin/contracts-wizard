@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2022-06-15)
 
 - Update API format for Cairo. ([#136](https://github.com/OpenZeppelin/contracts-wizard/pull/136))
 - Add functions for getInitialSupply and toUint256. ([#138](https://github.com/OpenZeppelin/contracts-wizard/pull/138))
