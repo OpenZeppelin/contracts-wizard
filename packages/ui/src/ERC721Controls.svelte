@@ -1,29 +1,17 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions } from '@openzeppelin/wizard';
+  import { erc721, infoDefaults } from '@openzeppelin/wizard';
   
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   
-
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
-    name: 'MyToken',
-    symbol: 'MTK',
-    baseUri: '',
-    enumerable: false,
-    uriStorage: false,
-    burnable: false,
-    pausable: false,
-    mintable: false,
-    incremental: false,
-    votes: false,
-    access: false,
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...erc721.defaults,
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   let wasMintable = opts.mintable;

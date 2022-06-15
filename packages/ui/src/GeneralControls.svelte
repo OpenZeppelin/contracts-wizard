@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions } from '@openzeppelin/wizard';
+  import { infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';

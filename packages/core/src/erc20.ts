@@ -2,9 +2,10 @@ import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults } from './common-options';
+import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { printContract } from './print';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -19,43 +20,80 @@ export interface ERC20Options extends CommonOptions {
   flashmint?: boolean;
 }
 
+export const defaults: Required<ERC20Options> = {
+  name: 'MyToken',
+  symbol: 'MTK',
+  burnable: false,
+  snapshots: false,
+  pausable: false,
+  premint: '0',
+  mintable: false,
+  permit: false,
+  votes: false,
+  flashmint: false,
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info,
+} as const;
+
+function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    burnable: opts.burnable ?? defaults.burnable,
+    snapshots: opts.snapshots ?? defaults.snapshots,
+    pausable: opts.pausable ?? defaults.pausable,
+    premint: opts.premint || defaults.premint,
+    mintable: opts.mintable ?? defaults.mintable,
+    permit: opts.permit ?? defaults.permit,
+    votes: opts.votes ?? defaults.votes,
+    flashmint: opts.flashmint ?? defaults.flashmint,
+  };
+}
+
+export function printERC20(opts: ERC20Options = defaults): string {
+  return printContract(buildERC20(opts));
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
-  const c = new ContractBuilder(opts.name);
+  const allOpts = withDefaults(opts);
 
-  const { access, upgradeable, info } = withCommonDefaults(opts);
+  const c = new ContractBuilder(allOpts.name);
 
-  addBase(c, opts.name, opts.symbol);
+  const { access, upgradeable, info } = allOpts;
 
-  if (opts.burnable) {
+  addBase(c, allOpts.name, allOpts.symbol);
+
+  if (allOpts.burnable) {
     addBurnable(c);
   }
 
-  if (opts.snapshots) {
+  if (allOpts.snapshots) {
     addSnapshot(c, access);
   }
 
-  if (opts.pausable) {
+  if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);
   }
 
-  if (opts.premint) {
-    addPremint(c, opts.premint);
+  if (allOpts.premint) {
+    addPremint(c, allOpts.premint);
   }
 
-  if (opts.mintable) {
+  if (allOpts.mintable) {
     addMintable(c, access);
   }
 
   // Note: Votes requires Permit
-  if (opts.permit || opts.votes) {
-    addPermit(c, opts.name);
+  if (allOpts.permit || allOpts.votes) {
+    addPermit(c, allOpts.name);
   }
 
-  if (opts.votes) {
+  if (allOpts.votes) {
     addVotes(c);
   }
 
-  if (opts.flashmint) {
+  if (allOpts.flashmint) {
     addFlashMint(c);
   }
 

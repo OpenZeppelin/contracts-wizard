@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions, } from '@openzeppelin/wizard';
+  import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -10,19 +10,9 @@
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
-    name: 'MyToken',
-    symbol: 'MTK',
-    burnable: false,
-    snapshots: false,
-    pausable: false,
-    premint: '',
-    mintable: false,
-    permit: false,
-    votes: false,
-    flashmint: false,
-    access: false,
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...erc20.defaults,
+    premint: '', // default to empty premint in UI instead of 0
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   let requireAccessControl: boolean;

@@ -3,7 +3,8 @@ import test from 'ava';
 import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
 
-import { printERC20, erc20defaults } from '.';
+import { erc20 } from '.';
+import type { OptionsError } from './error';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {
@@ -16,9 +17,16 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
   });
 }
 
-function testERC20API(title: string, opts?: ERC20Options) {
+/**
+ * Tests external API for equivalence with internal API
+ */
+function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.snapshot(printERC20(opts));
+    t.is(erc20.print(opts), printContract(buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      ...opts,
+    })));
   });
 }
 
@@ -60,11 +68,11 @@ testERC20('erc20 full upgradeable', {
   upgradeable: true,
 });
 
-testERC20API('erc20 API default');
+testAPIEquivalence('erc20 API default');
 
-testERC20API('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
 
-testERC20API('erc20 API full upgradeable', {
+testAPIEquivalence('erc20 API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   premint: '2000',
@@ -76,5 +84,20 @@ testERC20API('erc20 API full upgradeable', {
 });
 
 test('erc20 API assert defaults', async t => {
-  t.is(printERC20(erc20defaults), printERC20());
+  t.is(erc20.print(erc20.defaults), erc20.print());
+});
+
+test('erc20 API getInitialSupply', async t => {
+  t.is(erc20.getInitialSupply('1000', 18),   '1000000000000000000000');
+  t.is(erc20.getInitialSupply('1000.1', 18), '1000100000000000000000');
+  t.is(erc20.getInitialSupply('.1', 18),     '100000000000000000');
+  t.is(erc20.getInitialSupply('.01', 2), '1');
+  
+  let error = t.throws(() => erc20.getInitialSupply('.01', 1));
+  t.not(error, undefined);
+  t.is((error as OptionsError).messages.premint, 'Too many decimals');
+
+  error = t.throws(() => erc20.getInitialSupply('1.1.1', 18));
+  t.not(error, undefined);
+  t.is((error as OptionsError).messages.premint, 'Not a valid number');
 });
