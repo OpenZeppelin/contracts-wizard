@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Access, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import type { Access } from '@openzeppelin/wizard';
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';

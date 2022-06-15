@@ -32,7 +32,7 @@
 
   let requireAccessControl: boolean;
   $: {
-    requireAccessControl = opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+    requireAccessControl = erc721.isAccessControlRequired(opts);
   }
 </script>
 

@@ -17,7 +17,7 @@
 
   let requireAccessControl: boolean;
   $: {
-    requireAccessControl = opts.mintable || opts.pausable || opts.snapshots || opts.upgradeable === 'uups';
+    requireAccessControl = erc20.isAccessControlRequired(opts);
   }
 </script>
 

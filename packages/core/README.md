@@ -17,7 +17,7 @@ The following contract types are supported:
 - `governor`
 - `general`
 
-Each contract type has a `print` function and a `defaults` constant as defined below.
+Each contract type has functions/constants as defined below.
 
 ### Functions
 
@@ -56,6 +56,24 @@ const defaults: Required<GovernorOptions>
 const defaults: Required<GeneralOptions>
 ```
 The default options that are used for [`print`](#print).
+
+#### `isAccessControlRequired`
+```js
+function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean
+```
+Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
 
 ### Examples
 

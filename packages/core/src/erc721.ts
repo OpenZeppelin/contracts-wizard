@@ -56,6 +56,10 @@ export function printERC721(opts: ERC721Options = defaults): string {
   return printContract(buildERC721(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+}
+
 export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 

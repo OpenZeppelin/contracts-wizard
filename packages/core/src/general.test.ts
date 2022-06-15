@@ -72,3 +72,9 @@ testAPIEquivalence('general API full upgradeable', {
 test('general API assert defaults', async t => {
   t.is(general.print(general.defaults), general.print());
 });
+
+test('API isAccessControlRequired', async t => {
+  t.is(general.isAccessControlRequired({ pausable: true }), true);
+  t.is(general.isAccessControlRequired({ upgradeable: 'uups' }), true);
+  t.is(general.isAccessControlRequired({ upgradeable: 'transparent' }), false);
+});

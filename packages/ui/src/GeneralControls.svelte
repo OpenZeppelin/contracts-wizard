@@ -2,7 +2,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { infoDefaults } from '@openzeppelin/wizard';
+  import { general, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -19,7 +19,7 @@
 
   let requireAccessControl: boolean;
   $: {
-    requireAccessControl = opts.pausable || opts.upgradeable === 'uups';
+    requireAccessControl = general.isAccessControlRequired(opts);
   }
 </script>
 

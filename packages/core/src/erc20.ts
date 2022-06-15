@@ -55,6 +55,10 @@ export function printERC20(opts: ERC20Options = defaults): string {
   return printContract(buildERC20(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+  return opts.mintable || opts.pausable || opts.snapshots || opts.upgradeable === 'uups';
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 

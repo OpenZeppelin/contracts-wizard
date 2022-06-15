@@ -44,6 +44,10 @@ export function printERC1155(opts: ERC1155Options = defaults): string {
   return printContract(buildERC1155(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
+  return true;
+}
+
 export function buildERC1155(opts: ERC1155Options): Contract {
   const allOpts = withDefaults(opts);
 

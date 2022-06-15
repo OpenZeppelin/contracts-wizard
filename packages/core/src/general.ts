@@ -31,6 +31,10 @@ export function printGeneral(opts: GeneralOptions = defaults): string {
   return printContract(buildGeneral(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean {
+  return opts.pausable || opts.upgradeable === 'uups';
+}
+
 export function buildGeneral(opts: GeneralOptions): Contract {
   const allOpts = withDefaults(opts);
 
