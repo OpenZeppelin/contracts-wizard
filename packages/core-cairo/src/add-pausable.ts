@@ -19,7 +19,7 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 
 const modules = defineModules( {
   Pausable: {
-    path: 'openzeppelin/security/pausable', 
+    path: 'openzeppelin.security.pausable.library', 
     useNamespace: true
   },
 });
