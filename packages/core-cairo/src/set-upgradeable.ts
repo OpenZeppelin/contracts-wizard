@@ -28,7 +28,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
 const modules = defineModules( {
   Proxy: {
-    path: 'openzeppelin/upgrades/library',
+    path: 'openzeppelin.upgrades.library.Proxy',
     usePrefix: true
   },
 });

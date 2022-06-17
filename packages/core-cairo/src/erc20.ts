@@ -219,7 +219,7 @@ function addMintable(c: ContractBuilder, access: Access) {
 
 const modules = defineModules( {
   ERC20: {
-    path: 'openzeppelin/token/erc20/library',
+    path: 'openzeppelin.token.erc20.library.ERC20',
     usePrefix: true
   },
 
