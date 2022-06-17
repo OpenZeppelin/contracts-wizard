@@ -69,8 +69,8 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.setUri}>
-      <input type="checkbox" bind:checked={opts.setUri}>
+    <label class:checked={opts.updatableUri}>
+      <input type="checkbox" bind:checked={opts.updatableUri}>
       Updatable URI
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155#ERC1155-_setURI-string-">
         Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of &lbrace;id&rbrace; in the URI with the tokenId.

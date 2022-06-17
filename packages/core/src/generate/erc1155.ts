@@ -13,7 +13,7 @@ const blueprint = {
   pausable: booleans,
   mintable: booleans,
   supply: booleans,
-  setUri: booleans,
+  updatableUri: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
