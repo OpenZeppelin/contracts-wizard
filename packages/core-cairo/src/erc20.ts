@@ -6,11 +6,11 @@ import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-op
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-import BN from 'bn.js';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { defineNamespaces } from './utils/define-namespaces';
+import { NumberTooLarge, toUint256 } from './utils/uint256';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -154,32 +154,33 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       });
     } 
 
-    const premintAbsolute = getPremintAbsolute(amount, parseInt(decimals));
-    const premintBN = new BN(premintAbsolute, 10);
-    if (premintBN.bitLength() > 256) { // 256 bits
-      throw new OptionsError({
-        premint: 'Premint argument too large',
-        decimals: 'Premint argument too large',
-      });
-    } else if (premintAbsolute !== '0') {
-      const highBits = premintBN.shrn(128);
-      const lowBits = premintBN.maskn(128);
-  
+    const premintAbsolute = getInitialSupply(amount, parseInt(decimals));
+
+    try {
+      const premintUint256 = toUint256(premintAbsolute);
+
       c.addConstructorArgument({ name:'recipient', type:'felt' });
-      c.addConstructorCode(`ERC20._mint(recipient, Uint256(${lowBits}, ${highBits}))`);
+      c.addConstructorCode(`ERC20._mint(recipient, Uint256(${premintUint256.lowBits}, ${premintUint256.highBits}))`); 
+    } catch (e: any) {
+      if (e instanceof NumberTooLarge) {
+        throw new OptionsError({
+          premint: 'Premint argument too large',
+          decimals: 'Premint argument too large',
+        });
+      }
     }
   }
 }
 
 /**
- * Gets premint amount, taking the decimals field into consideration.
+ * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
  * 
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
- * @returns premint with zeros padded or removed
- * @throws OptionsError if premint has more than one decimal character or is more precise than allowed by the decimals field
+ * @returns `premint` with zeros padded or removed based on `decimals`.
+ * @throws OptionsError if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
  */
-function getPremintAbsolute(premint: string, decimals: number): string {
+export function getInitialSupply(premint: string, decimals: number): string {
   let result;
   const premintSegments = premint.split(".");
   if (premintSegments.length > 2) {
@@ -211,7 +212,6 @@ function getPremintAbsolute(premint: string, decimals: number): string {
   }
   return result;
 }
-
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.mint, access);

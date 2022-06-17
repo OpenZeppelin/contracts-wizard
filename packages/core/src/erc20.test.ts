@@ -1,4 +1,5 @@
 import test from 'ava';
+import { erc20 } from '.';
 
 import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
@@ -11,6 +12,19 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
       ...opts,
     });
     t.snapshot(printContract(c));
+  });
+}
+
+/**
+ * Tests external API for equivalence with internal API
+ */
+ function testAPIEquivalence(title: string, opts?: ERC20Options) {
+  test(title, t => {
+    t.is(erc20.print(opts), printContract(buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      ...opts,
+    })));
   });
 }
 
@@ -104,4 +118,27 @@ testERC20('erc20 full upgradeable uups', {
   votes: true,
   flashmint: true,
   upgradeable: 'uups',
+});
+
+testAPIEquivalence('erc20 API default');
+
+testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+
+testAPIEquivalence('erc20 API full upgradeable', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  snapshots: true,
+  permit: true,
+  votes: true,
+  flashmint: true,
+  upgradeable: 'uups',
+});
+
+test('erc20 API assert defaults', async t => {
+  t.is(erc20.print(erc20.defaults), erc20.print());
 });

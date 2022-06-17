@@ -3,9 +3,10 @@ import { Access, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults } from './common-options';
+import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { printContract } from './print';
 
 export interface ERC1155Options extends CommonOptions {
   name: string;
@@ -16,27 +17,56 @@ export interface ERC1155Options extends CommonOptions {
   supply?: boolean;
 }
 
+export const defaults: Required<ERC1155Options> = {
+  name: 'MyToken',
+  uri: '',
+  burnable: false,
+  pausable: false,
+  mintable: false,
+  supply: false,
+  access: commonDefaults.access,
+  upgradeable: commonDefaults.upgradeable,
+  info: commonDefaults.info
+} as const;
+
+function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
+  return {
+    ...opts,
+    ...withCommonDefaults(opts),
+    burnable: opts.burnable ?? defaults.burnable,
+    pausable: opts.pausable ?? defaults.pausable,
+    mintable: opts.mintable ?? defaults.mintable,
+    supply: opts.supply ?? defaults.supply,
+  };
+}
+
+export function printERC1155(opts: ERC1155Options = defaults): string {
+  return printContract(buildERC1155(opts));
+}
+
 export function buildERC1155(opts: ERC1155Options): Contract {
-  const c = new ContractBuilder(opts.name);
+  const allOpts = withDefaults(opts);
 
-  const { access, upgradeable, info } = withCommonDefaults(opts);
+  const c = new ContractBuilder(allOpts.name);
 
-  addBase(c, opts.uri);
+  const { access, upgradeable, info } = allOpts;
+
+  addBase(c, allOpts.uri);
   addSetUri(c, access);
 
-  if (opts.pausable) {
+  if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);
   }
 
-  if (opts.burnable) {
+  if (allOpts.burnable) {
     addBurnable(c);
   }
 
-  if (opts.mintable) {
+  if (allOpts.mintable) {
     addMintable(c, access);
   }
 
-  if (opts.supply) {
+  if (allOpts.supply) {
     addSupply(c);
   }
 

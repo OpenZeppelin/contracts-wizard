@@ -2,14 +2,14 @@
   import HelpTooltip from '../HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard-cairo';
-  import { erc721defaults, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo';
   
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
-    ...erc721defaults,
+    ...erc721.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 </script>

@@ -2,7 +2,7 @@
   import HelpTooltip from '../HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { premintPattern, erc20defaults, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
@@ -10,7 +10,7 @@
 
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
-    ...erc20defaults,
+    ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
