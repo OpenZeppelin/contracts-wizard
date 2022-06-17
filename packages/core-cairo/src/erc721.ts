@@ -101,16 +101,17 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     modules.ERC721,
     [name, symbol],
     [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom],
+    true,
+    namespaces.ERC721
   );
 }
 
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
-  c.addModuleFunction(modules.ERC721, 'ERC721_only_token_owner');
   c.setFunctionBody(
     [
-      'ERC721_only_token_owner(tokenId)',
-      'ERC721_burn(tokenId)'
+      'ERC721.assert_only_token_owner(tokenId)',
+      'ERC721._burn(tokenId)'
     ],
     functions.burn
   );
@@ -118,11 +119,10 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
-  c.addModuleFunction(modules.ERC721, 'ERC721_setTokenURI');
   c.setFunctionBody(
     [
-      'ERC721_safeMint(to, tokenId, data_len, data)', 
-      'ERC721_setTokenURI(tokenId, tokenURI)'
+      'ERC721._safe_mint(to, tokenId, data_len, data)', 
+      'ERC721._set_token_uri(tokenId, tokenURI)'
     ],
     functions.safeMint
   );
@@ -169,6 +169,7 @@ const functions = defineFunctions({
 
   name: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -179,6 +180,7 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -189,6 +191,7 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -196,10 +199,12 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'balance', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'balance_of',
   },
 
   ownerOf: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -207,10 +212,12 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'owner', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'owner_of',
   },
 
   getApproved: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -218,10 +225,12 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'approved', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'get_approved',
   },
 
   isApprovedForAll: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -230,10 +239,12 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'isApproved', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'is_approved_for_all',
   },
 
   tokenURI: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -241,12 +252,14 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'tokenURI', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'token_uri',
   },
 
   // --- external functions ---
 
   approve: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -257,16 +270,19 @@ const functions = defineFunctions({
 
   setApprovalForAll: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'operator', type: 'felt' },
       { name: 'approved', type: 'felt' },
     ],
+    parentFunctionName: 'set_approval_for_all',
   },
 
   transferFrom: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -274,10 +290,12 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
     ],
+    parentFunctionName: 'transfer_from',
   },
 
   safeTransferFrom: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -287,10 +305,12 @@ const functions = defineFunctions({
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
+    parentFunctionName: 'safe_transfer_from',
   },
 
   safeMint: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -300,10 +320,12 @@ const functions = defineFunctions({
       { name: 'data', type: 'felt*' },
       { name: 'tokenURI', type: 'felt' },
     ],
+    parentFunctionName: '_safe_mint',
   },
   
   burn: {
     module: modules.ERC721,
+    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
