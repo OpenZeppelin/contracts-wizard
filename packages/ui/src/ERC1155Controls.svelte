@@ -14,7 +14,10 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let requireAccessControl = true;
+  let requireAccessControl: boolean;
+  $: {
+    requireAccessControl = erc1155.isAccessControlRequired(opts);
+  }
 </script>
 
 <section class="controls-section">
@@ -64,6 +67,13 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/security#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
         Useful for emergency response.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.setUri}>
+      <input type="checkbox" bind:checked={opts.setUri}>
+      Updatable URI
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155#ERC1155-_setURI-string-">
+        Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of &lbrace;id&rbrace; in the URI with the tokenId.
       </HelpTooltip>
     </label>
   </div>

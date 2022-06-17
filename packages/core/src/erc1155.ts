@@ -15,6 +15,7 @@ export interface ERC1155Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   supply?: boolean;
+  setUri?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
@@ -24,7 +25,8 @@ export const defaults: Required<ERC1155Options> = {
   pausable: false,
   mintable: false,
   supply: false,
-  access: 'ownable', // erc1155 requires access control for setURI
+  setUri: true,
+  access: false,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
@@ -37,6 +39,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     supply: opts.supply ?? defaults.supply,
+    setUri: opts.setUri ?? defaults.setUri,
   };
 }
 
@@ -45,7 +48,7 @@ export function printERC1155(opts: ERC1155Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
-  return true;
+  return opts.mintable || opts.pausable || opts.setUri || opts.upgradeable === 'uups';
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -56,7 +59,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const { access, upgradeable, info } = allOpts;
 
   addBase(c, allOpts.uri);
-  addSetUri(c, access);
+
+  if (allOpts.setUri) {
+    addSetUri(c, access);
+  }
 
   if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);

@@ -34,6 +34,10 @@ testERC1155('basic + roles', {
   access: 'roles',
 });
 
+testERC1155('no setUri', {
+  setUri: false,
+});
+
 testERC1155('burnable', {
   burnable: true,
 });
@@ -90,7 +94,10 @@ test('API assert defaults', async t => {
 });
 
 test('API isAccessControlRequired', async t => {
-  // always required
-  t.is(erc1155.isAccessControlRequired({ upgradeable: 'transparent' }), true);
+  t.is(erc1155.isAccessControlRequired({ setUri: false, mintable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ setUri: false, pausable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ setUri: false, upgradeable: 'uups' }), true);
+  t.is(erc1155.isAccessControlRequired({ setUri: true }), true);
+  t.is(erc1155.isAccessControlRequired({ setUri: false }), false);
   t.is(erc1155.isAccessControlRequired({}), true);
 });
