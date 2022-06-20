@@ -60,10 +60,10 @@ testGeneral('upgradeable uups with access control disabled', {
 
 testAPIEquivalence('general API default');
 
-testAPIEquivalence('general API basic', { name: 'CustomToken' });
+testAPIEquivalence('general API basic', { name: 'CustomContract' });
 
 testAPIEquivalence('general API full upgradeable', {
-  name: 'CustomToken',
+  name: 'CustomContract',
   access: 'roles',
   pausable: true,
   upgradeable: 'uups',
