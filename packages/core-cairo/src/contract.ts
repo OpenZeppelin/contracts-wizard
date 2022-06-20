@@ -1,4 +1,5 @@
 import { withImplicitArgs } from './common-options';
+import { importHashBuiltin } from './utils/hash-builtin';
 import { getFunctionName, getImportName } from './utils/module-prefix';
 
 export interface Contract {
@@ -91,6 +92,11 @@ export class ContractBuilder implements Contract {
     const present = this.librariesMap.has(key);
     const initializer = initializable ? { params, namespace: initializerNamespace } : undefined;
 
+    if (initializer !== undefined && initializer.params.length > 0) {
+      // presence of initializer params implies initializer code will be written, so implicit args must be included
+      importHashBuiltin(this);
+    }
+
     const functionStrings: string[] = [];
     functions.forEach(fn => {
       functionStrings.push(getImportName(fn));
@@ -130,6 +136,8 @@ export class ContractBuilder implements Contract {
   }
 
   addFunction(baseFn: BaseFunction): ContractFunction {
+    importHashBuiltin(this);
+
     const signature = [baseFn.name, '(', ...baseFn.args.map(a => a.name), ')'].join('');
     const got = this.functionMap.get(signature);
     if (got !== undefined) {
@@ -156,6 +164,8 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorCode(code: string) {
+    importHashBuiltin(this);
+    
     this.constructorCode.push(code);
   }
 

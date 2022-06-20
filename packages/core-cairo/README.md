@@ -13,8 +13,9 @@ This package provides a programmatic API. For a web interface, see https://wizar
 The following contract types are supported:
 - `erc20`
 - `erc721`
+- `general`
 
-Each contract type has a `print` function and a `defaults` constant as defined below.
+Each contract type has functions/constants as defined below.
 
 ### Functions
 
@@ -25,6 +26,9 @@ function print(opts?: ERC20Options): string
 ```js
 function print(opts?: ERC721Options): string
 ```
+```js
+function print(opts?: GeneralOptions): string
+```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
 #### `defaults`
@@ -34,7 +38,23 @@ const defaults: Required<ERC20Options>
 ```js
 const defaults: Required<ERC721Options>
 ```
+```js
+const defaults: Required<GeneralOptions>
+```
 The default options that are used for [`print`](#print).
+
+#### `isAccessControlRequired`
+```js
+function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean
+```
+Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
+
 
 ### Contract specific functions
 
@@ -61,7 +81,7 @@ Throws an error if the provided number is larger than 256 bits.
 
 ### Examples
 
-Import the contract type(s) or function categories (e.g. `erc20`, `erc721`, or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:
+Import the contract type(s) or function categories (for example, `erc20` or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:
 
 ```js
 import { erc20 } from '@openzeppelin/wizard-cairo';

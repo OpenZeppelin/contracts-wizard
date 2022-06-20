@@ -1,25 +1,26 @@
 <script lang="ts">
   export let value: false | string = false;
-  export let enabled = value !== false;
+  export let checked = value !== false;
   export let defaultValue: string;
+  export let disabled: boolean | undefined = undefined;
 
-  let wasEnabled = enabled;
+  let wasChecked = checked;
   let wasValue = value || defaultValue;
 
   $: {
-    if (!wasEnabled) {
-      if (enabled) {
+    if (!wasChecked) {
+      if (checked) {
         value = wasValue;
       } else if (value !== false) {
-        enabled = true;
+        checked = true;
       }
-    } else if (!enabled) {
+    } else if (!checked) {
       value = false;
     }
 
-    wasEnabled = enabled;
+    wasChecked = checked;
     wasValue = value || wasValue;
   }
 </script>
 
-<input type="checkbox" bind:checked={enabled}>
+<input type="checkbox" bind:checked={checked} disabled={disabled}>

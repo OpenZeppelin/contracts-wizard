@@ -1,6 +1,6 @@
 import { withImplicitArgs } from './common-options';
 import type { ContractBuilder, BaseFunction } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
 import { defineNamespaces } from './utils/define-namespaces';
@@ -14,8 +14,8 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 
   c.addFunction(functions.paused);
 
-  setAccessControl(c, functions.pause, access);
-  setAccessControl(c, functions.unpause, access);
+  requireAccessControl(c, functions.pause, access);
+  requireAccessControl(c, functions.unpause, access);
 }
 
 const modules = defineModules( {

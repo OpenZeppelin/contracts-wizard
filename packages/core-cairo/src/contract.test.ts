@@ -20,6 +20,17 @@ test('contract with function code', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with initializer params', t => {
+  const Foo = new ContractBuilder();
+  Foo.addModule(
+    someModule,
+    ['param1'],
+    [],
+    true
+  );
+  t.snapshot(printContract(Foo));
+});
+
 test('contract with library call', t => {
   const Foo = new ContractBuilder();
   Foo.addModule(
