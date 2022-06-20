@@ -10,11 +10,8 @@
 
   export const opts: Required<KindedOptions['General']> = {
     kind: 'General',
-    name: 'MyContract',
-    pausable: false,
-    access: false,
-    upgradeable: false,
-    info: { ...infoDefaults },
+    ...general.defaults,
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   let requireAccessControl: boolean;

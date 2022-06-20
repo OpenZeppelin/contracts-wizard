@@ -12,7 +12,7 @@ export interface GeneralOptions extends CommonOptions {
 }
 
 export const defaults: Required<GeneralOptions> = {
-  name: 'MyToken',
+  name: 'MyContract',
   pausable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,

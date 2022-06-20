@@ -20,7 +20,7 @@ function testGeneral(title: string, opts: Partial<GeneralOptions>) {
  function testAPIEquivalence(title: string, opts?: GeneralOptions) {
   test(title, t => {
     t.is(general.print(opts), printContract(buildGeneral({
-      name: 'MyToken',
+      name: 'MyContract',
       ...opts,
     })));
   });
