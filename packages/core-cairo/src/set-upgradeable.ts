@@ -22,7 +22,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
   c.setFunctionBody([
     'Proxy.assert_only_admin()',
-    'Proxy._set_implementation(new_implementation)'
+    'Proxy._set_implementation_hash(new_implementation)'
   ], functions.upgrade);
 }
 
