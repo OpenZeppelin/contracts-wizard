@@ -27,4 +27,15 @@
       </HelpTooltip>
     </label>
   </h1>
+
+  <div class="checkbox-group">
+    <label class:checked={access === 'ownable'}>
+      <input type="radio" bind:group={access} value="ownable">
+      Ownable
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Access.md#ownable">
+        Simple mechanism with a single account authorized for all privileged actions.
+      </HelpTooltip>
+    </label>
+  </div>
+
 </section>
