@@ -2,7 +2,7 @@ import { Contract, ContractBuilder } from './contract';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
-import { setAccessControlForContract } from './set-access-control';
+import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { printContract } from './print';
 
@@ -46,7 +46,7 @@ export function buildGeneral(opts: GeneralOptions): Contract {
     addPausable(c, access, []);
   }
 
-  setAccessControlForContract(c, access);
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
   setInfo(c, info);
 

@@ -72,7 +72,6 @@ export interface NatspecTag {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
-  accessControl = true;
   upgradeable = false;
 
   readonly using: Using[] = [];

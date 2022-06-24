@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
+import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -80,7 +80,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addSupply(c);
   }
 
-  setAccessControlForContract(c, access);
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
   setInfo(c, info);
 

@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControlForContract, requireAccessControl } from './set-access-control';
+import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -97,7 +97,7 @@ export function buildERC721(opts: ERC721Options): Contract {
     addVotes(c, allOpts.name);
   }
 
-  setAccessControlForContract(c, access);
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
   setInfo(c, info);
 
