@@ -6,12 +6,12 @@ import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { printContract } from './print';
 
-export interface GeneralOptions extends CommonOptions {
+export interface CustomOptions extends CommonOptions {
   name: string;
   pausable?: boolean;
 }
 
-export const defaults: Required<GeneralOptions> = {
+export const defaults: Required<CustomOptions> = {
   name: 'MyContract',
   pausable: false,
   access: commonDefaults.access,
@@ -19,7 +19,7 @@ export const defaults: Required<GeneralOptions> = {
   info: commonDefaults.info,
 } as const;
 
-function withDefaults(opts: GeneralOptions): Required<GeneralOptions> {
+function withDefaults(opts: CustomOptions): Required<CustomOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -27,15 +27,15 @@ function withDefaults(opts: GeneralOptions): Required<GeneralOptions> {
   };
 }
 
-export function printGeneral(opts: GeneralOptions = defaults): string {
-  return printContract(buildGeneral(opts));
+export function printCustom(opts: CustomOptions = defaults): string {
+  return printContract(buildCustom(opts));
 }
 
-export function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean {
+export function isAccessControlRequired(opts: Partial<CustomOptions>): boolean {
   return opts.pausable || opts.upgradeable === 'uups';
 }
 
-export function buildGeneral(opts: GeneralOptions): Contract {
+export function buildCustom(opts: CustomOptions): Contract {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);

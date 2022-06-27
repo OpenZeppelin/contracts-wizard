@@ -15,7 +15,7 @@ The following contract types are supported:
 - `erc721`
 - `erc1155`
 - `governor`
-- `general`
+- `custom`
 
 Each contract type has functions/constants as defined below.
 
@@ -35,7 +35,7 @@ function print(opts?: ERC1155Options): string
 function print(opts?: GovernorOptions): string
 ```
 ```js
-function print(opts?: GeneralOptions): string
+function print(opts?: CustomOptions): string
 ```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
@@ -53,7 +53,7 @@ const defaults: Required<ERC1155Options>
 const defaults: Required<GovernorOptions>
 ```
 ```js
-const defaults: Required<GeneralOptions>
+const defaults: Required<CustomOptions>
 ```
 The default options that are used for [`print`](#print).
 
@@ -71,7 +71,7 @@ function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
 function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
 ```
 ```js
-function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean
+function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
 ```
 Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
 

@@ -2,21 +2,21 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { general, infoDefaults } from '@openzeppelin/wizard';
+  import { custom, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
 
-  export const opts: Required<KindedOptions['General']> = {
-    kind: 'General',
-    ...general.defaults,
+  export const opts: Required<KindedOptions['Custom']> = {
+    kind: 'Custom',
+    ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   let requireAccessControl: boolean;
   $: {
-    requireAccessControl = general.isAccessControlRequired(opts);
+    requireAccessControl = custom.isAccessControlRequired(opts);
   }
 </script>
 
