@@ -3,7 +3,6 @@ import type { ContractBuilder } from './contract';
 //import { Access, setAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
-import { defineNamespaces } from './utils/define-namespaces';
 
 export const upgradeableOptions = [false, true] as const;
 
@@ -16,7 +15,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
   c.upgradeable = true;
 
-  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }], [], true, namespaces.Proxy);
+  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }], [], true);
 
   c.addConstructorArgument({ name:'proxy_admin', type:'felt' });
 
@@ -29,20 +28,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 const modules = defineModules( {
   Proxy: {
     path: 'openzeppelin.upgrades.library.Proxy',
-    usePrefix: true
+    useNamespace: true
   },
 });
-
-const namespaces = defineNamespaces( {
-  Proxy: {
-    module: modules.Proxy,
-  },
-})
 
 const functions = defineFunctions({
 
   upgrade: {
-    namespace: namespaces.Proxy,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [

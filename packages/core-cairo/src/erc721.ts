@@ -8,7 +8,6 @@ import { setInfo } from './set-info';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { defineNamespaces } from './utils/define-namespaces';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -102,7 +101,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     [name, symbol],
     [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom],
     true,
-    namespaces.ERC721
   );
 }
 
@@ -131,22 +129,12 @@ function addMintable(c: ContractBuilder, access: Access) {
 const modules = defineModules( {
   ERC165: {
     path: 'openzeppelin.introspection.library.ERC165',
-    usePrefix: true
+    useNamespace: true
   },
 
   ERC721: {
     path: 'openzeppelin.token.erc721.library.ERC721',
-    usePrefix: true
-  },
-})
-
-const namespaces = defineNamespaces( {
-  ERC165: {
-    module: modules.ERC165,
-  },
-
-  ERC721: {
-    module: modules.ERC721,
+    useNamespace: true
   },
 })
 
@@ -156,7 +144,6 @@ const functions = defineFunctions({
 
   supportsInterface: {
     module: modules.ERC165,
-    namespace: namespaces.ERC165,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -169,7 +156,6 @@ const functions = defineFunctions({
 
   name: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -180,7 +166,6 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -191,7 +176,6 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -204,7 +188,6 @@ const functions = defineFunctions({
 
   ownerOf: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -217,7 +200,6 @@ const functions = defineFunctions({
 
   getApproved: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -230,7 +212,6 @@ const functions = defineFunctions({
 
   isApprovedForAll: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -244,7 +225,6 @@ const functions = defineFunctions({
 
   tokenURI: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -259,7 +239,6 @@ const functions = defineFunctions({
 
   approve: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -270,7 +249,6 @@ const functions = defineFunctions({
 
   setApprovalForAll: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -282,7 +260,6 @@ const functions = defineFunctions({
 
   transferFrom: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -295,7 +272,6 @@ const functions = defineFunctions({
 
   safeTransferFrom: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -310,7 +286,6 @@ const functions = defineFunctions({
 
   safeMint: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -325,7 +300,6 @@ const functions = defineFunctions({
   
   burn: {
     module: modules.ERC721,
-    namespace: namespaces.ERC721,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [

@@ -9,7 +9,6 @@ import { OptionsError } from './error';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { defineNamespaces } from './utils/define-namespaces';
 import { NumberTooLarge, toUint256 } from './utils/uint256';
 
 export const defaults: Required<ERC20Options> = {
@@ -124,7 +123,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
       functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance
     ],
     true,
-    namespaces.ERC20
   );
 }
 
@@ -220,24 +218,18 @@ function addMintable(c: ContractBuilder, access: Access) {
 const modules = defineModules( {
   ERC20: {
     path: 'openzeppelin.token.erc20.library.ERC20',
-    usePrefix: true
+    useNamespace: true
   },
 
   syscalls: {
     path: 'starkware.starknet.common.syscalls',
-    usePrefix: false
+    useNamespace: false
   },
 
   bool: {
     path: 'starkware.cairo.common.bool',
-    usePrefix: false
+    useNamespace: false
   }
-})
-
-const namespaces = defineNamespaces( {
-  ERC20: {
-    module: modules.ERC20,
-  },
 })
 
 const functions = defineFunctions({
@@ -246,7 +238,6 @@ const functions = defineFunctions({
 
   name: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -257,7 +248,6 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -268,7 +258,6 @@ const functions = defineFunctions({
 
   totalSupply: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -280,7 +269,6 @@ const functions = defineFunctions({
 
   decimals: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -291,7 +279,6 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -304,7 +291,6 @@ const functions = defineFunctions({
 
   allowance: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -319,7 +305,6 @@ const functions = defineFunctions({
 
   transfer: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -332,7 +317,6 @@ const functions = defineFunctions({
 
   transferFrom: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -347,7 +331,6 @@ const functions = defineFunctions({
 
   approve: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -360,7 +343,6 @@ const functions = defineFunctions({
 
   increaseAllowance: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -374,7 +356,6 @@ const functions = defineFunctions({
 
   decreaseAllowance: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -388,7 +369,6 @@ const functions = defineFunctions({
 
   mint: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
@@ -400,7 +380,6 @@ const functions = defineFunctions({
 
   burn: {
     module: modules.ERC20,
-    namespace: namespaces.ERC20,
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
