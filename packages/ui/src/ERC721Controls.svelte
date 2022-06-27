@@ -30,10 +30,7 @@
     wasIncremental = opts.incremental;
   }
 
-  let requireAccessControl: boolean;
-  $: {
-    requireAccessControl = erc721.isAccessControlRequired(opts);
-  }
+  $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -115,7 +112,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
+<AccessControlSection bind:access={opts.access} {requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

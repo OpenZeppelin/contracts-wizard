@@ -87,18 +87,18 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       return constructor;
     } else {
       return spaceBetween(
-        INITIALIZE_IMPLEMENTATION,
+        DISABLE_INITIALIZERS,
         constructor,
       );
     }
   } else if (!helpers.upgradeable) {
     return [];
   } else {
-    return INITIALIZE_IMPLEMENTATION;
+    return DISABLE_INITIALIZERS;
   }
 }
 
-const INITIALIZE_IMPLEMENTATION = 
+const DISABLE_INITIALIZERS = 
 [
   '/// @custom:oz-upgrades-unsafe-allow constructor',
   'constructor() {',

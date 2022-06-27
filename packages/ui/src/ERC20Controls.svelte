@@ -1,7 +1,7 @@
 <script lang="ts">
   import HelpTooltip from './HelpTooltip.svelte';
 
-  import type { KindedOptions, } from '@openzeppelin/wizard';
+  import type { KindedOptions } from '@openzeppelin/wizard';
   import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
@@ -15,10 +15,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let requireAccessControl: boolean;
-  $: {
-    requireAccessControl = erc20.isAccessControlRequired(opts);
-  }
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -112,7 +109,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
+<AccessControlSection bind:access={opts.access} {requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
