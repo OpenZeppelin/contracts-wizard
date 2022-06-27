@@ -128,12 +128,12 @@ function addMintable(c: ContractBuilder, access: Access) {
 
 const modules = defineModules( {
   ERC165: {
-    path: 'openzeppelin.introspection.library.ERC165',
+    path: 'openzeppelin.introspection.ERC165',
     useNamespace: true
   },
 
   ERC721: {
-    path: 'openzeppelin.token.erc721.library.ERC721',
+    path: 'openzeppelin/token/erc721/library',
     useNamespace: true
   },
 })

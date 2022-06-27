@@ -24,7 +24,7 @@ export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: A
 
 const modules = defineModules( {
   Ownable: {
-    path: 'openzeppelin.access.library.Ownable',
+    path: 'openzeppelin/access/ownable',
     useNamespace: true
   },
 })
