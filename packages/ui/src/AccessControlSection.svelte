@@ -7,9 +7,13 @@
   export let access: Access;
   export let requireAccessControl: boolean;
 
+  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+
   $: {
-    if (access === false && requireAccessControl) {
-      access = 'ownable';
+    if (access !== false) {
+      defaultValueWhenEnabled = access;
+    } else if (requireAccessControl) {
+      access = defaultValueWhenEnabled;
     }
   }
 </script>
