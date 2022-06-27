@@ -5,9 +5,6 @@
   import ToggleRadio from '../inputs/ToggleRadio.svelte';
 
   export let upgradeable: Upgradeable;
-
-  let upgradeableWithKind: 'uups' | false;
-  $: upgradeable = upgradeableWithKind === 'uups' ? true : false;
 </script>
 
 <section class="controls-section">
@@ -16,7 +13,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Upgradeability</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={upgradeableWithKind} defaultValue='uups' />
+        <ToggleRadio bind:value={upgradeable} defaultValue={true} />
       </span>
       <HelpTooltip align="right" link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Proxies.md">
       Smart contracts are immutable by default unless deployed behind an upgradeable proxy.
@@ -25,8 +22,8 @@
   </h1>
 
   <div class="checkbox-group">
-    <label class:checked={upgradeableWithKind === 'uups'}>
-      <input type="radio" bind:group={upgradeableWithKind} value='uups'>
+    <label class:checked={upgradeable}>
+      <input type="radio" bind:group={upgradeable} value={true}>
       UUPS
       <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Proxies.md#proxy-contract">
       Requires including code in your contract for upgrades. Allows flexibility for authorizing upgrades.
