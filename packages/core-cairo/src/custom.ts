@@ -5,7 +5,7 @@ import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { setAccessControlForContract } from './set-access-control';
+import { setAccessControl } from './set-access-control';
 
 export const defaults: Required<CustomOptions> = {
   pausable: false,
@@ -43,7 +43,7 @@ export function buildCustom(opts: CustomOptions): Contract {
     addPausable(c, allOpts.access, []);
   }
 
-  setAccessControlForContract(c, allOpts.access);
+  setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 

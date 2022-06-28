@@ -18,10 +18,7 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  let requireAccessControl: boolean;
-  $: {
-    requireAccessControl = erc20.isAccessControlRequired(opts);
-  }
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -86,7 +83,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

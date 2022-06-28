@@ -18,6 +18,8 @@
       }
     } else if (!checked) {
       value = false;
+    } else if (value === false) {
+      checked = false;
     }
 
     wasChecked = checked;
@@ -25,4 +27,4 @@
   }
 </script>
 
-<input type="checkbox" bind:checked={checked} disabled={disabled}>
+<input type="checkbox" bind:checked {disabled}>

@@ -10,7 +10,7 @@ export type Access = typeof accessOptions[number];
 /**
  * Sets access control for the contract by adding inheritance.
  */
- export function setAccessControlForContract(c: ContractBuilder, access: Access) {
+ export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
       c.addModule(modules.Ownable, [{ lit:'owner' }], [], true);
@@ -31,7 +31,7 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
     access = 'ownable';
   }
   
-  setAccessControlForContract(c, access);
+  setAccessControl(c, access);
 
   switch (access) {
     case 'ownable': {

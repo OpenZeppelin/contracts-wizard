@@ -14,10 +14,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let requireAccessControl: boolean;
-  $: {
-    requireAccessControl = erc721.isAccessControlRequired(opts);
-  }
+  $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -64,7 +61,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} requireAccessControl={requireAccessControl} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

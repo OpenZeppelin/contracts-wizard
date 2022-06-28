@@ -5,12 +5,23 @@
   import HelpTooltip from '../HelpTooltip.svelte';
 
   export let access: Access;
-  export let requireAccessControl: boolean;
+  export let required: boolean;
+  const defaultValueWhenEnabled = 'ownable';
 
+  let wasRequired = required;
+  let wasAccess = access;
   $: {
-    if (access === false && requireAccessControl) {
-      access = 'ownable';
+    if (wasRequired && !required) {
+      access = wasAccess;
+    } else if (!wasRequired && required) {
+      wasAccess = access;
+      if (access === false) {
+        access = defaultValueWhenEnabled;
+      }
+    } else {
+      wasAccess = access;
     }
+    wasRequired = required;
   }
 </script>
 
@@ -20,7 +31,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Access Control</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={access} defaultValue="ownable" disabled={requireAccessControl} />
+        <ToggleRadio bind:value={access} defaultValue="ownable" disabled={required} />
       </span>
       <HelpTooltip align="right" link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Access.md">
         Restrict who can access the functions of a contract or when they can do it.

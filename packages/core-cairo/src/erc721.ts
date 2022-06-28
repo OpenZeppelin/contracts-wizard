@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControlForContract } from './set-access-control';
+import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable, setPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-options';
@@ -88,7 +88,7 @@ export function buildERC721(opts: ERC721Options): Contract {
     addMintable(c, allOpts.access);
   }
 
-  setAccessControlForContract(c, allOpts.access);
+  setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable);
 
   setInfo(c, allOpts.info);
