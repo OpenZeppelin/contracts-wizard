@@ -112,7 +112,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} {requireAccessControl} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

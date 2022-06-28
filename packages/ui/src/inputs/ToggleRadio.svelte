@@ -18,6 +18,8 @@
       }
     } else if (!checked) {
       value = false;
+    } else if (value === false) {
+      checked = false;
     }
 
     wasChecked = checked;
