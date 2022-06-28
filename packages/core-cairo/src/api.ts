@@ -1,7 +1,7 @@
 import type { CommonOptions } from './common-options';
 import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20IsAccessControlRequired, ERC20Options, getInitialSupply } from './erc20';
 import { printERC721, defaults as erc721defaults, isAccessControlRequired as erc721IsAccessControlRequired, ERC721Options } from './erc721';
-import { printGeneral, defaults as generalDefaults, isAccessControlRequired as generalIsAccessControlRequired, GeneralOptions } from './general';
+import { printCustom, defaults as customDefaults, isAccessControlRequired as customIsAccessControlRequired, CustomOptions } from './custom';
 import { toUint256 } from './utils/uint256';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
@@ -29,7 +29,7 @@ export type ERC20 = WizardContractAPI<ERC20Options> & {
    getInitialSupply: (premint: string, decimals: number) => string;
 }
 export type ERC721 = WizardContractAPI<ERC721Options>;
-export type General = WizardContractAPI<GeneralOptions>;
+export type Custom = WizardContractAPI<CustomOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,
@@ -42,10 +42,10 @@ export const erc721: ERC721 = {
   defaults: erc721defaults,
   isAccessControlRequired: erc721IsAccessControlRequired
 }
-export const general: General = {
-  print: printGeneral,
-  defaults: generalDefaults,
-  isAccessControlRequired: generalIsAccessControlRequired
+export const custom: Custom = {
+  print: printCustom,
+  defaults: customDefaults,
+  isAccessControlRequired: customIsAccessControlRequired
 }
 export const utils = {
   toUint256

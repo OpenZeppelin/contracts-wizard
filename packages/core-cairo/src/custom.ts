@@ -7,22 +7,22 @@ import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControlForContract } from './set-access-control';
 
-export const defaults: Required<GeneralOptions> = {
+export const defaults: Required<CustomOptions> = {
   pausable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
 
-export function printGeneral(opts: GeneralOptions = defaults): string {
-  return printContract(buildGeneral(opts));
+export function printCustom(opts: CustomOptions = defaults): string {
+  return printContract(buildCustom(opts));
 }
 
-export interface GeneralOptions extends CommonOptions {
+export interface CustomOptions extends CommonOptions {
   pausable?: boolean;
 }
 
-function withDefaults(opts: GeneralOptions): Required<GeneralOptions> {
+function withDefaults(opts: CustomOptions): Required<CustomOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -30,11 +30,11 @@ function withDefaults(opts: GeneralOptions): Required<GeneralOptions> {
   };
 }
 
-export function isAccessControlRequired(opts: Partial<GeneralOptions>): boolean {
+export function isAccessControlRequired(opts: Partial<CustomOptions>): boolean {
   return opts.pausable === true;
 }
 
-export function buildGeneral(opts: GeneralOptions): Contract {
+export function buildCustom(opts: CustomOptions): Contract {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder();
