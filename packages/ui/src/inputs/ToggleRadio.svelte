@@ -1,7 +1,9 @@
 <script lang="ts">
-  export let value: false | string = false;
+  type T = $$Generic;
+
+  export let value: false | T = false;
   export let checked = value !== false;
-  export let defaultValue: string;
+  export let defaultValue: T;
   export let disabled: boolean | undefined = undefined;
 
   let wasChecked = checked;
