@@ -4,7 +4,7 @@ import { defineModules } from "./define-modules";
 const modules = defineModules( {
   cairo_builtins: {
     path: 'starkware.cairo.common.cairo_builtins',
-    usePrefix: false
+    useNamespace: false
   },
 })
 

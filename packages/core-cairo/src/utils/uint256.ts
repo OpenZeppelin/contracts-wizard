@@ -26,7 +26,7 @@ export class NumberTooLarge extends Error {}
 const modules = defineModules( {
   uint256: {
     path: 'starkware.cairo.common.uint256',
-    usePrefix: false
+    useNamespace: false
   },
 })
 

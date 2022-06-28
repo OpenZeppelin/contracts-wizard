@@ -23,17 +23,11 @@ export interface Library {
 export interface Module {
   name: string;
   path: string;
-  usePrefix: boolean;
+  useNamespace: boolean;
 }
 
 export interface Initializer {
   params: Value[];
-  namespace?: Namespace;
-}
-
-export interface Namespace {
-  module: Module;
-  name: string;
 }
 
 export interface BaseFunction {
@@ -47,7 +41,6 @@ export interface BaseFunction {
   passthrough?: boolean;
   read?: boolean;
   parentFunctionName?: string;
-  namespace?: Namespace;
 }
 
 export interface ContractFunction extends BaseFunction {
@@ -87,10 +80,10 @@ export class ContractBuilder implements Contract {
     return [...this.functionMap.values()];
   }
 
-  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true, initializerNamespace?: Namespace): boolean {
+  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
     const key = module;
     const present = this.librariesMap.has(key);
-    const initializer = initializable ? { params, namespace: initializerNamespace } : undefined;
+    const initializer = initializable ? { params } : undefined;
 
     if (initializer !== undefined && initializer.params.length > 0) {
       // presence of initializer params implies initializer code will be written, so implicit args must be included
@@ -104,7 +97,6 @@ export class ContractBuilder implements Contract {
     if (initializable) {
       functionStrings.push(getImportName({
           module: module,
-          namespace: initializerNamespace,
           name: 'initializer', 
           args: []
         }))

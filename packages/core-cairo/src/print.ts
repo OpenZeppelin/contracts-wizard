@@ -102,7 +102,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode) {
     const parents = contract.libraries
       .filter(hasInitializer)
-      .flatMap(p => printParentConstructor(p, helpers));
+      .flatMap(p => printParentConstructor(p));
     const modifier = helpers.upgradeable ? 'external' : 'constructor';
     const head = helpers.upgradeable ? 'func initializer' : 'func constructor';
     const args = contract.constructorArgs.map(a => printArgument(a));
@@ -149,11 +149,11 @@ function sortedFunctions(contract: Contract): SortedFunctions {
   return fns;
 }
 
-function printParentConstructor({ module: contract, initializer }: Library, helpers: Helpers): [] | [string] {
-  if (initializer === undefined || contract.name === undefined) {
+function printParentConstructor({ module, initializer }: Library): [] | [string] {
+  if (initializer === undefined || module.name === undefined || !module.useNamespace) {
     return [];
   }
-  const fn = initializer.namespace !== undefined ? `${contract.name}.initializer` : `${contract.name}_initializer`;
+  const fn = `${module.name}.initializer`;
   return [
     fn + '(' + initializer.params.map(printValue).join(', ') + ')',
   ];

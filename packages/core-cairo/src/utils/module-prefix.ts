@@ -1,26 +1,12 @@
-import type { BaseFunction, Module, Namespace } from "../contract";
+import type { BaseFunction } from "../contract";
 
 /**
- * Get prefix with module name (without namespace)
- */
-function getModulePrefix(module: Module): string {
-  return module.usePrefix ? `${module.name}_` : '';
-}
-
-/**
- * Get prefix with namespace
- */
- function getNamespacePrefix(namespace: Namespace): string {
-  return `${namespace.name}.`;
-}
-
-/**
- * If the fn has a namespace, returns the namespace.
- * Otherwise returns the module (if any) prefixed to the function name. 
+ * If the function's module has a namespace, returns the namespace.
+ * Otherwise returns the function name itself.
  */
 export function getImportName(fn: BaseFunction): string {
-  if (fn.namespace !== undefined) {
-    return fn.namespace.name;
+  if (fn.module?.useNamespace) {
+    return fn.module.name;
   } else {
     return getFunctionName(fn);
   }
@@ -32,10 +18,8 @@ export function getImportName(fn: BaseFunction): string {
 export function getFunctionName(fn: BaseFunction): string {
   const suffix = fn.parentFunctionName ?? fn.name;
   let prefix: string;
-  if (fn.namespace !== undefined) {
-    prefix = getNamespacePrefix(fn.namespace);
-  } else if (fn.module !== undefined && fn.module.usePrefix) {
-    prefix = getModulePrefix(fn.module);
+  if (fn.module !== undefined && fn.module.useNamespace) {
+    prefix = `${fn.module.name}.`
   } else {
     prefix = '';
   }
