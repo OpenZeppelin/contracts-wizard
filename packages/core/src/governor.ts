@@ -57,7 +57,7 @@ export interface GovernorOptions extends CommonOptions {
 }
 
 export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean {
-  return false;
+  return opts.upgradeable === 'uups';
 }
 
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
