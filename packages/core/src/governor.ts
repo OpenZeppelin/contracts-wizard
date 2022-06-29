@@ -2,6 +2,7 @@ import { supportsInterface } from "./common-functions";
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from "./common-options";
 import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
+import { setAccessControl } from "./set-access-control";
 import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
@@ -55,6 +56,10 @@ export interface GovernorOptions extends CommonOptions {
   settings?: boolean;
 }
 
+export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean {
+  return opts.upgradeable === 'uups';
+}
+
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
@@ -87,8 +92,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
 
+  setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
-
   setInfo(c, allOpts.info);
 
   return c;

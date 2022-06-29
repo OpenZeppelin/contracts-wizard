@@ -142,3 +142,11 @@ testAPIEquivalence('erc20 API full upgradeable', {
 test('erc20 API assert defaults', async t => {
   t.is(erc20.print(erc20.defaults), erc20.print());
 });
+
+test('erc20 API isAccessControlRequired', async t => {
+  t.is(erc20.isAccessControlRequired({ mintable: true }), true);
+  t.is(erc20.isAccessControlRequired({ pausable: true }), true);
+  t.is(erc20.isAccessControlRequired({ snapshots: true }), true);
+  t.is(erc20.isAccessControlRequired({ upgradeable: 'uups' }), true);
+  t.is(erc20.isAccessControlRequired({ upgradeable: 'transparent' }), false);
+});

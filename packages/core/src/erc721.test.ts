@@ -120,3 +120,10 @@ testAPIEquivalence('API full upgradeable', {
 test('API assert defaults', async t => {
   t.is(erc721.print(erc721.defaults), erc721.print());
 });
+
+test('API isAccessControlRequired', async t => {
+  t.is(erc721.isAccessControlRequired({ mintable: true }), true);
+  t.is(erc721.isAccessControlRequired({ pausable: true }), true);
+  t.is(erc721.isAccessControlRequired({ upgradeable: 'uups' }), true);
+  t.is(erc721.isAccessControlRequired({ upgradeable: 'transparent' }), false);
+});

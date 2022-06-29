@@ -7,6 +7,7 @@
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
     import GovernorControls from './GovernorControls.svelte';
+    import CustomControls from './CustomControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
     import RemixIcon from './icons/RemixIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
@@ -115,6 +116,9 @@
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
+        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
+          Custom
+        </button>
       </OverflowMenu>
     </div>
 
@@ -178,6 +182,9 @@
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
+      </div>
+      <div class:hidden={tab !== 'Custom'}>
+        <CustomControls bind:opts={allOpts.Custom} />
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">

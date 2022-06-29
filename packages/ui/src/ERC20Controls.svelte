@@ -14,6 +14,8 @@
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -107,7 +109,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

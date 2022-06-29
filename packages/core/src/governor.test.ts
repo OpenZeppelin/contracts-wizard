@@ -118,3 +118,8 @@ testAPIEquivalence('API basic upgradeable', { name: 'CustomGovernor', delay: '2 
 test('API assert defaults', async t => {
   t.is(governor.print(governor.defaults), governor.print());
 });
+
+test('API isAccessControlRequired', async t => {
+  t.is(governor.isAccessControlRequired({ upgradeable: 'uups' }), true);
+  t.is(governor.isAccessControlRequired({}), false);
+});
