@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -15,6 +15,7 @@ export interface ERC1155Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   supply?: boolean;
+  updatableUri?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
@@ -24,7 +25,8 @@ export const defaults: Required<ERC1155Options> = {
   pausable: false,
   mintable: false,
   supply: false,
-  access: commonDefaults.access,
+  updatableUri: true,
+  access: false,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
@@ -37,11 +39,16 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     supply: opts.supply ?? defaults.supply,
+    updatableUri: opts.updatableUri ?? defaults.updatableUri,
   };
 }
 
 export function printERC1155(opts: ERC1155Options = defaults): string {
   return printContract(buildERC1155(opts));
+}
+
+export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
+  return opts.mintable || opts.pausable || opts.updatableUri !== false || opts.upgradeable === 'uups';
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -52,7 +59,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const { access, upgradeable, info } = allOpts;
 
   addBase(c, allOpts.uri);
-  addSetUri(c, access);
+
+  if (allOpts.updatableUri) {
+    addSetUri(c, access);
+  }
 
   if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);
@@ -70,8 +80,8 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addSupply(c);
   }
 
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
-
   setInfo(c, info);
 
   return c;
@@ -98,14 +108,14 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.mint, access, 'MINTER');
-  setAccessControl(c, functions.mintBatch, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mintBatch, access, 'MINTER');
   c.addFunctionCode('_mint(account, id, amount, data);', functions.mint);
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.setURI, access, 'URI_SETTER');
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER');
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 

@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
@@ -55,6 +55,10 @@ export function printERC20(opts: ERC20Options = defaults): string {
   return printContract(buildERC20(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+  return opts.mintable || opts.pausable || opts.snapshots || opts.upgradeable === 'uups';
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
@@ -97,8 +101,8 @@ export function buildERC20(opts: ERC20Options): Contract {
     addFlashMint(c);
   }
 
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
-  
   setInfo(c, info);
 
   return c;
@@ -134,7 +138,7 @@ function addSnapshot(c: ContractBuilder, access: Access) {
 
   c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
 
-  setAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
+  requireAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
   c.addFunctionCode('_snapshot();', functions.snapshot);
 }
 
@@ -158,7 +162,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 

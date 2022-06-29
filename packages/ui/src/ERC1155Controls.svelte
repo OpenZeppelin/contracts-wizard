@@ -13,6 +13,8 @@
     ...erc1155.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  $: requireAccessControl = erc1155.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -25,7 +27,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       URI
-      <HelpTooltip>Location of the metadata. Clients will replace any instance of &lbrace;id&rbrace; in this string with the tokenId.</HelpTooltip>
+      <HelpTooltip>Location of the metadata. Clients will replace any instance of {"{id}"} in this string with the tokenId.</HelpTooltip>
     </span>
     <input bind:value={opts.uri} placeholder="https://...">
   </label>
@@ -64,10 +66,17 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.updatableUri}>
+      <input type="checkbox" bind:checked={opts.updatableUri}>
+      Updatable URI
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155#ERC1155-_setURI-string-">
+        Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {"{id}"} in the URI with the tokenId.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
