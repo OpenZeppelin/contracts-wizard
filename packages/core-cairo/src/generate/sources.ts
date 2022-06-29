@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 import { generateERC20Options } from './erc20';
 import { generateERC721Options } from './erc721';
+import { generateCustomOptions } from './custom';
 import { buildGeneric, GenericOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
@@ -19,6 +20,10 @@ export function* generateOptions(): Generator<GenericOptions> {
 
   for (const kindOpts of generateERC721Options()) {
     yield { kind: 'ERC721', ...kindOpts };
+  }
+
+  for (const kindOpts of generateCustomOptions()) {
+    yield { kind: 'Custom', ...kindOpts };
   }
 }
 
