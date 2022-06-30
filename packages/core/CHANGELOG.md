@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 (2022-06-30)
 
 - Support custom contract type, optional access control. ([#112](https://github.com/OpenZeppelin/contracts-wizard/pull/112))
 
