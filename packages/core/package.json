@@ -18,8 +18,8 @@
     "test:watch": "ava --watch"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "4.6.0",
-    "@openzeppelin/contracts-upgradeable": "4.6.0",
+    "@openzeppelin/contracts": "4.7.0",
+    "@openzeppelin/contracts-upgradeable": "4.7.0",
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
