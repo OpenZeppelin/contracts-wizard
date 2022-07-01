@@ -84,6 +84,10 @@ export default function(hljs: HLJSApi) {
     type: TYPES
   };
 
+  if (typeof cairoLanguage.keywords !== 'object') {
+    throw Error('Expected object');
+  }
+
   Object.assign(cairoLanguage.keywords, KEYWORDS);
 
   Object.assign(cairoLanguage, {
