@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo';
 
+  import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../error-tooltip';
@@ -16,6 +17,8 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -72,13 +75,15 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC20.md#erc20_pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>when_not_paused</code>.
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Security.md#pausable">
+        Privileged accounts will be able to pause the functionality marked with <code>assert_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
   </div>
 </section>
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable, setPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-options';
@@ -9,7 +9,7 @@ import { OptionsError } from './error';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { NumberTooLarge, toUint256 } from './utils/uint256';
+import { importUint256, NumberTooLarge, toUint256 } from './utils/uint256';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -62,6 +62,10 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
+export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+  return opts.mintable === true || opts.pausable === true;
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder();
 
@@ -84,8 +88,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addFunction(functions.increaseAllowance);
   c.addFunction(functions.decreaseAllowance);
 
-  c.addModule(modules.bool, [], [], false);
-  c.addModuleFunction(modules.bool, 'TRUE');
+  importUint256(c);
+  importBool(c);
 
   if (allOpts.burnable) {
     addBurnable(c);
@@ -106,6 +110,7 @@ export function buildERC20(opts: ERC20Options): Contract {
     addMintable(c, allOpts.access);
   }
 
+  setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable);
   
   setInfo(c, allOpts.info);
@@ -124,6 +129,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
     ],
     true,
   );
+}
+
+function importBool(c: ContractBuilder) {
+  c.addModule(modules.bool, [], [], false);
+  c.addModuleFunction(modules.bool, 'TRUE');
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -212,7 +222,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.mint, access);
+  requireAccessControl(c, functions.mint, access);
 }
 
 const modules = defineModules( {

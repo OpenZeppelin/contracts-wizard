@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable, setPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-options';
@@ -8,6 +8,7 @@ import { setInfo } from './set-info';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
+import { importUint256 } from './utils/uint256';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -42,6 +43,10 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   };
 }
 
+export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
+  return opts.mintable === true || opts.pausable === true;
+}
+
 export function buildERC721(opts: ERC721Options): Contract {
   const c = new ContractBuilder();
 
@@ -63,6 +68,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   c.addFunction(functions.transferFrom);
   c.addFunction(functions.safeTransferFrom);
 
+  importUint256(c);
+
   if (allOpts.pausable) {
     addPausable(c, allOpts.access, [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom]);
     if (allOpts.burnable) {
@@ -81,6 +88,7 @@ export function buildERC721(opts: ERC721Options): Contract {
     addMintable(c, allOpts.access);
   }
 
+  setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable);
 
   setInfo(c, allOpts.info);
@@ -116,7 +124,7 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  setAccessControl(c, functions.safeMint, access);
+  requireAccessControl(c, functions.safeMint, access);
   c.setFunctionBody(
     [
       'ERC721._safe_mint(to, tokenId, data_len, data)', 

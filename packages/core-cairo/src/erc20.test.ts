@@ -87,6 +87,12 @@ test('erc20 API assert defaults', async t => {
   t.is(erc20.print(erc20.defaults), erc20.print());
 });
 
+test('erc20 API isAccessControlRequired', async t => {
+  t.is(erc20.isAccessControlRequired({ mintable: true }), true);
+  t.is(erc20.isAccessControlRequired({ pausable: true }), true);
+  t.is(erc20.isAccessControlRequired({ upgradeable: true }), false);
+}); 
+
 test('erc20 API getInitialSupply', async t => {
   t.is(erc20.getInitialSupply('1000', 18),   '1000000000000000000000');
   t.is(erc20.getInitialSupply('1000.1', 18), '1000100000000000000000');

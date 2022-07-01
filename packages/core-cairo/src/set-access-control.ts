@@ -3,20 +3,39 @@ import type { ContractBuilder, BaseFunction } from './contract';
 import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
 
-export const accessOptions = ['ownable'] as const;
+export const accessOptions = [false, 'ownable'] as const;
 
 export type Access = typeof accessOptions[number];
 
-export function setAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access) {
+/**
+ * Sets access control for the contract by adding inheritance.
+ */
+ export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
       c.addModule(modules.Ownable, [{ lit:'owner' }], [], true);
       c.addConstructorArgument({ name: 'owner', type: 'felt'});
-      c.addLibraryCall(functions.assert_only_owner, fn);
-
+      
       c.addFunction(functions.transferOwnership);
       c.addFunction(functions.renounceOwnership);
+      break;
+    }
+  }
+}
 
+/**
+ * Enables access control for the contract and restricts the given function with access control.
+ */
+export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access) {
+  if (access === false) {
+    access = 'ownable';
+  }
+  
+  setAccessControl(c, access);
+
+  switch (access) {
+    case 'ownable': {
+      c.addLibraryCall(functions.assert_only_owner, fn);
       break;
     }
   }

@@ -5,6 +5,7 @@
 
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
+    import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
     import DocsIcon from '../icons/DocsIcon.svelte';
@@ -65,7 +66,8 @@
     const downloadCairoHandler = async () => {
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
-        saveAs(blob, opts.name + '.cairo');
+        const name = ('name' in opts) ? opts.name : 'MyContract';
+        saveAs(blob, name + '.cairo');
         await postConfig(opts, 'download-npm', language);
       }
     };
@@ -81,6 +83,9 @@
         </button>
         <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
           ERC721
+        </button>
+        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
+          Custom
         </button>
       </OverflowMenu>
     </div>
@@ -115,6 +120,9 @@
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
+      </div>
+      <div class:hidden={tab !== 'Custom'}>
+        <CustomControls bind:opts={allOpts.Custom} />
       </div>
       <div class="controls-footer">
         <a href="https://forum.openzeppelin.com/" target="_blank">
