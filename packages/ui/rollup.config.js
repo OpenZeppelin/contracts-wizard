@@ -88,6 +88,7 @@ export default [
       alias({
         entries: {
           path: 'path-browserify',
+          'highlight.js/lib/languages/python': '../../node_modules/highlight.js/lib/languages/python.js',
         },
       }),
 
