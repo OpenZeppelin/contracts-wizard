@@ -1,5 +1,5 @@
 import { withImplicitArgs } from './common-options';
-import { getFunctionName } from './utils/module-prefix';
+import { getFunctionName, getImportName } from './utils/module-prefix';
 
 export interface Contract {
   license: string;
@@ -22,7 +22,7 @@ export interface Library {
 export interface Module {
   name: string;
   path: string;
-  usePrefix: boolean;
+  useNamespace: boolean;
 }
 
 export interface Initializer {
@@ -86,11 +86,11 @@ export class ContractBuilder implements Contract {
 
     const functionStrings: string[] = [];
     functions.forEach(fn => {
-      functionStrings.push(getFunctionName(fn));
+      functionStrings.push(getImportName(fn));
     });
     if (initializable) {
-      functionStrings.push(getFunctionName({
-          module: module, 
+      functionStrings.push(getImportName({
+          module: module,
           name: 'initializer', 
           args: []
         }))
@@ -113,7 +113,7 @@ export class ContractBuilder implements Contract {
   addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (callFn.module !== undefined) {
-      this.addModuleFunction(callFn.module, getFunctionName(callFn));
+      this.addModuleFunction(callFn.module, getImportName(callFn));
     }
     if (callFn.args.length > 0) {
       throw new Error(`Library call with functions is not supported yet`);

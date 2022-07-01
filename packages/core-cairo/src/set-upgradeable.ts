@@ -15,22 +15,20 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
 
   c.upgradeable = true;
 
-  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }]);
-  c.addModuleFunction(modules.Proxy, 'Proxy_only_admin');
-  c.addModuleFunction(modules.Proxy, 'Proxy_set_implementation');
+  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }], [], true);
 
   c.addConstructorArgument({ name:'proxy_admin', type:'felt' });
 
   c.setFunctionBody([
-    'Proxy_only_admin()',
-    'Proxy_set_implementation(new_implementation)'
+    'Proxy.assert_only_admin()',
+    'Proxy._set_implementation_hash(new_implementation)'
   ], functions.upgrade);
 }
 
 const modules = defineModules( {
   Proxy: {
     path: 'openzeppelin/upgrades/library',
-    usePrefix: true
+    useNamespace: true
   },
 });
 

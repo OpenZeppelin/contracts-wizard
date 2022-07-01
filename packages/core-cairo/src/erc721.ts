@@ -100,16 +100,16 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     modules.ERC721,
     [name, symbol],
     [functions.approve, functions.setApprovalForAll, functions.transferFrom, functions.safeTransferFrom],
+    true,
   );
 }
 
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
-  c.addModuleFunction(modules.ERC721, 'ERC721_only_token_owner');
   c.setFunctionBody(
     [
-      'ERC721_only_token_owner(tokenId)',
-      'ERC721_burn(tokenId)'
+      'ERC721.assert_only_token_owner(tokenId)',
+      'ERC721._burn(tokenId)'
     ],
     functions.burn
   );
@@ -117,11 +117,10 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access) {
   setAccessControl(c, functions.safeMint, access);
-  c.addModuleFunction(modules.ERC721, 'ERC721_setTokenURI');
   c.setFunctionBody(
     [
-      'ERC721_safeMint(to, tokenId, data_len, data)', 
-      'ERC721_setTokenURI(tokenId, tokenURI)'
+      'ERC721._safe_mint(to, tokenId, data_len, data)', 
+      'ERC721._set_token_uri(tokenId, tokenURI)'
     ],
     functions.safeMint
   );
@@ -130,12 +129,12 @@ function addMintable(c: ContractBuilder, access: Access) {
 const modules = defineModules( {
   ERC165: {
     path: 'openzeppelin.introspection.ERC165',
-    usePrefix: true
+    useNamespace: true
   },
 
   ERC721: {
     path: 'openzeppelin/token/erc721/library',
-    usePrefix: true
+    useNamespace: true
   },
 })
 
@@ -184,6 +183,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'balance', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'balance_of',
   },
 
   ownerOf: {
@@ -195,6 +195,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'owner', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'owner_of',
   },
 
   getApproved: {
@@ -206,6 +207,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'approved', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'get_approved',
   },
 
   isApprovedForAll: {
@@ -218,6 +220,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'isApproved', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'is_approved_for_all',
   },
 
   tokenURI: {
@@ -229,6 +232,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'tokenURI', type: 'felt' }],
     passthrough: true,
+    parentFunctionName: 'token_uri',
   },
 
   // --- external functions ---
@@ -251,6 +255,7 @@ const functions = defineFunctions({
       { name: 'operator', type: 'felt' },
       { name: 'approved', type: 'felt' },
     ],
+    parentFunctionName: 'set_approval_for_all',
   },
 
   transferFrom: {
@@ -262,6 +267,7 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'tokenId', type: 'Uint256' },
     ],
+    parentFunctionName: 'transfer_from',
   },
 
   safeTransferFrom: {
@@ -275,6 +281,7 @@ const functions = defineFunctions({
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
+    parentFunctionName: 'safe_transfer_from',
   },
 
   safeMint: {
@@ -288,6 +295,7 @@ const functions = defineFunctions({
       { name: 'data', type: 'felt*' },
       { name: 'tokenURI', type: 'felt' },
     ],
+    parentFunctionName: '_safe_mint',
   },
   
   burn: {

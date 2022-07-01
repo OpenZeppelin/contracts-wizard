@@ -20,7 +20,7 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 const modules = defineModules( {
   Pausable: {
     path: 'openzeppelin/security/pausable', 
-    usePrefix: true
+    useNamespace: true
   },
 });
 
@@ -33,7 +33,7 @@ const functions = defineFunctions({
     args: [],
     returns: [{ name: 'paused', type: 'felt' }],
     passthrough: true,
-    read: true
+    parentFunctionName: 'is_paused',
   },
 
   pause: {
@@ -41,6 +41,7 @@ const functions = defineFunctions({
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
+    parentFunctionName: '_pause',
   },
 
   unpause: {
@@ -48,11 +49,12 @@ const functions = defineFunctions({
     kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [],
+    parentFunctionName: '_unpause',
   },
 
   // --- library-only calls ---
 
-  when_not_paused: {
+  assert_not_paused: {
     module: modules.Pausable,
     args: [],
   },
@@ -60,5 +62,5 @@ const functions = defineFunctions({
 });
 
 export function setPausable(c: ContractBuilder, fn: BaseFunction) {
-    c.addLibraryCall(functions.when_not_paused, fn);
+    c.addLibraryCall(functions.assert_not_paused, fn);
 }

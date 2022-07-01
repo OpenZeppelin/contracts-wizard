@@ -6,7 +6,6 @@ import { CommonOptions, withCommonDefaults, withImplicitArgs } from './common-op
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-import BN from 'bn.js';
 import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
@@ -123,6 +122,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
     [
       functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance
     ],
+    true,
   );
 }
 
@@ -135,7 +135,7 @@ function addBurnable(c: ContractBuilder) {
   c.setFunctionBody(
     [
       'let (owner) = get_caller_address()', 
-      'ERC20_burn(owner, amount)'
+      'ERC20._burn(owner, amount)'
     ],
     functions.burn
   );
@@ -158,12 +158,7 @@ function addPremint(c: ContractBuilder, amount: string, decimals: string) {
       const premintUint256 = toUint256(premintAbsolute);
 
       c.addConstructorArgument({ name:'recipient', type:'felt' });
-      c.addConstructorCode(`ERC20_mint(recipient, Uint256(${premintUint256.lowBits}, ${premintUint256.highBits}))`);
-
-      c.addModuleFunction(
-        modules.ERC20,
-        `ERC20_mint`
-      );    
+      c.addConstructorCode(`ERC20._mint(recipient, Uint256(${premintUint256.lowBits}, ${premintUint256.highBits}))`); 
     } catch (e: any) {
       if (e instanceof NumberTooLarge) {
         throw new OptionsError({
@@ -223,17 +218,17 @@ function addMintable(c: ContractBuilder, access: Access) {
 const modules = defineModules( {
   ERC20: {
     path: 'openzeppelin/token/erc20/library',
-    usePrefix: true
+    useNamespace: true
   },
 
   syscalls: {
     path: 'starkware.starknet.common.syscalls',
-    usePrefix: false
+    useNamespace: false
   },
 
   bool: {
     path: 'starkware.cairo.common.bool',
-    usePrefix: false
+    useNamespace: false
   }
 })
 
@@ -269,6 +264,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'totalSupply', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'total_supply',
   },
 
   decimals: {
@@ -290,6 +286,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'balance', type: 'Uint256' }],
     passthrough: true,
+    parentFunctionName: 'balance_of',
   },
 
   allowance: {
@@ -329,6 +326,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'transfer_from',
   },
 
   approve: {
@@ -353,6 +351,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'increase_allowance',
   },
 
   decreaseAllowance: {
@@ -365,6 +364,7 @@ const functions = defineFunctions({
     ],
     returns: [{ name: 'success', type: 'felt' }],
     returnValue: 'TRUE',
+    parentFunctionName: 'decrease_allowance',
   },
 
   mint: {
@@ -375,6 +375,7 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'amount', type: 'Uint256' },
     ],
+    parentFunctionName: '_mint'
   },
 
   burn: {
@@ -384,6 +385,7 @@ const functions = defineFunctions({
     args: [
       { name: 'amount', type: 'Uint256' },
     ],
+    parentFunctionName: '_burn'
   },
 
 });
