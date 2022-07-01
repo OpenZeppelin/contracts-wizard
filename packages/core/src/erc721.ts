@@ -1,5 +1,5 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
@@ -56,6 +56,10 @@ export function printERC721(opts: ERC721Options = defaults): string {
   return printContract(buildERC721(opts));
 }
 
+export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+}
+
 export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
@@ -93,8 +97,8 @@ export function buildERC721(opts: ERC721Options): Contract {
     addVotes(c, allOpts.name);
   }
 
+  setAccessControl(c, access);
   setUpgradeable(c, upgradeable, access);
-
   setInfo(c, info);
 
   return c;
@@ -150,7 +154,7 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
   const fn = getMintFunction(incremental, uriStorage);
-  setAccessControl(c, fn, access, 'MINTER');
+  requireAccessControl(c, fn, access, 'MINTER');
 
   if (incremental) {
     c.addUsing({

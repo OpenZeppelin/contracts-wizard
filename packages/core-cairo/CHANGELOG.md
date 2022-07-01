@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Support Contracts for Cairo v0.2.0. ([#135](https://github.com/OpenZeppelin/contracts-wizard/pull/135))
 - Support custom contract type, optional access control. ([#140](https://github.com/OpenZeppelin/contracts-wizard/pull/140))
 
 ## 0.2.0 (2022-06-15)

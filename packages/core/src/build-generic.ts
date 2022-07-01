@@ -1,3 +1,4 @@
+import { CustomOptions, buildCustom } from './custom';
 import { ERC20Options, buildERC20 } from './erc20';
 import { ERC721Options, buildERC721 } from './erc721';
 import { ERC1155Options, buildERC1155 } from './erc1155';
@@ -8,6 +9,7 @@ export interface KindedOptions {
   ERC721:   { kind: 'ERC721' }   & ERC721Options;
   ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
   Governor: { kind: 'Governor' } & GovernorOptions;
+  Custom:  { kind: 'Custom' }  & CustomOptions;
 }
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];
@@ -25,6 +27,9 @@ export function buildGeneric(opts: GenericOptions) {
 
     case 'Governor':
       return buildGovernor(opts);
+
+    case 'Custom':
+      return buildCustom(opts);
 
     default:
       const _: never = opts;

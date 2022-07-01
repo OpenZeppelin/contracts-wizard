@@ -1,6 +1,6 @@
 import { withImplicitArgs } from './common-options';
 import { importHashBuiltin } from './utils/hash-builtin';
-import { getFunctionName, getImportName } from './utils/module-prefix';
+import { getImportName } from './utils/module-prefix';
 
 export interface Contract {
   license: string;

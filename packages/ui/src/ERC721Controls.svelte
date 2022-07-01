@@ -29,6 +29,8 @@
     wasMintable = opts.mintable;
     wasIncremental = opts.incremental;
   }
+
+  $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -110,7 +112,7 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} />
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
