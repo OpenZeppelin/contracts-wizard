@@ -14,10 +14,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let requireAccessControl: boolean;
-  $: {
-    requireAccessControl = custom.isAccessControlRequired(opts);
-  }
+  $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
