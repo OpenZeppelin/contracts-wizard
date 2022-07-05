@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add Role-Based Access Control. ([#147](https://github.com/OpenZeppelin/contracts-wizard/pull/147))
+
 ## 0.3.0 (2022-07-01)
 
 - Support Contracts for Cairo v0.2.0. ([#135](https://github.com/OpenZeppelin/contracts-wizard/pull/135))
