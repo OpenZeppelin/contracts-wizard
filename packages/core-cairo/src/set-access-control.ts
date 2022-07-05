@@ -2,6 +2,8 @@ import { withImplicitArgs } from './common-options';
 import type { ContractBuilder, BaseFunction } from './contract';
 import { defineFunctions } from './utils/define-functions';
 import { defineModules } from './utils/define-modules';
+import { keccak256 } from '@ethersproject/keccak256';
+import { toUtf8Bytes } from "@ethersproject/strings";
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
 
@@ -58,7 +60,10 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
 }
 
 export function to251BitHash(label: string): string {
-  return '0x' + label; //keccak256(Buffer.from(label)).toString('hex');
+  const hash = BigInt(keccak256(toUtf8Bytes(label)));
+  const bin = hash.toString(2).substring(0, 251);
+  const hex = BigInt('0b' + bin).toString(16)
+  return '0x' + hex;
 }
 
 const modules = defineModules( {
