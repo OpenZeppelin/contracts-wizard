@@ -24,8 +24,16 @@ export type Access = typeof accessOptions[number];
     }
     case 'roles': {
       if (c.addModule(modules.AccessControl)) {
+        importDefaultAdminRole(c);
+
         c.addConstructorArgument({ name: 'admin', type: 'felt'});
-        c.addConstructorCode('AccessControl._grant_role(DEFAULT_ADMIN_ROLE, admin)');  
+        c.addConstructorCode('AccessControl._grant_role(DEFAULT_ADMIN_ROLE, admin)');
+
+        c.addFunction(functions.hasRole);
+        c.addFunction(functions.getRoleAdmin);
+        c.addFunction(functions.grantRole);
+        c.addFunction(functions.revokeRole);
+        c.addFunction(functions.renounceRole);
       }
       break;
     }
@@ -66,6 +74,11 @@ export function to251BitHash(label: string): string {
   return '0x' + hex;
 }
 
+function importDefaultAdminRole(c: ContractBuilder) {
+  c.addModule(modules.constants, [], [], false);
+  c.addModuleFunction(modules.constants, 'DEFAULT_ADMIN_ROLE');
+}
+
 const modules = defineModules( {
   Ownable: {
     path: 'openzeppelin/access/ownable',
@@ -74,6 +87,10 @@ const modules = defineModules( {
   AccessControl: {
     path: 'openzeppelin/access/accesscontrol',
     useNamespace: true
+  },
+  constants: {
+    path: 'openzeppelin/utils/constants',
+    useNamespace: false
   }
 })
 
@@ -107,6 +124,64 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: 'renounce_ownership',
+  },
+
+  hasRole: {
+    module: modules.AccessControl,
+    kind: 'view' as const,
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'role', type: 'felt' },
+      { name: 'account', type: 'felt' },
+    ],
+    parentFunctionName: 'has_role',
+    returns: [{ name: 'has_role', type: 'felt' }],
+    passthrough: true,
+  },
+
+  getRoleAdmin: {
+    module: modules.AccessControl,
+    kind: 'view' as const,
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'role', type: 'felt' },
+    ],
+    parentFunctionName: 'get_role_admin',
+    returns: [{ name: 'admin', type: 'felt' }],
+    passthrough: true,
+  },
+
+  grantRole: {
+    module: modules.AccessControl,
+    kind: 'external' as const,
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'role', type: 'felt' },
+      { name: 'account', type: 'felt' },
+    ],
+    parentFunctionName: 'grant_role',
+  },
+
+  revokeRole: {
+    module: modules.AccessControl,
+    kind: 'external' as const,
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'role', type: 'felt' },
+      { name: 'account', type: 'felt' },
+    ],
+    parentFunctionName: 'revoke_role',
+  },
+
+  renounceRole: {
+    module: modules.AccessControl,
+    kind: 'external' as const,
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'role', type: 'felt' },
+      { name: 'account', type: 'felt' },
+    ],
+    parentFunctionName: 'renounce_role',
   },
 
 });
