@@ -25,10 +25,6 @@ export type Access = typeof accessOptions[number];
         c.addConstructorArgument({ name: 'admin', type: 'felt'});
         c.addConstructorCode('AccessControl._grant_role(DEFAULT_ADMIN_ROLE, admin)');  
       }
-      // if (c.addParent(parents.AccessControl)) {
-      //   c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);');
-      // }
-      // c.addOverride(parents.AccessControl.name, supportsInterface);
       break;
     }
   }
@@ -51,15 +47,18 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
     }
     case 'roles': {
       const roleId = role + '_ROLE';
-      // if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
-      //   c.addConstructorCode(`_grantRole(${roleId}, msg.sender);`);
-      // }
-      c.addConstructorCode(`AccessControl._grant_role(${roleId}, admin)`);
+      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)}`)) {
+        c.addConstructorCode(`AccessControl._grant_role(${roleId}, admin)`);
+      }
 
       c.addLibraryCall(functions.assert_only_role, fn, [roleId]);
       break;
     }
   }
+}
+
+export function to251BitHash(label: string): string {
+  return '0x' + label; //keccak256(Buffer.from(label)).toString('hex');
 }
 
 const modules = defineModules( {

@@ -38,6 +38,7 @@ export function printContract(contract: Contract): string {
       ozImports,
 
       spaceBetween(
+        contract.variables,
         printConstructor(contract, helpers),
         ...fns.code,
         ...fns.modifiers,
