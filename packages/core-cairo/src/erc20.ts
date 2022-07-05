@@ -222,7 +222,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access);
+  requireAccessControl(c, functions.mint, access, 'MINTER');
 }
 
 const modules = defineModules( {

@@ -35,6 +35,7 @@ export interface BaseFunction {
   name: string;
   implicitArgs?: Argument[];
   args: Argument[];
+  literalArgs?: string[];
   returns?: Argument[];
   returnValue?: string;
   kind?: FunctionKind;
@@ -44,9 +45,14 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  libraryCalls: BaseFunction[];
+  libraryCalls: LibraryCall[];
   code: string[];
   final: boolean;
+}
+
+export interface LibraryCall {
+  baseFn: BaseFunction;
+  literalArgs: string[];
 }
 
 export type FunctionKind = 'view' | 'external';
@@ -116,15 +122,13 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {
+  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction, literalArgs: string[] = []) {
     const fn = this.addFunction(baseFn);
     if (callFn.module !== undefined) {
       this.addModuleFunction(callFn.module, getImportName(callFn));
     }
-    if (callFn.args.length > 0) {
-      throw new Error(`Library call with functions is not supported yet`);
-    }
-    fn.libraryCalls.push(callFn);
+    const libraryCall: LibraryCall = { baseFn: callFn, literalArgs };
+    fn.libraryCalls.push(libraryCall);
   }
 
   addFunction(baseFn: BaseFunction): ContractFunction {

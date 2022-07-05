@@ -184,9 +184,11 @@ function printFunction(fn: ContractFunction): Lines[] {
 
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
 
-  fn.libraryCalls.forEach(callFn => {
-    const libraryCall = `${getFunctionName(callFn)}()`;
-    code.push(libraryCall);
+  fn.libraryCalls.forEach(libraryCall => {
+    const libraryCallString = libraryCall.literalArgs ? 
+      `${getFunctionName(libraryCall.baseFn)}(${libraryCall.literalArgs.join(', ')})`:
+      `${getFunctionName(libraryCall.baseFn)}()`;
+    code.push(libraryCallString);
   });
 
   if (!fn.final && fn.module !== undefined) {

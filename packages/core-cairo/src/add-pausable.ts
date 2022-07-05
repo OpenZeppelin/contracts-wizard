@@ -13,8 +13,8 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 
   c.addFunction(functions.paused);
 
-  requireAccessControl(c, functions.pause, access);
-  requireAccessControl(c, functions.unpause, access);
+  requireAccessControl(c, functions.pause, access, 'PAUSER');
+  requireAccessControl(c, functions.unpause, access, 'PAUSER');
 }
 
 const modules = defineModules( {

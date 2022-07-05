@@ -124,7 +124,7 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.safeMint, access);
+  requireAccessControl(c, functions.safeMint, access, 'MINTER');
   c.setFunctionBody(
     [
       'ERC721._safe_mint(to, tokenId, data_len, data)', 
