@@ -98,6 +98,7 @@ testAPIEquivalence('erc20 API full upgradeable', {
   symbol: 'CTK',
   premint: '2000',
   decimals: '9',
+  access: 'roles',
   burnable: true,
   mintable: true,
   pausable: true,
