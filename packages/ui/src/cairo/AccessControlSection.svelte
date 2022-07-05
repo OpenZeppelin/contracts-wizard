@@ -10,7 +10,7 @@
 
   let wasRequired = required;
   let wasAccess = access;
-  
+
   $: {
     if (wasRequired && !required) {
       access = wasAccess;
@@ -55,7 +55,7 @@
     <label class:checked={access === 'roles'}>
       <input type="radio" bind:group={access} value="roles">
       Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/access#AccessControl">
+      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Access.md#accesscontrol">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
