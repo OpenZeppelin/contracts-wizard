@@ -132,7 +132,7 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
-      { name: 'account', type: 'felt' },
+      { name: 'user', type: 'felt' },
     ],
     parentFunctionName: 'has_role',
     returns: [{ name: 'has_role', type: 'felt' }],
@@ -157,7 +157,7 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
-      { name: 'account', type: 'felt' },
+      { name: 'user', type: 'felt' },
     ],
     parentFunctionName: 'grant_role',
   },
@@ -168,7 +168,7 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
-      { name: 'account', type: 'felt' },
+      { name: 'user', type: 'felt' },
     ],
     parentFunctionName: 'revoke_role',
   },
@@ -179,7 +179,7 @@ const functions = defineFunctions({
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
-      { name: 'account', type: 'felt' },
+      { name: 'user', type: 'felt' },
     ],
     parentFunctionName: 'renounce_role',
   },
