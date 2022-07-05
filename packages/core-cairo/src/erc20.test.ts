@@ -41,6 +41,11 @@ testERC20('erc20 pausable', {
   access: 'ownable',
 });
 
+testERC20('erc20 pausable with roles', {
+  pausable: true,
+  access: 'roles',
+});
+
 testERC20('erc20 burnable pausable', {
   burnable: true,
   pausable: true,
@@ -59,9 +64,15 @@ testERC20('erc20 mintable', {
   access: 'ownable',
 });
 
+testERC20('erc20 mintable with roles', {
+  mintable: true,
+  access: 'roles',
+});
+
 testERC20('erc20 full upgradeable', {
   premint: '2000',
   decimals: '9',
+  access: 'ownable',
   burnable: true,
   mintable: true,
   pausable: true,
