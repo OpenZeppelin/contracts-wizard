@@ -30,7 +30,6 @@
   "dependencies": {
     "array.prototype.flatmap": "^1.2.4",
     "bn.js": "^5.2.0",
-    "@ethersproject/keccak256": "^5.6.1",
-    "@ethersproject/strings": "^5.6.1"
+    "ethereum-cryptography": "^1.1.0"
   }
 }
