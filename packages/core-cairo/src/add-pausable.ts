@@ -28,7 +28,7 @@ const functions = defineFunctions({
 
   paused: {
     module: modules.Pausable,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [],
     returns: [{ name: 'paused', type: 'felt' }],
@@ -38,7 +38,7 @@ const functions = defineFunctions({
 
   pause: {
     module: modules.Pausable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: '_pause',
@@ -46,7 +46,7 @@ const functions = defineFunctions({
 
   unpause: {
     module: modules.Pausable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: '_unpause',

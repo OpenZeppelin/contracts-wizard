@@ -110,7 +110,7 @@ const functions = defineFunctions({
 
   transferOwnership: {
     module: modules.Ownable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'newOwner', type: 'felt' },
@@ -120,7 +120,7 @@ const functions = defineFunctions({
 
   renounceOwnership: {
     module: modules.Ownable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: 'renounce_ownership',
@@ -128,7 +128,7 @@ const functions = defineFunctions({
 
   hasRole: {
     module: modules.AccessControl,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
@@ -141,7 +141,7 @@ const functions = defineFunctions({
 
   getRoleAdmin: {
     module: modules.AccessControl,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
@@ -153,7 +153,7 @@ const functions = defineFunctions({
 
   grantRole: {
     module: modules.AccessControl,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
@@ -164,7 +164,7 @@ const functions = defineFunctions({
 
   revokeRole: {
     module: modules.AccessControl,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
@@ -175,7 +175,7 @@ const functions = defineFunctions({
 
   renounceRole: {
     module: modules.AccessControl,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'role', type: 'felt' },
