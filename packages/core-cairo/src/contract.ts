@@ -36,7 +36,6 @@ export interface BaseFunction {
   name: string;
   implicitArgs?: Argument[];
   args: Argument[];
-  literalArgs?: string[];
   returns?: Argument[];
   returnValue?: string;
   kind?: FunctionKind;
@@ -52,8 +51,8 @@ export interface ContractFunction extends BaseFunction {
 }
 
 export interface LibraryCall {
-  baseFn: BaseFunction;
-  literalArgs: string[];
+  callFn: BaseFunction;
+  args: string[];
 }
 
 export type FunctionKind = 'view' | 'external';
@@ -128,12 +127,12 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction, literalArgs: string[] = []) {
+  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction, args: string[] = []) {
     const fn = this.addFunction(baseFn);
     if (callFn.module !== undefined) {
       this.addModuleFunction(callFn.module, getImportName(callFn));
     }
-    const libraryCall: LibraryCall = { baseFn: callFn, literalArgs };
+    const libraryCall: LibraryCall = { callFn, args };
     fn.libraryCalls.push(libraryCall);
   }
 

@@ -186,9 +186,7 @@ function printFunction(fn: ContractFunction): Lines[] {
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
 
   fn.libraryCalls.forEach(libraryCall => {
-    const libraryCallString = libraryCall.literalArgs ? 
-      `${getFunctionName(libraryCall.baseFn)}(${libraryCall.literalArgs.join(', ')})`:
-      `${getFunctionName(libraryCall.baseFn)}()`;
+    const libraryCallString = `${getFunctionName(libraryCall.callFn)}(${libraryCall.args.join(', ')})`;
     code.push(libraryCallString);
   });
 
