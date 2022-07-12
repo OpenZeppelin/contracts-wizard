@@ -6,11 +6,10 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  const defaultValueWhenEnabled = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
-
   $: {
     if (wasRequired && !required) {
       access = wasAccess;
@@ -22,11 +21,7 @@
     } else {
       wasAccess = access;
     }
-
     wasRequired = required;
-    if (access !== false) {
-      defaultValueWhenEnabled = access;
-    }
   }
 </script>
 
@@ -50,13 +45,6 @@
       Ownable
       <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Access.md#ownable">
         Simple mechanism with a single account authorized for all privileged actions.
-      </HelpTooltip>
-    </label>
-    <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles">
-      Roles
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Access.md#accesscontrol">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
   </div>

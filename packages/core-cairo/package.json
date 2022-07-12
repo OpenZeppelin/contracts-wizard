@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "array.prototype.flatmap": "^1.2.4",
-    "bn.js": "^5.2.0",
-    "ethereum-cryptography": "^1.1.0"
+    "bn.js": "^5.2.0"
   }
 }

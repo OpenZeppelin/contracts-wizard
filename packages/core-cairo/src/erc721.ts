@@ -124,7 +124,7 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.safeMint, access, 'MINTER');
+  requireAccessControl(c, functions.safeMint, access);
   c.setFunctionBody(
     [
       'ERC721._safe_mint(to, tokenId, data_len, data)', 
@@ -152,7 +152,7 @@ const functions = defineFunctions({
 
   supportsInterface: {
     module: modules.ERC165,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'interfaceId', type: 'felt' },
@@ -164,7 +164,7 @@ const functions = defineFunctions({
 
   name: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -174,7 +174,7 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -184,7 +184,7 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'owner', type: 'felt' },
@@ -196,7 +196,7 @@ const functions = defineFunctions({
 
   ownerOf: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'token_id', type: 'Uint256' },
@@ -208,7 +208,7 @@ const functions = defineFunctions({
 
   getApproved: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'token_id', type: 'Uint256' },
@@ -220,7 +220,7 @@ const functions = defineFunctions({
 
   isApprovedForAll: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'owner', type: 'felt' },
@@ -233,7 +233,7 @@ const functions = defineFunctions({
 
   tokenURI: {
     module: modules.ERC721,
-    kind: 'view',
+    kind: 'view' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'tokenId', type: 'Uint256' },
@@ -247,7 +247,7 @@ const functions = defineFunctions({
 
   approve: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'to', type: 'felt' },
@@ -257,7 +257,7 @@ const functions = defineFunctions({
 
   setApprovalForAll: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'operator', type: 'felt' },
@@ -268,7 +268,7 @@ const functions = defineFunctions({
 
   transferFrom: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'from_', type: 'felt' },
@@ -280,7 +280,7 @@ const functions = defineFunctions({
 
   safeTransferFrom: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'from_', type: 'felt' },
@@ -294,7 +294,7 @@ const functions = defineFunctions({
 
   safeMint: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'to', type: 'felt' },
@@ -308,7 +308,7 @@ const functions = defineFunctions({
   
   burn: {
     module: modules.ERC721,
-    kind: 'external',
+    kind: 'external' as const,
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'tokenId', type: 'Uint256' },

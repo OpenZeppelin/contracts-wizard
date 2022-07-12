@@ -9,7 +9,6 @@ export interface Contract {
   constructorCode: string[];
   constructorImplicitArgs?: Argument[];
   constructorArgs: Argument[];
-  variables: string[];
   upgradeable: boolean; 
 }
 
@@ -45,14 +44,9 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  libraryCalls: LibraryCall[];
+  libraryCalls: BaseFunction[];
   code: string[];
   final: boolean;
-}
-
-export interface LibraryCall {
-  callFn: BaseFunction;
-  args: string[];
 }
 
 export type FunctionKind = 'view' | 'external';
@@ -73,7 +67,6 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
   private librariesMap: Map<Module, Library> = new Map<Module, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
@@ -85,10 +78,6 @@ export class ContractBuilder implements Contract {
 
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
-  }
-
-  get variables(): string[] {
-    return [...this.variableSet];
   }
 
   addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
@@ -127,13 +116,15 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction, args: string[] = []) {
+  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     if (callFn.module !== undefined) {
       this.addModuleFunction(callFn.module, getImportName(callFn));
     }
-    const libraryCall: LibraryCall = { callFn, args };
-    fn.libraryCalls.push(libraryCall);
+    if (callFn.args.length > 0) {
+      throw new Error(`Library call with functions is not supported yet`);
+    }
+    fn.libraryCalls.push(callFn);
   }
 
   addFunction(baseFn: BaseFunction): ContractFunction {
@@ -187,9 +178,4 @@ export class ContractBuilder implements Contract {
     fn.final = true;
   }
 
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
-    return !present;
-  }
 }
