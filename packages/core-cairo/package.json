@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-cairo",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Cairo",
   "license": "MIT",
   "repository": "github:OpenZeppelin/contracts-wizard",
