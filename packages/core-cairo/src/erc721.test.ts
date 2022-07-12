@@ -43,6 +43,11 @@ testERC721('mintable', {
   mintable: true,
 });
 
+testERC721('mintable + roles', {
+  mintable: true,
+  access: 'roles',
+});
+
 testERC721('full upgradeable', {
   mintable: true,
   pausable: true,

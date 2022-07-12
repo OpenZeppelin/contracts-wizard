@@ -38,6 +38,7 @@ export function printContract(contract: Contract): string {
       ozImports,
 
       spaceBetween(
+        contract.variables,
         printConstructor(contract, helpers),
         ...fns.code,
         ...fns.modifiers,
@@ -184,9 +185,9 @@ function printFunction(fn: ContractFunction): Lines[] {
 
   const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
 
-  fn.libraryCalls.forEach(callFn => {
-    const libraryCall = `${getFunctionName(callFn)}()`;
-    code.push(libraryCall);
+  fn.libraryCalls.forEach(libraryCall => {
+    const libraryCallString = `${getFunctionName(libraryCall.callFn)}(${libraryCall.args.join(', ')})`;
+    code.push(libraryCallString);
   });
 
   if (!fn.final && fn.module !== undefined) {

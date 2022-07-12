@@ -35,7 +35,7 @@ const modules = defineModules( {
 const functions = defineFunctions({
 
   upgrade: {
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'new_implementation', type: 'felt' },

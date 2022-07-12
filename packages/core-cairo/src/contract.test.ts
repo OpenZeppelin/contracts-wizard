@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { ContractBuilder } from './contract';
+import { BaseFunction, ContractBuilder } from './contract';
 import { printContract } from './print';
 
 test('contract basics', t => {
@@ -49,15 +49,15 @@ const someModule = {
   useNamespace: true
 };
 
-const _otherFunction = {
+const _otherFunction: BaseFunction = {
   name: 'otherFunction',
-  kind: 'external' as const,
+  kind: 'external',
   args: [],
 };
 
-const _libraryFunction = {
+const _libraryFunction: BaseFunction = {
   module: someModule,
   name: 'libraryFunction',
-  kind: 'external' as const,
+  kind: 'external',
   args: [],
 };
