@@ -12,6 +12,7 @@ const blueprint = {
   baseUri: ['https://example.com/'],
   enumerable: booleans,
   uriStorage: booleans,
+  royalty: booleans,
   burnable: booleans,
   pausable: booleans,
   mintable: booleans,

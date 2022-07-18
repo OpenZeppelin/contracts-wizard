@@ -3,11 +3,11 @@
 
   import type { KindedOptions } from '@openzeppelin/wizard';
   import { erc721, infoDefaults } from '@openzeppelin/wizard';
-  
+
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  
+
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
     ...erc721.defaults,
@@ -107,6 +107,13 @@
       URI Storage
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721URIStorage">
         Allows updating token URIs for individual token IDs.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.royalty}>
+      <input type="checkbox" bind:checked={opts.royalty}>
+      Royalties
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Royalty">
+        Allows settings royalites on token transfers.
       </HelpTooltip>
     </label>
   </div>

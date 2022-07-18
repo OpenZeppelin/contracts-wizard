@@ -14,6 +14,7 @@ export interface ERC721Options extends CommonOptions {
   baseUri?: string;
   enumerable?: boolean;
   uriStorage?: boolean;
+  royalty?: boolean;
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
@@ -27,6 +28,7 @@ export const defaults: Required<ERC721Options> = {
   baseUri: '',
   enumerable: false,
   uriStorage: false,
+  royalty: false,
   burnable: false,
   pausable: false,
   mintable: false,
@@ -44,6 +46,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     baseUri: opts.baseUri ?? defaults.baseUri,
     enumerable: opts.enumerable ?? defaults.enumerable,
     uriStorage: opts.uriStorage ?? defaults.uriStorage,
+    royalty: opts.royalty ?? defaults.royalty,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
@@ -81,6 +84,10 @@ export function buildERC721(opts: ERC721Options): Contract {
     addURIStorage(c);
   }
 
+  if (allOpts.royalty) {
+    addRoyalty(c, access);
+  }
+
   if (allOpts.pausable) {
     addPausable(c, access, [functions._beforeTokenTransfer]);
   }
@@ -90,7 +97,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.royalty);
   }
 
   if (allOpts.votes) {
@@ -145,6 +152,16 @@ function addURIStorage(c: ContractBuilder) {
   c.addOverride('ERC721URIStorage', functions.tokenURI);
 }
 
+function addRoyalty(c: ContractBuilder, access: Access) {
+  c.addParent({
+    name: 'ERC721Royalty',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol',
+  });
+
+  c.addOverride('ERC721Royalty', supportsInterface);
+  c.addOverride('ERC721Royalty', functions._burn);
+}
+
 function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC721Burnable',
@@ -152,8 +169,8 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
-  const fn = getMintFunction(incremental, uriStorage);
+function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, royalty = false) {
+  const fn = getMintFunction(incremental, uriStorage, royalty);
   requireAccessControl(c, fn, access, 'MINTER');
 
   if (incremental) {
@@ -171,6 +188,10 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
 
   if (uriStorage) {
     c.addFunctionCode('_setTokenURI(tokenId, uri);', fn);
+  }
+
+  if (royalty) {
+    c.addFunctionCode('_setTokenRoyalty(tokenId, receiver, fee);', fn);
   }
 }
 
@@ -233,7 +254,7 @@ const functions = defineFunctions({
   },
 });
 
-function getMintFunction(incremental: boolean, uriStorage: boolean) {
+function getMintFunction(incremental: boolean, uriStorage: boolean, royalty: boolean) {
   const fn = {
     name: 'safeMint',
     kind: 'public' as const,
@@ -248,6 +269,11 @@ function getMintFunction(incremental: boolean, uriStorage: boolean) {
 
   if (uriStorage) {
     fn.args.push({ name: 'uri', type: 'string memory' });
+  }
+
+  if (royalty) {
+    fn.args.push({ name: 'receiver', type: 'address' });
+    fn.args.push({ name: 'fee', type: 'uint256' });
   }
 
   return fn;
