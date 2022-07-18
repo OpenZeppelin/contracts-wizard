@@ -222,7 +222,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access);
+  requireAccessControl(c, functions.mint, access, 'MINTER');
 }
 
 const modules = defineModules( {
@@ -248,7 +248,7 @@ const functions = defineFunctions({
 
   name: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -258,7 +258,7 @@ const functions = defineFunctions({
 
   symbol: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -268,7 +268,7 @@ const functions = defineFunctions({
 
   totalSupply: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -279,7 +279,7 @@ const functions = defineFunctions({
 
   decimals: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
     ],
@@ -289,7 +289,7 @@ const functions = defineFunctions({
 
   balanceOf: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'account', type: 'felt' },
@@ -301,7 +301,7 @@ const functions = defineFunctions({
 
   allowance: {
     module: modules.ERC20,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'owner', type: 'felt' },
@@ -315,7 +315,7 @@ const functions = defineFunctions({
 
   transfer: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'recipient', type: 'felt' },
@@ -327,7 +327,7 @@ const functions = defineFunctions({
 
   transferFrom: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'sender', type: 'felt' },
@@ -341,7 +341,7 @@ const functions = defineFunctions({
 
   approve: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'spender', type: 'felt' },
@@ -353,7 +353,7 @@ const functions = defineFunctions({
 
   increaseAllowance: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'spender', type: 'felt' },
@@ -366,7 +366,7 @@ const functions = defineFunctions({
 
   decreaseAllowance: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'spender', type: 'felt' },
@@ -379,7 +379,7 @@ const functions = defineFunctions({
 
   mint: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'to', type: 'felt' },
@@ -390,7 +390,7 @@ const functions = defineFunctions({
 
   burn: {
     module: modules.ERC20,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
       { name: 'amount', type: 'Uint256' },

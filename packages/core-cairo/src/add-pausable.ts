@@ -13,8 +13,8 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
 
   c.addFunction(functions.paused);
 
-  requireAccessControl(c, functions.pause, access);
-  requireAccessControl(c, functions.unpause, access);
+  requireAccessControl(c, functions.pause, access, 'PAUSER');
+  requireAccessControl(c, functions.unpause, access, 'PAUSER');
 }
 
 const modules = defineModules( {
@@ -28,7 +28,7 @@ const functions = defineFunctions({
 
   paused: {
     module: modules.Pausable,
-    kind: 'view' as const,
+    kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [],
     returns: [{ name: 'paused', type: 'felt' }],
@@ -38,7 +38,7 @@ const functions = defineFunctions({
 
   pause: {
     module: modules.Pausable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: '_pause',
@@ -46,7 +46,7 @@ const functions = defineFunctions({
 
   unpause: {
     module: modules.Pausable,
-    kind: 'external' as const,
+    kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [],
     parentFunctionName: '_unpause',

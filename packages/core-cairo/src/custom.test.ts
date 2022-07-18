@@ -42,6 +42,10 @@ testCustom('access control ownable', {
   access: 'ownable',
 });
 
+testCustom('access control roles', {
+  access: 'roles',
+});
+
 testCustom('pausable with access control disabled', {
   // API should override access to true since it is required for pausable
   access: false,
@@ -51,7 +55,7 @@ testCustom('pausable with access control disabled', {
 testAPIEquivalence('custom API default');
 
 testAPIEquivalence('custom API full upgradeable', {
-  access: 'ownable',
+  access: 'roles',
   pausable: true,
   upgradeable: true,
 });
