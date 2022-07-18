@@ -1,4 +1,3 @@
-import type {} from 'highlight.js';
 import hljs from 'highlight.js/lib/core';
 
 // @ts-ignore
