@@ -273,7 +273,7 @@ function getMintFunction(incremental: boolean, uriStorage: boolean, royalty: boo
 
   if (royalty) {
     fn.args.push({ name: 'receiver', type: 'address' });
-    fn.args.push({ name: 'fee', type: 'uint256' });
+    fn.args.push({ name: 'fee', type: 'uint96' });
   }
 
   return fn;
