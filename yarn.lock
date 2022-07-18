@@ -2477,6 +2477,13 @@ highlight.js@^11.0.0:
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.5.1.tgz#027c24e4509e2f4dcd00b4a6dda542ce0a1f7aea"
   integrity sha512-LKzHqnxr4CrD2YsNoIf/o5nJ09j4yi/GcH5BnYz9UnVpZdS4ucMgvP61TDty5xJcFGRjnH4DpujkS9bHT3hq0Q==
 
+highlightjs-cairo@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/highlightjs-cairo/-/highlightjs-cairo-0.1.0.tgz#64c7a94d70513ed1bee72a1e7152f57baffb0a76"
+  integrity sha512-PYnLSgSokPIhaCShTAxdhlJdTLR/4ll2U2ikMimqOmi0NBH7J3Up2Nl1kJhqqCrXb4m4xrTlHTf61tEjf5juCQ==
+  dependencies:
+    highlight.js "^11.0.0"
+
 highlightjs-solidity@^2.0.0:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/highlightjs-solidity/-/highlightjs-solidity-2.0.5.tgz#48b945f41886fa49af9f06023e6e87fffc243745"
