@@ -14,13 +14,11 @@
   $: {
     if (wasRequired && !required) {
       access = wasAccess;
-    } else if (!wasRequired && required) {
-      wasAccess = access;
-      if (access === false) {
-        access = defaultValueWhenEnabled;
-      }
     } else {
       wasAccess = access;
+      if (access === false && required) {
+        access = defaultValueWhenEnabled;
+      }
     }
 
     wasRequired = required;
