@@ -119,7 +119,22 @@ body {
 .header img {
   margin: 0 2rem 0;
 }
-.header a.solidity,
+.header a.solidity {
+  display: block;
+  background: linear-gradient(to right, #51d4ff, #4e5de4);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: white;
+  font-weight: normal;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  width: fit-content;
+  margin: 0.5rem;
+  border: 1px solid white;
+  border-radius: 0.5rem;
+}
 .header a.solidity_off:hover,
 .header a.solidity_off:focus {
   display: block;
@@ -136,6 +151,7 @@ body {
   margin: 0.5rem;
   border: 1px solid white;
   border-radius: 0.5rem;
+  opacity: 75%;
 }
 .header a.solidity_off {
   font-size: 1.1rem;
@@ -153,7 +169,22 @@ body {
   border: 1px solid #49a5fa;
   border-radius: 0.5rem;
 }
-.header a.cairo,
+.header a.cairo {
+  display: block;
+  background: linear-gradient(to left, #f6863c, #e55233);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: white;
+  font-weight: normal;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  width: fit-content;
+  margin: 0.5rem;
+  border: 1px solid white;
+  border-radius: 0.5rem;
+}
 .header a.cairo_off:hover,
 .header a.cairo_off:focus {
   display: block;
@@ -170,6 +201,7 @@ body {
   margin: 0.5rem;
   border: 1px solid white;
   border-radius: 0.5rem;
+  opacity: 75%;
 }
 .header a.cairo_off {
   font-size: 1.1rem;
