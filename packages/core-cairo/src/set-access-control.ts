@@ -81,15 +81,15 @@ function importDefaultAdminRole(c: ContractBuilder) {
 
 const modules = defineModules( {
   Ownable: {
-    path: 'openzeppelin/access/ownable',
+    path: 'openzeppelin.access.ownable.library',
     useNamespace: true
   },
   AccessControl: {
-    path: 'openzeppelin/access/accesscontrol',
+    path: 'openzeppelin.access.accesscontrol.library',
     useNamespace: true
   },
   constants: {
-    path: 'openzeppelin/utils/constants',
+    path: 'openzeppelin.utils.constants.library',
     useNamespace: false
   }
 })
