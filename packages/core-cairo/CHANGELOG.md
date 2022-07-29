@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update directory structure for libraries. ([#157](https://github.com/OpenZeppelin/contracts-wizard/pull/157))
+
 ## 0.3.1 (2022-07-12)
 
 - Add Role-Based Access Control. ([#147](https://github.com/OpenZeppelin/contracts-wizard/pull/147))
