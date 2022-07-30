@@ -73,7 +73,8 @@
       e.preventDefault();
       if ((e.target as Element)?.classList.contains('disabled')) return;
       const versionedCode = printContractVersioned(contract);
-      window.open(remixURL(versionedCode).toString(), '_blank');
+      const upgradeable = !!opts?.upgradeable;
+      window.open(remixURL(versionedCode, upgradeable).toString(), '_blank');
       if (opts) {
         await postConfig(opts, 'remix', language);
       }
@@ -128,15 +129,29 @@
         Copy to Clipboard
       </button>
 
-      <Tooltip let:trigger disabled={!opts?.upgradeable} theme="light-red border" interactive hideOnClick={false}>
-        <button use:trigger class="action-button" class:disabled={opts?.upgradeable} on:click={remixHandler}>
+      <Tooltip
+        let:trigger
+        disabled={!(opts?.upgradeable === "transparent")}
+        theme="light-red border"
+        hideOnClick={false}
+        interactive
+      >
+        <button
+          use:trigger
+          class="action-button"
+          class:disabled={opts?.upgradeable === "transparent"}
+          on:click={remixHandler}
+        >
           <RemixIcon />
           Open in Remix
         </button>
         <div slot="content">
-          Upgradeable contracts are not supported on Remix.
-          Use Hardhat or Truffle with <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
-          <br>
+          Transparent upgradeable contracts are not supported on Remix.
+          Try using Remix with UUPS upgradability or use Hardhat or Truffle with <a
+            href="https://docs.openzeppelin.com/upgrades-plugins/"
+            target="_blank">OpenZeppelin Upgrades</a
+          >.
+          <br />
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
         </div>
