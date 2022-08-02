@@ -73,8 +73,7 @@
       e.preventDefault();
       if ((e.target as Element)?.classList.contains('disabled')) return;
       const versionedCode = printContractVersioned(contract);
-      const upgradeable = !!opts?.upgradeable;
-      window.open(remixURL(versionedCode, upgradeable).toString(), '_blank');
+      window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank');
       if (opts) {
         await postConfig(opts, 'remix', language);
       }
