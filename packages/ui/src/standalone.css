@@ -1,3 +1,4 @@
+@tailwind utilities;
 @import "styles/vars.css";
 
 body {
@@ -87,6 +88,18 @@ body {
 .header .switch.switch-cairo {
   --color-1: var(--cairo-orange-1);
   --color-2: var(--cairo-orange-2);
+}
+
+.header .link {
+  color: var(--text-color);
+  display: block;
+  background: white;
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 1rem 1rem;
+  width: fit-content;
 }
 
 /* Wizard */
