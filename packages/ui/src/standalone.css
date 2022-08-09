@@ -141,7 +141,6 @@ body {
 .header .switch.switch-off:not(:hover, :focus) {
   color: transparent;
   background-clip: text;
-  -webkit-background-clip: text;
   box-shadow: 0 0 0 1px var(--color-2) inset;
 }
 
