@@ -1,3 +1,5 @@
+@import "styles/vars.css";
+
 body {
   background: #f9fafb;
   font-family: Helvetica, Arial, sans-serif;
@@ -121,8 +123,8 @@ body {
 }
 
 .header .switch {
-  --color-1: #51d4ff;
-  --color-2: #4e5de4;
+  --color-1: var(--solidity-blue-1);
+  --color-2: var(--solidity-blue-2);
   display: block;
   background: linear-gradient(to right, var(--color-1), var(--color-2));
   font-size: 1.1rem;
@@ -145,13 +147,13 @@ body {
 }
 
 .header .switch.switch-solidity {
-  --color-1: #51d4ff;
-  --color-2: #4e5de4;
+  --color-1: var(--solidity-blue-1);
+  --color-2: var(--solidity-blue-2);
 }
 
 .header .switch.switch-cairo {
-  --color-1: #f6863c;
-  --color-2: #e55233;
+  --color-1: var(--cairo-orange-1);
+  --color-2: var(--cairo-orange-2);
 }
 
 /* Wizard */

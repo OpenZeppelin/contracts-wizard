@@ -174,7 +174,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--red-3);
+    background-color: var(--cairo-orange-2);
     color: white;
     order: -1;
   }
