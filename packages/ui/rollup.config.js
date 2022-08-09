@@ -43,6 +43,27 @@ function onStartRun(cmd, ...args) {
 /** @type import('rollup').RollupOptions */
 export default [
   {
+    input: 'src/standalone.js',
+    output: {
+      dir: 'public/build',
+      assetFileNames: '[name][extname]',
+      sourcemap: true,
+    },
+    onwarn(warning, warn) {
+      if (warning.code !== 'EMPTY_BUNDLE') {
+        warn(warning);
+      }
+    },
+    plugins: [
+      styles({
+        include: 'src/standalone.css',
+        mode: ['extract'],
+        url: false,
+        sourceMap: true,
+      }),
+    ],
+  },
+  {
     input: 'src/embed.ts',
     output: {
       sourcemap: true,
