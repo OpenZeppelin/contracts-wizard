@@ -51,6 +51,7 @@ body {
   background: white;
   display: flex;
   flex-direction: row;
+  min-width: 800px;
 }
 .header img {
   margin: 0 2rem 0;
@@ -97,9 +98,9 @@ body {
   background: white;
   font-size: 1rem;
   line-height: 1;
-  font-weight: bold;
+  font-weight: 500;
   text-decoration: none;
-  padding: 1rem 1rem;
+  padding: 1rem 0.5rem;
   width: fit-content;
 }
 
