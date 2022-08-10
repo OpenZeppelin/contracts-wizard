@@ -106,7 +106,7 @@ body {
 
 /* Wizard */
 .wizard-container {
-  padding: 0 1rem 3rem;
+  padding: 0 1rem 1.5rem;
   max-width: 100%;
   margin: -12rem auto 0;
 }
