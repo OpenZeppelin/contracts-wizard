@@ -9,6 +9,7 @@ import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { importUint256 } from './utils/uint256';
+import { addSupportsInterface } from './common-functions';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -96,13 +97,6 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
-function addSupportsInterface(c: ContractBuilder) {
-  c.addModule(
-    modules.ERC165, [], [], false
-  );
-  c.addFunction(functions.supportsInterface);
-}
-
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addModule(
     modules.ERC721,
@@ -135,32 +129,15 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 const modules = defineModules( {
-  ERC165: {
-    path: 'openzeppelin.introspection.erc165.library',
-    useNamespace: true
-  },
-
   ERC721: {
     path: 'openzeppelin.token.erc721.library',
     useNamespace: true
   },
-})
+});
 
 const functions = defineFunctions({
 
   // --- view functions ---
-
-  supportsInterface: {
-    module: modules.ERC165,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'interfaceId', type: 'felt' },
-    ],
-    returns: [{ name: 'success', type: 'felt' }],
-    passthrough: true,
-    parentFunctionName: 'supports_interface',
-  },
 
   name: {
     module: modules.ERC721,
