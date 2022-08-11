@@ -46,7 +46,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
-  return opts.mintable === true || opts.pausable === true;
+  return opts.mintable || opts.pausable || opts.updatableUri !== false;
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
