@@ -16,6 +16,7 @@ export const defaults: Required<ERC1155Options> = {
   burnable: false,
   pausable: false,
   mintable: false,
+  updatableUri: true,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -30,6 +31,7 @@ export interface ERC1155Options extends CommonOptions {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  updatableUri?: boolean;
 }
 
 function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
@@ -39,6 +41,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
+    updatableUri: opts.updatableUri ?? defaults.updatableUri,
   };
 }
 
@@ -58,16 +61,14 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   c.addFunction(functions.balanceOf);
   c.addFunction(functions.balanceOfBatch);
   c.addFunction(functions.isApprovedForAll);
-  c.addFunction(functions.owner);
 
-  c.addFunction(functions.setURI);
+  if (allOpts.updatableUri) {
+    addSetUri(c, allOpts.access);
+  }
+
   c.addFunction(functions.setApprovalForAll);
   c.addFunction(functions.safeTransferFrom);
   c.addFunction(functions.safeBatchTransferFrom);
-  c.addFunction(functions.mint);
-  c.addFunction(functions.mintBatch);
-  c.addFunction(functions.burn);
-  c.addFunction(functions.burnBatch);
 
   importUint256(c);
 
@@ -163,6 +164,11 @@ function addMintable(c: ContractBuilder, access: Access) {
   );
 }
 
+function addSetUri(c: ContractBuilder, access: Access) {
+  c.addFunction(functions.setURI);
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER');
+}
+
 const modules = defineModules( {
   ERC1155: {
     path: 'openzeppelin.token.erc1155.library',
@@ -225,16 +231,6 @@ const functions = defineFunctions({
     returns: [{ name: 'isApproved', type: 'felt' }],
     passthrough: true,
     parentFunctionName: 'is_approved_for_all',
-  },
-
-  owner: {
-    module: modules.ERC1155,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    returns: [{ name: 'owner', type: 'felt' }],
-    passthrough: true,
-    parentFunctionName: 'owner',
   },
 
   // --- external functions ---

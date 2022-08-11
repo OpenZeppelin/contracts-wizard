@@ -32,6 +32,10 @@ testERC1155('basic + roles', {
   access: 'roles',
 });
 
+testERC1155('no updatable uri', {
+  updatableUri: false,
+});
+
 testERC1155('burnable', {
   burnable: true,
 });
@@ -75,7 +79,10 @@ test('API assert defaults', async t => {
 });
 
 test('API isAccessControlRequired', async t => {
-  t.is(erc1155.isAccessControlRequired({ mintable: true }), true);
-  t.is(erc1155.isAccessControlRequired({ pausable: true }), true);
-  t.is(erc1155.isAccessControlRequired({ upgradeable: true }), false);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, mintable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, pausable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, upgradeable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: true }), true);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false}), false);
+  t.is(erc1155.isAccessControlRequired({}), true); // updatableUri is true by default
 });

@@ -5,6 +5,7 @@
 
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
+    import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
@@ -84,6 +85,9 @@
         <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
           ERC721
         </button>
+        <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
+          ERC1155
+        </button>
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -120,6 +124,9 @@
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
+      </div>
+      <div class:hidden={tab !== 'ERC1155'}>
+        <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
