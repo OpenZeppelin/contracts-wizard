@@ -10,10 +10,22 @@ export function addSupportsInterface(c: ContractBuilder) {
   c.addFunction(functions.supportsInterface);
 }
 
+export function importGetCallerAddress(c: ContractBuilder) {
+  c.addModule(
+    modules.syscalls, [], [], false
+  );
+  c.addModuleFunction(modules.syscalls, 'get_caller_address');
+}
+
 const modules = defineModules( {
   ERC165: {
     path: 'openzeppelin.introspection.erc165.library',
     useNamespace: true
+  },
+
+  syscalls: {
+    path: 'starkware.starknet.common.syscalls',
+    useNamespace: false
   },
 })
 

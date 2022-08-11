@@ -9,7 +9,7 @@ import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { importUint256 } from './utils/uint256';
-import { addSupportsInterface } from './common-functions';
+import { addSupportsInterface, importGetCallerAddress } from './common-functions';
 
 export const defaults: Required<ERC1155Options> = {
   uri: '',
@@ -115,7 +115,17 @@ function addBase(c: ContractBuilder, uri: string) {
   );
 }
 
+function importAssertNonZero(c: ContractBuilder) {
+  c.addModule(
+    modules.math, [], [], false
+  );
+  c.addModuleFunction(modules.math, 'assert_not_zero');
+}
+
 function addBurnable(c: ContractBuilder) {
+  importGetCallerAddress(c);
+  importAssertNonZero(c);
+
   c.addFunction(functions.burn);
   c.setFunctionBody(
     [
@@ -144,6 +154,8 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
+  importGetCallerAddress(c);
+
   requireAccessControl(c, functions.mint, access, 'MINTER');
   requireAccessControl(c, functions.mintBatch, access, 'MINTER');
 
@@ -174,6 +186,11 @@ const modules = defineModules( {
     path: 'openzeppelin.token.erc1155.library',
     useNamespace: true
   },
+
+  math: {
+    path: 'starkware.cairo.common.math',
+    useNamespace: false
+  }
 });
 
 const functions = defineFunctions({
@@ -211,11 +228,11 @@ const functions = defineFunctions({
       { name: 'accounts_len', type: 'felt' },
       { name: 'accounts', type: 'felt*' },
       { name: 'ids_len', type: 'felt' },
-      { name: 'id', type: 'Uint256' },
+      { name: 'ids', type: 'Uint256*' },
     ],
     returns: [
       { name: 'balances_len', type: 'felt' },
-      { name: 'balance', type: 'Uint256*' }],
+      { name: 'balances', type: 'Uint256*' }],
     passthrough: true,
     parentFunctionName: 'balance_of_batch',
   },
