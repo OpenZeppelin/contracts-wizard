@@ -99,6 +99,7 @@ export function buildERC20(opts: ERC20Options): Contract {
     addPausable(c, allOpts.access, [functions.transfer, functions.transferFrom, functions.approve, functions.increaseAllowance, functions.decreaseAllowance]);
     if (allOpts.burnable) {
       setPausable(c, functions.burn);
+      setPausable(c, functions.burnFrom);
     }
   }
 
@@ -140,14 +141,26 @@ function addBurnable(c: ContractBuilder) {
   c.addModule(
     modules.syscalls, [], [], false
   );
+
   c.addModuleFunction(modules.syscalls, 'get_caller_address');
+
   c.addFunction(functions.burn);
   c.setFunctionBody(
     [
-      'let (owner) = get_caller_address()', 
-      'ERC20._burn(owner, amount)'
+      'let (caller) = get_caller_address()', 
+      'ERC20._burn(caller, amount)'
     ],
     functions.burn
+  );
+
+  c.addFunction(functions.burnFrom);
+  c.setFunctionBody(
+    [
+      'let (caller) = get_caller_address()',
+      'ERC20._spend_allowance(account, caller, amount)',
+      'ERC20._burn(account, amount)'
+    ],
+    functions.burnFrom
   );
 }
 
@@ -393,6 +406,17 @@ const functions = defineFunctions({
     kind: 'external',
     implicitArgs: withImplicitArgs(),
     args: [
+      { name: 'amount', type: 'Uint256' },
+    ],
+    parentFunctionName: '_burn'
+  },
+
+  burnFrom: {
+    module: modules.ERC20,
+    kind: 'external',
+    implicitArgs: withImplicitArgs(),
+    args: [
+      { name: 'account', type: 'felt' },
       { name: 'amount', type: 'Uint256' },
     ],
     parentFunctionName: '_burn'
