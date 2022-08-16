@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `burnFrom` function for ERC20 burnable. ([#168](https://github.com/OpenZeppelin/contracts-wizard/issues/168))
+
 ## 0.4.0 (2022-08-04)
 
 - Update directory structure for libraries. ([#157](https://github.com/OpenZeppelin/contracts-wizard/pull/157))
