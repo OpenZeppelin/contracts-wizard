@@ -18,6 +18,7 @@ export type Access = typeof accessOptions[number];
       c.addModule(modules.Ownable, [{ lit:'owner' }], [], true);
       c.addConstructorArgument({ name: 'owner', type: 'felt'});
       
+      c.addFunction(functions.owner);
       c.addFunction(functions.transferOwnership);
       c.addFunction(functions.renounceOwnership);
       break;
@@ -104,6 +105,17 @@ const functions = defineFunctions({
   assert_only_role: {
     module: modules.AccessControl,
     args: []
+  },
+
+  // --- view functions ---
+
+  owner: {
+    module: modules.Ownable,
+    kind: 'view',
+    implicitArgs: withImplicitArgs(),
+    args: [],
+    returns: [{ name: 'owner', type: 'felt' }],
+    passthrough: true,
   },
 
   // --- external functions ---
