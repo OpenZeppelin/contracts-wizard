@@ -128,7 +128,7 @@
         <a href="https://forum.openzeppelin.com/" target="_blank">
           <ForumIcon/> Forum
         </a>
-        <a href="https://github.com/OpenZeppelin/cairo-contracts/tree/main/docs" target="_blank">
+        <a href="https://docs.openzeppelin.com/contracts-cairo" target="_blank">
           <DocsIcon/> Docs
         </a>
       </div>
