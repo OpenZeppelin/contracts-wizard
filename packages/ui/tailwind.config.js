@@ -1,3 +1,3 @@
 module.exports = {
-  content: [ './src/**/*.{html,svelte}' ],
+  content: [ './src/**/*.{html,svelte}', './public/**/*.html' ],
 };
