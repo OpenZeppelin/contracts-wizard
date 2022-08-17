@@ -51,7 +51,7 @@
   <!-- Scripts and CSS -->
   <link rel="preload" href="/fonts/silka-regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/silka-semibold-webfont.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel='stylesheet' href='/standalone.css'>
+  <link rel='stylesheet' href='/build/standalone.css'>
   <script async src='/build/embed.js'></script>
 </head>
 <body>
@@ -59,60 +59,27 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PBBPJ9T"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <div class="hero">
-    <a href="https://openzeppelin.com/">
-      <img src="/logo.svg" alt="OpenZeppelin">
-    </a>
 
-    <h1>Contracts Wizard</h1>
-    <p>Use the interactive generator below to bootstrap your smart contract and learn about <a href="https://openzeppelin.com/contracts">OpenZeppelin Contracts</a>.</p>
-    <br/>
-    <p><small>Looking for Cairo? Go to the <a href="/cairo">Contracts Wizard for Cairo</a>.</small></p>
+  <div class="header container flex flex-row justify-between overflow-auto">
+    <div class="flex flex-row">
+      <img src="/logo.svg" alt="OpenZeppelin" width="300px">
+      <a class="switch switch-solidity" href="#">Solidity Wizard</a>
+      <a class="switch switch-cairo switch-off" href="/cairo">Cairo Wizard</a>
+    </div>
+    <div class="flex flex-row">
+      <a class="link" href="https://forum.openzeppelin.com/" target="_blank">Forum</a>
+      <a class="link" href="https://docs.openzeppelin.com/" target="_blank">Docs</a>
+      <a class="link" href="https://github.com/OpenZeppelin/openzeppelin-contracts" target="_blank">GitHub</a>
+      <a class="link" href="https://twitter.com/OpenZeppelin" target="_blank">Twitter</a>
+    </div>
   </div>
 
   <div class="wizard-container">
     <oz-wizard class="wizard" data-sync-url="fragment"></oz-wizard>
   </div>
 
-  <div class="faq">
-    <ul>
-      <li>
-        <h3>What is this?</h3>
-        <p>Contracts Wizard is an interface to interactively build a smart contract out of components from OpenZeppelin Contracts.</p>
-      </li>
-      <li>
-        <h3>How can I use this?</h3>
-        <p>Select the kind of contract that you want (current support for ERC20, ERC721, ERC1155, Governor, and custom contracts), set your parameters and desired features (token name, symbol, premint amount, access control, etc.), and Contracts Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.</p>
-      </li>
-      <li>
-        <h3>What can I do with the code?</h3>
-        <p>There’s several options for how to proceed with it that will be useful in different circumstances. “Copy to Clipboard” as well as the standard “Download” will work well with local development workflows (such as using Hardhat or Truffle), whereas “Open in Remix” will be ideal for anyone working on Remix IDE.</p>
-      </li>
-      <li>
-        <h3>Is there an API?</h3>
-        <p>See <a href="https://www.npmjs.com/package/@openzeppelin/wizard">Contracts Wizard API for Solidity</a>.</p>
-      </li>
-      <li>
-        <h3>What other languages are supported?</h3>
-        <p>If you're developing Cairo smart contracts for StarkNet, check out the <a href="/cairo">Contracts Wizard for Cairo</a>.</p>
-      </li>
-    </ul>
-  </div>
-
-  <div class="defender">
-    <h2>Ship faster with the security of OpenZeppelin Defender</h2>
-    <p>After deploying your smart contract you can upload it to OpenZeppelin Defender and automate your operations delivering high-quality products with lower risk to users.</p>
-    <a href="https://defender.openzeppelin.com/" target="_blank">Sign up for free</a>
-  </div>
-
   <footer>
-    <div class="footer-icons">
-      <a href="https://forum.openzeppelin.com/" target="_blank"><img src="icons/forum.svg" alt="forum"></a>
-      <a href="https://docs.openzeppelin.com/" target="_blank"><img src="icons/docs.svg" alt="forum"></a>
-      <a href="https://github.com/OpenZeppelin/openzeppelin-contracts" target="_blank"><img src="icons/github.svg" alt="forum"></a>
-      <a href="https://twitter.com/openzeppelin/" target="_blank"><img src="icons/twitter.svg" alt="forum"></a>
-    </div>
-    <p>© <a href="https://openzeppelin.com" target="_blank">OpenZeppelin</a> 2017-2021 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank">Terms of Service</a></p>
+    <p>© <a href="https://openzeppelin.com" target="_blank">OpenZeppelin</a> 2017-2022 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank">Terms of Service</a></p>
   </footer>
 
   <!-- Hidden form necessary for Netlify Forms -->

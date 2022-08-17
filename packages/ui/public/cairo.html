@@ -34,57 +34,30 @@
   <!-- Scripts and CSS -->
   <link rel="preload" href="/fonts/silka-regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/silka-semibold-webfont.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel='stylesheet' href='/standalone.css'>
+  <link rel='stylesheet' href='/build/standalone.css'>
   <script async src='/build/embed.js'></script>
 </head>
 <body>
-  <div class="hero hero-cairo">
-    <a href="https://openzeppelin.com/">
-      <img src="/logo.svg" alt="OpenZeppelin">
-    </a>
-    <h1>Contracts Wizard for Cairo</h1>
-    <p>Use the interactive generator below to bootstrap your smart contract and learn about <a href="https://github.com/OpenZeppelin/cairo-contracts">OpenZeppelin Contracts for Cairo</a>.</p>
-    <br/>
-    <p><small>Looking for Solidity? Go to the <a href="../">Contracts Wizard for Solidity</a>.</small></p>
+
+  <div class="header container flex flex-row justify-between overflow-auto">
+    <div class="flex flex-row">
+      <img src="/logo.svg" alt="OpenZeppelin" width="300px">
+      <a class="switch switch-solidity switch-off" href="/">Solidity Wizard</a>
+      <a class="switch switch-cairo" href="#">Cairo Wizard</a>
+    </div>
+    <div class="flex flex-row">
+      <a class="link" href="https://forum.openzeppelin.com/" target="_blank">Forum</a>
+      <a class="link" href="https://docs.openzeppelin.com/" target="_blank">Docs</a>
+      <a class="link" href="https://github.com/OpenZeppelin/cairo-contracts" target="_blank">GitHub</a>
+      <a class="link" href="https://twitter.com/OpenZeppelin" target="_blank">Twitter</a>
+    </div>
   </div>
 
   <div class="wizard-container">
     <oz-wizard class="wizard" data-sync-url="fragment" data-lang="cairo"></oz-wizard>
   </div>
 
-  <div class="faq">
-    <ul>
-      <li>
-        <h3>What is this?</h3>
-        <p>Contracts Wizard for Cairo is an interface to interactively build a smart contract out of components from OpenZeppelin Contracts for Cairo.</p>
-        <p><b>Warning</b>: This contains highly experimental code. Use at your own risk.</p>
-      </li>
-      <li>
-        <h3>What is Cairo?</h3>
-        <p><a href="https://www.cairo-lang.org/">Cairo</a> is the native smart contract language for <a href="https://starkware.co/starknet/">StarkNet</a>, a decentralized ZK Rollup.</p>
-      </li>
-      <li>
-        <h3>How can I use this?</h3>
-        <p>Select the kind of contract that you want, set your parameters and desired features (token name, symbol, premint amount, etc.), and Contracts Wizard for Cairo will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.</p>
-      </li>
-      <li>
-        <h3>Is there an API?</h3>
-        <p>See <a href="https://www.npmjs.com/package/@openzeppelin/wizard-cairo">Contracts Wizard API for Cairo</a>.</p>
-      </li>
-      <li>
-        <h3>What other languages are supported?</h3>
-        <p>If you're developing Solidity smart contracts, check out the <a href="../">Contracts Wizard for Solidity</a>.</p>
-      </li>
-    </ul>
-  </div>
-
   <footer>
-    <div class="footer-icons">
-      <a href="https://forum.openzeppelin.com/" target="_blank"><img src="icons/forum.svg" alt="forum"></a>
-      <a href="https://docs.openzeppelin.com/contracts-cairo" target="_blank"><img src="icons/docs.svg" alt="docs"></a>
-      <a href="https://github.com/OpenZeppelin/cairo-contracts" target="_blank"><img src="icons/github.svg" alt="source"></a>
-      <a href="https://twitter.com/openzeppelin/" target="_blank"><img src="icons/twitter.svg" alt="twitter"></a>
-    </div>
     <p>© <a href="https://openzeppelin.com" target="_blank">OpenZeppelin</a> 2022 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank">Terms of Service</a></p>
   </footer>
 
