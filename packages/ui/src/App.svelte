@@ -13,8 +13,6 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
-    import DocsIcon from './icons/DocsIcon.svelte';
-    import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
@@ -198,14 +196,6 @@
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
       </div>
-      <div class="controls-footer">
-        <a href="https://forum.openzeppelin.com/" target="_blank">
-          <ForumIcon/> Forum
-        </a>
-        <a href="https://docs.openzeppelin.com/" target="_blank">
-          <DocsIcon/> Docs
-        </a>
-      </div>
     </div>
 
     <div class="output flex flex-col grow overflow-auto">
@@ -248,7 +238,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--blue-2);
+    background-color: var(--solidity-blue-2);
     color: white;
     order: -1;
   }

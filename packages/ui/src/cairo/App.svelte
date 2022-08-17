@@ -8,8 +8,6 @@
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
-    import DocsIcon from '../icons/DocsIcon.svelte';
-    import ForumIcon from '../icons/ForumIcon.svelte';
     import Dropdown from '../Dropdown.svelte';
     import OverflowMenu from '../OverflowMenu.svelte';
     import FileIcon from '../icons/FileIcon.svelte';
@@ -124,16 +122,7 @@
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
       </div>
-      <div class="controls-footer">
-        <a href="https://forum.openzeppelin.com/" target="_blank">
-          <ForumIcon/> Forum
-        </a>
-        <a href="https://github.com/OpenZeppelin/cairo-contracts/tree/main/docs" target="_blank">
-          <DocsIcon/> Docs
-        </a>
-      </div>
     </div>
-
     <div class="output flex flex-col grow overflow-auto">
     <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
@@ -174,7 +163,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--red-3);
+    background-color: var(--cairo-orange-2);
     color: white;
     order: -1;
   }
