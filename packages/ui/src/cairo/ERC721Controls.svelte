@@ -39,21 +39,21 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#presets">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc721#presets">
         Privileged accounts will be able to emit new tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/ERC721.md#presets">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc721#presets">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://github.com/OpenZeppelin/cairo-contracts/blob/main/docs/Security.md#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code>assert_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
