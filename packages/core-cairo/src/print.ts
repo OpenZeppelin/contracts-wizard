@@ -62,7 +62,7 @@ export function printContract(contract: Contract): string {
 }
 
 function withSemicolons(lines: string[]): string[] {
-  return lines.map(line => line + ';');
+  return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
 function printImports(contract: Contract) {
