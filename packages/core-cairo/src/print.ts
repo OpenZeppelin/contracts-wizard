@@ -28,7 +28,7 @@ export function printContract(contract: Contract): string {
       ],
             
       [
-        `%lang starknet`
+        `%lang starknet;`
       ],
 
       [
@@ -61,6 +61,10 @@ export function printContract(contract: Contract): string {
   );
 }
 
+function withSemicolons(lines: string[]): string[] {
+  return lines.map(line => line + ';');
+}
+
 function printImports(contract: Contract) {
   const modulesToLibraryFunctions = getImportsMap(contract);
   const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
@@ -89,9 +93,9 @@ function printImportLines(importStatements: Map<string, Set<string>>) {
     if (fns.size > 1) {
       lines.push(`from ${module} import (`);
       lines.push(Array.from(fns).map(p => `${p},`));
-      lines.push(`)`);
+      lines.push(`);`);
     } else if (fns.size === 1) {
-      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
+      lines.push(`from ${module} import ${Array.from(fns)[0]};`);
     }
   }
   return lines;
@@ -109,8 +113,8 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a));
     const implicitArgs = contract.constructorImplicitArgs?.map(a => printArgument(a));
     const body = spaceBetween(
-        parents,
-        contract.constructorCode,
+        withSemicolons(parents),
+        withSemicolons(contract.constructorCode),
       );
 
     const constructor = printFunction2(
@@ -210,7 +214,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     fn.kind,
     fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a)),
     returnVariables,
-    code,
+    withSemicolons(code),
   );
 }
 
@@ -231,21 +235,21 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   const formattedReturns = returns?.join(', ');
 
   if (returns !== undefined) {
-    fn.push([`}(${formattedArgs}) -> (${formattedReturns}):`]);
+    fn.push([`}(${formattedArgs}) -> (${formattedReturns}){`]);
   } else {
-    fn.push([`}(${formattedArgs}):`]);
+    fn.push([`}(${formattedArgs}){`]);
   }
 
   fn.push(code);
 
   if (returnVariables !== undefined) {
     const formattedReturnVars = returnVariables?.join(', ');
-    fn.push([`return (${formattedReturnVars})`]);
+    fn.push([`return (${formattedReturnVars});`]);
   } else {
-    fn.push(['return ()']);
+    fn.push(['return ();']);
   }
 
-  fn.push('end');
+  fn.push('}');
 
   return fn;
 }
