@@ -15,7 +15,8 @@
     "prepare": "tsc",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch",
+    "version": "node ../../scripts/bump-changelog.js"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
