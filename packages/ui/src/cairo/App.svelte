@@ -1,88 +1,115 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
 
-    import hljs from './highlightjs';
+  import hljs from './highlightjs';
 
-    import ERC20Controls from './ERC20Controls.svelte';
-    import ERC721Controls from './ERC721Controls.svelte';
-    import CustomControls from './CustomControls.svelte';
-    import CopyIcon from '../icons/CopyIcon.svelte';
-    import DownloadIcon from '../icons/DownloadIcon.svelte';
-    import Dropdown from '../Dropdown.svelte';
-    import OverflowMenu from '../OverflowMenu.svelte';
-    import FileIcon from '../icons/FileIcon.svelte';
+  import ERC20Controls from './ERC20Controls.svelte';
+  import ERC721Controls from './ERC721Controls.svelte';
+  import CustomControls from './CustomControls.svelte';
+  import CopyIcon from '../icons/CopyIcon.svelte';
+  import CheckIcon from '../icons/CheckIcon.svelte';
+  import DownloadIcon from '../icons/DownloadIcon.svelte';
+  import Dropdown from '../Dropdown.svelte';
+  import OverflowMenu from '../OverflowMenu.svelte';
+  import FileIcon from '../icons/FileIcon.svelte';
 
-    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
-    import { postConfig } from '../post-config';
+  import type {
+    KindedOptions,
+    Kind,
+    Contract,
+    OptionsErrorMessages,
+  } from '@openzeppelin/wizard-cairo';
+  import {
+    ContractBuilder,
+    buildGeneric,
+    printContract,
+    sanitizeKind,
+    OptionsError,
+  } from '@openzeppelin/wizard-cairo';
+  import { postConfig } from '../post-config';
 
-    import { saveAs } from 'file-saver';
-    import { injectHyperlinks } from './inject-hyperlinks';
+  import { saveAs } from 'file-saver';
+  import { injectHyperlinks } from './inject-hyperlinks';
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    export let tab: Kind = 'ERC20';
-    $: {
-      tab = sanitizeKind(tab);
-      dispatch('tab-change', tab);
-    };
+  let copyButtonText: string = 'Copy to clipboard';
+  export let tab: Kind = 'ERC20';
+  $: {
+    tab = sanitizeKind(tab);
+    dispatch('tab-change', tab);
+  }
 
-    let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
-    let errors: { [k in Kind]?: OptionsErrorMessages } = {};
+  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
+  let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder();
+  let contract: Contract = new ContractBuilder();
 
-    $: opts = allOpts[tab];
+  $: opts = allOpts[tab];
 
-    $: {
-      if (opts) {
-        try {
-          contract = buildGeneric(opts);
-          errors[tab] = undefined;
-        } catch (e: unknown) {
-          if (e instanceof OptionsError) {
-            errors[tab] = e.messages;
-          } else {
-            throw e;
-          }
+  $: {
+    if (opts) {
+      try {
+        contract = buildGeneric(opts);
+        errors[tab] = undefined;
+      } catch (e: unknown) {
+        if (e instanceof OptionsError) {
+          errors[tab] = e.messages;
+        } else {
+          throw e;
         }
       }
     }
+  }
 
-    $: code = printContract(contract);
-    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
+  $: code = printContract(contract);
+  $: highlightedCode = injectHyperlinks(
+    hljs.highlight(code, { language: 'cairo' }).value
+  );
 
-    const language = 'cairo';
+  const language = 'cairo';
 
-    const copyHandler = async () => {
-      await navigator.clipboard.writeText(code);
-      if (opts) {
-        await postConfig(opts, 'copy', language);
-      }
-    };
+  const copyHandler = async () => {
+    await navigator.clipboard.writeText(code);
+    copyButtonText = 'copied';
+    if (opts) {
+      await postConfig(opts, 'copy', language);
+    }
+    setTimeout(() => {
+      copyButtonText = 'copy to clipboard';
+    }, 1000);
+  };
 
-    const downloadCairoHandler = async () => {
-      const blob = new Blob([code], { type: 'text/plain' });
-      if (opts) {
-        const name = ('name' in opts) ? opts.name : 'MyContract';
-        saveAs(blob, name + '.cairo');
-        await postConfig(opts, 'download-npm', language);
-      }
-    };
-
+  const downloadCairoHandler = async () => {
+    const blob = new Blob([code], { type: 'text/plain' });
+    if (opts) {
+      const name = 'name' in opts ? opts.name : 'MyContract';
+      saveAs(blob, name + '.cairo');
+      await postConfig(opts, 'download-npm', language);
+    }
+  };
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
-        <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
+        <button
+          class:selected={tab === 'ERC20'}
+          on:click={() => (tab = 'ERC20')}
+        >
           ERC20
         </button>
-        <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
+        <button
+          class:selected={tab === 'ERC721'}
+          on:click={() => (tab = 'ERC721')}
+        >
           ERC721
         </button>
-        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
+        <button
+          class:selected={tab === 'Custom'}
+          on:click={() => (tab = 'Custom')}
+        >
           Custom
         </button>
       </OverflowMenu>
@@ -90,8 +117,12 @@
 
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button" on:click={copyHandler}>
-        <CopyIcon />
-        Copy to Clipboard
+        {#if copyButtonText === 'copied'}
+          <CheckIcon />
+        {:else}
+          <CopyIcon />
+        {/if}
+        {copyButtonText}
       </button>
 
       <Dropdown let:active>
@@ -104,7 +135,11 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires installation of Python package (<code>openzeppelin-cairo-contracts</code>).</p>
+            <p>
+              Requires installation of Python package (<code
+                >openzeppelin-cairo-contracts</code
+              >).
+            </p>
           </div>
         </button>
       </Dropdown>
@@ -124,7 +159,9 @@
       </div>
     </div>
     <div class="output flex flex-col grow overflow-auto">
-    <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto"><code
+          class="hljs grow overflow-auto p-4">{@html highlightedCode}</code
+        ></pre>
     </div>
   </div>
 </div>
@@ -146,19 +183,23 @@
     color: var(--gray-5);
   }
 
-  .tab button, .action-button, :global(.overflow-btn) {
+  .tab button,
+  .action-button,
+  :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
   }
 
-  .tab button, :global(.overflow-btn) {
+  .tab button,
+  :global(.overflow-btn) {
     border: 0;
     background-color: transparent;
   }
 
-  .tab button:hover, :global(.overflow-btn):hover {
+  .tab button:hover,
+  :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
 
@@ -182,7 +223,8 @@
       background-color: var(--gray-2);
     }
 
-    &:active, &.active {
+    &:active,
+    &.active {
       background-color: var(--gray-2);
     }
 
@@ -196,7 +238,8 @@
     padding: var(--size-4);
   }
 
-  .controls, .output {
+  .controls,
+  .output {
     border-radius: 5px;
     box-shadow: var(--shadow);
   }
@@ -216,7 +259,7 @@
 
     :global(.icon) {
       margin-right: 0.2em;
-      opacity: .8;
+      opacity: 0.8;
     }
 
     a {
@@ -243,7 +286,7 @@
     }
 
     &:hover,
-    &:focus, {
+    &:focus {
       background-color: var(--gray-1);
       border: 1px solid var(--gray-3);
     }
@@ -268,5 +311,4 @@
       color: var(--gray-5);
     }
   }
-
 </style>
