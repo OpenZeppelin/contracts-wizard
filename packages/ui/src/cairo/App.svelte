@@ -22,7 +22,6 @@
 
     const dispatch = createEventDispatcher();
 
-    let copyButtonText: string = 'Copy to Clipboard';
     export let tab: Kind = 'ERC20';
     $: {
       tab = sanitizeKind(tab);
@@ -56,14 +55,15 @@
 
     const language = 'cairo';
 
+    let copied = false;
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
-      copyButtonText = 'Copied';
+      copied = true;
       if (opts) {
         await postConfig(opts, 'copy', language);
       }
       setTimeout(() => {
-        copyButtonText = 'Copy to Clipboard';
+        copied = false;
       }, 1000);
     };
 
@@ -96,12 +96,13 @@
 
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
-        {#if copyButtonText === 'Copied'}
+        {#if copied}
           <CheckIcon />
+          Copied
         {:else}
           <CopyIcon />
+          Copy to Clipboard
         {/if}
-        {copyButtonText}
       </button>
 
       <Dropdown let:active>
