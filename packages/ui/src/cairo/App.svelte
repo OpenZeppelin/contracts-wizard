@@ -22,7 +22,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let copyButtonText: string = 'Copy to clipboard';
+    let copyButtonText: string = 'Copy to Clipboard';
     export let tab: Kind = 'ERC20';
     $: {
       tab = sanitizeKind(tab);
@@ -58,12 +58,12 @@
 
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
-      copyButtonText = 'copied';
+      copyButtonText = 'Copied';
       if (opts) {
         await postConfig(opts, 'copy', language);
       }
       setTimeout(() => {
-        copyButtonText = 'copy to clipboard';
+        copyButtonText = 'Copy to Clipboard';
       }, 1000);
     };
 
@@ -96,7 +96,7 @@
 
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
-        {#if copyButtonText === 'copied'}
+        {#if copyButtonText === 'Copied'}
           <CheckIcon />
         {:else}
           <CopyIcon />
