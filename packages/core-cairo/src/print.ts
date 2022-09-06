@@ -24,7 +24,7 @@ export function printContract(contract: Contract): string {
   return formatLines(
     ...spaceBetween(
       [
-        `# SPDX-License-Identifier: ${contract.license}`,
+        `// SPDX-License-Identifier: ${contract.license}`,
       ],
             
       [
@@ -44,16 +44,16 @@ export function printContract(contract: Contract): string {
         ...fns.modifiers,
         hasViews ? 
           [
-            `#`,
-            `# Getters`,
-            `#`
+            `//`,
+            `// Getters`,
+            `//`
           ] : [],
         ...fns.views,
         hasExternals ? 
         [
-          `#`,
-          `# Externals`,
-          `#`
+          `//`,
+          `// Externals`,
+          `//`
         ] : [],
       ...fns.externals,
       ),

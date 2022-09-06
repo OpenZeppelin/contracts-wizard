@@ -58,7 +58,7 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
     }
     case 'roles': {
       const roleId = role + '_ROLE';
-      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)}; # keccak256('${roleId}')[0:251 bits]`)) {
+      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)}; // keccak256('${roleId}')[0:251 bits]`)) {
         c.addConstructorCode(`AccessControl._grant_role(${roleId}, admin)`);
       }
 
