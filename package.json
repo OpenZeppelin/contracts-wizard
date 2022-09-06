@@ -1,18 +1,15 @@
 {
-  "name": "root",
-  "private": true,
-  "scripts": {
-    "prepare": "wsrun -m prepare"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/@types/*"
-    ]
-  },
-  "devDependencies": {
-    "wsrun": "^5.2.4"
-  }
+    "name": "root",
+    "private": true,
+    "scripts": {
+        "prepare": "wsrun -m prepare"
+    },
+    "devDependencies": {
+        "wsrun": "^5.2.4"
+    },
+    "dependencies": {
+        "@openzeppelin/wizard": "file:packages/core",
+        "@openzeppelin/wizard-cairo": "file:packages/core-cairo",
+        "ui": "file:packages/ui"
+    }
 }
