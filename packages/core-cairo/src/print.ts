@@ -28,7 +28,7 @@ export function printContract(contract: Contract): string {
       ],
             
       [
-        `%lang starknet;`
+        `%lang starknet`
       ],
 
       [
@@ -93,9 +93,9 @@ function printImportLines(importStatements: Map<string, Set<string>>) {
     if (fns.size > 1) {
       lines.push(`from ${module} import (`);
       lines.push(Array.from(fns).map(p => `${p},`));
-      lines.push(`);`);
+      lines.push(`)`);
     } else if (fns.size === 1) {
-      lines.push(`from ${module} import ${Array.from(fns)[0]};`);
+      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
     }
   }
   return lines;
@@ -242,9 +242,9 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
 
   fn.push(code);
 
-  if (returnVariables !== undefined) {
-    const formattedReturnVars = returnVariables?.join(', ');
-    fn.push([`return (${formattedReturnVars});`]);
+  if (returnVariables !== undefined && returnVariables.length > 0) {
+    const formattedReturnVars = returnVariables.join(', ');
+    fn.push([`return (${formattedReturnVars},);`]);
   } else {
     fn.push(['return ();']);
   }
