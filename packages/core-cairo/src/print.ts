@@ -226,19 +226,29 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   if (kind !== undefined) {
     fn.push(`@${kind}`);
   }
-  fn.push(`${kindedName}{`);
-  
-  const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
-  fn.push([implicitArgsFormatted]);
+
+  let accum = kindedName;
+
+  if (implicitArgs.length > 0) {
+    accum += '{';
+    fn.push(accum);
+    const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
+    fn.push([implicitArgsFormatted]);
+    accum = '}';
+  }
   
   const formattedArgs = args.join(', ');
-  const formattedReturns = returns?.join(', ');
 
-  if (returns !== undefined) {
-    fn.push([`}(${formattedArgs}) -> (${formattedReturns}){`]);
+  accum += `(${formattedArgs})`;
+
+  if (returns === undefined) {
+    accum += ' {';
   } else {
-    fn.push([`}(${formattedArgs}){`]);
+    const formattedReturns = returns.join(', ');
+    accum += ` -> (${formattedReturns}){`;
   }
+
+  fn.push(accum);
 
   fn.push(code);
 
