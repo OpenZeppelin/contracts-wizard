@@ -244,7 +244,7 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
     accum += ' {';
   } else {
     const formattedReturns = returns.join(', ');
-    accum += ` -> (${formattedReturns}){`;
+    accum += ` -> (${formattedReturns}) {`;
   }
 
   fn.push(accum);
