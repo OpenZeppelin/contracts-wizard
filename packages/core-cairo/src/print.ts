@@ -230,8 +230,7 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   let accum = kindedName;
 
   if (implicitArgs.length > 0) {
-    accum += '{';
-    fn.push(accum);
+    fn.push(accum + '{');
     const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
     fn.push([implicitArgsFormatted]);
     accum = '}';
