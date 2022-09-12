@@ -123,7 +123,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       args,
       modifier,
       undefined,
-      undefined,
+      'return ();',
       body,
     );
     return constructor;
@@ -194,18 +194,25 @@ function printFunction(fn: ContractFunction): Lines[] {
     code.push(libraryCallString);
   });
 
+  let returnLine = 'return ();';
+
   if (!fn.final && fn.module !== undefined) {
     const fnName = getFunctionName(fn);
     const parentFunctionCall = fn.read ? 
     `${fnName}.read()` :
     `${fnName}(${fn.args.map(a => a.name).join(', ')})`;
-    const callParentLine = fn.passthrough ? `let (${returnArgs}) = ${parentFunctionCall}` : `${parentFunctionCall}`;
-    code.push(callParentLine);
+    if (!fn.passthrough || returnArgs === undefined || returnArgs.length === 0) {
+      code.push(parentFunctionCall);
+    } else if (fn.passthrough === 'strict') {
+      code.push(`let (${returnArgs}) = ${parentFunctionCall}`);
+      const namedReturnVars = returnArgs.map(v => `${v}=${v}`).join(', ');
+      returnLine = `return (${namedReturnVars});`;
+    } else if (fn.passthrough === true) {
+      returnLine = `return ${parentFunctionCall};`;
+    }
   }
 
   code.push(...fn.code);
-
-  const returnVariables = fn.returnValue ? [fn.returnValue] : returnArgs;
 
   return printFunction2(
     'func ' + fn.name,
@@ -213,14 +220,14 @@ function printFunction(fn: ContractFunction): Lines[] {
     fn.args.map(a => printArgument(a)),
     fn.kind,
     fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a)),
-    returnVariables,
+    returnLine,
     withSemicolons(code),
   );
 }
 
 // generic for functions and constructors
 // kindedName = 'func foo'
-function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnVariables: string[] | undefined, code: Lines[]): Lines[] {
+function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnLine: string, code: Lines[]): Lines[] {
   const fn = [];
 
   if (kind !== undefined) {
@@ -248,14 +255,11 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   }
 
   fn.push(accum);
-
+  
   fn.push(code);
-
-  if (returnVariables !== undefined && returnVariables.length > 0) {
-    const formattedReturnVars = returnVariables.join(', ');
-    fn.push([`return (${formattedReturnVars},);`]);
-  } else {
-    fn.push(['return ();']);
+  
+  if (returnLine !== undefined) {
+    fn.push([returnLine]);
   }
 
   fn.push('}');
