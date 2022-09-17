@@ -124,6 +124,7 @@ export default [
         preventAssignment: true,
         include: '../../**/node_modules/**/*',
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
       }),
 
       json(),
