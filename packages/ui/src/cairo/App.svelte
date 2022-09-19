@@ -7,6 +7,7 @@
     import ERC721Controls from './ERC721Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
+    import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
     import Dropdown from '../Dropdown.svelte';
     import OverflowMenu from '../OverflowMenu.svelte';
@@ -54,11 +55,16 @@
 
     const language = 'cairo';
 
+    let copied = false;
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
+      copied = true;
       if (opts) {
         await postConfig(opts, 'copy', language);
       }
+      setTimeout(() => {
+        copied = false;
+      }, 1000);
     };
 
     const downloadCairoHandler = async () => {
@@ -89,9 +95,14 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button" on:click={copyHandler}>
-        <CopyIcon />
-        Copy to Clipboard
+      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+        {#if copied}
+          <CheckIcon />
+          Copied
+        {:else}
+          <CopyIcon />
+          Copy to Clipboard
+        {/if}
       </button>
 
       <Dropdown let:active>
