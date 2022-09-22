@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add `owner` view for Ownable. ([#165](https://github.com/OpenZeppelin/contracts-wizard/issues/165))
+- Implement Cairo 0.10 syntax changes. ([#173](https://github.com/OpenZeppelin/contracts-wizard/issues/173))
 
 ## 0.4.0 (2022-08-04)
 

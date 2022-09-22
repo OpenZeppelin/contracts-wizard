@@ -227,7 +227,7 @@ const functions = defineFunctions({
       { name: 'operator', type: 'felt' },
     ],
     returns: [{ name: 'isApproved', type: 'felt' }],
-    passthrough: true,
+    passthrough: 'strict',
     parentFunctionName: 'is_approved_for_all',
   },
 
@@ -239,7 +239,7 @@ const functions = defineFunctions({
       { name: 'tokenId', type: 'Uint256' },
     ],
     returns: [{ name: 'tokenURI', type: 'felt' }],
-    passthrough: true,
+    passthrough: 'strict',
     parentFunctionName: 'token_uri',
   },
 

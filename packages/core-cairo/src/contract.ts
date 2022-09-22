@@ -31,15 +31,22 @@ export interface Initializer {
   params: Value[];
 }
 
+/**
+ * Whether the function should directly return the parent function's return value.
+ * If false, call the parent function without returning its value.
+ * If true, return directly from the call to the parent function.
+ * If 'strict', treat as `true` but uses the return arguments' names.
+ */
+export type PassthroughOption = true | false | 'strict'; 
+
 export interface BaseFunction {
   module?: Module;
   name: string;
   implicitArgs?: Argument[];
   args: Argument[];
   returns?: Argument[];
-  returnValue?: string;
   kind?: FunctionKind;
-  passthrough?: boolean;
+  passthrough?: PassthroughOption;
   read?: boolean;
   parentFunctionName?: string;
 }

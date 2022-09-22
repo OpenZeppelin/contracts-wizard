@@ -14,9 +14,21 @@ test('contract with constructor code', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with constructor code with semicolon', t => {
+  const Foo = new ContractBuilder();
+  Foo.addConstructorCode('someFunction();');
+  t.snapshot(printContract(Foo));
+});
+
 test('contract with function code', t => {
   const Foo = new ContractBuilder();
   Foo.addFunctionCode('someFunction()', _otherFunction);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with function code with semicolon', t => {
+  const Foo = new ContractBuilder();
+  Foo.addFunctionCode('someFunction();', _otherFunction);
   t.snapshot(printContract(Foo));
 });
 
