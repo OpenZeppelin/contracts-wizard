@@ -16,7 +16,7 @@ export const defaults: Required<GovernorOptions> = {
 
   votes: 'erc20votes',
   timelock: 'openzeppelin',
-  blockTime: 13.2,
+  blockTime: 12,
   decimals: 18,
   proposalThreshold: '0',
   quorumMode: 'percent',
