@@ -1,6 +1,7 @@
 import JSZip from "jszip";
 import type { Contract } from "../contract";
 import { printContract } from "../print";
+import { hardhatPackageLock } from "./lockHardhat";
 
 const hardhatConfig = `
 import { HardhatUserConfig } from "hardhat/config";
@@ -108,6 +109,8 @@ export function zipHardhat(c: Contract) {
   zip.file('scripts/deploy.ts', script(c.name));
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
+
+  zip.file(`package-lock.json`, hardhatPackageLock);
 
   return zip;
 }
