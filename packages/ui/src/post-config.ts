@@ -9,7 +9,7 @@ declare global {
 }
 const instance = uuid();
 
-export type Action = 'copy' | 'remix' | 'download-npm' | 'download-vendored';
+export type Action = 'copy' | 'remix' | 'download-npm' | 'download-vendored' | 'download-hardhat';
 export type Language = 'solidity' | 'cairo';
 
 export async function postConfig(opts: Required<GenericOptions> | Required<CairoOptions>, action: Action, language: Language) {
