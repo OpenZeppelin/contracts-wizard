@@ -107,7 +107,7 @@
 
     const downloadHardhatHandler = async () => {
       const { zipHardhat } = await zipHardhatModule;
-      const devPackage = zipHardhat(contract);
+      const devPackage = zipHardhat(contract, opts?.name);
       const blob = await devPackage.generateAsync({ type: 'blob' });
       saveAs(blob, 'hardhat.zip');
       if (opts) {

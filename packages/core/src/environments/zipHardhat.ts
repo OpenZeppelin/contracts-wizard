@@ -2,19 +2,28 @@ import JSZip from "jszip";
 import type { Contract } from "../contract";
 import { printContract } from "../print";
 import { hardhatPackageLock } from "./lockHardhat";
+import { hardhatUpgradeablePackageLock } from "./lockHardhatUpgradeable";
 
-const hardhatConfig = `
+const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-toolbox";${upgradeable ? `
+import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+      },
+    },
+  }
 };
 
 export default config;
 `;
 
-const packageJson = (variant: string) => `\
+const packageJson = (upgradeable: boolean) => `\
 {
   "name": "hardhat-ts",
   "version": "1.0.0",
@@ -27,7 +36,13 @@ const packageJson = (variant: string) => `\
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
-    "@openzeppelin/contracts${variant}": "^4.7.3",
+    ${upgradeable ? `"@openzeppelin/contracts-upgradeable" : "^4.7.3",
+    "@openzeppelin/hardhat-upgrades": "^1.21.0",
+    "@nomiclabs/hardhat-ethers": "^2.2.0",
+    "ethers": "^5.7.1",`
+    :
+    `"@openzeppelin/contracts" : "^4.7.3",`
+    }
     "hardhat": "^2.11.2"
   }
 }
@@ -59,32 +74,32 @@ cache
 artifacts
 `
 
-const test = (name: string) => `\
+const test = (c: Contract, nameOpt?: string) => `\
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
 
-describe("${name}", function () {
+describe("${c.name}", function () {
   it("Should return token name", async function () {
-    const ContractFactory = await ethers.getContractFactory("${name}");
+    const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-    const instance = await ContractFactory.deploy();
+    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory);' : 'ContractFactory.deploy();' }
     await instance.deployed();
 
-    expect(await instance.name()).to.equal("${name}");
+    expect(await instance.name()).to.equal("${nameOpt ?? c.name}");
   });
 });
 `
 
-const script = (name: string) => `\
-import { ethers } from "hardhat";
+const script = (c: Contract) => `\
+import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
 
 async function main() {
-  const ContractFactory = await ethers.getContractFactory("${name}");
+  const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  const instance = await ContractFactory.deploy();
+  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory);' : 'ContractFactory.deploy();' }
   await instance.deployed();
 
-  console.log(\`Contract deployed to \${instance.address}\`);
+  console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${instance.address}\`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -121,22 +136,20 @@ npx hardhat run --network <your-network> scripts/deploy.js
 \`\`\`
 `
 
-export function zipHardhat(c: Contract) {
+export function zipHardhat(c: Contract, nameOpt?: string) {
   const zip = new JSZip();
 
-  const contractsVariant = c.upgradeable ? '-upgradeable' : '';
-
-  zip.file('hardhat.config.ts', hardhatConfig);
-  zip.file('package.json', packageJson(contractsVariant));
+  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
+  zip.file('package.json', packageJson(c.upgradeable));
   zip.file('README.md', readme);
   zip.file('tsconfig.json', tsConfig);
   zip.file('.gitignore', gitIgnore);
-  zip.file('test/test.ts', test(c.name));
-  zip.file('scripts/deploy.ts', script(c.name));
+  zip.file('test/test.ts', test(c, nameOpt));
+  zip.file('scripts/deploy.ts', script(c));
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
 
-  zip.file(`package-lock.json`, hardhatPackageLock); // TODO use a different lock if upgradeable
+  zip.file(`package-lock.json`, c.upgradeable ? hardhatUpgradeablePackageLock : hardhatPackageLock);
 
   return zip;
 }
