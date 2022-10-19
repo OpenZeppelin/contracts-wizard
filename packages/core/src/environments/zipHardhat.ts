@@ -1,5 +1,8 @@
 import JSZip from "jszip";
+import type { GenericOptions, KindedOptions } from "../build-generic";
 import type { Contract } from "../contract";
+import type { ERC1155Options } from "../erc1155";
+import type { Kind } from "../kind";
 import { printContract } from "../print";
 import { hardhatPackageLock } from "./lockHardhat";
 import { hardhatUpgradeablePackageLock } from "./lockHardhatUpgradeable";
@@ -74,21 +77,50 @@ cache
 artifacts
 `
 
-const test = (c: Contract, nameOpt?: string) => `\
+const test = (c: Contract, opts?: GenericOptions) => {
+
+let buf = `\
 import { expect } from "chai";
 import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
 
 describe("${c.name}", function () {
-  it("Should return token name", async function () {
+  it("Test contract", async function () {
     const ContractFactory = await ethers.getContractFactory("${c.name}");
 
     const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory);' : 'ContractFactory.deploy();' }
     await instance.deployed();
 
-    expect(await instance.name()).to.equal("${nameOpt ?? c.name}");
+`;
+
+if (opts !== undefined) {
+  switch (opts.kind) {
+    case 'ERC20':
+    case 'ERC721':
+      buf += `    expect(await instance.name()).to.equal("${opts.name}");`
+      break;
+
+    case 'ERC1155':
+      buf += `    expect(await instance.uri(0)).to.equal("${(opts as ERC1155Options).uri}");`
+      break;
+
+    case 'Governor':
+      break;
+
+    case 'Custom':
+      break;
+
+    default:
+      const _: never = opts;
+      throw new Error('Unknown ERC');
+  }
+}
+
+buf += `
   });
 });
 `
+return buf;
+}
 
 const script = (c: Contract) => `\
 import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
@@ -136,7 +168,7 @@ npx hardhat run --network <your-network> scripts/deploy.js
 \`\`\`
 `
 
-export function zipHardhat(c: Contract, nameOpt?: string) {
+export function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
@@ -144,7 +176,7 @@ export function zipHardhat(c: Contract, nameOpt?: string) {
   zip.file('README.md', readme);
   zip.file('tsconfig.json', tsConfig);
   zip.file('.gitignore', gitIgnore);
-  zip.file('test/test.ts', test(c, nameOpt));
+  zip.file('test/test.ts', test(c, opts));
   zip.file('scripts/deploy.ts', script(c));
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
