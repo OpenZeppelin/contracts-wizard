@@ -25,8 +25,8 @@ export default config;
 
 const packageJson = (upgradeable: boolean) => `\
 {
-  "name": "hardhat-ts",
-  "version": "1.0.0",
+  "name": "hardhat-sample",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {

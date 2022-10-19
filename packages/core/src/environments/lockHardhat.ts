@@ -2,14 +2,14 @@ export { hardhatPackageLock };
 
 const hardhatPackageLock = `\
 {
-  "name": "hardhat-ts",
-  "version": "1.0.0",
+  "name": "hardhat-sample",
+  "version": "0.0.1",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
-      "name": "hardhat-ts",
-      "version": "1.0.0",
+      "name": "hardhat-sample",
+      "version": "0.0.1",
       "license": "ISC",
       "devDependencies": {
         "@nomicfoundation/hardhat-toolbox": "^2.0.0",
