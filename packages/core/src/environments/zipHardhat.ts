@@ -1,8 +1,7 @@
 import JSZip from "jszip";
-import type { GenericOptions, KindedOptions } from "../build-generic";
+import type { GenericOptions } from "../build-generic";
 import type { Contract } from "../contract";
 import type { ERC1155Options } from "../erc1155";
-import type { Kind } from "../kind";
 import { printContract } from "../print";
 import { hardhatPackageLock } from "./lockHardhat";
 import { hardhatUpgradeablePackageLock } from "./lockHardhatUpgradeable";
