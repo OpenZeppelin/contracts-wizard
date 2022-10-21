@@ -6,6 +6,14 @@ import { printContract } from "../print";
 import { hardhatPackageLock } from "./lockHardhat";
 import { hardhatUpgradeablePackageLock } from "./lockHardhatUpgradeable";
 
+import { version as contractsVersion } from "@openzeppelin/contracts/package.json";
+import { version as contractsUpgradeableVersion } from "@openzeppelin/contracts-upgradeable/package.json";
+import { version as hardhatVersion } from "hardhat/package.json";
+import { version as hardhatUpgradesVersion } from "@openzeppelin/hardhat-upgrades/package.json";
+import { version as hardhatEthersVersion } from "@nomiclabs/hardhat-ethers/package.json";
+import { version as hardhatToolboxVersion } from "@nomicfoundation/hardhat-toolbox/package.json";
+import { version as ethersVersion } from "ethers/package.json";
+
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";${upgradeable ? `
@@ -13,7 +21,7 @@ import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.17",
+    version: "0.8.9",
     settings: {
       optimizer: {
         enabled: true,
@@ -37,15 +45,15 @@ const packageJson = (upgradeable: boolean) => `\
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
-    ${upgradeable ? `"@openzeppelin/contracts-upgradeable" : "^4.7.3",
-    "@openzeppelin/hardhat-upgrades": "^1.21.0",
-    "@nomiclabs/hardhat-ethers": "^2.2.0",
-    "ethers": "^5.7.1",`
+    "@nomicfoundation/hardhat-toolbox": "^${hardhatToolboxVersion}",
+    ${upgradeable ? `"@openzeppelin/contracts-upgradeable" : "^${contractsUpgradeableVersion}",
+    "@openzeppelin/hardhat-upgrades": "^${hardhatUpgradesVersion}",
+    "@nomiclabs/hardhat-ethers": "^${hardhatEthersVersion}",
+    "ethers": "^${ethersVersion}",`
     :
-    `"@openzeppelin/contracts" : "^4.7.3",`
+    `"@openzeppelin/contracts" : "^${contractsVersion}",`
     }
-    "hardhat": "^2.11.2"
+    "hardhat": "^${hardhatVersion}"
   }
 }
 `
