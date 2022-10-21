@@ -1,4 +1,4 @@
-import test from 'ava';
+import test, { ExecutionContext } from 'ava';
 
 import { zipHardhat } from './zipHardhat';
 
@@ -10,6 +10,7 @@ import path from 'path';
 import os from 'os';
 import util from 'util';
 import child from "child_process";
+import type { JSZipObject } from 'jszip';
 
 test('erc20 basic', async t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK' });
@@ -31,9 +32,14 @@ test('erc20 basic', async t => {
     'tsconfig.json',
   ]);
 
+  const items = Object.values(zip.files);
+  await runProject(items, t);
+});
+
+async function runProject(files: JSZipObject[], t: ExecutionContext<unknown>) {
   let tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
 
-  const items = Object.values(zip.files);
+  const items = Object.values(files);
   for (const item of items) {
     if (item.dir) {
       await fs.mkdir(path.join(tempFolder, item.name));
@@ -46,7 +52,7 @@ test('erc20 basic', async t => {
   const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
   t.regex(result.stdout, /1 passing/);
   t.regex(result.stdout, /deployed to/);
-});
+}
 
 test('can zip all combinations', t => {
   for (const { options } of generateSources('all')) {
