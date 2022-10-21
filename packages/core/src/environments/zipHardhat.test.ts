@@ -3,6 +3,9 @@ import test, { ExecutionContext } from 'ava';
 import { zipHardhat } from './zipHardhat';
 
 import { buildERC20 } from '../erc20';
+import { buildERC721 } from '../erc721';
+import { buildERC1155 } from '../erc1155';
+import { buildCustom } from '../custom';
 import { generateSources } from '../generate/sources';
 import { buildGeneric } from '../build-generic';
 import { promises as fs } from 'fs';
@@ -10,18 +13,37 @@ import path from 'path';
 import os from 'os';
 import util from 'util';
 import child from "child_process";
-import type { JSZipObject } from 'jszip';
+import type { Contract } from '../contract';
 
 test('erc20 basic', async t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK' });
-  const zip = zipHardhat(c);
-  const files = Object.values(zip.files).map(f => f.name).sort();
+  await run(c, t);
+});
 
-  t.deepEqual(files, [
+test('erc721 upgradeable', async t => {
+  const c = buildERC721({ name: 'MyToken', symbol: 'MTK', upgradeable: 'uups' });
+  await run(c, t);
+});
+
+test('erc1155 basic', async t => {
+  const c = buildERC1155({ name: 'MyToken', uri: 'https://myuri/{id}'});
+  await run(c, t);
+});
+
+test('custom upgradeable', async t => {
+  const c = buildCustom({ name: 'MyContract', upgradeable: 'transparent' });
+  await run(c, t);
+});
+
+async function run(c: Contract, t: ExecutionContext<unknown>) {
+  const zip = zipHardhat(c);
+
+  const sorted = Object.values(zip.files).map(f => f.name).sort();
+  t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
     'contracts/',
-    'contracts/MyToken.sol',
+    `contracts/${c.name}.sol`,
     'hardhat.config.ts',
     'package-lock.json',
     'package.json',
@@ -32,11 +54,8 @@ test('erc20 basic', async t => {
     'tsconfig.json',
   ]);
 
-  const items = Object.values(zip.files);
-  await runProject(items, t);
-});
+  const files = Object.values(zip.files);
 
-async function runProject(files: JSZipObject[], t: ExecutionContext<unknown>) {
   let tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
 
   const items = Object.values(files);
