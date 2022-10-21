@@ -193,8 +193,8 @@
         <button class="download-option" on:click={downloadVendoredHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
-            <p>Does not require npm package.</p>
+            <p>Contracts ZIP <span class="download-zip-beta">Beta</span></p>
+            <p>Dependencies included.</p>
             <p>Must be updated manually.</p>
           </div>
         </button>
@@ -203,7 +203,7 @@
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Development Package - Hardhat</p>
+            <p>Development Package: Hardhat <span class="download-zip-beta">Beta</span></p>
             <p>Sample project to get started with development and testing.</p>
           </div>
         </button>
