@@ -199,6 +199,7 @@
           </div>
         </button>
 
+        {#if opts?.kind !== "Governor"}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -206,6 +207,7 @@
             <p>Sample project to get started with development and testing.</p>
           </div>
         </button>
+        {/if}
       </Dropdown>
     </div>
   </div>
