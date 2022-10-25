@@ -11,9 +11,12 @@ import { buildGeneric } from '../build-generic';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
-import util from 'util';
+import util, { promisify } from 'util';
 import child from "child_process";
 import type { Contract } from '../contract';
+import _rimraf from 'rimraf';
+
+const rimraf = promisify(_rimraf);
 
 test('erc20 basic', async t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK' });
@@ -57,20 +60,23 @@ async function run(c: Contract, t: ExecutionContext<unknown>) {
   const files = Object.values(zip.files);
 
   let tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
-
-  const items = Object.values(files);
-  for (const item of items) {
-    if (item.dir) {
-      await fs.mkdir(path.join(tempFolder, item.name));
-    } else {
-      await fs.writeFile(path.join(tempFolder, item.name), Buffer.from(await item?.async('arraybuffer')));
+  try {
+    const items = Object.values(files);
+    for (const item of items) {
+      if (item.dir) {
+        await fs.mkdir(path.join(tempFolder, item.name));
+      } else {
+        await fs.writeFile(path.join(tempFolder, item.name), Buffer.from(await item?.async('arraybuffer')));
+      }
     }
-  }
 
-  const exec = util.promisify(child.exec);
-  const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
-  t.regex(result.stdout, /1 passing/);
-  t.regex(result.stdout, /deployed to/);
+    const exec = util.promisify(child.exec);
+    const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
+    t.regex(result.stdout, /1 passing/);
+    t.regex(result.stdout, /deployed to/);
+  } finally {
+    await rimraf(tempFolder);
+  }
 }
 
 test('can zip all combinations', t => {
