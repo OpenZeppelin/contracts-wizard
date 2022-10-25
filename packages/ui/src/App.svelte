@@ -193,8 +193,8 @@
         <button class="download-option" on:click={downloadVendoredHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Contracts ZIP <span class="download-zip-beta">Beta</span></p>
-            <p>Dependencies included.</p>
+            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
+            <p>Does not require npm package.</p>
             <p>Must be updated manually.</p>
           </div>
         </button>
