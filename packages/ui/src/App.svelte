@@ -91,8 +91,10 @@
       }
     };
 
+    const zipModule = import('@openzeppelin/wizard/zip');
+
     const downloadVendoredHandler = async () => {
-      const { zipContract } = await import('@openzeppelin/wizard/zip');
+      const { zipContract } = await zipModule;
       const zip = zipContract(contract);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');
@@ -101,8 +103,10 @@
       }
     };
 
+    const wizardModule = import('@openzeppelin/wizard');
+
     const downloadHardhatHandler = async () => {
-      const { zipHardhat } = await import('@openzeppelin/wizard');
+      const { zipHardhat } = await wizardModule;
       const zip = await zipHardhat(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'hardhat.zip');
