@@ -3,16 +3,10 @@ import type { GenericOptions } from "../build-generic";
 import type { Contract } from "../contract";
 import type { ERC1155Options } from "../erc1155";
 import { printContract } from "../print";
-import { hardhatPackageLock } from "./lockHardhat";
-import { hardhatUpgradeablePackageLock } from "./lockHardhatUpgradeable";
-
-import { version as contractsVersion } from "@openzeppelin/contracts/package.json";
-import { version as contractsUpgradeableVersion } from "@openzeppelin/contracts-upgradeable/package.json";
-import { version as hardhatVersion } from "hardhat/package.json";
-import { version as hardhatUpgradesVersion } from "@openzeppelin/hardhat-upgrades/package.json";
-import { version as hardhatEthersVersion } from "@nomiclabs/hardhat-ethers/package.json";
-import { version as hardhatToolboxVersion } from "@nomicfoundation/hardhat-toolbox/package.json";
-import { version as ethersVersion } from "ethers/package.json";
+import packageJson from "./hardhat/package.json";
+import packageLock from "./hardhat/package-lock.json";
+import upgradeablePackageJson from "./hardhat/upgradeable/package.json";
+import upgradeablePackageLock from "./hardhat/upgradeable/package-lock.json";
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
@@ -21,7 +15,7 @@ import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.9",
+    version: "0.8.4",
     settings: {
       optimizer: {
         enabled: true,
@@ -32,31 +26,6 @@ const config: HardhatUserConfig = {
 
 export default config;
 `;
-
-const packageJson = (upgradeable: boolean) => `\
-{
-  "name": "hardhat-sample",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "npx hardhat test"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^${hardhatToolboxVersion}",
-    ${upgradeable ? `"@openzeppelin/contracts-upgradeable" : "^${contractsUpgradeableVersion}",
-    "@openzeppelin/hardhat-upgrades": "^${hardhatUpgradesVersion}",
-    "@nomiclabs/hardhat-ethers": "^${hardhatEthersVersion}",
-    "ethers": "^${ethersVersion}",`
-    :
-    `"@openzeppelin/contracts" : "^${contractsVersion}",`
-    }
-    "hardhat": "^${hardhatVersion}"
-  }
-}
-`
 
 const tsConfig = `\
 {
@@ -179,7 +148,7 @@ export function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
-  zip.file('package.json', packageJson(c.upgradeable));
+  zip.file('package.json', JSON.stringify(c.upgradeable ? upgradeablePackageJson : packageJson, null, 2));
   zip.file('README.md', readme);
   zip.file('tsconfig.json', tsConfig);
   zip.file('.gitignore', gitIgnore);
@@ -188,7 +157,7 @@ export function zipHardhat(c: Contract, opts?: GenericOptions) {
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
 
-  zip.file(`package-lock.json`, c.upgradeable ? hardhatUpgradeablePackageLock : hardhatPackageLock);
+  zip.file(`package-lock.json`, JSON.stringify(c.upgradeable ? upgradeablePackageLock : packageLock, null, 2));
 
   return zip;
 }
