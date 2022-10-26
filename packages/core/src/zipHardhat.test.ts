@@ -6,8 +6,6 @@ import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
 import { buildCustom } from './custom';
-import { generateSources } from './generate/sources';
-import { buildGeneric } from './build-generic';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -18,22 +16,22 @@ import _rimraf from 'rimraf';
 
 const rimraf = promisify(_rimraf);
 
-test.serial('erc20 basic', async t => {
+test('erc20 basic', async t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK' });
   await run(c, t);
 });
 
-test.serial('erc721 upgradeable', async t => {
+test('erc721 upgradeable', async t => {
   const c = buildERC721({ name: 'MyToken', symbol: 'MTK', upgradeable: 'uups' });
   await run(c, t);
 });
 
-test.serial('erc1155 basic', async t => {
+test('erc1155 basic', async t => {
   const c = buildERC1155({ name: 'MyToken', uri: 'https://myuri/{id}'});
   await run(c, t);
 });
 
-test.serial('custom upgradeable', async t => {
+test('custom upgradeable', async t => {
   const c = buildCustom({ name: 'MyContract', upgradeable: 'transparent' });
   await run(c, t);
 });
@@ -78,11 +76,3 @@ async function run(c: Contract, t: ExecutionContext<unknown>) {
     await rimraf(tempFolder);
   }
 }
-
-test('can zip all combinations', t => {
-  for (const { options } of generateSources('all')) {
-    const c = buildGeneric(options);
-    zipHardhat(c);
-  }
-  t.pass();
-});
