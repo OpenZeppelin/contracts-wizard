@@ -190,24 +190,24 @@
           </div>
         </button>
 
-        <button class="download-option" on:click={downloadVendoredHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
-            <p>Does not require npm package.</p>
-            <p>Must be updated manually.</p>
-          </div>
-        </button>
-
         {#if opts?.kind !== "Governor"}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Development Package: Hardhat <span class="download-zip-beta">Beta</span></p>
+            <p>Development Package: Hardhat</p>
             <p>Sample project to get started with development and testing.</p>
           </div>
         </button>
         {/if}
+
+        <button class="download-option" on:click={downloadVendoredHandler}>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Vendored ZIP</p>
+            <p>Does not require npm package.</p>
+            <p>Must be updated manually.</p>
+          </div>
+        </button>
       </Dropdown>
     </div>
   </div>
