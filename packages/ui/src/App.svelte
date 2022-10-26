@@ -25,7 +25,6 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
-    import { zipHardhat } from '@openzeppelin/wizard';
 
     const dispatch = createEventDispatcher();
 
@@ -92,10 +91,8 @@
       }
     };
 
-    const zipModule = import('@openzeppelin/wizard/zip');
-
     const downloadVendoredHandler = async () => {
-      const { zipContract } = await zipModule;
+      const { zipContract } = await import('@openzeppelin/wizard/zip');
       const zip = zipContract(contract);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'contracts.zip');
@@ -105,9 +102,9 @@
     };
 
     const downloadHardhatHandler = async () => {
-
-      const devPackage = await zipHardhat(contract, opts);
-      const blob = await devPackage.generateAsync({ type: 'blob' });
+      const { zipHardhat } = await import('@openzeppelin/wizard/zipHardhat');
+      const zip = await zipHardhat(contract, opts);
+      const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'hardhat.zip');
       if (opts) {
         await postConfig(opts, 'download-hardhat', language);
