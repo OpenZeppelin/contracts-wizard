@@ -103,10 +103,10 @@
       }
     };
 
-    const zipHardhatModule = import('@openzeppelin/wizard/zipHardhat');
+    const zipEnvModule = import('@openzeppelin/wizard/zipEnv');
 
     const downloadHardhatHandler = async () => {
-      const { zipHardhat } = await zipHardhatModule;
+      const { zipHardhat } = await zipEnvModule;
       const zip = await zipHardhat(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'hardhat.zip');
