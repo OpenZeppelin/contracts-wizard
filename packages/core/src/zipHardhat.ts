@@ -1,12 +1,8 @@
 import JSZip from "jszip";
-import type { GenericOptions } from "../build-generic";
-import type { Contract } from "../contract";
-import type { ERC1155Options } from "../erc1155";
-import { printContract } from "../print";
-import packageJson from "./hardhat/package.json";
-import packageLock from "./hardhat/package-lock.json";
-import upgradeablePackageJson from "./hardhat/upgradeable/package.json";
-import upgradeablePackageLock from "./hardhat/upgradeable/package-lock.json";
+import type { GenericOptions } from "./build-generic";
+import type { Contract } from "./contract";
+import type { ERC1155Options } from "./erc1155";
+import { printContract } from "./print";
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
@@ -144,11 +140,15 @@ npx hardhat run --network <your-network> scripts/deploy.js
 \`\`\`
 `
 
-export function zipHardhat(c: Contract, opts?: GenericOptions) {
+export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
-  zip.file('package.json', JSON.stringify(c.upgradeable ? upgradeablePackageJson : packageJson, null, 2));
+
+  const packageJson = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
+  const packageLock = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
+
+  zip.file('package.json', JSON.stringify(packageJson, null, 2));
   zip.file('README.md', readme);
   zip.file('tsconfig.json', tsConfig);
   zip.file('.gitignore', gitIgnore);
@@ -157,7 +157,7 @@ export function zipHardhat(c: Contract, opts?: GenericOptions) {
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
 
-  zip.file(`package-lock.json`, JSON.stringify(c.upgradeable ? upgradeablePackageLock : packageLock, null, 2));
+  zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
 
   return zip;
 }

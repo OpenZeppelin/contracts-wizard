@@ -2,18 +2,18 @@ import test, { ExecutionContext } from 'ava';
 
 import { zipHardhat } from './zipHardhat';
 
-import { buildERC20 } from '../erc20';
-import { buildERC721 } from '../erc721';
-import { buildERC1155 } from '../erc1155';
-import { buildCustom } from '../custom';
-import { generateSources } from '../generate/sources';
-import { buildGeneric } from '../build-generic';
+import { buildERC20 } from './erc20';
+import { buildERC721 } from './erc721';
+import { buildERC1155 } from './erc1155';
+import { buildCustom } from './custom';
+import { generateSources } from './generate/sources';
+import { buildGeneric } from './build-generic';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
 import util, { promisify } from 'util';
 import child from "child_process";
-import type { Contract } from '../contract';
+import type { Contract } from './contract';
 import _rimraf from 'rimraf';
 
 const rimraf = promisify(_rimraf);
@@ -39,7 +39,7 @@ test('custom upgradeable', async t => {
 });
 
 async function run(c: Contract, t: ExecutionContext<unknown>) {
-  const zip = zipHardhat(c);
+  const zip = await zipHardhat(c);
 
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
