@@ -16,7 +16,8 @@
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:watch": "ava --watch",
-    "version": "node ../../scripts/bump-changelog.js"
+    "version": "node ../../scripts/bump-changelog.js",
+    "bumplocks": "npm install --prefix ./src/environments/hardhat && npm install --prefix ./src/environments/hardhat/upgradeable"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "4.7.3",
