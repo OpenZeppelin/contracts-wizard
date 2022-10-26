@@ -1,1 +1,1 @@
-export * from './src/zipHardhat';
+export { zipHardhat } from './src/zipHardhat';
