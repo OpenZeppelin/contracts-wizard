@@ -143,21 +143,18 @@ npx hardhat run --network <your-network> scripts/deploy.js
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
-
   const { default: packageJson } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
   const { default: packageLock } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
 
-  zip.file('package.json', JSON.stringify(packageJson, null, 2));
-  zip.file('README.md', readme);
-  zip.file('tsconfig.json', tsConfig);
-  zip.file('.gitignore', gitIgnore);
+  zip.file(`contracts/${c.name}.sol`, printContract(c));
   zip.file('test/test.ts', test(c, opts));
   zip.file('scripts/deploy.ts', script(c));
-
-  zip.file(`contracts/${c.name}.sol`, printContract(c));
-
+  zip.file('.gitignore', gitIgnore);
+  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
+  zip.file('package.json', JSON.stringify(packageJson, null, 2));
   zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
+  zip.file('README.md', readme);
+  zip.file('tsconfig.json', tsConfig);
 
   return zip;
 }
