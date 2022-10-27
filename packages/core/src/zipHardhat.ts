@@ -145,8 +145,8 @@ export async function zipHardhat(c: Contract, opts?: GenericOptions) {
 
   zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
 
-  const packageJson = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
-  const packageLock = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
+  const { default: packageJson } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
+  const { default: packageLock } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
 
   zip.file('package.json', JSON.stringify(packageJson, null, 2));
   zip.file('README.md', readme);
