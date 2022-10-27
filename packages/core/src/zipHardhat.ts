@@ -136,7 +136,7 @@ npm test
 You can target any network from your Hardhat config using:
 
 \`\`\`shell
-npx hardhat run --network <your-network> scripts/deploy.js
+npx hardhat run --network <network-name> scripts/deploy.ts
 \`\`\`
 `
 
