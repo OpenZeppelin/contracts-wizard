@@ -16,22 +16,22 @@ import _rimraf from 'rimraf';
 
 const rimraf = promisify(_rimraf);
 
-test('erc20 basic', async t => {
+test.serial('erc20 basic', async t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK' });
   await run(c, t);
 });
 
-test('erc721 upgradeable', async t => {
+test.serial('erc721 upgradeable', async t => {
   const c = buildERC721({ name: 'MyToken', symbol: 'MTK', upgradeable: 'uups' });
   await run(c, t);
 });
 
-test('erc1155 basic', async t => {
+test.serial('erc1155 basic', async t => {
   const c = buildERC1155({ name: 'MyToken', uri: 'https://myuri/{id}'});
   await run(c, t);
 });
 
-test('custom upgradeable', async t => {
+test.serial('custom upgradeable', async t => {
   const c = buildCustom({ name: 'MyContract', upgradeable: 'transparent' });
   await run(c, t);
 });
