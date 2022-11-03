@@ -34,7 +34,7 @@ const tsConfig = `\
     "skipLibCheck": true
   }
 }
-`
+`;
 
 const gitIgnore = `\
 node_modules
@@ -47,7 +47,7 @@ typechain-types
 #Hardhat files
 cache
 artifacts
-`
+`;
 
 const test = (c: Contract, opts?: GenericOptions) => {
 
@@ -59,7 +59,7 @@ describe("${c.name}", function () {
   it("Test contract", async function () {
     const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory);' : 'ContractFactory.deploy();' }
+    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()' };
     await instance.deployed();
 
 `;
@@ -92,7 +92,7 @@ buf += `
 });
 `
 return buf;
-}
+};
 
 const script = (c: Contract) => `\
 import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
@@ -100,7 +100,7 @@ import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory);' : 'ContractFactory.deploy();' }
+  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()' };
   await instance.deployed();
 
   console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${instance.address}\`);
@@ -112,7 +112,7 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-`
+`;
 
 const readme = `\
 # Sample Hardhat Project
@@ -121,13 +121,13 @@ This project demonstrates a basic Hardhat use case. It comes with a contract gen
 
 ## Installing dependencies
 
-\`\`\`shell
+\`\`\`
 npm install
 \`\`\`
 
 ## Testing the contract
 
-\`\`\`shell
+\`\`\`
 npm test
 \`\`\`
 
@@ -135,10 +135,10 @@ npm test
 
 You can target any network from your Hardhat config using:
 
-\`\`\`shell
+\`\`\`
 npx hardhat run --network <network-name> scripts/deploy.ts
 \`\`\`
-`
+`;
 
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
