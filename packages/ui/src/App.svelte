@@ -194,7 +194,7 @@
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Development Package: Hardhat</p>
+            <p>Development Package (Hardhat)</p>
             <p>Sample project to get started with development and testing.</p>
           </div>
         </button>
