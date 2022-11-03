@@ -206,6 +206,7 @@
             <p>Vendored ZIP</p>
             <p>Does not require npm package.</p>
             <p>Must be updated manually.</p>
+            <p>Not recommended for beginners.</p>
           </div>
         </button>
       </Dropdown>
