@@ -1,6 +1,6 @@
 import test, { ExecutionContext } from 'ava';
 
-import { zipHardhat } from './zipHardhat';
+import { zipHardhat } from './zip-hardhat';
 
 import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';

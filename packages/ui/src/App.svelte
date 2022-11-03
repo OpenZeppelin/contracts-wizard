@@ -103,7 +103,7 @@
       }
     };
 
-    const zipEnvModule = import('@openzeppelin/wizard/zipEnv');
+    const zipEnvModule = import('@openzeppelin/wizard/zip-env');
 
     const downloadHardhatHandler = async () => {
       const { zipHardhat } = await zipEnvModule;
