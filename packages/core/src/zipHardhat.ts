@@ -17,7 +17,7 @@ const config: HardhatUserConfig = {
         enabled: true,
       },
     },
-  }
+  },
 };
 
 export default config;
