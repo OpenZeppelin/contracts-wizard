@@ -109,7 +109,7 @@
       const { zipHardhat } = await zipEnvModule;
       const zip = await zipHardhat(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'hardhat.zip');
+      saveAs(blob, 'project.zip');
       if (opts) {
         await postConfig(opts, 'download-hardhat', language);
       }
