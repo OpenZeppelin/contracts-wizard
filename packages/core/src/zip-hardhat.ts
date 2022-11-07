@@ -3,6 +3,7 @@ import type { GenericOptions } from "./build-generic";
 import type { Contract } from "./contract";
 import type { ERC1155Options } from "./erc1155";
 import { printContract } from "./print";
+import SOLIDITY_VERSION from './solidity-version.json';
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
@@ -11,7 +12,7 @@ import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.4",
+    version: "${SOLIDITY_VERSION}",
     settings: {
       optimizer: {
         enabled: true,
