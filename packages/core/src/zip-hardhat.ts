@@ -145,7 +145,10 @@ export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   const { default: packageJson } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
+  packageJson.license = c.license;
+
   const { default: packageLock } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
+  packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
   zip.file('test/test.ts', test(c, opts));
