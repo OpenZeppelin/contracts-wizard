@@ -1,7 +1,6 @@
 import JSZip from "jszip";
 import type { GenericOptions } from "./build-generic";
 import type { Contract } from "./contract";
-import type { ERC1155Options } from "./erc1155";
 import { printContract } from "./print";
 import SOLIDITY_VERSION from './solidity-version.json';
 
@@ -51,57 +50,61 @@ artifacts
 `;
 
 const test = (c: Contract, opts?: GenericOptions) => {
+  let plugins = getHardhatPlugins(c);
 
-let buf = `\
+  let buf = `\
 import { expect } from "chai";
-import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
+import { ${plugins.join(', ')} } from "hardhat";
 
 describe("${c.name}", function () {
   it("Test contract", async function () {
     const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()' };
+    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
     await instance.deployed();
 
 `;
 
-if (opts !== undefined) {
-  switch (opts.kind) {
-    case 'ERC20':
-    case 'ERC721':
-      buf += `    expect(await instance.name()).to.equal("${opts.name}");`
-      break;
+  if (opts !== undefined) {
+    switch (opts.kind) {
+      case 'ERC20':
+      case 'ERC721':
+        buf += `    expect(await instance.name()).to.equal("${opts.name}");`
+        break;
 
-    case 'ERC1155':
-      buf += `    expect(await instance.uri(0)).to.equal("${opts.uri}");`
-      break;
+      case 'ERC1155':
+        buf += `    expect(await instance.uri(0)).to.equal("${opts.uri}");`
+        break;
 
-    case 'Governor':
-      break;
+      case 'Governor':
+        break;
 
-    case 'Custom':
-      break;
+      case 'Custom':
+        break;
 
-    default:
-      const _: never = opts;
-      throw new Error('Unknown ERC');
+      default:
+        const _: never = opts;
+        throw new Error('Unknown ERC');
+    }
   }
-}
 
-buf += `
+  buf += `
   });
 });
 `
-return buf;
+  return buf;
 };
 
-const script = (c: Contract) => `\
-import { ethers${c.upgradeable ? ', upgrades' : ''} } from "hardhat";
+const script = (c: Contract) => {
+  let plugins = getHardhatPlugins(c);
+
+  return `\
+import { ${plugins.join(', ')} } from "hardhat";
 
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()' };
+  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
   await instance.deployed();
 
   console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${instance.address}\`);
@@ -113,7 +116,8 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-`;
+`
+};
 
 const readme = `\
 # Sample Hardhat Project
@@ -140,6 +144,14 @@ You can target any network from your Hardhat config using:
 npx hardhat run --network <network-name> scripts/deploy.ts
 \`\`\`
 `;
+
+function getHardhatPlugins(c: Contract) {
+  let plugins = ['ethers'];
+  if (c.upgradeable) {
+    plugins.push('upgrades');
+  }
+  return plugins;
+}
 
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
