@@ -73,7 +73,7 @@ if (opts !== undefined) {
       break;
 
     case 'ERC1155':
-      buf += `    expect(await instance.uri(0)).to.equal("${(opts as ERC1155Options).uri}");`
+      buf += `    expect(await instance.uri(0)).to.equal("${opts.uri}");`
       break;
 
     case 'Governor':
