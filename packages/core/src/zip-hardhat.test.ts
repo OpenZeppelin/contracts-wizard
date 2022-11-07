@@ -31,6 +31,11 @@ test.serial('erc1155 basic', async t => {
   await run(c, t);
 });
 
+test.serial('custom basic', async t => {
+  const c = buildCustom({ name: 'MyContract' });
+  await run(c, t);
+});
+
 test.serial('custom upgradeable', async t => {
   const c = buildCustom({ name: 'MyContract', upgradeable: 'transparent' });
   await run(c, t);
