@@ -3,11 +3,12 @@ import type { GenericOptions } from "./build-generic";
 import type { Contract } from "./contract";
 import { printContract } from "./print";
 import SOLIDITY_VERSION from './solidity-version.json';
+import { formatLinesWithSpaces, Lines, spaceBetween } from "./utils/format-lines";
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";${upgradeable ? `
-import "@openzeppelin/hardhat-upgrades";` : ''}
+import "@nomicfoundation/hardhat-toolbox";
+${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -50,56 +51,69 @@ artifacts
 `;
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  let plugins = getHardhatPlugins(c);
+  return formatLinesWithSpaces(
+    2,
+    ...spaceBetween(
+      getImports(c),
+      getTestCase(c),
+    ),
+  );
 
-  let buf = `\
-import { expect } from "chai";
-import { ${plugins.join(', ')} } from "hardhat";
+  function getTestCase(c: Contract) {
+    let testcase = [];
+    testcase.push(
+      `describe("${c.name}", function () {`,
+      [
+        'it("Test contract", async function () {',
+        spaceBetween(
+          [
+            `const ContractFactory = await ethers.getContractFactory("${c.name}");`,
+          ],
+          [
+            `const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};`,
+            'await instance.deployed();'
+          ],
+          getContractSpecificExpects(),
+        ),
+        '});'
+      ],
+      '});',
+    );
 
-describe("${c.name}", function () {
-  it("Test contract", async function () {
-    const ContractFactory = await ethers.getContractFactory("${c.name}");
-
-    const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
-    await instance.deployed();
-
-`;
-
-  if (opts !== undefined) {
-    switch (opts.kind) {
-      case 'ERC20':
-      case 'ERC721':
-        buf += `    expect(await instance.name()).to.equal("${opts.name}");`
-        break;
-
-      case 'ERC1155':
-        buf += `    expect(await instance.uri(0)).to.equal("${opts.uri}");`
-        break;
-
-      case 'Governor':
-        break;
-
-      case 'Custom':
-        break;
-
-      default:
-        const _: never = opts;
-        throw new Error('Unknown ERC');
-    }
+    return testcase;
   }
 
-  buf += `
-  });
-});
-`
-  return buf;
+  function getImports(c: Contract) {
+    return [
+      'import { expect } from "chai";',
+      `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`,
+    ];
+  }
+
+  function getContractSpecificExpects(): Lines[] {
+    if (opts !== undefined) {
+      switch (opts.kind) {
+        case 'ERC20':
+        case 'ERC721':
+          return [`expect(await instance.name()).to.equal("${opts.name}");`];
+
+        case 'ERC1155':
+          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
+
+        case 'Governor':
+        case 'Custom':
+          break;
+
+        default:
+          throw new Error('Unknown ERC');
+      }
+    }
+    return [];
+  }
 };
 
-const script = (c: Contract) => {
-  let plugins = getHardhatPlugins(c);
-
-  return `\
-import { ${plugins.join(', ')} } from "hardhat";
+const script = (c: Contract) => `\
+import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
 
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
@@ -116,8 +130,7 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-`
-};
+`;
 
 const readme = `\
 # Sample Hardhat Project
