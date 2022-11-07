@@ -6,6 +6,7 @@ const {
   TASK_COMPILE_SOLIDITY_LOG_COMPILATION_ERRORS,
   TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS,
 } = require('hardhat/builtin-tasks/task-names');
+const SOLIDITY_VERSION = require('./src/solidity-version.json');
 
 require('array.prototype.flat/auto');
 
@@ -43,5 +44,5 @@ task(TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS, async ({ compilationJobs }, _
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: '0.8.4',
+  solidity: SOLIDITY_VERSION,
 };
