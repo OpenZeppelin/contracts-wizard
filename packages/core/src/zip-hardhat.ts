@@ -60,8 +60,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   );
 
   function getTestCase(c: Contract) {
-    let testcase = [];
-    testcase.push(
+    return [
       `describe("${c.name}", function () {`,
       [
         'it("Test contract", async function () {',
@@ -78,9 +77,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         '});'
       ],
       '});',
-    );
-
-    return testcase;
+    ];
   }
 
   function getImports(c: Contract) {
