@@ -197,6 +197,7 @@ const functions = defineFunctions({
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
+      { name: 'batchSize', type: 'uint256' },
     ],
   },
 
@@ -206,6 +207,7 @@ const functions = defineFunctions({
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
+      { name: 'batchSize', type: 'uint256' },
     ],
   },
 
