@@ -53,6 +53,8 @@ test('erc721 auto increment', t => {
     '@openzeppelin/contracts/utils/introspection/',
     '@openzeppelin/contracts/utils/introspection/ERC165.sol',
     '@openzeppelin/contracts/utils/introspection/IERC165.sol',
+    '@openzeppelin/contracts/utils/math/',
+    '@openzeppelin/contracts/utils/math/Math.sol',
     'MyToken.sol',
   ]);
 });
@@ -94,6 +96,8 @@ test('erc721 auto increment uups', t => {
     '@openzeppelin/contracts-upgradeable/utils/introspection/',
     '@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol',
     '@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol',
+    '@openzeppelin/contracts-upgradeable/utils/math/',
+    '@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol',
     'MyToken.sol',
   ]);
 });
