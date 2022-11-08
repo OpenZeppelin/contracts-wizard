@@ -78,7 +78,7 @@ function assertLayout(zip: JSZip, t: ExecutionContext<unknown>, c: Contract) {
 async function extractAndRunPackage(zip: JSZip, t: ExecutionContext<unknown>) {
   const files = Object.values(zip.files);
 
-  let tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
+  const tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
   try {
     const items = Object.values(files);
     for (const item of items) {
