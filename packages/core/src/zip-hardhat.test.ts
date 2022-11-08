@@ -112,11 +112,10 @@ async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<unkno
 
 async function getItemString(zip: JSZip, key: string) {
   const obj = zip.files[key];
-  if (obj !== undefined) {
-    return await asString(obj);
-  } else {
-    return '';
+  if (obj === undefined) {
+    throw Error(`Item ${key} not found in zip`);
   }
+  return await asString(obj);
 }
 
 async function asString(item: JSZipObject) {
