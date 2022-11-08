@@ -5,8 +5,7 @@ import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
-
-const SOLIDITY_VERSION = '0.8.9';
+import SOLIDITY_VERSION from './solidity-version.json';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
