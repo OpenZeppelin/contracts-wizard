@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "MIT",
   "repository": "github:OpenZeppelin/contracts-wizard",
@@ -16,15 +16,16 @@
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:watch": "ava --watch",
-    "version": "node ../../scripts/bump-changelog.js"
+    "version": "node ../../scripts/bump-changelog.js",
+    "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "4.7.3",
-    "@openzeppelin/contracts-upgradeable": "4.7.3",
+    "@openzeppelin/contracts": "4.8.0",
+    "@openzeppelin/contracts-upgradeable": "4.8.0",
     "@types/node": "^10.17.51",
     "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
-    "ava": "^4.0.0",
+    "ava": "^5.0.0",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
     "rimraf": "^3.0.2",
