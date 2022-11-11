@@ -10,7 +10,7 @@ import typescript from '@rollup/plugin-typescript';
 import styles from 'rollup-plugin-styles';
 import proc from 'child_process';
 import events from 'events';
-import serve from './rollup.server';
+import serve from './rollup.server.mjs';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -99,7 +99,7 @@ export default [
       // Generate openzeppelin-contracts.js data file
       onStartRun(...'yarn --cwd ../core prepare'.split(' ')),
 
-      svelte(require('./svelte.config')),
+      svelte(await import('./svelte.config.js')),
 
       styles({
         mode: ['extract', 'bundle.css'],
