@@ -17,14 +17,14 @@ resizeObserver.observe(document.body);
 
 const params = new URLSearchParams(window.location.search);
 
-const tab = params.get('tab');
+const initialTab = params.get('tab') ?? undefined;
 const lang = params.get('lang');
 
 let app;
 if (lang === 'cairo') {
-  app = new CairoApp({ target: document.body, props: { tab } });
+  app = new CairoApp({ target: document.body, props: { initialTab } });
 } else {
-  app = new App({ target: document.body, props: { tab } });
+  app = new App({ target: document.body, props: { initialTab } });
 }
 
 app.$on('tab-change', (e: CustomEvent) => {

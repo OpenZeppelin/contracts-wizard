@@ -22,7 +22,9 @@
 
     const dispatch = createEventDispatcher();
 
-    export let tab: Kind = 'ERC20';
+    export let initialTab: string | undefined = 'ERC20';
+
+    export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
