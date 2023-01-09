@@ -74,6 +74,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access, [
+      functions.setApprovalForAll,
       functions.safeTransferFrom, 
       functions.safeBatchTransferFrom, 
     ]);
