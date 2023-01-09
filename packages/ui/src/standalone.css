@@ -1,3 +1,6 @@
+@tailwind utilities;
+@import "styles/vars.css";
+
 body {
   background: #f9fafb;
   font-family: Helvetica, Arial, sans-serif;
@@ -39,76 +42,71 @@ body {
   font-style: normal;
 }
 
-/* Hero */
-.hero {
-  text-align: center;
-  padding: 5rem 1rem 16rem;
-  margin: auto;
-  color: #2c374b;
+/* Header */
+.header {
+  text-align: left;
+  padding: 1.5rem 1rem 1.5rem;
+  margin: 0 0 14rem;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   background: white;
+  display: flex;
+  flex-direction: row;
+  min-width: 800px;
 }
-.hero img {
-  height: 2rem;
-}
-.hero a {
-  color: inherit;
-}
-.hero h1 {
-  font-size: 3.5rem;
-  line-height: 1.25;
-  padding: 2rem 0;
-  margin: 0;
-  font-weight: 500;
-  color: transparent;
-  background: linear-gradient(-60deg, #4e5de4, #49a5fa, #51d4ff, #49a5fa, #51d4ff);
-  background-size: 200% 200%;
-  animation: Gradient 8s ease infinite;
-  -moz-animation: Gradient 8s ease infinite;
-  -webkit-animation: Gradient 8s ease infinite;
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.hero-cairo h1 {
-  font-size: 3.5rem;
-  line-height: 1.25;
-  padding: 2rem 0;
-  margin: 0;
-  font-weight: 500;
-  color: transparent;
-  background: linear-gradient(-60deg, #e55233, #f6643c, #e55233, #f6643c);
-  background-size: 200% 200%;
-  animation: Gradient 8s ease infinite;
-  -moz-animation: Gradient 8s ease infinite;
-  -webkit-animation: Gradient 8s ease infinite;
-  -webkit-background-clip: text;
-  background-clip: text;
+.header img {
+  margin: 0 2rem 0;
 }
 
-@-webkit-keyframes Gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+.header .switch {
+  --color-1: var(--solidity-blue-1);
+  --color-2: var(--solidity-blue-2);
+  display: block;
+  background: linear-gradient(to right, var(--color-1), var(--color-2));
+  font-size: 1.1rem;
+  line-height: 1;
+  color: white;
+  font-weight: 500;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  width: fit-content;
+  margin: 0.5rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
 }
 
-.hero p {
-  margin: 0 auto;
-  font-size: 1.3em;
-  line-height: 1.5;
-  color: #798294;
-  font-weight: 400;
-  max-width: 40rem;
+.header .switch.switch-off:not(:hover, :focus) {
+  color: transparent;
+  background-clip: text;
+  box-shadow: 0 0 0 1px var(--color-2) inset;
+}
+
+.header .switch.switch-solidity {
+  --color-1: var(--solidity-blue-1);
+  --color-2: var(--solidity-blue-2);
+}
+
+.header .switch.switch-cairo {
+  --color-1: var(--cairo-orange-1);
+  --color-2: var(--cairo-orange-2);
+}
+
+.header .link {
+  color: var(--text-color);
+  display: block;
+  background: white;
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 1rem 0.5rem;
+  width: fit-content;
 }
 
 /* Wizard */
 .wizard-container {
-  padding: 0 1rem 3rem;
+  padding: 0 1rem 1.5rem;
   max-width: 100%;
   margin: -12rem auto 0;
 }
@@ -117,80 +115,8 @@ body {
   box-shadow: 0px 10px 40px rgb(108 133 171 / 20%);
   border-radius: 1rem;
   min-width: 800px;
-  max-width: 1100px;
+  max-width: 1500px;
   margin: auto;
-}
-
-/* FAQ */
-.faq {
-  max-width: 45rem;
-  margin: 0 auto 2rem;
-  padding: 0 2rem;
-}
-.faq ul {
-  padding-inline-start: 0;
-}
-.faq li {
-  padding: 1rem 0;
-  border-bottom: solid 1px #e1e1e2;
-  list-style: none;
-}
-.faq li:last-child {
-  border: none;
-}
-.faq h3 {
-  color: #3d4a5c;
-  font-family: 'silka', Arial, Helvetica, sans-serif;
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 500;
-}
-.faq p {
-  color: #818998;
-  margin-top: 0.5rem;
-}
-.faq a {
-  color: inherit;
-}
-
-/* Defender */
-.defender {
-  max-width: 45rem;
-  background-color: #21d4fd;
-  background-image: linear-gradient(19deg, #21d4fd 0%, #4e5de4 100%);
-  box-shadow: 0px 10px 30px rgba(181, 185, 192, 0.3);
-  border-radius: 1rem;
-  padding: 3rem 6rem;
-  margin: 0 auto 4rem;
-  color: white;
-  text-align: center;
-  line-height: 1.5;
-}
-.defender p {
-  margin: 0 auto 2rem;
-  font-size: 1.2rem;
-  max-width: 45rem;
-  color: #f0f6fe;
-}
-.defender a {
-  display: block;
-  background: white;
-  font-size: 1rem;
-  line-height: 1;
-  color: #3586f0;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-decoration: none;
-  border-radius: 0.75rem;
-  padding: 1rem 2rem;
-  width: fit-content;
-  margin: auto;
-}
-.defender a:hover,
-.defender a:focus {
-  box-shadow: 0px 0px 12px rgb(255 255 255 / 80%);
-  outline: none;
-  border: none;
 }
 
 /* Footer */

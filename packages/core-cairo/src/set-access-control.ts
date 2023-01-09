@@ -18,6 +18,7 @@ export type Access = typeof accessOptions[number];
       c.addModule(modules.Ownable, [{ lit:'owner' }], [], true);
       c.addConstructorArgument({ name: 'owner', type: 'felt'});
       
+      c.addFunction(functions.owner);
       c.addFunction(functions.transferOwnership);
       c.addFunction(functions.renounceOwnership);
       break;
@@ -57,7 +58,7 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
     }
     case 'roles': {
       const roleId = role + '_ROLE';
-      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)} # keccak256('${roleId}')[0:251 bits]`)) {
+      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)}; // keccak256('${roleId}')[0:251 bits]`)) {
         c.addConstructorCode(`AccessControl._grant_role(${roleId}, admin)`);
       }
 
@@ -104,6 +105,17 @@ const functions = defineFunctions({
   assert_only_role: {
     module: modules.AccessControl,
     args: []
+  },
+
+  // --- view functions ---
+
+  owner: {
+    module: modules.Ownable,
+    kind: 'view',
+    implicitArgs: withImplicitArgs(),
+    args: [],
+    returns: [{ name: 'owner', type: 'felt' }],
+    passthrough: true,
   },
 
   // --- external functions ---

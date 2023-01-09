@@ -29,7 +29,7 @@ export function zipContract(c: Contract): JSZip {
   const fileName = c.name + '.sol';
 
   const dependencies = {
-    [fileName]: c.parents.map(p => transformImport(p.contract.path)),
+    [fileName]: c.imports.map(i => transformImport(i)),
     ...contracts.dependencies,
   };
 

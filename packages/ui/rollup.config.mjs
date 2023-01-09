@@ -10,7 +10,7 @@ import typescript from '@rollup/plugin-typescript';
 import styles from 'rollup-plugin-styles';
 import proc from 'child_process';
 import events from 'events';
-import serve from './rollup.server';
+import serve from './rollup.server.mjs';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -42,6 +42,27 @@ function onStartRun(cmd, ...args) {
 
 /** @type import('rollup').RollupOptions */
 export default [
+  {
+    input: 'src/standalone.js',
+    output: {
+      dir: 'public/build',
+      assetFileNames: '[name][extname]',
+      sourcemap: true,
+    },
+    onwarn(warning, warn) {
+      if (warning.code !== 'EMPTY_BUNDLE') {
+        warn(warning);
+      }
+    },
+    plugins: [
+      styles({
+        include: 'src/standalone.css',
+        mode: ['extract'],
+        url: false,
+        sourceMap: true,
+      }),
+    ],
+  },
   {
     input: 'src/embed.ts',
     output: {
@@ -78,7 +99,7 @@ export default [
       // Generate openzeppelin-contracts.js data file
       onStartRun(...'yarn --cwd ../core prepare'.split(' ')),
 
-      svelte(require('./svelte.config')),
+      svelte(await import('./svelte.config.js')),
 
       styles({
         mode: ['extract', 'bundle.css'],
@@ -103,6 +124,7 @@ export default [
         preventAssignment: true,
         include: '../../**/node_modules/**/*',
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
       }),
 
       json(),

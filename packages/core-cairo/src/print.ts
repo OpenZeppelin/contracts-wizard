@@ -24,7 +24,7 @@ export function printContract(contract: Contract): string {
   return formatLines(
     ...spaceBetween(
       [
-        `# SPDX-License-Identifier: ${contract.license}`,
+        `// SPDX-License-Identifier: ${contract.license}`,
       ],
             
       [
@@ -44,21 +44,25 @@ export function printContract(contract: Contract): string {
         ...fns.modifiers,
         hasViews ? 
           [
-            `#`,
-            `# Getters`,
-            `#`
+            `//`,
+            `// Getters`,
+            `//`
           ] : [],
         ...fns.views,
         hasExternals ? 
         [
-          `#`,
-          `# Externals`,
-          `#`
+          `//`,
+          `// Externals`,
+          `//`
         ] : [],
       ...fns.externals,
       ),
     ),
   );
+}
+
+function withSemicolons(lines: string[]): string[] {
+  return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
 function printImports(contract: Contract) {
@@ -109,8 +113,8 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a));
     const implicitArgs = contract.constructorImplicitArgs?.map(a => printArgument(a));
     const body = spaceBetween(
-        parents,
-        contract.constructorCode,
+        withSemicolons(parents),
+        withSemicolons(contract.constructorCode),
       );
 
     const constructor = printFunction2(
@@ -119,7 +123,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       args,
       modifier,
       undefined,
-      undefined,
+      'return ();',
       body,
     );
     return constructor;
@@ -190,18 +194,25 @@ function printFunction(fn: ContractFunction): Lines[] {
     code.push(libraryCallString);
   });
 
+  let returnLine = 'return ();';
+
   if (!fn.final && fn.module !== undefined) {
     const fnName = getFunctionName(fn);
     const parentFunctionCall = fn.read ? 
     `${fnName}.read()` :
     `${fnName}(${fn.args.map(a => a.name).join(', ')})`;
-    const callParentLine = fn.passthrough ? `let (${returnArgs}) = ${parentFunctionCall}` : `${parentFunctionCall}`;
-    code.push(callParentLine);
+    if (!fn.passthrough || returnArgs === undefined || returnArgs.length === 0) {
+      code.push(parentFunctionCall);
+    } else if (fn.passthrough === 'strict') {
+      code.push(`let (${returnArgs}) = ${parentFunctionCall}`);
+      const namedReturnVars = returnArgs.map(v => `${v}=${v}`).join(', ');
+      returnLine = `return (${namedReturnVars});`;
+    } else if (fn.passthrough === true) {
+      returnLine = `return ${parentFunctionCall};`;
+    }
   }
 
   code.push(...fn.code);
-
-  const returnVariables = fn.returnValue ? [fn.returnValue] : returnArgs;
 
   return printFunction2(
     'func ' + fn.name,
@@ -209,43 +220,49 @@ function printFunction(fn: ContractFunction): Lines[] {
     fn.args.map(a => printArgument(a)),
     fn.kind,
     fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a)),
-    returnVariables,
-    code,
+    returnLine,
+    withSemicolons(code),
   );
 }
 
 // generic for functions and constructors
 // kindedName = 'func foo'
-function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnVariables: string[] | undefined, code: Lines[]): Lines[] {
+function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnLine: string, code: Lines[]): Lines[] {
   const fn = [];
 
   if (kind !== undefined) {
     fn.push(`@${kind}`);
   }
-  fn.push(`${kindedName}{`);
-  
-  const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
-  fn.push([implicitArgsFormatted]);
+
+  let accum = kindedName;
+
+  if (implicitArgs.length > 0) {
+    fn.push(accum + '{');
+    const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
+    fn.push([implicitArgsFormatted]);
+    accum = '}';
+  }
   
   const formattedArgs = args.join(', ');
-  const formattedReturns = returns?.join(', ');
 
-  if (returns !== undefined) {
-    fn.push([`}(${formattedArgs}) -> (${formattedReturns}):`]);
+  accum += `(${formattedArgs})`;
+
+  if (returns === undefined) {
+    accum += ' {';
   } else {
-    fn.push([`}(${formattedArgs}):`]);
+    const formattedReturns = returns.join(', ');
+    accum += ` -> (${formattedReturns}) {`;
   }
 
+  fn.push(accum);
+  
   fn.push(code);
-
-  if (returnVariables !== undefined) {
-    const formattedReturnVars = returnVariables?.join(', ');
-    fn.push([`return (${formattedReturnVars})`]);
-  } else {
-    fn.push(['return ()']);
+  
+  if (returnLine !== undefined) {
+    fn.push([returnLine]);
   }
 
-  fn.push('end');
+  fn.push('}');
 
   return fn;
 }

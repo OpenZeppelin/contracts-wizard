@@ -8,9 +8,8 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
+    import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
-    import DocsIcon from '../icons/DocsIcon.svelte';
-    import ForumIcon from '../icons/ForumIcon.svelte';
     import Dropdown from '../Dropdown.svelte';
     import OverflowMenu from '../OverflowMenu.svelte';
     import FileIcon from '../icons/FileIcon.svelte';
@@ -24,7 +23,9 @@
 
     const dispatch = createEventDispatcher();
 
-    export let tab: Kind = 'ERC20';
+    export let initialTab: string | undefined = 'ERC20';
+
+    export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
@@ -57,11 +58,16 @@
 
     const language = 'cairo';
 
+    let copied = false;
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
+      copied = true;
       if (opts) {
         await postConfig(opts, 'copy', language);
       }
+      setTimeout(() => {
+        copied = false;
+      }, 1000);
     };
 
     const downloadCairoHandler = async () => {
@@ -95,9 +101,14 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button" on:click={copyHandler}>
-        <CopyIcon />
-        Copy to Clipboard
+      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+        {#if copied}
+          <CheckIcon />
+          Copied
+        {:else}
+          <CopyIcon />
+          Copy to Clipboard
+        {/if}
       </button>
 
       <Dropdown let:active>
@@ -131,16 +142,7 @@
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
       </div>
-      <div class="controls-footer">
-        <a href="https://forum.openzeppelin.com/" target="_blank">
-          <ForumIcon/> Forum
-        </a>
-        <a href="https://github.com/OpenZeppelin/cairo-contracts/tree/main/docs" target="_blank">
-          <DocsIcon/> Docs
-        </a>
-      </div>
     </div>
-
     <div class="output flex flex-col grow overflow-auto">
     <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
@@ -181,7 +183,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--red-3);
+    background-color: var(--cairo-orange-2);
     color: white;
     order: -1;
   }

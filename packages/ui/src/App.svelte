@@ -9,12 +9,11 @@
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
+    import CheckIcon from './icons/CheckIcon.svelte';
     import RemixIcon from './icons/RemixIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
-    import DocsIcon from './icons/DocsIcon.svelte';
-    import ForumIcon from './icons/ForumIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
@@ -29,7 +28,9 @@
 
     const dispatch = createEventDispatcher();
 
-    export let tab: Kind = 'ERC20';
+    export let initialTab: string | undefined = 'ERC20';
+
+    export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
@@ -62,11 +63,16 @@
 
     const language = 'solidity';
 
+    let copied = false;
     const copyHandler = async () => {
       await navigator.clipboard.writeText(code);
+      copied = true;
       if (opts) {
         await postConfig(opts, 'copy', language);
       }
+      setTimeout(() => {
+        copied = false;
+      }, 1000);
     };
 
     const remixHandler = async (e: MouseEvent) => {
@@ -98,6 +104,18 @@
         await postConfig(opts, 'download-vendored', language);
       }
     };
+
+    const zipEnvModule = import('@openzeppelin/wizard/zip-env');
+
+    const downloadHardhatHandler = async () => {
+      const { zipHardhat } = await zipEnvModule;
+      const zip = await zipHardhat(contract, opts);
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveAs(blob, 'project.zip');
+      if (opts) {
+        await postConfig(opts, 'download-hardhat', language);
+      }
+    };
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
@@ -123,9 +141,14 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button" on:click={copyHandler}>
-        <CopyIcon />
-        Copy to Clipboard
+      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+        {#if copied}
+          <CheckIcon />
+          Copied
+        {:else}
+          <CopyIcon />
+          Copy to Clipboard
+        {/if}
       </button>
 
       <Tooltip
@@ -169,12 +192,23 @@
           </div>
         </button>
 
+        {#if opts?.kind !== "Governor"}
+        <button class="download-option" on:click={downloadHardhatHandler}>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Development Package (Hardhat)</p>
+            <p>Sample project to get started with development and testing.</p>
+          </div>
+        </button>
+        {/if}
+
         <button class="download-option" on:click={downloadVendoredHandler}>
           <ZipIcon />
           <div class="download-option-content">
-            <p>Vendored ZIP <span class="download-zip-beta">Beta</span></p>
+            <p>Vendored ZIP</p>
             <p>Does not require npm package.</p>
             <p>Must be updated manually.</p>
+            <p>Not recommended for beginners.</p>
           </div>
         </button>
       </Dropdown>
@@ -197,14 +231,6 @@
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
-      </div>
-      <div class="controls-footer">
-        <a href="https://forum.openzeppelin.com/" target="_blank">
-          <ForumIcon/> Forum
-        </a>
-        <a href="https://docs.openzeppelin.com/" target="_blank">
-          <DocsIcon/> Docs
-        </a>
       </div>
     </div>
 
@@ -248,7 +274,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--blue-2);
+    background-color: var(--solidity-blue-2);
     color: white;
     order: -1;
   }

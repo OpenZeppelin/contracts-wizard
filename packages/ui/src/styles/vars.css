@@ -25,6 +25,12 @@
   --red-1: #feecec;
   --red-2: #f53d3d;
   --red-3: #aa0909;
+  
+  --solidity-blue-1: #51d4ff;
+  --solidity-blue-2: #4e5de4;
+
+  --cairo-orange-1: #fe9149;
+  --cairo-orange-2: #fe4a3c;
 
   /* Dimensions (scale taken from Tailwind) */
 

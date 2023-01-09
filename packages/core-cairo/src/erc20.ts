@@ -90,7 +90,6 @@ export function buildERC20(opts: ERC20Options): Contract {
   c.addFunction(functions.decreaseAllowance);
 
   importUint256(c);
-  importBool(c);
 
   if (allOpts.burnable) {
     addBurnable(c);
@@ -130,11 +129,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
     ],
     true,
   );
-}
-
-function importBool(c: ContractBuilder) {
-  c.addModule(modules.bool, [], [], false);
-  c.addModuleFunction(modules.bool, 'TRUE');
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -266,7 +260,7 @@ const functions = defineFunctions({
     args: [
     ],
     returns: [{ name: 'totalSupply', type: 'Uint256' }],
-    passthrough: true,
+    passthrough: 'strict',
     parentFunctionName: 'total_supply',
   },
 
@@ -315,7 +309,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'Uint256' },
     ],
     returns: [{ name: 'success', type: 'felt' }],
-    returnValue: 'TRUE',
+    passthrough: true,
   },
 
   transferFrom: {
@@ -328,7 +322,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'Uint256' },
     ],
     returns: [{ name: 'success', type: 'felt' }],
-    returnValue: 'TRUE',
+    passthrough: true,
     parentFunctionName: 'transfer_from',
   },
 
@@ -341,7 +335,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'Uint256' },
     ],
     returns: [{ name: 'success', type: 'felt' }],
-    returnValue: 'TRUE',
+    passthrough: true,
   },
 
   increaseAllowance: {
@@ -353,7 +347,7 @@ const functions = defineFunctions({
       { name: 'added_value', type: 'Uint256' },
     ],
     returns: [{ name: 'success', type: 'felt' }],
-    returnValue: 'TRUE',
+    passthrough: true,
     parentFunctionName: 'increase_allowance',
   },
 
@@ -366,7 +360,7 @@ const functions = defineFunctions({
       { name: 'subtracted_value', type: 'Uint256' },
     ],
     returns: [{ name: 'success', type: 'felt' }],
-    returnValue: 'TRUE',
+    passthrough: true,
     parentFunctionName: 'decrease_allowance',
   },
 
