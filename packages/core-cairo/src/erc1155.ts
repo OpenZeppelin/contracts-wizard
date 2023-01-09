@@ -115,26 +115,12 @@ function addBase(c: ContractBuilder, uri: string) {
   );
 }
 
-function importAssertNonZero(c: ContractBuilder) {
-  c.addModule(
-    modules.math, [], [], false
-  );
-  c.addModuleFunction(modules.math, 'assert_not_zero');
-}
-
 function addBurnable(c: ContractBuilder) {
-  importGetCallerAddress(c);
-  importAssertNonZero(c);
-
   c.addFunction(functions.burn);
   c.setFunctionBody(
     [
       'ERC1155.assert_owner_or_approved(owner=from_)',
-      'let (caller) = get_caller_address()',
-      'with_attr error_message("ERC1155: called from zero address"):',
-      '    assert_not_zero(caller)',
-      'end',
-      'ERC1155._burn(from_, id, amount)'
+      'ERC1155._burn(from_, id, value)'
     ],
     functions.burn
   );
@@ -143,34 +129,26 @@ function addBurnable(c: ContractBuilder) {
   c.setFunctionBody(
     [
       'ERC1155.assert_owner_or_approved(owner=from_)',
-      'let (caller) = get_caller_address()',
-      'with_attr error_message("ERC1155: called from zero address"):',
-      '    assert_not_zero(caller)',
-      'end',
-      'ERC1155._burn_batch(from_, ids_len, ids, amounts_len, amounts)'
+      'ERC1155._burn_batch(from_, ids_len, ids, values_len, values)'
     ],
     functions.burnBatch
   );
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  importGetCallerAddress(c);
-
   requireAccessControl(c, functions.mint, access, 'MINTER');
   requireAccessControl(c, functions.mintBatch, access, 'MINTER');
 
   c.setFunctionBody(
     [
-      'let (caller) = get_caller_address()',
-      'ERC1155._mint(to, id, amount, data_len, data)'
+      'ERC1155._mint(to, id, value, data_len, data)'
     ],
     functions.mint
   );
 
   c.setFunctionBody(
     [
-      'let (caller) = get_caller_address()',
-      'ERC1155._mint_batch(to, ids_len, ids, amounts_len, amounts, data_len, data)'
+      'ERC1155._mint_batch(to, ids_len, ids, values_len, values, data_len, data)'
     ],
     functions.mintBatch
   );
@@ -202,6 +180,7 @@ const functions = defineFunctions({
     kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
+      { name: 'id', type: 'Uint256' },
     ],
     returns: [{ name: 'uri', type: 'felt' }],
     passthrough: true,
@@ -212,7 +191,7 @@ const functions = defineFunctions({
     kind: 'view',
     implicitArgs: withImplicitArgs(),
     args: [
-      { name: 'owner', type: 'felt' },
+      { name: 'account', type: 'felt' },
       { name: 'id', type: 'Uint256' },
     ],
     returns: [{ name: 'balance', type: 'Uint256' }],
@@ -245,7 +224,7 @@ const functions = defineFunctions({
       { name: 'account', type: 'felt' },
       { name: 'operator', type: 'felt' },
     ],
-    returns: [{ name: 'isApproved', type: 'felt' }],
+    returns: [{ name: 'approved', type: 'felt' }],
     passthrough: true,
     parentFunctionName: 'is_approved_for_all',
   },
@@ -281,7 +260,7 @@ const functions = defineFunctions({
       { name: 'from_', type: 'felt' },
       { name: 'to', type: 'felt' },
       { name: 'id', type: 'Uint256' },
-      { name: 'amount', type: 'Uint256' },
+      { name: 'value', type: 'Uint256' },
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
@@ -297,8 +276,8 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'ids_len', type: 'felt' },
       { name: 'ids', type: 'Uint256*' },
-      { name: 'amounts_len', type: 'felt' },
-      { name: 'amounts', type: 'Uint256*' },
+      { name: 'values_len', type: 'felt' },
+      { name: 'values', type: 'Uint256*' },
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
@@ -312,7 +291,7 @@ const functions = defineFunctions({
     args: [
       { name: 'to', type: 'felt' },
       { name: 'id', type: 'Uint256' },
-      { name: 'amount', type: 'Uint256' },
+      { name: 'value', type: 'Uint256' },
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
@@ -327,8 +306,8 @@ const functions = defineFunctions({
       { name: 'to', type: 'felt' },
       { name: 'ids_len', type: 'felt' },
       { name: 'ids', type: 'Uint256*' },
-      { name: 'amounts_len', type: 'felt' },
-      { name: 'amounts', type: 'Uint256*' },
+      { name: 'values_len', type: 'felt' },
+      { name: 'values', type: 'Uint256*' },
       { name: 'data_len', type: 'felt' },
       { name: 'data', type: 'felt*' },
     ],
@@ -342,7 +321,7 @@ const functions = defineFunctions({
     args: [
       { name: 'from_', type: 'felt' },
       { name: 'id', type: 'Uint256' },
-      { name: 'amount', type: 'Uint256' },
+      { name: 'value', type: 'Uint256' },
     ],
     parentFunctionName: '_burn',
   },
@@ -355,8 +334,8 @@ const functions = defineFunctions({
       { name: 'from_', type: 'felt' },
       { name: 'ids_len', type: 'felt' },
       { name: 'ids', type: 'Uint256*' },
-      { name: 'amounts_len', type: 'felt' },
-      { name: 'amounts', type: 'Uint256*' },
+      { name: 'values_len', type: 'felt' },
+      { name: 'values', type: 'Uint256*' },
     ],
     parentFunctionName: '_burn_batch',
   },
