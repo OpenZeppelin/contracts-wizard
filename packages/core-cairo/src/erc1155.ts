@@ -9,7 +9,7 @@ import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { importUint256 } from './utils/uint256';
-import { addSupportsInterface, importGetCallerAddress } from './common-functions';
+import { addSupportsInterface } from './common-functions';
 
 export const defaults: Required<ERC1155Options> = {
   uri: '',
