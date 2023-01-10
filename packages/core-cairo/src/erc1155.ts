@@ -62,10 +62,6 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   c.addFunction(functions.balanceOfBatch);
   c.addFunction(functions.isApprovedForAll);
 
-  if (allOpts.updatableUri) {
-    addSetUri(c, allOpts.access);
-  }
-
   c.addFunction(functions.setApprovalForAll);
   c.addFunction(functions.safeTransferFrom);
   c.addFunction(functions.safeBatchTransferFrom);
@@ -94,6 +90,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   if (allOpts.mintable) {
     addMintable(c, allOpts.access);
+  }
+
+  if (allOpts.updatableUri) {
+    addSetUri(c, allOpts.access);
   }
 
   setAccessControl(c, allOpts.access);
