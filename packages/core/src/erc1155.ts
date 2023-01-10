@@ -26,7 +26,7 @@ export const defaults: Required<ERC1155Options> = {
   mintable: false,
   supply: false,
   updatableUri: true,
-  access: false,
+  access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
