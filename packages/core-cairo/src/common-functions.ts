@@ -17,7 +17,7 @@ export function importGetCallerAddress(c: ContractBuilder) {
   c.addModuleFunction(modules.syscalls, 'get_caller_address');
 }
 
-const modules = defineModules( {
+const modules = defineModules({
   ERC165: {
     path: 'openzeppelin.introspection.erc165.library',
     useNamespace: true
