@@ -118,22 +118,10 @@ function addBase(c: ContractBuilder, uri: string) {
 
 function addBurnable(c: ContractBuilder) {
   c.addFunction(functions.burn);
-  c.setFunctionBody(
-    [
-      'ERC1155.assert_owner_or_approved(owner=from_)',
-      'ERC1155._burn(from_, id, value)'
-    ],
-    functions.burn
-  );
+  c.addLibraryCall(functions.assert_owner_or_approved, functions.burn, [ 'owner=from_' ]);
 
   c.addFunction(functions.burnBatch);
-  c.setFunctionBody(
-    [
-      'ERC1155.assert_owner_or_approved(owner=from_)',
-      'ERC1155._burn_batch(from_, ids_len, ids, values_len, values)'
-    ],
-    functions.burnBatch
-  );
+  c.addLibraryCall(functions.assert_owner_or_approved, functions.burnBatch, [ 'owner=from_' ]);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
@@ -328,6 +316,15 @@ const functions = defineFunctions({
       { name: 'values', type: 'Uint256*' },
     ],
     parentFunctionName: '_burn_batch',
+  },
+
+  // --- library-only calls ---
+
+  assert_owner_or_approved: {
+    module: modules.ERC1155,
+    args: [
+      { name: 'owner', type: 'felt' },
+    ],
   },
 
 });
