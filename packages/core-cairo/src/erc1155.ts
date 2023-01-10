@@ -137,22 +137,11 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
+  c.addFunction(functions.mint);
   requireAccessControl(c, functions.mint, access, 'MINTER');
+
+  c.addFunction(functions.mintBatch);
   requireAccessControl(c, functions.mintBatch, access, 'MINTER');
-
-  c.setFunctionBody(
-    [
-      'ERC1155._mint(to, id, value, data_len, data)'
-    ],
-    functions.mint
-  );
-
-  c.setFunctionBody(
-    [
-      'ERC1155._mint_batch(to, ids_len, ids, values_len, values, data_len, data)'
-    ],
-    functions.mintBatch
-  );
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
