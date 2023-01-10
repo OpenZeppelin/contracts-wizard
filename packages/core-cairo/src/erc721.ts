@@ -203,8 +203,8 @@ const functions = defineFunctions({
       { name: 'owner', type: 'felt' },
       { name: 'operator', type: 'felt' },
     ],
-    returns: [{ name: 'isApproved', type: 'felt' }],
-    passthrough: 'strict',
+    returns: [{ name: 'approved', type: 'felt' }],
+    passthrough: true,
     parentFunctionName: 'is_approved_for_all',
   },
 
