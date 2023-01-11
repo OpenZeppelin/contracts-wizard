@@ -242,7 +242,12 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   
   if (args.length > 0) {
     fn.push(`${accum}(`);
-    fn.push([args.join(', ')]);
+    let formattedArgs = args.join(', ');
+    if (formattedArgs.length > 80) {
+      fn.push(args.map(arg => `${arg},`));
+    } else {
+      fn.push([formattedArgs]);
+    }
     accum = ')';
   } else {
     accum += '()';
