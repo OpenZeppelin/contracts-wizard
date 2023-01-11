@@ -237,21 +237,27 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   let accum = kindedName;
 
   if (implicitArgs.length > 0) {
-    fn.push(accum + '{');
-    const implicitArgsFormatted = formatImplicitArgs(implicitArgs);
-    fn.push([implicitArgsFormatted]);
-    accum = '}';
+    accum += '{' + implicitArgs.join(', ') + '}';
   }
   
-  const formattedArgs = args.join(', ');
-
-  accum += `(${formattedArgs})`;
+  if (args.length > 0) {
+    fn.push(`${accum}(`);
+    let formattedArgs = args.join(', ');
+    if (formattedArgs.length > 80) {
+      // print each arg in a separate line
+      fn.push(args.map(arg => `${arg},`));
+    } else {
+      fn.push([formattedArgs]);
+    }
+    accum = ')';
+  } else {
+    accum += '()';
+  }
 
   if (returns === undefined) {
     accum += ' {';
   } else {
-    const formattedReturns = returns.join(', ');
-    accum += ` -> (${formattedReturns}) {`;
+    accum += ` -> (${returns.join(', ')}) {`;
   }
 
   fn.push(accum);
@@ -265,18 +271,6 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
   fn.push('}');
 
   return fn;
-}
-
-function formatImplicitArgs(implicitArgs: string[]) {
-  const implicitArgsFormatted: string[] = [];
-  implicitArgs.forEach((implicitArg, index, arr) => {
-    if (index < arr.length - 1) {
-      implicitArgsFormatted.push(`${implicitArg},`);
-    } else {
-      implicitArgsFormatted.push(`${implicitArg}`);
-    }
-  });
-  return implicitArgsFormatted;
 }
 
 function printArgument(arg: Argument): string {
