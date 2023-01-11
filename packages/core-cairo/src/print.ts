@@ -244,6 +244,7 @@ function printFunction2(kindedName: string, implicitArgs: string[], args: string
     fn.push(`${accum}(`);
     let formattedArgs = args.join(', ');
     if (formattedArgs.length > 80) {
+      // print each arg in a separate line
       fn.push(args.map(arg => `${arg},`));
     } else {
       fn.push([formattedArgs]);
