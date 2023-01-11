@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add ERC1155. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))
+- Update formatting. ([#217](https://github.com/OpenZeppelin/contracts-wizard/pull/217))
 - **Breaking change**: Renamed `isApprovedForAll` return variable name (`isApproved` -> `approved`) in ERC721. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))
 
 ## 0.5.0 (2022-09-22)
