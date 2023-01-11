@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add ERC1155. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))
+- **Breaking change**: Renamed `isApprovedForAll` return variable name (`isApproved` -> `approved`) in ERC721. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))
+
 ## 0.5.0 (2022-09-22)
 
 - Add `owner` view for Ownable. ([#165](https://github.com/OpenZeppelin/contracts-wizard/issues/165))

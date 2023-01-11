@@ -10,6 +10,7 @@ import { defineModules } from './utils/define-modules';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { importUint256, NumberTooLarge, toUint256 } from './utils/uint256';
+import { importGetCallerAddress } from './common-functions';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -131,10 +132,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: str
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addModule(
-    modules.syscalls, [], [], false
-  );
-  c.addModuleFunction(modules.syscalls, 'get_caller_address');
+  importGetCallerAddress(c);
   c.addFunction(functions.burn);
   c.setFunctionBody(
     [
@@ -223,11 +221,6 @@ const modules = defineModules( {
   ERC20: {
     path: 'openzeppelin.token.erc20.library',
     useNamespace: true
-  },
-
-  syscalls: {
-    path: 'starkware.starknet.common.syscalls',
-    useNamespace: false
   },
 
   bool: {
