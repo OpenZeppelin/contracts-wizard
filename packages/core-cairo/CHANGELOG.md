@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0 (2023-01-11)
 
 - Add ERC1155. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))
 - Update formatting. ([#217](https://github.com/OpenZeppelin/contracts-wizard/pull/217))
