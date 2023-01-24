@@ -9,6 +9,8 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 ## Development
 
+Install dependencies with `yarn install`.
+
 `packages/core` contains the code generation logic for Solidity.
 
 `packages/core-cairo` contains the code generation logic for Cairo.
