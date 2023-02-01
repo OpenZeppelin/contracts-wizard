@@ -76,8 +76,6 @@
       Permit
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Permit">
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
-        <br>
-        <a href="https://eips.ethereum.org/EIPS/eip-2612">EIP</a> is still Draft and may change.
       </HelpTooltip>
     </label>
 
