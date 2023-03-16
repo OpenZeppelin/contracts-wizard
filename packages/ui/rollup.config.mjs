@@ -30,7 +30,7 @@ function onStartRun(cmd, ...args) {
   return {
     async buildStart() {
       if (ran) return;
-      const child = proc.spawn(cmd, args, { stdio: 'inherit' });
+      const child = proc.spawn(cmd, args, { stdio: 'inherit', shell: process.platform == 'win32' });
       const [code, signal] = await events.once(child, 'exit');
       if (code || signal) {
         throw new Error(`Command \`${cmd}\` failed`);
