@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Remove unspecified dependency on `@openzeppelin/contracts`. ([#233](https://github.com/OpenZeppelin/contracts-wizard/pull/233))
+
 ## 0.2.0 (2022-11-08)
 
 - Reduce default block time to 12 seconds in `governor`. ([fdcf912](https://github.com/OpenZeppelin/contracts-wizard/commit/fdcf9129354692b3b7e0fa694233fdd62a1e99bb))
