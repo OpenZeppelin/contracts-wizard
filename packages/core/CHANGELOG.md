@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.2 (2023-03-17)
 
 - Fix missing file. ([#234](https://github.com/OpenZeppelin/contracts-wizard/pull/234))
 
