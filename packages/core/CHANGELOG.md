@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix missing file. ([#234](https://github.com/OpenZeppelin/contracts-wizard/pull/234))
+
 ## 0.2.1 (2023-03-17)
 
 - Remove unspecified dependency on `@openzeppelin/contracts`. ([#233](https://github.com/OpenZeppelin/contracts-wizard/pull/233))

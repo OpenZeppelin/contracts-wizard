@@ -9,7 +9,8 @@
   "files": [
     "/dist",
     "/src",
-    "!**/*.test.*"
+    "!**/*.test.*",
+    "openzeppelin-contracts.json"
   ],
   "scripts": {
     "prepare": "tsc && node dist/scripts/prepare.js",
