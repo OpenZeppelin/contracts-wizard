@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "MIT",
   "repository": "github:OpenZeppelin/contracts-wizard",
@@ -9,8 +9,7 @@
   "files": [
     "/dist",
     "/src",
-    "!**/*.test.*",
-    "openzeppelin-contracts.json"
+    "!**/*.test.*"
   ],
   "scripts": {
     "prepare": "tsc && node dist/scripts/prepare.js",
