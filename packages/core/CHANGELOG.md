@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.3 (2023-03-23)
 
 - Fix module not found error. ([#235](https://github.com/OpenZeppelin/contracts-wizard/issues/235))
 
