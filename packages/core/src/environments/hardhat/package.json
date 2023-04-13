@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/contracts": "^4.8.3",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.4",

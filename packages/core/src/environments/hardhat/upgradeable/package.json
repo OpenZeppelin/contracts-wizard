@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.8.0",
+    "@openzeppelin/contracts-upgradeable": "^4.8.3",
     "@openzeppelin/hardhat-upgrades": "^1.21.0",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
