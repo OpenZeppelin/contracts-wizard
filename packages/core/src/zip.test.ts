@@ -71,6 +71,7 @@ test('erc721 auto increment uups', t => {
     '@openzeppelin/contracts-upgradeable/access/',
     '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol',
     '@openzeppelin/contracts-upgradeable/interfaces/',
+    '@openzeppelin/contracts-upgradeable/interfaces/IERC1967Upgradeable.sol',
     '@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol',
     '@openzeppelin/contracts-upgradeable/proxy/',
     '@openzeppelin/contracts-upgradeable/proxy/ERC1967/',
