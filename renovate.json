@@ -5,7 +5,8 @@
   "packageRules": [
     {
       "matchPackagePrefixes": ["@openzeppelin/"],
-      "schedule": ["at any time"]
+      "schedule": ["at any time"],
+      "rangeStrategy": "update-lockfile"
     }
   ]
 }
