@@ -20,7 +20,7 @@
     <slot></slot>
     {#if link}
       <br>
-      <a target="_blank" href={link}>Read more.</a>
+      <a target="_blank" rel="noopener noreferrer" href={link}>Read more.</a>
     {/if}
   </div>
 </Tooltip>

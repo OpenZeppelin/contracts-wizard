@@ -173,7 +173,7 @@
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
           Try using Remix with UUPS upgradability or use Hardhat or Truffle with
-          <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank">OpenZeppelin Upgrades</a>.
+          <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
           <br />
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
