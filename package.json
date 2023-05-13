@@ -9,7 +9,8 @@
       "packages/*"
     ],
     "nohoist": [
-      "**/@types/*"
+      "**/@types/*",
+      "**/typescript"
     ]
   },
   "devDependencies": {
