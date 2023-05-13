@@ -12,12 +12,10 @@ import os from 'os';
 import util, { promisify } from 'util';
 import child from "child_process";
 import type { Contract } from './contract';
-import _rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-
-const rimraf = promisify(_rimraf);
 
 test.serial('erc20 basic', async t => {
   const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
