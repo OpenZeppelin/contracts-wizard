@@ -4,11 +4,9 @@ import hre from 'hardhat';
 import type { BuildInfo } from 'hardhat/types';
 import type { SourceUnit } from 'solidity-ast';
 import { findAll } from 'solidity-ast/utils';
-import _rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import { promisify } from 'util';
 import { version } from "@openzeppelin/contracts/package.json";
-
-const rimraf = promisify(_rimraf);
 
 import type { OpenZeppelinContracts } from '../../openzeppelin-contracts';
 import { writeGeneratedSources } from '../generate/sources';
