@@ -24,7 +24,7 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
   test(title, t => {
     t.is(governor.print(opts), printContract(buildGovernor({
       name: 'MyGovernor',
-      delay: '1 block',
+      delay: '1 day',
       period: '1 week',
       ...opts,
     })));
