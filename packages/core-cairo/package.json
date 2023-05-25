@@ -21,7 +21,6 @@
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
     "@types/node": "^10.17.51",
-    "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
     "ava": "^5.0.0",
     "rimraf": "^5.0.0",

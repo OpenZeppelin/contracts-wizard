@@ -23,7 +23,6 @@
     "@openzeppelin/contracts": "4.9.0",
     "@openzeppelin/contracts-upgradeable": "4.9.0",
     "@types/node": "^10.17.51",
-    "@types/rimraf": "^3.0.0",
     "array.prototype.flat": "^1.2.4",
     "ava": "^5.0.0",
     "hardhat": "^2.1.1",
