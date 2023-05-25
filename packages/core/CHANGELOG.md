@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking change**: Update to OpenZeppelin Contracts 4.9. ([#252](https://github.com/OpenZeppelin/contracts-wizard/pull/252))
+
 ## 0.2.3 (2023-03-23)
 
 - Fix module not found error. ([#235](https://github.com/OpenZeppelin/contracts-wizard/issues/235))
