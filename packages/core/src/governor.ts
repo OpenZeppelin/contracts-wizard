@@ -117,6 +117,7 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   c.addOverride('Governor', functions._cancel);
   c.addOverride('Governor', functions._executor);
   c.addOverride('Governor', supportsInterface);
+  c.addOverride('Governor', functions.cancel);
 }
 
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
@@ -365,6 +366,8 @@ function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
       path: '@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol',
     });
     c.addOverride('IGovernor', functions.state);
+    c.addOverride('IGovernor', functions.cancel);
+    c.addOverride('GovernorCompatibilityBravo', functions.cancel);
     c.addOverride('GovernorCompatibilityBravo', functions.propose);
     c.addOverride('IERC165', supportsInterface);
   }
@@ -432,6 +435,16 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
+  },
+  cancel: {
+    args: [
+      { name: 'targets', type: 'address[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
+      { name: 'calldatas', type: 'bytes[] memory' },
+      { name: 'descriptionHash', type: 'bytes32' },
+    ],
+    returns: ['uint256'],
+    kind: 'public',
   },
   state: {
     args: [

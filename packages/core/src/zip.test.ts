@@ -55,6 +55,7 @@ test('erc721 auto increment', t => {
     '@openzeppelin/contracts/utils/introspection/IERC165.sol',
     '@openzeppelin/contracts/utils/math/',
     '@openzeppelin/contracts/utils/math/Math.sol',
+    '@openzeppelin/contracts/utils/math/SignedMath.sol',
     'MyToken.sol',
   ]);
 });
@@ -99,6 +100,7 @@ test('erc721 auto increment uups', t => {
     '@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol',
     '@openzeppelin/contracts-upgradeable/utils/math/',
     '@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol',
+    '@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol',
     'MyToken.sol',
   ]);
 });

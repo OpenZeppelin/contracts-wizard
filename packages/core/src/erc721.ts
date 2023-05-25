@@ -143,6 +143,7 @@ function addURIStorage(c: ContractBuilder) {
 
   c.addOverride('ERC721URIStorage', functions._burn);
   c.addOverride('ERC721URIStorage', functions.tokenURI);
+  c.addOverride('ERC721URIStorage', supportsInterface);
 }
 
 function addBurnable(c: ContractBuilder) {
