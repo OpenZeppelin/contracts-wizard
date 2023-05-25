@@ -3,7 +3,7 @@
 ## Unreleased
 
 - **Breaking change**: Update to OpenZeppelin Contracts 4.9. ([#252](https://github.com/OpenZeppelin/contracts-wizard/pull/252))
-- Change default voting delay to 1 day in `governor`.
+- Change default voting delay to 1 day in `governor`. ([#258](https://github.com/OpenZeppelin/contracts-wizard/pull/258))
 
 ## 0.2.3 (2023-03-23)
 
