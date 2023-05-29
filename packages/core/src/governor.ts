@@ -11,7 +11,7 @@ import { durationToBlocks } from "./utils/duration";
 
 export const defaults: Required<GovernorOptions> = {
   name: 'MyGovernor',
-  delay: '1 block',
+  delay: '1 day',
   period: '1 week',
 
   votes: 'erc20votes',
