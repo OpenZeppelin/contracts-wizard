@@ -1,0 +1,3 @@
+[submodule "packages/core/contracts/pure-supertokens"]
+      path = "packages/core/contracts/pure-supertokens"
+      url = "https://github.com/superfluid-finance/custom-supertokens"
