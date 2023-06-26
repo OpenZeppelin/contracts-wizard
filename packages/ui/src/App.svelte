@@ -82,7 +82,7 @@
       const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
 
       const versionedCode = printContractVersioned(contract);
-      window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank');
+      window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
       if (opts) {
         await postConfig(opts, 'remix', language);
       }
