@@ -32,7 +32,8 @@ const tsConfig = `\
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   }
 }
 `;
@@ -45,7 +46,7 @@ coverage.json
 typechain
 typechain-types
 
-#Hardhat files
+# Hardhat files
 cache
 artifacts
 `;
@@ -70,7 +71,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
           ],
           [
             `const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};`,
-            'await instance.deployed();'
+            'await instance.waitForDeployment();'
           ],
           getContractSpecificExpects(),
         ),
@@ -116,9 +117,9 @@ async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
   const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
-  await instance.deployed();
+  await instance.waitForDeployment();
 
-  console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${instance.address}\`);
+  console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
