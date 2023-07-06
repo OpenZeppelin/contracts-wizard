@@ -5,98 +5,147 @@ import { printContract } from "./print";
 import SOLIDITY_VERSION from './solidity-version.json';
 import { formatLinesWithSpaces, Lines, spaceBetween } from "./utils/format-lines";
 
-const hardhatConfig = (upgradeable: boolean) => `\
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
+const githubWorkflowsTestYml = `\
+name: test
 
-const config: HardhatUserConfig = {
-  solidity: {
-    version: "${SOLIDITY_VERSION}",
-    settings: {
-      optimizer: {
-        enabled: true,
-      },
-    },
-  },
-};
+on: workflow_dispatch
 
-export default config;
-`;
+env:
+  FOUNDRY_PROFILE: ci
 
-const tsConfig = `\
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
-  }
-}
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+
+    name: Foundry project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run Forge build
+        run: |
+          forge --version
+          forge build --sizes
+        id: build
+
+      - name: Run Forge tests
+        run: |
+          forge test -vvv
+        id: test
 `;
 
 const gitIgnore = `\
-node_modules
-.env
-coverage
-coverage.json
-typechain
-typechain-types
+# Compiler files
+cache/
+out/
 
-# Hardhat files
-cache
-artifacts
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
 `;
+
+const gitModules = `\
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lib/openzeppelin-contracts"]
+	path = lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+`;
+
+const foundryToml = `\
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+`
+
+const remappings = `\
+@openzeppelin/=lib/openzeppelin-contracts/
+`
+
+function getHeader(c: Contract) {
+  return [
+    `// SPDX-License-Identifier: ${c.license}`,
+    `pragma solidity ^${SOLIDITY_VERSION};`
+  ];
+}
 
 const test = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(
     2,
     ...spaceBetween(
+      getHeader(c),
       getImports(c),
       getTestCase(c),
     ),
   );
 
-  function getTestCase(c: Contract) {
-    return [
-      `describe("${c.name}", function () {`,
-      [
-        'it("Test contract", async function () {',
-        spaceBetween(
-          [
-            `const ContractFactory = await ethers.getContractFactory("${c.name}");`,
-          ],
-          [
-            `const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};`,
-            'await instance.waitForDeployment();'
-          ],
-          getContractSpecificExpects(),
-        ),
-        '});'
-      ],
-      '});',
-    ];
-  }
-
   function getImports(c: Contract) {
     return [
-      'import { expect } from "chai";',
-      `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`,
+      'import "forge-std/Test.sol";',
+      `import "../src/${c.name}.sol";`,
     ];
   }
 
-  function getContractSpecificExpects(): Lines[] {
+  function getTestCase(c: Contract) {
+    return [
+      `contract ${c.name}Test is Test {`,
+      spaceBetween(
+        [
+          `${c.name} public instance;`,
+        ],
+        [
+          'function setUp() public {',
+          [
+            `instance = new ${c.name}();`,
+          ],
+          '}',
+        ],
+        getContractSpecificTestFunction(),
+      ),
+      '}',
+    ];
+  }
+
+  function getContractSpecificTestFunction(): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
         case 'ERC20':
         case 'ERC721':
-          return [`expect(await instance.name()).to.equal("${opts.name}");`];
+          return [
+            `function testName() public {`,
+            [
+              `assertEq(instance.name(), "${c.name}");`
+            ],
+            `}`,
+          ];
 
         case 'ERC1155':
-          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
+          return [
+            `function testUri() public {`,
+            [
+              `assertEq(instance.uri(0), "${opts.uri}");`
+            ],
+            `}`,
+          ];
 
         case 'Governor':
         case 'Custom':
@@ -110,78 +159,86 @@ const test = (c: Contract, opts?: GenericOptions) => {
   }
 };
 
-const script = (c: Contract) => `\
-import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
+const script = (c: Contract) => {
+  return formatLinesWithSpaces(
+    2,
+    ...spaceBetween(
+      getHeader(c),
+      getImports(c),
+      getScript(c),
+    ),
+  );
 
-async function main() {
-  const ContractFactory = await ethers.getContractFactory("${c.name}");
+  function getImports(c: Contract) {
+    return [
+      'import "forge-std/Script.sol";',
+      `import "../src/${c.name}.sol";`,
+    ];
+  }
 
-  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
-  await instance.waitForDeployment();
+  function getScript(c: Contract) {
+    return [
+      `contract ${c.name}Script is Script {`,
+      spaceBetween(
+        [
+          'function setUp() public {}',
+        ],
+        [
+          'function run() public {',
+          [
+            'vm.startBroadcast();',
+            `${c.name} instance = new ${c.name}();`,
+            'console.log("Contract deployed to %s", address(instance));',
+            'vm.stopBroadcast();',
+          ],
+          '}',
+        ],
+      ),
+      '}',
+    ];
+  }
+};
 
-  console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
-}
+const readme = (c: Contract) => `\
+# Sample Foundry Project
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
-`;
-
-const readme = `\
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a contract generated by [OpenZeppelin Wizard](https://wizard.openzeppelin.com/), a test for that contract, and a script that deploys that contract.
+This project demonstrates a basic Foundry use case. It comes with a contract generated by [OpenZeppelin Wizard](https://wizard.openzeppelin.com/), a test for that contract, and a script that deploys that contract.
 
 ## Installing dependencies
 
 \`\`\`
-npm install
+forge install
 \`\`\`
 
 ## Testing the contract
 
 \`\`\`
-npm test
+forge test
 \`\`\`
 
 ## Deploying the contract
 
-You can target any network from your Hardhat config using:
+You can deploy the contract to a local development network by running:
 
 \`\`\`
-npx hardhat run --network <network-name> scripts/deploy.ts
+forge script script/${c.name}.s.sol
 \`\`\`
+
+See https://book.getfoundry.sh/tutorials/solidity-scripting to deploy to different networks.
 `;
-
-function getHardhatPlugins(c: Contract) {
-  let plugins = ['ethers'];
-  if (c.upgradeable) {
-    plugins.push('upgrades');
-  }
-  return plugins;
-}
 
 export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  const { default: packageJson } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
-  packageJson.license = c.license;
-
-  const { default: packageLock } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
-  packageLock.packages[''].license = c.license;
-
-  zip.file(`contracts/${c.name}.sol`, printContract(c));
-  zip.file('test/test.ts', test(c, opts));
-  zip.file('scripts/deploy.ts', script(c));
+  zip.file(`src/${c.name}.sol`, printContract(c));
+  zip.file(`test/${c.name}.t.sol`, test(c, opts));
+  zip.file(`scripts/${c.name}.s.sol`, script(c));
+  zip.file('.github/workflows/test.yml', githubWorkflowsTestYml); 
   zip.file('.gitignore', gitIgnore);
-  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
-  zip.file('package.json', JSON.stringify(packageJson, null, 2));
-  zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
-  zip.file('README.md', readme);
-  zip.file('tsconfig.json', tsConfig);
+  zip.file('.gitmodules', gitModules);
+  zip.file('foundry.toml', foundryToml);
+  zip.file('remappings.toml', remappings);
+  zip.file('README.md', readme(c));
 
   return zip;
 }
