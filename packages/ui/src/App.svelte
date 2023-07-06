@@ -114,7 +114,7 @@
       const { zipHardhat } = await zipHardhatModule;
       const zip = await zipHardhat(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'project.zip');
+      saveAs(blob, 'hardhat.zip');
       if (opts) {
         await postConfig(opts, 'download-hardhat', language);
       }
@@ -126,7 +126,7 @@
       const { zipFoundry } = await zipFoundryModule;
       const zip = await zipFoundry(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'project.zip');
+      saveAs(blob, 'foundry.zip');
       if (opts) {
         await postConfig(opts, 'download-foundry', language);
       }
