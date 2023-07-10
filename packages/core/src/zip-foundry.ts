@@ -64,15 +64,6 @@ docs/
 .env
 `;
 
-const gitModules = `\
-[submodule "lib/forge-std"]
-	path = lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/openzeppelin-contracts"]
-	path = lib/openzeppelin-contracts
-	url = https://github.com/OpenZeppelin/openzeppelin-contracts
-`;
-
 const foundryToml = `\
 [profile.default]
 src = "src"
@@ -264,7 +255,6 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file('.github/workflows/test.yml', githubWorkflowsTestYml); 
   zip.file('.env', dotEnv);
   zip.file('.gitignore', gitIgnore);
-  zip.file('.gitmodules', gitModules);
   zip.file('foundry.toml', foundryToml);
   zip.file('remappings.txt', remappings);
   zip.file('Makefile', makefile);
