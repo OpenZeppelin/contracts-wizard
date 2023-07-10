@@ -44,8 +44,7 @@ jobs:
 `;
 
 const dotEnv = `\
-PRIVATE_KEY=
-`
+PRIVATE_KEY=`
 
 const gitIgnore = `\
 # Compiler files
