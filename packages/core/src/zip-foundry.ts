@@ -237,7 +237,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file('.gitignore', gitIgnore);
   zip.file('.gitmodules', gitModules);
   zip.file('foundry.toml', foundryToml);
-  zip.file('remappings.toml', remappings);
+  zip.file('remappings.txt', remappings);
   zip.file('README.md', readme(c));
 
   return zip;
