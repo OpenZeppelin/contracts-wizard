@@ -43,6 +43,10 @@ jobs:
         id: test
 `;
 
+const dotEnv = `\
+PRIVATE_KEY=
+`
+
 const gitIgnore = `\
 # Compiler files
 cache/
@@ -187,9 +191,10 @@ const script = (c: Contract) => {
         [
           'function run() public {',
           [
-            'vm.startBroadcast();',
+            'uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");',
+            'vm.startBroadcast(deployerPrivateKey);',
             `${c.name} instance = new ${c.name}();`,
-            'console.log("Contract deployed to %s", address(instance));',
+            'console.log("Deploying contract to %s", address(instance));',
             'vm.stopBroadcast();',
           ],
           '}',
@@ -239,13 +244,15 @@ forge test
 
 ## Deploying the contract
 
-You can deploy the contract to a local development network by running:
+You can deploy the contract to any network by providing a private key and RPC URL:
 
+1. Add your deployer account's private key to the \`PRIVATE_KEY\` variable in the \`.env\` file.
+2. Run the following command:
 \`\`\`
-forge script script/${c.name}.s.sol
+forge script scripts/${c.name}.s.sol --rpc-url <RPC URL> --broadcast
 \`\`\`
 
-See https://book.getfoundry.sh/tutorials/solidity-scripting to deploy to different networks.
+See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
 `;
 
 export async function zipFoundry(c: Contract, opts?: GenericOptions) {
@@ -255,6 +262,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`scripts/${c.name}.s.sol`, script(c));
   zip.file('.github/workflows/test.yml', githubWorkflowsTestYml); 
+  zip.file('.env', dotEnv);
   zip.file('.gitignore', gitIgnore);
   zip.file('.gitmodules', gitModules);
   zip.file('foundry.toml', foundryToml);
