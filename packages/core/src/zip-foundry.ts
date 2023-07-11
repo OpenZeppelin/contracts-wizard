@@ -126,25 +126,31 @@ const test = (c: Contract, opts?: GenericOptions) => {
         case 'ERC20':
         case 'ERC721':
           return [
-            `function testName() public {`,
+            'function testName() public {',
             [
-              `assertEq(instance.name(), "${c.name}");`
+              `assertEq(instance.name(), "${opts.name}");`
             ],
-            `}`,
+            '}',
           ];
 
         case 'ERC1155':
           return [
-            `function testUri() public {`,
+            'function testUri() public {',
             [
               `assertEq(instance.uri(0), "${opts.uri}");`
             ],
-            `}`,
+            '}',
           ];
 
         case 'Governor':
         case 'Custom':
-          break;
+          return [
+            'function testSomething() public {',
+            [
+              '// Add your test here',
+            ],
+            '}',
+          ]
 
         default:
           throw new Error('Unknown ERC');
