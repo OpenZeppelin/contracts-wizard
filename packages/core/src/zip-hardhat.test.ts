@@ -9,7 +9,7 @@ import { buildCustom } from './custom';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
-import util, { promisify } from 'util';
+import util from 'util';
 import child from "child_process";
 import type { Contract } from './contract';
 import { rimraf } from 'rimraf';
@@ -50,12 +50,12 @@ test.serial('custom upgradeable', async t => {
 async function runTest(c: Contract, t: ExecutionContext<unknown>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
-  assertLayout(zip, t, c);
+  assertLayout(zip, c, t);
   await extractAndRunPackage(zip, t);
   await assertContents(zip, c, t);
 }
 
-function assertLayout(zip: JSZip, t: ExecutionContext<unknown>, c: Contract) {
+function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
     '.gitignore',
