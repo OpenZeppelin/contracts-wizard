@@ -87,8 +87,16 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
     // append fake private key to .env file
     await fs.appendFile(path.join(tempFolder, '.env'), '0x1');
 
+    const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
+    const build = 'make -B'; // force rebuild since .git folder was created to set user
+    const test = 'forge test';
+    const script = `forge script scripts/${c.name}.s.sol`;
+
+    const command = `cd "${tempFolder}" && ${setGitUser} && ${build} && ${test} && ${script}`;
+
     const exec = util.promisify(child.exec);
-    const result = await exec(`cd "${tempFolder}" && make && forge test && forge script scripts/${c.name}.s.sol`);
+    const result = await exec(command);
+
     t.regex(result.stdout, /1 passed/);
     t.regex(result.stdout, /Deploying contract to /);
   } finally {
