@@ -225,12 +225,12 @@ then
 fi
 
 # Setup git submodules
-if [ ! -d "lib/forge-std" ]
+if ! [ -d "lib/forge-std" ]
 then
   forge install foundry-rs/forge-std
 fi
 
-if [ ! -d "lib/openzeppelin-contracts" ]
+if ! [ -d "lib/openzeppelin-contracts" ]
 then
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version}
 fi
