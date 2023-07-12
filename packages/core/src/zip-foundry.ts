@@ -201,20 +201,39 @@ const script = (c: Contract) => {
   }
 };
 
-const makefile = `\
-.PHONY: all
-all: | .git lib
-	forge clean
-	forge build
+const setupSh = `\
+# Check if git is installed
+if ! command -v git &> /dev/null
+then
+  echo "git command not found. Install git and try again."
+  exit 1
+fi
 
-.git:
-	git init
-	git add .
-	git commit -m "Initial commit"
+# Check if Foundry is installed
+if ! command -v forge &> /dev/null
+then
+  echo "forge command not found. Install Foundry and try again. See https://book.getfoundry.sh/getting-started/installation"
+  exit 1
+fi
 
-lib:
-	forge install foundry-rs/forge-std
-	forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version}
+# Setup git repository
+if ! git log &> /dev/null
+then
+  git init
+  git add .
+  git commit -m "Initial commit"
+fi
+
+# Setup git submodules
+if [ ! -d "lib/forge-std" ]
+then
+  forge install foundry-rs/forge-std
+fi
+
+if [ ! -d "lib/openzeppelin-contracts" ]
+then
+  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version}
+fi
 `;
 
 const readme = (c: Contract) => `\
@@ -226,10 +245,10 @@ This project demonstrates a basic Foundry use case. It comes with a contract gen
 
 See [Foundry installation guide](https://book.getfoundry.sh/getting-started/installation).
 
-## Building the project
+## Initializing the project
 
 \`\`\`
-make
+./setup.sh
 \`\`\`
 
 ## Testing the contract
@@ -262,7 +281,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file('.gitignore', gitIgnore);
   zip.file('foundry.toml', foundryToml);
   zip.file('remappings.txt', remappings);
-  zip.file('Makefile', makefile);
+  zip.file('setup.sh', setupSh, { unixPermissions: '755' });
   zip.file('README.md', readme(c));
 
   return zip;

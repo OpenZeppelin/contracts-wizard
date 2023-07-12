@@ -125,7 +125,7 @@
     const downloadFoundryHandler = async () => {
       const { zipFoundry } = await zipFoundryModule;
       const zip = await zipFoundry(contract, opts);
-      const blob = await zip.generateAsync({ type: 'blob' });
+      const blob = await zip.generateAsync({ type: 'blob', platform: 'UNIX' });
       saveAs(blob, 'foundry.zip');
       if (opts) {
         await postConfig(opts, 'download-foundry', language);

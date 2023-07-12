@@ -57,12 +57,12 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
     '.github/workflows/',
     '.github/workflows/test.yml',
     '.gitignore',
-    'Makefile',
     'README.md',
     'foundry.toml',
     'remappings.txt',
     'scripts/',
     `scripts/${c.name}.s.sol`,
+    'setup.sh',
     'src/',
     `src/${c.name}.sol`,
     'test/',
@@ -80,7 +80,8 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
       if (item.dir) {
         await fs.mkdir(path.join(tempFolder, item.name));
       } else {
-        await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+        const mode = item.unixPermissions ?? undefined;
+        await fs.writeFile(path.join(tempFolder, item.name), await asString(item), { mode });
       }
     }
 
@@ -88,11 +89,11 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
     await fs.appendFile(path.join(tempFolder, '.env'), '0x1');
 
     const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
-    const build = 'make -B'; // force rebuild since .git folder was created to set user
+    const setup = './setup.sh';
     const test = 'forge test';
     const script = `forge script scripts/${c.name}.s.sol`;
 
-    const command = `cd "${tempFolder}" && ${setGitUser} && ${build} && ${test} && ${script}`;
+    const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
 
     const exec = util.promisify(child.exec);
     const result = await exec(command);
@@ -109,7 +110,7 @@ async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<unkno
     await getItemString(zip, `.env`),
     await getItemString(zip, `.github/workflows/test.yml`),
     await getItemString(zip, `.gitignore`),
-    await getItemString(zip, `Makefile`),
+    await getItemString(zip, `setup.sh`),
     await getItemString(zip, `README.md`),
     await getItemString(zip, `foundry.toml`),
     await getItemString(zip, `remappings.txt`),
