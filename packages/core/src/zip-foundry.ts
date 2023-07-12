@@ -203,14 +203,14 @@ const script = (c: Contract) => {
 
 const setupSh = `\
 # Check if git is installed
-if ! command -v git &> /dev/null
+if ! [ -x "$(command -v git)" ]
 then
   echo "git command not found. Install git and try again."
   exit 1
 fi
 
 # Check if Foundry is installed
-if ! command -v forge &> /dev/null
+if ! [ -x "$(command -v forge)" ]
 then
   echo "forge command not found. Install Foundry and try again. See https://book.getfoundry.sh/getting-started/installation"
   exit 1
