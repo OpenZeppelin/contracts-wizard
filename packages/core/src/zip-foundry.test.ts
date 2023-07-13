@@ -97,13 +97,20 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const test = 'forge test';
   const script = `forge script script/${c.name}.s.sol`;
 
-  const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
-
   const exec = util.promisify(child.exec);
+
+  const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
   const result = await exec(command);
 
+  t.regex(result.stdout, /Initializing Foundry project\.\.\./);
+  t.regex(result.stdout, /Done\./);
   t.regex(result.stdout, /1 passed/);
   t.regex(result.stdout, /deployed to /);
+
+  const rerunCommand = `cd "${tempFolder}" && ${setup}`;
+  const rerunResult = await exec(rerunCommand);
+
+  t.regex(rerunResult.stdout, /Foundry project already initialized\./);
 }
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {

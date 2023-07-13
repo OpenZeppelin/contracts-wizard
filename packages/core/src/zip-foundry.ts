@@ -148,6 +148,8 @@ fi
 # Setup Foundry project
 if ! [ -f "foundry.toml" ]
 then
+  echo "Initializing Foundry project..."
+
   # Initialize sample Foundry project
   forge init --force --no-commit
 
@@ -169,6 +171,10 @@ then
   # Perform initial git commit
   git add .
   git commit -m "Initial commit"
+
+  echo "Done."
+else
+  echo "Foundry project already initialized."
 fi
 `;
 
