@@ -73,8 +73,8 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
     'README.md',
     'foundry.toml',
     'remappings.txt',
-    'scripts/',
-    `scripts/${c.name}.s.sol`,
+    'script/',
+    `script/${c.name}.s.sol`,
     'setup.sh',
     'src/',
     `src/${c.name}.sol`,
@@ -101,7 +101,7 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
   const setup = './setup.sh';
   const test = 'forge test';
-  const script = `forge script scripts/${c.name}.s.sol`;
+  const script = `forge script script/${c.name}.s.sol`;
 
   const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
 
@@ -120,7 +120,7 @@ async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Conte
     await getItemString(zip, `README.md`),
     await getItemString(zip, `foundry.toml`),
     await getItemString(zip, `remappings.txt`),
-    await getItemString(zip, `scripts/${c.name}.s.sol`),
+    await getItemString(zip, `script/${c.name}.s.sol`),
     await getItemString(zip, `src/${c.name}.sol`),
     await getItemString(zip, `test/${c.name}.t.sol`),
   ];

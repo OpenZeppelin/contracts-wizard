@@ -258,7 +258,7 @@ forge test
 You can simulate a deployment by running the script:
 
 \`\`\`
-forge script scripts/${c.name}.s.sol
+forge script script/${c.name}.s.sol
 \`\`\`
 
 See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
@@ -269,7 +269,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
 
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
-  zip.file(`scripts/${c.name}.s.sol`, script(c));
+  zip.file(`script/${c.name}.s.sol`, script(c));
   zip.file('.github/workflows/test.yml', githubWorkflowsTestYml);
   zip.file('.gitignore', gitIgnore);
   zip.file('foundry.toml', foundryToml);
