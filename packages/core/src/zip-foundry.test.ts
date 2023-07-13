@@ -102,8 +102,7 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
   const result = await exec(command);
 
-  t.regex(result.stdout, /Initializing Foundry project\.\.\./);
-  t.regex(result.stdout, /Done\./);
+  t.regex(result.stdout, /Initializing Foundry project\.\.\.\nDone\./);
   t.regex(result.stdout, /1 passed/);
   t.regex(result.stdout, /deployed to /);
 
