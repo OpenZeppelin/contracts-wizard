@@ -66,13 +66,7 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
-    '.github/',
-    '.github/workflows/',
-    '.github/workflows/test.yml',
-    '.gitignore',
     'README.md',
-    'foundry.toml',
-    'remappings.txt',
     'script/',
     `script/${c.name}.s.sol`,
     'setup.sh',
@@ -114,12 +108,8 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
-    await getItemString(zip, `.github/workflows/test.yml`),
-    await getItemString(zip, `.gitignore`),
     await getItemString(zip, `setup.sh`),
     await getItemString(zip, `README.md`),
-    await getItemString(zip, `foundry.toml`),
-    await getItemString(zip, `remappings.txt`),
     await getItemString(zip, `script/${c.name}.s.sol`),
     await getItemString(zip, `src/${c.name}.sol`),
     await getItemString(zip, `test/${c.name}.t.sol`),

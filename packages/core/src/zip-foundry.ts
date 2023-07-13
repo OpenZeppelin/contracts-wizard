@@ -6,73 +6,6 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
 import { formatLinesWithSpaces, Lines, spaceBetween } from "./utils/format-lines";
 
-const githubWorkflowsTestYml = `\
-name: test
-
-on: workflow_dispatch
-
-env:
-  FOUNDRY_PROFILE: ci
-
-jobs:
-  check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Run Forge build
-        run: |
-          forge --version
-          forge build --sizes
-        id: build
-
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
-`;
-
-const gitIgnore = `\
-# Compiler files
-cache/
-out/
-
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
-
-# Docs
-docs/
-
-# Dotenv file
-.env
-`;
-
-const foundryToml = `\
-[profile.default]
-src = "src"
-out = "out"
-libs = ["lib"]
-
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
-`
-
-const remappings = `\
-@openzeppelin/=lib/openzeppelin-contracts/
-`
-
 function getHeader(c: Contract) {
   return [
     `// SPDX-License-Identifier: ${c.license}`,
@@ -212,23 +145,30 @@ then
   exit 1
 fi
 
-# Setup git repository
-if ! git log &> /dev/null
+# Setup Foundry project
+if ! [ -f "foundry.toml" ]
 then
-  git init
+  # Initialize sample Foundry project
+  forge init --force --no-commit
+
+  # Install OpenZeppelin Contracts
+  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit
+
+  # Remove template contracts
+  rm src/Counter.sol
+  rm script/Counter.s.sol
+  rm test/Counter.t.sol
+
+  # Add remappings
+  if [ -f "remappings.txt" ]
+  then
+    echo "" >> remappings.txt
+  fi
+  echo "@openzeppelin/=lib/openzeppelin-contracts/" >> remappings.txt
+
+  # Perform initial git commit
   git add .
   git commit -m "Initial commit"
-fi
-
-# Setup git submodules
-if ! [ -d "lib/forge-std" ]
-then
-  forge install foundry-rs/forge-std
-fi
-
-if ! [ -d "lib/openzeppelin-contracts" ]
-then
-  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version}
 fi
 `;
 
@@ -270,10 +210,6 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c));
-  zip.file('.github/workflows/test.yml', githubWorkflowsTestYml);
-  zip.file('.gitignore', gitIgnore);
-  zip.file('foundry.toml', foundryToml);
-  zip.file('remappings.txt', remappings);
   zip.file('setup.sh', setupSh, { unixPermissions: '755' });
   zip.file('README.md', readme(c));
 
