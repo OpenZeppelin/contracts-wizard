@@ -66,7 +66,6 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
-    '.env',
     '.github/',
     '.github/workflows/',
     '.github/workflows/test.yml',
@@ -99,9 +98,6 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
     }
   }
 
-  // append fake private key to .env file
-  await fs.appendFile(path.join(tempFolder, '.env'), '0x1');
-
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
   const setup = './setup.sh';
   const test = 'forge test';
@@ -113,12 +109,11 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const result = await exec(command);
 
   t.regex(result.stdout, /1 passed/);
-  t.regex(result.stdout, /Deploying contract to /);
+  t.regex(result.stdout, /deployed to /);
 }
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
-    await getItemString(zip, `.env`),
     await getItemString(zip, `.github/workflows/test.yml`),
     await getItemString(zip, `.gitignore`),
     await getItemString(zip, `setup.sh`),
