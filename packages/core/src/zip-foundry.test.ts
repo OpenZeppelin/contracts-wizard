@@ -1,4 +1,4 @@
-import test, { ExecutionContext } from 'ava';
+import _test, { TestFn, ExecutionContext } from 'ava';
 
 import { zipFoundry } from './zip-foundry';
 
@@ -16,6 +16,20 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
+
+interface Context {
+  tempFolder: string;
+}
+
+const test = _test as TestFn<Context>;
+
+test.beforeEach(async t => {
+  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
+});
+
+test.afterEach.always(async t => {
+  await rimraf(t.context.tempFolder);
+});
 
 test.serial('erc20 basic', async t => {
   const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
@@ -41,7 +55,7 @@ test.serial('custom basic', async t => {
   await runTest(c, t, opts);
 });
 
-async function runTest(c: Contract, t: ExecutionContext<unknown>, opts: GenericOptions) {
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipFoundry(c, opts);
 
   assertLayout(zip, c, t);
@@ -49,7 +63,7 @@ async function runTest(c: Contract, t: ExecutionContext<unknown>, opts: GenericO
   await assertContents(zip, c, t);
 }
 
-function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
+function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
     '.env',
@@ -70,42 +84,39 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
   ]);
 }
 
-async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
+async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
-  const tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
-  try {
-    const items = Object.values(files);
-    for (const item of items) {
-      if (item.dir) {
-        await fs.mkdir(path.join(tempFolder, item.name));
-      } else {
-        const mode = item.unixPermissions ?? undefined;
-        await fs.writeFile(path.join(tempFolder, item.name), await asString(item), { mode });
-      }
+  const tempFolder = t.context.tempFolder;
+
+  const items = Object.values(files);
+  for (const item of items) {
+    if (item.dir) {
+      await fs.mkdir(path.join(tempFolder, item.name));
+    } else {
+      const mode = item.unixPermissions ?? undefined;
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item), { mode });
     }
-
-    // append fake private key to .env file
-    await fs.appendFile(path.join(tempFolder, '.env'), '0x1');
-
-    const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
-    const setup = './setup.sh';
-    const test = 'forge test';
-    const script = `forge script scripts/${c.name}.s.sol`;
-
-    const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
-
-    const exec = util.promisify(child.exec);
-    const result = await exec(command);
-
-    t.regex(result.stdout, /1 passed/);
-    t.regex(result.stdout, /Deploying contract to /);
-  } finally {
-    await rimraf(tempFolder);
   }
+
+  // append fake private key to .env file
+  await fs.appendFile(path.join(tempFolder, '.env'), '0x1');
+
+  const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
+  const setup = './setup.sh';
+  const test = 'forge test';
+  const script = `forge script scripts/${c.name}.s.sol`;
+
+  const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
+
+  const exec = util.promisify(child.exec);
+  const result = await exec(command);
+
+  t.regex(result.stdout, /1 passed/);
+  t.regex(result.stdout, /Deploying contract to /);
 }
 
-async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
+async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
     await getItemString(zip, `.env`),
     await getItemString(zip, `.github/workflows/test.yml`),

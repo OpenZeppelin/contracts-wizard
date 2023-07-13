@@ -1,4 +1,4 @@
-import test, { ExecutionContext } from 'ava';
+import _test, { TestFn, ExecutionContext } from 'ava';
 
 import { zipHardhat } from './zip-hardhat';
 
@@ -16,6 +16,20 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
+
+interface Context {
+  tempFolder: string;
+}
+
+const test = _test as TestFn<Context>;
+
+test.beforeEach(async t => {
+  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
+});
+
+test.afterEach.always(async t => {
+  await rimraf(t.context.tempFolder);
+});
 
 test.serial('erc20 basic', async t => {
   const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
@@ -47,7 +61,7 @@ test.serial('custom upgradeable', async t => {
   await runTest(c, t, opts);
 });
 
-async function runTest(c: Contract, t: ExecutionContext<unknown>, opts: GenericOptions) {
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
   assertLayout(zip, c, t);
@@ -55,7 +69,7 @@ async function runTest(c: Contract, t: ExecutionContext<unknown>, opts: GenericO
   await assertContents(zip, c, t);
 }
 
-function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
+function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files).map(f => f.name).sort();
   t.deepEqual(sorted, [
     '.gitignore',
@@ -73,30 +87,27 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
   ]);
 }
 
-async function extractAndRunPackage(zip: JSZip, t: ExecutionContext<unknown>) {
+async function extractAndRunPackage(zip: JSZip, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
-  const tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
-  try {
-    const items = Object.values(files);
-    for (const item of items) {
-      if (item.dir) {
-        await fs.mkdir(path.join(tempFolder, item.name));
-      } else {
-        await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
-      }
-    }
+  const tempFolder = t.context.tempFolder;
 
-    const exec = util.promisify(child.exec);
-    const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
-    t.regex(result.stdout, /1 passing/);
-    t.regex(result.stdout, /deployed to/);
-  } finally {
-    await rimraf(tempFolder);
+  const items = Object.values(files);
+  for (const item of items) {
+    if (item.dir) {
+      await fs.mkdir(path.join(tempFolder, item.name));
+    } else {
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+    }
   }
+
+  const exec = util.promisify(child.exec);
+  const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
+  t.regex(result.stdout, /1 passing/);
+  t.regex(result.stdout, /deployed to/);
 }
 
-async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<unknown>) {
+async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
     await getItemString(zip, 'hardhat.config.ts'),
