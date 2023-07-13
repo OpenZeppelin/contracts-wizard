@@ -131,6 +131,8 @@ const script = (c: Contract) => {
 };
 
 const setupSh = `\
+#!/usr/bin/env bash
+
 # Check if git is installed
 if ! [ -x "$(command -v git)" ]
 then
