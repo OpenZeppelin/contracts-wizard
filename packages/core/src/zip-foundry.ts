@@ -192,7 +192,7 @@ See [Foundry installation guide](https://book.getfoundry.sh/getting-started/inst
 ## Initializing the project
 
 \`\`\`
-./setup.sh
+bash setup.sh
 \`\`\`
 
 ## Testing the contract
