@@ -218,7 +218,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c));
-  zip.file('setup.sh', setupSh, { unixPermissions: '755' });
+  zip.file('setup.sh', setupSh);
   zip.file('README.md', readme(c));
 
   return zip;

@@ -87,13 +87,12 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
     if (item.dir) {
       await fs.mkdir(path.join(tempFolder, item.name));
     } else {
-      const mode = item.unixPermissions ?? undefined;
-      await fs.writeFile(path.join(tempFolder, item.name), await asString(item), { mode });
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
     }
   }
 
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
-  const setup = './setup.sh';
+  const setup = 'bash setup.sh';
   const test = 'forge test';
   const script = `forge script script/${c.name}.s.sol`;
 
