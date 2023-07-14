@@ -134,14 +134,14 @@ const setupSh = `\
 #!/usr/bin/env bash
 
 # Check if git is installed
-if ! [ -x "$(command -v git)" ]
+if ! which git &> /dev/null
 then
   echo "git command not found. Install git and try again."
   exit 1
 fi
 
 # Check if Foundry is installed
-if ! [ -x "$(command -v forge)" ]
+if ! which forge &> /dev/null
 then
   echo "forge command not found. Install Foundry and try again. See https://book.getfoundry.sh/getting-started/installation"
   exit 1
@@ -172,7 +172,7 @@ then
 
   # Perform initial git commit
   git add .
-  git commit -m "Initial commit" --quiet
+  git commit -m "openzeppelin: add wizard output" --quiet
 
   echo "Done."
 else
