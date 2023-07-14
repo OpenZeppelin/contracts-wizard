@@ -108,15 +108,27 @@
       }
     };
 
-    const zipEnvModule = import('@openzeppelin/wizard/zip-env');
+    const zipHardhatModule = import('@openzeppelin/wizard/zip-env-hardhat');
 
     const downloadHardhatHandler = async () => {
-      const { zipHardhat } = await zipEnvModule;
+      const { zipHardhat } = await zipHardhatModule;
       const zip = await zipHardhat(contract, opts);
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, 'project.zip');
       if (opts) {
         await postConfig(opts, 'download-hardhat', language);
+      }
+    };
+
+    const zipFoundryModule = import('@openzeppelin/wizard/zip-env-foundry');
+
+    const downloadFoundryHandler = async () => {
+      const { zipFoundry } = await zipFoundryModule;
+      const zip = await zipFoundry(contract, opts);
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveAs(blob, 'project.zip');
+      if (opts) {
+        await postConfig(opts, 'download-foundry', language);
       }
     };
 </script>
@@ -200,7 +212,17 @@
           <ZipIcon />
           <div class="download-option-content">
             <p>Development Package (Hardhat)</p>
-            <p>Sample project to get started with development and testing.</p>
+            <p>Sample Hardhat project to get started with development and testing.</p>
+          </div>
+        </button>
+        {/if}
+
+        {#if opts?.kind !== "Governor" && opts?.upgradeable === false}
+        <button class="download-option" on:click={downloadFoundryHandler}>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Development Package (Foundry)</p>
+            <p>Sample Foundry project to get started with development and testing.</p>
           </div>
         </button>
         {/if}

@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: 16.x
           cache: 'yarn'
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
         run: yarn install
       - name: Compile TypeScript
