@@ -168,7 +168,7 @@ then
   then
     echo "" >> remappings.txt
   fi
-  echo "@openzeppelin/=lib/openzeppelin-contracts/" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt
 
   # Perform initial git commit
   git add .
