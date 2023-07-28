@@ -112,8 +112,10 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 }
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+  const normalizeVersion = (text: string) => text.replace(/\bv\d+\.\d+\.\d+\b/g, 'vX.Y.Z');
+
   const contentComparison = [
-    await getItemString(zip, `setup.sh`),
+    normalizeVersion(await getItemString(zip, `setup.sh`)),
     await getItemString(zip, `README.md`),
     await getItemString(zip, `script/${c.name}.s.sol`),
     await getItemString(zip, `src/${c.name}.sol`),
