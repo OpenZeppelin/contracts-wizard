@@ -169,7 +169,7 @@ function addMintable(c: ContractBuilder, access: Access) {
 function addPermit(c: ContractBuilder, name: string) {
   c.addParent({
     name: 'ERC20Permit',
-    path: '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
   }, [name]);
 }
 
