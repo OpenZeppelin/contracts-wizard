@@ -179,14 +179,14 @@ function addVotes(c: ContractBuilder, name: string) {
   c.addParent(
     {
       name: 'EIP712',
-      path: '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol',
+      path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
     },
     [name, "1"]
   );
   c.addParent(
     {
       name: 'ERC721Votes',
-      path: '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol',
+      path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
     });
   c.addOverride('ERC721Votes', functions._afterTokenTransfer);
 }
