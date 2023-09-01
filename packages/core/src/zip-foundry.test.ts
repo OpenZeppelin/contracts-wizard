@@ -96,7 +96,7 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const test = 'forge test';
   const script = `forge script script/${c.name}.s.sol`;
 
-  const exec = util.promisify(child.exec);
+  const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
 
   const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
   const result = await exec(command);
