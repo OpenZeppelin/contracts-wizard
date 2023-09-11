@@ -4,7 +4,10 @@ async function main() {
 
   console.log('starting')
   const { data } = await axios.post('http://localhost:8888/ai', {
-    message: 'write a smart contract for an erc20 token called bobcoin'
+    messages: [{
+      role: 'user',
+      content: 'write a smart contract for an erc20 token called bobcoin'
+    }]
   })
 
   const choice = data.choices[0].message
