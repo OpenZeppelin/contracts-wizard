@@ -33,6 +33,7 @@
     "typescript": "^4.9.0"
   },
   "dependencies": {
-    "array.prototype.flatmap": "^1.2.4"
+    "array.prototype.flatmap": "^1.2.4",
+    "openai": "^4.6.0"
   }
 }

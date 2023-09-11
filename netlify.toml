@@ -1,3 +1,9 @@
 [build]
 command = "yarn --cwd packages/ui build"
 publish = "packages/ui/public"
+
+edge_functions = "packages/ui/api"
+
+[[edge_functions]]
+  path = "/ai"
+  function = "ai"
