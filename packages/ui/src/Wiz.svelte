@@ -6,11 +6,21 @@
   let showing: boolean = false
   let messages: { role: string, content: string }[] = [{
     role: 'wiz',
-    content: 'I can also edit Wizard directly, so from time to time I will update the settings based on your input.',
+    content: 'I can also edit Wizard settings directly, so from time to time I will update those based on your input.',
   }, {
     role: 'wiz',
-    content: 'Wiz here. Feel free to ask any questions you have about smart contract development.',
+    content: 'Wiz here 👋. Feel free to ask any questions you have about smart contract development.',
   }]
+
+  let input = ''
+  let listener = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+
+
+      console.log(input)
+
+    }
+  }
 
 </script>
 
@@ -18,7 +28,7 @@
 
   <div class={`${showing ? '' : ''} absolute flex flex-col-reverse gap-4 overflow-y-auto right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 p-4 rounded-md w-80 animate-fade-up`}>
     <div class="w-full flex items-center justify-between gap-2">
-      <textarea placeholder="Ask me anything..." class="w-full text-sm shadow-lg h-32 p-4 rounded-md outline-none border-0 resize-none" />
+      <textarea bind:value={input} on:keypress={listener} placeholder="Ask me anything..." class="w-full text-sm shadow-lg h-32 p-4 rounded-md outline-none border-0 resize-none" />
       <!-- 
       <button class="bg-gray-400 border-0 rounded-md p-2 flex-none">
         <SendIcon />
@@ -26,7 +36,7 @@
       -->
     </div>
 
-    {#each messages as message}
+    {#each messages as message, index}
       <div class="flex gap-2">
         <div class="relative h-[36px] w-[36px] flex-none">
           <div class="absolute w-[36px] h-[36px] glimmery rounded-full animate-spin-slow"></div>
