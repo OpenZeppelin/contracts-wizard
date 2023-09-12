@@ -1,4 +1,5 @@
-import OpenAI from 'npm:openai'
+// import OpenAI from 'npm:openai'
+import OpenAI from 'https://esm.sh/openai@4.6.0'
 import { erc20Function, erc721Function, erc1155Function, governorFunction, customFunction } from '../src/wiz-functions.ts'
 
 export default async (req: Request) => {
