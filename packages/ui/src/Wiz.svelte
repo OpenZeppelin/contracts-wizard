@@ -45,7 +45,7 @@
       input = ''
 
       const chat = messages.slice(0, messages.length - 2).reverse()
-      console.log(chat)
+      // console.log(chat)
 
       axios.post('/ai', {
         messages: chat
@@ -57,13 +57,13 @@
           if (newMessage) {
 
             if (newMessage.content) {
-              console.log('adding w content')
+              // console.log('adding w content')
               addMessage(newMessage)
             }
 
             if (newMessage.function_call) {
               const name = newMessage.function_call.name as keyof typeof nameMap
-              console.log('adding w function')
+              // console.log('adding w function')
               addMessage({
                 role: 'assistant',
                 content: 'Updated Wizard using ' + nameMap[name] + '.'
