@@ -146,10 +146,7 @@
       opts?: any
     } = {}
 
-    const applyFunction = () => {
-      // go to the tab for functionCall.name
-      // apply settings of functionCall.opts
-
+    const applyFunctionCall = () => {
       if (functionCall.name) {
         const name = functionCall.name as keyof typeof nameMap
         tab = sanitizeKind(nameMap[name])
@@ -158,23 +155,13 @@
           ...allOpts[tab],
           ...functionCall.opts
         }
-
-        /*
-        console.log('setting opts', opts)
-        opts = functionCall.opts
-        console.log('set opts', opts)
-        */
-
       }
     }
 
-    $: functionCall && applyFunction()
-
-
+    $: functionCall && applyFunctionCall()
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
-
   <Wiz bind:functionCall={functionCall}></Wiz>
 
   <div class="header flex flex-row justify-between">
