@@ -5,14 +5,27 @@
   import WizAvatar from './icons/WizAvatar.svelte'
   import WizIcon from './icons/WizIcon.svelte'
 
+  export let functionCall: {
+    name?: string,
+    opts?: any
+  }
+
   let showing: boolean = false
-  $: messages = [{
+  let messages: { role: string, content: string }[] = [{
     role: 'assistant',
     content: 'I can also edit Wizard settings directly, so from time to time I will update those based on your input.',
   }, {
     role: 'assistant',
     content: 'Wiz here 👋. Feel free to ask any questions you have about smart contract development.',
   }]
+
+  const nameMap = {
+    erc20: 'ERC20',
+    erc721: 'ERC721',
+    erc1155: 'ERC1155',
+    governor: 'Governor',
+    custom: 'Custom',
+  }
 
   const addMessage = (message: { role: string, content: string }) => {
     messages = [{
@@ -38,14 +51,34 @@
         messages: chat
       }).then(result => {
 
-        const newMessage = result.data?.choices[0]?.message
-        console.log(newMessage)
-        if (newMessage) {
-          if (newMessage.function_call) {
+        const choices = result.data?.choices
+        if (choices) {
+          const newMessage = choices[0]?.message
+          if (newMessage) {
 
-          }
-          if (newMessage.content) {
-            addMessage(newMessage)
+            if (newMessage.content) {
+              console.log('adding w content')
+              addMessage(newMessage)
+            }
+
+            if (newMessage.function_call) {
+              const name = newMessage.function_call.name as keyof typeof nameMap
+              console.log('adding w function')
+              addMessage({
+                role: 'assistant',
+                content: 'Updated Wizard using ' + nameMap[name] + '.'
+              })
+
+              const opts = JSON.parse(newMessage.function_call.arguments)
+              if (opts.access === 'false') { opts.access = false }
+              if (opts.upgrade === 'false') { opts.upgrade = false }
+              if (opts.timelock === 'false') { opts.timelock = false }
+
+              functionCall = {
+                name: name,
+                opts: opts
+              }
+            }
           }
         }
       })
@@ -71,25 +104,30 @@
       <div class="flex gap-2">
         <div class="relative h-[36px] w-[36px] flex-none">
           <div class="absolute w-[36px] h-[36px] glimmery rounded-full animate-spin-slow"></div>
-            {#if message.role === 'assistant'}
-              <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-900 text-gray-50 rounded-full">
-                <WizAvatar />
-              </div>
-            {/if}
-            {#if message.role === 'user'}
-              <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-100 rounded-full">
-                <UserAvatar />
-              </div>
-            {/if}
-        </div>
           {#if message.role === 'assistant'}
-            <div class="text-sm bg-gray-200 rounded-md p-4">{message.content}</div>
+            <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-900 text-gray-50 rounded-full">
+              <WizAvatar />
+            </div>
           {/if}
           {#if message.role === 'user'}
-            <div class="text-sm bg-gray-100 rounded-md p-4">{message.content}</div>
+            <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-100 rounded-full">
+              <UserAvatar />
+            </div>
           {/if}
+        </div>
+        {#if message.role === 'assistant'}
+          {#if message.content}
+            <div class="text-sm bg-gray-200 rounded-md p-4">{message.content}</div>
+          {:else}
+            <div class="text-sm bg-gray-200 rounded-md font-bold p-4 text-gray-500">{'Called a function'}</div>
+          {/if}
+        {/if}
+        {#if message.role === 'user'}
+          <div class="text-sm bg-gray-100 rounded-md p-4">{message.content}</div>
+        {/if}
       </div>
     {/each}
+
   </div>
 
 

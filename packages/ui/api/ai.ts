@@ -1,6 +1,5 @@
 import OpenAI from 'npm:openai'
-import { erc20, erc721, erc1155, governor, custom } from 'npm:@openzeppelin/wizard'
-import { erc20Function, erc721Function, erc1155Function, governorFunction } from '../src/wiz-functions.ts'
+import { erc20Function, erc721Function, erc1155Function, governorFunction, customFunction } from '../src/wiz-functions.ts'
 
 export default async (req: Request) => {
   // const body: { prompt: string } = await req.json();
@@ -20,13 +19,14 @@ export default async (req: Request) => {
       model: 'gpt-3.5-turbo-0613',
       messages: data.messages,
       functions: [
-        erc20Function, erc721Function, erc1155Function, governorFunction
+        erc20Function, erc721Function, erc1155Function, governorFunction, customFunction
       ],
       temperature: 0.7,
       // stream: true
     })
 
     return Response.json(result)
+
   } catch (e) {
     console.log(e)
     return Response.json({

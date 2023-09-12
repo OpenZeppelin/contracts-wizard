@@ -132,11 +132,50 @@
         await postConfig(opts, 'download-foundry', language);
       }
     };
+
+    const nameMap = {
+      erc20: 'ERC20',
+      erc721: 'ERC721',
+      erc1155: 'ERC1155',
+      governor: 'Governor',
+      custom: 'Custom',
+    }
+
+    let functionCall: {
+      name?: string,
+      opts?: any
+    } = {}
+
+    const applyFunction = () => {
+      // go to the tab for functionCall.name
+      // apply settings of functionCall.opts
+
+      if (functionCall.name) {
+        const name = functionCall.name as keyof typeof nameMap
+        tab = sanitizeKind(nameMap[name])
+
+        allOpts[tab] = {
+          ...allOpts[tab],
+          ...functionCall.opts
+        }
+
+        /*
+        console.log('setting opts', opts)
+        opts = functionCall.opts
+        console.log('set opts', opts)
+        */
+
+      }
+    }
+
+    $: functionCall && applyFunction()
+
+
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
 
-  <Wiz></Wiz>
+  <Wiz bind:functionCall={functionCall}></Wiz>
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">

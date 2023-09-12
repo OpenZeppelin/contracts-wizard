@@ -89,3 +89,18 @@ export const governorFunction = {
     required: ['name', 'delay', 'period'],
   }
 }
+
+export const customFunction = {
+  name: 'custom',
+  description: 'Make a custom smart contract',
+  parameters: {
+    type: 'object',
+    properties: {
+      name: { type: 'string', description: 'The name of the contract' },
+      pausable: { type: 'boolean', description: 'Whether the contract is pausable' },
+      access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
+      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+    },
+    required: ['name'],
+  }
+}
