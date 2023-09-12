@@ -17,7 +17,13 @@ export default async (req: Request) => {
 
     const result = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo-0613',
-      messages: data.messages,
+      messages: [
+        {
+          role: 'system',
+          content: 'Please be kind and concise. Keep responses to <100 words.'
+        },
+        ...data.messages
+      ],
       functions: [
         erc20Function, erc721Function, erc1155Function, governorFunction, customFunction
       ],

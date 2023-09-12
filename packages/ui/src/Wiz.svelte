@@ -87,17 +87,11 @@
 
 </script>
 
-<div class="absolute bottom-8 right-8">
-
-  <div class={`${showing ? '' : 'hidden'} absolute flex flex-col-reverse max-h-[829px] gap-3 overflow-y-auto right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 p-4 rounded-md w-80 animate-fade-up`}>
+<div class="absolute bottom-8 right-8 h-[calc(100%-188px)]">
+  <div class={`${showing ? '' : 'hidden'} absolute flex flex-col-reverse gap-3 overflow-y-auto right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 p-4 rounded-md w-80 animate-fade-up max-h-full`}>
 
     <div class="w-full flex items-center justify-between gap-2">
       <textarea bind:value={input} on:keypress={listener} placeholder="Ask me anything..." class="w-full text-sm shadow-lg h-32 p-4 rounded-md outline-none border-0 resize-none" />
-      <!-- 
-      <button class="bg-gray-400 border-0 rounded-md p-2 flex-none">
-        <SendIcon />
-      </button>
-      -->
     </div>
 
     {#each messages as message, index}
