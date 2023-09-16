@@ -20,8 +20,8 @@
     "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "4.9.3",
-    "@openzeppelin/contracts-upgradeable": "4.9.3",
+    "@openzeppelin/contracts": "file:openzeppelin-contracts-5.0.0.tgz",
+    "@openzeppelin/contracts-upgradeable": "file:openzeppelin-contracts-upgradeable-5.0.0.tgz",
     "@types/node": "^10.17.51",
     "array.prototype.flat": "^1.2.4",
     "ava": "^5.0.0",
