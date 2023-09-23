@@ -1,0 +1,54 @@
+:root {
+
+  --sans-serif: system-ui, sans-serif;
+  --monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+  /* Colors */
+
+  --text-color: #333333;
+
+  --gray-1: #f9fafb;
+  --gray-2: #eff1f3;
+  --gray-3: #d8dbe2;
+  --gray-4: #818998;
+  --gray-5: #575c66;
+  --gray-6: #2c374b;
+
+  --blue-1: #f5f6ff;
+  --blue-2: #4e5de4;
+  --blue-3: #343f9d;
+
+  --yellow-1: #fffaeb;
+  --yellow-2: #ffcc33;
+  --yellow-3: #b27700;
+
+  --red-1: #feecec;
+  --red-2: #f53d3d;
+  --red-3: #aa0909;
+  
+  --solidity-blue-1: #51d4ff;
+  --solidity-blue-2: #4e5de4;
+
+  --cairo-orange-1: #fe9149;
+  --cairo-orange-2: #fe4a3c;
+
+  /* Dimensions (scale taken from Tailwind) */
+
+  --size-1: 0.25rem;
+  --size-2: 0.5rem;
+  --size-3: 0.75rem;
+  --size-4: 1rem;
+  --size-8: 2rem;
+  --size-64: 16rem;
+
+  /* Font Sizes */
+
+  --text-small: 0.875rem;
+
+  /* Utilities */
+
+  --shadow: 0 2px 3px rgba(0, 0, 0, .1);
+
+  --icon-adjust: 0.125em;
+
+}

@@ -1,12 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BTMVCGVJ51"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BTMVCGVJ51');
+    </script>
+
+    <meta name="description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://wizard.openzeppelin.com">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="OpenZeppelin Contracts Wizard">
+    <meta property="og:description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
+    <meta property="og:image" content="https://wizard.openzeppelin.com/tw-card.png">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="wizard.openzeppelin.com">
+    <meta property="twitter:url" content="https://wizard.openzeppelin.com">
+    <meta name="twitter:creator" content="@OpenZeppelin">
+    <meta name="twitter:title" content="OpenZeppelin Contracts Wizard">
+    <meta name="twitter:description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
+    <meta name="twitter:image" content="https://wizard.openzeppelin.com/tw-card.png">
+
+    <!-- Favicons -->
+    <link rel='icon' type='image/png' href='/favicons/favicon.ico'>
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-icon-180x180.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicons/favicon-192x192.png" />
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+    <!-- Start of HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7795250.js"></script>
+    <!-- End of HubSpot Embed Code -->
+  </body>
 </html>
