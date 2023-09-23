@@ -27,9 +27,10 @@ export function installCustomElement() {
       w.style.display = 'block';
       w.style.minHeight = '53rem';
 
-      const src = new URL('embed', currentScript.origin);
+      const lang = getAttribute(w, 'data-lang', 'lang') ?? 'solidity';
 
-      setSearchParam(w, src.searchParams, 'data-lang', 'lang');
+      const src = new URL(`embed/${lang}`, currentScript.origin);
+
       setSearchParam(w, src.searchParams, 'data-tab', 'tab');
       const sync = w.getAttribute('data-sync-url');
 
@@ -67,8 +68,12 @@ export function installCustomElement() {
 
 }
 
+function getAttribute(w: HTMLElement, dataParam: string, param: string) {
+  return w.getAttribute(dataParam) ?? w.getAttribute(param);
+}
+
 function setSearchParam(w: HTMLElement, searchParams: URLSearchParams, dataParam: string, param: string) {
-  const value = w.getAttribute(dataParam) ?? w.getAttribute(param);
+  const value = getAttribute(w, dataParam, param);
   if (value) {
     searchParams.set(param, value);
   }

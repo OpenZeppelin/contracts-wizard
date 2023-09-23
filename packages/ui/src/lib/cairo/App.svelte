@@ -6,22 +6,17 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
-    import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '$lib/icons/CopyIcon.svelte';
     import CheckIcon from '$lib/icons/CheckIcon.svelte';
-    import RemixIcon from '$lib/icons/RemixIcon.svelte';
     import DownloadIcon from '$lib/icons/DownloadIcon.svelte';
-    import ZipIcon from '$lib/icons/ZipIcon.svelte';
-    import FileIcon from '$lib/icons/FileIcon.svelte';
     import Dropdown from '$lib/Dropdown.svelte';
     import OverflowMenu from '$lib/OverflowMenu.svelte';
-    import Tooltip from '$lib/Tooltip.svelte';
+    import FileIcon from '$lib/icons/FileIcon.svelte';
 
-    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
+    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
     import { postConfig } from '$lib/post-config';
-    import { remixURL } from '$lib/remix';
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
@@ -39,7 +34,7 @@
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder('MyToken');
+    let contract: Contract = new ContractBuilder();
 
     $: opts = allOpts[tab];
 
@@ -59,9 +54,9 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
-    const language = 'solidity';
+    const language = 'cairo';
 
     let copied = false;
     const copyHandler = async () => {
@@ -75,62 +70,15 @@
       }, 1000);
     };
 
-    const remixHandler = async (e: MouseEvent) => {
-      e.preventDefault();
-      if ((e.target as Element)?.classList.contains('disabled')) return;
-
-      const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
-
-      const versionedCode = printContractVersioned(contract);
-      window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
-      if (opts) {
-        await postConfig(opts, 'remix', language);
-      }
-    };
-
-    const downloadNpmHandler = async () => {
+    const downloadCairoHandler = async () => {
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
-        saveAs(blob, opts.name + '.sol');
+        const name = ('name' in opts) ? opts.name : 'MyContract';
+        saveAs(blob, name + '.cairo');
         await postConfig(opts, 'download-npm', language);
       }
     };
 
-    const zipModule = import('@openzeppelin/wizard/zip');
-
-    const downloadVendoredHandler = async () => {
-      const { zipContract } = await zipModule;
-      const zip = zipContract(contract);
-      const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'contracts.zip');
-      if (opts) {
-        await postConfig(opts, 'download-vendored', language);
-      }
-    };
-
-    const zipHardhatModule = import('@openzeppelin/wizard/zip-env-hardhat');
-
-    const downloadHardhatHandler = async () => {
-      const { zipHardhat } = await zipHardhatModule;
-      const zip = await zipHardhat(contract, opts);
-      const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'project.zip');
-      if (opts) {
-        await postConfig(opts, 'download-hardhat', language);
-      }
-    };
-
-    const zipFoundryModule = import('@openzeppelin/wizard/zip-env-foundry');
-
-    const downloadFoundryHandler = async () => {
-      const { zipFoundry } = await zipFoundryModule;
-      const zip = await zipFoundry(contract, opts);
-      const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'project.zip');
-      if (opts) {
-        await postConfig(opts, 'download-foundry', language);
-      }
-    };
 </script>
 
 <div class="wrapper flex flex-col gap-4 p-4">
@@ -146,9 +94,6 @@
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
-        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
-          Governor
-        </button>
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -156,7 +101,7 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[175px]" on:click={copyHandler}>
+      <button class="action-button min-w-[165px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
           Copied
@@ -166,74 +111,17 @@
         {/if}
       </button>
 
-      <Tooltip
-        let:trigger
-        disabled={!(opts?.upgradeable === "transparent")}
-        theme="light-red border"
-        hideOnClick={false}
-        interactive
-      >
-        <button
-          use:trigger
-          class="action-button"
-          class:disabled={opts?.upgradeable === "transparent"}
-          on:click={remixHandler}
-        >
-          <RemixIcon />
-          Open in Remix
-        </button>
-        <div slot="content">
-          Transparent upgradeable contracts are not supported on Remix.
-          Try using Remix with UUPS upgradability or use Hardhat or Truffle with
-          <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
-          <br />
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-        </div>
-      </Tooltip>
-
       <Dropdown let:active>
         <button class="action-button" let:active class:active slot="button">
           <DownloadIcon />
           Download
         </button>
 
-        <button class="download-option" on:click={downloadNpmHandler}>
+        <button class="download-option" on:click={downloadCairoHandler}>
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
-            <p>Simple to receive updates.</p>
-          </div>
-        </button>
-
-        {#if opts?.kind !== "Governor"}
-        <button class="download-option" on:click={downloadHardhatHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Development Package (Hardhat)</p>
-            <p>Sample Hardhat project to get started with development and testing.</p>
-          </div>
-        </button>
-        {/if}
-
-        {#if opts?.kind !== "Governor" && opts?.upgradeable === false}
-        <button class="download-option" on:click={downloadFoundryHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Development Package (Foundry)</p>
-            <p>Sample Foundry project to get started with development and testing.</p>
-          </div>
-        </button>
-        {/if}
-
-        <button class="download-option" on:click={downloadVendoredHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Vendored ZIP</p>
-            <p>Does not require npm package.</p>
-            <p>Must be updated manually.</p>
-            <p>Not recommended for beginners.</p>
+            <p>Requires installation of Python package (<code>openzeppelin-cairo-contracts</code>).</p>
           </div>
         </button>
       </Dropdown>
@@ -243,7 +131,7 @@
   <div class="flex flex-row gap-4 grow">
     <div class="controls w-64 flex flex-col shrink-0 justify-between">
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} />
+        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
@@ -251,14 +139,10 @@
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
-      <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
-      </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
       </div>
     </div>
-
     <div class="output flex flex-col grow overflow-auto">
     <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
@@ -299,7 +183,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--solidity-blue-2);
+    background-color: var(--cairo-orange-2);
     color: white;
     order: -1;
   }
@@ -320,10 +204,6 @@
 
     &:active, &.active {
       background-color: var(--gray-2);
-    }
-
-    &.disabled {
-      color: var(--gray-4);
     }
 
     :global(.icon) {
@@ -382,10 +262,6 @@
       margin-top: var(--icon-adjust);
     }
 
-    :not(:hover) + & {
-      border-top: 1px solid var(--gray-2);
-    }
-
     &:hover,
     &:focus, {
       background-color: var(--gray-1);
@@ -413,12 +289,4 @@
     }
   }
 
-  .download-zip-beta {
-    text-transform: uppercase;
-    padding: 0 .2em;
-    border: 1px solid;
-    border-radius: 4px;
-    font-size: .8em;
-    margin-left: .25em;
-  }
 </style>
