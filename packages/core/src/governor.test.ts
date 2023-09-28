@@ -85,12 +85,6 @@ testGovernor('governor with erc721votes settings omit decimals', {
   settings: true,
 });
 
-testGovernor('governor with comp', {
-  votes: 'comp',
-  quorumMode: 'absolute',
-  quorumAbsolute: '1',
-});
-
 testGovernor('governor with percent quorum', {
   quorumMode: 'percent',
   quorumPercent: 6,

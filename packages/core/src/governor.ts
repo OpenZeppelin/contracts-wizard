@@ -30,7 +30,7 @@ export const defaults: Required<GovernorOptions> = {
   info: commonDefaults.info
 } as const;
 
-export const votesOptions = ['erc20votes', 'erc721votes', 'comp'] as const;
+export const votesOptions = ['erc20votes', 'erc721votes'] as const;
 export type VotesOptions = typeof votesOptions[number];
 
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
@@ -227,10 +227,6 @@ const votesModules = {
     tokenType: 'IVotes',
     parentName: 'GovernorVotes',
   },
-  comp: {
-    tokenType: 'ERC20VotesComp',
-    parentName: 'GovernorVotesComp',
-  },
 } as const;
 
 function addVotes(c: ContractBuilder, { votes }: Required<GovernorOptions>) {
@@ -252,12 +248,6 @@ export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
-    if (opts.votes !== 'erc20votes' && opts.votes !== 'erc721votes') {
-      throw new OptionsError({
-        quorumPercent: 'Percent-based quorum is only available for ERC20Votes or ERC721Votes',
-      });
-    }
-
     if (opts.quorumPercent > 100) {
       throw new OptionsError({
         quorumPercent: 'Invalid percentage',

@@ -168,14 +168,6 @@
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
-
-    <label class:checked={opts.votes === 'comp'}>
-      <input type="radio" bind:group={opts.votes} value="comp">
-      COMP-like
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20VotesComp">
-        Similar to <code>ERC20Votes</code>, but based on COMP token or <code>ERC20VotesComp</code>.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 
