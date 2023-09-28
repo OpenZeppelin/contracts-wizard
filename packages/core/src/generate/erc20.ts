@@ -10,7 +10,6 @@ const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   burnable: booleans,
-  snapshots: booleans,
   pausable: booleans,
   mintable: booleans,
   permit: booleans,

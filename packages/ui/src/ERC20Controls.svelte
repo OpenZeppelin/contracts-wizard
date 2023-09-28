@@ -94,16 +94,6 @@
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
       </HelpTooltip>
     </label>
-
-    <label class:checked={opts.snapshots}>
-      <input type="checkbox" bind:checked={opts.snapshots}>
-      Snapshots
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Snapshot">
-        Privileged accounts will be able to store snapshots of balances that can be retrieved later.
-        <br>
-        For on-chain voting, the Votes option is preferable.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 

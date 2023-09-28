@@ -11,7 +11,9 @@ export type Access = typeof accessOptions[number];
 export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
-      c.addParent(parents.Ownable);
+      if (c.addParent(parents.Ownable, [{lit: 'initialOwner'}])) {
+        c.addConstructorArgument({type: 'address', name: 'initialOwner'});
+      }
       break;
     }
     case 'roles': {

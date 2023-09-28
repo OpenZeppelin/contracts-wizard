@@ -82,7 +82,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._beforeTokenTransfer]);
+    addPausable(c, access, [functions._update]);
   }
 
   if (allOpts.burnable) {
@@ -113,8 +113,8 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     [name, symbol],
   );
 
-  c.addOverride('ERC721', functions._beforeTokenTransfer);
-  c.addOverride('ERC721', functions._afterTokenTransfer);
+  c.addOverride('ERC721', functions._update);
+  c.addOverride('ERC721', functions._increaseBalance);
   c.addOverride('ERC721', functions._burn);
   c.addOverride('ERC721', functions.tokenURI);
   c.addOverride('ERC721', supportsInterface);
@@ -131,7 +131,8 @@ function addEnumerable(c: ContractBuilder) {
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol',
   });
 
-  c.addOverride('ERC721Enumerable', functions._beforeTokenTransfer);
+  c.addOverride('ERC721Enumerable', functions._update);
+  c.addOverride('ERC721Enumerable', functions._increaseBalance);
   c.addOverride('ERC721Enumerable', supportsInterface);
 }
 
@@ -141,7 +142,6 @@ function addURIStorage(c: ContractBuilder) {
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol',
   });
 
-  c.addOverride('ERC721URIStorage', functions._burn);
   c.addOverride('ERC721URIStorage', functions.tokenURI);
   c.addOverride('ERC721URIStorage', supportsInterface);
 }
@@ -158,13 +158,8 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   requireAccessControl(c, fn, access, 'MINTER');
 
   if (incremental) {
-    c.addUsing({
-      name: 'Counters',
-      path: '@openzeppelin/contracts/utils/Counters.sol',
-    }, 'Counters.Counter');
-    c.addVariable('Counters.Counter private _tokenIdCounter;');
-    c.addFunctionCode('uint256 tokenId = _tokenIdCounter.current();', fn);
-    c.addFunctionCode('_tokenIdCounter.increment();', fn);
+    c.addVariable('uint256 private _nextTokenId;');
+    c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
@@ -188,28 +183,20 @@ function addVotes(c: ContractBuilder, name: string) {
       name: 'ERC721Votes',
       path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
     });
-  c.addOverride('ERC721Votes', functions._afterTokenTransfer);
+
+  c.addOverride('ERC721Votes', functions._update);
+  c.addOverride('ERC721Votes', functions._increaseBalance);
 }
 
 const functions = defineFunctions({
-  _beforeTokenTransfer: {
+  _update: {
     kind: 'internal' as const,
     args: [
-      { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
-      { name: 'batchSize', type: 'uint256' },
+      { name: 'auth', type: 'address' },
     ],
-  },
-
-  _afterTokenTransfer: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'from', type: 'address' },
-      { name: 'to', type: 'address' },
-      { name: 'tokenId', type: 'uint256' },
-      { name: 'batchSize', type: 'uint256' },
-    ],
+    returns: ['address'],
   },
 
   _burn: {
@@ -233,6 +220,14 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
+  },
+
+  _increaseBalance: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'account', type: 'address' },
+      { name: 'value', type: 'uint128' },
+    ],
   },
 });
 

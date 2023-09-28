@@ -65,7 +65,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._beforeTokenTransfer]);
+    addPausable(c, access, [functions._update]);
   }
 
   if (allOpts.burnable) {
@@ -96,7 +96,7 @@ function addBase(c: ContractBuilder, uri: string) {
     [uri],
   );
 
-  c.addOverride('ERC1155', functions._beforeTokenTransfer);
+  c.addOverride('ERC1155', functions._update);
   c.addOverride('ERC1155', supportsInterface);
 }
 
@@ -124,19 +124,17 @@ function addSupply(c: ContractBuilder) {
     name: 'ERC1155Supply',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
   });
-  c.addOverride('ERC1155Supply', functions._beforeTokenTransfer);
+  c.addOverride('ERC1155Supply', functions._update);
 }
 
 const functions = defineFunctions({
-  _beforeTokenTransfer: {
+  _update: {
     kind: 'internal' as const,
     args: [
-      { name: 'operator', type: 'address' },
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'ids', type: 'uint256[] memory' },
-      { name: 'amounts', type: 'uint256[] memory' },
-      { name: 'data', type: 'bytes memory' },
+      { name: 'values', type: 'uint256[] memory' },
     ],
   },
 
@@ -166,5 +164,4 @@ const functions = defineFunctions({
       { name: 'data', type: 'bytes memory' },
     ],
   },
-
 });
