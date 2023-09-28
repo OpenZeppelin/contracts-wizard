@@ -58,10 +58,6 @@ testGovernor('governor with settings', {
   proposalThreshold: '1',
 });
 
-testGovernor('governor with bravo', {
-  bravo: true,
-});
-
 testGovernor('governor with erc20votes', {
   votes: 'erc20votes',
 });

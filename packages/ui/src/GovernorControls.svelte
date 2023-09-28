@@ -136,16 +136,6 @@
         Allow governance to update voting settings (delay, period, proposal threshold).
       </HelpTooltip>
     </label>
-
-    <label class:checked={opts.bravo}>
-      <input type="checkbox" bind:checked={opts.bravo}>
-      Bravo Compatible
-      <HelpTooltip>
-        Include full compatibility with <code>GovernorBravo</code>.
-        <br>
-        May require enabling Solidity optimizer to avoid hitting contract size limit.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 

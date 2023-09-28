@@ -22,7 +22,6 @@ export const defaults: Required<GovernorOptions> = {
   quorumMode: 'percent',
   quorumPercent: 4,
   quorumAbsolute: '',
-  bravo: false,
   settings: true,
   
   access: commonDefaults.access,
@@ -52,7 +51,6 @@ export interface GovernorOptions extends CommonOptions {
   quorumAbsolute?: string;
   votes?: VotesOptions;
   timelock?: TimelockOptions;
-  bravo?: boolean;
   settings?: boolean;
 }
 
@@ -70,7 +68,6 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
-    bravo: opts.bravo ?? defaults.bravo,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     timelock: opts.timelock ?? defaults.timelock
@@ -86,8 +83,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
   addBase(c, allOpts);
   addSettings(c, allOpts);
-  addCounting(c, allOpts);
-  addBravo(c, allOpts);
+  addCounting(c);
   addVotes(c, allOpts);
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
@@ -107,17 +103,18 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
     },
     [name],
   );
-  c.addOverride('IGovernor', functions.votingDelay);
-  c.addOverride('IGovernor', functions.votingPeriod);
-  c.addOverride('IGovernor', functions.quorum);
+  c.addOverride('Governor', functions.votingDelay);
+  c.addOverride('Governor', functions.votingPeriod);
+  c.addOverride('Governor', functions.quorum);
   c.addOverride('Governor', functions.state);
   c.addOverride('Governor', functions.propose);
+  c.addOverride('Governor', functions.proposalNeedsQueuing);
   c.addOverride('Governor', functions.proposalThreshold);
-  c.addOverride('Governor', functions._execute);
+  c.addOverride('Governor', functions._queueOperations);
+  c.addOverride('Governor', functions._executeOperations);
   c.addOverride('Governor', functions._cancel);
   c.addOverride('Governor', functions._executor);
   c.addOverride('Governor', supportsInterface);
-  c.addOverride('Governor', functions.cancel);
 }
 
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
@@ -209,13 +206,11 @@ function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions
   }
 }
 
-function addCounting(c: ContractBuilder, { bravo }: GovernorOptions) {
-  if (!bravo) {
-    c.addParent({
-      name: 'GovernorCountingSimple',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
-    });
-  }
+function addCounting(c: ContractBuilder) {
+  c.addParent({
+    name: 'GovernorCountingSimple',
+    path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
+  });
 }
 
 const votesModules = {
@@ -335,32 +330,12 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
   }, [{ lit: timelockArg }]);
-  c.addOverride('IGovernor', functions.propose);
-  c.addOverride(parentName, functions._execute);
+  c.addOverride(parentName, functions._queueOperations);
+  c.addOverride(parentName, functions._executeOperations);
   c.addOverride(parentName, functions._cancel);
   c.addOverride(parentName, functions._executor);
   c.addOverride(parentName, functions.state);
-  c.addOverride(parentName, supportsInterface);
-}
-
-function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
-  if (bravo) {
-    if (timelock === false) {
-      throw new OptionsError({
-        timelock: 'GovernorBravo compatibility requires a timelock',
-      });
-    }
-
-    c.addParent({
-      name: 'GovernorCompatibilityBravo',
-      path: '@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol',
-    });
-    c.addOverride('IGovernor', functions.state);
-    c.addOverride('IGovernor', functions.cancel);
-    c.addOverride('GovernorCompatibilityBravo', functions.cancel);
-    c.addOverride('GovernorCompatibilityBravo', functions.propose);
-    c.addOverride('IERC165', supportsInterface);
-  }
+  c.addOverride(parentName, functions.proposalNeedsQueuing);
 }
 
 const functions = defineFunctions({
@@ -381,6 +356,14 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+  },
+  proposalNeedsQueuing: {
+    args: [
+      { name: 'proposalId', type: 'uint256' },
+    ],
+    returns: ['bool'],
+    kind: 'public',
+    mutability: 'view',
   },
   quorum: {
     args: [
@@ -406,7 +389,18 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
   },
-  _execute: {
+  _queueOperations: {
+    args: [
+      { name: 'proposalId', type: 'uint256' },
+      { name: 'targets', type: 'address[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
+      { name: 'calldatas', type: 'bytes[] memory' },
+      { name: 'descriptionHash', type: 'bytes32' },
+    ],
+    kind: 'internal',
+    returns: ['uint48'],
+  },
+  _executeOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
       { name: 'targets', type: 'address[] memory' },
@@ -425,16 +419,6 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
-  },
-  cancel: {
-    args: [
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'descriptionHash', type: 'bytes32' },
-    ],
-    returns: ['uint256'],
-    kind: 'public',
   },
   state: {
     args: [
