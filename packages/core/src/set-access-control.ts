@@ -11,14 +11,21 @@ export type Access = typeof accessOptions[number];
 export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
-      if (c.addParent(parents.Ownable, [{lit: 'initialOwner'}])) {
-        c.addConstructorArgument({type: 'address', name: 'initialOwner'});
+      if (c.addParent(parents.Ownable, [ {lit: 'initialOwner'} ])) {
+        c.addConstructorArgument({
+          type: 'address',
+          name: 'initialOwner'
+        });
       }
       break;
     }
     case 'roles': {
       if (c.addParent(parents.AccessControl)) {
-        c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);');
+        c.addConstructorArgument({
+          type: 'address',
+          name: 'defaultAdmin'
+        });
+        c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);');
       }
       c.addOverride(parents.AccessControl.name, supportsInterface);
       break;
@@ -29,7 +36,7 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string) {
   if (access === false) {
     access = 'ownable';
   }
@@ -42,9 +49,10 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
       break;
     }
     case 'roles': {
-      const roleId = role + '_ROLE';
+      const roleId = roleIdPrefix + '_ROLE';
       if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
-        c.addConstructorCode(`_grantRole(${roleId}, msg.sender);`);
+        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
       c.addModifier(`onlyRole(${roleId})`, fn);
       break;

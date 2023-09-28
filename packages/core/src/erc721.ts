@@ -155,7 +155,7 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
   const fn = getMintFunction(incremental, uriStorage);
-  requireAccessControl(c, fn, access, 'MINTER');
+  requireAccessControl(c, fn, access, 'MINTER', 'minter');
 
   if (incremental) {
     c.addVariable('uint256 private _nextTokenId;');

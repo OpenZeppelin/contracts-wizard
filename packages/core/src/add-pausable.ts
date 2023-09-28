@@ -12,10 +12,10 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
     c.addModifier('whenNotPaused', fn);
   }
 
-  requireAccessControl(c, functions.pause, access, 'PAUSER');
+  requireAccessControl(c, functions.pause, access, 'PAUSER', 'pauser');
   c.addFunctionCode('_pause();', functions.pause);
 
-  requireAccessControl(c, functions.unpause, access, 'PAUSER');
+  requireAccessControl(c, functions.unpause, access, 'PAUSER', 'pauser');
   c.addFunctionCode('_unpause();', functions.unpause);
 }
 

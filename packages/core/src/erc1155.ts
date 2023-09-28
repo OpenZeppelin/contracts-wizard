@@ -108,14 +108,14 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access, 'MINTER');
-  requireAccessControl(c, functions.mintBatch, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
+  requireAccessControl(c, functions.mintBatch, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(account, id, amount, data);', functions.mint);
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.setURI, access, 'URI_SETTER');
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER', 'uriSetter');
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 

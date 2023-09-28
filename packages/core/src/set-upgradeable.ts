@@ -22,7 +22,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
     case 'transparent': break;
 
     case 'uups': {
-      requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER');
+      requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
       c.addParent({
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',

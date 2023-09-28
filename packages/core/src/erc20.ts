@@ -142,7 +142,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 
