@@ -1,10 +1,9 @@
-module.exports = {
-  content: [
-    './src/**/*.{html,svelte}',
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{html,js,svelte,ts}'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
 
-    // Using glob patterns results in infinite loop
-    './public/index.html',
-    './public/cairo.html',
-    './public/embed.html',
-  ],
-};
