@@ -136,6 +136,14 @@
         Allow governance to update voting settings (delay, period, proposal threshold).
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.storage}>
+      <input type="checkbox" bind:checked={opts.storage}>
+      Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x-rc/api/governance#GovernorStorage">
+        Enable storage of proposal details and enumerability of proposals.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 

@@ -22,6 +22,7 @@ export const defaults: Required<GovernorOptions> = {
   quorumMode: 'percent',
   quorumPercent: 4,
   quorumAbsolute: '',
+  storage: false,
   settings: true,
   
   access: commonDefaults.access,
@@ -51,6 +52,7 @@ export interface GovernorOptions extends CommonOptions {
   quorumAbsolute?: string;
   votes?: VotesOptions;
   timelock?: TimelockOptions;
+  storage?: boolean;
   settings?: boolean;
 }
 
@@ -68,6 +70,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
+    storage: opts.storage ?? defaults.storage,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     timelock: opts.timelock ?? defaults.timelock
@@ -84,6 +87,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addBase(c, allOpts);
   addSettings(c, allOpts);
   addCounting(c);
+  addStorage(c, allOpts);
   addVotes(c, allOpts);
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
@@ -110,6 +114,7 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   c.addOverride('Governor', functions.propose);
   c.addOverride('Governor', functions.proposalNeedsQueuing);
   c.addOverride('Governor', functions.proposalThreshold);
+  c.addOverride('Governor', functions._propose);
   c.addOverride('Governor', functions._queueOperations);
   c.addOverride('Governor', functions._executeOperations);
   c.addOverride('Governor', functions._cancel);
@@ -338,6 +343,16 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   c.addOverride(parentName, functions.proposalNeedsQueuing);
 }
 
+function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
+  if (storage) {
+    c.addParent({
+      name: 'GovernorStorage',
+      path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
+    });
+    c.addOverride('GovernorStorage', functions._propose);
+  }
+}
+
 const functions = defineFunctions({
   votingDelay: {
     args: [],
@@ -388,6 +403,17 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'public',
+  },
+  _propose: {
+    args: [
+      { name: 'targets', type: 'address[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
+      { name: 'calldatas', type: 'bytes[] memory' },
+      { name: 'description', type: 'string memory' },
+      { name: 'proposer', type: 'address' },
+    ],
+    returns: ['uint256'],
+    kind: 'internal',
   },
   _queueOperations: {
     args: [

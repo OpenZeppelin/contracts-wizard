@@ -58,6 +58,10 @@ testGovernor('governor with settings', {
   proposalThreshold: '1',
 });
 
+testGovernor('governor with storage', {
+  storage: true,
+});
+
 testGovernor('governor with erc20votes', {
   votes: 'erc20votes',
 });
