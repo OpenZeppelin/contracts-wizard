@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument } from './contract';
+import type { Contract } from './contract';
 import { printContract } from './print';
 import { reachable } from './utils/transitive-closure';
 
@@ -24,7 +24,6 @@ Generated with OpenZeppelin Contracts Wizard (https://zpl.in/wizard).
 
 export function zipContract(c: Contract): JSZip {
   const { transformImport } = withHelpers(c);
-  const contractsVariant = c.upgradeable ? '-upgradeable' : '';
 
   const fileName = c.name + '.sol';
 
@@ -46,7 +45,8 @@ export function zipContract(c: Contract): JSZip {
     }
   }));
 
-  zip.file(`@openzeppelin/contracts${contractsVariant}/README.md`, readme(contractsVariant));
+  addReadmeIfImportsVariant(zip, allImports, '');
+  addReadmeIfImportsVariant(zip, allImports, '-upgradeable');
 
   for (const importPath of allImports) {
     const source = contracts.sources[importPath];
@@ -57,4 +57,13 @@ export function zipContract(c: Contract): JSZip {
   }
 
   return zip;
+}
+
+function addReadmeIfImportsVariant(zip: JSZip, allImports: Set<string>, variant: string) {
+  const hasVariant = Array.from(allImports).some((importPath) => {
+    return importPath.startsWith(`@openzeppelin/contracts${variant}/`);
+  });
+  if (hasVariant) {
+    zip.file(`@openzeppelin/contracts${variant}/README.md`, readme(variant));
+  }
 }

@@ -80,6 +80,7 @@ test('erc721 auto increment uups', t => {
     '@openzeppelin/contracts-upgradeable/token/ERC721/',
     '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol',
     '@openzeppelin/contracts/',
+    '@openzeppelin/contracts/README.md',
     '@openzeppelin/contracts/interfaces/',
     '@openzeppelin/contracts/interfaces/draft-IERC1822.sol',
     '@openzeppelin/contracts/interfaces/draft-IERC6093.sol',
