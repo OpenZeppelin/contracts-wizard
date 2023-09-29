@@ -49,14 +49,29 @@ export function zipContract(c: Contract): JSZip {
   addReadmeIfImportsVariant(zip, allImports, '-upgradeable');
 
   for (const importPath of allImports) {
-    const source = contracts.sources[importPath];
+    let source = contracts.sources[importPath];
     if (source === undefined) {
       throw new Error(`Source for ${importPath} not found`);
     }
+    if (c.upgradeable) {
+      source = relativizeNonTranspiledImports(source, importPath);
+    }
+
     zip.file(importPath, source);
   }
 
   return zip;
+}
+
+/**
+ * If there are any non-transpiled paths in source's imports, relativize them according to
+ * current file depth so that they point to the non-transpiled sources in the zip.
+ */
+function relativizeNonTranspiledImports(source: string, importPath: string) {
+  return source.replace(/import\s+.*from\s+("|')@openzeppelin\/contracts/g, match => {
+    const depth = importPath.split('/').length - 1;
+    return match.replace(/@openzeppelin/, '../'.repeat(depth) + '@openzeppelin');
+  });
 }
 
 function addReadmeIfImportsVariant(zip: JSZip, allImports: Set<string>, variant: string) {
