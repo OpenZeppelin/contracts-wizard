@@ -31,8 +31,20 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('erc20 basic', async t => {
-  const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
+test.serial('erc20 full', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    votes: true,
+    flashmint: true,
+  };
   const c = buildERC20(opts);
   await runTest(c, t, opts);
 });
