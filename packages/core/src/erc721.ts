@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
+import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
@@ -82,7 +82,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._update]);
+    addPausableExtension(c, access);
   }
 
   if (allOpts.burnable) {
@@ -102,6 +102,16 @@ export function buildERC721(opts: ERC721Options): Contract {
   setInfo(c, info);
 
   return c;
+}
+
+function addPausableExtension(c: ContractBuilder, access: Access) {
+  c.addParent({
+    name: 'ERC721Pausable',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol',
+  });
+  c.addOverride('ERC721Pausable', functions._update);
+
+  addPauseFunctions(c, access);
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {

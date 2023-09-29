@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
+import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
@@ -70,7 +70,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._update]);
+    addPausableExtension(c, access);
   }
 
   if (allOpts.premint) {
@@ -113,6 +113,16 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addOverride('ERC20', functions._update);
   c.addOverride('ERC20', functions._mint);
   c.addOverride('ERC20', functions._burn);
+}
+
+function addPausableExtension(c: ContractBuilder, access: Access) {
+  c.addParent({
+    name: 'ERC20Pausable',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
+  });
+  c.addOverride('ERC20Pausable', functions._update);
+
+  addPauseFunctions(c, access);
 }
 
 function addBurnable(c: ContractBuilder) {
