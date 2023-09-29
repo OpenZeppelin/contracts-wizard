@@ -6,7 +6,6 @@ import { Options, Helpers, withHelpers } from './options';
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
-import assert from 'assert';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -228,8 +227,9 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
   let type: string;
   if (typeof arg.type === 'string') {
-    // primitive type
-    assert(!/^[A-Z]/.test(arg.type), `Type ${arg.type} is not a primitive type. Define it as a ContractReference`);
+    if (/^[A-Z]/.test(arg.type)) {
+      `Type ${arg.type} is not a primitive type. Define it as a ContractReference`;
+    }
     type = arg.type;
   } else {
     type = transformName(arg.type);
