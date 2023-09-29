@@ -18,7 +18,7 @@ const blueprint = {
   quorumAbsolute: ['1000'],
   votes: votesOptions,
   timelock: timelockOptions,
-  bravo: booleans,
+  storage: booleans,
   settings: booleans,
   upgradeable: upgradeableOptions,
   access: accessOptions,
