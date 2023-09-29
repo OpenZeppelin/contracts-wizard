@@ -30,7 +30,6 @@ export interface Options {
 export interface Helpers extends Required<Options> {
   upgradeable: boolean;
   transformName: (name: ContractReference) => string;
-  transformVariable: (code: string) => string;
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
@@ -43,6 +42,5 @@ export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
       const p2 = contractUpgradeable && p1.transpiled ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
-    transformVariable: v => v.replace(/[A-Z]\w*(?=\.|$)/, transformName({ name: '$&', transpiled: false})), // TODO this is a hack
   };
 }

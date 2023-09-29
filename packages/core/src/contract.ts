@@ -192,7 +192,9 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  // TODO does this need a tranpiled flag
+  /**
+   * Note: The type in the variable is not currently transpiled, even if it refers to a contract
+   */
   addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);

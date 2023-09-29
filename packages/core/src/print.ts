@@ -32,7 +32,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          contract.variables.map(helpers.transformVariable),
+          contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
