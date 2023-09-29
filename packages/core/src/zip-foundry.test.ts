@@ -103,7 +103,11 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
   t.regex(result.stdout, /Initializing Foundry project\.\.\.\nDone\./);
   t.regex(result.stdout, /1 passed/);
-  t.regex(result.stdout, /deployed to /);
+
+  if (c.constructorArgs === undefined) {
+    // the deployment is only run by default if there are no constructor args
+    t.regex(result.stdout, /deployed to /);
+  }
 
   const rerunCommand = `cd "${tempFolder}" && ${setup}`;
   const rerunResult = await exec(rerunCommand);

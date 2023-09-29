@@ -142,7 +142,7 @@ import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  ${args.length > 0 ? '// TODO: Set addresses for the arguments below' : ''}
+  ${args.length > 0 ? '// TODO: Set addresses for the contract arguments below' : ''}
   const instance = await ${getDeploymentCall(c, args)};
   await instance.waitForDeployment();
 
