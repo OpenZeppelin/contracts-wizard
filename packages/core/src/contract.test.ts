@@ -67,10 +67,7 @@ test('contract with one override', t => {
       { name: 'amount', type: 'uint256' },
     ],
   };
-  Foo.addOverride({
-    name: 'ERC20',
-    transpiled: true,
-  }, _beforeTokenTransfer);
+  Foo.addOverride(toContractReference('ERC20'), _beforeTokenTransfer);
   t.snapshot(printContract(Foo));
 });
 
