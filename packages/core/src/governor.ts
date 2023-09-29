@@ -104,6 +104,7 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
     {
       name: 'Governor',
       path: '@openzeppelin/contracts/governance/Governor.sol',
+      transpiled: true,
     },
     [name],
   );
@@ -128,6 +129,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
       {
         name: 'GovernorSettings',
         path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
+        transpiled: true,
       },
       [
         { value: getVotingDelay(allOpts), note: allOpts.delay },
@@ -215,6 +217,7 @@ function addCounting(c: ContractBuilder) {
   c.addParent({
     name: 'GovernorCountingSimple',
     path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
+    transpiled: true,
   });
 }
 
@@ -222,16 +225,18 @@ const votesModules = {
   erc20votes: {
     tokenType: 'IVotes',
     parentName: 'GovernorVotes',
+    transpiled: true,
   },
   erc721votes: {
     tokenType: 'IVotes',
     parentName: 'GovernorVotes',
+    transpiled: true,
   },
 } as const;
 
 function addVotes(c: ContractBuilder, { votes }: Required<GovernorOptions>) {
   const tokenArg = '_token';
-  const { tokenType, parentName } = votesModules[votes];
+  const { tokenType, parentName, transpiled } = votesModules[votes];
 
   c.addConstructorArgument({
     type: tokenType,
@@ -241,6 +246,7 @@ function addVotes(c: ContractBuilder, { votes }: Required<GovernorOptions>) {
   c.addParent({
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
+    transpiled,
   }, [{ lit: tokenArg }]);
 }
 
@@ -266,6 +272,7 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
     c.addParent({
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
+      transpiled: true,
     }, [quorumFractionNumerator]);
     c.addOverride('GovernorVotesQuorumFraction', functions.quorum);
   }
@@ -291,10 +298,12 @@ const timelockModules = {
   openzeppelin: {
     timelockType: 'TimelockController',
     parentName: 'GovernorTimelockControl',
+    transpiled: true,
   },
   compound: {
     timelockType: 'ICompoundTimelock',
     parentName: 'GovernorTimelockCompound',
+    transpiled: true,
   },
 } as const;
 
@@ -324,7 +333,7 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   }
 
   const timelockArg = '_timelock';
-  const { timelockType, parentName } = timelockModules[timelock];
+  const { timelockType, parentName, transpiled } = timelockModules[timelock];
 
   c.addConstructorArgument({
     type: timelockType,
@@ -334,6 +343,7 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   c.addParent({
     name: parentName,
     path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
+    transpiled,
   }, [{ lit: timelockArg }]);
   c.addOverride(parentName, functions._queueOperations);
   c.addOverride(parentName, functions._executeOperations);
@@ -348,6 +358,7 @@ function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
     c.addParent({
       name: 'GovernorStorage',
       path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
+      transpiled: true,
     });
     c.addOverride('GovernorStorage', functions._propose);
   }

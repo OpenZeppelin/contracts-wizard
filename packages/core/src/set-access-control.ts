@@ -64,9 +64,11 @@ const parents = {
   Ownable: {
     name: 'Ownable',
     path: '@openzeppelin/contracts/access/Ownable.sol',
+    transpiled: true,
   },
   AccessControl: {
     name: 'AccessControl',
     path: '@openzeppelin/contracts/access/AccessControl.sol',
+    transpiled: true,
   },
 };

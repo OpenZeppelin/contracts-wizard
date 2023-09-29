@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@openzeppelin/contracts": "^5.0.0-rc.0",
+    "@openzeppelin/contracts": "^5.0.0-rc.1",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "hardhat": "^2.16.1"
   }

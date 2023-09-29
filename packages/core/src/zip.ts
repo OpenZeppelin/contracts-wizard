@@ -29,7 +29,7 @@ export function zipContract(c: Contract): JSZip {
   const fileName = c.name + '.sol';
 
   const dependencies = {
-    [fileName]: c.imports.map(i => transformImport(i)),
+    [fileName]: c.imports.map(i => transformImport(i).path),
     ...contracts.dependencies,
   };
 
@@ -37,7 +37,14 @@ export function zipContract(c: Contract): JSZip {
 
   const zip = new JSZip();
 
-  zip.file(fileName, printContract(c, { transformImport: p => './' + p }));
+  zip.file(fileName, printContract(c, {
+    transformImport: p => {
+      return {
+        ...p,
+        path: './' + p.path
+      }
+    }
+  }));
 
   zip.file(`@openzeppelin/contracts${contractsVariant}/README.md`, readme(contractsVariant));
 

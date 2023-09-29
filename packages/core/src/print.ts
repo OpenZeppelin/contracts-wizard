@@ -24,7 +24,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.imports.map(p => `import "${helpers.transformImport(p)}";`),
+      contract.imports.map(p => `import "${helpers.transformImport(p).path}";`),
 
       [
         ...printNatspecTags(contract.natspecTags),
@@ -134,8 +134,9 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const fn = helpers.upgradeable ? `__${contract.name}_init` : contract.name;
-  if (helpers.upgradeable || params.length > 0) {
+  const useTranspiled = helpers.upgradeable && contract.transpiled;
+  const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
+  if (useTranspiled || params.length > 0) {
     return [
       fn + '(' + params.map(printValue).join(', ') + ')',
     ];

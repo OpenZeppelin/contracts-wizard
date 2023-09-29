@@ -106,6 +106,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     {
       name: 'ERC20',
       path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
+      transpiled: true,
     },
     [name, symbol],
   );
@@ -119,6 +120,7 @@ function addPausableExtension(c: ContractBuilder, access: Access) {
   c.addParent({
     name: 'ERC20Pausable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
+    transpiled: true,
   });
   c.addOverride('ERC20Pausable', functions._update);
 
@@ -129,6 +131,7 @@ function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20Burnable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol',
+    transpiled: true,
   });
 }
 
@@ -160,6 +163,7 @@ function addPermit(c: ContractBuilder, name: string) {
   c.addParent({
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
+    transpiled: true,
   }, [name]);
   c.addOverride('ERC20Permit', functions.nonces);
 
@@ -173,6 +177,7 @@ function addVotes(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
+    transpiled: true,
   });
   c.addOverride('ERC20Votes', functions._update);
   c.addOverride('Nonces', functions.nonces);
@@ -182,6 +187,7 @@ function addFlashMint(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20FlashMint',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20FlashMint.sol',
+    transpiled: true,
   });
 }
 

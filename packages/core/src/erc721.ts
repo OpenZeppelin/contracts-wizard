@@ -108,6 +108,7 @@ function addPausableExtension(c: ContractBuilder, access: Access) {
   c.addParent({
     name: 'ERC721Pausable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol',
+    transpiled: true,
   });
   c.addOverride('ERC721Pausable', functions._update);
 
@@ -119,6 +120,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     {
       name: 'ERC721',
       path: '@openzeppelin/contracts/token/ERC721/ERC721.sol',
+      transpiled: true,
     },
     [name, symbol],
   );
@@ -139,6 +141,7 @@ function addEnumerable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC721Enumerable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol',
+    transpiled: true,
   });
 
   c.addOverride('ERC721Enumerable', functions._update);
@@ -150,6 +153,7 @@ function addURIStorage(c: ContractBuilder) {
   c.addParent({
     name: 'ERC721URIStorage',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol',
+    transpiled: true,
   });
 
   c.addOverride('ERC721URIStorage', functions.tokenURI);
@@ -160,6 +164,7 @@ function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC721Burnable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol',
+    transpiled: true,
   });
 }
 
@@ -185,6 +190,7 @@ function addVotes(c: ContractBuilder, name: string) {
     {
       name: 'EIP712',
       path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+      transpiled: true,
     },
     [name, "1"]
   );
@@ -192,6 +198,7 @@ function addVotes(c: ContractBuilder, name: string) {
     {
       name: 'ERC721Votes',
       path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
+      transpiled: true,
     });
 
   c.addOverride('ERC721Votes', functions._update);

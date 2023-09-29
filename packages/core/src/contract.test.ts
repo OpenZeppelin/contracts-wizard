@@ -11,15 +11,15 @@ test('contract basics', t => {
 
 test('contract with a parent', t => {
   const Foo = new ContractBuilder('Foo');
-  const Bar = { name: 'Bar', path: './Bar.sol' };
+  const Bar = { name: 'Bar', path: './Bar.sol', transpiled: false };
   Foo.addParent(Bar);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with two parents', t => {
   const Foo = new ContractBuilder('Foo');
-  const Bar = { name: 'Bar', path: './Bar.sol' };
-  const Quux = { name: 'Quux', path: './Quux.sol' };
+  const Bar = { name: 'Bar', path: './Bar.sol', transpiled: false };
+  const Quux = { name: 'Quux', path: './Quux.sol', transpiled:false };
   Foo.addParent(Bar);
   Foo.addParent(Quux);
   t.snapshot(printContract(Foo));
@@ -27,15 +27,15 @@ test('contract with two parents', t => {
 
 test('contract with a parent with parameters', t => {
   const Foo = new ContractBuilder('Foo');
-  const Bar = { name: 'Bar', path: './Bar.sol' };
+  const Bar = { name: 'Bar', path: './Bar.sol', transpiled: false };
   Foo.addParent(Bar, ["param1", "param2"]);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with two parents only one with parameters', t => {
   const Foo = new ContractBuilder('Foo');
-  const Bar = { name: 'Bar', path: './Bar.sol' };
-  const Quux = { name: 'Quux', path: './Quux.sol' };
+  const Bar = { name: 'Bar', path: './Bar.sol', transpiled: false };
+  const Quux = { name: 'Quux', path: './Quux.sol', transpiled: false };
   Foo.addParent(Bar, ["param1", "param2"]);
   Foo.addParent(Quux);
   t.snapshot(printContract(Foo));
@@ -94,7 +94,7 @@ test('contract with constructor code', t => {
 
 test('contract with constructor code and a parent', t => {
   const Foo = new ContractBuilder('Foo');
-  const Bar = { name: 'Bar', path: './Bar.sol' };
+  const Bar = { name: 'Bar', path: './Bar.sol', transpiled: false };
   Foo.addParent(Bar, ["param1", "param2"]);
   Foo.addConstructorCode('_mint(msg.sender, 10 ether);');
   t.snapshot(printContract(Foo));
@@ -136,6 +136,7 @@ test('using for statement', t => {
   Foo.addUsing({
     name: 'Counters',
     path: './Counters.sol',
+    transpiled: false,
   }, 'Counters.Counter');
   t.snapshot(printContract(Foo));
 });
