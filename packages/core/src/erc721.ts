@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { Contract, ContractBuilder, ParentContract } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
@@ -105,59 +105,64 @@ export function buildERC721(opts: ERC721Options): Contract {
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
-  c.addParent({
+  const p = {
     name: 'ERC721Pausable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol',
     transpiled: true,
-  });
-  c.addOverride('ERC721Pausable', functions._update);
+  };
+  c.addParent(p);
+  c.addOverride(p, functions._update);
 
   addPauseFunctions(c, access);
 }
 
+const BASE_CONTRACT = {
+  name: 'ERC721',
+  path: '@openzeppelin/contracts/token/ERC721/ERC721.sol',
+  transpiled: true,
+};
+
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addParent(
-    {
-      name: 'ERC721',
-      path: '@openzeppelin/contracts/token/ERC721/ERC721.sol',
-      transpiled: true,
-    },
+    BASE_CONTRACT,
     [name, symbol],
   );
 
-  c.addOverride('ERC721', functions._update);
-  c.addOverride('ERC721', functions._increaseBalance);
-  c.addOverride('ERC721', functions._burn);
-  c.addOverride('ERC721', functions.tokenURI);
-  c.addOverride('ERC721', supportsInterface);
+  c.addOverride(BASE_CONTRACT, functions._update);
+  c.addOverride(BASE_CONTRACT, functions._increaseBalance);
+  c.addOverride(BASE_CONTRACT, functions._burn);
+  c.addOverride(BASE_CONTRACT, functions.tokenURI);
+  c.addOverride(BASE_CONTRACT, supportsInterface);
 }
 
 function addBaseURI(c: ContractBuilder, baseUri: string) {
-  c.addOverride('ERC721', functions._baseURI);
+  c.addOverride(BASE_CONTRACT, functions._baseURI);
   c.setFunctionBody([`return ${JSON.stringify(baseUri)};`], functions._baseURI);
 }
 
 function addEnumerable(c: ContractBuilder) {
-  c.addParent({
+  const p = {
     name: 'ERC721Enumerable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol',
     transpiled: true,
-  });
+  };
+  c.addParent(p);
 
-  c.addOverride('ERC721Enumerable', functions._update);
-  c.addOverride('ERC721Enumerable', functions._increaseBalance);
-  c.addOverride('ERC721Enumerable', supportsInterface);
+  c.addOverride(p, functions._update);
+  c.addOverride(p, functions._increaseBalance);
+  c.addOverride(p, supportsInterface);
 }
 
 function addURIStorage(c: ContractBuilder) {
-  c.addParent({
+  const p = {
     name: 'ERC721URIStorage',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol',
     transpiled: true,
-  });
+  };
+  c.addParent(p);
 
-  c.addOverride('ERC721URIStorage', functions.tokenURI);
-  c.addOverride('ERC721URIStorage', supportsInterface);
+  c.addOverride(p, functions.tokenURI);
+  c.addOverride(p, supportsInterface);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -194,15 +199,15 @@ function addVotes(c: ContractBuilder, name: string) {
     },
     [name, "1"]
   );
-  c.addParent(
-    {
-      name: 'ERC721Votes',
-      path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
-      transpiled: true,
-    });
+  const votes = {
+    name: 'ERC721Votes',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
+    transpiled: true,
+  };
+  c.addParent(votes);
 
-  c.addOverride('ERC721Votes', functions._update);
-  c.addOverride('ERC721Votes', functions._increaseBalance);
+  c.addOverride(votes, functions._update);
+  c.addOverride(votes, functions._increaseBalance);
 }
 
 const functions = defineFunctions({

@@ -27,7 +27,7 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
         });
         c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);');
       }
-      c.addOverride(parents.AccessControl.name, supportsInterface);
+      c.addOverride(parents.AccessControl, supportsInterface);
       break;
     }
   }

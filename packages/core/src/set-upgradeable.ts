@@ -24,12 +24,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 
     case 'uups': {
       requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
-      c.addParent({
+      const p = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
         transpiled: false,
-      });
-      c.addOverride('UUPSUpgradeable', functions._authorizeUpgrade);
+      };
+      c.addParent(p);
+      c.addOverride(p, functions._authorizeUpgrade);
       c.setFunctionBody([], functions._authorizeUpgrade);
       break;
     }

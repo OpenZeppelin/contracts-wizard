@@ -4,7 +4,6 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
-  using: Using[];
   natspecTags: NatspecTag[];
   imports: ParentContract[];
   functions: ContractFunction[];
@@ -21,9 +20,12 @@ export interface Parent {
   params: Value[];
 }
 
-export interface ParentContract {
-  name: string;
+export interface ParentContract extends ContractReference {
   path: string;
+}
+
+export interface ContractReference {
+  name: string;
   transpiled: boolean;
 }
 
@@ -41,7 +43,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: Set<string>;
+  override: Set<ContractReference>;
   modifiers: string[];
   code: string[];
   mutability: FunctionMutability;
@@ -61,7 +63,7 @@ function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMu
 }
 
 export interface FunctionArgument {
-  type: string;
+  type: string | ContractReference;
   name: string;
 }
 
@@ -122,11 +124,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addUsing(library: ParentContract, usingFor: string) {
-    this.using.push({ library, usingFor });
-  }
-
-  addOverride(parent: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
+  addOverride(parent: ContractReference, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
     if (mutability) {
@@ -151,7 +149,7 @@ export class ContractBuilder implements Contract {
       return got;
     } else {
       const fn: ContractFunction = {
-        override: new Set<string>(),
+        override: new Set<ContractReference>(),
         modifiers: [],
         code: [],
         mutability: 'nonpayable',
@@ -194,6 +192,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  // TODO does this need a tranpiled flag
   addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);

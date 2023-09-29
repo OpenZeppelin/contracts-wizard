@@ -6,6 +6,7 @@ import { Options, Helpers, withHelpers } from './options';
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
+import assert from 'assert';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -31,7 +32,6 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          printUsingFor(contract, helpers),
           contract.variables.map(helpers.transformVariable),
           printConstructor(contract, helpers),
           ...fns.code,
@@ -48,16 +48,10 @@ export function printContract(contract: Contract, opts?: Options): string {
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
   if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.contract.name)).join(', ')];
+    return ['is ' + contract.parents.map(p => transformName(p.contract)).join(', ')];
   } else {
     return [];
   }
-}
-
-function printUsingFor(contract: Contract, { transformName }: Helpers): string[] {
-  return contract.using.map(
-    u => `using ${transformName(u.library.name)} for ${transformName(u.usingFor)};`,
-  );
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
@@ -232,7 +226,15 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
 }
 
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
-  const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
+  let type: string;
+  if (typeof arg.type === 'string') {
+    // primitive type
+    assert(!/^[A-Z]/.test(arg.type), `Type ${arg.type} is not a primitive type. Define it as a ContractReference`);
+    type = arg.type;
+  } else {
+    type = transformName(arg.type);
+  }
+
   return [type, arg.name].join(' ');
 }
 

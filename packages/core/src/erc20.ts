@@ -102,27 +102,29 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
+  const p = {
+    name: 'ERC20',
+    path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
+    transpiled: true,
+  };
   c.addParent(
-    {
-      name: 'ERC20',
-      path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
-      transpiled: true,
-    },
+    p,
     [name, symbol],
   );
 
-  c.addOverride('ERC20', functions._update);
-  c.addOverride('ERC20', functions._mint);
-  c.addOverride('ERC20', functions._burn);
+  c.addOverride(p, functions._update);
+  c.addOverride(p, functions._mint);
+  c.addOverride(p, functions._burn);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
-  c.addParent({
+  const p = {
     name: 'ERC20Pausable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
     transpiled: true,
-  });
-  c.addOverride('ERC20Pausable', functions._update);
+  };
+  c.addParent(p);
+  c.addOverride(p, functions._update);
 
   addPauseFunctions(c, access);
 }
@@ -160,12 +162,13 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 function addPermit(c: ContractBuilder, name: string) {
-  c.addParent({
+  const p = {
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
     transpiled: true,
-  }, [name]);
-  c.addOverride('ERC20Permit', functions.nonces);
+  };
+  c.addParent(p, [name]);
+  c.addOverride(p, functions.nonces);
 
 }
 
@@ -174,13 +177,17 @@ function addVotes(c: ContractBuilder) {
     throw new Error('Missing ERC20Permit requirement for ERC20Votes');
   }
 
-  c.addParent({
+  const p = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
     transpiled: true,
-  });
-  c.addOverride('ERC20Votes', functions._update);
-  c.addOverride('Nonces', functions.nonces);
+  };
+  c.addParent(p);
+  c.addOverride(p, functions._update);
+  c.addOverride({
+    name: 'Nonces',
+    transpiled: true
+  }, functions.nonces);
 }
 
 function addFlashMint(c: ContractBuilder) {
