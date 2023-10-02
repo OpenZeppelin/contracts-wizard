@@ -20,11 +20,11 @@ export interface Parent {
   params: Value[];
 }
 
-export interface ParentContract extends ContractReference {
+export interface ParentContract extends ReferencedContract {
   path: string;
 }
 
-export interface ContractReference {
+export interface ReferencedContract {
   name: string;
   transpiled: boolean;
 }
@@ -43,7 +43,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: Set<ContractReference>;
+  override: Set<ReferencedContract>;
   modifiers: string[];
   code: string[];
   mutability: FunctionMutability;
@@ -63,7 +63,7 @@ function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMu
 }
 
 export interface FunctionArgument {
-  type: string | ContractReference;
+  type: string | ReferencedContract;
   name: string;
 }
 
@@ -124,7 +124,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addOverride(parent: ContractReference, baseFn: BaseFunction, mutability?: FunctionMutability) {
+  addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
     if (mutability) {
@@ -149,7 +149,7 @@ export class ContractBuilder implements Contract {
       return got;
     } else {
       const fn: ContractFunction = {
-        override: new Set<ContractReference>(),
+        override: new Set<ReferencedContract>(),
         modifiers: [],
         code: [],
         mutability: 'nonpayable',

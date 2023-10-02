@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Contract, ContractReference, ParentContract } from './contract';
+import type { Contract, ReferencedContract, ParentContract } from './contract';
 
 const upgradeableName = (n: string) => {
   if (n === 'Initializable') {
@@ -29,12 +29,12 @@ export interface Options {
 
 export interface Helpers extends Required<Options> {
   upgradeable: boolean;
-  transformName: (name: ContractReference) => string;
+  transformName: (name: ReferencedContract) => string;
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
   const contractUpgradeable = contract.upgradeable;
-  const transformName = (n: ContractReference) => contractUpgradeable && n.transpiled ? upgradeableName(n.name) : n.name;
+  const transformName = (n: ReferencedContract) => contractUpgradeable && n.transpiled ? upgradeableName(n.name) : n.name;
   return {
     upgradeable: contractUpgradeable,
     transformName,
