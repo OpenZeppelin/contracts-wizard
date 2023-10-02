@@ -27,7 +27,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
-        transpiled: false,
+        transpiled: true,
       };
       c.addParent(UUPSUpgradeable);
       c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);

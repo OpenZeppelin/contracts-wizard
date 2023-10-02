@@ -742,15 +742,15 @@
     "@nomicfoundation/solidity-analyzer-win32-ia32-msvc" "0.1.1"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.1"
 
-"@openzeppelin/contracts-upgradeable@^5.0.0-rc.1":
-  version "5.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.0.0-rc.1.tgz#20110355ae7fe5707bf272300cdadb1f2e7ac89a"
-  integrity sha512-1AkR6DypFjJP4rLY2WVFltYbHxm1/qdyotYjH9kFB4UMV+8rK1jdhNDnpVUzCAXJwcVYVBR7LGaYnkLD4T10Ag==
+"@openzeppelin/contracts-upgradeable@^5.0.0-rc.2":
+  version "5.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.0.0-rc.2.tgz#508830c1b66a1cf40a855b3f10bf1411c6afba31"
+  integrity sha512-7Q3mssot18sveJ7qm/jQENlQEwFn7zfQfyMWDw0ZyCwDUIyLr9/RBKFmp6X0pqXvEFc99/z5UgkpVjFp2Bci9w==
 
-"@openzeppelin/contracts@^5.0.0-rc.1":
-  version "5.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.0.0-rc.1.tgz#e79f6cd7f14ed7beaaf414b0b8a3837693572d9d"
-  integrity sha512-He+SjZjiJpb8Y3clkv2N4nyVOvqOYyb5DW6kjYvnpKz8W830NWRRYL0pGbwEnwonIAQGWEUn76sUH8SXYr53mA==
+"@openzeppelin/contracts@^5.0.0-rc.2":
+  version "5.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.0.0-rc.2.tgz#d67790a519cc65c3bab0cd05777418466646cd01"
+  integrity sha512-nUwKYTVsaLQ0C1DlPKtpSEDcg0rDoY5UNrll0nfCBUrzGgcpS6LiIbRV7wgYq+lRhcH1z+MGUcaQEj4gIb1Ung==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
