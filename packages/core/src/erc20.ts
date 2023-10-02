@@ -26,7 +26,7 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   premint: '0',
   mintable: false,
-  permit: false,
+  permit: true,
   votes: false,
   flashmint: false,
   access: commonDefaults.access,
