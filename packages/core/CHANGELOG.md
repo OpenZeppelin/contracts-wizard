@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+- Update to OpenZeppelin Contracts 5.0. ([#284](https://github.com/OpenZeppelin/contracts-wizard/pull/284))
+- Require constructor or initializer arguments for initial owner or role assignments if using access control.
+- Use token-specific pausable extensions.
+- Enable ERC20Permit by default.
+
 ## 0.3.0 (2023-05-25)
 
 - **Breaking change**: Update to OpenZeppelin Contracts 4.9. ([#252](https://github.com/OpenZeppelin/contracts-wizard/pull/252))
