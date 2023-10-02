@@ -88,25 +88,25 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 }
 
 function addBase(c: ContractBuilder, uri: string) {
-  const p = {
+  const ERC1155 = {
     name: 'ERC1155',
     path: '@openzeppelin/contracts/token/ERC1155/ERC1155.sol',
     transpiled: true,
   };
-  c.addParent(p, [uri]);
+  c.addParent(ERC1155, [uri]);
 
-  c.addOverride(p, functions._update);
-  c.addOverride(p, supportsInterface);
+  c.addOverride(ERC1155, functions._update);
+  c.addOverride(ERC1155, supportsInterface);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
-  const p = {
+  const ERC1155Pausable = {
     name: 'ERC1155Pausable',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol',
     transpiled: true,
   };
-  c.addParent(p);
-  c.addOverride(p, functions._update);
+  c.addParent(ERC1155Pausable);
+  c.addOverride(ERC1155Pausable, functions._update);
 
   addPauseFunctions(c, access);
 }
@@ -132,13 +132,13 @@ function addSetUri(c: ContractBuilder, access: Access) {
 }
 
 function addSupply(c: ContractBuilder) {
-  const p = {
+  const ERC1155Supply = {
     name: 'ERC1155Supply',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
     transpiled: true,
   };
-  c.addParent(p);
-  c.addOverride(p, functions._update);
+  c.addParent(ERC1155Supply);
+  c.addOverride(ERC1155Supply, functions._update);
 }
 
 const functions = defineFunctions({

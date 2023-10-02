@@ -102,29 +102,29 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
-  const p = {
+  const ERC20 = {
     name: 'ERC20',
     path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
     transpiled: true,
   };
   c.addParent(
-    p,
+    ERC20,
     [name, symbol],
   );
 
-  c.addOverride(p, functions._update);
-  c.addOverride(p, functions._mint);
-  c.addOverride(p, functions._burn);
+  c.addOverride(ERC20, functions._update);
+  c.addOverride(ERC20, functions._mint);
+  c.addOverride(ERC20, functions._burn);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
-  const p = {
+  const ERC20Pausable = {
     name: 'ERC20Pausable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
     transpiled: true,
   };
-  c.addParent(p);
-  c.addOverride(p, functions._update);
+  c.addParent(ERC20Pausable);
+  c.addOverride(ERC20Pausable, functions._update);
 
   addPauseFunctions(c, access);
 }
@@ -162,13 +162,13 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 function addPermit(c: ContractBuilder, name: string) {
-  const p = {
+  const ERC20Permit = {
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
     transpiled: true,
   };
-  c.addParent(p, [name]);
-  c.addOverride(p, functions.nonces);
+  c.addParent(ERC20Permit, [name]);
+  c.addOverride(ERC20Permit, functions.nonces);
 
 }
 
@@ -177,13 +177,13 @@ function addVotes(c: ContractBuilder) {
     throw new Error('Missing ERC20Permit requirement for ERC20Votes');
   }
 
-  const p = {
+  const ERC20Votes = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
     transpiled: true,
   };
-  c.addParent(p);
-  c.addOverride(p, functions._update);
+  c.addParent(ERC20Votes);
+  c.addOverride(ERC20Votes, functions._update);
   c.addOverride({
     name: 'Nonces',
     transpiled: true

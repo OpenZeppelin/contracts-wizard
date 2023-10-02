@@ -100,45 +100,45 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 }
 
 function addBase(c: ContractBuilder, { name }: GovernorOptions) {
-  const governor = {
+  const Governor = {
     name: 'Governor',
     path: '@openzeppelin/contracts/governance/Governor.sol',
     transpiled: true,
   };
-  c.addParent(governor, [name]);
-  c.addOverride(governor, functions.votingDelay);
-  c.addOverride(governor, functions.votingPeriod);
-  c.addOverride(governor, functions.quorum);
-  c.addOverride(governor, functions.state);
-  c.addOverride(governor, functions.propose);
-  c.addOverride(governor, functions.proposalNeedsQueuing);
-  c.addOverride(governor, functions.proposalThreshold);
-  c.addOverride(governor, functions._propose);
-  c.addOverride(governor, functions._queueOperations);
-  c.addOverride(governor, functions._executeOperations);
-  c.addOverride(governor, functions._cancel);
-  c.addOverride(governor, functions._executor);
-  c.addOverride(governor, supportsInterface);
+  c.addParent(Governor, [name]);
+  c.addOverride(Governor, functions.votingDelay);
+  c.addOverride(Governor, functions.votingPeriod);
+  c.addOverride(Governor, functions.quorum);
+  c.addOverride(Governor, functions.state);
+  c.addOverride(Governor, functions.propose);
+  c.addOverride(Governor, functions.proposalNeedsQueuing);
+  c.addOverride(Governor, functions.proposalThreshold);
+  c.addOverride(Governor, functions._propose);
+  c.addOverride(Governor, functions._queueOperations);
+  c.addOverride(Governor, functions._executeOperations);
+  c.addOverride(Governor, functions._cancel);
+  c.addOverride(Governor, functions._executor);
+  c.addOverride(Governor, supportsInterface);
 }
 
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   if (allOpts.settings) {
-    const governorSettings = {
+    const GovernorSettings = {
       name: 'GovernorSettings',
       path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
       transpiled: true,
     };
     c.addParent(
-      governorSettings,
+      GovernorSettings,
       [
         { value: getVotingDelay(allOpts), note: allOpts.delay },
         { value: getVotingPeriod(allOpts), note: allOpts.period },
         { lit: getProposalThreshold(allOpts) },
       ],
     );
-    c.addOverride(governorSettings, functions.votingDelay, 'view');
-    c.addOverride(governorSettings, functions.votingPeriod, 'view');
-    c.addOverride(governorSettings, functions.proposalThreshold, 'view');
+    c.addOverride(GovernorSettings, functions.votingDelay, 'view');
+    c.addOverride(GovernorSettings, functions.votingPeriod, 'view');
+    c.addOverride(GovernorSettings, functions.proposalThreshold, 'view');
   } else {
     setVotingParameters(c, allOpts);
     setProposalThreshold(c, allOpts);
@@ -250,21 +250,21 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
 
     let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
 
-    const governorVotesQuorumFraction = {
+    const GovernorVotesQuorumFraction = {
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
       transpiled: true,
     };
 
     if (quorumFractionDenominator !== undefined) {
-      c.addOverride(governorVotesQuorumFraction, functions.quorumDenominator);
+      c.addOverride(GovernorVotesQuorumFraction, functions.quorumDenominator);
       c.setFunctionBody([
         `return ${quorumFractionDenominator};`
       ], functions.quorumDenominator, 'pure');
     }
 
-    c.addParent(governorVotesQuorumFraction, [quorumFractionNumerator]);
-    c.addOverride(governorVotesQuorumFraction, functions.quorum);
+    c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
+    c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
   }
 
   else if (opts.quorumMode === 'absolute') {
@@ -353,13 +353,13 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
 
 function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
   if (storage) {
-    const governorStorage = {
+    const GovernorStorage = {
       name: 'GovernorStorage',
       path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
       transpiled: true,
     };
-    c.addParent(governorStorage);
-    c.addOverride(governorStorage, functions._propose);
+    c.addParent(GovernorStorage);
+    c.addOverride(GovernorStorage, functions._propose);
   }
 }
 
