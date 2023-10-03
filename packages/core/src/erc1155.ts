@@ -127,7 +127,7 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.setURI, access, 'URI_SETTER', 'uriSetter', false);
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER', undefined);
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 
