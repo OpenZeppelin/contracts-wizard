@@ -113,8 +113,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride(ERC20, functions._update);
-  c.addOverride(ERC20, functions._mint);
-  c.addOverride(ERC20, functions._burn);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
@@ -205,22 +203,6 @@ const functions = defineFunctions({
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'value', type: 'uint256' },
-    ],
-  },
-
-  _burn: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'account', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  },
-
-  _mint: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
     ],
   },
 

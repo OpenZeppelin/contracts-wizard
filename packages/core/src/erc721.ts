@@ -127,7 +127,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 
   c.addOverride(ERC721, functions._update);
   c.addOverride(ERC721, functions._increaseBalance);
-  c.addOverride(ERC721, functions._burn);
   c.addOverride(ERC721, functions.tokenURI);
   c.addOverride(ERC721, supportsInterface);
 }
@@ -215,13 +214,6 @@ const functions = defineFunctions({
       { name: 'auth', type: 'address' },
     ],
     returns: ['address'],
-  },
-
-  _burn: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'tokenId', type: 'uint256' },
-    ],
   },
 
   tokenURI: {
