@@ -36,7 +36,7 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string) {
+export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string, grantRole = true) {
   if (access === false) {
     access = 'ownable';
   }
@@ -50,7 +50,8 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
     }
     case 'roles': {
       const roleId = roleIdPrefix + '_ROLE';
-      if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
+      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      if (grantRole && addedConstant) {
         c.addConstructorArgument({type: 'address', name: roleOwner});
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
