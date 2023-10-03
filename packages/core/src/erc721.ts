@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder, ParentContract } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
