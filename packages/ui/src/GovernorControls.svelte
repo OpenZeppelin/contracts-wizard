@@ -140,7 +140,7 @@
     <label class:checked={opts.storage}>
       <input type="checkbox" bind:checked={opts.storage}>
       Storage
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x-rc/api/governance#GovernorStorage">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/governance#GovernorStorage">
         Enable storage of proposal details and enumerability of proposals.
       </HelpTooltip>
     </label>
@@ -154,7 +154,7 @@
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes">
       ERC20Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x-rc/api/token/erc20#ERC20Votes">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
         Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -162,7 +162,7 @@
     <label class:checked={opts.votes === 'erc721votes'}>
       <input type="radio" bind:group={opts.votes} value="erc721votes">
       ERC721Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x-rc/api/token/erc721#ERC721Votes">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -189,7 +189,7 @@
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
       TimelockController
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x-rc/api/governance#GovernorTimelockControl">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/governance#GovernorTimelockControl">
         Module compatible with OpenZeppelin's <code>TimelockController</code>.
         Allows multiple proposers and executors, in addition to the Governor itself.
       </HelpTooltip>
