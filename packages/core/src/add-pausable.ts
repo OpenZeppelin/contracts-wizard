@@ -6,7 +6,6 @@ export function addPausable(c: ContractBuilder, access: Access, pausableFns: Bas
   c.addParent({
     name: 'Pausable',
     path: '@openzeppelin/contracts/utils/Pausable.sol',
-    transpiled: true,
   });
 
   for (const fn of pausableFns) {

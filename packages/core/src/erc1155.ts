@@ -91,7 +91,6 @@ function addBase(c: ContractBuilder, uri: string) {
   const ERC1155 = {
     name: 'ERC1155',
     path: '@openzeppelin/contracts/token/ERC1155/ERC1155.sol',
-    transpiled: true,
   };
   c.addParent(ERC1155, [uri]);
 
@@ -103,7 +102,6 @@ function addPausableExtension(c: ContractBuilder, access: Access) {
   const ERC1155Pausable = {
     name: 'ERC1155Pausable',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol',
-    transpiled: true,
   };
   c.addParent(ERC1155Pausable);
   c.addOverride(ERC1155Pausable, functions._update);
@@ -115,7 +113,6 @@ function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC1155Burnable',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol',
-    transpiled: true,
   });
 }
 
@@ -135,7 +132,6 @@ function addSupply(c: ContractBuilder) {
   const ERC1155Supply = {
     name: 'ERC1155Supply',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
-    transpiled: true,
   };
   c.addParent(ERC1155Supply);
   c.addOverride(ERC1155Supply, functions._update);

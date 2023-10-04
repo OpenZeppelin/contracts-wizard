@@ -26,7 +26,7 @@ export interface ParentContract extends ReferencedContract {
 
 export interface ReferencedContract {
   name: string;
-  transpiled: boolean;
+  transpiled?: boolean;
 }
 
 export interface Using {

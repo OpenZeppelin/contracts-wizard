@@ -16,7 +16,6 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   c.addParent({
     name: 'Initializable',
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
-    transpiled: true,
   });
 
   switch (upgradeable) {
@@ -27,7 +26,6 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
-        transpiled: true,
       };
       c.addParent(UUPSUpgradeable);
       c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);

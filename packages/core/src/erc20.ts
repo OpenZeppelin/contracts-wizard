@@ -105,7 +105,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   const ERC20 = {
     name: 'ERC20',
     path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
-    transpiled: true,
   };
   c.addParent(
     ERC20,
@@ -119,7 +118,6 @@ function addPausableExtension(c: ContractBuilder, access: Access) {
   const ERC20Pausable = {
     name: 'ERC20Pausable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
-    transpiled: true,
   };
   c.addParent(ERC20Pausable);
   c.addOverride(ERC20Pausable, functions._update);
@@ -131,7 +129,6 @@ function addBurnable(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20Burnable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol',
-    transpiled: true,
   });
 }
 
@@ -163,7 +160,6 @@ function addPermit(c: ContractBuilder, name: string) {
   const ERC20Permit = {
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
-    transpiled: true,
   };
   c.addParent(ERC20Permit, [name]);
   c.addOverride(ERC20Permit, functions.nonces);
@@ -178,13 +174,11 @@ function addVotes(c: ContractBuilder) {
   const ERC20Votes = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
-    transpiled: true,
   };
   c.addParent(ERC20Votes);
   c.addOverride(ERC20Votes, functions._update);
   c.addOverride({
     name: 'Nonces',
-    transpiled: true
   }, functions.nonces);
 }
 
@@ -192,7 +186,6 @@ function addFlashMint(c: ContractBuilder) {
   c.addParent({
     name: 'ERC20FlashMint',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20FlashMint.sol',
-    transpiled: true,
   });
 }
 

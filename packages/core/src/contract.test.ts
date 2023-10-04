@@ -7,7 +7,6 @@ import { TAG_SECURITY_CONTACT } from './set-info';
 const toContractReference = (name: string) => {
   return {
     name: name,
-    transpiled: false,
   }
 }
 
@@ -15,7 +14,6 @@ const toParentContract = (name: string, path: string) => {
   return {
     name: name,
     path: path,
-    transpiled: false,
   }
 }
 

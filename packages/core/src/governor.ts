@@ -103,7 +103,6 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   const Governor = {
     name: 'Governor',
     path: '@openzeppelin/contracts/governance/Governor.sol',
-    transpiled: true,
   };
   c.addParent(Governor, [name]);
   c.addOverride(Governor, functions.votingDelay);
@@ -126,7 +125,6 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
     const GovernorSettings = {
       name: 'GovernorSettings',
       path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
-      transpiled: true,
     };
     c.addParent(
       GovernorSettings,
@@ -216,7 +214,6 @@ function addCounting(c: ContractBuilder) {
   c.addParent({
     name: 'GovernorCountingSimple',
     path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
-    transpiled: true,
   });
 }
 
@@ -226,7 +223,7 @@ function addVotes(c: ContractBuilder) {
   c.addConstructorArgument({
     type: {
       name: 'IVotes',
-      transpiled: false
+      transpiled: false,
     },
     name: tokenArg,
   });
@@ -234,7 +231,6 @@ function addVotes(c: ContractBuilder) {
   c.addParent({
     name: 'GovernorVotes',
     path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
-    transpiled: true,
   }, [{ lit: tokenArg }]);
 }
 
@@ -253,7 +249,6 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
     const GovernorVotesQuorumFraction = {
       name: 'GovernorVotesQuorumFraction',
       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-      transpiled: true,
     };
 
     if (quorumFractionDenominator !== undefined) {
@@ -288,12 +283,10 @@ const timelockModules = {
   openzeppelin: {
     timelockType: {
       name: 'TimelockController',
-      transpiled: true,
     },
     timelockParent: {
       name: 'GovernorTimelockControl',
       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol`,
-      transpiled: true,
     }
   },
   compound: {
@@ -304,7 +297,6 @@ const timelockModules = {
     timelockParent: {
       name: 'GovernorTimelockCompound',
       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol`,
-      transpiled: true,
     }
   },
 } as const;
@@ -356,7 +348,6 @@ function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
     const GovernorStorage = {
       name: 'GovernorStorage',
       path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
-      transpiled: true,
     };
     c.addParent(GovernorStorage);
     c.addOverride(GovernorStorage, functions._propose);
