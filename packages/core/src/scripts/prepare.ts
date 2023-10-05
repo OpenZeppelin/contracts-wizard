@@ -2,10 +2,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import hre from 'hardhat';
 import type { BuildInfo } from 'hardhat/types';
-import type { SourceUnit } from 'solidity-ast';
 import { findAll } from 'solidity-ast/utils';
 import { rimraf } from 'rimraf';
-import { promisify } from 'util';
 import { version } from "@openzeppelin/contracts/package.json";
 
 import type { OpenZeppelinContracts } from '../../openzeppelin-contracts';

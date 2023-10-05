@@ -4,9 +4,8 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
-  using: Using[];
   natspecTags: NatspecTag[];
-  imports: string[];
+  imports: ParentContract[];
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
@@ -21,9 +20,13 @@ export interface Parent {
   params: Value[];
 }
 
-export interface ParentContract {
-  name: string;
+export interface ParentContract extends ReferencedContract {
   path: string;
+}
+
+export interface ReferencedContract {
+  name: string;
+  transpiled?: boolean;
 }
 
 export interface Using {
@@ -40,7 +43,7 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
-  override: Set<string>;
+  override: Set<ReferencedContract>;
   modifiers: string[];
   code: string[];
   mutability: FunctionMutability;
@@ -60,7 +63,7 @@ function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMu
 }
 
 export interface FunctionArgument {
-  type: string;
+  type: string | ReferencedContract;
   name: string;
 }
 
@@ -100,10 +103,10 @@ export class ContractBuilder implements Contract {
     });
   }
 
-  get imports(): string[] {
+  get imports(): ParentContract[] {
     return [
-      ...[...this.parentMap.values()].map(p => p.contract.path),
-      ...this.using.map(u => u.library.path),
+      ...[...this.parentMap.values()].map(p => p.contract),
+      ...this.using.map(u => u.library),
     ];
   }
 
@@ -121,11 +124,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addUsing(library: ParentContract, usingFor: string) {
-    this.using.push({ library, usingFor });
-  }
-
-  addOverride(parent: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
+  addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
     if (mutability) {
@@ -150,7 +149,7 @@ export class ContractBuilder implements Contract {
       return got;
     } else {
       const fn: ContractFunction = {
-        override: new Set<string>(),
+        override: new Set<ReferencedContract>(),
         modifiers: [],
         code: [],
         mutability: 'nonpayable',
@@ -193,6 +192,9 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  /**
+   * Note: The type in the variable is not currently transpiled, even if it refers to a contract
+   */
   addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);

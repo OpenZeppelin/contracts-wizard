@@ -31,6 +31,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   }
 
   function getTestCase(c: Contract) {
+    const args = getAddressArgs(c);
     return [
       `contract ${c.name}Test is Test {`,
       spaceBetween(
@@ -39,8 +40,9 @@ const test = (c: Contract, opts?: GenericOptions) => {
         ],
         [
           'function setUp() public {',
+          getAddressVariables(args),
           [
-            `instance = new ${c.name}();`,
+            `instance = new ${getDeploymentCall(c, args)};`,
           ],
           '}',
         ],
@@ -48,6 +50,15 @@ const test = (c: Contract, opts?: GenericOptions) => {
       ),
       '}',
     ];
+  }
+
+  function getAddressVariables(args: string[]): Lines[] {
+    const vars = [];
+    for (let i = 0; i < args.length; i++) {
+      // use i + 1 as the private key since it must be non-zero
+      vars.push(`address ${args[i]} = vm.addr(${i + 1});`);
+    }
+    return vars;
   }
 
   function getContractSpecificTestFunction(): Lines[] {
@@ -90,6 +101,20 @@ const test = (c: Contract, opts?: GenericOptions) => {
   }
 };
 
+function getAddressArgs(c: Contract): string[] {
+  const args = [];
+  for (const constructorArg of c.constructorArgs) {
+    if (constructorArg.type === 'address') {
+      args.push(constructorArg.name);
+    }
+  }
+  return args;
+}
+
+function getDeploymentCall(c: Contract, args: string[]): string {
+  return `${c.name}(${args.join(', ')})`;
+}
+
 const script = (c: Contract) => {
   return formatLinesWithSpaces(
     2,
@@ -108,6 +133,13 @@ const script = (c: Contract) => {
   }
 
   function getScript(c: Contract) {
+    const args = getAddressArgs(c);
+    const deploymentLines = [
+      'vm.startBroadcast();',
+      `${c.name} instance = new ${getDeploymentCall(c, args)};`,
+      'console.log("Contract deployed to %s", address(instance));',
+      'vm.stopBroadcast();',
+    ];
     return [
       `contract ${c.name}Script is Script {`,
       spaceBetween(
@@ -116,16 +148,18 @@ const script = (c: Contract) => {
         ],
         [
           'function run() public {',
-          [
-            'vm.startBroadcast();',
-            `${c.name} instance = new ${c.name}();`,
-            'console.log("Contract deployed to %s", address(instance));',
-            'vm.stopBroadcast();',
-          ],
+          args.length > 0 ? addTodoAndCommentOut(deploymentLines) : deploymentLines,
           '}',
         ],
       ),
       '}',
+    ];
+  }
+
+  function addTodoAndCommentOut(lines: string[]) {
+    return [
+      '// TODO: Set addresses for the contract arguments below, then uncomment the following lines',
+      ...lines.map(l => `// ${l}`),
     ];
   }
 };

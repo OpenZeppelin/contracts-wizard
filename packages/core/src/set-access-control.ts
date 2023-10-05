@@ -11,14 +11,23 @@ export type Access = typeof accessOptions[number];
 export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
-      c.addParent(parents.Ownable);
+      if (c.addParent(parents.Ownable, [ {lit: 'initialOwner'} ])) {
+        c.addConstructorArgument({
+          type: 'address',
+          name: 'initialOwner'
+        });
+      }
       break;
     }
     case 'roles': {
       if (c.addParent(parents.AccessControl)) {
-        c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);');
+        c.addConstructorArgument({
+          type: 'address',
+          name: 'defaultAdmin'
+        });
+        c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);');
       }
-      c.addOverride(parents.AccessControl.name, supportsInterface);
+      c.addOverride(parents.AccessControl, supportsInterface);
       break;
     }
   }
@@ -27,7 +36,7 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
   if (access === false) {
     access = 'ownable';
   }
@@ -40,9 +49,11 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
       break;
     }
     case 'roles': {
-      const roleId = role + '_ROLE';
-      if (c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`)) {
-        c.addConstructorCode(`_grantRole(${roleId}, msg.sender);`);
+      const roleId = roleIdPrefix + '_ROLE';
+      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      if (roleOwner && addedConstant) {
+        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
       c.addModifier(`onlyRole(${roleId})`, fn);
       break;

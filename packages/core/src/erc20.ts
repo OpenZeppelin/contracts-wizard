@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
+import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
@@ -11,7 +11,6 @@ export interface ERC20Options extends CommonOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
-  snapshots?: boolean;
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
@@ -24,11 +23,10 @@ export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
-  snapshots: false,
   pausable: false,
   premint: '0',
   mintable: false,
-  permit: false,
+  permit: true,
   votes: false,
   flashmint: false,
   access: commonDefaults.access,
@@ -41,7 +39,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     ...opts,
     ...withCommonDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
-    snapshots: opts.snapshots ?? defaults.snapshots,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
@@ -56,7 +53,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.snapshots || opts.upgradeable === 'uups';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -72,12 +69,8 @@ export function buildERC20(opts: ERC20Options): Contract {
     addBurnable(c);
   }
 
-  if (allOpts.snapshots) {
-    addSnapshot(c, access);
-  }
-
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._beforeTokenTransfer]);
+    addPausableExtension(c, access);
   }
 
   if (allOpts.premint) {
@@ -109,18 +102,27 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
+  const ERC20 = {
+    name: 'ERC20',
+    path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
+  };
   c.addParent(
-    {
-      name: 'ERC20',
-      path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
-    },
+    ERC20,
     [name, symbol],
   );
 
-  c.addOverride('ERC20', functions._beforeTokenTransfer);
-  c.addOverride('ERC20', functions._afterTokenTransfer);
-  c.addOverride('ERC20', functions._mint);
-  c.addOverride('ERC20', functions._burn);
+  c.addOverride(ERC20, functions._update);
+}
+
+function addPausableExtension(c: ContractBuilder, access: Access) {
+  const ERC20Pausable = {
+    name: 'ERC20Pausable',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol',
+  };
+  c.addParent(ERC20Pausable);
+  c.addOverride(ERC20Pausable, functions._update);
+
+  addPauseFunctions(c, access);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -128,18 +130,6 @@ function addBurnable(c: ContractBuilder) {
     name: 'ERC20Burnable',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol',
   });
-}
-
-function addSnapshot(c: ContractBuilder, access: Access) {
-  c.addParent({
-    name: 'ERC20Snapshot',
-    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol',
-  });
-
-  c.addOverride('ERC20Snapshot', functions._beforeTokenTransfer);
-
-  requireAccessControl(c, functions.snapshot, access, 'SNAPSHOT');
-  c.addFunctionCode('_snapshot();', functions.snapshot);
 }
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
@@ -162,15 +152,18 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 
 function addPermit(c: ContractBuilder, name: string) {
-  c.addParent({
+  const ERC20Permit = {
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
-  }, [name]);
+  };
+  c.addParent(ERC20Permit, [name]);
+  c.addOverride(ERC20Permit, functions.nonces);
+
 }
 
 function addVotes(c: ContractBuilder) {
@@ -178,13 +171,15 @@ function addVotes(c: ContractBuilder) {
     throw new Error('Missing ERC20Permit requirement for ERC20Votes');
   }
 
-  c.addParent({
+  const ERC20Votes = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
-  });
-  c.addOverride('ERC20Votes', functions._mint);
-  c.addOverride('ERC20Votes', functions._burn);
-  c.addOverride('ERC20Votes', functions._afterTokenTransfer);
+  };
+  c.addParent(ERC20Votes);
+  c.addOverride(ERC20Votes, functions._update);
+  c.addOverride({
+    name: 'Nonces',
+  }, functions.nonces);
 }
 
 function addFlashMint(c: ContractBuilder) {
@@ -195,37 +190,12 @@ function addFlashMint(c: ContractBuilder) {
 }
 
 const functions = defineFunctions({
-  _beforeTokenTransfer: {
+  _update: {
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  },
-
-  _afterTokenTransfer: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'from', type: 'address' },
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  },
-
-  _burn: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'account', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  },
-
-  _mint: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
+      { name: 'value', type: 'uint256' },
     ],
   },
 
@@ -251,4 +221,13 @@ const functions = defineFunctions({
     kind: 'public' as const,
     args: [],
   },
+
+  nonces: {
+    kind: 'public' as const,
+    args: [
+      { name: 'owner', type: 'address' },
+    ],
+    returns: ['uint256'],
+    mutability: 'view' as const,
+  }
 });

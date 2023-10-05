@@ -6,6 +6,7 @@ import { Options, Helpers, withHelpers } from './options';
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
+import { inferTranspiled } from './infer-transpiled';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -24,15 +25,14 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.imports.map(p => `import "${helpers.transformImport(p)}";`),
+      contract.imports.map(p => `import "${helpers.transformImport(p).path}";`),
 
       [
         ...printNatspecTags(contract.natspecTags),
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          printUsingFor(contract, helpers),
-          contract.variables.map(helpers.transformVariable),
+          contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
@@ -48,16 +48,10 @@ export function printContract(contract: Contract, opts?: Options): string {
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
   if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.contract.name)).join(', ')];
+    return ['is ' + contract.parents.map(p => transformName(p.contract)).join(', ')];
   } else {
     return [];
   }
-}
-
-function printUsingFor(contract: Contract, { transformName }: Helpers): string[] {
-  return contract.using.map(
-    u => `using ${transformName(u.library.name)} for ${transformName(u.usingFor)};`,
-  );
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
@@ -134,8 +128,9 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const fn = helpers.upgradeable ? `__${contract.name}_init` : contract.name;
-  if (helpers.upgradeable || params.length > 0) {
+  const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
+  const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
+  if (useTranspiled || params.length > 0) {
     return [
       fn + '(' + params.map(printValue).join(', ') + ')',
     ];
@@ -231,7 +226,16 @@ function printFunction2(kindedName: string, args: string[], modifiers: string[],
 }
 
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
-  const type = /^[A-Z]/.test(arg.type) ? transformName(arg.type) : arg.type;
+  let type: string;
+  if (typeof arg.type === 'string') {
+    if (/^[A-Z]/.test(arg.type)) {
+      `Type ${arg.type} is not a primitive type. Define it as a ContractReference`;
+    }
+    type = arg.type;
+  } else {
+    type = transformName(arg.type);
+  }
+
   return [type, arg.name].join(' ');
 }
 

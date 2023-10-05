@@ -5,17 +5,21 @@ import { defineFunctions } from './utils/define-functions';
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
   c.addParent({
     name: 'Pausable',
-    path: '@openzeppelin/contracts/security/Pausable.sol',
+    path: '@openzeppelin/contracts/utils/Pausable.sol',
   });
 
   for (const fn of pausableFns) {
     c.addModifier('whenNotPaused', fn);
   }
 
-  requireAccessControl(c, functions.pause, access, 'PAUSER');
+  addPauseFunctions(c, access);
+}
+
+export function addPauseFunctions(c: ContractBuilder, access: Access) {
+  requireAccessControl(c, functions.pause, access, 'PAUSER', 'pauser');
   c.addFunctionCode('_pause();', functions.pause);
 
-  requireAccessControl(c, functions.unpause, access, 'PAUSER');
+  requireAccessControl(c, functions.unpause, access, 'PAUSER', 'pauser');
   c.addFunctionCode('_unpause();', functions.unpause);
 }
 

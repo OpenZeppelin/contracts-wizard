@@ -1,6 +1,7 @@
 import path from 'path';
 
-import type { Contract } from './contract';
+import type { Contract, ReferencedContract, ParentContract } from './contract';
+import { inferTranspiled } from './infer-transpiled';
 
 const upgradeableName = (n: string) => {
   if (n === 'Initializable') {
@@ -10,36 +11,37 @@ const upgradeableName = (n: string) => {
   }
 }
 
-const upgradeableImport = (p: string) => {
-  const { dir, ext, name } = path.parse(p);
+const upgradeableImport = (p: ParentContract): ParentContract => {
+  const { dir, ext, name } = path.parse(p.path);
   // Use path.posix to get forward slashes
-  return path.posix.format({
-    ext,
-    dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
-    name: upgradeableName(name),
-  });
+  return {
+    ...p,
+    path: path.posix.format({
+      ext,
+      dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
+      name: upgradeableName(name),
+    }),
+  }
 };
 
 export interface Options {
-  transformImport?: (path: string) => string;
+  transformImport?: (parent: ParentContract) => ParentContract;
 }
 
 export interface Helpers extends Required<Options> {
   upgradeable: boolean;
-  transformName: (name: string) => string;
-  transformVariable: (code: string) => string;
+  transformName: (name: ReferencedContract) => string;
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
-  const upgradeable = contract.upgradeable;
-  const transformName = (n: string) => upgradeable ? upgradeableName(n) : n;
+  const contractUpgradeable = contract.upgradeable;
+  const transformName = (n: ReferencedContract) => contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
   return {
-    upgradeable,
+    upgradeable: contractUpgradeable,
     transformName,
     transformImport: p1 => {
-      const p2 = upgradeable ? upgradeableImport(p1) : p1;
+      const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
-    transformVariable: v => v.replace(/[A-Z]\w*(?=\.|$)/, transformName),
   };
 }

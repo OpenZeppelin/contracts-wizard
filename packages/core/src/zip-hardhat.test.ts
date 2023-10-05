@@ -31,8 +31,20 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('erc20 basic', async t => {
-  const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
+test.serial('erc20 full', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    votes: true,
+    flashmint: true,
+  };
   const c = buildERC20(opts);
   await runTest(c, t, opts);
 });
@@ -65,7 +77,7 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
   const zip = await zipHardhat(c, opts);
 
   assertLayout(zip, c, t);
-  await extractAndRunPackage(zip, t);
+  await extractAndRunPackage(zip, c, t);
   await assertContents(zip, c, t);
 }
 
@@ -87,7 +99,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   ]);
 }
 
-async function extractAndRunPackage(zip: JSZip, t: ExecutionContext<Context>) {
+async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
   const tempFolder = t.context.tempFolder;
@@ -101,10 +113,19 @@ async function extractAndRunPackage(zip: JSZip, t: ExecutionContext<Context>) {
     }
   }
 
+  let command = `cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test`;
+  if (c.constructorArgs === undefined) {
+    // only test deploying the contract if there are no constructor args needed
+    command += ' && npx hardhat run scripts/deploy.ts';
+  }
+
   const exec = util.promisify(child.exec);
-  const result = await exec(`cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test && npx hardhat run scripts/deploy.ts`);
+  const result = await exec(command);
+
   t.regex(result.stdout, /1 passing/);
-  t.regex(result.stdout, /deployed to/);
+  if (c.constructorArgs === undefined) {
+    t.regex(result.stdout, /deployed to/);
+  }
 }
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {

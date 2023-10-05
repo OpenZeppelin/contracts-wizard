@@ -22,7 +22,7 @@ export const defaults: Required<GovernorOptions> = {
   quorumMode: 'percent',
   quorumPercent: 4,
   quorumAbsolute: '',
-  bravo: false,
+  storage: false,
   settings: true,
   
   access: commonDefaults.access,
@@ -30,7 +30,7 @@ export const defaults: Required<GovernorOptions> = {
   info: commonDefaults.info
 } as const;
 
-export const votesOptions = ['erc20votes', 'erc721votes', 'comp'] as const;
+export const votesOptions = ['erc20votes', 'erc721votes'] as const;
 export type VotesOptions = typeof votesOptions[number];
 
 export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
@@ -52,7 +52,7 @@ export interface GovernorOptions extends CommonOptions {
   quorumAbsolute?: string;
   votes?: VotesOptions;
   timelock?: TimelockOptions;
-  bravo?: boolean;
+  storage?: boolean;
   settings?: boolean;
 }
 
@@ -70,7 +70,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
-    bravo: opts.bravo ?? defaults.bravo,
+    storage: opts.storage ?? defaults.storage,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     timelock: opts.timelock ?? defaults.timelock
@@ -86,9 +86,9 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
   addBase(c, allOpts);
   addSettings(c, allOpts);
-  addCounting(c, allOpts);
-  addBravo(c, allOpts);
-  addVotes(c, allOpts);
+  addCounting(c);
+  addStorage(c, allOpts);
+  addVotes(c);
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
 
@@ -100,42 +100,43 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 }
 
 function addBase(c: ContractBuilder, { name }: GovernorOptions) {
-  c.addParent(
-    {
-      name: 'Governor',
-      path: '@openzeppelin/contracts/governance/Governor.sol',
-    },
-    [name],
-  );
-  c.addOverride('IGovernor', functions.votingDelay);
-  c.addOverride('IGovernor', functions.votingPeriod);
-  c.addOverride('IGovernor', functions.quorum);
-  c.addOverride('Governor', functions.state);
-  c.addOverride('Governor', functions.propose);
-  c.addOverride('Governor', functions.proposalThreshold);
-  c.addOverride('Governor', functions._execute);
-  c.addOverride('Governor', functions._cancel);
-  c.addOverride('Governor', functions._executor);
-  c.addOverride('Governor', supportsInterface);
-  c.addOverride('Governor', functions.cancel);
+  const Governor = {
+    name: 'Governor',
+    path: '@openzeppelin/contracts/governance/Governor.sol',
+  };
+  c.addParent(Governor, [name]);
+  c.addOverride(Governor, functions.votingDelay);
+  c.addOverride(Governor, functions.votingPeriod);
+  c.addOverride(Governor, functions.quorum);
+  c.addOverride(Governor, functions.state);
+  c.addOverride(Governor, functions.propose);
+  c.addOverride(Governor, functions.proposalNeedsQueuing);
+  c.addOverride(Governor, functions.proposalThreshold);
+  c.addOverride(Governor, functions._propose);
+  c.addOverride(Governor, functions._queueOperations);
+  c.addOverride(Governor, functions._executeOperations);
+  c.addOverride(Governor, functions._cancel);
+  c.addOverride(Governor, functions._executor);
+  c.addOverride(Governor, supportsInterface);
 }
 
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   if (allOpts.settings) {
+    const GovernorSettings = {
+      name: 'GovernorSettings',
+      path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
+    };
     c.addParent(
-      {
-        name: 'GovernorSettings',
-        path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
-      },
+      GovernorSettings,
       [
         { value: getVotingDelay(allOpts), note: allOpts.delay },
         { value: getVotingPeriod(allOpts), note: allOpts.period },
         { lit: getProposalThreshold(allOpts) },
       ],
     );
-    c.addOverride('GovernorSettings', functions.votingDelay, 'view');
-    c.addOverride('GovernorSettings', functions.votingPeriod, 'view');
-    c.addOverride('GovernorSettings', functions.proposalThreshold, 'view');
+    c.addOverride(GovernorSettings, functions.votingDelay, 'view');
+    c.addOverride(GovernorSettings, functions.votingPeriod, 'view');
+    c.addOverride(GovernorSettings, functions.proposalThreshold, 'view');
   } else {
     setVotingParameters(c, allOpts);
     setProposalThreshold(c, allOpts);
@@ -209,42 +210,27 @@ function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions
   }
 }
 
-function addCounting(c: ContractBuilder, { bravo }: GovernorOptions) {
-  if (!bravo) {
-    c.addParent({
-      name: 'GovernorCountingSimple',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
-    });
-  }
+function addCounting(c: ContractBuilder) {
+  c.addParent({
+    name: 'GovernorCountingSimple',
+    path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
+  });
 }
 
-const votesModules = {
-  erc20votes: {
-    tokenType: 'IVotes',
-    parentName: 'GovernorVotes',
-  },
-  erc721votes: {
-    tokenType: 'IVotes',
-    parentName: 'GovernorVotes',
-  },
-  comp: {
-    tokenType: 'ERC20VotesComp',
-    parentName: 'GovernorVotesComp',
-  },
-} as const;
-
-function addVotes(c: ContractBuilder, { votes }: Required<GovernorOptions>) {
+function addVotes(c: ContractBuilder) {
   const tokenArg = '_token';
-  const { tokenType, parentName } = votesModules[votes];
 
   c.addConstructorArgument({
-    type: tokenType,
+    type: {
+      name: 'IVotes',
+      transpiled: false,
+    },
     name: tokenArg,
   });
 
   c.addParent({
-    name: parentName,
-    path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
+    name: 'GovernorVotes',
+    path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
   }, [{ lit: tokenArg }]);
 }
 
@@ -252,12 +238,6 @@ export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
-    if (opts.votes !== 'erc20votes' && opts.votes !== 'erc721votes') {
-      throw new OptionsError({
-        quorumPercent: 'Percent-based quorum is only available for ERC20Votes or ERC721Votes',
-      });
-    }
-
     if (opts.quorumPercent > 100) {
       throw new OptionsError({
         quorumPercent: 'Invalid percentage',
@@ -266,18 +246,20 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
 
     let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
 
+    const GovernorVotesQuorumFraction = {
+      name: 'GovernorVotesQuorumFraction',
+      path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
+    };
+
     if (quorumFractionDenominator !== undefined) {
-      c.addOverride('GovernorVotesQuorumFraction', functions.quorumDenominator);
+      c.addOverride(GovernorVotesQuorumFraction, functions.quorumDenominator);
       c.setFunctionBody([
         `return ${quorumFractionDenominator};`
       ], functions.quorumDenominator, 'pure');
     }
 
-    c.addParent({
-      name: 'GovernorVotesQuorumFraction',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-    }, [quorumFractionNumerator]);
-    c.addOverride('GovernorVotesQuorumFraction', functions.quorum);
+    c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
+    c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
   }
 
   else if (opts.quorumMode === 'absolute') {
@@ -299,12 +281,23 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
 
 const timelockModules = {
   openzeppelin: {
-    timelockType: 'TimelockController',
-    parentName: 'GovernorTimelockControl',
+    timelockType: {
+      name: 'TimelockController',
+    },
+    timelockParent: {
+      name: 'GovernorTimelockControl',
+      path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol`,
+    }
   },
   compound: {
-    timelockType: 'ICompoundTimelock',
-    parentName: 'GovernorTimelockCompound',
+    timelockType: {
+      name: 'ICompoundTimelock',
+      transpiled: false,
+    },
+    timelockParent: {
+      name: 'GovernorTimelockCompound',
+      path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol`,
+    }
   },
 } as const;
 
@@ -334,42 +327,30 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   }
 
   const timelockArg = '_timelock';
-  const { timelockType, parentName } = timelockModules[timelock];
+  const { timelockType, timelockParent } = timelockModules[timelock];
 
   c.addConstructorArgument({
     type: timelockType,
     name: timelockArg,
   });
 
-  c.addParent({
-    name: parentName,
-    path: `@openzeppelin/contracts/governance/extensions/${parentName}.sol`,
-  }, [{ lit: timelockArg }]);
-  c.addOverride('IGovernor', functions.propose);
-  c.addOverride(parentName, functions._execute);
-  c.addOverride(parentName, functions._cancel);
-  c.addOverride(parentName, functions._executor);
-  c.addOverride(parentName, functions.state);
-  c.addOverride(parentName, supportsInterface);
+  c.addParent(timelockParent, [{ lit: timelockArg }]);
+  c.addOverride(timelockParent, functions._queueOperations);
+  c.addOverride(timelockParent, functions._executeOperations);
+  c.addOverride(timelockParent, functions._cancel);
+  c.addOverride(timelockParent, functions._executor);
+  c.addOverride(timelockParent, functions.state);
+  c.addOverride(timelockParent, functions.proposalNeedsQueuing);
 }
 
-function addBravo(c: ContractBuilder, { bravo, timelock }: GovernorOptions) {
-  if (bravo) {
-    if (timelock === false) {
-      throw new OptionsError({
-        timelock: 'GovernorBravo compatibility requires a timelock',
-      });
-    }
-
-    c.addParent({
-      name: 'GovernorCompatibilityBravo',
-      path: '@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol',
-    });
-    c.addOverride('IGovernor', functions.state);
-    c.addOverride('IGovernor', functions.cancel);
-    c.addOverride('GovernorCompatibilityBravo', functions.cancel);
-    c.addOverride('GovernorCompatibilityBravo', functions.propose);
-    c.addOverride('IERC165', supportsInterface);
+function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
+  if (storage) {
+    const GovernorStorage = {
+      name: 'GovernorStorage',
+      path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
+    };
+    c.addParent(GovernorStorage);
+    c.addOverride(GovernorStorage, functions._propose);
   }
 }
 
@@ -391,6 +372,14 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+  },
+  proposalNeedsQueuing: {
+    args: [
+      { name: 'proposalId', type: 'uint256' },
+    ],
+    returns: ['bool'],
+    kind: 'public',
+    mutability: 'view',
   },
   quorum: {
     args: [
@@ -416,7 +405,29 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
   },
-  _execute: {
+  _propose: {
+    args: [
+      { name: 'targets', type: 'address[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
+      { name: 'calldatas', type: 'bytes[] memory' },
+      { name: 'description', type: 'string memory' },
+      { name: 'proposer', type: 'address' },
+    ],
+    returns: ['uint256'],
+    kind: 'internal',
+  },
+  _queueOperations: {
+    args: [
+      { name: 'proposalId', type: 'uint256' },
+      { name: 'targets', type: 'address[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
+      { name: 'calldatas', type: 'bytes[] memory' },
+      { name: 'descriptionHash', type: 'bytes32' },
+    ],
+    kind: 'internal',
+    returns: ['uint48'],
+  },
+  _executeOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
       { name: 'targets', type: 'address[] memory' },
@@ -435,16 +446,6 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
-  },
-  cancel: {
-    args: [
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'descriptionHash', type: 'bytes32' },
-    ],
-    returns: ['uint256'],
-    kind: 'public',
   },
   state: {
     args: [
