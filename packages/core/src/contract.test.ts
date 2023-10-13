@@ -121,7 +121,7 @@ test('contract with function code', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with overriden function with code', t => {
+test('contract with overridden function with code', t => {
   const Foo = new ContractBuilder('Foo');
   Foo.addOverride(toContractReference('Bar'), _otherFunction);
   Foo.addFunctionCode('_mint(msg.sender, 10 ether);', _otherFunction);
