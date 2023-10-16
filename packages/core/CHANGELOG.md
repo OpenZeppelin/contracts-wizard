@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add `managed` access control option for use with AccessManager.
+- Add `managed` access control option for use with AccessManager. ([#298](https://github.com/OpenZeppelin/contracts-wizard/pull/298))
 
 ## 0.4.0 (2023-10-05)
 
