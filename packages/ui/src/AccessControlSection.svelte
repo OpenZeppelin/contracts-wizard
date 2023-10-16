@@ -6,7 +6,7 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  let defaultValueWhenEnabled: 'ownable' | 'roles' | 'managed' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
@@ -55,6 +55,13 @@
       Roles
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessControl">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+      </HelpTooltip>
+    </label>
+    <label class:checked={access === 'managed'}>
+      <input type="radio" bind:group={access} value="managed">
+      Managed
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessManaged">
+        Enables a central contract to implement a policy that allows certain callers to access certain functions.
       </HelpTooltip>
     </label>
   </div>
