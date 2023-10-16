@@ -44,6 +44,11 @@ testERC20('erc20 pausable with roles', {
   access: 'roles',
 });
 
+testERC20('erc20 pausable with managed', {
+  pausable: true,
+  access: 'managed',
+});
+
 testERC20('erc20 burnable pausable', {
   burnable: true,
   pausable: true,
@@ -94,6 +99,18 @@ testERC20('erc20 full upgradeable transparent', {
 testERC20('erc20 full upgradeable uups', {
   premint: '2000',
   access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  permit: true,
+  votes: true,
+  flashmint: true,
+  upgradeable: 'uups',
+});
+
+testERC20('erc20 full upgradeable uups managed', {
+  premint: '2000',
+  access: 'managed',
   burnable: true,
   mintable: true,
   pausable: true,
