@@ -61,7 +61,7 @@
       <input type="radio" bind:group={access} value="managed">
       Managed
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessManaged">
-        Enables a central contract to implement a policy that allows certain callers to access certain functions.
+        Enables a central contract to define a policy that allows certain callers to access certain functions.
       </HelpTooltip>
     </label>
   </div>
