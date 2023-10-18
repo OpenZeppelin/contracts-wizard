@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1 (2023-10-18)
 
 - Add `managed` access control option for use with AccessManager. ([#298](https://github.com/OpenZeppelin/contracts-wizard/pull/298))
 
