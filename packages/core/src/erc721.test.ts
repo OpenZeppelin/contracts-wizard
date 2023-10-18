@@ -75,6 +75,11 @@ testERC721('mintable + roles', {
   access: 'roles',
 });
 
+testERC721('mintable + managed', {
+  mintable: true,
+  access: 'managed',
+});
+
 testERC721('mintable + incremental', {
   mintable: true,
   incremental: true,
@@ -100,6 +105,16 @@ testERC721('full upgradeable uups', {
   burnable: true,
   votes: true,
   upgradeable: 'uups',
+});
+
+testERC721('full upgradeable uups + managed', {
+  mintable: true,
+  enumerable: true,
+  pausable: true,
+  burnable: true,
+  votes: true,
+  upgradeable: 'uups',
+  access: 'managed',
 });
 
 testAPIEquivalence('API default');

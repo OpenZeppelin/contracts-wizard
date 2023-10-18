@@ -52,6 +52,10 @@ testCustom('access control roles', {
   access: 'roles',
 });
 
+testCustom('access control managed', {
+  access: 'managed',
+});
+
 testCustom('upgradeable uups with access control disabled', {
   // API should override access to true since it is required for UUPS
   access: false,
@@ -65,6 +69,13 @@ testAPIEquivalence('custom API basic', { name: 'CustomContract' });
 testAPIEquivalence('custom API full upgradeable', {
   name: 'CustomContract',
   access: 'roles',
+  pausable: true,
+  upgradeable: 'uups',
+});
+
+testAPIEquivalence('custom API full upgradeable with managed', {
+  name: 'CustomContract',
+  access: 'managed',
   pausable: true,
   upgradeable: 'uups',
 });

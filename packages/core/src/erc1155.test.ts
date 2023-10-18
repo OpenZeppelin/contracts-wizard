@@ -34,6 +34,10 @@ testERC1155('basic + roles', {
   access: 'roles',
 });
 
+testERC1155('basic + managed', {
+  access: 'managed',
+});
+
 testERC1155('no updatable uri', {
   updatableUri: false,
 });
@@ -55,6 +59,11 @@ testERC1155('mintable + roles', {
   access: 'roles',
 });
 
+testERC1155('mintable + managed', {
+  mintable: true,
+  access: 'managed',
+});
+
 testERC1155('supply tracking', {
   supply: true,
 });
@@ -70,6 +79,14 @@ testERC1155('full upgradeable transparent', {
 testERC1155('full upgradeable uups', {
   mintable: true,
   access: 'roles',
+  burnable: true,
+  pausable: true,
+  upgradeable: 'uups',
+});
+
+testERC1155('full upgradeable transparent with managed', {
+  mintable: true,
+  access: 'managed',
   burnable: true,
   pausable: true,
   upgradeable: 'uups',

@@ -1,7 +1,7 @@
 import type { ContractBuilder, BaseFunction } from './contract';
 import { supportsInterface } from './common-functions';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable', 'roles', 'managed'] as const;
 
 export type Access = typeof accessOptions[number];
 
@@ -28,6 +28,15 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
         c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);');
       }
       c.addOverride(parents.AccessControl, supportsInterface);
+      break;
+    }
+    case 'managed': {
+      if (c.addParent(parents.AccessManaged, [ {lit: 'initialAuthority'} ])) {
+        c.addConstructorArgument({
+          type: 'address',
+          name: 'initialAuthority'
+        });
+      }
       break;
     }
   }
@@ -58,6 +67,10 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
       c.addModifier(`onlyRole(${roleId})`, fn);
       break;
     }
+    case 'managed': {
+      c.addModifier('restricted', fn);
+      break;
+    }
   }
 }
 
@@ -69,5 +82,9 @@ const parents = {
   AccessControl: {
     name: 'AccessControl',
     path: '@openzeppelin/contracts/access/AccessControl.sol',
+  },
+  AccessManaged: {
+    name: 'AccessManaged',
+    path: '@openzeppelin/contracts/access/manager/AccessManaged.sol',
   },
 };
