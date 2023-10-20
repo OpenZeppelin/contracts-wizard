@@ -10,7 +10,7 @@
     name?: string,
     opts?: any
   }
-  export let currentTab: string
+  export let currentOpts: any
 
   let inProgress = false
   let currentMessage = ''
@@ -57,7 +57,7 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentTab: currentTab,
+        currentOpts: currentOpts,
         messages: chat,
         stream: true,
       }),
@@ -95,6 +95,9 @@
           if (opts.access === 'false') { opts.access = false }
           if (opts.upgradeable === 'false') { opts.upgradeable = false }
           if (opts.timelock === 'false') { opts.timelock = false }
+          if (opts.proposalThreshold) { opts.proposalThreshold = opts.proposalThreshold.toString() }
+          if (opts.quorumAbsolute) { opts.quorumAbsolute = opts.quorumAbsolute.toString() }
+          if (opts.premint) { opts.premint = opts.premint.toString() }
 
           functionCall = {
             name: name,

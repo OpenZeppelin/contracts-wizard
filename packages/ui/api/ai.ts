@@ -22,7 +22,7 @@ export default async (req: Request) => {
         {
           role: 'system',
           content: `
-            The current tab is ${data.currentTab}.
+            The current options are is ${JSON.stringify(data.currentOpts)}.
             Please be kind and concise. Keep responses to <100 words.
           `.trim()
         },
