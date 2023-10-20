@@ -1,12 +1,8 @@
-// import OpenAI from 'npm:openai'
-import OpenAI from 'https://esm.sh/openai@4.6.0'
+import OpenAI from 'https://esm.sh/openai@4.11.0'
+import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16'
 import { erc20Function, erc721Function, erc1155Function, governorFunction, customFunction } from '../src/wiz-functions.ts'
 
 export default async (req: Request) => {
-  // const body: { prompt: string } = await req.json();
-  // const prompt = body.prompt;
-
-
   try {
     const data = await req.json()
 
@@ -16,23 +12,32 @@ export default async (req: Request) => {
       apiKey: apiKey
     })
 
-    const result = await openai.chat.completions.create({
+    const validatedMessages = data.messages.filter((message: { role: string, content: string }) => {
+      return message.content.length < 500
+    })
+
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo-0613',
       messages: [
         {
           role: 'system',
-          content: 'Please be kind and concise. Keep responses to <100 words.'
+          content: `
+            The current tab is ${data.currentTab}.
+            Please be kind and concise. Keep responses to <100 words.
+          `.trim()
         },
-        ...data.messages
+        ...validatedMessages
       ],
       functions: [
         erc20Function, erc721Function, erc1155Function, governorFunction, customFunction
       ],
       temperature: 0.7,
-      // stream: true
+      stream: true
     })
 
-    return Response.json(result)
+    // return Response.json(result)
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
 
   } catch (e) {
     console.log(e)

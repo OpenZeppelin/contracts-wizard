@@ -42,6 +42,8 @@
 
     let contract: Contract = new ContractBuilder('MyToken');
 
+    $: functionCall && applyFunctionCall()
+
     $: opts = allOpts[tab];
 
     $: {
@@ -157,12 +159,10 @@
         }
       }
     }
-
-    $: functionCall && applyFunctionCall()
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
-  <Wiz bind:functionCall={functionCall}></Wiz>
+  <Wiz bind:functionCall={functionCall} bind:currentTab={tab}></Wiz>
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">

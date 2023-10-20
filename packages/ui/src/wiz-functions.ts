@@ -15,7 +15,7 @@ export const erc20Function = {
       votes: { type: 'boolean', description: 'Whether the token is votable' },
       flashmint: { type: 'boolean', description: 'Whether the token is flashmintable' },
       access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
-      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+      upgradeable: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
     },
     required: ['name', 'symbol'],
   }
@@ -38,7 +38,7 @@ export const erc721Function = {
       incremental: { type: 'boolean', description: 'Whether the token is incremental' },
       votes: { type: 'boolean', description: 'Whether the token is votable' },
       access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
-      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+      upgradeable: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
     },
     required: ['name', 'symbol'],
   }
@@ -58,7 +58,7 @@ export const erc1155Function = {
       supply: { type: 'boolean', description: 'Whether the token has a supply' },
       updatableUri: { type: 'boolean', description: 'Whether the token uri is updateable uri storage' },
       access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
-      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+      upgradeable: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
     },
     required: ['name', 'uri'],
   }
@@ -84,7 +84,7 @@ export const governorFunction = {
       bravo: { type: 'boolean', description: 'Whether the contract is bravo' },
       settings: { type: 'boolean', description: 'Whether the contract has settings' },
       access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
-      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+      upgradeable: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
     },
     required: ['name', 'delay', 'period'],
   }
@@ -99,7 +99,7 @@ export const customFunction = {
       name: { type: 'string', description: 'The name of the contract' },
       pausable: { type: 'boolean', description: 'Whether the contract is pausable' },
       access: { type: 'string', enum: ['false', 'ownable', 'roles'], description: 'The type of access control to provision' },
-      upgrade: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
+      upgradeable: { type: 'string', enum: ['false', 'transparent', 'uups'], description: 'Whether and how the contract can be upgraded' },
     },
     required: ['name'],
   }
