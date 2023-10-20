@@ -712,7 +712,7 @@
   resolved "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.9.3.tgz"
   integrity sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==
 
-"@openzeppelin/wizard-cairo@file:/Users/zack/code/contracts-wizard/packages/core-cairo":
+"@openzeppelin/wizard-cairo@file:/Users/zack/code/wiz/packages/core-cairo":
   version "0.6.0"
   resolved "file:packages/core-cairo"
   dependencies:
@@ -720,11 +720,12 @@
     bn.js "^5.2.0"
     ethereum-cryptography "^2.0.0"
 
-"@openzeppelin/wizard@file:/Users/zack/code/contracts-wizard/packages/core":
+"@openzeppelin/wizard@file:/Users/zack/code/wiz/packages/core":
   version "0.3.0"
   resolved "file:packages/core"
   dependencies:
     array.prototype.flatmap "^1.2.4"
+    openai "^4.6.0"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -5983,7 +5984,7 @@ typescript@^5.0.3:
 "typescript@>=3.9.5 || ^4.0.0 || ^5.0.0":
   version "4.9.5"
 
-"ui@file:/Users/zack/code/contracts-wizard/packages/ui":
+"ui@file:/Users/zack/code/wiz/packages/ui":
   version "0.0.0"
   resolved "file:packages/ui"
   dependencies:
