@@ -113,7 +113,7 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
     }
   }
 
-  let command = `cd "${tempFolder}" && npm config set scripts-prepend-node-path auto && npm install && npm test`;
+  let command = `cd "${tempFolder}" && npm install && npm test`;
   if (c.constructorArgs === undefined) {
     // only test deploying the contract if there are no constructor args needed
     command += ' && npx hardhat run scripts/deploy.ts';
