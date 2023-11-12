@@ -17,7 +17,7 @@ export default async (req: Request) => {
     })
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-0613',
+      model: 'gpt-4-1106-preview',
       messages: [
         {
           role: 'system',
@@ -35,7 +35,6 @@ export default async (req: Request) => {
       stream: true
     })
 
-    // return Response.json(result)
     const stream = OpenAIStream(response);
     return new StreamingTextResponse(stream);
 

@@ -1,21 +1,26 @@
 <script lang="ts">
-  import axios from 'axios'
   import UserAvatar from './icons/UserAvatar.svelte';
   import WizAvatar from './icons/WizAvatar.svelte'
   import WizIcon from './icons/WizIcon.svelte'
   import XIcon from './icons/XIcon.svelte';
   import ExperimentalTooltip from './ExperimentalTooltip.svelte';
+  import { postChats } from './post-chats';
+  import type { GenericOptions } from '@openzeppelin/wizard';
+  import type { Chat } from './post-chats';
+  import MinimizeIcon from './icons/MinimizeIcon.svelte';
+  import MaximizeIcon from './icons/MaximizeIcon.svelte';
 
   export let functionCall: {
     name?: string,
     opts?: any
   }
-  export let currentOpts: any
+  export let currentOpts: Required<GenericOptions>
 
   let inProgress = false
   let currentMessage = ''
   let showing: boolean = true
-  let messages: { role: string, content: string }[] = [{
+  let expanded: boolean = false
+  let messages: Chat[] = [{
     role: 'assistant',
     content: 'I can also edit Wizard settings directly, so from time to time I will update those based on your input.',
   }, {
@@ -37,14 +42,15 @@
     'Make a contract for a DAO',
   ]
 
-  const addMessage = (message: { role: string, content: string }) => {
+  const addMessage = (message: Chat) => {
+    postChats(currentOpts, messages, 'solidity')
     messages = [{
       role: message.role,
       content: message.content
     }, ...messages]
   }
 
-  const submitChat = (message: { role: string, content: string }) => {
+  const submitChat = (message: Chat) => {
     inProgress = true
     addMessage(message)
     input = ''
@@ -137,9 +143,7 @@
 </script>
 
 <div class="absolute bottom-8 right-8 h-[calc(100%-188px)]">
-  <div class={`${showing ? '' : 'hidden'} absolute flex flex-col-reverse right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 rounded-md w-80 animate-fade-up max-h-full overflow-y-auto`}>
-
-
+  <div class={`${showing ? '' : 'hidden'} ${expanded ? 'w-[40rem]' : 'w-80'} absolute flex flex-col-reverse right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 rounded-md animate-fade-up max-h-full overflow-y-auto`}>
     <div class={`flex flex-col-reverse gap-3 overflow-y-auto p-4 h-[calc(100%-800px)]`}>
       <div class="w-full flex items-center justify-between gap-2">
         <textarea bind:value={input} on:keypress={listener} placeholder="Ask me anything..." class="w-full text-sm shadow-lg h-32 p-4 rounded-md outline-none border-0 resize-none" />
@@ -201,12 +205,23 @@
     </div>
     <div class="flex items-center justify-between border-0 border-b border-solid border-gray-200 p-4 font-bold text-gray-600">
       AI Assistant
-      <div class="tooltip-container">
-        <ExperimentalTooltip placement="bottom">
-            The AI Assistant Wiz is powered by the <a href="https://openai.com/blog/openai-api">OpenAI API</a>, which utilizes AI/ML and therefore may produce inaccurate information.
-            <br /><br />
-            You should always review any information produced by Wiz to ensure that any results are accurate and suit your purposes.
-        </ExperimentalTooltip>
+      <div class="flex items-center gap-2">
+        <div class="tooltip-container">
+          <ExperimentalTooltip placement="bottom">
+              The AI Assistant Wiz is powered by the <a target="_blank" rel="noopener noreferrer" href="https://openai.com/blog/openai-api">OpenAI API</a>, which utilizes AI/ML and therefore may produce inaccurate information.
+              <br /><br />
+              You should always review any information produced by Wiz to ensure that any results are accurate and suit your purposes.
+          </ExperimentalTooltip>
+        </div>
+        <button class="shadow-xl rotate-45 border-none bg-gray-400 rounded-md h-6 w-6 text-white cursor-pointer" on:click={() => {
+          expanded = !expanded
+        }}>
+          {#if expanded}
+            <MinimizeIcon />
+          {:else}
+            <MaximizeIcon />
+          {/if}
+        </button>
       </div>
     </div>
   </div>

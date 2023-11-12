@@ -39,7 +39,7 @@
     "highlight.js": "^11.0.0",
     "highlightjs-cairo": "^0.2.0",
     "highlightjs-solidity": "^2.0.0",
-    "openai": "^4.6.0",
+    "openai": "^4.17.4",
     "sirv-cli": "^2.0.0",
     "tippy.js": "^6.3.1",
     "util": "^0.12.4",
