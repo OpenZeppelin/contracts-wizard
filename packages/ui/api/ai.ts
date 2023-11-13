@@ -5,7 +5,6 @@ import { erc20Function, erc721Function, erc1155Function, governorFunction, custo
 export default async (req: Request) => {
   try {
     const data = await req.json()
-
     const apiKey = Deno.env.get('OPENAI_API_KEY')
 
     const openai = new OpenAI({
