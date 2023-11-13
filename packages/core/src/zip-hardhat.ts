@@ -61,6 +61,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   );
 
   function getTestCase(c: Contract) {
+    const args = getAddressArgs(c);
     return [
       `describe("${c.name}", function () {`,
       [
@@ -69,11 +70,12 @@ const test = (c: Contract, opts?: GenericOptions) => {
           [
             `const ContractFactory = await ethers.getContractFactory("${c.name}");`,
           ],
+          getAddressVariables(args),
           [
-            `const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};`,
+            `const instance = await ${getDeploymentCall(c, args)};`,
             'await instance.waitForDeployment();'
           ],
-          getContractSpecificExpects(),
+          getExpects(),
         ),
         '});'
       ],
@@ -88,7 +90,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
     ];
   }
 
-  function getContractSpecificExpects(): Lines[] {
+  function getExpects(): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
         case 'ERC20':
@@ -108,15 +110,40 @@ const test = (c: Contract, opts?: GenericOptions) => {
     }
     return [];
   }
+
+  function getAddressVariables(args: string[]): Lines[] {
+    const vars = [];
+    for (let i = 0; i < args.length; i++) {
+      vars.push(`const ${args[i]} = (await ethers.getSigners())[${i}].address;`);
+    }
+    return vars;
+  }
 };
 
-const script = (c: Contract) => `\
+function getAddressArgs(c: Contract): string[] {
+  const args = [];
+  for (const constructorArg of c.constructorArgs) {
+    if (constructorArg.type === 'address') {
+      args.push(constructorArg.name);
+    }
+  }
+  return args;
+}
+
+function getDeploymentCall(c: Contract, args: string[]): string {
+  return c.upgradeable ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])` : `ContractFactory.deploy(${args.join(', ')})`;
+}
+
+const script = (c: Contract) => {
+  const args = getAddressArgs(c);
+  return `\
 import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
 
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  const instance = await ${c.upgradeable ? 'upgrades.deployProxy(ContractFactory)' : 'ContractFactory.deploy()'};
+  ${args.length > 0 ? '// TODO: Set addresses for the contract arguments below' : ''}
+  const instance = await ${getDeploymentCall(c, args)};
   await instance.waitForDeployment();
 
   console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
@@ -128,7 +155,7 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-`;
+`};
 
 const readme = `\
 # Sample Hardhat Project

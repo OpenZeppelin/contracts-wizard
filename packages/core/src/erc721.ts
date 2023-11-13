@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
+import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
@@ -82,7 +82,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._beforeTokenTransfer]);
+    addPausableExtension(c, access);
   }
 
   if (allOpts.burnable) {
@@ -104,46 +104,57 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
-  c.addParent(
-    {
-      name: 'ERC721',
-      path: '@openzeppelin/contracts/token/ERC721/ERC721.sol',
-    },
-    [name, symbol],
-  );
+function addPausableExtension(c: ContractBuilder, access: Access) {
+  const ERC721Pausable = {
+    name: 'ERC721Pausable',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol',
+  };
+  c.addParent(ERC721Pausable);
+  c.addOverride(ERC721Pausable, functions._update);
 
-  c.addOverride('ERC721', functions._beforeTokenTransfer);
-  c.addOverride('ERC721', functions._afterTokenTransfer);
-  c.addOverride('ERC721', functions._burn);
-  c.addOverride('ERC721', functions.tokenURI);
-  c.addOverride('ERC721', supportsInterface);
+  addPauseFunctions(c, access);
+}
+
+const ERC721 = {
+  name: 'ERC721',
+  path: '@openzeppelin/contracts/token/ERC721/ERC721.sol',
+};
+
+function addBase(c: ContractBuilder, name: string, symbol: string) {
+  c.addParent(ERC721, [name, symbol]);
+
+  c.addOverride(ERC721, functions._update);
+  c.addOverride(ERC721, functions._increaseBalance);
+  c.addOverride(ERC721, functions.tokenURI);
+  c.addOverride(ERC721, supportsInterface);
 }
 
 function addBaseURI(c: ContractBuilder, baseUri: string) {
-  c.addOverride('ERC721', functions._baseURI);
+  c.addOverride(ERC721, functions._baseURI);
   c.setFunctionBody([`return ${JSON.stringify(baseUri)};`], functions._baseURI);
 }
 
 function addEnumerable(c: ContractBuilder) {
-  c.addParent({
+  const ERC721Enumerable = {
     name: 'ERC721Enumerable',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol',
-  });
+  };
+  c.addParent(ERC721Enumerable);
 
-  c.addOverride('ERC721Enumerable', functions._beforeTokenTransfer);
-  c.addOverride('ERC721Enumerable', supportsInterface);
+  c.addOverride(ERC721Enumerable, functions._update);
+  c.addOverride(ERC721Enumerable, functions._increaseBalance);
+  c.addOverride(ERC721Enumerable, supportsInterface);
 }
 
 function addURIStorage(c: ContractBuilder) {
-  c.addParent({
+  const ERC721URIStorage = {
     name: 'ERC721URIStorage',
     path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol',
-  });
+  };
+  c.addParent(ERC721URIStorage);
 
-  c.addOverride('ERC721URIStorage', functions._burn);
-  c.addOverride('ERC721URIStorage', functions.tokenURI);
-  c.addOverride('ERC721URIStorage', supportsInterface);
+  c.addOverride(ERC721URIStorage, functions.tokenURI);
+  c.addOverride(ERC721URIStorage, supportsInterface);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -155,16 +166,11 @@ function addBurnable(c: ContractBuilder) {
 
 function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
   const fn = getMintFunction(incremental, uriStorage);
-  requireAccessControl(c, fn, access, 'MINTER');
+  requireAccessControl(c, fn, access, 'MINTER', 'minter');
 
   if (incremental) {
-    c.addUsing({
-      name: 'Counters',
-      path: '@openzeppelin/contracts/utils/Counters.sol',
-    }, 'Counters.Counter');
-    c.addVariable('Counters.Counter private _tokenIdCounter;');
-    c.addFunctionCode('uint256 tokenId = _tokenIdCounter.current();', fn);
-    c.addFunctionCode('_tokenIdCounter.increment();', fn);
+    c.addVariable('uint256 private _nextTokenId;');
+    c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
@@ -176,47 +182,31 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
 }
 
 function addVotes(c: ContractBuilder, name: string) {
-  c.addParent(
-    {
-      name: 'EIP712',
-      path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
-    },
-    [name, "1"]
-  );
-  c.addParent(
-    {
-      name: 'ERC721Votes',
-      path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
-    });
-  c.addOverride('ERC721Votes', functions._afterTokenTransfer);
+  const EIP712 = {
+    name: 'EIP712',
+    path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+  };
+  c.addParent(EIP712, [name, "1"]);
+
+  const ERC721Votes = {
+    name: 'ERC721Votes',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol',
+  };
+  c.addParent(ERC721Votes);
+
+  c.addOverride(ERC721Votes, functions._update);
+  c.addOverride(ERC721Votes, functions._increaseBalance);
 }
 
 const functions = defineFunctions({
-  _beforeTokenTransfer: {
+  _update: {
     kind: 'internal' as const,
     args: [
-      { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
-      { name: 'batchSize', type: 'uint256' },
+      { name: 'auth', type: 'address' },
     ],
-  },
-
-  _afterTokenTransfer: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'from', type: 'address' },
-      { name: 'to', type: 'address' },
-      { name: 'tokenId', type: 'uint256' },
-      { name: 'batchSize', type: 'uint256' },
-    ],
-  },
-
-  _burn: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'tokenId', type: 'uint256' },
-    ],
+    returns: ['address'],
   },
 
   tokenURI: {
@@ -233,6 +223,14 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
+  },
+
+  _increaseBalance: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'account', type: 'address' },
+      { name: 'value', type: 'uint128' },
+    ],
   },
 });
 

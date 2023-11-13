@@ -25,14 +25,14 @@
     <label class:checked={upgradeable === 'transparent'}>
       <input type="radio" bind:group={upgradeable} value="transparent">
       Transparent
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#TransparentUpgradeableProxy">
       Uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons.
       </HelpTooltip>
     </label>
     <label class:checked={upgradeable === 'uups'}>
       <input type="radio" bind:group={upgradeable} value="uups">
       UUPS
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#UUPSUpgradeable">
       Uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.
       </HelpTooltip>
     </label>

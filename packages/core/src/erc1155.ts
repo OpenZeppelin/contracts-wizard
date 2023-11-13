@@ -1,6 +1,6 @@
 import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
+import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
@@ -65,7 +65,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, [functions._beforeTokenTransfer]);
+    addPausableExtension(c, access);
   }
 
   if (allOpts.burnable) {
@@ -88,16 +88,25 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 }
 
 function addBase(c: ContractBuilder, uri: string) {
-  c.addParent(
-    {
-      name: 'ERC1155',
-      path: '@openzeppelin/contracts/token/ERC1155/ERC1155.sol',
-    },
-    [uri],
-  );
+  const ERC1155 = {
+    name: 'ERC1155',
+    path: '@openzeppelin/contracts/token/ERC1155/ERC1155.sol',
+  };
+  c.addParent(ERC1155, [uri]);
 
-  c.addOverride('ERC1155', functions._beforeTokenTransfer);
-  c.addOverride('ERC1155', supportsInterface);
+  c.addOverride(ERC1155, functions._update);
+  c.addOverride(ERC1155, supportsInterface);
+}
+
+function addPausableExtension(c: ContractBuilder, access: Access) {
+  const ERC1155Pausable = {
+    name: 'ERC1155Pausable',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol',
+  };
+  c.addParent(ERC1155Pausable);
+  c.addOverride(ERC1155Pausable, functions._update);
+
+  addPauseFunctions(c, access);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -108,35 +117,34 @@ function addBurnable(c: ContractBuilder) {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access, 'MINTER');
-  requireAccessControl(c, functions.mintBatch, access, 'MINTER');
+  requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
+  requireAccessControl(c, functions.mintBatch, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(account, id, amount, data);', functions.mint);
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.setURI, access, 'URI_SETTER');
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER', undefined);
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 
 function addSupply(c: ContractBuilder) {
-  c.addParent({
+  const ERC1155Supply = {
     name: 'ERC1155Supply',
     path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
-  });
-  c.addOverride('ERC1155Supply', functions._beforeTokenTransfer);
+  };
+  c.addParent(ERC1155Supply);
+  c.addOverride(ERC1155Supply, functions._update);
 }
 
 const functions = defineFunctions({
-  _beforeTokenTransfer: {
+  _update: {
     kind: 'internal' as const,
     args: [
-      { name: 'operator', type: 'address' },
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'ids', type: 'uint256[] memory' },
-      { name: 'amounts', type: 'uint256[] memory' },
-      { name: 'data', type: 'bytes memory' },
+      { name: 'values', type: 'uint256[] memory' },
     ],
   },
 
@@ -166,5 +174,4 @@ const functions = defineFunctions({
       { name: 'data', type: 'bytes memory' },
     ],
   },
-
 });

@@ -31,8 +31,20 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('erc20 basic', async t => {
-  const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK' };
+test.serial('erc20 full', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    votes: true,
+    flashmint: true,
+  };
   const c = buildERC20(opts);
   await runTest(c, t, opts);
 });
@@ -103,7 +115,11 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
   t.regex(result.stdout, /Initializing Foundry project\.\.\.\nDone\./);
   t.regex(result.stdout, /1 passed/);
-  t.regex(result.stdout, /deployed to /);
+
+  if (c.constructorArgs === undefined) {
+    // the deployment is only run by default if there are no constructor args
+    t.regex(result.stdout, /deployed to /);
+  }
 
   const rerunCommand = `cd "${tempFolder}" && ${setup}`;
   const rerunResult = await exec(rerunCommand);
