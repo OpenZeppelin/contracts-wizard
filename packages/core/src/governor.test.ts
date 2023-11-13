@@ -58,8 +58,8 @@ testGovernor('governor with settings', {
   proposalThreshold: '1',
 });
 
-testGovernor('governor with bravo', {
-  bravo: true,
+testGovernor('governor with storage', {
+  storage: true,
 });
 
 testGovernor('governor with erc20votes', {
@@ -83,12 +83,6 @@ testGovernor('governor with erc721votes settings omit decimals', {
   decimals: 6,
   proposalThreshold: '10',
   settings: true,
-});
-
-testGovernor('governor with comp', {
-  votes: 'comp',
-  quorumMode: 'absolute',
-  quorumAbsolute: '1',
 });
 
 testGovernor('governor with percent quorum', {

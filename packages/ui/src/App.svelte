@@ -99,18 +99,6 @@
       }
     };
 
-    const zipModule = import('@openzeppelin/wizard/zip');
-
-    const downloadVendoredHandler = async () => {
-      const { zipContract } = await zipModule;
-      const zip = zipContract(contract);
-      const blob = await zip.generateAsync({ type: 'blob' });
-      saveAs(blob, 'contracts.zip');
-      if (opts) {
-        await postConfig(opts, 'download-vendored', language);
-      }
-    };
-
     const zipHardhatModule = import('@openzeppelin/wizard/zip-env-hardhat');
 
     const downloadHardhatHandler = async () => {
@@ -256,16 +244,6 @@
           </div>
         </button>
         {/if}
-
-        <button class="download-option" on:click={downloadVendoredHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Vendored ZIP</p>
-            <p>Does not require npm package.</p>
-            <p>Must be updated manually.</p>
-            <p>Not recommended for beginners.</p>
-          </div>
-        </button>
       </Dropdown>
     </div>
   </div>
@@ -441,14 +419,5 @@
       margin-top: var(--size-1);
       color: var(--gray-5);
     }
-  }
-
-  .download-zip-beta {
-    text-transform: uppercase;
-    padding: 0 .2em;
-    border: 1px solid;
-    border-radius: 4px;
-    font-size: .8em;
-    margin-left: .25em;
   }
 </style>
