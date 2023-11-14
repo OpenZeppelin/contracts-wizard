@@ -2,7 +2,6 @@ import OpenAI from 'https://esm.sh/openai@4.11.0'
 import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16'
 import { erc20Function, erc721Function, erc1155Function, governorFunction, customFunction } from '../src/wiz-functions.ts'
 import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1'
-
 const redis = new Redis({
   url: Deno.env.get('REDIS_URL'),
   token: Deno.env.get('REDIS_TOKEN'),
