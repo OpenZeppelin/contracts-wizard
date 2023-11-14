@@ -4,9 +4,8 @@
   import WizIcon from './icons/WizIcon.svelte'
   import XIcon from './icons/XIcon.svelte';
   import ExperimentalTooltip from './ExperimentalTooltip.svelte';
-  import { postChats } from './post-chats';
   import type { GenericOptions } from '@openzeppelin/wizard';
-  import type { Chat } from './post-chats';
+  import { nanoid } from 'nanoid';
   import MinimizeIcon from './icons/MinimizeIcon.svelte';
   import MaximizeIcon from './icons/MaximizeIcon.svelte';
 
@@ -16,6 +15,12 @@
   }
   export let currentOpts: Required<GenericOptions>
 
+  interface Chat {
+    role: 'user' | 'assistant' | 'system'
+    content: string
+  }
+
+  const chatId = nanoid()
   let inProgress = false
   let currentMessage = ''
   let showing: boolean = true
@@ -43,7 +48,6 @@
   ]
 
   const addMessage = (message: Chat) => {
-    postChats(currentOpts, messages, 'solidity')
     messages = [{
       role: message.role,
       content: message.content
@@ -63,7 +67,8 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentOpts: currentOpts,
+        currentOpts,
+        chatId,
         messages: chat,
         stream: true,
       }),
