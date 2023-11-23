@@ -148,7 +148,7 @@
 </script>
 
 <div class="absolute bottom-8 right-8 h-[calc(100%-188px)]">
-  <div class={`${showing ? '' : 'hidden'} ${expanded ? 'w-[40rem]' : 'w-80'} absolute flex flex-col-reverse right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 rounded-md animate-fade-up max-h-full overflow-y-auto`}>
+  <div class={`${showing ? '' : 'hidden'} ${expanded ? 'w-[40rem]' : 'w-80'} max-w-[400px] min-h-[200px] absolute flex flex-col-reverse right-0 bottom-[4.5rem] border-0 shadow-xl bg-gray-50 rounded-md animate-fade-up max-h-full overflow-y-auto z-50`}>
     <div class={`flex flex-col-reverse gap-3 overflow-y-auto p-4 h-[calc(100%-800px)]`}>
       <div class="w-full flex items-center justify-between gap-2">
         <textarea bind:value={input} on:keypress={listener} placeholder="Ask me anything..." class="w-full text-sm shadow-lg h-32 p-4 rounded-md outline-none border-0 resize-none" />
