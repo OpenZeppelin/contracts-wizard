@@ -12,7 +12,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source && e.data.kind === 'oz-wizard-resize') {
     const iframe = iframes.get(e.source);
     if (iframe) {
-      iframe.style.height = Math.ceil(e.data.height).toString() + 'px';
+      iframe.style.height = 'calc(100vh - 158px)';
     }
   }
 });
@@ -22,7 +22,6 @@ onDOMContentLoaded(function () {
 
   for (const w of wizards) {
     w.style.display = 'block';
-    w.style.minHeight = '53rem';
 
     const src = new URL('embed', currentScript.origin);
 
@@ -42,7 +41,7 @@ onDOMContentLoaded(function () {
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = '53rem';
+    iframe.style.height = 'calc(100vh - 158px)';
 
     w.appendChild(iframe);
 
