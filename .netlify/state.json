@@ -1,0 +1,20 @@
+{
+	"promptVSCodeSettings": true,
+	"geolocation": {
+		"data": {
+			"city": "Chicago",
+			"country": {
+				"code": "US",
+				"name": "United States"
+			},
+			"subdivision": {
+				"code": "IL",
+				"name": "Illinois"
+			},
+			"timezone": "America/Chicago",
+			"latitude": 41.9032,
+			"longitude": -87.6383
+		},
+		"timestamp": 1700767684276
+	}
+}
