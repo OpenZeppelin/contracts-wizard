@@ -60,7 +60,6 @@ export default async (req: Request) => {
           ]
         }
         const exists = await redis.exists(`chat:${id}`)
-        console.log(exists)
         if (!exists) {
           // @ts-ignore redis types seem to require [key: string]
           payload.createdAt = updatedAt
@@ -71,7 +70,6 @@ export default async (req: Request) => {
     return new StreamingTextResponse(stream);
 
   } catch (e) {
-    console.log(e)
     return Response.json({
       error: 'Could not retrieve results.'
     })
