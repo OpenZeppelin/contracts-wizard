@@ -13,7 +13,7 @@
 
   const defaults = governor.defaults;
 
-  export const opts: Required<KindedOptions['Governor']> = {
+  export let opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
     ...defaults,
     proposalThreshold: '', // default to empty in UI

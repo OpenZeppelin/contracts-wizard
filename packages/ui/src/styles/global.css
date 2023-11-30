@@ -37,6 +37,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Components */
@@ -132,4 +133,8 @@ input.input-inline {
 
 .import-link {
   color: inherit;
+}
+
+.glimmery {
+  background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212))
 }

@@ -17,6 +17,7 @@
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
+    import Wiz from './Wiz.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -40,6 +41,8 @@
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
     let contract: Contract = new ContractBuilder('MyToken');
+
+    $: functionCall && applyFunctionCall()
 
     $: opts = allOpts[tab];
 
@@ -119,9 +122,36 @@
         await postConfig(opts, 'download-foundry', language);
       }
     };
+
+    const nameMap = {
+      erc20: 'ERC20',
+      erc721: 'ERC721',
+      erc1155: 'ERC1155',
+      governor: 'Governor',
+      custom: 'Custom',
+    }
+
+    let functionCall: {
+      name?: string,
+      opts?: any
+    } = {}
+
+    const applyFunctionCall = () => {
+      if (functionCall.name) {
+        const name = functionCall.name as keyof typeof nameMap
+        tab = sanitizeKind(nameMap[name])
+
+        allOpts[tab] = {
+          ...allOpts[tab],
+          ...functionCall.opts
+        }
+      }
+    }
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
+  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
+
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
@@ -219,7 +249,7 @@
   </div>
 
   <div class="flex flex-row gap-4 grow">
-    <div class="controls w-64 flex flex-col shrink-0 justify-between">
+    <div class="controls w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
@@ -237,8 +267,8 @@
       </div>
     </div>
 
-    <div class="output flex flex-col grow overflow-auto">
-    <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
+      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
 </div>
@@ -249,7 +279,6 @@
     border: 1px solid var(--gray-2);
     border-radius: 10px;
     min-width: 32rem;
-    min-height: 53rem;
   }
 
   .header {

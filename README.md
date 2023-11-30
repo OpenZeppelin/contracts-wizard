@@ -18,6 +18,8 @@ Install dependencies with `yarn install`.
 
 `packages/ui` is the interface built in Svelte. `yarn dev` spins up a local server to develop the UI.
 
+You'll need to supply your own environment variables if you want to enable Wizard AI Assistant (OPENAI_API_KEY) and/or logging (REDIS_URL, REDIS_TOKEN).
+
 ## Embedding
 
 To embed Contracts Wizard on your site, first include the script tag:

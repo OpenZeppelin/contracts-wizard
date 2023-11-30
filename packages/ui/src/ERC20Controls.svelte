@@ -8,7 +8,7 @@
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
 
-  export const opts: Required<KindedOptions['ERC20']> = {
+  export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
     ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0

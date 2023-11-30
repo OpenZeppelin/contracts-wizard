@@ -8,7 +8,7 @@
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
 
-  export const opts: Required<KindedOptions['ERC1155']> = {
+  export let opts: Required<KindedOptions['ERC1155']> = {
     kind: 'ERC1155',
     ...erc1155.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
