@@ -13,7 +13,7 @@
     name?: string,
     opts?: any
   }
-  export let currentOpts: Required<GenericOptions>
+  export let currentOpts: Required<GenericOptions> | undefined
 
   interface Chat {
     role: 'user' | 'assistant' | 'system'
@@ -76,20 +76,22 @@
       const reader = response.body?.getReader();
       const decoder = new TextDecoder("utf-8");
       let result = '';
-      while (true && reader) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        // Massage and parse the chunk of data
-        const chunk = decoder.decode(value);
-        result += chunk
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          // Massage and parse the chunk of data
+          const chunk = decoder.decode(value);
+          result += chunk
 
-        if (result.startsWith('{"function_call":')) {
-          currentMessage = 'Executing function...'
-        }
-        else {
-          currentMessage = result
+          if (result.startsWith('{"function_call":')) {
+            currentMessage = 'Executing function...'
+          }
+          else {
+            currentMessage = result
+          }
         }
       }
 
@@ -188,8 +190,7 @@
               <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-900 text-gray-50 rounded-full">
                 <WizAvatar />
               </div>
-            {/if}
-            {#if message.role === 'user'}
+            {:else if message.role === 'user'}
               <div class="absolute m-[2px] flex items-center justify-center w-[32px] h-[32px] bg-gray-100 rounded-full">
                 <UserAvatar />
               </div>
@@ -201,8 +202,7 @@
             {:else}
               <div class="text-sm bg-gray-200 rounded-md font-bold p-4 text-gray-500">{'Called a function'}</div>
             {/if}
-          {/if}
-          {#if message.role === 'user'}
+          {:else if message.role === 'user'}
             <div class="text-sm bg-gray-100 rounded-md p-4">{message.content}</div>
           {/if}
         </div>
