@@ -148,7 +148,8 @@ function printFunction(fn: ContractFunction) {
   const body = spaceBetween(
     withSemicolons(fn.codeBefore?.concat(fn.code) ?? fn.code),
   );
-  return printFunction2(head, args, undefined, undefined, undefined, body);
+  // TODO if there is a return, do not insert semicolon at the end
+  return printFunction2(head, args, undefined, fn.returns ? [fn.returns] : undefined, undefined, body);
 }
 
 function printConstructor(contract: Contract): Lines[] {
