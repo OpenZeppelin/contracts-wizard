@@ -60,7 +60,11 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, allOpts.name, allOpts.symbol);
-  addReimplementedImpls(c, allOpts);
+  addERC20ImplAndCamelOnlyImpl(c, allOpts.pausable);
+
+  if (allOpts.safeAllowance) {
+    addSafeAllowance(c, allOpts.pausable);
+  }
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -81,10 +85,6 @@ export function buildERC20(opts: ERC20Options): Contract {
     addMintable(c, allOpts.access);
   }
 
-  if (allOpts.safeAllowance) {
-    addSafeAllowance(c);
-  }
-
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
@@ -92,8 +92,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addReimplementedImpls(c: ContractBuilder, allOpts: Required<ERC20Options>) {
-  if (allOpts.pausable) {
+function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
+  if (pausable) {
 
     // TODO also do this for safeAllowance
 
@@ -147,19 +147,43 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 }
 
-function addSafeAllowance(c: ContractBuilder) {
-  c.addImplToComponent(components.ERC20Component, 
-    {
+function addSafeAllowance(c: ContractBuilder, pausable: boolean) {
+  if (pausable) {
+    c.addStandaloneImport('openzeppelin::token::erc20::interface::ISafeAllowance');
+    const SafeAllowanceImpl: BaseImplementedTrait = {
       name: 'SafeAllowanceImpl',
-      value: 'ERC20Component::SafeAllowanceImpl<ContractState>',
-    },
-  );
-  c.addImplToComponent(components.ERC20Component,
-    {
+      of: 'ISafeAllowance<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    setPausable(c, SafeAllowanceImpl, functions.increase_allowance);
+    setPausable(c, SafeAllowanceImpl, functions.decrease_allowance);
+
+    c.addStandaloneImport('openzeppelin::token::erc20::interface::ISafeAllowanceCamel');
+    const SafeAllowanceCamelImpl: BaseImplementedTrait = {
       name: 'SafeAllowanceCamelImpl',
-      value: 'ERC20Component::SafeAllowanceCamelImpl<ContractState>',
-    },
-  );
+      of: 'ISafeAllowanceCamel<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    setPausable(c, SafeAllowanceCamelImpl, functions.increaseAllowance);
+    setPausable(c, SafeAllowanceCamelImpl, functions.decreaseAllowance);
+  } else {
+    c.addImplToComponent(components.ERC20Component, 
+      {
+        name: 'SafeAllowanceImpl',
+        value: 'ERC20Component::SafeAllowanceImpl<ContractState>',
+      },
+    );
+    c.addImplToComponent(components.ERC20Component,
+      {
+        name: 'SafeAllowanceCamelImpl',
+        value: 'ERC20Component::SafeAllowanceCamelImpl<ContractState>',
+      },
+    );  
+  }
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -235,7 +259,6 @@ const functions = defineFunctions({
   },
 
   // Re-implements ERC20Impl
-
   total_supply: {
     args: [
       getSelfArg('view')
@@ -309,7 +332,6 @@ const functions = defineFunctions({
   },
 
   // Re-implements ERC20CamelOnlyImpl
-
   totalSupply: {
     args: [
       getSelfArg('view')
@@ -342,4 +364,51 @@ const functions = defineFunctions({
     returns : 'bool',
   },
 
+  // Re-implements SafeAllowanceImpl
+  increase_allowance: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'ContractAddress' },
+      { name: 'added_value', type: 'u256' },
+    ],
+    code: [
+      'self.erc20._increase_allowance(spender, added_value)'
+    ],
+    returns : 'bool',
+  },
+  decrease_allowance: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'ContractAddress' },
+      { name: 'subtracted_value', type: 'u256' },
+    ],
+    code: [
+      'self.erc20._decrease_allowance(spender, subtracted_value)'
+    ],
+    returns : 'bool',
+  },
+
+  // Re-implements SafeAllowanceCamelImpl
+  increaseAllowance: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'ContractAddress' },
+      { name: 'addedValue', type: 'u256' },
+    ],
+    code: [
+      'self.increase_allowance(spender, addedValue)'
+    ],
+    returns : 'bool',
+  },
+  decreaseAllowance: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'ContractAddress' },
+      { name: 'subtractedValue', type: 'u256' },
+    ],
+    code: [
+      'self.decrease_allowance(spender, subtractedValue)'
+    ],
+    returns : 'bool',
+  },
 });
