@@ -5,7 +5,6 @@
 
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
-    import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import CheckIcon from '../icons/CheckIcon.svelte';
@@ -34,7 +33,7 @@
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder();
+    let contract: Contract = new ContractBuilder('MyToken');
 
     $: opts = allOpts[tab];
 
@@ -91,9 +90,9 @@
         <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
           ERC721
         </button>
-        <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
+        <!-- <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
-        </button>
+        </button>-->
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -136,9 +135,9 @@
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
       </div>
-      <div class:hidden={tab !== 'ERC1155'}>
+      <!-- <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
-      </div>
+      </div>-->
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />
       </div>

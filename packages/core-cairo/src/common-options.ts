@@ -24,10 +24,6 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   };
 }
 
-export function withImplicitArgs(): Argument[] {
-  return [ 
-    { name: 'syscall_ptr', type: 'felt*' },
-    { name: 'pedersen_ptr', type: 'HashBuiltin*' },
-    { name: 'range_check_ptr' }
-  ];
+export function getSelfArg(): Argument {
+  return { name: 'ref self', type: 'ContractState' };
 }

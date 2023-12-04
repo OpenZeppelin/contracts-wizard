@@ -5,7 +5,7 @@
   import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../error-tooltip';
 
@@ -35,13 +35,6 @@
       <input bind:value={opts.symbol}>
     </label>
   </div>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Decimals
-    </span>
-    <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder="18">
-  </label>
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
@@ -80,11 +73,19 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.safeAllowance}>
+      <input type="checkbox" bind:checked={opts.safeAllowance}>
+      Safe Allowance
+      <HelpTooltip>
+        Enables non standard increase/decrease allowance methods.
+      </HelpTooltip>
+    </label>
+
+    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />

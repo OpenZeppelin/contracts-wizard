@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking changes**:
+  - Use Cairo 1+ and OpenZeppelin Contracts for Cairo v0.8.0.
+  - Remove functions for `getInitialSupply` and `toUint256`.
+  - Remove ERC1155.
+  - Role-Based Access Control adds separate constructor arguments to assign different users for different roles.
+
 ## 0.6.0 (2023-01-11)
 
 - Add ERC1155. ([#167](https://github.com/OpenZeppelin/contracts-wizard/pull/167))

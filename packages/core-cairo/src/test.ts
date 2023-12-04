@@ -19,7 +19,7 @@ function isAccessControlRequired(opts: GenericOptions) {
 
 test('is access control required', async t => {
   for (const contract of generateSources('all')) {
-    const regexOwnable = /(from openzeppelin.access.ownable.library import Ownable)/gm;
+    const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
     if (!contract.options.access) {
       if (isAccessControlRequired(contract.options)) {

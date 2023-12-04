@@ -7,6 +7,7 @@ import { printContract } from './print';
 function testCustom(title: string, opts: Partial<CustomOptions>) {
   test(title, t => {
     const c = buildCustom({
+      name: 'MyContract',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -19,6 +20,7 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
  function testAPIEquivalence(title: string, opts?: CustomOptions) {
   test(title, t => {
     t.is(custom.print(opts), printContract(buildCustom({
+      name: 'MyContract',
       ...opts,
     })));
   });
@@ -55,6 +57,7 @@ testCustom('pausable with access control disabled', {
 testAPIEquivalence('custom API default');
 
 testAPIEquivalence('custom API full upgradeable', {
+  name: 'CustomContract',
   access: 'roles',
   pausable: true,
   upgradeable: true,
@@ -66,5 +69,5 @@ test('custom API assert defaults', async t => {
 
 test('API isAccessControlRequired', async t => {
   t.is(custom.isAccessControlRequired({ pausable: true }), true);
-  t.is(custom.isAccessControlRequired({ upgradeable: true }), false);
+  t.is(custom.isAccessControlRequired({ upgradeable: true }), true);
 });

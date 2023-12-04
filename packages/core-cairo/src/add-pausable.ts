@@ -1,66 +1,62 @@
-import { withImplicitArgs } from './common-options';
-import type { ContractBuilder, BaseFunction } from './contract';
+import { getSelfArg } from './common-options';
+import type { ContractBuilder, ContractFunction } from './contract';
 import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
-import { defineModules } from './utils/define-modules';
+import { defineComponents } from './utils/define-components';
+import { externalTrait } from './external-trait';
 
-export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {
-  c.addModule(modules.Pausable, [], [functions.pause, functions.unpause], false);
+export function addPausable(c: ContractBuilder, access: Access) {
+  c.addComponent(components.PausableComponent, [], false);
 
-  for (const fn of pausableFns) {
-    setPausable(c, fn);
-  }
-
-  c.addFunction(functions.paused);
-
-  requireAccessControl(c, functions.pause, access, 'PAUSER');
-  requireAccessControl(c, functions.unpause, access, 'PAUSER');
+  c.addFunction(externalTrait, functions.pause);
+  c.addFunction(externalTrait, functions.unpause);
+  requireAccessControl(c, externalTrait, functions.pause, access, 'PAUSER', 'pauser');
+  requireAccessControl(c, externalTrait, functions.unpause, access, 'PAUSER', 'pauser');
 }
 
-const modules = defineModules( {
-  Pausable: {
-    path: 'openzeppelin.security.pausable.library', 
-    useNamespace: true
+const components = defineComponents( {
+  PausableComponent: {
+    path: 'openzeppelin::security::pausable',
+    substorage: {
+      name: 'pausable',
+      type: 'PausableComponent::Storage',
+    },
+    event: {
+      name: 'PausableEvent',
+      type: 'PausableComponent::Event',
+    },
+    impls: [
+      {
+        name: 'PausableImpl',
+        value: 'PausableComponent::PausableImpl<ContractState>',
+      },
+    ],
+    internalImpl: {
+      name: 'PausableInternalImpl',
+      value: 'PausableComponent::InternalImpl<ContractState>',
+    },
   },
 });
 
 const functions = defineFunctions({
-
-  paused: {
-    module: modules.Pausable,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    returns: [{ name: 'paused', type: 'felt' }],
-    passthrough: true,
-    parentFunctionName: 'is_paused',
-  },
-
   pause: {
-    module: modules.Pausable,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    parentFunctionName: '_pause',
+    args: [
+      getSelfArg(),
+    ],
+    code: [
+      'self.pausable._pause()'
+    ]
   },
-
   unpause: {
-    module: modules.Pausable,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    parentFunctionName: '_unpause',
+    args: [
+      getSelfArg(),
+    ],
+    code: [
+      'self.pausable._unpause()'
+    ]
   },
-
-  // --- library-only calls ---
-
-  assert_not_paused: {
-    module: modules.Pausable,
-    args: [],
-  },
-  
 });
 
-export function setPausable(c: ContractBuilder, fn: BaseFunction) {
-    c.addLibraryCall(functions.assert_not_paused, fn);
+export function setPausable(c: ContractBuilder, fn: ContractFunction) {
+  c.addFunctionCodeBefore(externalTrait, fn, 'self.pausable.assert_not_paused()');
 }

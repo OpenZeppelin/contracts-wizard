@@ -22,7 +22,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^5.0.0",
     "@openzeppelin/contracts-upgradeable": "^5.0.0",
-    "@types/node": "^10.17.51",
+    "@types/node": "^18.0.0",
     "array.prototype.flat": "^1.2.4",
     "ava": "^5.0.0",
     "hardhat": "^2.1.1",

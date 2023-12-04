@@ -5,7 +5,7 @@
   import { custom, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
 
   export const opts: Required<KindedOptions['Custom']> = {
@@ -16,6 +16,15 @@
 
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
+
+<section class="controls-section">
+  <h1>Settings</h1>
+
+  <label class="labeled-input">
+    <span>Name</span>
+    <input bind:value={opts.name}>
+  </label>
+</section>
 
 <section class="controls-section">
   <h1>Features</h1>
@@ -29,11 +38,12 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
+
+    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
+
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />

@@ -5,7 +5,7 @@
   import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo';
   
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   
   export const opts: Required<KindedOptions['ERC721']> = {
@@ -58,11 +58,10 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
+    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />
