@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable, setPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
@@ -60,6 +60,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, allOpts.name, allOpts.symbol);
+  addReimplementedImpls(c, allOpts);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -72,7 +73,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
     if (allOpts.burnable) {
-      setPausable(c, functions.burn);
+      setPausable(c, externalTrait, functions.burn);
     }
   }
 
@@ -89,6 +90,51 @@ export function buildERC20(opts: ERC20Options): Contract {
   setInfo(c, allOpts.info);
 
   return c;
+}
+
+function addReimplementedImpls(c: ContractBuilder, allOpts: Required<ERC20Options>) {
+  if (allOpts.pausable) {
+
+    // TODO also do this for safeAllowance
+
+    c.addStandaloneImport('starknet::get_caller_address');
+      
+    c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20');
+    const ERC20Impl: BaseImplementedTrait = {
+      name: 'ERC20Impl',
+      of: 'IERC20<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    c.addFunction(ERC20Impl, functions.total_supply);
+    c.addFunction(ERC20Impl, functions.balance_of);
+    c.addFunction(ERC20Impl, functions.allowance);
+    setPausable(c, ERC20Impl, functions.transfer);
+    setPausable(c, ERC20Impl, functions.transfer_from);
+    setPausable(c, ERC20Impl, functions.approve);
+
+    c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20CamelOnly');
+    const ERC20CamelOnlyImpl: BaseImplementedTrait = {
+      name: 'ERC20CamelOnlyImpl',
+      of: 'IERC20CamelOnly<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    c.addFunction(ERC20CamelOnlyImpl, functions.totalSupply);
+    c.addFunction(ERC20CamelOnlyImpl, functions.balanceOf);
+    setPausable(c, ERC20CamelOnlyImpl, functions.transferFrom);
+  } else {
+    c.addImplToComponent(components.ERC20Component, {
+      name: 'ERC20Impl',
+      value: 'ERC20Component::ERC20Impl<ContractState>',
+    });
+    c.addImplToComponent(components.ERC20Component,     {
+      name: 'ERC20CamelOnlyImpl',
+      value: 'ERC20Component::ERC20CamelOnlyImpl<ContractState>',
+    });
+  }
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
@@ -155,17 +201,9 @@ const components = defineComponents( {
     },
     impls: [
       {
-        name: 'ERC20Impl',
-        value: 'ERC20Component::ERC20Impl<ContractState>',
-      },
-      {
         name: 'ERC20MetadataImpl',
         value: 'ERC20Component::ERC20MetadataImpl<ContractState>',
-      },
-      {
-        name: 'ERC20CamelOnlyImpl',
-        value: 'ERC20Component::ERC20CamelOnlyImpl<ContractState>',
-      },      
+      },    
     ],
     internalImpl: {
       name: 'ERC20InternalImpl',
@@ -194,5 +232,114 @@ const functions = defineFunctions({
     code: [
       'self.erc20._mint(recipient, amount);'
     ]
-  }
+  },
+
+  // Re-implements ERC20Impl
+
+  total_supply: {
+    args: [
+      getSelfArg('view')
+    ],
+    code: [
+      'self.erc20.total_supply();'
+    ],
+    returns : 'u256',
+  },
+  balance_of: {
+    args: [
+      getSelfArg('view'),
+      { name: 'account', type: 'ContractAddress' },
+    ],
+    code: [
+      'self.erc20.balance_of(account);'
+    ],
+    returns : 'u256',
+  },
+  allowance: {
+    args: [
+      getSelfArg('view'),
+      { name: 'owner', type: 'ContractAddress' },
+      { name: 'spender', type: 'ContractAddress' },
+    ],
+    code: [
+      'self.erc20.allowance(owner, spender);'
+    ],
+    returns : 'u256',
+  },
+  transfer: {
+    args: [
+      getSelfArg(),
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [
+      'let caller = get_caller_address();',
+      'self.erc20.transfer(caller, recipient, amount);',
+      'true',
+    ],
+    returns : 'bool',
+  },
+  transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'sender', type: 'ContractAddress' },
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [
+      'let caller = get_caller_address();',
+      'self.erc20._spend_allowance(sender, caller, amount);',
+      'self.erc20._transfer(sender, recipient, amount);',
+      'true',
+    ],
+    returns : 'bool',
+  },
+  approve: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [
+      'let caller = get_caller_address();',
+      'self.erc20._approve(caller, spender, amount);',
+      'true',
+    ],
+    returns : 'bool',
+  },
+
+  // Re-implements ERC20CamelOnlyImpl
+
+  totalSupply: {
+    args: [
+      getSelfArg('view')
+    ],
+    code: [
+      'self.total_supply();'
+    ],
+    returns : 'u256',
+  },
+  balanceOf: {
+    args: [
+      getSelfArg('view'),
+      { name: 'account', type: 'ContractAddress' },
+    ],
+    code: [
+      'self.balance_of(account);'
+    ],
+    returns : 'u256',
+  },
+  transferFrom: {
+    args: [
+      getSelfArg(),
+      { name: 'sender', type: 'ContractAddress' },
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [
+      'self.transfer_from(sender, recipient, amount);',
+    ],
+    returns : 'bool',
+  },
+
 });

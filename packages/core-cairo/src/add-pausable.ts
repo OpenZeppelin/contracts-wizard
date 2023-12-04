@@ -1,5 +1,5 @@
 import { getSelfArg } from './common-options';
-import type { ContractBuilder, ContractFunction } from './contract';
+import type { BaseImplementedTrait, ContractBuilder, ContractFunction } from './contract';
 import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { defineComponents } from './utils/define-components';
@@ -57,6 +57,6 @@ const functions = defineFunctions({
   },
 });
 
-export function setPausable(c: ContractBuilder, fn: ContractFunction) {
-  c.addFunctionCodeBefore(externalTrait, fn, 'self.pausable.assert_not_paused()');
+export function setPausable(c: ContractBuilder, t: BaseImplementedTrait, fn: ContractFunction) {
+  c.addFunctionCodeBefore(t, fn, 'self.pausable.assert_not_paused()');
 }

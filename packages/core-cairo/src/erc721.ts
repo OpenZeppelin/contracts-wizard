@@ -62,7 +62,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
     if (allOpts.burnable) {
-      setPausable(c, functions.burn);
+      setPausable(c, externalTrait, functions.burn);
     }
   }
 

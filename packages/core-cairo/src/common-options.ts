@@ -24,6 +24,10 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   };
 }
 
-export function getSelfArg(): Argument {
-  return { name: 'ref self', type: 'ContractState' };
+export function getSelfArg(scope: 'external' | 'view' = 'external'): Argument {
+  if (scope === 'view') {
+    return { name: 'self', type: '@ContractState' };
+  } else {
+    return { name: 'ref self', type: 'ContractState' };
+  }
 }

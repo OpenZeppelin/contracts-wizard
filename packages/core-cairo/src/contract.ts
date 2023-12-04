@@ -57,6 +57,7 @@ export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string[];
+  returns?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
@@ -162,7 +163,7 @@ export class ContractBuilder implements Contract {
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction) {
     const t = this.addImplementedTrait(baseTrait);
-    
+
     const signature = this.getFunctionSignature(fn);
 
     // Look for the existing function with the same signature and return it if found
