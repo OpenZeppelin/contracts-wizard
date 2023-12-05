@@ -1,4 +1,4 @@
-import { toIdentifier } from './utils/to-identifier';
+import { toIdentifier } from './utils/strings';
 
 export interface Contract {
   license: string;
