@@ -94,9 +94,6 @@ export function buildERC20(opts: ERC20Options): Contract {
 
 function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
-
-    // TODO also do this for safeAllowance
-
     c.addStandaloneImport('starknet::get_caller_address');
       
     c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20');
@@ -264,7 +261,7 @@ const functions = defineFunctions({
       getSelfArg('view')
     ],
     code: [
-      'self.erc20.total_supply();'
+      'self.erc20.total_supply()'
     ],
     returns : 'u256',
   },
@@ -274,7 +271,7 @@ const functions = defineFunctions({
       { name: 'account', type: 'ContractAddress' },
     ],
     code: [
-      'self.erc20.balance_of(account);'
+      'self.erc20.balance_of(account)'
     ],
     returns : 'u256',
   },
@@ -285,7 +282,7 @@ const functions = defineFunctions({
       { name: 'spender', type: 'ContractAddress' },
     ],
     code: [
-      'self.erc20.allowance(owner, spender);'
+      'self.erc20.allowance(owner, spender)'
     ],
     returns : 'u256',
   },
@@ -297,7 +294,7 @@ const functions = defineFunctions({
     ],
     code: [
       'let caller = get_caller_address();',
-      'self.erc20.transfer(caller, recipient, amount);',
+      'self.erc20._transfer(caller, recipient, amount);',
       'true',
     ],
     returns : 'bool',
@@ -337,7 +334,7 @@ const functions = defineFunctions({
       getSelfArg('view')
     ],
     code: [
-      'self.total_supply();'
+      'self.total_supply()'
     ],
     returns : 'u256',
   },
@@ -347,7 +344,7 @@ const functions = defineFunctions({
       { name: 'account', type: 'ContractAddress' },
     ],
     code: [
-      'self.balance_of(account);'
+      'self.balance_of(account)'
     ],
     returns : 'u256',
   },
@@ -359,7 +356,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' },
     ],
     code: [
-      'self.transfer_from(sender, recipient, amount);',
+      'self.transfer_from(sender, recipient, amount)',
     ],
     returns : 'bool',
   },

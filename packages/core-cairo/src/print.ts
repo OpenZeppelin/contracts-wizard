@@ -145,11 +145,20 @@ function printFunction(fn: ContractFunction) {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
-  const body = spaceBetween(
-    withSemicolons(fn.codeBefore?.concat(fn.code) ?? fn.code),
-  );
-  // TODO if there is a return, do not insert semicolon at the end
-  return printFunction2(head, args, undefined, fn.returns ? [fn.returns] : undefined, undefined, body);
+  const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
+  for (let i = 0; i < codeLines.length; i++) {
+    const line = codeLines[i];
+    const shouldEndWithSemicolon = i < codeLines.length - 1 || fn.returns === undefined;
+    if (line !== undefined) {
+      if (shouldEndWithSemicolon && !line.endsWith(';')) {
+        codeLines[i] += ';';
+      } else if (!shouldEndWithSemicolon && line.endsWith(';')) {
+        codeLines[i] = line.slice(0, line.length - 1);
+      }
+    }
+  }
+
+  return printFunction2(head, args, undefined, fn.returns, undefined, codeLines);
 }
 
 function printConstructor(contract: Contract): Lines[] {
@@ -218,7 +227,7 @@ export function printValue(value: Value): string {
 
 // generic for functions and constructors
 // kindedName = 'fn foo'
-function printFunction2(kindedName: string, args: string[], tag: string | undefined, returns: string[] | undefined, returnLine: string | undefined, code: Lines[]): Lines[] {
+function printFunction2(kindedName: string, args: string[], tag: string | undefined, returns: string | undefined, returnLine: string | undefined, code: Lines[]): Lines[] {
   const fn = [];
 
   if (tag !== undefined) {
@@ -243,7 +252,7 @@ function printFunction2(kindedName: string, args: string[], tag: string | undefi
   if (returns === undefined) {
     accum += ' {';
   } else {
-    accum += ` -> (${returns.join(', ')}) {`;
+    accum += ` -> ${returns} {`;
   }
 
   fn.push(accum);
