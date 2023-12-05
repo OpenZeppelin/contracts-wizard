@@ -1,9 +1,9 @@
 import test from 'ava';
 
-import { buildERC20, ERC20Options } from './erc20';
+import { buildERC20, ERC20Options, getInitialSupply } from './erc20';
 import { printContract } from './print';
 
-import { erc20 } from '.';
+import { erc20, OptionsError } from '.';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {
@@ -117,3 +117,18 @@ test('erc20 API isAccessControlRequired', async t => {
   t.is(erc20.isAccessControlRequired({ pausable: true }), true);
   t.is(erc20.isAccessControlRequired({ upgradeable: true }), true);
 }); 
+
+test('erc20 getInitialSupply', async t => {
+  t.is(getInitialSupply('1000', 18),   '1000000000000000000000');
+  t.is(getInitialSupply('1000.1', 18), '1000100000000000000000');
+  t.is(getInitialSupply('.1', 18),     '100000000000000000');
+  t.is(getInitialSupply('.01', 2), '1');
+
+  let error = t.throws(() => getInitialSupply('.01', 1));
+  t.not(error, undefined);
+  t.is((error as OptionsError).messages.premint, 'Too many decimals');
+
+  error = t.throws(() => getInitialSupply('1.1.1', 18));
+  t.not(error, undefined);
+  t.is((error as OptionsError).messages.premint, 'Not a valid number');
+});

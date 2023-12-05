@@ -194,12 +194,55 @@ function addPremint(c: ContractBuilder, amount: string) {
       throw new OptionsError({
         premint: 'Not a valid number',
       });
-    } 
+    }
+
+    const premintAbsolute = getInitialSupply(amount, 18);
 
     c.addStandaloneImport('starknet::ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.erc20._mint(recipient, ${amount})`); 
+    c.addConstructorCode(`self.erc20._mint(recipient, ${premintAbsolute})`); 
   }
+}
+
+/**
+ * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
+ * 
+ * @param premint Premint amount in token units, may be fractional
+ * @param decimals The number of decimals in the token
+ * @returns `premint` with zeros padded or removed based on `decimals`.
+ * @throws OptionsError if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
+ */
+export function getInitialSupply(premint: string, decimals: number): string {
+  let result;
+  const premintSegments = premint.split(".");
+  if (premintSegments.length > 2) {
+    throw new OptionsError({
+      premint: 'Not a valid number',
+    });
+  } else {
+    let firstSegment = premintSegments[0] ?? '';
+    let lastSegment = premintSegments[1] ?? '';
+    if (decimals > lastSegment.length) {
+      try {
+        lastSegment += "0".repeat(decimals - lastSegment.length);
+      } catch (e) {
+        // .repeat gives an error if number is too large, although this should not happen since decimals is limited to 256
+        throw new OptionsError({
+          decimals: 'Number too large',
+        });
+      }
+    } else if (decimals < lastSegment.length) {
+      throw new OptionsError({
+        premint: 'Too many decimals',
+      });
+    }
+    // concat segments without leading zeros
+    result = firstSegment.concat(lastSegment).replace(/^0+/, '');
+  }
+  if (result.length === 0) {
+    result = '0';
+  }
+  return result;
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
