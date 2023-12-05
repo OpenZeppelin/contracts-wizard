@@ -52,7 +52,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc20#erc20mintable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
@@ -69,7 +69,7 @@
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>assert_not_paused</code>.
+        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
@@ -77,8 +77,8 @@
     <label class:checked={opts.safeAllowance}>
       <input type="checkbox" bind:checked={opts.safeAllowance}>
       Safe Allowance
-      <HelpTooltip>
-        Enables non standard increase/decrease allowance methods.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20Component-increase_allowance">
+        Enables non-standard increase/decrease allowance methods.
       </HelpTooltip>
     </label>
 
