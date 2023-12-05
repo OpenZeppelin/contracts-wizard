@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable, setPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
@@ -54,6 +54,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, allOpts.name, allOpts.symbol);
+  addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.burnable) {
     addBurnable(c);
@@ -75,6 +76,52 @@ export function buildERC721(opts: ERC721Options): Contract {
   setInfo(c, allOpts.info);
 
   return c;
+}
+
+function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
+  if (pausable) {
+    c.addStandaloneImport('openzeppelin::token::erc721::interface::IERC721');
+    const ERC721Impl: BaseImplementedTrait = {
+      name: 'ERC721Impl',
+      of: 'IERC721<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    c.addFunction(ERC721Impl, functions.balance_of);
+    c.addFunction(ERC721Impl, functions.owner_of);
+    setPausable(c, ERC721Impl, functions.safe_transfer_from);
+    setPausable(c, ERC721Impl, functions.transfer_from);
+    setPausable(c, ERC721Impl, functions.approve);
+    setPausable(c, ERC721Impl, functions.set_approval_for_all);
+    c.addFunction(ERC721Impl, functions.get_approved);
+    c.addFunction(ERC721Impl, functions.is_approved_for_all);
+
+    c.addStandaloneImport('openzeppelin::token::erc721::interface::IERC721CamelOnly');
+    const ERC721CamelOnlyImpl: BaseImplementedTrait = {
+      name: 'ERC721CamelOnlyImpl',
+      of: 'IERC721CamelOnly<ContractState>',
+      tags: [
+        '#[external(v0)]'
+      ],
+    }
+    c.addFunction(ERC721CamelOnlyImpl, functions.balanceOf);
+    c.addFunction(ERC721CamelOnlyImpl, functions.ownerOf);
+    setPausable(c, ERC721CamelOnlyImpl, functions.safeTransferFrom);
+    setPausable(c, ERC721CamelOnlyImpl, functions.transferFrom);
+    setPausable(c, ERC721CamelOnlyImpl, functions.setApprovalForAll);
+    c.addFunction(ERC721CamelOnlyImpl, functions.getApproved);
+    c.addFunction(ERC721CamelOnlyImpl, functions.isApprovedForAll);
+  } else {
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721Impl',
+      value: 'ERC721Component::ERC721Impl<ContractState>',
+    });
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721CamelOnly',
+      value: 'ERC721Component::ERC721CamelOnlyImpl<ContractState>',
+    });
+  }
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
@@ -111,16 +158,8 @@ const components = defineComponents( {
     },
     impls: [
       {
-        name: 'ERC721Impl',
-        value: 'ERC721Component::ERC721Impl<ContractState>',
-      },
-      {
         name: 'ERC721MetadataImpl',
         value: 'ERC721Component::ERC721MetadataImpl<ContractState>',
-      },
-      {
-        name: 'ERC721CamelOnly',
-        value: 'ERC721Component::ERC721CamelOnlyImpl<ContractState>',
       },
       {
         name: 'ERC721MetadataCamelOnly',
@@ -158,5 +197,168 @@ const functions = defineFunctions({
       'self.erc721._safe_mint(recipient, token_id, data);',
       'self.erc721._set_token_uri(token_id, token_uri);',
     ]
-  }
+  },
+
+  // Re-implements ERC721Impl
+  balance_of: {
+    args: [
+      getSelfArg('view'),
+      { name: 'account', type: 'ContractAddress' },
+    ],
+    returns: 'u256',
+    code: [
+      'self.erc721.balance_of(account)'
+    ]
+  },
+  owner_of: {
+    args: [
+      getSelfArg('view'),
+      { name: 'token_id', type: 'u256' },
+    ],
+    returns: 'ContractAddress',
+    code: [
+      'self.erc721.owner_of(token_id)'
+    ]
+  },
+  safe_transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'data', type: 'Span<felt252>' },
+    ],
+    code: [
+      'self.erc721.safe_transfer_from(from, to, token_id, data)'
+    ]
+  },
+  transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+    ],
+    code: [
+      'self.erc721.transfer_from(from, to, token_id)'
+    ]
+  },
+  approve: {
+    args: [
+      getSelfArg(),
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+    ],
+    code: [
+      'self.erc721.approve(to, token_id)'
+    ]
+  },
+  set_approval_for_all: {
+    args: [
+      getSelfArg(),
+      { name: 'operator', type: 'ContractAddress' },
+      { name: 'approved', type: 'bool' },
+    ],
+    code: [
+      'self.erc721.set_approval_for_all(operator, approved)'
+    ]
+  },
+  get_approved: {
+    args: [
+      getSelfArg('view'),
+      { name: 'token_id', type: 'u256' },
+    ],
+    returns: 'ContractAddress',
+    code: [
+      'self.erc721.get_approved(token_id)'
+    ]
+  },
+  is_approved_for_all: {
+    args: [
+      getSelfArg('view'),
+      { name: 'owner', type: 'ContractAddress' },
+      { name: 'operator', type: 'ContractAddress' },
+    ],
+    returns: 'bool',
+    code: [
+      'self.erc721.is_approved_for_all(owner, operator)'
+    ]
+  },
+
+  // Re-implements ERC721CamelOnlyImpl
+
+  balanceOf: {
+    args: [
+      getSelfArg('view'),
+      { name: 'account', type: 'ContractAddress' },
+    ],
+    returns: 'u256',
+    code: [
+      'self.balance_of(account)'
+    ]
+  },
+  ownerOf: {
+    args: [
+      getSelfArg('view'),
+      { name: 'tokenId', type: 'u256' },
+    ],
+    returns: 'ContractAddress',
+    code: [
+      'self.owner_of(tokenId)'
+    ]
+  },
+  safeTransferFrom: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'tokenId', type: 'u256' },
+      { name: 'data', type: 'Span<felt252>' },
+    ],
+    code: [
+      'self.safe_transfer_from(from, to, tokenId, data)'
+    ]
+  },
+  transferFrom: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'tokenId', type: 'u256' },
+    ],
+    code: [
+      'self.transfer_from(from, to, tokenId)'
+    ]
+  },
+  setApprovalForAll: {
+    args: [
+      getSelfArg(),
+      { name: 'operator', type: 'ContractAddress' },
+      { name: 'approved', type: 'bool' },
+    ],
+    code: [
+      'self.set_approval_for_all(operator, approved)'
+    ]
+  },
+  getApproved: {
+    args: [
+      getSelfArg('view'),
+      { name: 'tokenId', type: 'u256' },
+    ],
+    returns: 'ContractAddress',
+    code: [
+      'self.get_approved(tokenId)'
+    ]
+  },
+  isApprovedForAll: {
+    args: [
+      getSelfArg('view'),
+      { name: 'owner', type: 'ContractAddress' },
+      { name: 'operator', type: 'ContractAddress' },
+    ],
+    returns: 'bool',
+    code: [
+      'self.is_approved_for_all(owner, operator)'
+    ]
+  },
 });
