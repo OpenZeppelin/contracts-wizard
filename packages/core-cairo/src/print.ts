@@ -221,8 +221,28 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else {
-    return `'${value}'`;
+    return `'${toPrintableShortString(value)}'`;
   }
+}
+
+/**
+ * Converts to a felt252-compatible short string according to the rules in https://docs.cairo-lang.org/language_constructs/literal-expressions.html#short_string_literals
+ */
+function toPrintableShortString(str: string): string {
+  let result = '';
+  for (let i = 0; i < str.length && i < 31; i++) {
+    let code = str.charCodeAt(i);
+    if (code >= 32 && code <= 126) {
+      if (code === 39) {
+        result += '\\\''; // escape single quote
+      } else if (code === 92) {
+        result += '\\\\'; // escape backslash
+      } else {
+        result += str.charAt(i);
+      }
+    }
+  }
+  return result;
 }
 
 // generic for functions and constructors
