@@ -19,6 +19,18 @@ test('toIdentifier - capitalize', t => {
   t.is(toIdentifier('abc', true), 'Abc');
 });
 
+test('toIdentifier - remove accents', t => {
+  t.is(toIdentifier('ábc'), 'abc');
+});
+
+test('toIdentifier - underscores', t => {
+  t.is(toIdentifier('_abc_'), '_abc_');
+});
+
+test('toIdentifier - remove starting numbers', t => {
+  t.is(toIdentifier('123abc456'), 'abc456');
+});
+
 test('toPrintableShortString - unmodified', t => {
   t.is(toPrintableShortString('abc'), 'abc');
 });
