@@ -1,4 +1,4 @@
-import { toIdentifier } from './utils/strings';
+import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;

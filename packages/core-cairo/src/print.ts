@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import { toPrintableShortString } from './utils/strings';
+import { toPrintableShortString } from './utils/convert-strings';
 import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';

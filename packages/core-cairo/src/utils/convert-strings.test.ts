@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { toIdentifier, toPrintableShortString } from './strings';
+import { toIdentifier, toPrintableShortString } from './convert-strings';
 
 test('toIdentifier - unmodified', t => {
   t.is(toIdentifier('abc'), 'abc');
