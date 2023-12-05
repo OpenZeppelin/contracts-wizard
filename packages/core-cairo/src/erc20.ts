@@ -94,8 +94,6 @@ export function buildERC20(opts: ERC20Options): Contract {
 
 function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
-    c.addStandaloneImport('starknet::get_caller_address');
-      
     c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20');
     const ERC20Impl: BaseImplementedTrait = {
       name: 'ERC20Impl',
@@ -293,9 +291,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' },
     ],
     code: [
-      'let caller = get_caller_address();',
-      'self.erc20._transfer(caller, recipient, amount);',
-      'true',
+      'self.erc20.transfer(recipient, amount)',
     ],
     returns : 'bool',
   },
@@ -307,10 +303,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' },
     ],
     code: [
-      'let caller = get_caller_address();',
-      'self.erc20._spend_allowance(sender, caller, amount);',
-      'self.erc20._transfer(sender, recipient, amount);',
-      'true',
+      'self.erc20.transfer_from(sender, recipient, amount)',
     ],
     returns : 'bool',
   },
@@ -321,9 +314,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' },
     ],
     code: [
-      'let caller = get_caller_address();',
-      'self.erc20._approve(caller, spender, amount);',
-      'true',
+      'self.erc20.approve(spender, amount)',
     ],
     returns : 'bool',
   },
@@ -369,7 +360,7 @@ const functions = defineFunctions({
       { name: 'added_value', type: 'u256' },
     ],
     code: [
-      'self.erc20._increase_allowance(spender, added_value)'
+      'self.erc20.increase_allowance(spender, added_value)'
     ],
     returns : 'bool',
   },
@@ -380,7 +371,7 @@ const functions = defineFunctions({
       { name: 'subtracted_value', type: 'u256' },
     ],
     code: [
-      'self.erc20._decrease_allowance(spender, subtracted_value)'
+      'self.erc20.decrease_allowance(spender, subtracted_value)'
     ],
     returns : 'bool',
   },
