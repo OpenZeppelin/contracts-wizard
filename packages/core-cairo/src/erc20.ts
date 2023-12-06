@@ -92,12 +92,17 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
+function addERC20Interface(c: ContractBuilder) {
+  c.addStandaloneImport('openzeppelin::token::erc20::interface');
+}
+
 function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
-    c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20');
+    addERC20Interface(c);
+
     const ERC20Impl: BaseImplementedTrait = {
       name: 'ERC20Impl',
-      of: 'IERC20<ContractState>',
+      of: 'interface::IERC20<ContractState>',
       tags: [
         '#[external(v0)]'
       ],
@@ -109,10 +114,9 @@ function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
     setPausable(c, ERC20Impl, functions.transfer_from);
     setPausable(c, ERC20Impl, functions.approve);
 
-    c.addStandaloneImport('openzeppelin::token::erc20::interface::IERC20CamelOnly');
     const ERC20CamelOnlyImpl: BaseImplementedTrait = {
       name: 'ERC20CamelOnlyImpl',
-      of: 'IERC20CamelOnly<ContractState>',
+      of: 'interface::IERC20CamelOnly<ContractState>',
       tags: [
         '#[external(v0)]'
       ],
@@ -144,10 +148,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 
 function addSafeAllowance(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
-    c.addStandaloneImport('openzeppelin::token::erc20::interface::ISafeAllowance');
+    addERC20Interface(c);
+
     const SafeAllowanceImpl: BaseImplementedTrait = {
       name: 'SafeAllowanceImpl',
-      of: 'ISafeAllowance<ContractState>',
+      of: 'interface::ISafeAllowance<ContractState>',
       tags: [
         '#[external(v0)]'
       ],
@@ -155,10 +160,9 @@ function addSafeAllowance(c: ContractBuilder, pausable: boolean) {
     setPausable(c, SafeAllowanceImpl, functions.increase_allowance);
     setPausable(c, SafeAllowanceImpl, functions.decrease_allowance);
 
-    c.addStandaloneImport('openzeppelin::token::erc20::interface::ISafeAllowanceCamel');
     const SafeAllowanceCamelImpl: BaseImplementedTrait = {
       name: 'SafeAllowanceCamelImpl',
-      of: 'ISafeAllowanceCamel<ContractState>',
+      of: 'interface::ISafeAllowanceCamel<ContractState>',
       tags: [
         '#[external(v0)]'
       ],

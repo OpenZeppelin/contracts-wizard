@@ -78,12 +78,17 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
+function addERC721Interface(c: ContractBuilder) {
+  c.addStandaloneImport('openzeppelin::token::erc721::interface');
+}
+
 function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
-    c.addStandaloneImport('openzeppelin::token::erc721::interface::IERC721');
+    addERC721Interface(c);
+
     const ERC721Impl: BaseImplementedTrait = {
       name: 'ERC721Impl',
-      of: 'IERC721<ContractState>',
+      of: 'interface::IERC721<ContractState>',
       tags: [
         '#[external(v0)]'
       ],
@@ -97,10 +102,9 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
     c.addFunction(ERC721Impl, functions.get_approved);
     c.addFunction(ERC721Impl, functions.is_approved_for_all);
 
-    c.addStandaloneImport('openzeppelin::token::erc721::interface::IERC721CamelOnly');
     const ERC721CamelOnlyImpl: BaseImplementedTrait = {
       name: 'ERC721CamelOnlyImpl',
-      of: 'IERC721CamelOnly<ContractState>',
+      of: 'interface::IERC721CamelOnly<ContractState>',
       tags: [
         '#[external(v0)]'
       ],
