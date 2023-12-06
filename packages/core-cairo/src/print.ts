@@ -41,10 +41,8 @@ function printSuperVariables(contract: Contract) {
 
 function printImports(contract: Contract) {
   const lines: string[] = [];
-  const { ozImports, otherImports, superImports } = getCategorizedImports(contract);
-  ozImports.forEach(i => lines.push(`use ${i}`));
-  otherImports.forEach(i => lines.push(`use ${i}`));
-  superImports.forEach(i => lines.push(`use ${i}`));
+  getCategorizedImports(contract)
+    .forEach(category => category.forEach(i => lines.push(`use ${i}`)));
   return withSemicolons(lines);
 }
 
@@ -52,12 +50,15 @@ function getCategorizedImports(contract: Contract) {
   const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
   const combined = componentImports.concat(contract.standaloneImports);
 
+  const ozTokenImports = [];
   const ozImports = [];
   const otherImports = [];
   const superImports = [];
 
   for (const importStatement of combined) {
-    if (importStatement.startsWith('openzeppelin')) {
+    if (importStatement.startsWith('openzeppelin::token')) {
+      ozTokenImports.push(importStatement);
+    } else if (importStatement.startsWith('openzeppelin')) {
       ozImports.push(importStatement);
     } else {
       otherImports.push(importStatement);
@@ -66,7 +67,7 @@ function getCategorizedImports(contract: Contract) {
   if (contract.superVariables.length > 0) {
     superImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
   }
-  return { ozImports, otherImports, superImports };
+  return [ ozTokenImports, ozImports, otherImports, superImports ];
 }
 
 function printComponentDeclarations(contract: Contract) {
