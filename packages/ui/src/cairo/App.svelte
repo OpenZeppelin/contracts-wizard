@@ -120,7 +120,7 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires installation of Python package (<code>openzeppelin-cairo-contracts</code>).</p>
+            <p>Requires installing Scarb with <code>openzeppelin</code> as a dependency.</p>
           </div>
         </button>
       </Dropdown>
