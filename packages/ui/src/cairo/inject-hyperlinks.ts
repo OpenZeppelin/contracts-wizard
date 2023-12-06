@@ -12,7 +12,9 @@ export function injectHyperlinks(code: string) {
       let libraryPathSegments = libraryPath.split('::');
 
       // Remove the component name
-      libraryPathSegments.pop();
+      if (libraryPathSegments.length > 0 && libraryPathSegments[libraryPathSegments.length - 1] !== 'interface') {
+        libraryPathSegments.pop();
+      }
 
       if (libraryPathSegments !== undefined && libraryPathSegments.length > 0) {
         const replacedImportLine = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join('/')}.cairo' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>;`;
