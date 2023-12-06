@@ -120,7 +120,7 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires installing Scarb with <code>openzeppelin</code> as a dependency.</p>
+            <p>Requires a Scarb project with <code>openzeppelin</code> as a dependency.</p>
           </div>
         </button>
       </Dropdown>
