@@ -133,13 +133,10 @@
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} />
+        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721}/>
       </div>
-      <!-- <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} />
-      </div>-->
       <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} />
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
     <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

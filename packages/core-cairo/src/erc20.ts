@@ -10,6 +10,7 @@ import { defineComponents } from './utils/define-components';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
+import { toShortString } from './utils/convert-strings';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -59,7 +60,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, allOpts.name, allOpts.symbol);
+  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
   addERC20ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.safeAllowance) {
@@ -230,9 +231,9 @@ export function getInitialSupply(premint: string, decimals: number): string {
       try {
         lastSegment += "0".repeat(decimals - lastSegment.length);
       } catch (e) {
-        // .repeat gives an error if number is too large, although this should not happen since decimals is limited to 256
+        // .repeat gives an error if decimals number is too large
         throw new OptionsError({
-          decimals: 'Number too large',
+          premint: 'Decimals number too large',
         });
       }
     } else if (decimals < lastSegment.length) {

@@ -1,18 +1,21 @@
 <script lang="ts">
   import HelpTooltip from '../HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { custom, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import { error } from '../error-tooltip';
 
   export const opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
     ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
@@ -22,7 +25,7 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name}>
+    <input bind:value={opts.name} use:error={errors?.name}>
   </label>
 </section>
 

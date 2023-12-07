@@ -1,56 +1,70 @@
 import test from 'ava';
 
-import { toIdentifier, toPrintableShortString } from './convert-strings';
+import { toIdentifier, toShortString } from './convert-strings';
+import type { OptionsError } from '../error';
 
-test('toIdentifier - unmodified', t => {
+test('identifier - unmodified', t => {
   t.is(toIdentifier('abc'), 'abc');
 });
 
-test('toIdentifier - remove leading specials', t => {
+test('identifier - remove leading specials', t => {
   t.is(toIdentifier('--abc'), 'abc');
 });
 
-test('toIdentifier - remove specials and upcase next char', t => {
+test('identifier - remove specials and upcase next char', t => {
   t.is(toIdentifier('abc-def'), 'abcDef');
   t.is(toIdentifier('abc--def'), 'abcDef');
 });
 
-test('toIdentifier - capitalize', t => {
+test('identifier - capitalize', t => {
   t.is(toIdentifier('abc', true), 'Abc');
 });
 
-test('toIdentifier - remove accents', t => {
+test('identifier - remove accents', t => {
   t.is(toIdentifier('ábc'), 'abc');
 });
 
-test('toIdentifier - underscores', t => {
+test('identifier - underscores', t => {
   t.is(toIdentifier('_abc_'), '_abc_');
 });
 
-test('toIdentifier - remove starting numbers', t => {
+test('identifier - remove starting numbers', t => {
   t.is(toIdentifier('123abc456'), 'abc456');
 });
 
-test('toPrintableShortString - unmodified', t => {
-  t.is(toPrintableShortString('abc'), 'abc');
+test('identifier - empty string', t => {
+  let error: OptionsError | undefined = t.throws(() => toIdentifier(''));
+  t.is(error?.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
-test('toPrintableShortString - remove accents', t => {
-  t.is(toPrintableShortString('ábc'), 'abc');
+test('identifier - no valid chars', t => {
+  let error: OptionsError | undefined = t.throws(() => toIdentifier('123'));
+  t.is(error?.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
-test('toPrintableShortString - remove non-ascii-printable characters', t => {
-  t.is(toPrintableShortString('abc😀'), 'abc');
+test('short string - unmodified', t => {
+  t.is(toShortString('abc', 'foo'), 'abc');
 });
 
-test('toPrintableShortString - escape single quote', t => {
-  t.is(toPrintableShortString("abc'def"), "abc\\'def");
+test('short string - remove accents', t => {
+  t.is(toShortString('ábc', 'foo'), 'abc');
 });
 
-test('toPrintableShortString - escape backslash', t => {
-  t.is(toPrintableShortString('abc\\def'), 'abc\\\\def');
+test('short string - remove non-ascii-printable characters', t => {
+  t.is(toShortString('abc😀', 'foo'), 'abc');
 });
 
-test('toPrintableShortString - limit to 31 characters', t => {
-  t.is(toPrintableShortString('A123456789B123456789C123456789D123456789'), 'A123456789B123456789C123456789D');
+test('short string - escape single quote', t => {
+  t.is(toShortString("abc'def", 'foo'), "abc\\'def");
+});
+
+test('short string - escape backslash', t => {
+  t.is(toShortString('abc\\def', 'foo'), 'abc\\\\def');
+});
+
+test('short string - max 31 characters', t => {
+  t.is(toShortString('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
+
+  let error: OptionsError | undefined = t.throws(() => toShortString('A2345678901234567890123456789012', 'foo'));
+  t.is(error?.messages.foo, 'String is longer than 31 characters');
 });

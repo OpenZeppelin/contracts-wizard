@@ -1,6 +1,5 @@
 import 'array.prototype.flatmap/auto';
 
-import { toPrintableShortString } from './utils/convert-strings';
 import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -223,7 +222,7 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else {
-    return `'${toPrintableShortString(value)}'`;
+    return `'${value}'`;
   }
 }
 

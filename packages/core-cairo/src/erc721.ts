@@ -10,6 +10,7 @@ import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
+import { toShortString } from './utils/convert-strings';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -53,7 +54,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, allOpts.name, allOpts.symbol);
+  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
   addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.burnable) {

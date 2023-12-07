@@ -1,18 +1,21 @@
 <script lang="ts">
   import HelpTooltip from '../HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo';
   
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import { error } from '../error-tooltip';
   
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
     ...erc721.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
@@ -23,11 +26,11 @@
   <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name}>
+      <input bind:value={opts.name} use:error={errors?.name}>
     </label>
     <label class="labeled-input">
       <span>Symbol</span>
-      <input bind:value={opts.symbol}>
+      <input bind:value={opts.symbol} use:error={errors?.symbol}>
     </label>
   </div>
 </section>
