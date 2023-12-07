@@ -7,6 +7,8 @@
   - Remove functions for `getInitialSupply` and `toUint256`.
   - Remove ERC1155.
   - Role-Based Access Control adds separate constructor arguments to assign different users for different roles.
+  - Throws error if `name` results in an identifer that is empty or does not have valid characters.
+  - Throws error if `name` or `symbol` result in strings longer than 31 characters.
 
 ## 0.6.0 (2023-01-11)
 
