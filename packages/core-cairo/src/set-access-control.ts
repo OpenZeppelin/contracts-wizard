@@ -24,10 +24,10 @@ export type Access = typeof accessOptions[number];
         addSRC5Component(c);
 
         c.addStandaloneImport('starknet::ContractAddress');
-        c.addConstructorArgument({ name: 'defaultAdmin', type: 'ContractAddress'});
+        c.addConstructorArgument({ name: 'default_admin', type: 'ContractAddress'});
 
         c.addStandaloneImport('openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE');
-        c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, defaultAdmin)');
+        c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
     }
