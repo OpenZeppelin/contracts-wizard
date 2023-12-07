@@ -71,20 +71,20 @@ export function buildERC20(opts: ERC20Options): Contract {
     addPremint(c, allOpts.premint);
   }
 
-  if (allOpts.mintable) {
-    addMintable(c, allOpts.access);
+  if (allOpts.pausable) {
+    addPausable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
     addBurnable(c);
-  }
-
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
-    if (allOpts.burnable) {
+    if (allOpts.pausable) {
       setPausable(c, externalTrait, functions.burn);
     }
-    if (allOpts.mintable) {
+  }
+
+  if (allOpts.mintable) {
+    addMintable(c, allOpts.access);
+    if (allOpts.pausable) {
       setPausable(c, externalTrait, functions.mint);
     }
   }

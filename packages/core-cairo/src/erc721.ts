@@ -57,20 +57,20 @@ export function buildERC721(opts: ERC721Options): Contract {
   addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
   addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
-  if (allOpts.mintable) {
-    addMintable(c, allOpts.access);
+  if (allOpts.pausable) {
+    addPausable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
     addBurnable(c);
-  }
-
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
-    if (allOpts.burnable) {
+    if (allOpts.pausable) {
       setPausable(c, externalTrait, functions.burn);
     }
-    if (allOpts.mintable) {
+  }
+
+  if (allOpts.mintable) {
+    addMintable(c, allOpts.access);
+    if (allOpts.pausable) {
       setPausable(c, externalTrait, functions.safe_mint);
     }
   }
