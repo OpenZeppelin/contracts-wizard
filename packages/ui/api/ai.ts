@@ -29,6 +29,7 @@ export default async (req: Request) => {
     const messages = [{
       role: 'system',
       content: `
+        You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
         The current options are ${JSON.stringify(data.currentOpts)}.
         Please be kind and concise. Keep responses to <100 words.
       `.trim()
