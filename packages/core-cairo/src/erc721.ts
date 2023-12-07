@@ -151,6 +151,9 @@ function addBurnable(c: ContractBuilder) {
 function addMintable(c: ContractBuilder, access: Access) {
   c.addStandaloneImport('starknet::ContractAddress');
   requireAccessControl(c, externalTrait, functions.safe_mint, access, 'MINTER', 'minter');
+
+  // Camel case version of safe_mint. Access control and pausable are already set on safe_mint.
+  c.addFunction(externalTrait, functions.safeMint);
 }
 
 const components = defineComponents( {
@@ -204,6 +207,18 @@ const functions = defineFunctions({
     code: [
       'self.erc721._safe_mint(recipient, token_id, data);',
       'self.erc721._set_token_uri(token_id, token_uri);',
+    ]
+  },
+  safeMint: {
+    args: [
+      getSelfArg(),
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'data', type: 'Span<felt252>' },
+      { name: 'token_uri', type: 'felt252' },
+    ],
+    code: [
+      'self.safe_mint(recipient, token_id, data, token_uri);',
     ]
   },
 
