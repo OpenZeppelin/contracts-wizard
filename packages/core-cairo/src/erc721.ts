@@ -213,12 +213,12 @@ const functions = defineFunctions({
     args: [
       getSelfArg(),
       { name: 'recipient', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
+      { name: 'tokenId', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'token_uri', type: 'felt252' },
+      { name: 'tokenURI', type: 'felt252' },
     ],
     code: [
-      'self.safe_mint(recipient, token_id, data, token_uri);',
+      'self.safe_mint(recipient, tokenId, data, tokenURI);',
     ]
   },
 
