@@ -1,46 +1,63 @@
-import { withImplicitArgs } from './common-options';
-import type { ContractBuilder } from './contract';
-//import { Access, setAccessControl } from './set-access-control';
+import { getSelfArg } from './common-options';
+import type { BaseImplementedTrait, ContractBuilder } from './contract';
+import { Access, requireAccessControl } from './set-access-control';
+import { defineComponents } from './utils/define-components';
 import { defineFunctions } from './utils/define-functions';
-import { defineModules } from './utils/define-modules';
 
 export const upgradeableOptions = [false, true] as const;
 
 export type Upgradeable = typeof upgradeableOptions[number];
 
-export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
+export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
   if (upgradeable === false) {
     return;
   }
 
   c.upgradeable = true;
 
-  c.addModule(modules.Proxy, [ {lit: 'proxy_admin' }], [], true);
+  c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addConstructorArgument({ name:'proxy_admin', type:'felt' });
+  c.addStandaloneImport('openzeppelin::upgrades::interface::IUpgradeable');
+  c.addStandaloneImport('starknet::ClassHash');
 
-  c.setFunctionBody([
-    'Proxy.assert_only_admin()',
-    'Proxy._set_implementation_hash(new_implementation)'
-  ], functions.upgrade);
+  const t: BaseImplementedTrait = {
+    name: 'UpgradeableImpl',
+    of: 'IUpgradeable<ContractState>',
+    tags: [
+      '#[external(v0)]'
+    ],
+  };
+  c.addImplementedTrait(t);
+  requireAccessControl(c, t, functions.upgrade, access, 'UPGRADER', 'upgrader');
 }
 
-const modules = defineModules( {
-  Proxy: {
-    path: 'openzeppelin.upgrades.library',
-    useNamespace: true
+const components = defineComponents( {
+  UpgradeableComponent: {
+    path: 'openzeppelin::upgrades',
+    substorage: {
+      name: 'upgradeable',
+      type: 'UpgradeableComponent::Storage',
+    },
+    event: {
+      name: 'UpgradeableEvent',
+      type: 'UpgradeableComponent::Event',
+    },
+    impls: [],
+    internalImpl: {
+      name: 'UpgradeableInternalImpl',
+      value: 'UpgradeableComponent::InternalImpl<ContractState>',
+    },
   },
 });
 
 const functions = defineFunctions({
-
   upgrade: {
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
     args: [
-      { name: 'new_implementation', type: 'felt' },
+      getSelfArg(),
+      { name: 'new_class_hash', type: 'ClassHash' },
     ],
-    returns: [],
+    code: [
+      'self.upgradeable._upgrade(new_class_hash)'
+    ]
   },
-
 });

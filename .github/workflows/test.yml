@@ -21,6 +21,7 @@ jobs:
           node-version: 18.x
           cache: 'yarn'
       - name: Install Foundry
+        if: matrix.package == 'core'
         uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
         run: yarn install

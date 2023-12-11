@@ -1,62 +1,31 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Library, ContractFunction, Argument, Value, } from './contract';
-import { Helpers, withHelpers } from './options';
+import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
-import { getImportsMap } from './utils/imports-map';
-import { mapValues } from './utils/map-values';
-import { getFunctionName } from './utils/module-prefix';
+import { getSelfArg } from './common-options';
 
 export function printContract(contract: Contract): string {
-  const helpers = withHelpers(contract);
-
-  const fns = mapValues(
-    sortedFunctions(contract),
-    fns => fns.map(fn => printFunction(fn)),
-  );
-
-  const hasViews = fns.views.some(l => l.length > 0);
-  const hasExternals = fns.externals.some(l => l.length > 0);
-
-  const { starkwareImports, ozImports } = printImports(contract); 
-
   return formatLines(
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
       ],
-            
+      printSuperVariables(contract),
       [
-        `%lang starknet`
+        `#[starknet::contract]`,
+        `mod ${contract.name} {`,
+        spaceBetween(
+          printImports(contract),
+          printComponentDeclarations(contract),
+          printImpls(contract),
+          printStorage(contract),
+          printEvents(contract),
+          printConstructor(contract),
+          printImplementedTraits(contract),
+        ),
+        `}`,
       ],
-
-      [
-        ...starkwareImports,
-      ],
-
-      ozImports,
-
-      spaceBetween(
-        contract.variables,
-        printConstructor(contract, helpers),
-        ...fns.code,
-        ...fns.modifiers,
-        hasViews ? 
-          [
-            `//`,
-            `// Getters`,
-            `//`
-          ] : [],
-        ...fns.views,
-        hasExternals ? 
-        [
-          `//`,
-          `// Externals`,
-          `//`
-        ] : [],
-      ...fns.externals,
-      ),
     ),
   );
 }
@@ -65,53 +34,145 @@ function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
-function printImports(contract: Contract) {
-  const modulesToLibraryFunctions = getImportsMap(contract);
-  const { starkwareImportsMap, ozImportsMap } = getVendoredImports(modulesToLibraryFunctions);
-
-  const starkwareImports = printImportLines(starkwareImportsMap);
-  const ozImports = printImportLines(ozImportsMap);
-  return { starkwareImports, ozImports };
+function printSuperVariables(contract: Contract) {
+  return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
-function getVendoredImports(parentImportsMap: Map<string, Set<string>>) {
-  const starkwareImportsMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-  const ozImportsMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-  for (let [key, value] of parentImportsMap) {
-    if (key.startsWith('starkware')) {
-      starkwareImportsMap.set(key, value);
+function printImports(contract: Contract) {
+  const lines: string[] = [];
+  getCategorizedImports(contract)
+    .forEach(category => category.forEach(i => lines.push(`use ${i}`)));
+  return withSemicolons(lines);
+}
+
+function getCategorizedImports(contract: Contract) {
+  const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
+  const combined = componentImports.concat(contract.standaloneImports);
+
+  const ozTokenImports = [];
+  const ozImports = [];
+  const otherImports = [];
+  const superImports = [];
+
+  for (const importStatement of combined) {
+    if (importStatement.startsWith('openzeppelin::token')) {
+      ozTokenImports.push(importStatement);
+    } else if (importStatement.startsWith('openzeppelin')) {
+      ozImports.push(importStatement);
     } else {
-      ozImportsMap.set(key, value);
+      otherImports.push(importStatement);
     }
   }
-  return { starkwareImportsMap, ozImportsMap };
+  if (contract.superVariables.length > 0) {
+    superImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
+  }
+  return [ ozTokenImports, ozImports, otherImports, superImports ];
 }
 
-function printImportLines(importStatements: Map<string, Set<string>>) {
+function printComponentDeclarations(contract: Contract) {
   const lines = [];
-  for (const [module, fns] of importStatements.entries()) {
-    if (fns.size > 1) {
-      lines.push(`from ${module} import (`);
-      lines.push(Array.from(fns).map(p => `${p},`));
-      lines.push(`)`);
-    } else if (fns.size === 1) {
-      lines.push(`from ${module} import ${Array.from(fns)[0]}`);
-    }
+  for (const component of contract.components) {
+    lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
   }
   return lines;
 }
 
-function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
-  const hasParentParams = contract.libraries.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
+function printImpls(contract: Contract) {
+  const externalImpls = contract.components.flatMap(c => c.impls);
+  const internalImpls = contract.components.flatMap(c => c.internalImpl ? [c.internalImpl] : []);
+
+  return spaceBetween(
+    externalImpls.flatMap(impl => printImpl(impl)),
+    internalImpls.flatMap(impl => printImpl(impl, true))
+  );
+}
+
+function printImpl(impl: Impl, internal = false) {
+  const lines = [];
+  if (!internal) {
+    lines.push('#[abi(embed_v0)]');
+  }
+  lines.push(`impl ${impl.name} = ${impl.value};`);
+  return lines;
+}
+
+function printStorage(contract: Contract) {
+  const lines = [];
+  // storage is required regardless of whether there are components
+  lines.push('#[storage]');
+  lines.push('struct Storage {');
+  const storageLines = [];
+  for (const component of contract.components) {
+    storageLines.push(`#[substorage(v0)]`);
+    storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
+  }
+  lines.push(storageLines);
+  lines.push('}');
+  return lines;
+}
+
+function printEvents(contract: Contract) {
+  const lines = [];
+  if (contract.components.length > 0) {
+    lines.push('#[event]');
+    lines.push('#[derive(Drop, starknet::Event)]');
+    lines.push('enum Event {')
+    const eventLines = [];
+    for (const component of contract.components) {
+      eventLines.push('#[flat]');
+      eventLines.push(`${component.event.name}: ${component.event.type},`);
+    }
+    lines.push(eventLines);
+    lines.push('}');
+  }
+  return lines;
+}
+
+function printImplementedTraits(contract: Contract) {
+  const impls = [];
+  for (const trait of contract.implementedTraits) {
+    const implLines = [];
+    implLines.push(...trait.tags.map(t => `${t}`));
+    implLines.push(`impl ${trait.name} of ${trait.of} {`);
+    const fns = trait.functions.map(fn => printFunction(fn));
+    implLines.push(spaceBetween(...fns));
+    implLines.push('}');
+    impls.push(implLines);
+  }
+  return spaceBetween(...impls);
+}
+
+function printFunction(fn: ContractFunction) {
+  const head = `fn ${fn.name}`;
+  const args = fn.args.map(a => printArgument(a));
+
+  const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
+  for (let i = 0; i < codeLines.length; i++) {
+    const line = codeLines[i];
+    const shouldEndWithSemicolon = i < codeLines.length - 1 || fn.returns === undefined;
+    if (line !== undefined) {
+      if (shouldEndWithSemicolon && !line.endsWith(';')) {
+        codeLines[i] += ';';
+      } else if (!shouldEndWithSemicolon && line.endsWith(';')) {
+        codeLines[i] = line.slice(0, line.length - 1);
+      }
+    }
+  }
+
+  return printFunction2(head, args, undefined, fn.returns, undefined, codeLines);
+}
+
+function printConstructor(contract: Contract): Lines[] {
+  const hasParentParams = contract.components.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasParentParams || hasConstructorCode) {
-    const parents = contract.libraries
+    const parents = contract.components
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p));
-    const modifier = helpers.upgradeable ? 'external' : 'constructor';
-    const head = helpers.upgradeable ? 'func initializer' : 'func constructor';
-    const args = contract.constructorArgs.map(a => printArgument(a));
-    const implicitArgs = contract.constructorImplicitArgs?.map(a => printArgument(a));
+    const tag = 'constructor';
+    const head = 'fn constructor';
+    const args = [ getSelfArg(), ...contract.constructorArgs ];
+
     const body = spaceBetween(
         withSemicolons(parents),
         withSemicolons(contract.constructorCode),
@@ -119,11 +180,10 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
 
     const constructor = printFunction2(
       head,
-      implicitArgs ?? [],
-      args,
-      modifier,
+      args.map(a => printArgument(a)),
+      tag,
       undefined,
-      'return ();',
+      undefined,
       body,
     );
     return constructor;
@@ -132,33 +192,15 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   }
 }
 
-function hasInitializer(parent: Library) {
-  return parent.initializer !== undefined && parent.module.name !== undefined;
+function hasInitializer(parent: Component) {
+  return parent.initializer !== undefined && parent.substorage?.name !== undefined;
 }
 
-type SortedFunctions = Record<'code' | 'modifiers' | 'views' | 'externals', ContractFunction[]>;
-
-function sortedFunctions(contract: Contract): SortedFunctions {
-  const fns: SortedFunctions = { code: [], modifiers: [], views: [], externals: [] };
-
-  for (const fn of contract.functions) {
-    if (fn.kind === undefined && fn.code.length > 0) { // fallback case, not sure if anything fits in this category
-      fns.code.push(fn);
-    } else if (fn.kind === 'view') {
-      fns.views.push(fn);
-    } else {
-      fns.externals.push(fn);
-    }
-  }
-
-  return fns;
-}
-
-function printParentConstructor({ module, initializer }: Library): [] | [string] {
-  if (initializer === undefined || module.name === undefined || !module.useNamespace) {
+function printParentConstructor({ substorage, initializer }: Component): [] | [string] {
+  if (initializer === undefined || substorage?.name === undefined) {
     return [];
   }
-  const fn = `${module.name}.initializer`;
+  const fn = `self.${substorage.name}.initializer`;
   return [
     fn + '(' + initializer.params.map(printValue).join(', ') + ')',
   ];
@@ -184,80 +226,34 @@ export function printValue(value: Value): string {
   }
 }
 
-function printFunction(fn: ContractFunction): Lines[] {
-  const code = [];
-
-  const returnArgs = fn.returns?.map(a => typeof a === 'string' ? a : a.name);
-
-  fn.libraryCalls.forEach(libraryCall => {
-    const libraryCallString = `${getFunctionName(libraryCall.callFn)}(${libraryCall.args.join(', ')})`;
-    code.push(libraryCallString);
-  });
-
-  let returnLine = 'return ();';
-
-  if (!fn.final && fn.module !== undefined) {
-    const fnName = getFunctionName(fn);
-    const parentFunctionCall = fn.read ? 
-    `${fnName}.read()` :
-    `${fnName}(${fn.args.map(a => a.name).join(', ')})`;
-    if (!fn.passthrough || returnArgs === undefined || returnArgs.length === 0) {
-      code.push(parentFunctionCall);
-    } else if (fn.passthrough === 'strict') {
-      code.push(`let (${returnArgs}) = ${parentFunctionCall}`);
-      const namedReturnVars = returnArgs.map(v => `${v}=${v}`).join(', ');
-      returnLine = `return (${namedReturnVars});`;
-    } else if (fn.passthrough === true) {
-      returnLine = `return ${parentFunctionCall};`;
-    }
-  }
-
-  code.push(...fn.code);
-
-  return printFunction2(
-    'func ' + fn.name,
-    fn.implicitArgs?.map(a => printArgument(a)) ?? [],
-    fn.args.map(a => printArgument(a)),
-    fn.kind,
-    fn.returns?.map(a => typeof a === 'string' ? a : printArgument(a)),
-    returnLine,
-    withSemicolons(code),
-  );
-}
-
 // generic for functions and constructors
-// kindedName = 'func foo'
-function printFunction2(kindedName: string, implicitArgs: string[], args: string[], kind: string | undefined, returns: string[] | undefined, returnLine: string, code: Lines[]): Lines[] {
+// kindedName = 'fn foo'
+function printFunction2(kindedName: string, args: string[], tag: string | undefined, returns: string | undefined, returnLine: string | undefined, code: Lines[]): Lines[] {
   const fn = [];
 
-  if (kind !== undefined) {
-    fn.push(`@${kind}`);
+  if (tag !== undefined) {
+    fn.push(`#[${tag}]`);
   }
 
-  let accum = kindedName;
+  let accum = `${kindedName}(`;
 
-  if (implicitArgs.length > 0) {
-    accum += '{' + implicitArgs.join(', ') + '}';
-  }
-  
   if (args.length > 0) {
-    fn.push(`${accum}(`);
     let formattedArgs = args.join(', ');
     if (formattedArgs.length > 80) {
+      fn.push(accum);
+      accum = '';
       // print each arg in a separate line
       fn.push(args.map(arg => `${arg},`));
     } else {
-      fn.push([formattedArgs]);
+      accum += `${formattedArgs}`;
     }
-    accum = ')';
-  } else {
-    accum += '()';
   }
+  accum += ')';
 
   if (returns === undefined) {
     accum += ' {';
   } else {
-    accum += ` -> (${returns.join(', ')}) {`;
+    accum += ` -> ${returns} {`;
   }
 
   fn.push(accum);

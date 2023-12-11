@@ -1,10 +1,9 @@
 import test from 'ava';
 
-import { buildERC20, ERC20Options } from './erc20';
+import { buildERC20, ERC20Options, getInitialSupply } from './erc20';
 import { printContract } from './print';
 
-import { erc20 } from '.';
-import type { OptionsError } from './error';
+import { erc20, OptionsError } from '.';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {
@@ -69,23 +68,27 @@ testERC20('erc20 mintable with roles', {
   access: 'roles',
 });
 
+testERC20('erc20 safe allowance', {
+  safeAllowance: true,
+});
+
 testERC20('erc20 full upgradeable', {
   premint: '2000',
-  decimals: '9',
   access: 'ownable',
   burnable: true,
   mintable: true,
   pausable: true,
+  safeAllowance: true,
   upgradeable: true,
 });
 
 testERC20('erc20 full upgradeable with roles', {
   premint: '2000',
-  decimals: '9',
   access: 'roles',
   burnable: true,
   mintable: true,
   pausable: true,
+  safeAllowance: true,
   upgradeable: true,
 });
 
@@ -97,11 +100,11 @@ testAPIEquivalence('erc20 API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   premint: '2000',
-  decimals: '9',
   access: 'roles',
   burnable: true,
   mintable: true,
   pausable: true,
+  safeAllowance: true,
   upgradeable: true,
 });
 
@@ -112,20 +115,20 @@ test('erc20 API assert defaults', async t => {
 test('erc20 API isAccessControlRequired', async t => {
   t.is(erc20.isAccessControlRequired({ mintable: true }), true);
   t.is(erc20.isAccessControlRequired({ pausable: true }), true);
-  t.is(erc20.isAccessControlRequired({ upgradeable: true }), false);
+  t.is(erc20.isAccessControlRequired({ upgradeable: true }), true);
 }); 
 
-test('erc20 API getInitialSupply', async t => {
-  t.is(erc20.getInitialSupply('1000', 18),   '1000000000000000000000');
-  t.is(erc20.getInitialSupply('1000.1', 18), '1000100000000000000000');
-  t.is(erc20.getInitialSupply('.1', 18),     '100000000000000000');
-  t.is(erc20.getInitialSupply('.01', 2), '1');
-  
-  let error = t.throws(() => erc20.getInitialSupply('.01', 1));
+test('erc20 getInitialSupply', async t => {
+  t.is(getInitialSupply('1000', 18),   '1000000000000000000000');
+  t.is(getInitialSupply('1000.1', 18), '1000100000000000000000');
+  t.is(getInitialSupply('.1', 18),     '100000000000000000');
+  t.is(getInitialSupply('.01', 2), '1');
+
+  let error = t.throws(() => getInitialSupply('.01', 1));
   t.not(error, undefined);
   t.is((error as OptionsError).messages.premint, 'Too many decimals');
 
-  error = t.throws(() => erc20.getInitialSupply('1.1.1', 18));
+  error = t.throws(() => getInitialSupply('1.1.1', 18));
   t.not(error, undefined);
   t.is((error as OptionsError).messages.premint, 'Not a valid number');
 });

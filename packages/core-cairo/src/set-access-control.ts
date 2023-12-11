@@ -1,9 +1,6 @@
-import { withImplicitArgs } from './common-options';
-import type { ContractBuilder, BaseFunction } from './contract';
-import { defineFunctions } from './utils/define-functions';
-import { defineModules } from './utils/define-modules';
-import { keccak256 } from 'ethereum-cryptography/keccak';
-import { utf8ToBytes, bytesToHex } from 'ethereum-cryptography/utils';
+import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './contract';
+import { defineComponents } from './utils/define-components';
+import { addSRC5Component } from './common-components';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
 
@@ -15,26 +12,22 @@ export type Access = typeof accessOptions[number];
  export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
-      c.addModule(modules.Ownable, [{ lit:'owner' }], [], true);
-      c.addConstructorArgument({ name: 'owner', type: 'felt'});
-      
-      c.addFunction(functions.owner);
-      c.addFunction(functions.transferOwnership);
-      c.addFunction(functions.renounceOwnership);
+      c.addComponent(components.OwnableComponent, [{ lit:'owner' }], true);
+
+      c.addStandaloneImport('starknet::ContractAddress');
+      c.addConstructorArgument({ name: 'owner', type: 'ContractAddress'});
+
       break;
     }
     case 'roles': {
-      if (c.addModule(modules.AccessControl)) {
-        importDefaultAdminRole(c);
+      if (c.addComponent(components.AccessControlComponent, [], true)) {
+        addSRC5Component(c);
 
-        c.addConstructorArgument({ name: 'admin', type: 'felt'});
-        c.addConstructorCode('AccessControl._grant_role(DEFAULT_ADMIN_ROLE, admin)');
+        c.addStandaloneImport('starknet::ContractAddress');
+        c.addConstructorArgument({ name: 'default_admin', type: 'ContractAddress'});
 
-        c.addFunction(functions.hasRole);
-        c.addFunction(functions.getRoleAdmin);
-        c.addFunction(functions.grantRole);
-        c.addFunction(functions.revokeRole);
-        c.addFunction(functions.renounceRole);
+        c.addStandaloneImport('openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE');
+        c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
     }
@@ -44,7 +37,7 @@ export type Access = typeof accessOptions[number];
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, role: string) {
+export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
   if (access === false) {
     access = 'ownable';
   }
@@ -53,147 +46,76 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
 
   switch (access) {
     case 'ownable': {
-      c.addLibraryCall(functions.assert_only_owner, fn);
+      c.addFunctionCodeBefore(trait, fn, 'self.ownable.assert_only_owner()');
       break;
     }
     case 'roles': {
-      const roleId = role + '_ROLE';
-      if (c.addVariable(`const ${roleId} = ${to251BitHash(roleId)}; // keccak256('${roleId}')[0:251 bits]`)) {
-        c.addConstructorCode(`AccessControl._grant_role(${roleId}, admin)`);
+      const roleId = roleIdPrefix + '_ROLE';
+      const addedSuper = c.addSuperVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
+      if (roleOwner !== undefined) {
+        c.addStandaloneImport('starknet::ContractAddress');
+        c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
+        if (addedSuper) {
+          c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
+        }  
       }
 
-      c.addLibraryCall(functions.assert_only_role, fn, [roleId]);
+      c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
+      
       break;
     }
   }
 }
 
-export function to251BitHash(label: string): string {
-  const hash = bytesToHex(keccak256(utf8ToBytes(label)));
-  const bin = BigInt('0x' + hash).toString(2).substring(0, 251);
-  const hex = BigInt('0b' + bin).toString(16);
-  return '0x' + hex;
-}
-
-function importDefaultAdminRole(c: ContractBuilder) {
-  c.addModule(modules.constants, [], [], false);
-  c.addModuleFunction(modules.constants, 'DEFAULT_ADMIN_ROLE');
-}
-
-const modules = defineModules( {
-  Ownable: {
-    path: 'openzeppelin.access.ownable.library',
-    useNamespace: true
-  },
-  AccessControl: {
-    path: 'openzeppelin.access.accesscontrol.library',
-    useNamespace: true
-  },
-  constants: {
-    path: 'openzeppelin.utils.constants.library',
-    useNamespace: false
-  }
-})
-
-const functions = defineFunctions({
-  // --- library-only calls ---
-  assert_only_owner: {
-    module: modules.Ownable,
-    args: [],
-  },
-
-  assert_only_role: {
-    module: modules.AccessControl,
-    args: []
-  },
-
-  // --- view functions ---
-
-  owner: {
-    module: modules.Ownable,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    returns: [{ name: 'owner', type: 'felt' }],
-    passthrough: true,
-  },
-
-  // --- external functions ---
-
-  transferOwnership: {
-    module: modules.Ownable,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'newOwner', type: 'felt' },
+const components = defineComponents( {
+  OwnableComponent: {
+    path: 'openzeppelin::access::ownable',
+    substorage: {
+      name: 'ownable',
+      type: 'OwnableComponent::Storage',
+    },
+    event: {
+      name: 'OwnableEvent',
+      type: 'OwnableComponent::Event',
+    },
+    impls: [
+      {
+        name: 'OwnableImpl',
+        value: 'OwnableComponent::OwnableImpl<ContractState>',
+      },
+      {
+        name: 'OwnableCamelOnlyImpl',
+        value: 'OwnableComponent::OwnableCamelOnlyImpl<ContractState>',
+      },      
     ],
-    parentFunctionName: 'transfer_ownership',
+    internalImpl: {
+      name: 'OwnableInternalImpl',
+      value: 'OwnableComponent::InternalImpl<ContractState>',
+    },
   },
-
-  renounceOwnership: {
-    module: modules.Ownable,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [],
-    parentFunctionName: 'renounce_ownership',
-  },
-
-  hasRole: {
-    module: modules.AccessControl,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'role', type: 'felt' },
-      { name: 'user', type: 'felt' },
+  AccessControlComponent: {
+    path: 'openzeppelin::access::accesscontrol',
+    substorage: {
+      name: 'accesscontrol',
+      type: 'AccessControlComponent::Storage',
+    },
+    event: {
+      name: 'AccessControlEvent',
+      type: 'AccessControlComponent::Event',
+    },
+    impls: [
+      {
+        name: 'AccessControlImpl',
+        value: 'AccessControlComponent::AccessControlImpl<ContractState>',
+      },
+      {
+        name: 'AccessControlCamelImpl',
+        value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
+      },      
     ],
-    parentFunctionName: 'has_role',
-    returns: [{ name: 'has_role', type: 'felt' }],
-    passthrough: true,
+    internalImpl: {
+      name: 'AccessControlInternalImpl',
+      value: 'AccessControlComponent::InternalImpl<ContractState>',
+    },
   },
-
-  getRoleAdmin: {
-    module: modules.AccessControl,
-    kind: 'view',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'role', type: 'felt' },
-    ],
-    parentFunctionName: 'get_role_admin',
-    returns: [{ name: 'admin', type: 'felt' }],
-    passthrough: true,
-  },
-
-  grantRole: {
-    module: modules.AccessControl,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'role', type: 'felt' },
-      { name: 'user', type: 'felt' },
-    ],
-    parentFunctionName: 'grant_role',
-  },
-
-  revokeRole: {
-    module: modules.AccessControl,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'role', type: 'felt' },
-      { name: 'user', type: 'felt' },
-    ],
-    parentFunctionName: 'revoke_role',
-  },
-
-  renounceRole: {
-    module: modules.AccessControl,
-    kind: 'external',
-    implicitArgs: withImplicitArgs(),
-    args: [
-      { name: 'role', type: 'felt' },
-      { name: 'user', type: 'felt' },
-    ],
-    parentFunctionName: 'renounce_role',
-  },
-
 });

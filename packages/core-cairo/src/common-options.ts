@@ -24,10 +24,10 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   };
 }
 
-export function withImplicitArgs(): Argument[] {
-  return [ 
-    { name: 'syscall_ptr', type: 'felt*' },
-    { name: 'pedersen_ptr', type: 'HashBuiltin*' },
-    { name: 'range_check_ptr' }
-  ];
+export function getSelfArg(scope: 'external' | 'view' = 'external'): Argument {
+  if (scope === 'view') {
+    return { name: 'self', type: '@ContractState' };
+  } else {
+    return { name: 'ref self', type: 'ContractState' };
+  }
 }

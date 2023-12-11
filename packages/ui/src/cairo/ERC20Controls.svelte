@@ -5,7 +5,7 @@
   import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
+  import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../error-tooltip';
 
@@ -27,21 +27,14 @@
   <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name}>
+      <input bind:value={opts.name} use:error={errors?.name}>
     </label>
 
     <label class="labeled-input">
       <span>Symbol</span>
-      <input bind:value={opts.symbol}>
+      <input bind:value={opts.symbol} use:error={errors?.symbol}>
     </label>
   </div>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Decimals
-    </span>
-    <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder="18">
-  </label>
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
@@ -59,7 +52,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc20#erc20mintable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
@@ -76,15 +69,23 @@
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>assert_not_paused</code>.
+        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.safeAllowance}>
+      <input type="checkbox" bind:checked={opts.safeAllowance}>
+      Safe Allowance
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20Component-increase_allowance">
+        Enables non-standard increase/decrease allowance methods.
+      </HelpTooltip>
+    </label>
+
+    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />

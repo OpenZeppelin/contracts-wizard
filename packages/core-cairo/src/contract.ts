@@ -1,165 +1,196 @@
-import { withImplicitArgs } from './common-options';
-import { importHashBuiltin } from './utils/hash-builtin';
-import { getImportName } from './utils/module-prefix';
+import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
-  libraries: Library[];
-  functions: ContractFunction[];
+  name: string;
+  standaloneImports: string[];
+  components: Component[];
   constructorCode: string[];
-  constructorImplicitArgs?: Argument[];
   constructorArgs: Argument[];
-  variables: string[];
   upgradeable: boolean; 
+  implementedTraits: ImplementedTrait[];
+  superVariables: Variable[];
 }
 
 export type Value = string | number | { lit: string } | { note: string, value: Value };
 
-export interface Library {
-  module: Module;
-  functions: string[];
+export interface Component {
+  name: string;
+  path: string;
+  substorage: Substorage;
+  event: Event;
+  impls: Impl[];
+  internalImpl?: Impl;
   initializer?: Initializer;
 }
 
-export interface Module {
+export interface Substorage {
   name: string;
-  path: string;
-  useNamespace: boolean;
+  type: string;
+}
+
+export interface Event {
+  name: string;
+  type: string;
+}
+
+export interface Impl {
+  name: string;
+  value: string;
 }
 
 export interface Initializer {
   params: Value[];
 }
 
-/**
- * Whether the function should directly return the parent function's return value.
- * If false, call the parent function without returning its value.
- * If true, return directly from the call to the parent function.
- * If 'strict', treat as `true` but uses the return arguments' names.
- */
-export type PassthroughOption = true | false | 'strict'; 
+export interface BaseImplementedTrait {
+  name: string;
+  of: string;
+  tags: string[];
+}
+
+export interface ImplementedTrait extends BaseImplementedTrait {
+  functions: ContractFunction[];
+}
 
 export interface BaseFunction {
-  module?: Module;
   name: string;
-  implicitArgs?: Argument[];
   args: Argument[];
-  returns?: Argument[];
-  kind?: FunctionKind;
-  passthrough?: PassthroughOption;
-  read?: boolean;
-  parentFunctionName?: string;
+  code: string[];
+  returns?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
-  libraryCalls: LibraryCall[];
-  code: string[];
-  final: boolean;
+  codeBefore?: string[];
 }
 
-export interface LibraryCall {
-  callFn: BaseFunction;
-  args: string[];
+export interface Variable {
+  name: string;
+  type: string;
+  value: string;
 }
-
-export type FunctionKind = 'view' | 'external';
 
 export interface Argument {
   name: string;
   type?: string;
 }
 
-export interface NatspecTag {
-  key: string;
-  value: string;
-}
-
 export class ContractBuilder implements Contract {
+  readonly name: string;
   license: string = 'MIT';
   upgradeable = false;
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
-  private librariesMap: Map<Module, Library> = new Map<Module, Library>();
-  private functionMap: Map<string, ContractFunction> = new Map();
-  readonly constructorImplicitArgs: Argument[] = withImplicitArgs();
+  private componentsMap: Map<string, Component> = new Map<string, Component>();
+  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map<string, ImplementedTrait>();
+  private superVariablesMap: Map<string, Variable> = new Map<string, Variable>();
+  private standaloneImportsSet: Set<string> = new Set();
 
-  get libraries(): Library[] {
-    return [...this.librariesMap.values()];
+  constructor(name: string) {
+    this.name = toIdentifier(name, true);
   }
 
-  get functions(): ContractFunction[] {
-    return [...this.functionMap.values()];
+  get components(): Component[] {
+    return [...this.componentsMap.values()];
   }
 
-  get variables(): string[] {
-    return [...this.variableSet];
+  get implementedTraits(): ImplementedTrait[] {
+    return [...this.implementedTraitsMap.values()];
   }
 
-  addModule(module: Module, params: Value[] = [], functions: BaseFunction[] = [], initializable: boolean = true): boolean {
-    const key = module;
-    const present = this.librariesMap.has(key);
-    const initializer = initializable ? { params } : undefined;
+  get superVariables(): Variable[] {
+    return [...this.superVariablesMap.values()];
+  }
 
-    if (initializer !== undefined && initializer.params.length > 0) {
-      // presence of initializer params implies initializer code will be written, so implicit args must be included
-      importHashBuiltin(this);
+  get standaloneImports(): string[] {
+    return [...this.standaloneImportsSet];
+  }
+
+  addStandaloneImport(fullyQualified: string) {
+    this.standaloneImportsSet.add(fullyQualified);
+  }
+
+  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
+    const key = component.name;
+    const present = this.componentsMap.has(key);
+    if (!present) {
+      const initializer = initializable ? { params } : undefined;  
+      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
+      this.componentsMap.set(key, cp);
     }
-
-    const functionStrings: string[] = [];
-    functions.forEach(fn => {
-      functionStrings.push(getImportName(fn));
-    });
-    if (initializable) {
-      functionStrings.push(getImportName({
-          module: module,
-          name: 'initializer', 
-          args: []
-        }))
-    }
-
-    this.librariesMap.set(module, { module, functions: functionStrings, initializer });
     return !present;
   }
 
-  addModuleFunction(module: Module, addFunction: string) {
-    const existing = this.librariesMap.get(module);
-    if (existing === undefined) {
-      throw new Error(`Module ${module} has not been added yet`);
+  addImplToComponent(component: Component, impl: Impl) {
+    this.addComponent(component);
+    let c = this.componentsMap.get(component.name);
+    if (c == undefined) {
+      throw new Error(`Component ${component.name} has not been added yet`);
     }
-    if (!existing.functions.includes(addFunction)) {
-      existing.functions.push(addFunction);
+
+    if (!c.impls.some(i => i.name === impl.name)) {
+      c.impls.push(impl);
     }
   }
 
-  addLibraryCall(callFn: BaseFunction, baseFn: BaseFunction, args: string[] = []) {
-    const fn = this.addFunction(baseFn);
-    if (callFn.module !== undefined) {
-      this.addModuleFunction(callFn.module, getImportName(callFn));
-    }
-    const libraryCall: LibraryCall = { callFn, args };
-    fn.libraryCalls.push(libraryCall);
-  }
-
-  addFunction(baseFn: BaseFunction): ContractFunction {
-    importHashBuiltin(this);
-
-    const signature = [baseFn.name, '(', ...baseFn.args.map(a => a.name), ')'].join('');
-    const got = this.functionMap.get(signature);
-    if (got !== undefined) {
-      return got;
+  addSuperVariable(variable: Variable) {
+    if (this.superVariablesMap.has(variable.name)) {
+      return false;
     } else {
-      const fn: ContractFunction = {
-        libraryCalls: [],
-        code: [],
-        final: false,
-        ...baseFn,
-      };
-      this.functionMap.set(signature, fn);
-      return fn;
+      this.superVariablesMap.set(variable.name, variable);
+      return true;
     }
+  }
+
+  addImplementedTrait(baseTrait: BaseImplementedTrait) {
+    const key = baseTrait.name;
+    const existingTrait = this.implementedTraitsMap.get(key);
+    if (existingTrait !== undefined) {
+      return existingTrait;
+    } else {
+      const t: ImplementedTrait = { 
+        name: baseTrait.name,
+        of: baseTrait.of,
+        tags: [ ...baseTrait.tags ],
+        functions: [],
+      };
+      this.implementedTraitsMap.set(key, t);
+      return t;
+    }
+  }
+
+  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction) {
+    const t = this.addImplementedTrait(baseTrait);
+
+    const signature = this.getFunctionSignature(fn);
+
+    // Look for the existing function with the same signature and return it if found
+    for (let i = 0; i < t.functions.length; i++) {
+      const existingFn = t.functions[i];
+      if (existingFn !== undefined && this.getFunctionSignature(existingFn) === signature) {
+        return existingFn;
+      }
+    }
+
+    // Otherwise, add the function
+    const contractFn: ContractFunction = {
+      ...fn,
+      codeBefore: [],
+    };
+    t.functions.push(contractFn);
+    return contractFn;
+  }
+
+  private getFunctionSignature(fn: BaseFunction) {
+    return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
+  }
+
+  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string) {
+    this.addImplementedTrait(baseTrait);
+    const existingFn = this.addFunction(baseTrait, fn);
+    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
   }
 
   addConstructorArgument(arg: Argument) {
@@ -172,31 +203,6 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorCode(code: string) {
-    importHashBuiltin(this);
-    
     this.constructorCode.push(code);
-  }
-
-  addFunctionCode(code: string, baseFn: BaseFunction) {
-    const fn = this.addFunction(baseFn);
-    if (fn.final) {
-      throw new Error(`Function ${baseFn.name} is already finalized`);
-    }
-    fn.code.push(code);
-  }
-
-  setFunctionBody(code: string[], baseFn: BaseFunction) {
-    const fn = this.addFunction(baseFn);
-    if (fn.code.length > 0) {
-      throw new Error(`Function ${baseFn.name} has additional code`);
-    }
-    fn.code.push(...code);
-    fn.final = true;
-  }
-
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
-    return !present;
   }
 }
