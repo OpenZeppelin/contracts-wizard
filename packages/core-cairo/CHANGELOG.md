@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.0 (2023-12-11)
 
 - **Breaking changes**:
   - Use Cairo 1+ and OpenZeppelin Contracts for Cairo v0.8.0.
