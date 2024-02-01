@@ -14,6 +14,7 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
+    import OzIcon from './icons/OzIcon.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
@@ -174,6 +175,13 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
+      <a href="https://docs.openzeppelin.com/defender/v2/tutorial/deploy?utm_campaign=Defender%20GA_2024&utm_source=Wizard#environment_setup" target="_blank" rel="noopener noreferrer">
+        <button class="action-button min-w-[165px]">
+          <OzIcon />
+          Deploy with Defender
+        </button>
+      </a>
+
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
