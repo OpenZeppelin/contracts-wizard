@@ -49,9 +49,10 @@ test('contract with function code before', t => {
     name: 'External',
     of: 'ExternalTrait',
     tags: [
-      '#[generate_trait]',
-      '#[external(v0)]'
+      'generate_trait',
+      'abi(per_item)',
     ],
+    perItemTag: 'external(v0)',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -72,9 +73,10 @@ test('contract with function code before with semicolons', t => {
     name: 'External',
     of: 'ExternalTrait',
     tags: [
-      '#[generate_trait]',
-      '#[external(v0)]'
+      'generate_trait',
+      'abi(per_item)',
     ],
+    perItemTag: 'external(v0)',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {

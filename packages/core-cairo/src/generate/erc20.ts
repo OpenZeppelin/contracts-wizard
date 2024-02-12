@@ -12,7 +12,6 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   mintable: booleans,
-  safeAllowance: booleans,
   premint: ['1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,

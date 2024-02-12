@@ -132,7 +132,7 @@ function printImplementedTraits(contract: Contract) {
   const impls = [];
   for (const trait of contract.implementedTraits) {
     const implLines = [];
-    implLines.push(...trait.tags.map(t => `${t}`));
+    implLines.push(...trait.tags.map(t => `#[${t}]`));
     implLines.push(`impl ${trait.name} of ${trait.of} {`);
     const fns = trait.functions.map(fn => printFunction(fn));
     implLines.push(spaceBetween(...fns));
@@ -159,7 +159,7 @@ function printFunction(fn: ContractFunction) {
     }
   }
 
-  return printFunction2(head, args, undefined, fn.returns, undefined, codeLines);
+  return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
 function printConstructor(contract: Contract): Lines[] {

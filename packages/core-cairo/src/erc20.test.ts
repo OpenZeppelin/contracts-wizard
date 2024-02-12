@@ -68,17 +68,12 @@ testERC20('erc20 mintable with roles', {
   access: 'roles',
 });
 
-testERC20('erc20 safe allowance', {
-  safeAllowance: true,
-});
-
 testERC20('erc20 full upgradeable', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
   pausable: true,
-  safeAllowance: true,
   upgradeable: true,
 });
 
@@ -88,7 +83,6 @@ testERC20('erc20 full upgradeable with roles', {
   burnable: true,
   mintable: true,
   pausable: true,
-  safeAllowance: true,
   upgradeable: true,
 });
 
@@ -104,7 +98,6 @@ testAPIEquivalence('erc20 API full upgradeable', {
   burnable: true,
   mintable: true,
   pausable: true,
-  safeAllowance: true,
   upgradeable: true,
 });
 

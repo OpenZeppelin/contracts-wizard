@@ -47,6 +47,7 @@ export interface BaseImplementedTrait {
   name: string;
   of: string;
   tags: string[];
+  perItemTag?: string;
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -62,6 +63,7 @@ export interface BaseFunction {
 
 export interface ContractFunction extends BaseFunction {
   codeBefore?: string[];
+  tag?: string;
 }
 
 export interface Variable {
@@ -178,6 +180,7 @@ export class ContractBuilder implements Contract {
     const contractFn: ContractFunction = {
       ...fn,
       codeBefore: [],
+      tag: baseTrait.perItemTag,
     };
     t.functions.push(contractFn);
     return contractFn;

@@ -74,14 +74,6 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.safeAllowance}>
-      <input type="checkbox" bind:checked={opts.safeAllowance}>
-      Safe Allowance
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20Component-increase_allowance">
-        Enables non-standard increase/decrease allowance methods.
-      </HelpTooltip>
-    </label>
-
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
