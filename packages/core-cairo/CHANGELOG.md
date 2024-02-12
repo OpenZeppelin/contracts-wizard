@@ -4,7 +4,8 @@
 
 - **Breaking changes**:
   - Remove non-standard `safeAllowance` option from ERC20. ([#324](https://github.com/OpenZeppelin/contracts-wizard/pull/324))
-  - Use `abi(per_item)` attribute instead of `external` for generated trait impls.
+  - Use `abi(embed_v0)` attribute instead of `external` for impls derived from interfaces.
+  - Use `abi(per_item)` attribute instead of `external` for impls with generated traits.
 
 ## 0.8.0 (2023-12-11)
 

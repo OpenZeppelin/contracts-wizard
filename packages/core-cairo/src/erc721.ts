@@ -94,7 +94,7 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
       name: 'ERC721Impl',
       of: 'interface::IERC721<ContractState>',
       tags: [
-        'external(v0)'
+        'abi(embed_v0)'
       ],
     }
     c.addFunction(ERC721Impl, functions.balance_of);
@@ -110,7 +110,7 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
       name: 'ERC721CamelOnlyImpl',
       of: 'interface::IERC721CamelOnly<ContractState>',
       tags: [
-        'external(v0)'
+        'abi(embed_v0)'
       ],
     }
     c.addFunction(ERC721CamelOnlyImpl, functions.balanceOf);

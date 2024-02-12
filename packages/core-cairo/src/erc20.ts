@@ -101,7 +101,7 @@ function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
       name: 'ERC20Impl',
       of: 'interface::IERC20<ContractState>',
       tags: [
-        'external(v0)'
+        'abi(embed_v0)'
       ],
     }
     c.addFunction(ERC20Impl, functions.total_supply);
@@ -115,7 +115,7 @@ function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
       name: 'ERC20CamelOnlyImpl',
       of: 'interface::IERC20CamelOnly<ContractState>',
       tags: [
-        'external(v0)'
+        'abi(embed_v0)'
       ],
     }
     c.addFunction(ERC20CamelOnlyImpl, functions.totalSupply);
