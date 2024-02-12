@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking changes**:
+  - Remove non-standard `safeAllowance` option from ERC20.
+
 ## 0.8.0 (2023-12-11)
 
 - **Breaking changes**:

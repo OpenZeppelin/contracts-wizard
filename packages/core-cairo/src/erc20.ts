@@ -19,7 +19,6 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   premint: '0',
   mintable: false,
-  safeAllowance: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -36,7 +35,6 @@ export interface ERC20Options extends CommonOptions {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
-  safeAllowance?: boolean;
 }
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -47,7 +45,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
-    safeAllowance: opts.safeAllowance ?? defaults.safeAllowance,
   };
 }
 
@@ -62,10 +59,6 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
   addERC20ImplAndCamelOnlyImpl(c, allOpts.pausable);
-
-  if (allOpts.safeAllowance) {
-    addSafeAllowance(c, allOpts.pausable);
-  }
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -148,45 +141,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     ],
     true,
   );
-}
-
-function addSafeAllowance(c: ContractBuilder, pausable: boolean) {
-  if (pausable) {
-    addERC20Interface(c);
-
-    const SafeAllowanceImpl: BaseImplementedTrait = {
-      name: 'SafeAllowanceImpl',
-      of: 'interface::ISafeAllowance<ContractState>',
-      tags: [
-        '#[external(v0)]'
-      ],
-    }
-    setPausable(c, SafeAllowanceImpl, functions.increase_allowance);
-    setPausable(c, SafeAllowanceImpl, functions.decrease_allowance);
-
-    const SafeAllowanceCamelImpl: BaseImplementedTrait = {
-      name: 'SafeAllowanceCamelImpl',
-      of: 'interface::ISafeAllowanceCamel<ContractState>',
-      tags: [
-        '#[external(v0)]'
-      ],
-    }
-    setPausable(c, SafeAllowanceCamelImpl, functions.increaseAllowance);
-    setPausable(c, SafeAllowanceCamelImpl, functions.decreaseAllowance);
-  } else {
-    c.addImplToComponent(components.ERC20Component, 
-      {
-        name: 'SafeAllowanceImpl',
-        value: 'ERC20Component::SafeAllowanceImpl<ContractState>',
-      },
-    );
-    c.addImplToComponent(components.ERC20Component,
-      {
-        name: 'SafeAllowanceCamelImpl',
-        value: 'ERC20Component::SafeAllowanceCamelImpl<ContractState>',
-      },
-    );  
-  }
 }
 
 function addBurnable(c: ContractBuilder) {
