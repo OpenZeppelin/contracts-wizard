@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.0 (2024-02-12)
 
 - **Breaking changes**:
   - Remove non-standard `safeAllowance` option from ERC20. ([#324](https://github.com/OpenZeppelin/contracts-wizard/pull/324))
