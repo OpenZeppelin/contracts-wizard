@@ -24,7 +24,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
     name: 'UpgradeableImpl',
     of: 'IUpgradeable<ContractState>',
     tags: [
-      '#[external(v0)]'
+      'external(v0)'
     ],
   };
   c.addImplementedTrait(t);
