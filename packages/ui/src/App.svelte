@@ -151,7 +151,7 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4">
-  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
+  <!-- <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz> -->
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
