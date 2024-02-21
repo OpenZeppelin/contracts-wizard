@@ -4,12 +4,15 @@ import type { Contract, Component, Argument, Value, Impl, ContractFunction, } fr
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
+import { compatibleCairoLangSemver, compatibleContractsSemver } from './utils/version';
 
 export function printContract(contract: Contract): string {
   return formatLines(
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
+        `// Compatible with OpenZeppelin Contracts for Cairo ${compatibleContractsSemver}`,
+        `// Cairo lang ${compatibleCairoLangSemver}`
       ],
       printSuperVariables(contract),
       [

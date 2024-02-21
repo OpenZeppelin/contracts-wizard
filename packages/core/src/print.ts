@@ -7,6 +7,7 @@ import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
+import { compatibleContractsSemver } from './utils/version';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -22,6 +23,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
+        `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
