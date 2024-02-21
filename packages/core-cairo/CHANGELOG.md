@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add code comments for compatible OpenZeppelin Contracts for Cairo and Cairo lang versions.
+
 ## 0.9.0 (2024-02-12)
 
 - **Breaking changes**:
