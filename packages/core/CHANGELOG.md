@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add code comment for compatible OpenZeppelin Contracts versions.
+- Add code comment for compatible OpenZeppelin Contracts versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))
 
 ## 0.4.1 (2023-10-18)
 
