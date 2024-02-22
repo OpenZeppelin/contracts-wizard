@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 (2024-02-22)
+
+- Set `upgradeable` to `true` by default.
+
 ## 0.9.1 (2024-02-22)
 
 - Add code comments for compatible OpenZeppelin Contracts for Cairo and Cairo lang versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))

@@ -6,7 +6,7 @@ import type { Upgradeable } from "./set-upgradeable";
 
 export const defaults: Required<CommonOptions> = {
   access: false,
-  upgradeable: false,
+  upgradeable: true,
   info: infoDefaults,
 } as const;
 
