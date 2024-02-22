@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (2024-02-22)
+
+- Add code comments for compatible OpenZeppelin Contracts versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))
+
 ## 0.4.1 (2023-10-18)
 
 - Add `managed` access control option for use with AccessManager. ([#298](https://github.com/OpenZeppelin/contracts-wizard/pull/298))
