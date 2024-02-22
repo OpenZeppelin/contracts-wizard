@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.4.2 (2024-02-22)
 
-- Add code comment for compatible OpenZeppelin Contracts versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))
+- Add code comments for compatible OpenZeppelin Contracts versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))
 
 ## 0.4.1 (2023-10-18)
 

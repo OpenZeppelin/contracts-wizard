@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.1 (2024-02-22)
 
 - Add code comments for compatible OpenZeppelin Contracts for Cairo and Cairo lang versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))
 
