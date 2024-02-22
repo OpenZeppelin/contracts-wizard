@@ -26,7 +26,11 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
   });
 }
 
-testCustom('custom', {});
+testCustom('custom non-upgradeable', {
+  upgradeable: false,
+});
+
+testCustom('custom defaults', {});
 
 testCustom('pausable', {
   pausable: true,
@@ -37,6 +41,7 @@ testCustom('upgradeable', {
 });
 
 testCustom('access control disabled', {
+  upgradeable: false,
   access: false,
 });
 
