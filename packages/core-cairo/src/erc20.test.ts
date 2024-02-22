@@ -29,6 +29,10 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   });
 }
 
+testERC20('basic erc20, non-upgradeable', {
+  upgradeable: false,
+});
+
 testERC20('basic erc20', {});
 
 testERC20('erc20 burnable', {
@@ -66,6 +70,15 @@ testERC20('erc20 mintable', {
 testERC20('erc20 mintable with roles', {
   mintable: true,
   access: 'roles',
+});
+
+testERC20('erc20 full, non-upgradeable', {
+  premint: '2000',
+  access: 'ownable',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  upgradeable: false,
 });
 
 testERC20('erc20 full upgradeable', {
