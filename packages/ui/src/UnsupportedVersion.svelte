@@ -10,10 +10,10 @@
 
   <div class="controls p-4">
     <p>
-      Version <strong>{requestedVersion}</strong> is not supported by the Contracts Wizard.
+      Version <strong>{requestedVersion}</strong> is not supported by the Wizard.
     </p>
     <p>
-      Select a version that matches the supported version range: <strong>{compatibleVersionSemver}</strong>.
+      Select a version that is compatible with the version range: <strong>{compatibleVersionSemver}</strong>.
     </p>
   </div>
 </div>
