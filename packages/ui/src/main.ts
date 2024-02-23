@@ -29,6 +29,7 @@ let compatibleVersionSemver = lang === 'cairo' ? compatibleCairoContractsSemver 
 
 let app;
 if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSemver)) {
+  postMessage({ kind: 'oz-wizard-unsupported-version' });
   app = new UnsupportedVersion({ target: document.body, props: { requestedVersion, compatibleVersionSemver }});
 } else if (lang === 'cairo') {
   app = new CairoApp({ target: document.body, props: { initialTab } });
