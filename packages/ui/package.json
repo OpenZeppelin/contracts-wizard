@@ -19,6 +19,7 @@
     "@types/resize-observer-browser": "^0.1.5",
     "@types/uuid": "^9.0.0",
     "@types/node": "^18.0.0",
+    "@types/semver": "^7.5.7",
     "autoprefixer": "^10.4.2",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
@@ -43,6 +44,7 @@
     "sirv-cli": "^2.0.0",
     "tippy.js": "^6.3.1",
     "util": "^0.12.4",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "semver": "^7.6.0"
   }
 }

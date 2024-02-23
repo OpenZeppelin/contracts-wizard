@@ -27,6 +27,7 @@ onDOMContentLoaded(function () {
 
     setSearchParam(w, src.searchParams, 'data-lang', 'lang');
     setSearchParam(w, src.searchParams, 'data-tab', 'tab');
+    setSearchParam(w, src.searchParams, 'version', 'version');
     const sync = w.getAttribute('data-sync-url');
 
     if (sync === 'fragment') {
