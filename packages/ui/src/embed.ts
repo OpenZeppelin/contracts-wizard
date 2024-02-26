@@ -8,11 +8,22 @@ const currentScript = new URL(document.currentScript.src);
 
 const iframes = new WeakMap<MessageEventSource, HTMLIFrameElement>();
 
+let unsupportedVersion: boolean = false;
+const unsupportedVersionFrameHeight = 'auto';
+
 window.addEventListener('message', function (e: MessageEvent<Message>) {
-  if (e.source && e.data.kind === 'oz-wizard-resize') {
-    const iframe = iframes.get(e.source);
-    if (iframe) {
-      iframe.style.height = 'calc(100vh - 158px)';
+  if (e.source) {
+    if (e.data.kind === 'oz-wizard-unsupported-version') {
+      unsupportedVersion = true;
+      const iframe = iframes.get(e.source);
+      if (iframe) {
+        iframe.style.height = unsupportedVersionFrameHeight;
+      }
+    } else if (e.data.kind === 'oz-wizard-resize') {
+      const iframe = iframes.get(e.source);
+      if (iframe) {
+        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : 'calc(100vh - 158px)';
+      }
     }
   }
 });
@@ -27,6 +38,7 @@ onDOMContentLoaded(function () {
 
     setSearchParam(w, src.searchParams, 'data-lang', 'lang');
     setSearchParam(w, src.searchParams, 'data-tab', 'tab');
+    setSearchParam(w, src.searchParams, 'version', 'version');
     const sync = w.getAttribute('data-sync-url');
 
     if (sync === 'fragment') {
