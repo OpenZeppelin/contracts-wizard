@@ -2,7 +2,7 @@
 
 ## 0.9.2 (2024-02-26)
 
-- Remove code comment for Cairo lang version.
+- Remove code comment for Cairo lang version. ([#337](https://github.com/OpenZeppelin/contracts-wizard/pull/337))
 
 ## 0.9.1 (2024-02-22)
 
