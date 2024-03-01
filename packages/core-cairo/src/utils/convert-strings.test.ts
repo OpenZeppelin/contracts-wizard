@@ -34,12 +34,12 @@ test('identifier - remove starting numbers', t => {
 
 test('identifier - empty string', t => {
   let error = t.throws(() => toIdentifier(''), { instanceOf: OptionsError });
-  t.is(error?.messages.name, 'Identifier is empty or does not have valid characters');
+  t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
 test('identifier - no valid chars', t => {
   let error = t.throws(() => toIdentifier('123'),  { instanceOf: OptionsError });
-  t.is(error?.messages.name, 'Identifier is empty or does not have valid characters');
+  t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
 test('short string - unmodified', t => {
@@ -66,5 +66,5 @@ test('short string - max 31 characters', t => {
   t.is(toShortString('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
 
   let error = t.throws(() => toShortString('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
-  t.is(error?.messages.foo, 'String is longer than 31 characters');
+  t.is(error.messages.foo, 'String is longer than 31 characters');
 });
