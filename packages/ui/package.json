@@ -23,7 +23,7 @@
     "autoprefixer": "^10.4.2",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
-    "postcss-load-config": "^4.0.0",
+    "postcss-load-config": "^5.0.0",
     "rollup": "^3.0.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-styles": "^4.0.0",
