@@ -25,7 +25,7 @@
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
     "array.prototype.flat": "^1.2.4",
-    "ava": "^5.0.0",
+    "ava": "^6.0.0",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
     "rimraf": "^5.0.0",
