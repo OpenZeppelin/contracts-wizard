@@ -202,11 +202,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'token_id', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'token_uri', type: 'felt252' },
     ],
     code: [
       'self.erc721._safe_mint(recipient, token_id, data);',
-      'self.erc721._set_token_uri(token_id, token_uri);',
     ]
   },
   safeMint: {
@@ -215,10 +213,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'tokenId', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'tokenURI', type: 'felt252' },
     ],
     code: [
-      'self.safe_mint(recipient, tokenId, data, tokenURI);',
+      'self.safe_mint(recipient, tokenId, data);',
     ]
   },
 
