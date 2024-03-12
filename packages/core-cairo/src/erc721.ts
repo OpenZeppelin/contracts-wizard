@@ -15,6 +15,7 @@ import { toShortString } from './utils/convert-strings';
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   symbol: 'MTK',
+  baseUri: '',
   burnable: false,
   pausable: false,
   mintable: false,
@@ -30,6 +31,7 @@ export function printERC721(opts: ERC721Options = defaults): string {
 export interface ERC721Options extends CommonOptions {
   name: string;
   symbol: string;
+  baseUri: string;
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
@@ -39,6 +41,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    baseUri: opts.baseUri ?? defaults.baseUri,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
@@ -54,7 +57,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
+  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'), toShortString(allOpts.baseUri, 'baseUri'));
   addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.pausable) {
@@ -132,11 +135,11 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   }
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
+function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
   c.addComponent(
     components.ERC721Component,
     [
-      name, symbol
+      name, symbol, baseUri,
     ],
     true,
   );
