@@ -224,7 +224,7 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else {
-    return `'${value}'`;
+    return `"${value}"`;
   }
 }
 
