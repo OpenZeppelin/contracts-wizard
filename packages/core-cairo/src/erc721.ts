@@ -10,11 +10,12 @@ import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
-import { toShortString } from './utils/convert-strings';
+import { toStringLiteral } from './utils/convert-strings';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   symbol: 'MTK',
+  baseUri: '',
   burnable: false,
   pausable: false,
   mintable: false,
@@ -30,6 +31,7 @@ export function printERC721(opts: ERC721Options = defaults): string {
 export interface ERC721Options extends CommonOptions {
   name: string;
   symbol: string;
+  baseUri?: string;
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
@@ -39,6 +41,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    baseUri: opts.baseUri ?? defaults.baseUri,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
@@ -54,7 +57,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
+  addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol), toStringLiteral(allOpts.baseUri));
   addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.pausable) {
@@ -132,11 +135,11 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
   }
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
+function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
   c.addComponent(
     components.ERC721Component,
     [
-      name, symbol
+      name, symbol, baseUri,
     ],
     true,
   );
@@ -202,11 +205,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'token_id', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'token_uri', type: 'felt252' },
     ],
     code: [
       'self.erc721._safe_mint(recipient, token_id, data);',
-      'self.erc721._set_token_uri(token_id, token_uri);',
     ]
   },
   safeMint: {
@@ -215,10 +216,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'tokenId', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'tokenURI', type: 'felt252' },
     ],
     code: [
-      'self.safe_mint(recipient, tokenId, data, tokenURI);',
+      'self.safe_mint(recipient, tokenId, data);',
     ]
   },
 

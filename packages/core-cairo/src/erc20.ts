@@ -10,7 +10,7 @@ import { defineComponents } from './utils/define-components';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
-import { toShortString } from './utils/convert-strings';
+import { toStringLiteral } from './utils/convert-strings';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -57,7 +57,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
+  addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol));
   addERC20ImplAndCamelOnlyImpl(c, allOpts.pausable);
 
   if (allOpts.premint) {

@@ -31,6 +31,10 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
 
 testERC721('basic', {});
 
+testERC721('base uri', {
+  baseUri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
+});
+
 testERC721('burnable', {
   burnable: true,
 });
