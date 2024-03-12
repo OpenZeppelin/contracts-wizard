@@ -3,7 +3,7 @@
 ## 0.10.0 (2024-03-12)
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v0.10.0.
+  - Use OpenZeppelin Contracts for Cairo v0.10.0. ([#344](https://github.com/OpenZeppelin/contracts-wizard/pull/344))
   - ERC721: Remove token URI parameter from safe mint functions.
   - ERC721: Add optional base URI parameter. If not set, this defaults to empty string.
   - Use string literals for ByteArray initialization instead of short strings.
