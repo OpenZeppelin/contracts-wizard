@@ -186,16 +186,23 @@ if ! [ -f "foundry.toml" ]
 then
   echo "Initializing Foundry project..."
 
+  # Rename Wizard's README.md
+  mv README.md README-wizard.md
+
   # Initialize sample Foundry project
   forge init --force --no-commit --quiet
 
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet
 
-  # Remove template contracts
+  # Remove unneeded template files
   rm src/Counter.sol
   rm script/Counter.s.sol
   rm test/Counter.t.sol
+  rm README.md
+
+  # Restore Wizard's README.md
+  mv README-wizard.md README.md
 
   # Add remappings
   if [ -f "remappings.txt" ]
