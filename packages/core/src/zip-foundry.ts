@@ -164,7 +164,7 @@ const script = (c: Contract) => {
   }
 };
 
-const setupSh = `\
+const setupSh = (c: Contract) => `\
 #!/usr/bin/env bash
 
 # Check if git is installed
@@ -192,8 +192,14 @@ then
   # Initialize sample Foundry project
   forge init --force --no-commit --quiet
 
+${c.upgradeable ? `\
+  # Install OpenZeppelin Contracts and Upgrades
+  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --no-commit --quiet
+  forge install OpenZeppelin/openzeppelin-foundry-upgrades --no-commit --quiet\
+` : `\
   # Install OpenZeppelin Contracts
-  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet
+  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet\
+`}
 
   # Remove unneeded template files
   rm src/Counter.sol
@@ -209,7 +215,12 @@ then
   then
     echo "" >> remappings.txt
   fi
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt
+${c.upgradeable ? `\
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
+  echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt\
+` : `\
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
+`}
 
   # Perform initial git commit
   git add .
@@ -259,7 +270,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c));
-  zip.file('setup.sh', setupSh);
+  zip.file('setup.sh', setupSh(c));
   zip.file('README.md', readme(c));
 
   return zip;
