@@ -24,10 +24,14 @@ const test = (c: Contract, opts?: GenericOptions) => {
   );
 
   function getImports(c: Contract) {
-    return [
-      'import "forge-std/Test.sol";',
-      `import "../src/${c.name}.sol";`,
+    const result = [
+      'import {Test} from "forge-std/Test.sol";',
     ];
+    if (c.upgradeable) {
+      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
+    }
+    result.push(`import {${c.name}} from "src/${c.name}.sol";`);
+    return result;
   }
 
   function getTestCase(c: Contract) {
@@ -126,10 +130,15 @@ const script = (c: Contract) => {
   );
 
   function getImports(c: Contract) {
-    return [
-      'import "forge-std/Script.sol";',
-      `import "../src/${c.name}.sol";`,
+    const result = [
+      'import {Script} from "forge-std/Script.sol";',
+      'import {console} from "forge-std/console.sol";',
     ];
+    if (c.upgradeable) {
+      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
+    }
+    result.push(`import {${c.name}} from "src/${c.name}.sol";`);
+    return result;
   }
 
   function getScript(c: Contract) {
