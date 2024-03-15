@@ -56,11 +56,12 @@ const test = (c: Contract, opts?: GenericOptions) => {
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     if (c.upgradeable) {
-      if (opts?.upgradeable === 'uups') {
+      if (opts?.upgradeable === 'transparent') {
         return [
-          `address proxy = Upgrades.deployUUPSProxy(`,
+          `address proxy = Upgrades.deployTransparentProxy(`,
           [
             `"${c.name}.sol",`,
+            `initialOwner,`,
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
@@ -68,10 +69,9 @@ const test = (c: Contract, opts?: GenericOptions) => {
         ];
       } else {
         return [
-          `address proxy = Upgrades.deployTransparentProxy(`,
+          `address proxy = Upgrades.deployUUPSProxy(`,
           [
             `"${c.name}.sol",`,
-            `initialOwner,`,
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
@@ -91,7 +91,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
       // use i + 1 as the private key since it must be non-zero
       vars.push(`address ${args[i]} = vm.addr(${i + 1});`);
     }
-    if (c.upgradeable && opts?.upgradeable !== 'uups' && !args.includes('initialOwner')) {
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push(`address initialOwner = vm.addr(${vars.length + 1});`);
     }
     return vars;
@@ -196,11 +196,12 @@ const script = (c: Contract, opts?: GenericOptions) => {
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     if (c.upgradeable) {
-      if (opts?.upgradeable === 'uups') {
+      if (opts?.upgradeable === 'transparent') {
         return [
-          `address proxy = Upgrades.deployUUPSProxy(`,
+          `address proxy = Upgrades.deployTransparentProxy(`,
           [
             `"${c.name}.sol",`,
+            `initialOwner,`,
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
@@ -208,10 +209,9 @@ const script = (c: Contract, opts?: GenericOptions) => {
         ];
       } else {
         return [
-          `address proxy = Upgrades.deployTransparentProxy(`,
+          `address proxy = Upgrades.deployUUPSProxy(`,
           [
             `"${c.name}.sol",`,
-            `initialOwner,`,
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
@@ -230,7 +230,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
     for (let i = 0; i < args.length; i++) {
       vars.push(`address ${args[i]} = <Set ${args[i]} address here>;`);
     }
-    if (c.upgradeable && opts?.upgradeable !== 'uups' && !args.includes('initialOwner')) {
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push('address initialOwner = <Set initialOwner address here>;');
     }
     return vars;
