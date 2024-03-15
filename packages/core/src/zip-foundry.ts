@@ -65,7 +65,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
-          'instance = MyToken(proxy);',
+          `instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
@@ -75,7 +75,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
-          'instance = MyToken(proxy);',
+          `instance = ${c.name}(proxy);`,
         ];
       }
     } else {
@@ -205,7 +205,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
-          `${c.name} instance = MyToken(proxy);`,
+          `${c.name} instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
@@ -215,7 +215,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
             `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
           ],
           ');',
-          `${c.name} instance = MyToken(proxy);`,
+          `${c.name} instance = ${c.name}(proxy);`,
         ];
       }
     } else {
