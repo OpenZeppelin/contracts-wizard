@@ -45,15 +45,49 @@ const test = (c: Contract, opts?: GenericOptions) => {
         [
           'function setUp() public {',
           getAddressVariables(args),
-          [
-            `instance = new ${getDeploymentCall(c, args)};`,
-          ],
+          getDeploymentCode(c, args),
           '}',
         ],
         getContractSpecificTestFunction(),
       ),
       '}',
     ];
+  }
+
+  function getDeploymentCode(c: Contract, args: string[]): Lines[] {
+    if (c.upgradeable) {
+      if (opts?.upgradeable === 'uups') {
+        return [
+          `address proxy = Upgrades.deployUUPSProxy(`,
+          [
+            `"${c.name}.sol",`,
+            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
+          ],
+          ');',
+          'instance = MyToken(proxy);',
+        ];
+      } else {
+        const result = [];
+        if (!args.includes('initialOwner')) {
+          result.push(`address initialOwner = vm.addr(${args.length + 1});`);
+        }
+        result.push(
+          `address proxy = Upgrades.deployTransparentProxy(`,
+          [
+            `"${c.name}.sol",`,
+            `initialOwner,`,
+            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
+          ],
+          ');',
+          'instance = MyToken(proxy);',
+        );
+        return result;
+      }
+    } else {
+      return [
+        `instance = new ${c.name}(${args.join(', ')});`,
+      ];
+    }
   }
 
   function getAddressVariables(args: string[]): Lines[] {
@@ -115,11 +149,7 @@ function getAddressArgs(c: Contract): string[] {
   return args;
 }
 
-function getDeploymentCall(c: Contract, args: string[]): string {
-  return `${c.name}(${args.join(', ')})`;
-}
-
-const script = (c: Contract) => {
+const script = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(
     2,
     ...spaceBetween(
@@ -145,8 +175,9 @@ const script = (c: Contract) => {
     const args = getAddressArgs(c);
     const deploymentLines = [
       'vm.startBroadcast();',
-      `${c.name} instance = new ${getDeploymentCall(c, args)};`,
-      'console.log("Contract deployed to %s", address(instance));',
+      ...getAddressVariables(args),
+      ...getDeploymentCode(c, args),
+      `console.log("${c.upgradeable ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
       'vm.stopBroadcast();',
     ];
     return [
@@ -165,10 +196,51 @@ const script = (c: Contract) => {
     ];
   }
 
-  function addTodoAndCommentOut(lines: string[]) {
+  function getDeploymentCode(c: Contract, args: string[]): Lines[] {
+    if (c.upgradeable) {
+      if (opts?.upgradeable === 'uups') {
+        return [
+          `address proxy = Upgrades.deployUUPSProxy(`,
+          [
+            `"${c.name}.sol",`,
+            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
+          ],
+          ');',
+          `${c.name} instance = MyToken(proxy);`,
+        ];
+      } else {
+        return [
+          `address proxy = Upgrades.deployTransparentProxy(`,
+          [
+            `"${c.name}.sol",`,
+            `initialOwner,`,
+            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
+          ],
+          ');',
+          `${c.name} instance = MyToken(proxy);`,
+        ];
+      }
+    } else {
+      return [
+        `${c.name} instance = new ${c.name}(${args.join(', ')});`,
+      ];
+    }
+  }
+
+  function getAddressVariables(args: string[]): Lines[] {
+    const vars = [];
+    for (let i = 0; i < args.length; i++) {
+      vars.push(`address ${args[i]} = <SET ${args[i]} ADDRESS HERE>;`);
+    }
+    return vars;
+  }
+
+  function addTodoAndCommentOut(lines: Lines[]) {
     return [
-      '// TODO: Set addresses for the contract arguments below, then uncomment the following lines',
-      ...lines.map(l => `// ${l}`),
+      '// TODO: Set addresses for the variables below, then uncomment the following section:',
+      '/*',
+      ...lines,
+      '*/',
     ];
   }
 };
@@ -195,8 +267,8 @@ if ! [ -f "foundry.toml" ]
 then
   echo "Initializing Foundry project..."
 
-  # Rename Wizard's README.md
-  mv README.md README-wizard.md
+  # Backup Wizard template readme to avoid it being overwritten
+  mv README.md README-oz.md
 
   # Initialize sample Foundry project
   forge init --force --no-commit --quiet
@@ -210,14 +282,14 @@ ${c.upgradeable ? `\
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet\
 `}
 
-  # Remove unneeded template files
+  # Remove unneeded Foundry template files
   rm src/Counter.sol
   rm script/Counter.s.sol
   rm test/Counter.t.sol
   rm README.md
 
-  # Restore Wizard's README.md
-  mv README-wizard.md README.md
+  # Restore Wizard template readme
+  mv README-oz.md README.md
 
   # Add remappings
   if [ -f "remappings.txt" ]
@@ -230,6 +302,12 @@ ${c.upgradeable ? `\
 ` : `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
 `}
+
+  # Add settings in foundry.toml
+  echo "" >> foundry.toml
+  echo "ast = true" >> foundry.toml
+  echo "build_info = true" >> foundry.toml
+  echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml
 
   # Perform initial git commit
   git add .
@@ -259,7 +337,7 @@ bash setup.sh
 ## Testing the contract
 
 \`\`\`
-forge test
+forge test${c.upgradeable ? ' --ffi --force' : ''}
 \`\`\`
 
 ## Deploying the contract
@@ -267,7 +345,7 @@ forge test
 You can simulate a deployment by running the script:
 
 \`\`\`
-forge script script/${c.name}.s.sol
+forge script script/${c.name}.s.sol${c.upgradeable ? ' --ffi --force' : ''}
 \`\`\`
 
 See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
