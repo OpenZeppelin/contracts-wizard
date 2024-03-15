@@ -103,7 +103,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         case 'ERC20':
         case 'ERC721':
           return [
-            'function testName() public {',
+            'function testName() public view {',
             [
               `assertEq(instance.name(), "${opts.name}");`
             ],
@@ -112,7 +112,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
 
         case 'ERC1155':
           return [
-            'function testUri() public {',
+            'function testUri() public view {',
             [
               `assertEq(instance.uri(0), "${opts.uri}");`
             ],
