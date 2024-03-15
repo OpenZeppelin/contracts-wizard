@@ -44,7 +44,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         ],
         [
           'function setUp() public {',
-          getAddressVariables(args),
+          getAddressVariables(c, args),
           getDeploymentCode(c, args),
           '}',
         ],
@@ -67,11 +67,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
           'instance = MyToken(proxy);',
         ];
       } else {
-        const result = [];
-        if (!args.includes('initialOwner')) {
-          result.push(`address initialOwner = vm.addr(${args.length + 1});`);
-        }
-        result.push(
+        return [
           `address proxy = Upgrades.deployTransparentProxy(`,
           [
             `"${c.name}.sol",`,
@@ -80,8 +76,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
           ],
           ');',
           'instance = MyToken(proxy);',
-        );
-        return result;
+        ];
       }
     } else {
       return [
@@ -90,11 +85,14 @@ const test = (c: Contract, opts?: GenericOptions) => {
     }
   }
 
-  function getAddressVariables(args: string[]): Lines[] {
+  function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
       // use i + 1 as the private key since it must be non-zero
       vars.push(`address ${args[i]} = vm.addr(${i + 1});`);
+    }
+    if (c.upgradeable && opts?.upgradeable !== 'uups' && !args.includes('initialOwner')) {
+      vars.push(`address initialOwner = vm.addr(${vars.length + 1});`);
     }
     return vars;
   }
@@ -175,7 +173,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
     const args = getAddressArgs(c);
     const deploymentLines = [
       'vm.startBroadcast();',
-      ...getAddressVariables(args),
+      ...getAddressVariables(c, args),
       ...getDeploymentCode(c, args),
       `console.log("${c.upgradeable ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
       'vm.stopBroadcast();',
@@ -227,10 +225,13 @@ const script = (c: Contract, opts?: GenericOptions) => {
     }
   }
 
-  function getAddressVariables(args: string[]): Lines[] {
+  function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
-      vars.push(`address ${args[i]} = <SET ${args[i]} ADDRESS HERE>;`);
+      vars.push(`address ${args[i]} = <Set ${args[i]} address here>;`);
+    }
+    if (c.upgradeable && opts?.upgradeable !== 'uups' && !args.includes('initialOwner')) {
+      vars.push('address initialOwner = <Set initialOwner address here>;');
     }
     return vars;
   }
@@ -356,7 +357,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
 
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
-  zip.file(`script/${c.name}.s.sol`, script(c));
+  zip.file(`script/${c.name}.s.sol`, script(c, opts));
   zip.file('setup.sh', setupSh(c));
   zip.file('README.md', readme(c));
 
