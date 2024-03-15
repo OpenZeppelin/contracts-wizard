@@ -87,12 +87,12 @@ const test = (c: Contract, opts?: GenericOptions) => {
 
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
-    for (let i = 0; i < args.length; i++) {
-      // use i + 1 as the private key since it must be non-zero
-      vars.push(`address ${args[i]} = vm.addr(${i + 1});`);
-    }
+    let i = 1; // private key index starts from 1 since it must be non-zero
     if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
-      vars.push(`address initialOwner = vm.addr(${vars.length + 1});`);
+      vars.push(`address initialOwner = vm.addr(${i++});`);
+    }
+    for (const arg of args) {
+      vars.push(`address ${arg} = vm.addr(${i++});`);
     }
     return vars;
   }
@@ -227,11 +227,11 @@ const script = (c: Contract, opts?: GenericOptions) => {
 
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
-    for (let i = 0; i < args.length; i++) {
-      vars.push(`address ${args[i]} = <Set ${args[i]} address here>;`);
-    }
     if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push('address initialOwner = <Set initialOwner address here>;');
+    }
+    for (const arg of args) {
+      vars.push(`address ${arg} = <Set ${arg} address here>;`);
     }
     return vars;
   }
