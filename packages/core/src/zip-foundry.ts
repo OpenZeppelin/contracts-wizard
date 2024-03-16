@@ -299,16 +299,16 @@ ${c.upgradeable ? `\
   fi
 ${c.upgradeable ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
-  echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt\
-` : `\
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
-`}
+  echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
 
   # Add settings in foundry.toml
   echo "" >> foundry.toml
   echo "ast = true" >> foundry.toml
   echo "build_info = true" >> foundry.toml
-  echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml
+  echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml\
+` : `\
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
+`}
 
   # Perform initial git commit
   git add .
