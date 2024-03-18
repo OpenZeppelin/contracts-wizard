@@ -204,6 +204,7 @@ function addVotes(c: ContractBuilder, name: string, timestamp: boolean) {
     c.addOverride(ERC721Votes, functions.clock);
     c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
 
+    // TODO add comment: // solhint-disable-next-line func-name-mixedcase
     c.addOverride(ERC721Votes, functions.CLOCK_MODE);
     c.setFunctionBody(['return "mode=timestamp";'], functions.CLOCK_MODE);
   }
