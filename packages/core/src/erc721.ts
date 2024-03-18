@@ -7,6 +7,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
+import { setClockMode } from './set-clock-mode';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -200,14 +201,7 @@ function addVotes(c: ContractBuilder, name: string, timestamp: boolean) {
   c.addOverride(ERC721Votes, functions._update);
   c.addOverride(ERC721Votes, functions._increaseBalance);
 
-  if (timestamp) {
-    c.addOverride(ERC721Votes, functions.clock);
-    c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
-
-    c.setFunctionComments(['// solhint-disable-next-line func-name-mixedcase'], functions.CLOCK_MODE);
-    c.addOverride(ERC721Votes, functions.CLOCK_MODE);
-    c.setFunctionBody(['return "mode=timestamp";'], functions.CLOCK_MODE);
-  }
+  setClockMode(c, ERC721Votes, timestamp);
 }
 
 const functions = defineFunctions({
@@ -244,20 +238,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'uint128' },
     ],
   },
-
-  clock: {
-    kind: 'public' as const,
-    args: [],
-    returns: ['uint48'],
-    mutability: 'view' as const,
-  },
-
-  CLOCK_MODE: {
-    kind: 'public' as const,
-    args: [],
-    returns: ['string memory'],
-    mutability: 'pure' as const,
-  }
 });
 
 function getMintFunction(incremental: boolean, uriStorage: boolean) {
