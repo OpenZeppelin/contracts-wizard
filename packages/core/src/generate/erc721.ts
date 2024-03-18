@@ -1,3 +1,4 @@
+import { clockOptions } from '../clock';
 import type { ERC721Options } from '../erc721';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
@@ -20,6 +21,7 @@ const blueprint = {
   upgradeable: upgradeableOptions,
   info: infoOptions,
   votes: booleans,
+  clock: clockOptions,
 };
 
 export function* generateERC721Options(): Generator<Required<ERC721Options>> {

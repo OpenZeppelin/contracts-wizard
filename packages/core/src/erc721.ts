@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseFunction, Contract, ContractBuilder, ContractFunction } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
@@ -19,6 +19,7 @@ export interface ERC721Options extends CommonOptions {
   mintable?: boolean;
   incremental?: boolean;
   votes?: boolean;
+  timestamp?: boolean;
 }
 
 export const defaults: Required<ERC721Options> = {
@@ -32,9 +33,10 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   incremental: false,
   votes: false,
+  timestamp: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -49,6 +51,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     mintable: opts.mintable ?? defaults.mintable,
     incremental: opts.incremental ?? defaults.incremental,
     votes: opts.votes ?? defaults.votes,
+    timestamp: opts.timestamp ?? defaults.timestamp,
   };
 }
 
@@ -94,7 +97,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c, allOpts.name);
+    addVotes(c, allOpts.name, allOpts.timestamp);
   }
 
   setAccessControl(c, access);
@@ -181,7 +184,7 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   }
 }
 
-function addVotes(c: ContractBuilder, name: string) {
+function addVotes(c: ContractBuilder, name: string, timestamp: boolean) {
   const EIP712 = {
     name: 'EIP712',
     path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
@@ -196,6 +199,14 @@ function addVotes(c: ContractBuilder, name: string) {
 
   c.addOverride(ERC721Votes, functions._update);
   c.addOverride(ERC721Votes, functions._increaseBalance);
+
+  if (timestamp) {
+    c.addOverride(ERC721Votes, functions.clock);
+    c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
+
+    c.addOverride(ERC721Votes, functions.CLOCK_MODE);
+    c.setFunctionBody(['return "mode=timestamp";'], functions.CLOCK_MODE);
+  }
 }
 
 const functions = defineFunctions({
@@ -232,6 +243,20 @@ const functions = defineFunctions({
       { name: 'value', type: 'uint128' },
     ],
   },
+
+  clock: {
+    kind: 'public' as const,
+    args: [],
+    returns: ['uint48'],
+    mutability: 'view' as const,
+  },
+
+  CLOCK_MODE: {
+    kind: 'public' as const,
+    args: [],
+    returns: ['string memory'],
+    mutability: 'pure' as const,
+  }
 });
 
 function getMintFunction(incremental: boolean, uriStorage: boolean) {

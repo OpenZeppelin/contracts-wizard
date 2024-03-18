@@ -30,6 +30,22 @@
     wasIncremental = opts.incremental;
   }
 
+  let wasVotes = opts.votes;
+  let wasTimestamp = opts.timestamp;
+
+  $: {
+    if (wasVotes && !opts.votes) {
+      opts.timestamp = false;
+    }
+
+    if (opts.timestamp && !wasTimestamp) {
+      opts.votes = true;
+    }
+
+    wasVotes = opts.votes;
+    wasTimestamp = opts.timestamp;
+  }
+
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
@@ -93,6 +109,13 @@
       Votes
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.timestamp} class="subcontrol">
+      <input type="checkbox" bind:checked={opts.timestamp}>
+      Timestamp Based Governance
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+        Uses voting durations expressed as timestamps instead of block numbers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
