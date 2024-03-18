@@ -303,6 +303,7 @@ ${c.upgradeable ? `\
 
   # Add settings in foundry.toml
   echo "" >> foundry.toml
+  echo "ffi = true" >> foundry.toml
   echo "ast = true" >> foundry.toml
   echo "build_info = true" >> foundry.toml
   echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml\
@@ -338,7 +339,7 @@ bash setup.sh
 ## Testing the contract
 
 \`\`\`
-forge test${c.upgradeable ? ' --ffi --force' : ''}
+forge test${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 ## Deploying the contract
@@ -346,7 +347,7 @@ forge test${c.upgradeable ? ' --ffi --force' : ''}
 You can simulate a deployment by running the script:
 
 \`\`\`
-forge script script/${c.name}.s.sol${c.upgradeable ? ' --ffi --force' : ''}
+forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
