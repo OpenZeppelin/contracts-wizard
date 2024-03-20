@@ -49,8 +49,14 @@ test.serial('erc20 full', async t => {
   await runTest(c, t, opts);
 });
 
-test.serial('erc721 basic', async t => {
-  const opts: GenericOptions = { kind: 'ERC721', name: 'My Token', symbol: 'MTK'};
+test.serial('erc20 uups, roles', async t => {
+  const opts: GenericOptions = { kind: 'ERC20', name: 'My Token', symbol: 'MTK', upgradeable: 'uups', access: 'roles' };
+  const c = buildERC20(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('erc721 uups, ownable', async t => {
+  const opts: GenericOptions = { kind: 'ERC721', name: 'My Token', symbol: 'MTK', upgradeable: 'uups', access: 'ownable' };
   const c = buildERC721(opts);
   await runTest(c, t, opts);
 });
@@ -61,8 +67,20 @@ test.serial('erc1155 basic', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('erc1155 transparent, ownable', async t => {
+  const opts: GenericOptions = { kind: 'ERC1155', name: 'My Token', uri: 'https://myuri/{id}', upgradeable: 'transparent', access: 'ownable' };
+  const c = buildERC1155(opts);
+  await runTest(c, t, opts);
+});
+
 test.serial('custom basic', async t => {
   const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
+  const c = buildCustom(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('custom transparent, managed', async t => {
+  const opts: GenericOptions = { kind: 'Custom',  name: 'My Contract', upgradeable: 'transparent', access: 'managed' };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
@@ -105,8 +123,8 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
   const setup = 'bash setup.sh';
-  const test = 'forge test';
-  const script = `forge script script/${c.name}.s.sol`;
+  const test = 'forge test' + (c.upgradeable ? ' --force' : '');
+  const script = `forge script script/${c.name}.s.sol` + (c.upgradeable ? ' --force' : '');
 
   const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
 
