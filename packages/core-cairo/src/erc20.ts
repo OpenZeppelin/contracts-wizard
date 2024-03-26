@@ -58,7 +58,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol));
-  addERC20ImplAndCamelOnlyImpl(c, allOpts.pausable);
+  addERC20MixinImpl(c, allOpts.pausable);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -93,9 +93,14 @@ function addERC20Interface(c: ContractBuilder) {
   c.addStandaloneImport('openzeppelin::token::erc20::interface');
 }
 
-function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
+function addERC20MixinImpl(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
     addERC20Interface(c);
+
+    c.addImplToComponent(components.ERC20Component, {
+      name: 'ERC20MetadataImpl',
+      value: 'ERC20Component::ERC20MetadataImpl<ContractState>',
+    });
 
     const ERC20Impl: BaseImplementedTrait = {
       name: 'ERC20Impl',
@@ -123,12 +128,8 @@ function addERC20ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
     setPausable(c, ERC20CamelOnlyImpl, functions.transferFrom);
   } else {
     c.addImplToComponent(components.ERC20Component, {
-      name: 'ERC20Impl',
-      value: 'ERC20Component::ERC20Impl<ContractState>',
-    });
-    c.addImplToComponent(components.ERC20Component,     {
-      name: 'ERC20CamelOnlyImpl',
-      value: 'ERC20Component::ERC20CamelOnlyImpl<ContractState>',
+      name: 'ERC20MixinImpl',
+      value: 'ERC20Component::ERC20ABI<ContractState>',
     });
   }
 }
@@ -223,12 +224,7 @@ const components = defineComponents( {
       name: 'ERC20Event',
       type: 'ERC20Component::Event',
     },
-    impls: [
-      {
-        name: 'ERC20MetadataImpl',
-        value: 'ERC20Component::ERC20MetadataImpl<ContractState>',
-      },    
-    ],
+    impls: [],
     internalImpl: {
       name: 'ERC20InternalImpl',
       value: 'ERC20Component::InternalImpl<ContractState>',
