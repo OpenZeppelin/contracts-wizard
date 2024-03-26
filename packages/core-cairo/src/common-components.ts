@@ -21,6 +21,6 @@ const components = defineComponents( {
   },
 })
 
-export function addSRC5Component(c: ContractBuilder) {
-  c.addComponent(components.SRC5Component, [], false);
+export function addSRC5Component(c: ContractBuilder, addImpls: boolean = true) {
+  c.addComponent(components.SRC5Component, [], false, addImpls);
 }

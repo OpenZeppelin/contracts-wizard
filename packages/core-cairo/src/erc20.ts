@@ -58,7 +58,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol));
-  addERC20MixinImpl(c, allOpts.pausable);
+  addERC20MixinOrImpls(c, allOpts.pausable);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -93,7 +93,7 @@ function addERC20Interface(c: ContractBuilder) {
   c.addStandaloneImport('openzeppelin::token::erc20::interface');
 }
 
-function addERC20MixinImpl(c: ContractBuilder, pausable: boolean) {
+function addERC20MixinOrImpls(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
     addERC20Interface(c);
 

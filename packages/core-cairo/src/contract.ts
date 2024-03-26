@@ -114,12 +114,12 @@ export class ContractBuilder implements Contract {
     this.standaloneImportsSet.add(fullyQualified);
   }
 
-  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
+  addComponent(component: Component, params: Value[] = [], initializable: boolean = true, addImpls: boolean = true): boolean {
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
       const initializer = initializable ? { params } : undefined;  
-      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
+      const cp: Component = { initializer, ...component, impls: addImpls ? [ ...component.impls ] : [] }; // spread impls to deep copy from original component
       this.componentsMap.set(key, cp);
     }
     return !present;
