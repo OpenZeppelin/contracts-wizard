@@ -83,19 +83,6 @@
     </label>
   </div>
 
-  <p class="tooltip-container flex justify-between items-center pr-2">
-    <label class="text-sm">
-      1 block =
-      <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
-      seconds
-    </label>
-    <HelpTooltip>
-      Assumed block time for converting above time periods into block numbers.
-      <br>
-      Block time may drift and impact these periods in the future.
-    </HelpTooltip>
-  </p>
-
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Proposal Threshold
@@ -164,6 +151,40 @@
       ERC721Votes
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>Token Clock Mode</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={true}>
+      <input type="radio" value="blocknumbers">
+      Block numbers
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+        Uses voting durations expressed as block numbers.
+      </HelpTooltip>
+    </label>
+    <p class="tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm">
+        1 block =
+        <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" disabled={true} use:resizeToFit>
+        seconds
+      </label>
+      <HelpTooltip>
+        Assumed block time for converting voting time periods into block numbers.
+        <br>
+        Block time may drift and impact these periods in the future.
+      </HelpTooltip>
+    </p>
+
+    <label class:checked={false}>
+      <input type="radio" value="timestamps">
+      Timestamps
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+        Uses voting durations expressed as timestamps instead of block numbers.
       </HelpTooltip>
     </label>
   </div>
