@@ -2,7 +2,7 @@
 
 ## 0.10.1 (2024-03-27)
 
-- Use mixins.
+- Use mixins. ([#348](https://github.com/OpenZeppelin/contracts-wizard/pull/348))
 
 ## 0.10.0 (2024-03-12)
 
