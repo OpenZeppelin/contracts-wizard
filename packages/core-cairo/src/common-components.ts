@@ -12,15 +12,18 @@ const components = defineComponents( {
       name: 'SRC5Event',
       type: 'SRC5Component::Event',
     },
-    impls: [
-      {
-        name: 'SRC5Impl',
-        value: 'SRC5Component::SRC5Impl<ContractState>',
-      },
-    ],
+    impls: [],
   },
 })
 
 export function addSRC5Component(c: ContractBuilder) {
   c.addComponent(components.SRC5Component, [], false);
+
+  if (!c.interfaceFlags.has('ISRC5')) {
+    c.addImplToComponent(components.SRC5Component, {
+      name: 'SRC5Impl',
+      value: 'SRC5Component::SRC5Impl<ContractState>',
+    });
+    c.addInterfaceFlag('ISRC5');
+  }
 }

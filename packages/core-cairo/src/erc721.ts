@@ -58,7 +58,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol), toStringLiteral(allOpts.baseUri));
-  addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
+  addERC721MixinOrImpls(c, allOpts.pausable);
+  addSRC5Component(c);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -89,9 +90,18 @@ function addERC721Interface(c: ContractBuilder) {
   c.addStandaloneImport('openzeppelin::token::erc721::interface');
 }
 
-function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
+function addERC721MixinOrImpls(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
     addERC721Interface(c);
+
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721MetadataImpl',
+      value: 'ERC721Component::ERC721MetadataImpl<ContractState>',
+    });
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721MetadataCamelOnly',
+      value: 'ERC721Component::ERC721MetadataCamelOnlyImpl<ContractState>',
+    });
 
     const ERC721Impl: BaseImplementedTrait = {
       name: 'ERC721Impl',
@@ -125,13 +135,10 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
     c.addFunction(ERC721CamelOnlyImpl, functions.isApprovedForAll);
   } else {
     c.addImplToComponent(components.ERC721Component, {
-      name: 'ERC721Impl',
-      value: 'ERC721Component::ERC721Impl<ContractState>',
+      name: 'ERC721MixinImpl',
+      value: 'ERC721Component::ERC721MixinImpl<ContractState>',
     });
-    c.addImplToComponent(components.ERC721Component, {
-      name: 'ERC721CamelOnly',
-      value: 'ERC721Component::ERC721CamelOnlyImpl<ContractState>',
-    });
+    c.addInterfaceFlag('ISRC5');
   }
 }
 
@@ -143,7 +150,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: stri
     ],
     true,
   );
-  addSRC5Component(c);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -170,16 +176,7 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [
-      {
-        name: 'ERC721MetadataImpl',
-        value: 'ERC721Component::ERC721MetadataImpl<ContractState>',
-      },
-      {
-        name: 'ERC721MetadataCamelOnly',
-        value: 'ERC721Component::ERC721MetadataCamelOnlyImpl<ContractState>',
-      }
-    ],
+    impls: [],
     internalImpl: {
       name: 'ERC721InternalImpl',
       value: 'ERC721Component::InternalImpl<ContractState>',
