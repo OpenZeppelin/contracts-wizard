@@ -58,8 +58,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol), toStringLiteral(allOpts.baseUri));
-  addSRC5Component(c, allOpts.pausable);
   addERC721MixinOrImpls(c, allOpts.pausable);
+  addSRC5Component(c);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -138,6 +138,7 @@ function addERC721MixinOrImpls(c: ContractBuilder, pausable: boolean) {
       name: 'ERC721MixinImpl',
       value: 'ERC721Component::ERC721MixinImpl<ContractState>',
     });
+    c.addInterfaceFlag('ISRC5');
   }
 }
 

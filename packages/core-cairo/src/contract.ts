@@ -89,6 +89,7 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map<string, ImplementedTrait>();
   private superVariablesMap: Map<string, Variable> = new Map<string, Variable>();
   private standaloneImportsSet: Set<string> = new Set();
+  private interfaceFlagsSet: Set<string> = new Set();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -110,16 +111,23 @@ export class ContractBuilder implements Contract {
     return [...this.standaloneImportsSet];
   }
 
+  /**
+   * Custom flags to denote that the contract implements a specific interface, e.g. ISRC5, to avoid duplicates
+   **/
+  get interfaceFlags(): Set<string> {
+    return this.interfaceFlagsSet;
+  }
+
   addStandaloneImport(fullyQualified: string) {
     this.standaloneImportsSet.add(fullyQualified);
   }
 
-  addComponent(component: Component, params: Value[] = [], initializable: boolean = true, addImpls: boolean = true): boolean {
+  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
       const initializer = initializable ? { params } : undefined;  
-      const cp: Component = { initializer, ...component, impls: addImpls ? [ ...component.impls ] : [] }; // spread impls to deep copy from original component
+      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
       this.componentsMap.set(key, cp);
     }
     return !present;
@@ -207,5 +215,9 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
+  }
+
+  addInterfaceFlag(flag: string) {
+    this.interfaceFlagsSet.add(flag);
   }
 }
