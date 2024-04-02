@@ -81,6 +81,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     }
   }
 
+  if (allOpts.updatableUri) {
+    addSetBaseUri(c, allOpts.access);
+  }
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
@@ -161,6 +165,13 @@ function addMintable(c: ContractBuilder, access: Access) {
 
   // Camel case version of batch_mint. Access control and pausable are already set on batch_mint.
   c.addFunction(externalTrait, functions.batchMint);
+}
+
+function addSetBaseUri(c: ContractBuilder, access: Access) {
+  requireAccessControl(c, externalTrait, functions.set_base_uri, access, 'URI_SETTER', 'uri_setter');
+
+  // Camel case version of set_base_uri. Access control is already set on set_base_uri.
+  c.addFunction(externalTrait, functions.setBaseUri);
 }
 
 const components = defineComponents( {
@@ -254,6 +265,24 @@ const functions = defineFunctions({
     ],
     code: [
       'self.batch_mint(account, tokenIds, values, data);',
+    ]
+  },
+  set_base_uri: {
+    args: [
+      getSelfArg(),
+      { name: 'base_uri', type: 'ByteArray' },
+    ],
+    code: [
+      'self.erc1155.set_base_uri(base_uri);'
+    ]
+  },
+  setBaseUri: {
+    args: [
+      getSelfArg(),
+      { name: 'baseUri', type: 'ByteArray' },
+    ],
+    code: [
+      'self.set_base_uri(baseUri);'
     ]
   },
 

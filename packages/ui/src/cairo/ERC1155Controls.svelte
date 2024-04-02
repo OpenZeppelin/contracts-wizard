@@ -26,7 +26,7 @@
   </label>
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
-      URI
+      Base URI
       <HelpTooltip>Location of the metadata. Clients will replace any instance of {"{id}"} in this string with the tokenId.</HelpTooltip>
     </span>
     <input bind:value={opts.baseUri} placeholder="https://...">
