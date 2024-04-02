@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Use OpenZeppelin Contracts for Cairo v0.11.0.
+- Use OpenZeppelin Contracts for Cairo v0.11.0. ([#351](https://github.com/OpenZeppelin/contracts-wizard/pull/351))
 - Add ERC1155.
 - Remove redundant not paused assertions for camel case functions.
 - Fix use of ERC20 mixin.
