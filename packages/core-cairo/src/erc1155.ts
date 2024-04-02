@@ -126,11 +126,12 @@ function addERC1155MixinOrImpls(c: ContractBuilder, pausable: boolean) {
         'abi(embed_v0)'
       ],
     }
+    // Camel case versions of the functions above. Pausable is already set above.
     c.addFunction(ERC1155CamelImpl, functions.balanceOf);
     c.addFunction(ERC1155CamelImpl, functions.balanceOfBatch);
-    setPausable(c, ERC1155CamelImpl, functions.safeTransferFrom);
-    setPausable(c, ERC1155CamelImpl, functions.safeBatchTransferFrom);
-    setPausable(c, ERC1155CamelImpl, functions.setApprovalForAll);
+    c.addFunction(ERC1155CamelImpl, functions.safeTransferFrom);
+    c.addFunction(ERC1155CamelImpl, functions.safeBatchTransferFrom);
+    c.addFunction(ERC1155CamelImpl, functions.setApprovalForAll);
     c.addFunction(ERC1155CamelImpl, functions.isApprovedForAll);
   } else {
     c.addImplToComponent(components.ERC1155Component, {
