@@ -130,7 +130,7 @@ function addERC20MixinOrImpls(c: ContractBuilder, pausable: boolean) {
   } else {
     c.addImplToComponent(components.ERC20Component, {
       name: 'ERC20MixinImpl',
-      value: 'ERC20Component::ERC20ABI<ContractState>',
+      value: 'ERC20Component::ERC20MixinImpl<ContractState>',
     });
   }
 }
