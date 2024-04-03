@@ -204,7 +204,9 @@ const functions = defineFunctions({
     ],
     code: [
       'let caller = get_caller_address();',
-      'assert(self.erc1155.is_approved_for_all(account, caller), ERC1155Component::Errors::UNAUTHORIZED)',
+      'if account != caller {',
+      '    assert(self.erc1155.is_approved_for_all(account, caller), ERC1155Component::Errors::UNAUTHORIZED)',
+      '}',
       'self.erc1155.burn(account, token_id, value);'
     ]
   },
@@ -217,7 +219,9 @@ const functions = defineFunctions({
     ],
     code: [
       'let caller = get_caller_address();',
-      'assert(self.erc1155.is_approved_for_all(account, caller), ERC1155Component::Errors::UNAUTHORIZED)',
+      'if account != caller {',
+      '    assert(self.erc1155.is_approved_for_all(account, caller), ERC1155Component::Errors::UNAUTHORIZED)',
+      '}',
       'self.erc1155.batch_burn(account, token_ids, values);'
     ]
   },
