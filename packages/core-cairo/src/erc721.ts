@@ -126,11 +126,12 @@ function addERC721MixinOrImpls(c: ContractBuilder, pausable: boolean) {
         'abi(embed_v0)'
       ],
     }
+    // Camel case versions of the functions above. Pausable is already set above.
     c.addFunction(ERC721CamelOnlyImpl, functions.balanceOf);
     c.addFunction(ERC721CamelOnlyImpl, functions.ownerOf);
-    setPausable(c, ERC721CamelOnlyImpl, functions.safeTransferFrom);
-    setPausable(c, ERC721CamelOnlyImpl, functions.transferFrom);
-    setPausable(c, ERC721CamelOnlyImpl, functions.setApprovalForAll);
+    c.addFunction(ERC721CamelOnlyImpl, functions.safeTransferFrom);
+    c.addFunction(ERC721CamelOnlyImpl, functions.transferFrom);
+    c.addFunction(ERC721CamelOnlyImpl, functions.setApprovalForAll);
     c.addFunction(ERC721CamelOnlyImpl, functions.getApproved);
     c.addFunction(ERC721CamelOnlyImpl, functions.isApprovedForAll);
   } else {

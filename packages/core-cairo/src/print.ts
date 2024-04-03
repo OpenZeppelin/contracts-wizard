@@ -42,33 +42,17 @@ function printSuperVariables(contract: Contract) {
 
 function printImports(contract: Contract) {
   const lines: string[] = [];
-  getCategorizedImports(contract)
-    .forEach(category => category.forEach(i => lines.push(`use ${i}`)));
+  sortImports(contract).forEach(i => lines.push(`use ${i}`));
   return withSemicolons(lines);
 }
 
-function getCategorizedImports(contract: Contract) {
+function sortImports(contract: Contract) {
   const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
-  const combined = componentImports.concat(contract.standaloneImports);
-
-  const ozTokenImports = [];
-  const ozImports = [];
-  const otherImports = [];
-  const superImports = [];
-
-  for (const importStatement of combined) {
-    if (importStatement.startsWith('openzeppelin::token')) {
-      ozTokenImports.push(importStatement);
-    } else if (importStatement.startsWith('openzeppelin')) {
-      ozImports.push(importStatement);
-    } else {
-      otherImports.push(importStatement);
-    }
-  }
+  const allImports = componentImports.concat(contract.standaloneImports);
   if (contract.superVariables.length > 0) {
-    superImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
+    allImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
   }
-  return [ ozTokenImports, ozImports, otherImports, superImports ];
+  return allImports.sort();
 }
 
 function printComponentDeclarations(contract: Contract) {
@@ -152,8 +136,8 @@ function printFunction(fn: ContractFunction) {
   for (let i = 0; i < codeLines.length; i++) {
     const line = codeLines[i];
     const shouldEndWithSemicolon = i < codeLines.length - 1 || fn.returns === undefined;
-    if (line !== undefined) {
-      if (shouldEndWithSemicolon && !line.endsWith(';')) {
+    if (line !== undefined && line.length > 0) {
+      if (shouldEndWithSemicolon && !['{', '}', ';'].includes(line.charAt(line.length - 1))) {
         codeLines[i] += ';';
       } else if (!shouldEndWithSemicolon && line.endsWith(';')) {
         codeLines[i] = line.slice(0, line.length - 1);

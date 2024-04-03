@@ -123,13 +123,14 @@ function addERC20MixinOrImpls(c: ContractBuilder, pausable: boolean) {
         'abi(embed_v0)'
       ],
     }
+    // Camel case versions of the functions above. Pausable is already set above.
     c.addFunction(ERC20CamelOnlyImpl, functions.totalSupply);
     c.addFunction(ERC20CamelOnlyImpl, functions.balanceOf);
-    setPausable(c, ERC20CamelOnlyImpl, functions.transferFrom);
+    c.addFunction(ERC20CamelOnlyImpl, functions.transferFrom);
   } else {
     c.addImplToComponent(components.ERC20Component, {
       name: 'ERC20MixinImpl',
-      value: 'ERC20Component::ERC20ABI<ContractState>',
+      value: 'ERC20Component::ERC20MixinImpl<ContractState>',
     });
   }
 }
