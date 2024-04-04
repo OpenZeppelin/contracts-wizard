@@ -6,7 +6,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { setClockMode } from './set-clock-mode';
+import { ClockMode, clockModeDefault, clockModeOptions, setClockMode } from './set-clock-mode';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -16,8 +16,7 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
-  votes?: boolean;
-  timestamp?: boolean;
+  votes?: boolean | ClockMode;
   flashmint?: boolean;
 }
 
@@ -30,7 +29,6 @@ export const defaults: Required<ERC20Options> = {
   mintable: false,
   permit: true,
   votes: false,
-  timestamp: false,
   flashmint: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -47,7 +45,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     mintable: opts.mintable ?? defaults.mintable,
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
-    timestamp: opts.timestamp ?? defaults.timestamp,
     flashmint: opts.flashmint ?? defaults.flashmint,
   };
 }
@@ -91,7 +88,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c, allOpts.timestamp);
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, clockMode);
   }
 
   if (allOpts.flashmint) {
@@ -170,7 +168,7 @@ function addPermit(c: ContractBuilder, name: string) {
 
 }
 
-function addVotes(c: ContractBuilder, timestamp: boolean) {
+function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
     throw new Error('Missing ERC20Permit requirement for ERC20Votes');
   }
@@ -185,7 +183,7 @@ function addVotes(c: ContractBuilder, timestamp: boolean) {
     name: 'Nonces',
   }, functions.nonces);
 
-  setClockMode(c, ERC20Votes, timestamp);
+  setClockMode(c, ERC20Votes, clockMode);
 }
 
 function addFlashMint(c: ContractBuilder) {

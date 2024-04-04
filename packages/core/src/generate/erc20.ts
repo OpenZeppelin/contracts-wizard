@@ -1,5 +1,6 @@
 import type { ERC20Options } from '../erc20';
 import { accessOptions } from '../set-access-control';
+import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
@@ -14,7 +15,7 @@ const blueprint = {
   mintable: booleans,
   permit: booleans,
   votes: booleans,
-  timestamp: booleans,
+  clockMode: clockModeOptions,
   flashmint: booleans,
   premint: ['1'],
   access: accessOptions,

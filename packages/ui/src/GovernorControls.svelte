@@ -184,7 +184,7 @@
       <input type="radio" value="timestamps">
       Timestamps
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
-        Uses voting durations expressed as timestamps instead of block numbers.
+        Uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
   </div>

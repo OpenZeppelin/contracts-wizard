@@ -7,7 +7,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { setClockMode } from './set-clock-mode';
+import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -19,8 +19,7 @@ export interface ERC721Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   incremental?: boolean;
-  votes?: boolean;
-  timestamp?: boolean;
+  votes?: boolean | ClockMode;
 }
 
 export const defaults: Required<ERC721Options> = {
@@ -34,7 +33,6 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   incremental: false,
   votes: false,
-  timestamp: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -52,7 +50,6 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     mintable: opts.mintable ?? defaults.mintable,
     incremental: opts.incremental ?? defaults.incremental,
     votes: opts.votes ?? defaults.votes,
-    timestamp: opts.timestamp ?? defaults.timestamp,
   };
 }
 
@@ -98,7 +95,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c, allOpts.name, allOpts.timestamp);
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, allOpts.name, clockMode);
   }
 
   setAccessControl(c, access);
@@ -185,7 +183,7 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   }
 }
 
-function addVotes(c: ContractBuilder, name: string, timestamp: boolean) {
+function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   const EIP712 = {
     name: 'EIP712',
     path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
@@ -201,7 +199,7 @@ function addVotes(c: ContractBuilder, name: string, timestamp: boolean) {
   c.addOverride(ERC721Votes, functions._update);
   c.addOverride(ERC721Votes, functions._increaseBalance);
 
-  setClockMode(c, ERC721Votes, timestamp);
+  setClockMode(c, ERC721Votes, clockMode);
 }
 
 const functions = defineFunctions({

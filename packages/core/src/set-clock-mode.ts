@@ -1,5 +1,9 @@
-import type { ContractBuilder, ParentContract, ReferencedContract } from "./contract";
+import type { ContractBuilder, ReferencedContract } from "./contract";
 import { defineFunctions } from "./utils/define-functions";
+
+export const clockModeOptions = ['blocknumber', 'timestamp'] as const;
+export const clockModeDefault = 'blocknumber' as const;
+export type ClockMode = typeof clockModeOptions[number];
 
 const functions = defineFunctions({
   clock: {
@@ -17,8 +21,8 @@ const functions = defineFunctions({
   }
 });
 
-export function setClockMode(c: ContractBuilder, parent: ReferencedContract, timestamp: boolean) {
-  if (timestamp) {
+export function setClockMode(c: ContractBuilder, parent: ReferencedContract, votes: ClockMode) {
+  if (votes === 'timestamp') {
     c.addOverride(parent, functions.clock);
     c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
 
