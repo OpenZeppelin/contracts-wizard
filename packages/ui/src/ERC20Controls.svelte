@@ -107,14 +107,14 @@
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
-      Block Numbers
+      Block Number
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
         Uses voting durations expressed as block numbers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.votes === 'timestamp'}>
       <input type="radio" bind:group={opts.votes} value="timestamp">
-      Timestamps
+      Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
       </HelpTooltip>

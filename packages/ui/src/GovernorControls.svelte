@@ -161,8 +161,8 @@
 
   <div class="checkbox-group">
     <label class:checked={true}>
-      <input type="radio" value="blocknumbers">
-      Block numbers
+      <input type="radio" value="blocknumber">
+      Block Number
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
         Uses voting durations expressed as block numbers.
       </HelpTooltip>
@@ -181,8 +181,8 @@
     </p>
 
     <label class:checked={false}>
-      <input type="radio" value="timestamps">
-      Timestamps
+      <input type="radio" value="timestamp">
+      Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
       </HelpTooltip>
