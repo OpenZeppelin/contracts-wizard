@@ -8,6 +8,7 @@ import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks } from "./utils/duration";
+import { clockModeDefault, type ClockMode } from "./set-clock-mode";
 
 export const defaults: Required<GovernorOptions> = {
   name: 'MyGovernor',
@@ -15,6 +16,7 @@ export const defaults: Required<GovernorOptions> = {
   period: '1 week',
 
   votes: 'erc20votes',
+  clockMode: clockModeDefault,
   timelock: 'openzeppelin',
   blockTime: 12,
   decimals: 18,
@@ -51,6 +53,7 @@ export interface GovernorOptions extends CommonOptions {
   quorumPercent?: number;
   quorumAbsolute?: string;
   votes?: VotesOptions;
+  clockMode?: ClockMode;
   timelock?: TimelockOptions;
   storage?: boolean;
   settings?: boolean;
@@ -73,6 +76,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     storage: opts.storage ?? defaults.storage,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
+    clockMode: opts.clockMode ?? defaults.clockMode,
     timelock: opts.timelock ?? defaults.timelock
   };
 }

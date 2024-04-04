@@ -160,8 +160,8 @@
   <h1>Token Clock Mode</h1>
 
   <div class="checkbox-group">
-    <label class:checked={true}>
-      <input type="radio" value="blocknumber">
+    <label class:checked={opts.clockMode === 'blocknumber'}>
+      <input type="radio" bind:group={opts.clockMode} value="blocknumber">
       Block Number
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
         Uses voting durations expressed as block numbers.
@@ -170,7 +170,7 @@
     <p class="tooltip-container flex justify-between items-center pr-2">
       <label class="text-sm">
         1 block =
-        <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" disabled={true} use:resizeToFit>
+        <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" disabled={opts.clockMode === 'timestamp'} use:resizeToFit>
         seconds
       </label>
       <HelpTooltip>
@@ -180,8 +180,8 @@
       </HelpTooltip>
     </p>
 
-    <label class:checked={false}>
-      <input type="radio" value="timestamp">
+    <label class:checked={opts.clockMode === 'timestamp'}>
+      <input type="radio" bind:group={opts.clockMode} value="timestamp">
       Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
