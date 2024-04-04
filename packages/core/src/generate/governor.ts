@@ -1,5 +1,6 @@
 import { defaults, GovernorOptions, timelockOptions, votesOptions } from '../governor';
 import { accessOptions } from '../set-access-control';
+import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
@@ -17,6 +18,7 @@ const blueprint = {
   quorumPercent: [4],
   quorumAbsolute: ['1000'],
   votes: votesOptions,
+  clockMode: clockModeOptions,
   timelock: timelockOptions,
   storage: booleans,
   settings: booleans,
