@@ -81,13 +81,11 @@ testERC20('erc20 votes', {
 });
 
 testERC20('erc20 votes + blocknumber', {
-  votes: true,
-  clockMode: 'blocknumber',
+  votes: 'blocknumber',
 });
 
 testERC20('erc20 votes + timestamp', {
-  votes: true,
-  clockMode: 'timestamp',
+  votes: 'timestamp',
 });
 
 testERC20('erc20 flashmint', {
