@@ -1,13 +1,13 @@
 import { supportsInterface } from "./common-functions";
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from "./common-options";
-import { ContractBuilder, Contract } from "./contract";
+import { ContractBuilder, Contract, Value } from "./contract";
 import { OptionsError } from "./error";
 import { setAccessControl } from "./set-access-control";
 import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
-import { durationToBlocks } from "./utils/duration";
+import { durationToBlocks, durationToTimestamp } from "./utils/duration";
 import { clockModeDefault, type ClockMode } from "./set-clock-mode";
 
 export const defaults: Required<GovernorOptions> = {
@@ -133,8 +133,8 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
     c.addParent(
       GovernorSettings,
       [
-        { value: getVotingDelay(allOpts), note: allOpts.delay },
-        { value: getVotingPeriod(allOpts), note: allOpts.period },
+        getVotingDelay(allOpts),
+        getVotingPeriod(allOpts),
         { lit: getProposalThreshold(allOpts) },
       ],
     );
@@ -147,9 +147,18 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   }
 }
 
-function getVotingDelay(opts: Required<GovernorOptions>): number {
+function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: Value } {
   try {
-    return durationToBlocks(opts.delay, opts.blockTime);
+    if (opts.clockMode === 'timestamp') {
+      return {
+        lit: durationToTimestamp(opts.delay),
+      };
+    } else {
+      return {
+        value: durationToBlocks(opts.delay, opts.blockTime),
+        note: opts.delay
+      };
+    }
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
@@ -161,9 +170,18 @@ function getVotingDelay(opts: Required<GovernorOptions>): number {
   }
 }
 
-function getVotingPeriod(opts: Required<GovernorOptions>): number {
+function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: Value } {
   try {
-    return durationToBlocks(opts.period, opts.blockTime);
+    if (opts.clockMode === 'timestamp') {
+      return {
+        lit: durationToTimestamp(opts.period),
+      };
+    } else {
+      return {
+        value: durationToBlocks(opts.period, opts.blockTime),
+        note: opts.period
+      };
+    }
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
@@ -199,10 +217,18 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
 
 function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
   const delayBlocks = getVotingDelay(opts);
-  c.setFunctionBody([`return ${delayBlocks}; // ${opts.delay}`], functions.votingDelay);
+  if ('lit' in delayBlocks) {
+    c.setFunctionBody([`return ${delayBlocks.lit};`], functions.votingDelay);
+  } else {
+    c.setFunctionBody([`return ${delayBlocks.value}; // ${delayBlocks.note}`], functions.votingDelay);
+  }
 
   const periodBlocks = getVotingPeriod(opts);
-  c.setFunctionBody([`return ${periodBlocks}; // ${opts.period}`], functions.votingPeriod);
+  if ('lit' in periodBlocks) {
+    c.setFunctionBody([`return ${periodBlocks.lit};`], functions.votingPeriod);
+  } else {
+    c.setFunctionBody([`return ${periodBlocks.value}; // ${periodBlocks.note}`], functions.votingPeriod);
+  }
 }
 
 function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions>) {
