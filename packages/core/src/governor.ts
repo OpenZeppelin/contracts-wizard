@@ -147,7 +147,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   }
 }
 
-function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: Value } {
+function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
   try {
     if (opts.clockMode === 'timestamp') {
       return {
@@ -170,7 +170,7 @@ function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { no
   }
 }
 
-function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: Value } {
+function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
   try {
     if (opts.clockMode === 'timestamp') {
       return {
