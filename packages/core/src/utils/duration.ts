@@ -43,6 +43,7 @@ export function durationToTimestamp(duration: string): string {
   const value = match[1]!;
   const unit = match[2]! as DurationUnit;
 
+  // unit must be a Solidity supported time unit
   if (unit === 'block' || unit === 'month' || unit === 'year') {
     throw new Error('Invalid unit for timestamp');
   }
