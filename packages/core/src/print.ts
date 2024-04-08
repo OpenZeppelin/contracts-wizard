@@ -73,6 +73,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     const constructor = printFunction2(
+      [],
       head,
       args,
       modifiers,
@@ -193,6 +194,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 
   if (modifiers.length + fn.code.length > 1) {
     return printFunction2(
+      fn.comments,
       'function ' + fn.name,
       fn.args.map(a => printArgument(a, helpers)),
       modifiers,
@@ -205,8 +207,8 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 
 // generic for functions and constructors
 // kindedName = 'function foo' or 'constructor'
-function printFunction2(kindedName: string, args: string[], modifiers: string[], code: Lines[]): Lines[] {
-  const fn = [];
+function printFunction2(comments: string[], kindedName: string, args: string[], modifiers: string[], code: Lines[]): Lines[] {
+  const fn: Lines[] = [ ...comments ];
 
   const headingLength = [kindedName, ...args, ...modifiers]
     .map(s => s.length)

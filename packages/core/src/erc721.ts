@@ -7,6 +7,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
+import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -18,7 +19,11 @@ export interface ERC721Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   incremental?: boolean;
-  votes?: boolean;
+  /**
+   * Whether to keep track of individual units for voting in on-chain governance, and optionally specify the clock mode.
+   * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
+   */
+  votes?: boolean | ClockMode;
 }
 
 export const defaults: Required<ERC721Options> = {
@@ -34,7 +39,7 @@ export const defaults: Required<ERC721Options> = {
   votes: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -94,7 +99,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c, allOpts.name);
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, allOpts.name, clockMode);
   }
 
   setAccessControl(c, access);
@@ -181,7 +187,7 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   }
 }
 
-function addVotes(c: ContractBuilder, name: string) {
+function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   const EIP712 = {
     name: 'EIP712',
     path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
@@ -196,6 +202,8 @@ function addVotes(c: ContractBuilder, name: string) {
 
   c.addOverride(ERC721Votes, functions._update);
   c.addOverride(ERC721Votes, functions._increaseBalance);
+
+  setClockMode(c, ERC721Votes, clockMode);
 }
 
 const functions = defineFunctions({

@@ -103,6 +103,34 @@ testGovernor('governor with compound timelock', {
   timelock: 'compound',
 });
 
+testGovernor('governor with blocknumber, updatable settings', {
+  clockMode: 'blocknumber',
+  delay: '1 day',
+  period: '2 weeks',
+  settings: true,
+});
+
+testGovernor('governor with blocknumber, non-updatable settings', {
+  clockMode: 'blocknumber',
+  delay: '1 block',
+  period: '2 weeks',
+  settings: false,
+});
+
+testGovernor('governor with timestamp clock mode, updatable settings', {
+  clockMode: 'timestamp',
+  delay: '1 day',
+  period: '2 weeks',
+  settings: true,
+});
+
+testGovernor('governor with timestamp clock mode, non-updatable settings', {
+  clockMode: 'timestamp',
+  delay: '1 day',
+  period: '2 weeks',
+  settings: false,
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week' });

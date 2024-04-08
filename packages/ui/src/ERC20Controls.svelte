@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import ToggleRadio from './inputs/ToggleRadio.svelte';
 
   export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
@@ -79,19 +80,43 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes}>
-      <input type="checkbox" bind:checked={opts.votes}>
-      Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
-        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-
     <label class:checked={opts.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint}>
       Flash Minting
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20FlashMint">
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Votes</span>
+      <span class="ml-1">
+        <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
+        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.votes === 'blocknumber'}>
+      <input type="radio" bind:group={opts.votes} value="blocknumber">
+      Block Number
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+        Uses voting durations expressed as block numbers.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.votes === 'timestamp'}>
+      <input type="radio" bind:group={opts.votes} value="timestamp">
+      Timestamp
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+        Uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
   </div>

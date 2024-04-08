@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3 (2024-04-08)
+
+- Add timestamp based Governor and Votes clock options. ([#347](https://github.com/OpenZeppelin/contracts-wizard/pull/347))
+
 ## 0.4.2 (2024-02-22)
 
 - Add code comments for compatible OpenZeppelin Contracts versions. ([#331](https://github.com/OpenZeppelin/contracts-wizard/pull/331))

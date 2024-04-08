@@ -32,3 +32,21 @@ export function durationToBlocks(duration: string, blockTime: number): number {
   const durationSeconds = value * secondsForUnit[unit];
   return Math.round(durationSeconds / blockTime);
 }
+
+export function durationToTimestamp(duration: string): string {
+  const match = duration.trim().match(durationPattern);
+
+  if (!match) {
+    throw new Error('Bad duration format');
+  }
+
+  const value = match[1]!;
+  const unit = match[2]! as DurationUnit;
+
+  // unit must be a Solidity supported time unit
+  if (unit === 'block' || unit === 'month' || unit === 'year') {
+    throw new Error('Invalid unit for timestamp');
+  }
+
+  return `${value} ${unit}s`;
+}
