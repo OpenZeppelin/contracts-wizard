@@ -6,7 +6,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { ClockMode, clockModeDefault, clockModeOptions, setClockMode } from './set-clock-mode';
+import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -16,6 +16,10 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
+  /**
+   * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
+   * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
+   */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
 }

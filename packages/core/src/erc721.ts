@@ -1,4 +1,4 @@
-import { BaseFunction, Contract, ContractBuilder, ContractFunction } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
@@ -19,6 +19,10 @@ export interface ERC721Options extends CommonOptions {
   pausable?: boolean;
   mintable?: boolean;
   incremental?: boolean;
+  /**
+   * Whether to keep track of individual units for voting in on-chain governance, and optionally specify the clock mode.
+   * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
+   */
   votes?: boolean | ClockMode;
 }
 
