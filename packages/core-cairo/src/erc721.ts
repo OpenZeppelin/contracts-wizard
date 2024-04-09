@@ -10,11 +10,12 @@ import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
-import { toShortString } from './utils/convert-strings';
+import { toStringLiteral } from './utils/convert-strings';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   symbol: 'MTK',
+  baseUri: '',
   burnable: false,
   pausable: false,
   mintable: false,
@@ -30,6 +31,7 @@ export function printERC721(opts: ERC721Options = defaults): string {
 export interface ERC721Options extends CommonOptions {
   name: string;
   symbol: string;
+  baseUri?: string;
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
@@ -39,6 +41,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    baseUri: opts.baseUri ?? defaults.baseUri,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
@@ -54,8 +57,9 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toShortString(allOpts.name, 'name'), toShortString(allOpts.symbol, 'symbol'));
-  addERC721ImplAndCamelOnlyImpl(c, allOpts.pausable);
+  addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol), toStringLiteral(allOpts.baseUri));
+  addERC721MixinOrImpls(c, allOpts.pausable);
+  addSRC5Component(c);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -86,9 +90,18 @@ function addERC721Interface(c: ContractBuilder) {
   c.addStandaloneImport('openzeppelin::token::erc721::interface');
 }
 
-function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
+function addERC721MixinOrImpls(c: ContractBuilder, pausable: boolean) {
   if (pausable) {
     addERC721Interface(c);
+
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721MetadataImpl',
+      value: 'ERC721Component::ERC721MetadataImpl<ContractState>',
+    });
+    c.addImplToComponent(components.ERC721Component, {
+      name: 'ERC721MetadataCamelOnly',
+      value: 'ERC721Component::ERC721MetadataCamelOnlyImpl<ContractState>',
+    });
 
     const ERC721Impl: BaseImplementedTrait = {
       name: 'ERC721Impl',
@@ -113,34 +126,31 @@ function addERC721ImplAndCamelOnlyImpl(c: ContractBuilder, pausable: boolean) {
         'abi(embed_v0)'
       ],
     }
+    // Camel case versions of the functions above. Pausable is already set above.
     c.addFunction(ERC721CamelOnlyImpl, functions.balanceOf);
     c.addFunction(ERC721CamelOnlyImpl, functions.ownerOf);
-    setPausable(c, ERC721CamelOnlyImpl, functions.safeTransferFrom);
-    setPausable(c, ERC721CamelOnlyImpl, functions.transferFrom);
-    setPausable(c, ERC721CamelOnlyImpl, functions.setApprovalForAll);
+    c.addFunction(ERC721CamelOnlyImpl, functions.safeTransferFrom);
+    c.addFunction(ERC721CamelOnlyImpl, functions.transferFrom);
+    c.addFunction(ERC721CamelOnlyImpl, functions.setApprovalForAll);
     c.addFunction(ERC721CamelOnlyImpl, functions.getApproved);
     c.addFunction(ERC721CamelOnlyImpl, functions.isApprovedForAll);
   } else {
     c.addImplToComponent(components.ERC721Component, {
-      name: 'ERC721Impl',
-      value: 'ERC721Component::ERC721Impl<ContractState>',
+      name: 'ERC721MixinImpl',
+      value: 'ERC721Component::ERC721MixinImpl<ContractState>',
     });
-    c.addImplToComponent(components.ERC721Component, {
-      name: 'ERC721CamelOnly',
-      value: 'ERC721Component::ERC721CamelOnlyImpl<ContractState>',
-    });
+    c.addInterfaceFlag('ISRC5');
   }
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
+function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
   c.addComponent(
     components.ERC721Component,
     [
-      name, symbol
+      name, symbol, baseUri,
     ],
     true,
   );
-  addSRC5Component(c);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -167,16 +177,7 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [
-      {
-        name: 'ERC721MetadataImpl',
-        value: 'ERC721Component::ERC721MetadataImpl<ContractState>',
-      },
-      {
-        name: 'ERC721MetadataCamelOnly',
-        value: 'ERC721Component::ERC721MetadataCamelOnlyImpl<ContractState>',
-      }
-    ],
+    impls: [],
     internalImpl: {
       name: 'ERC721InternalImpl',
       value: 'ERC721Component::InternalImpl<ContractState>',
@@ -202,11 +203,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'token_id', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'token_uri', type: 'felt252' },
     ],
     code: [
       'self.erc721._safe_mint(recipient, token_id, data);',
-      'self.erc721._set_token_uri(token_id, token_uri);',
     ]
   },
   safeMint: {
@@ -215,10 +214,9 @@ const functions = defineFunctions({
       { name: 'recipient', type: 'ContractAddress' },
       { name: 'tokenId', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
-      { name: 'tokenURI', type: 'felt252' },
     ],
     code: [
-      'self.safe_mint(recipient, tokenId, data, tokenURI);',
+      'self.safe_mint(recipient, tokenId, data);',
     ]
   },
 

@@ -89,6 +89,7 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map<string, ImplementedTrait>();
   private superVariablesMap: Map<string, Variable> = new Map<string, Variable>();
   private standaloneImportsSet: Set<string> = new Set();
+  private interfaceFlagsSet: Set<string> = new Set();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -108,6 +109,13 @@ export class ContractBuilder implements Contract {
 
   get standaloneImports(): string[] {
     return [...this.standaloneImportsSet];
+  }
+
+  /**
+   * Custom flags to denote that the contract implements a specific interface, e.g. ISRC5, to avoid duplicates
+   **/
+  get interfaceFlags(): Set<string> {
+    return this.interfaceFlagsSet;
   }
 
   addStandaloneImport(fullyQualified: string) {
@@ -207,5 +215,9 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
+  }
+
+  addInterfaceFlag(flag: string) {
+    this.interfaceFlagsSet.add(flag);
   }
 }

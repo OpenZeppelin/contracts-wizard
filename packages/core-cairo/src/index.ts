@@ -20,6 +20,6 @@ export { OptionsError } from './error';
 export type { Kind } from './kind';
 export { sanitizeKind } from './kind';
 
-export { contractsVersion, contractsVersionTag } from './utils/version';
+export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
-export { erc20, erc721, custom } from './api';
+export { erc20, erc721, erc1155, custom } from './api';

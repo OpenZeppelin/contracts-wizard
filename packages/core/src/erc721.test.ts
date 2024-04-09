@@ -89,6 +89,14 @@ testERC721('votes', {
   votes: true,
 });
 
+testERC721('votes + blocknumber', {
+  votes: 'blocknumber',
+});
+
+testERC721('votes + timestamp', {
+  votes: 'timestamp',
+});
+
 testERC721('full upgradeable transparent', {
   mintable: true,
   enumerable: true,

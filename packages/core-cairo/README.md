@@ -80,17 +80,6 @@ Calculates the initial supply that would be used in an ERC20 contract based on a
 Returns `premint` with zeros padded or removed based on `decimals`.
 Throws an error if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
 
-### Utility functions
-
-#### `utils.toUint256`
-
-Returns Uint256 components for low and high bits based on a given number in string format.
-
-- `num` Number in string format
-
-Returns an object with lowBits and highBits.
-Throws an error if the provided number is larger than 256 bits.
-
 ### Examples
 
 Import the contract type(s) or function categories (for example, `erc20` or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:

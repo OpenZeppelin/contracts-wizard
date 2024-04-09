@@ -1,4 +1,4 @@
-export type Message = ResizeMessage | TabChangeMessage;
+export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage;
 
 export interface ResizeMessage {
   kind: 'oz-wizard-resize';
@@ -8,6 +8,10 @@ export interface ResizeMessage {
 export interface TabChangeMessage {
   kind: 'oz-wizard-tab-change';
   tab: string;
+}
+
+export interface UnsupportedVersionMessage {
+  kind: 'oz-wizard-unsupported-version';
 }
 
 export function postMessage(msg: Message) {

@@ -243,7 +243,7 @@
         </button>
         {/if}
 
-        {#if opts?.kind !== "Governor" && opts?.upgradeable === false}
+        {#if opts?.kind !== "Governor"}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">

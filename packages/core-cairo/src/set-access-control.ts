@@ -21,6 +21,22 @@ export type Access = typeof accessOptions[number];
     }
     case 'roles': {
       if (c.addComponent(components.AccessControlComponent, [], true)) {
+        if (c.interfaceFlags.has('ISRC5')) {
+          c.addImplToComponent(components.AccessControlComponent, {
+            name: 'AccessControlImpl',
+            value: 'AccessControlComponent::AccessControlImpl<ContractState>',
+          });
+          c.addImplToComponent(components.AccessControlComponent, {
+            name: 'AccessControlCamelImpl',
+            value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
+          });
+        } else {
+          c.addImplToComponent(components.AccessControlComponent, {
+            name: 'AccessControlMixinImpl',
+            value: 'AccessControlComponent::AccessControlMixinImpl<ContractState>',
+          });
+          c.addInterfaceFlag('ISRC5');
+        }
         addSRC5Component(c);
 
         c.addStandaloneImport('starknet::ContractAddress');
@@ -80,13 +96,9 @@ const components = defineComponents( {
     },
     impls: [
       {
-        name: 'OwnableImpl',
-        value: 'OwnableComponent::OwnableImpl<ContractState>',
+        name: 'OwnableMixinImpl',
+        value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
       },
-      {
-        name: 'OwnableCamelOnlyImpl',
-        value: 'OwnableComponent::OwnableCamelOnlyImpl<ContractState>',
-      },      
     ],
     internalImpl: {
       name: 'OwnableInternalImpl',
@@ -103,16 +115,7 @@ const components = defineComponents( {
       name: 'AccessControlEvent',
       type: 'AccessControlComponent::Event',
     },
-    impls: [
-      {
-        name: 'AccessControlImpl',
-        value: 'AccessControlComponent::AccessControlImpl<ContractState>',
-      },
-      {
-        name: 'AccessControlCamelImpl',
-        value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
-      },      
-    ],
+    impls: [],
     internalImpl: {
       name: 'AccessControlInternalImpl',
       value: 'AccessControlComponent::InternalImpl<ContractState>',

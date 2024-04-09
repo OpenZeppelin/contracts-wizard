@@ -83,19 +83,6 @@
     </label>
   </div>
 
-  <p class="tooltip-container flex justify-between items-center pr-2">
-    <label class="text-sm">
-      1 block =
-      <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" use:resizeToFit>
-      seconds
-    </label>
-    <HelpTooltip>
-      Assumed block time for converting above time periods into block numbers.
-      <br>
-      Block time may drift and impact these periods in the future.
-    </HelpTooltip>
-  </p>
-
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Proposal Threshold
@@ -164,6 +151,50 @@
       ERC721Votes
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex justify-between items-center tooltip-container pr-2">
+      <span>Token Clock Mode</span>
+      <HelpTooltip>
+        The clock mode used by the voting token.
+        <br>
+        <b>NOTE:</b> This setting must be the same as what the token uses.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.clockMode === 'blocknumber'}>
+      <input type="radio" bind:group={opts.clockMode} value="blocknumber">
+      Block Number
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+        The token uses voting durations expressed as block numbers.
+      </HelpTooltip>
+    </label>
+    <p class="tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm">
+        1 block =
+        <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" disabled={opts.clockMode === 'timestamp'} use:resizeToFit>
+        seconds
+      </label>
+      <HelpTooltip>
+        Assumed block time for converting voting time periods into block numbers.
+        <br>
+        Block time may drift and impact these periods in the future.
+      </HelpTooltip>
+    </p>
+
+    <label class:checked={opts.clockMode === 'timestamp'}>
+      <input type="radio" bind:group={opts.clockMode} value="timestamp">
+      Timestamp
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+        The token uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
   </div>

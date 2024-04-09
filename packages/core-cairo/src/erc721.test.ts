@@ -35,6 +35,10 @@ testERC721('basic non-upgradeable', {
 
 testERC721('basic', {});
 
+testERC721('base uri', {
+  baseUri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
+});
+
 testERC721('burnable', {
   burnable: true,
 });

@@ -6,6 +6,7 @@ import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from '.
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
+import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -15,7 +16,11 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
-  votes?: boolean;
+  /**
+   * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
+   * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
+   */
+  votes?: boolean | ClockMode;
   flashmint?: boolean;
 }
 
@@ -87,7 +92,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c);
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, clockMode);
   }
 
   if (allOpts.flashmint) {
@@ -166,7 +172,7 @@ function addPermit(c: ContractBuilder, name: string) {
 
 }
 
-function addVotes(c: ContractBuilder) {
+function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
     throw new Error('Missing ERC20Permit requirement for ERC20Votes');
   }
@@ -180,6 +186,8 @@ function addVotes(c: ContractBuilder) {
   c.addOverride({
     name: 'Nonces',
   }, functions.nonces);
+
+  setClockMode(c, ERC20Votes, clockMode);
 }
 
 function addFlashMint(c: ContractBuilder) {

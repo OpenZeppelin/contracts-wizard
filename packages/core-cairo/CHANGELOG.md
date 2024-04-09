@@ -1,8 +1,32 @@
 # Changelog
 
-## 0.10.0 (2024-02-22)
+## Unreleased
 
-- Set `upgradeable` to `true` by default.
+- Set `upgradeable` to `true` by default. ([#334](https://github.com/OpenZeppelin/contracts-wizard/pull/334))
+
+## 0.10.2 (2024-04-03)
+
+- Use OpenZeppelin Contracts for Cairo v0.11.0. ([#351](https://github.com/OpenZeppelin/contracts-wizard/pull/351))
+- Add ERC1155.
+- Remove redundant not paused assertions for camel case functions.
+- Fix use of ERC20 mixin.
+- Sort imports alphabetically.
+
+## 0.10.1 (2024-03-27)
+
+- Use mixins. ([#348](https://github.com/OpenZeppelin/contracts-wizard/pull/348))
+
+## 0.10.0 (2024-03-12)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.10.0. ([#344](https://github.com/OpenZeppelin/contracts-wizard/pull/344))
+  - ERC721: Remove token URI parameter from safe mint functions.
+  - ERC721: Add optional base URI parameter. If not set, this defaults to empty string.
+  - Use string literals for ByteArray initialization instead of short strings.
+
+## 0.9.2 (2024-02-26)
+
+- Remove code comment for Cairo lang version. ([#337](https://github.com/OpenZeppelin/contracts-wizard/pull/337))
 
 ## 0.9.1 (2024-02-22)
 
