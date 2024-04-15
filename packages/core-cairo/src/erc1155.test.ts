@@ -28,6 +28,10 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
   });
 }
 
+testERC1155('basic non-upgradeable', {
+  upgradeable: false,
+});
+
 testERC1155('basic', {});
 
 testERC1155('basic + roles', {
@@ -53,6 +57,14 @@ testERC1155('mintable', {
 testERC1155('mintable + roles', {
   mintable: true,
   access: 'roles',
+});
+
+testERC1155('full non-upgradeable', {
+  mintable: true,
+  access: 'roles',
+  burnable: true,
+  pausable: true,
+  upgradeable: false,
 });
 
 testERC1155('full upgradeable', {
