@@ -57,6 +57,7 @@ testCustom('pausable with access control disabled', {
   // API should override access to true since it is required for pausable
   access: false,
   pausable: true,
+  upgradeable: false,
 });
 
 testAPIEquivalence('custom API default');
