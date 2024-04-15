@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Set `upgradeable` to `true` by default. ([#334](https://github.com/OpenZeppelin/contracts-wizard/pull/334))
+- **Breaking changes**:
+  - Set `upgradeable` to `true` by default. ([#334](https://github.com/OpenZeppelin/contracts-wizard/pull/334))
 
 ## 0.10.2 (2024-04-03)
 
