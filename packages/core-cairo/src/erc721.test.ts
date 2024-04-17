@@ -29,6 +29,10 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
   });
 }
 
+testERC721('basic non-upgradeable', {
+  upgradeable: false,
+});
+
 testERC721('basic', {});
 
 testERC721('base uri', {
@@ -50,6 +54,13 @@ testERC721('mintable', {
 testERC721('mintable + roles', {
   mintable: true,
   access: 'roles',
+});
+
+testERC721('full non-upgradeable', {
+  mintable: true,
+  pausable: true,
+  burnable: true,
+  upgradeable: false,
 });
 
 testERC721('full upgradeable', {

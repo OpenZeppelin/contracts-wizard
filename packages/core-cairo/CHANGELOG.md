@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 (2024-04-17)
+
+- **Breaking changes**:
+  - Set `upgradeable` to `true` by default. ([#334](https://github.com/OpenZeppelin/contracts-wizard/pull/334))
+
 ## 0.10.2 (2024-04-03)
 
 - Use OpenZeppelin Contracts for Cairo v0.11.0. ([#351](https://github.com/OpenZeppelin/contracts-wizard/pull/351))
