@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.11.0 (2024-04-17)
 
 - **Breaking changes**:
   - Set `upgradeable` to `true` by default. ([#334](https://github.com/OpenZeppelin/contracts-wizard/pull/334))
