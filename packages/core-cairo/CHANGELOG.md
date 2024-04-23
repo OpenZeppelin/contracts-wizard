@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 (2024-04-23)
+
+- Add ERC20Votes.
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.12.0.
+  - Use Hooks with ERC20.
+
 ## 0.11.0 (2024-04-17)
 
 - **Breaking changes**:
