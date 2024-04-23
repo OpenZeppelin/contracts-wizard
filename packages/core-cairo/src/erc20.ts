@@ -143,6 +143,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     ],
     true,
   );
+  c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
 }
 
 function addBurnable(c: ContractBuilder) {
