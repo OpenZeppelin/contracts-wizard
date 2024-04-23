@@ -85,6 +85,12 @@ export function buildERC20(opts: ERC20Options): Contract {
     }
   }
 
+  if (allOpts.votes) {
+    addVotes(c);
+  } else {
+    c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
+  }
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
@@ -146,7 +152,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     ],
     true,
   );
-  c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -218,6 +223,78 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
+function addVotes(c: ContractBuilder) {
+  c.addComponent(components.ERC20VotesComponent, [], false);
+  c.addComponent(components.NoncesComponent, [], false);
+
+  c.addStandaloneImport('openzeppelin::token::erc20::extensions::ERC20VotesComponent::InternalTrait as ERC20VotesInternalTrait');
+  c.addStandaloneImport('openzeppelin::utils::cryptography::snip12::SNIP12Metadata');
+  c.addStandaloneImport('starknet::ContractAddress');
+
+  const SNIP12Metadata: BaseImplementedTrait = {
+    name: 'SNIP12MetadataImpl',
+    of: 'SNIP12Metadata',
+    tags: [],
+  };
+  c.addImplementedTrait(SNIP12Metadata);
+
+  c.addFunction(SNIP12Metadata, {
+    name: 'name',
+    args: [],
+    returns: 'felt252',
+    code: [
+      "'DAPP_NAME'"
+    ],
+  });
+
+  c.addFunction(SNIP12Metadata, {
+    name: 'version',
+    args: [],
+    returns: 'felt252',
+    code: [
+      "'DAPP_VERSION'"
+    ],
+  });
+
+  const ERC20HooksTrait: BaseImplementedTrait = {
+    name: `ERC20VotesHooksImpl<
+        TContractState,
+        impl ERC20Votes: ERC20VotesComponent::HasComponent<TContractState>,
+        impl HasComponent: ERC20Component::HasComponent<TContractState>,
+        +NoncesComponent::HasComponent<TContractState>,
+        +Drop<TContractState>
+    >`,
+    of: 'ERC20Component::ERC20HooksTrait<TContractState>',
+    tags: [],
+  };
+  c.addImplementedTrait(ERC20HooksTrait);
+
+  c.addFunction(ERC20HooksTrait, {
+    name: 'before_update',
+    args: [
+      { name: 'ref self', type: 'ERC20Component::ComponentState<TContractState>' },
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [],
+  });
+
+  c.addFunction(ERC20HooksTrait, {
+    name: 'after_update',
+    args: [
+      { name: 'ref self', type: 'ERC20Component::ComponentState<TContractState>' },
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'recipient', type: 'ContractAddress' },
+      { name: 'amount', type: 'u256' },
+    ],
+    code: [
+      'let mut erc20_votes_component = get_dep_component_mut!(ref self, ERC20Votes);',
+      'erc20_votes_component.transfer_voting_units(from, recipient, amount);',
+    ],
+  });
+}
+
 const components = defineComponents( {
   ERC20Component: {
     path: 'openzeppelin::token::erc20',
@@ -234,6 +311,40 @@ const components = defineComponents( {
       name: 'ERC20InternalImpl',
       value: 'ERC20Component::InternalImpl<ContractState>',
     },
+  },
+  ERC20VotesComponent: {
+    path: 'openzeppelin::token::erc20::extensions',
+    substorage: {
+      name: 'erc20_votes',
+      type: 'ERC20VotesComponent::Storage',
+    },
+    event: {
+      name: 'ERC20VotesEvent',
+      type: 'ERC20VotesComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC20VotesComponentImpl',
+        value: 'ERC20VotesComponent::ERC20VotesImpl<ContractState>',
+      },
+    ],
+  },
+  NoncesComponent: {
+    path: 'openzeppelin::utils::cryptography::nonces',
+    substorage: {
+      name: 'nonces',
+      type: 'NoncesComponent::Storage',
+    },
+    event: {
+      name: 'NoncesEvent',
+      type: 'NoncesComponent::Event',
+    },
+    impls: [
+      {
+        name: 'NoncesImpl',
+        value: 'NoncesComponent::NoncesImpl<ContractState>',
+      },
+    ],
   },
 });
 
