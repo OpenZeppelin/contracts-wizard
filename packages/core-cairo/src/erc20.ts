@@ -19,6 +19,7 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   premint: '0',
   mintable: false,
+  votes: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -35,6 +36,7 @@ export interface ERC20Options extends CommonOptions {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
+  votes?: boolean;
 }
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -45,6 +47,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
+    votes: opts.votes ?? defaults.votes,
   };
 }
 

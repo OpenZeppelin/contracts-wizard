@@ -74,6 +74,14 @@
       </HelpTooltip>
     </label>
 
+    <label class:checked={opts.votes}>
+      <input type="checkbox" bind:checked={opts.votes}>
+      Votes
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20VotesComponent">
+        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
+      </HelpTooltip>
+    </label>
+
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
