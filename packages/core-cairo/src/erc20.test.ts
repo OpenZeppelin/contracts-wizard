@@ -76,6 +76,11 @@ testERC20('erc20 votes', {
   votes: true,
 });
 
+testERC20('erc20 votes, non-upgradeable', {
+  votes: true,
+  upgradeable: false,
+});
+
 testERC20('erc20 full, non-upgradeable', {
   premint: '2000',
   access: 'ownable',

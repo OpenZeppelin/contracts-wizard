@@ -2,8 +2,7 @@
 
 ## 0.12.0 (2024-04-23)
 
-- Add `votes` option to ERC20.
-
+- Add `votes` option to ERC20. ([#355](https://github.com/OpenZeppelin/contracts-wizard/pull/355))
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.12.0.
   - Use Hooks with ERC20.
