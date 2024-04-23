@@ -2,7 +2,7 @@
 
 ## 0.12.0 (2024-04-23)
 
-- Add ERC20Votes.
+- Add `votes` option to ERC20.
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.12.0.
