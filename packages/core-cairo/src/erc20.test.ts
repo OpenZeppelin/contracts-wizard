@@ -72,11 +72,16 @@ testERC20('erc20 mintable with roles', {
   access: 'roles',
 });
 
+testERC20('erc20 votes', {
+  votes: true,
+});
+
 testERC20('erc20 full, non-upgradeable', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: false,
 });
@@ -86,6 +91,7 @@ testERC20('erc20 full upgradeable', {
   access: 'ownable',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
 });
@@ -95,6 +101,7 @@ testERC20('erc20 full upgradeable with roles', {
   access: 'roles',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
 });
@@ -110,6 +117,7 @@ testAPIEquivalence('erc20 API full upgradeable', {
   access: 'roles',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
 });
