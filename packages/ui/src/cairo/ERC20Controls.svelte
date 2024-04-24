@@ -95,7 +95,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for typed messages. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
     </span>
     <input bind:value={opts.version} use:error={errors?.version} placeholder="v1" disabled={!opts.votes}>
   </label>
