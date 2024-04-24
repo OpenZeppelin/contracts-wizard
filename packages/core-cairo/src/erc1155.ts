@@ -10,7 +10,7 @@ import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
-import { toStringLiteral } from './utils/convert-strings';
+import { toByteArray } from './utils/convert-strings';
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
@@ -57,7 +57,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toStringLiteral(allOpts.baseUri));
+  addBase(c, toByteArray(allOpts.baseUri));
   addERC1155MixinOrImpls(c, allOpts.pausable);
   addSRC5Component(c);
 

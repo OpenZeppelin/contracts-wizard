@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { toIdentifier, toStringLiteral, toShortString } from './convert-strings';
+import { toIdentifier, toByteArray, toFelt252 } from './convert-strings';
 import { OptionsError } from '../error';
 
 test('identifier - unmodified', t => {
@@ -42,58 +42,58 @@ test('identifier - no valid chars', t => {
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
-test('toStringLiteral - unmodified', t => {
-  t.is(toStringLiteral('abc'), 'abc');
+test('toByteArray - unmodified', t => {
+  t.is(toByteArray('abc'), 'abc');
 });
 
-test('toStringLiteral - remove accents', t => {
-  t.is(toStringLiteral('ábc'), 'abc');
+test('toByteArray - remove accents', t => {
+  t.is(toByteArray('ábc'), 'abc');
 });
 
-test('toStringLiteral - remove non-ascii-printable characters', t => {
-  t.is(toStringLiteral('abc😀'), 'abc');
+test('toByteArray - remove non-ascii-printable characters', t => {
+  t.is(toByteArray('abc😀'), 'abc');
 });
 
-test('toStringLiteral - escape double quote', t => {
-  t.is(toStringLiteral("abc\"def"), "abc\\\"def");
+test('toByteArray - escape double quote', t => {
+  t.is(toByteArray("abc\"def"), "abc\\\"def");
 });
 
-test('toStringLiteral - does not escape single quote', t => {
-  t.is(toStringLiteral("abc'def"), "abc'def");
+test('toByteArray - does not escape single quote', t => {
+  t.is(toByteArray("abc'def"), "abc'def");
 });
 
-test('toStringLiteral - escape backslash', t => {
-  t.is(toStringLiteral('abc\\def'), 'abc\\\\def');
+test('toByteArray - escape backslash', t => {
+  t.is(toByteArray('abc\\def'), 'abc\\\\def');
 });
 
 test('more than 31 characters', t => {
-  t.is(toStringLiteral('A234567890123456789012345678901'), 'A234567890123456789012345678901');
-  t.is(toStringLiteral('A2345678901234567890123456789012'), 'A2345678901234567890123456789012');
+  t.is(toByteArray('A234567890123456789012345678901'), 'A234567890123456789012345678901');
+  t.is(toByteArray('A2345678901234567890123456789012'), 'A2345678901234567890123456789012');
 });
 
-test('short string - unmodified', t => {
-  t.is(toShortString('abc', 'foo'), 'abc');
+test('toFelt252 - unmodified', t => {
+  t.is(toFelt252('abc', 'foo'), 'abc');
 });
 
-test('short string - remove accents', t => {
-  t.is(toShortString('ábc', 'foo'), 'abc');
+test('toFelt252 - remove accents', t => {
+  t.is(toFelt252('ábc', 'foo'), 'abc');
 });
 
-test('short string - remove non-ascii-printable characters', t => {
-  t.is(toShortString('abc😀', 'foo'), 'abc');
+test('toFelt252 - remove non-ascii-printable characters', t => {
+  t.is(toFelt252('abc😀', 'foo'), 'abc');
 });
 
-test('short string - escape single quote', t => {
-  t.is(toShortString("abc'def", 'foo'), "abc\\'def");
+test('toFelt252 - escape single quote', t => {
+  t.is(toFelt252("abc'def", 'foo'), "abc\\'def");
 });
 
-test('short string - escape backslash', t => {
-  t.is(toShortString('abc\\def', 'foo'), 'abc\\\\def');
+test('toFelt252 - escape backslash', t => {
+  t.is(toFelt252('abc\\def', 'foo'), 'abc\\\\def');
 });
 
-test('short string - max 31 characters', t => {
-  t.is(toShortString('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
+test('toFelt252 - max 31 characters', t => {
+  t.is(toFelt252('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
 
-  let error = t.throws(() => toShortString('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
+  let error = t.throws(() => toFelt252('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
   t.is(error.messages.foo, 'String is longer than 31 characters');
 });

@@ -10,7 +10,7 @@ import { defineComponents } from './utils/define-components';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
-import { toStringLiteral } from './utils/convert-strings';
+import { toByteArray } from './utils/convert-strings';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -60,7 +60,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toStringLiteral(allOpts.name), toStringLiteral(allOpts.symbol));
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
   addERC20MixinOrImpls(c, allOpts.pausable);
 
   if (allOpts.premint) {
