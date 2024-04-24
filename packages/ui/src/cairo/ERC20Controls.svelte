@@ -74,16 +74,31 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes}>
-      <input type="checkbox" bind:checked={opts.votes}>
-      Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20VotesComponent">
+    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Votes</span>
+      <span class="ml-1">
+        <input type="checkbox" bind:checked={opts.votes}>
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20VotesComponent">
         Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
       </HelpTooltip>
     </label>
+  </h1>
 
-    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
-  </div>
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Version
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for typed messages. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.version} use:error={errors?.version} placeholder="v1" disabled={!opts.votes}>
+  </label>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />

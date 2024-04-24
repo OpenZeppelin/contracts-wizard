@@ -10,7 +10,7 @@ import { defineComponents } from './utils/define-components';
 import { defaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
-import { toByteArray } from './utils/convert-strings';
+import { toByteArray, toFelt252 } from './utils/convert-strings';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -20,6 +20,7 @@ export const defaults: Required<ERC20Options> = {
   premint: '0',
   mintable: false,
   votes: false,
+  version: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -37,6 +38,7 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   votes?: boolean;
+  version?: string;
 }
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -48,6 +50,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
     votes: opts.votes ?? defaults.votes,
+    version: opts.version ?? defaults.version,
   };
 }
 
@@ -86,7 +89,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c);
+    addVotes(c, toFelt252(allOpts.name, 'name'), toFelt252(allOpts.version, 'version'));
   } else {
     c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
   }
@@ -223,7 +226,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
-function addVotes(c: ContractBuilder) {
+function addVotes(c: ContractBuilder, name: string, version: string) {
   c.addComponent(components.ERC20VotesComponent, [], false);
   c.addComponent(components.NoncesComponent, [], false);
 
@@ -243,7 +246,7 @@ function addVotes(c: ContractBuilder) {
     args: [],
     returns: 'felt252',
     code: [
-      "'DAPP_NAME'"
+      `'${name}'`,
     ],
   });
 
@@ -252,7 +255,7 @@ function addVotes(c: ContractBuilder) {
     args: [],
     returns: 'felt252',
     code: [
-      "'DAPP_VERSION'"
+      `'${version}'`,
     ],
   });
 
