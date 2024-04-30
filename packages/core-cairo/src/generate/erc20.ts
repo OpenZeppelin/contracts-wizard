@@ -14,6 +14,7 @@ const blueprint = {
   mintable: booleans,
   premint: ['1'],
   votes: booleans,
+  appName: ['MyApp'],
   version: ['v1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,

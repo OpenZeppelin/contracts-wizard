@@ -94,10 +94,18 @@
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
-      Version
+      Application Name
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Application Version
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
     </span>
-    <input bind:value={opts.version} use:error={errors?.version} placeholder="v1" disabled={!opts.votes}>
+    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
   </label>
 </section>
 

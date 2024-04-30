@@ -12,7 +12,10 @@ import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 
-export const defaults: Required<ERC20Options> = {
+type DefaultableOptions = Required<Omit<ERC20Options, 'appName'>>;
+type NonDefaultableOptions = Omit<ERC20Options, keyof DefaultableOptions>;
+
+export const defaults: DefaultableOptions = {
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
@@ -20,7 +23,7 @@ export const defaults: Required<ERC20Options> = {
   premint: '0',
   mintable: false,
   votes: false,
-  version: 'v1',
+  appVersion: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -38,10 +41,11 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   votes?: boolean;
-  version?: string;
+  appName?: string;
+  appVersion?: string;
 }
 
-function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+function withDefaults(opts: ERC20Options): DefaultableOptions & NonDefaultableOptions {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -50,7 +54,8 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
     votes: opts.votes ?? defaults.votes,
-    version: opts.version ?? defaults.version,
+    appName: opts.appName,
+    appVersion: opts.appVersion ?? defaults.appVersion,
   };
 }
 
@@ -89,7 +94,19 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.votes) {
-    addVotes(c, toFelt252(allOpts.name, 'name'), toFelt252(allOpts.version, 'version'));
+    if (!allOpts.appName) {
+      throw new OptionsError({
+        appName: 'Application Name is required when Votes are enabled',
+      });
+    }
+
+    if (!allOpts.appVersion) {
+      throw new OptionsError({
+        appVersion: 'Application Version is required when Votes are enabled',
+      });
+    }
+
+    addVotes(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
   } else {
     c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
   }

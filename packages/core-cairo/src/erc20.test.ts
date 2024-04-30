@@ -74,15 +74,18 @@ testERC20('erc20 mintable with roles', {
 
 testERC20('erc20 votes', {
   votes: true,
+  appName: 'MY_DAPP_NAME',
 });
 
 testERC20('erc20 votes, version', {
   votes: true,
-  version: 'MY_DAPP_VERSION',
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testERC20('erc20 votes, non-upgradeable', {
   votes: true,
+  appName: 'MY_DAPP_NAME',
   upgradeable: false,
 });
 
@@ -94,7 +97,8 @@ testERC20('erc20 full, non-upgradeable', {
   votes: true,
   pausable: true,
   upgradeable: false,
-  version: 'MY_DAPP_VERSION',
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testERC20('erc20 full upgradeable', {
@@ -105,7 +109,8 @@ testERC20('erc20 full upgradeable', {
   votes: true,
   pausable: true,
   upgradeable: true,
-  version: 'MY_DAPP_VERSION',
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testERC20('erc20 full upgradeable with roles', {
@@ -116,7 +121,8 @@ testERC20('erc20 full upgradeable with roles', {
   votes: true,
   pausable: true,
   upgradeable: true,
-  version: 'MY_DAPP_VERSION',
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testAPIEquivalence('erc20 API default');
@@ -133,7 +139,8 @@ testAPIEquivalence('erc20 API full upgradeable', {
   votes: true,
   pausable: true,
   upgradeable: true,
-  version: 'MY_DAPP_VERSION',
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 test('erc20 API assert defaults', async t => {
