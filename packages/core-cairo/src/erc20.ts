@@ -12,10 +12,7 @@ import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 
-type DefaultableOptions = Required<Omit<ERC20Options, 'appName'>>;
-type NonDefaultableOptions = Omit<ERC20Options, keyof DefaultableOptions>;
-
-export const defaults: DefaultableOptions = {
+export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
@@ -23,6 +20,7 @@ export const defaults: DefaultableOptions = {
   premint: '0',
   mintable: false,
   votes: false,
+  appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -45,7 +43,7 @@ export interface ERC20Options extends CommonOptions {
   appVersion?: string;
 }
 
-function withDefaults(opts: ERC20Options): DefaultableOptions & NonDefaultableOptions {
+function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -54,7 +52,7 @@ function withDefaults(opts: ERC20Options): DefaultableOptions & NonDefaultableOp
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
     votes: opts.votes ?? defaults.votes,
-    appName: opts.appName,
+    appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion,
   };
 }
