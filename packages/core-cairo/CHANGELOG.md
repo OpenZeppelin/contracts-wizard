@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.12.0 (2024-04-23)
+## 0.12.0 (2024-04-30)
 
 - Add `votes` option to ERC20. ([#355](https://github.com/OpenZeppelin/contracts-wizard/pull/355))
+- Require `appName` and `appVersion` when `votes` is enabled.
 - Sort implemented traits.
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.12.0.
