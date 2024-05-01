@@ -117,8 +117,11 @@ function printEvents(contract: Contract) {
 function printImplementedTraits(contract: Contract) {
   const impls = [];
 
-  // sort first by number of tags, then name
+  // sort first by priority, then number of tags, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
+    if (a.priority !== b.priority) {
+      return (a.priority ?? Infinity) - (b.priority ?? Infinity);
+    }
     if (a.tags.length !== b.tags.length) {
       return a.tags.length - b.tags.length;
     }

@@ -253,6 +253,7 @@ function addVotes(c: ContractBuilder, name: string, version: string) {
     name: 'SNIP12MetadataImpl',
     of: 'SNIP12Metadata',
     tags: [],
+    priority: 0,
   };
   c.addImplementedTrait(SNIP12Metadata);
 
@@ -284,6 +285,7 @@ function addVotes(c: ContractBuilder, name: string, version: string) {
     >`,
     of: 'ERC20Component::ERC20HooksTrait<TContractState>',
     tags: [],
+    priority: 1,
   };
   c.addImplementedTrait(ERC20HooksTrait);
 

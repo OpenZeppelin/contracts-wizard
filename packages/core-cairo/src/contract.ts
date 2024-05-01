@@ -48,6 +48,11 @@ export interface BaseImplementedTrait {
   of: string;
   tags: string[];
   perItemTag?: string;
+  /**
+   * Priority for which trait to print first.
+   * Lower numbers are higher priority, undefined is lowest priority.
+   */
+  priority?: number;
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -165,6 +170,7 @@ export class ContractBuilder implements Contract {
         of: baseTrait.of,
         tags: [ ...baseTrait.tags ],
         functions: [],
+        priority: baseTrait.priority,
       };
       this.implementedTraitsMap.set(key, t);
       return t;
