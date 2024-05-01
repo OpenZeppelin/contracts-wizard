@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.12.0 (2024-04-30)
+## 0.12.0 (2024-05-01)
 
 - Add `votes` option to ERC20. ([#355](https://github.com/OpenZeppelin/contracts-wizard/pull/355))
 - Require `appName` and `appVersion` when `votes` is enabled.
