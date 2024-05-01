@@ -72,13 +72,53 @@ testERC20('erc20 mintable with roles', {
   access: 'roles',
 });
 
+testERC20('erc20 votes', {
+  votes: true,
+  appName: 'MY_DAPP_NAME',
+});
+
+testERC20('erc20 votes, version', {
+  votes: true,
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
+});
+
+test('erc20 votes, no name', async t => {
+  let error = t.throws(() => buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    votes: true,
+  }));
+  t.is((error as OptionsError).messages.appName, 'Application Name is required when Votes are enabled');
+});
+
+test('erc20 votes, empty version', async t => {
+  let error = t.throws(() => buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    votes: true,
+    appName: 'MY_DAPP_NAME',
+    appVersion: '', // avoids default value of v1
+  }));
+  t.is((error as OptionsError).messages.appVersion, 'Application Version is required when Votes are enabled');
+});
+
+testERC20('erc20 votes, non-upgradeable', {
+  votes: true,
+  appName: 'MY_DAPP_NAME',
+  upgradeable: false,
+});
+
 testERC20('erc20 full, non-upgradeable', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: false,
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testERC20('erc20 full upgradeable', {
@@ -86,8 +126,11 @@ testERC20('erc20 full upgradeable', {
   access: 'ownable',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testERC20('erc20 full upgradeable with roles', {
@@ -95,8 +138,11 @@ testERC20('erc20 full upgradeable with roles', {
   access: 'roles',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 testAPIEquivalence('erc20 API default');
@@ -110,8 +156,11 @@ testAPIEquivalence('erc20 API full upgradeable', {
   access: 'roles',
   burnable: true,
   mintable: true,
+  votes: true,
   pausable: true,
   upgradeable: true,
+  appName: 'MY_DAPP_NAME',
+  appVersion: 'MY_DAPP_VERSION',
 });
 
 test('erc20 API assert defaults', async t => {

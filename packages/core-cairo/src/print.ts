@@ -116,7 +116,19 @@ function printEvents(contract: Contract) {
 
 function printImplementedTraits(contract: Contract) {
   const impls = [];
-  for (const trait of contract.implementedTraits) {
+
+  // sort first by priority, then number of tags, then name
+  const sortedTraits = contract.implementedTraits.sort((a, b) => {
+    if (a.priority !== b.priority) {
+      return (a.priority ?? Infinity) - (b.priority ?? Infinity);
+    }
+    if (a.tags.length !== b.tags.length) {
+      return a.tags.length - b.tags.length;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  for (const trait of sortedTraits) {
     const implLines = [];
     implLines.push(...trait.tags.map(t => `#[${t}]`));
     implLines.push(`impl ${trait.name} of ${trait.of} {`);

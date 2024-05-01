@@ -22,9 +22,27 @@ export function toIdentifier(str: string, capitalize = false): string {
 /**
  * Converts to a ByteArray compatible string literal
  */
-export function toStringLiteral(str: string): string {
+export function toByteArray(str: string): string {
   return str
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
     .replace(/[^\x20-\x7E]+/g, '') // remove non-ascii-printable characters
     .replace(/(\\|")/g, (_, c) => '\\' + c); // escape backslash or double quotes
+}
+
+/**
+ * Converts to a felt252-compatible short string according to the rules in https://docs.cairo-lang.org/language_constructs/literal-expressions.html#short_string_literals
+ */
+export function toFelt252(str: string, field: string): string {
+  const result = str
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^\x20-\x7E]+/g, '') // remove non-ascii-printable characters
+    .replace(/(\\|')/g, (_, c) => '\\' + c); // escape backslash or single quote
+
+  if (result.length > 31) {
+    throw new OptionsError({
+      [field]: 'String is longer than 31 characters',
+    });
+  } else {
+    return result;
+  }
 }
