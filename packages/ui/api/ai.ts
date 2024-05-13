@@ -71,7 +71,7 @@ export default async (req: Request) => {
     return new StreamingTextResponse(stream);
 
   } catch (e) {
-    console.log("Could not retrieve results: ", e);
+    console.error("Could not retrieve results: ", e);
     return Response.json({
       error: 'Could not retrieve results.'
     });
