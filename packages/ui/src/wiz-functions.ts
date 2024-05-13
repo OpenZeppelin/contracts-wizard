@@ -105,7 +105,7 @@ export const governorFunction = {
       // gets converted to a string to follow the API
       quorumAbsolute: { type: 'number', description: 'The absolute quorum required, in cases of quorumMode equals absolute' },
       votes: { type: 'string', enum: ['erc20votes', 'erc721votes'], description: 'The type of voting to use' },
-      clockMode: { type: 'string', enum: ['blocknumber', 'timestamp'], description: 'The clock mode used by the voting token. This setting must be the same as what the ERC20 or ERC721 token uses.' },
+      clockMode: { type: 'string', enum: ['blocknumber', 'timestamp'], description: 'The clock mode used by the voting token. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.' },
       // 'false' gets converted to false
       timelock: { type: 'string', enum: ['false', 'openzeppelin', 'compound'], description: 'The type of timelock to use' },
       storage: { type: 'boolean', description: 'Enable storage of proposal details and enumerability of proposals' },
