@@ -21,7 +21,6 @@ const repeatedOptions = {
   burnable: { type: 'boolean', description: 'Whether token holders will be able to destroy their tokens' },
   pausable: { type: 'boolean', description: 'Whether privileged accounts will be able to pause the functionality marked as whenNotPaused. Useful for emergency response.' },
   mintable: { type: 'boolean', description: 'Whether privileged accounts will be able to create more supply or emit more tokens' },
-  votesBoolean: { type: 'boolean', description: 'Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one\'s voting power to a trusted account.' },
 }
 
 export const erc20Function = {
@@ -37,7 +36,8 @@ export const erc20Function = {
       premint: { type: 'number', description: 'The number of tokens to premint for the deployer.' },
       mintable: repeatedOptions.mintable,
       permit: { type: 'boolean', description: 'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.' },
-      votes: repeatedOptions.votesBoolean,
+      // 'false' gets converted to false
+      votes: { type: 'string', enum: ['false', 'blocknumber', 'timestamp'], description: 'Whether to keep track of historical balances for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.'},
       flashmint: { type: 'boolean', description: 'Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they\'re returned in the same transaction.' },
       ...commonOptions
     },
@@ -60,7 +60,8 @@ export const erc721Function = {
       pausable: repeatedOptions.pausable,
       mintable: repeatedOptions.mintable,
       incremental: { type: 'boolean', description: 'Whether new tokens will be automatically assigned an incremental id' },
-      votes: repeatedOptions.votesBoolean,
+      // 'false' gets converted to false
+      votes: { type: 'string', enum: ['false', 'blocknumber', 'timestamp'], description: 'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.'},
       ...commonOptions
     },
     required: ['name', 'symbol'],
@@ -104,6 +105,7 @@ export const governorFunction = {
       // gets converted to a string to follow the API
       quorumAbsolute: { type: 'number', description: 'The absolute quorum required, in cases of quorumMode equals absolute' },
       votes: { type: 'string', enum: ['erc20votes', 'erc721votes'], description: 'The type of voting to use' },
+      clockMode: { type: 'string', enum: ['blocknumber', 'timestamp'], description: 'The clock mode used by the voting token. This setting must be the same as what the ERC20 or ERC721 token uses.' },
       // 'false' gets converted to false
       timelock: { type: 'string', enum: ['false', 'openzeppelin', 'compound'], description: 'The type of timelock to use' },
       storage: { type: 'boolean', description: 'Enable storage of proposal details and enumerability of proposals' },
