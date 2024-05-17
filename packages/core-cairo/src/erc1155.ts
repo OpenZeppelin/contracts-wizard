@@ -85,6 +85,8 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addSetBaseUri(c, allOpts.access);
   }
 
+  c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);

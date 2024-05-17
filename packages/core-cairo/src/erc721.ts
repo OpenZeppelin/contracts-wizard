@@ -79,6 +79,8 @@ export function buildERC721(opts: ERC721Options): Contract {
     }
   }
 
+  c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
