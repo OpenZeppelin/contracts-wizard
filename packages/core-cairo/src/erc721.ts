@@ -194,8 +194,9 @@ const functions = defineFunctions({
       { name: 'token_id', type: 'u256' }
     ],
     code: [
+      'let owner = self.erc721._owner_of(token_id);',
       'let caller = get_caller_address();',
-      'assert(self.erc721._is_approved_or_owner(caller, token_id), ERC721Component::Errors::UNAUTHORIZED)',
+      'self.erc721._check_authorized(owner, caller, token_id);',
       'self.erc721._burn(token_id);'
     ]
   },
