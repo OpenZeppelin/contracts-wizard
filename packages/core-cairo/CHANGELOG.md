@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.13.0.
+  - Use Hooks with ERC721 and ERC1155.
+  - Use Hooks for Pausable.
+
 ## 0.12.0 (2024-05-01)
 
 - Add `votes` option to ERC20. ([#355](https://github.com/OpenZeppelin/contracts-wizard/pull/355))
