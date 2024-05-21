@@ -1,4 +1,4 @@
-import { BaseImplementedTrait, Contract, ContractBuilder, ContractFunction } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
@@ -156,43 +156,6 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
   } else {
     c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
   }
-}
-
-function addPausableHook(c: ContractBuilder) {
-  const ERC721HooksTrait: BaseImplementedTrait = {
-    name: `ERC721HooksImpl`,
-    of: 'ERC721Component::ERC721HooksTrait<ContractState>',
-    tags: [],
-    priority: 0,
-  };
-  c.addImplementedTrait(ERC721HooksTrait);
-
-  c.addStandaloneImport('starknet::ContractAddress');
-
-  c.addFunction(ERC721HooksTrait, {
-    name: 'before_update',
-    args: [
-      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-      { name: 'auth', type: 'ContractAddress' },
-    ],
-    code: [
-      'let contract_state = ERC721Component::HasComponent::get_contract(@self)',
-      'contract_state.pausable.assert_not_paused()',
-    ],
-  });
-
-  c.addFunction(ERC721HooksTrait, {
-    name: 'after_update',
-    args: [
-      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-      { name: 'auth', type: 'ContractAddress' },
-    ],
-    code: [],
-  });
 }
 
 function addERC20Mixin(c: ContractBuilder) {
