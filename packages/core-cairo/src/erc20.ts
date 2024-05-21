@@ -375,8 +375,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'u256' }
     ],
     code: [
-      'let caller = get_caller_address();',
-      'self.erc20._burn(caller, value);'
+      'self.erc20._burn(get_caller_address(), value);'
     ]
   },
   mint: {
