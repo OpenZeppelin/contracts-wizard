@@ -1,6 +1,6 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder, ContractFunction } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
-import { addPausable, setPausable } from './add-pausable';
+import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
@@ -67,7 +67,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
-  addERC20MixinOrImpls(c, allOpts.pausable);
+  addERC20Mixin(c);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -79,35 +79,13 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (allOpts.burnable) {
     addBurnable(c);
-    if (allOpts.pausable) {
-      setPausable(c, externalTrait, functions.burn);
-    }
   }
 
   if (allOpts.mintable) {
     addMintable(c, allOpts.access);
-    if (allOpts.pausable) {
-      setPausable(c, externalTrait, functions.mint);
-    }
   }
 
-  if (allOpts.votes) {
-    if (!allOpts.appName) {
-      throw new OptionsError({
-        appName: 'Application Name is required when Votes are enabled',
-      });
-    }
-
-    if (!allOpts.appVersion) {
-      throw new OptionsError({
-        appVersion: 'Application Version is required when Votes are enabled',
-      });
-    }
-
-    addVotes(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
-  } else {
-    c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
-  }
+  addHooks(c, allOpts);
 
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
@@ -116,50 +94,112 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addERC20Interface(c: ContractBuilder) {
-  c.addStandaloneImport('openzeppelin::token::erc20::interface');
+function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
+  if (allOpts.votes || allOpts.pausable) {
+    const hooksTrait = {
+      name: 'ERC20HooksImpl',
+      of: 'ERC20Component::ERC20HooksTrait<ContractState>',
+      tags: [],
+      priority: 1,
+    };
+    c.addImplementedTrait(hooksTrait);
+
+    const beforeUpdateFn = c.addFunction(hooksTrait, {
+      name: 'before_update',
+      args: [
+        { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+        { name: 'from', type: 'ContractAddress' },
+        { name: 'recipient', type: 'ContractAddress' },
+        { name: 'amount', type: 'u256' },
+      ],
+      code: [],
+    });
+
+    const afterUpdateFn = c.addFunction(hooksTrait, {
+      name: 'after_update',
+      args: [
+        { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+        { name: 'from', type: 'ContractAddress' },
+        { name: 'recipient', type: 'ContractAddress' },
+        { name: 'amount', type: 'u256' },
+      ],
+      code: [],
+    });
+
+    if (allOpts.pausable) {
+      beforeUpdateFn.code.push(
+        'let contract_state = ERC20Component::HasComponent::get_contract(@self);',
+        'contract_state.pausable.assert_not_paused();',
+      );
+    }
+
+    if (allOpts.votes) {
+      if (!allOpts.appName) {
+        throw new OptionsError({
+          appName: 'Application Name is required when Votes are enabled',
+        });
+      }
+
+      if (!allOpts.appVersion) {
+        throw new OptionsError({
+          appVersion: 'Application Version is required when Votes are enabled',
+        });
+      }
+
+      addVotesComponent(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
+
+      afterUpdateFn.code.push(
+        'let mut contract_state = ERC20Component::HasComponent::get_contract_mut(ref self);',
+        'contract_state.erc20_votes.transfer_voting_units(from, recipient, amount);',
+      );
+    }
+  } else {
+    c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
+  }
 }
 
-function addERC20MixinOrImpls(c: ContractBuilder, pausable: boolean) {
-  if (pausable) {
-    addERC20Interface(c);
+function addPausableHook(c: ContractBuilder) {
+  const ERC721HooksTrait: BaseImplementedTrait = {
+    name: `ERC721HooksImpl`,
+    of: 'ERC721Component::ERC721HooksTrait<ContractState>',
+    tags: [],
+    priority: 0,
+  };
+  c.addImplementedTrait(ERC721HooksTrait);
 
-    c.addImplToComponent(components.ERC20Component, {
-      name: 'ERC20MetadataImpl',
-      value: 'ERC20Component::ERC20MetadataImpl<ContractState>',
-    });
+  c.addStandaloneImport('starknet::ContractAddress');
 
-    const ERC20Impl: BaseImplementedTrait = {
-      name: 'ERC20Impl',
-      of: 'interface::IERC20<ContractState>',
-      tags: [
-        'abi(embed_v0)'
-      ],
-    }
-    c.addFunction(ERC20Impl, functions.total_supply);
-    c.addFunction(ERC20Impl, functions.balance_of);
-    c.addFunction(ERC20Impl, functions.allowance);
-    setPausable(c, ERC20Impl, functions.transfer);
-    setPausable(c, ERC20Impl, functions.transfer_from);
-    setPausable(c, ERC20Impl, functions.approve);
+  c.addFunction(ERC721HooksTrait, {
+    name: 'before_update',
+    args: [
+      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'auth', type: 'ContractAddress' },
+    ],
+    code: [
+      'let contract_state = ERC721Component::HasComponent::get_contract(@self)',
+      'contract_state.pausable.assert_not_paused()',
+    ],
+  });
 
-    const ERC20CamelOnlyImpl: BaseImplementedTrait = {
-      name: 'ERC20CamelOnlyImpl',
-      of: 'interface::IERC20CamelOnly<ContractState>',
-      tags: [
-        'abi(embed_v0)'
-      ],
-    }
-    // Camel case versions of the functions above. Pausable is already set above.
-    c.addFunction(ERC20CamelOnlyImpl, functions.totalSupply);
-    c.addFunction(ERC20CamelOnlyImpl, functions.balanceOf);
-    c.addFunction(ERC20CamelOnlyImpl, functions.transferFrom);
-  } else {
-    c.addImplToComponent(components.ERC20Component, {
-      name: 'ERC20MixinImpl',
-      value: 'ERC20Component::ERC20MixinImpl<ContractState>',
-    });
-  }
+  c.addFunction(ERC721HooksTrait, {
+    name: 'after_update',
+    args: [
+      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'auth', type: 'ContractAddress' },
+    ],
+    code: [],
+  });
+}
+
+function addERC20Mixin(c: ContractBuilder) {
+  c.addImplToComponent(components.ERC20Component, {
+    name: 'ERC20MixinImpl',
+    value: 'ERC20Component::ERC20MixinImpl<ContractState>',
+  });
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
@@ -241,10 +281,9 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
-function addVotes(c: ContractBuilder, name: string, version: string) {
+function addVotesComponent(c: ContractBuilder, name: string, version: string) {
   c.addComponent(components.ERC20VotesComponent, [], false);
   c.addComponent(components.NoncesComponent, [], false);
-
   c.addStandaloneImport('openzeppelin::token::erc20::extensions::ERC20VotesComponent::InternalTrait as ERC20VotesInternalTrait');
   c.addStandaloneImport('openzeppelin::utils::cryptography::snip12::SNIP12Metadata');
   c.addStandaloneImport('starknet::ContractAddress');
@@ -272,45 +311,6 @@ function addVotes(c: ContractBuilder, name: string, version: string) {
     returns: 'felt252',
     code: [
       `'${version}'`,
-    ],
-  });
-
-  const ERC20HooksTrait: BaseImplementedTrait = {
-    name: `ERC20VotesHooksImpl<
-        TContractState,
-        impl ERC20Votes: ERC20VotesComponent::HasComponent<TContractState>,
-        impl HasComponent: ERC20Component::HasComponent<TContractState>,
-        +NoncesComponent::HasComponent<TContractState>,
-        +Drop<TContractState>
-    >`,
-    of: 'ERC20Component::ERC20HooksTrait<TContractState>',
-    tags: [],
-    priority: 1,
-  };
-  c.addImplementedTrait(ERC20HooksTrait);
-
-  c.addFunction(ERC20HooksTrait, {
-    name: 'before_update',
-    args: [
-      { name: 'ref self', type: 'ERC20Component::ComponentState<TContractState>' },
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [],
-  });
-
-  c.addFunction(ERC20HooksTrait, {
-    name: 'after_update',
-    args: [
-      { name: 'ref self', type: 'ERC20Component::ComponentState<TContractState>' },
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [
-      'let mut erc20_votes_component = get_dep_component_mut!(ref self, ERC20Votes);',
-      'erc20_votes_component.transfer_voting_units(from, recipient, amount);',
     ],
   });
 }
@@ -388,104 +388,5 @@ const functions = defineFunctions({
     code: [
       'self.erc20._mint(recipient, amount);'
     ]
-  },
-
-  // Re-implements ERC20Impl
-  total_supply: {
-    args: [
-      getSelfArg('view')
-    ],
-    code: [
-      'self.erc20.total_supply()'
-    ],
-    returns : 'u256',
-  },
-  balance_of: {
-    args: [
-      getSelfArg('view'),
-      { name: 'account', type: 'ContractAddress' },
-    ],
-    code: [
-      'self.erc20.balance_of(account)'
-    ],
-    returns : 'u256',
-  },
-  allowance: {
-    args: [
-      getSelfArg('view'),
-      { name: 'owner', type: 'ContractAddress' },
-      { name: 'spender', type: 'ContractAddress' },
-    ],
-    code: [
-      'self.erc20.allowance(owner, spender)'
-    ],
-    returns : 'u256',
-  },
-  transfer: {
-    args: [
-      getSelfArg(),
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [
-      'self.erc20.transfer(recipient, amount)',
-    ],
-    returns : 'bool',
-  },
-  transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'sender', type: 'ContractAddress' },
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [
-      'self.erc20.transfer_from(sender, recipient, amount)',
-    ],
-    returns : 'bool',
-  },
-  approve: {
-    args: [
-      getSelfArg(),
-      { name: 'spender', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [
-      'self.erc20.approve(spender, amount)',
-    ],
-    returns : 'bool',
-  },
-
-  // Re-implements ERC20CamelOnlyImpl
-  totalSupply: {
-    args: [
-      getSelfArg('view')
-    ],
-    code: [
-      'self.total_supply()'
-    ],
-    returns : 'u256',
-  },
-  balanceOf: {
-    args: [
-      getSelfArg('view'),
-      { name: 'account', type: 'ContractAddress' },
-    ],
-    code: [
-      'self.balance_of(account)'
-    ],
-    returns : 'u256',
-  },
-  transferFrom: {
-    args: [
-      getSelfArg(),
-      { name: 'sender', type: 'ContractAddress' },
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' },
-    ],
-    code: [
-      'self.transfer_from(sender, recipient, amount)',
-    ],
-    returns : 'bool',
   },
 });
