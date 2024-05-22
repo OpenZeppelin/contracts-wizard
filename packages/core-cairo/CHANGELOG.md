@@ -1,9 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.13.0 (2024-05-22)
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v0.13.0.
+  - Use OpenZeppelin Contracts for Cairo v0.13.0. ([#359](https://github.com/OpenZeppelin/contracts-wizard/pull/359))
   - Use Hooks with ERC721 and ERC1155.
   - Use Hooks for Pausable.
 
