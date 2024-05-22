@@ -1,6 +1,6 @@
 import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
-import { addPausable, setPausable } from './add-pausable';
+import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
@@ -58,27 +58,21 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toByteArray(allOpts.baseUri));
-  addERC1155MixinOrImpls(c, allOpts.pausable);
-  addSRC5Component(c);
+  addERC1155Mixin(c);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
+    addPausableHook(c);
+  } else {
+    c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
   }
 
   if (allOpts.burnable) {
     addBurnable(c);
-    if (allOpts.pausable) {
-      setPausable(c, externalTrait, functions.burn);
-      setPausable(c, externalTrait, functions.batch_burn);
-    }
   }
 
   if (allOpts.mintable) {
     addMintable(c, allOpts.access);
-    if (allOpts.pausable) {
-      setPausable(c, externalTrait, functions.mint);
-      setPausable(c, externalTrait, functions.batch_mint);
-    }
   }
 
   if (allOpts.updatableUri) {
@@ -92,54 +86,52 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   return c;
 }
 
-function addERC1155Interface(c: ContractBuilder) {
-  c.addStandaloneImport('openzeppelin::token::erc1155::interface');
+function addPausableHook(c: ContractBuilder) {
+  const ERC1155HooksTrait: BaseImplementedTrait = {
+    name: `ERC1155HooksImpl`,
+    of: 'ERC1155Component::ERC1155HooksTrait<ContractState>',
+    tags: [],
+    priority: 0,
+  };
+  c.addImplementedTrait(ERC1155HooksTrait);
+
+  c.addStandaloneImport('starknet::ContractAddress');
+
+  c.addFunction(ERC1155HooksTrait, {
+    name: 'before_update',
+    args: [
+      { name: 'ref self', type: `ERC1155Component::ComponentState<ContractState>` },
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_ids', type: 'Span<u256>' },
+      { name: 'values', type: 'Span<u256>' },
+    ],
+    code: [
+      'let contract_state = ERC1155Component::HasComponent::get_contract(@self)',
+      'contract_state.pausable.assert_not_paused()',
+    ],
+  });
+
+  c.addFunction(ERC1155HooksTrait, {
+    name: 'after_update',
+    args: [
+      { name: 'ref self', type: `ERC1155Component::ComponentState<ContractState>` },
+      { name: 'from', type: 'ContractAddress' },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_ids', type: 'Span<u256>' },
+      { name: 'values', type: 'Span<u256>' },
+    ],
+    code: [],
+  });
 }
 
-function addERC1155MixinOrImpls(c: ContractBuilder, pausable: boolean) {
-  if (pausable) {
-    addERC1155Interface(c);
-
-    c.addImplToComponent(components.ERC1155Component, {
-      name: 'ERC1155MetadataURIImpl',
-      value: 'ERC1155Component::ERC1155MetadataURIImpl<ContractState>',
-    });
-
-    const ERC1155Impl: BaseImplementedTrait = {
-      name: 'ERC1155Impl',
-      of: 'interface::IERC1155<ContractState>',
-      tags: [
-        'abi(embed_v0)'
-      ],
-    }
-    c.addFunction(ERC1155Impl, functions.balance_of);
-    c.addFunction(ERC1155Impl, functions.balance_of_batch);
-    setPausable(c, ERC1155Impl, functions.safe_transfer_from);
-    setPausable(c, ERC1155Impl, functions.safe_batch_transfer_from);
-    setPausable(c, ERC1155Impl, functions.set_approval_for_all);
-    c.addFunction(ERC1155Impl, functions.is_approved_for_all);
-
-    const ERC1155CamelImpl: BaseImplementedTrait = {
-      name: 'ERC1155CamelImpl',
-      of: 'interface::IERC1155Camel<ContractState>',
-      tags: [
-        'abi(embed_v0)'
-      ],
-    }
-    // Camel case versions of the functions above. Pausable is already set above.
-    c.addFunction(ERC1155CamelImpl, functions.balanceOf);
-    c.addFunction(ERC1155CamelImpl, functions.balanceOfBatch);
-    c.addFunction(ERC1155CamelImpl, functions.safeTransferFrom);
-    c.addFunction(ERC1155CamelImpl, functions.safeBatchTransferFrom);
-    c.addFunction(ERC1155CamelImpl, functions.setApprovalForAll);
-    c.addFunction(ERC1155CamelImpl, functions.isApprovedForAll);
-  } else {
-    c.addImplToComponent(components.ERC1155Component, {
-      name: 'ERC1155MixinImpl',
-      value: 'ERC1155Component::ERC1155MixinImpl<ContractState>',
-    });
-    c.addInterfaceFlag('ISRC5');
-  }
+function addERC1155Mixin(c: ContractBuilder) {
+  c.addImplToComponent(components.ERC1155Component, {
+    name: 'ERC1155MixinImpl',
+    value: 'ERC1155Component::ERC1155MixinImpl<ContractState>',
+  });
+  c.addInterfaceFlag('ISRC5');
+  addSRC5Component(c);
 }
 
 function addBase(c: ContractBuilder, baseUri: string) {
@@ -288,149 +280,6 @@ const functions = defineFunctions({
     ],
     code: [
       'self.set_base_uri(baseUri);'
-    ]
-  },
-
-  // Re-implements ERC1155Impl
-  balance_of: {
-    args: [
-      getSelfArg('view'),
-      { name: 'account', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-    ],
-    returns: 'u256',
-    code: [
-      'self.erc1155.balance_of(account, token_id)'
-    ]
-  },
-  balance_of_batch: {
-    args: [
-      getSelfArg('view'),
-      { name: 'accounts', type: 'Span<ContractAddress>' },
-      { name: 'token_ids', type: 'Span<u256>' },
-    ],
-    returns: 'Span<u256>',
-    code: [
-      'self.erc1155.balance_of_batch(accounts, token_ids)'
-    ]
-  },
-  safe_transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-      { name: 'value', type: 'u256' },
-      { name: 'data', type: 'Span<felt252>' },
-    ],
-    code: [
-      'self.erc1155.safe_transfer_from(from, to, token_id, value, data)'
-    ]
-  },
-  safe_batch_transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_ids', type: 'Span<u256>' },
-      { name: 'values', type: 'Span<u256>' },
-      { name: 'data', type: 'Span<felt252>' },
-    ],
-    code: [
-      'self.erc1155.safe_batch_transfer_from(from, to, token_ids, values, data)'
-    ]
-  },
-  set_approval_for_all: {
-    args: [
-      getSelfArg(),
-      { name: 'operator', type: 'ContractAddress' },
-      { name: 'approved', type: 'bool' },
-    ],
-    code: [
-      'self.erc1155.set_approval_for_all(operator, approved)'
-    ]
-  },
-  is_approved_for_all: {
-    args: [
-      getSelfArg('view'),
-      { name: 'owner', type: 'ContractAddress' },
-      { name: 'operator', type: 'ContractAddress' },
-    ],
-    returns: 'bool',
-    code: [
-      'self.erc1155.is_approved_for_all(owner, operator)'
-    ]
-  },
-
-  // Re-implements ERC1155CamelImpl
-
-  balanceOf: {
-    args: [
-      getSelfArg('view'),
-      { name: 'account', type: 'ContractAddress' },
-      { name: 'tokenId', type: 'u256' },
-    ],
-    returns: 'u256',
-    code: [
-      'self.balance_of(account, tokenId)'
-    ]
-  },
-  balanceOfBatch: {
-    args: [
-      getSelfArg('view'),
-      { name: 'accounts', type: 'Span<ContractAddress>' },
-      { name: 'tokenIds', type: 'Span<u256>' },
-    ],
-    returns: 'Span<u256>',
-    code: [
-      'self.balance_of_batch(accounts, tokenIds)'
-    ]
-  },
-  safeTransferFrom: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'tokenId', type: 'u256' },
-      { name: 'value', type: 'u256' },
-      { name: 'data', type: 'Span<felt252>' },
-    ],
-    code: [
-      'self.safe_transfer_from(from, to, tokenId, value, data)'
-    ]
-  },
-  safeBatchTransferFrom: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'tokenIds', type: 'Span<u256>' },
-      { name: 'values', type: 'Span<u256>' },
-      { name: 'data', type: 'Span<felt252>' },
-    ],
-    code: [
-      'self.safe_batch_transfer_from(from, to, tokenIds, values, data)'
-    ]
-  },
-  setApprovalForAll: {
-    args: [
-      getSelfArg(),
-      { name: 'operator', type: 'ContractAddress' },
-      { name: 'approved', type: 'bool' },
-    ],
-    code: [
-      'self.set_approval_for_all(operator, approved)'
-    ]
-  },
-  isApprovedForAll: {
-    args: [
-      getSelfArg('view'),
-      { name: 'owner', type: 'ContractAddress' },
-      { name: 'operator', type: 'ContractAddress' },
-    ],
-    returns: 'bool',
-    code: [
-      'self.is_approved_for_all(owner, operator)'
     ]
   },
 });
