@@ -52,7 +52,7 @@ interface GeneratedSource extends GeneratedContract {
   source: string;
 }
 
-export function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[] {
+function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[] {
   const contracts = [];
 
   for (const options of generateOptions(kind)) {

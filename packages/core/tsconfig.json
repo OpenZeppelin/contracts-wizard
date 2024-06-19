@@ -12,5 +12,5 @@
   },
   "include": [
     "src/**/*"
-, "../core-cairo/src/generate/scarb-project.ts"  ]
+  ]
 }
