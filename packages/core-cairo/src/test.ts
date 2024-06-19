@@ -33,7 +33,7 @@ async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptio
   // TODO define output path for compilation environment
   const generatedSourcesPath = path.join('artifacts/contracts', `generated`);
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
-  await writeGeneratedSources(generatedSourcesPath, 'all', kind);
+  await writeGeneratedSources(generatedSourcesPath, 'all', false, kind);
 
   // TODO compile the generated sources here, and ensure the compilation is successful
 

@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "prepare": "tsc",
+    "update_scarb_project": "ts-node src/scripts/update-scarb-project.ts",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
     "test:watch": "ava --watch",
