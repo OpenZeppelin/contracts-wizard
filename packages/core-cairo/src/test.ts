@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import os from 'os';
 import _test, { TestFn, ExecutionContext } from 'ava';
 import path from 'path';
 
@@ -13,29 +14,26 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result compiles', async t => {
-  await testCompile(t, 'ERC20');
+test.serial('erc20 result generated', async t => {
+  await testGenerate(t, 'ERC20');
 });
 
-test.serial('erc721 result compiles', async t => {
-  await testCompile(t, 'ERC721');
+test.serial('erc721 result generated', async t => {
+  await testGenerate(t, 'ERC721');
 });
 
-test.serial('erc1155 result compiles', async t => {
-  await testCompile(t, 'ERC1155');
+test.serial('erc1155 result generated', async t => {
+  await testGenerate(t, 'ERC1155');
 });
 
-test.serial('custom result compiles', async t => {
-  await testCompile(t, 'Custom');
+test.serial('custom result generated', async t => {
+  await testGenerate(t, 'Custom');
 });
 
-async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
-  // TODO define output path for compilation environment
-  const generatedSourcesPath = path.join('artifacts/contracts', `generated`);
+async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
+  const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
-  await writeGeneratedSources(generatedSourcesPath, 'all', false, kind);
-
-  // TODO compile the generated sources here, and ensure the compilation is successful
+  await writeGeneratedSources(generatedSourcesPath, 'all', true, kind);
 
   t.pass();
 }
