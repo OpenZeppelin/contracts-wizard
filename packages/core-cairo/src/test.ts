@@ -14,19 +14,19 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result compiles', async t => {
+test.serial('erc20 result generated', async t => {
   await testGenerate(t, 'ERC20');
 });
 
-test.serial('erc721 result compiles', async t => {
+test.serial('erc721 result generated', async t => {
   await testGenerate(t, 'ERC721');
 });
 
-test.serial('erc1155 result compiles', async t => {
+test.serial('erc1155 result generated', async t => {
   await testGenerate(t, 'ERC1155');
 });
 
-test.serial('custom result compiles', async t => {
+test.serial('custom result generated', async t => {
   await testGenerate(t, 'Custom');
 });
 
