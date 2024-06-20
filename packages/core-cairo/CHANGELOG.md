@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.0 (2024-06-20)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.14.0. ([#369](https://github.com/OpenZeppelin/contracts-wizard/pull/369))
+  - Fix compile error with ERC1155 Burnable.
+
 ## 0.13.0 (2024-05-22)
 
 - **Breaking changes**:
