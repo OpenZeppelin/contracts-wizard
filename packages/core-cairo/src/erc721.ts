@@ -139,7 +139,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: stri
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('core::num::traits::Zero;');
+  c.addStandaloneImport('core::num::traits::Zero');
   c.addStandaloneImport('starknet::get_caller_address');
 
   c.addFunction(externalTrait, functions.burn);
