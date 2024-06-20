@@ -85,17 +85,26 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   }
 }
 
-export function* generateSources(subset: Subset, kind?: Kind): Generator<GeneratedSource> {
+export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
+  let counter = 1;
   for (const c of generateContractSubset(subset, kind)) {
+    if (uniqueName) {
+      c.contract.name = `Contract${counter++}`;
+    }
     const source = printContract(c.contract);
     yield { ...c, source };
   }
 }
 
-export async function writeGeneratedSources(dir: string, subset: Subset, kind?: Kind): Promise<void> {
+export async function writeGeneratedSources(dir: string, subset: Subset, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
+  let contractNames = [];
 
-  for (const { id, source } of generateSources(subset, kind)) {
-    await fs.writeFile(path.format({ dir, name: id, ext: '.cairo' }), source);
+  for (const { id, contract, source } of generateSources(subset, uniqueName, kind)) {
+    const name = uniqueName ? contract.name : id;
+    await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
+    contractNames.push(name);
   }
+
+  return contractNames;
 }
