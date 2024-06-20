@@ -44,7 +44,7 @@ const functions = defineFunctions({
       getSelfArg(),
     ],
     code: [
-      'self.pausable._pause()'
+      'self.pausable.pause()'
     ]
   },
   unpause: {
@@ -52,7 +52,7 @@ const functions = defineFunctions({
       getSelfArg(),
     ],
     code: [
-      'self.pausable._unpause()'
+      'self.pausable.unpause()'
     ]
   },
 });

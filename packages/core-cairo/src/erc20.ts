@@ -194,7 +194,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     c.addStandaloneImport('starknet::ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.erc20._mint(recipient, ${premintAbsolute})`); 
+    c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`); 
   }
 }
 
@@ -338,7 +338,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'u256' }
     ],
     code: [
-      'self.erc20._burn(get_caller_address(), value);'
+      'self.erc20.burn(get_caller_address(), value);'
     ]
   },
   mint: {
@@ -348,7 +348,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' }
     ],
     code: [
-      'self.erc20._mint(recipient, amount);'
+      'self.erc20.mint(recipient, amount);'
     ]
   },
 });

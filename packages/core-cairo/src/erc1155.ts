@@ -145,6 +145,7 @@ function addBase(c: ContractBuilder, baseUri: string) {
 }
 
 function addBurnable(c: ContractBuilder) {
+  c.addStandaloneImport('starknet::ContractAddress');
   c.addStandaloneImport('starknet::get_caller_address');
   c.addFunction(externalTrait, functions.burn);
   c.addFunction(externalTrait, functions.batch_burn);
@@ -270,7 +271,7 @@ const functions = defineFunctions({
       { name: 'base_uri', type: 'ByteArray' },
     ],
     code: [
-      'self.erc1155.set_base_uri(base_uri);'
+      'self.erc1155._set_base_uri(base_uri);'
     ]
   },
   setBaseUri: {

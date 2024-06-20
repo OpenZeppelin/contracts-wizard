@@ -139,7 +139,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: stri
 }
 
 function addBurnable(c: ContractBuilder) {
+  c.addStandaloneImport('core::num::traits::Zero');
   c.addStandaloneImport('starknet::get_caller_address');
+
   c.addFunction(externalTrait, functions.burn);
 }
 
@@ -177,7 +179,7 @@ const functions = defineFunctions({
       { name: 'token_id', type: 'u256' }
     ],
     code: [
-      'self.erc721._update(Zeroable::zero(), token_id, get_caller_address());',
+      'self.erc721.update(Zero::zero(), token_id, get_caller_address());',
     ]
   },
   safe_mint: {
@@ -188,7 +190,7 @@ const functions = defineFunctions({
       { name: 'data', type: 'Span<felt252>' },
     ],
     code: [
-      'self.erc721._safe_mint(recipient, token_id, data);',
+      'self.erc721.safe_mint(recipient, token_id, data);',
     ]
   },
   safeMint: {

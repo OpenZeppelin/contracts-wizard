@@ -57,7 +57,7 @@ const functions = defineFunctions({
       { name: 'new_class_hash', type: 'ClassHash' },
     ],
     code: [
-      'self.upgradeable._upgrade(new_class_hash)'
+      'self.upgradeable.upgrade(new_class_hash)'
     ]
   },
 });

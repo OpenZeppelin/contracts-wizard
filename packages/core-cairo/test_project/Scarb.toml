@@ -1,13 +1,13 @@
 [package]
 name = "test_project"
 version = "0.1.0"
-edition = "2023_01"
+edition = "2023_11"
 cairo-version = "2.6.4"
 scarb-version = "2.6.5"
 
 [dependencies]
 starknet = "2.6.4"
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.13.0" }
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.14.0" }
 
 [lib]
 

@@ -171,7 +171,7 @@ test('erc20 API isAccessControlRequired', async t => {
   t.is(erc20.isAccessControlRequired({ mintable: true }), true);
   t.is(erc20.isAccessControlRequired({ pausable: true }), true);
   t.is(erc20.isAccessControlRequired({ upgradeable: true }), true);
-}); 
+});
 
 test('erc20 getInitialSupply', async t => {
   t.is(getInitialSupply('1000', 18),   '1000000000000000000000');

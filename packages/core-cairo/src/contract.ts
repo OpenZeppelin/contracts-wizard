@@ -131,7 +131,7 @@ export class ContractBuilder implements Contract {
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
-      const initializer = initializable ? { params } : undefined;  
+      const initializer = initializable ? { params } : undefined;
       const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
       this.componentsMap.set(key, cp);
     }
