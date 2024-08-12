@@ -2,12 +2,12 @@
 name = "test_project"
 version = "0.1.0"
 edition = "2023_11"
-cairo-version = "2.6.4"
-scarb-version = "2.6.5"
+cairo-version = "2.7.0"
+scarb-version = "2.7.0"
 
 [dependencies]
-starknet = "2.6.4"
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.14.0" }
+starknet = "2.7.0"
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.15.0" }
 
 [lib]
 
