@@ -27,7 +27,6 @@ jobs:
         SCARB_VERSION=$(grep 'scarb-version = ' packages/core-cairo/test_project/Scarb.toml | sed 's/scarb-version = "\(.*\)"/\1/')
         echo "SCARB_VERSION=$SCARB_VERSION" >> $GITHUB_ENV
     - uses: software-mansion/setup-scarb@v1
-      working-directory: ./packages/core-cairo/test_project
       with:
         scarb-version: ${{ env.SCARB_VERSION }}
     - name: Compile contracts
