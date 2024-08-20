@@ -3,11 +3,11 @@
   import WizAvatar from './icons/WizAvatar.svelte'
   import WizIcon from './icons/WizIcon.svelte'
   import XIcon from './icons/XIcon.svelte';
-  import ExperimentalTooltip from './ExperimentalTooltip.svelte';
   import type { GenericOptions } from '@openzeppelin/wizard';
   import { nanoid } from 'nanoid';
   import MinimizeIcon from './icons/MinimizeIcon.svelte';
   import MaximizeIcon from './icons/MaximizeIcon.svelte';
+  import HelpTooltip from './HelpTooltip.svelte';
 
   export let functionCall: {
     name?: string,
@@ -23,7 +23,7 @@
   const chatId = nanoid()
   let inProgress = false
   let currentMessage = ''
-  let showing: boolean = true
+  let showing: boolean = false
   let expanded: boolean = false
   let messages: Chat[] = [{
     role: 'assistant',
@@ -212,11 +212,11 @@
       AI Assistant
       <div class="flex items-center gap-2">
         <div class="tooltip-container">
-          <ExperimentalTooltip placement="bottom">
+          <HelpTooltip placement="bottom">
               The AI Assistant Wiz is powered by the <a target="_blank" rel="noopener noreferrer" href="https://openai.com/blog/openai-api">OpenAI API</a>, which utilizes AI/ML and therefore may produce inaccurate information.
               <br /><br />
               You should always review any information produced by Wiz to ensure that any results are accurate and suit your purposes.
-          </ExperimentalTooltip>
+          </HelpTooltip>
         </div>
         <button class="shadow-xl rotate-45 border-none bg-gray-400 rounded-md h-6 w-6 text-white cursor-pointer" on:click={() => {
           expanded = !expanded
@@ -238,7 +238,7 @@
         <XIcon />
       </div>
     {:else}
-      <div class="animate-fade-in">
+      <div class="animate-fade-in" title="AI Assistant">
         <WizIcon />
       </div>
     {/if}
