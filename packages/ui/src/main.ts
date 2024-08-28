@@ -24,6 +24,7 @@ const params = new URLSearchParams(window.location.search);
 const initialTab = params.get('tab') ?? undefined;
 const lang = params.get('lang') ?? undefined;
 const requestedVersion = params.get('version') ?? undefined;
+const initialName = params.get('name') ?? undefined;
 
 let compatibleVersionSemver = lang === 'cairo' ? compatibleCairoContractsSemver : compatibleSolidityContractsSemver;
 
@@ -32,9 +33,9 @@ if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSem
   postMessage({ kind: 'oz-wizard-unsupported-version' });
   app = new UnsupportedVersion({ target: document.body, props: { requestedVersion, compatibleVersionSemver }});
 } else if (lang === 'cairo') {
-  app = new CairoApp({ target: document.body, props: { initialTab } });
+  app = new CairoApp({ target: document.body, props: { initialTab, initialName } });
 } else {
-  app = new App({ target: document.body, props: { initialTab } });
+  app = new App({ target: document.body, props: { initialTab, initialName } });
 }
 
 app.$on('tab-change', (e: CustomEvent) => {

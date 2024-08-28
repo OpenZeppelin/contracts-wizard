@@ -39,12 +39,19 @@ onDOMContentLoaded(function () {
     setSearchParam(w, src.searchParams, 'data-lang', 'lang');
     setSearchParam(w, src.searchParams, 'data-tab', 'tab');
     setSearchParam(w, src.searchParams, 'version', 'version');
+
     const sync = w.getAttribute('data-sync-url');
 
     if (sync === 'fragment') {
-      const fragment = window.location.hash.replace('#', '');
-      if (fragment) {
-        src.searchParams.set('tab', fragment);
+      // Uses format: #tab&key=value&key=value...
+      const fragments = window.location.hash.replace('#', '').split('&');
+      for (const fragment of fragments) {
+        const [key, value] = fragment.split('=', 2);
+        if (key && value) {
+          src.searchParams.set(key, value);
+        } else {
+          src.searchParams.set('tab', fragment);
+        }
       }
     }
 

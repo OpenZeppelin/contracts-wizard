@@ -38,10 +38,13 @@
       dispatch('tab-change', tab);
     };
 
+    export let initialName: string | undefined = undefined;
+    let name: string | undefined;
+
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder('MyToken');
+    let contract: Contract = new ContractBuilder(initialName ?? 'MyToken');
 
     $: functionCall && applyFunctionCall()
 
@@ -49,6 +52,10 @@
 
     $: {
       if (opts) {
+        if (name === undefined && initialName !== undefined) {
+          name = initialName;
+          opts.name = name;
+        }
         try {
           contract = buildGeneric(opts);
           errors[tab] = undefined;
