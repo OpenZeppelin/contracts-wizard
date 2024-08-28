@@ -32,7 +32,7 @@
     };
 
     export let initialName: string | undefined = undefined;
-    let name: string | undefined;
+    let initialNameSet = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
@@ -43,9 +43,9 @@
 
     $: {
       if (opts) {
-        if (name === undefined && initialName !== undefined) {
-          name = initialName;
-          opts.name = name;
+        if (!initialNameSet && initialName !== undefined) {
+          initialNameSet = true;
+          opts.name = initialName;
         }
         try {
           contract = buildGeneric(opts);
