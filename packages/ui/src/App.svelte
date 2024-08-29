@@ -54,25 +54,16 @@
     $: {
       if (opts) {
         if (!initialValuesSet) {
+          opts.name = initialOpts.name ?? opts.name;
           switch (opts.kind) {
             case 'ERC20':
-              opts.name = initialOpts.name ?? opts.name;
-              opts.symbol = initialOpts.symbol ?? opts.symbol;
               opts.premint = initialOpts.premint ?? opts.premint;
-              break;
             case 'ERC721':
-              opts.name = initialOpts.name ?? opts.name;
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'ERC1155':
-              opts.name = initialOpts.name ?? opts.name;
-              break;
             case 'Governor':
-              opts.name = initialOpts.name ?? opts.name;
-              break;
             case 'Custom':
-              opts.name = initialOpts.name ?? opts.name;
-              break;
           }
           initialValuesSet = true;
         }
