@@ -27,6 +27,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
+    import { InitialOptions } from './initial-options';
 
     const dispatch = createEventDispatcher();
 
@@ -38,10 +39,13 @@
       dispatch('tab-change', tab);
     };
 
+    export let initialOpts: InitialOptions = {};
+    let initialValuesSet = false;
+
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder('MyToken');
+    let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
 
     $: functionCall && applyFunctionCall()
 
@@ -49,6 +53,20 @@
 
     $: {
       if (opts) {
+        if (!initialValuesSet) {
+          opts.name = initialOpts.name ?? opts.name;
+          switch (opts.kind) {
+            case 'ERC20':
+              opts.premint = initialOpts.premint ?? opts.premint;
+            case 'ERC721':
+              opts.symbol = initialOpts.symbol ?? opts.symbol;
+              break;
+            case 'ERC1155':
+            case 'Governor':
+            case 'Custom':
+          }
+          initialValuesSet = true;
+        }
         try {
           contract = buildGeneric(opts);
           errors[tab] = undefined;
