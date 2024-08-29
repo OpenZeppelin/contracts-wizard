@@ -20,6 +20,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
+    import { InitialOptions } from '../initial-options';
 
     const dispatch = createEventDispatcher();
 
@@ -31,7 +32,7 @@
       dispatch('tab-change', tab);
     };
 
-    export let initialOpts: { name?: string, symbol?: string, premint?: string } = {};
+    export let initialOpts: InitialOptions = {};
     let initialValuesSet = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
