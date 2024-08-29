@@ -27,6 +27,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
+    import { InitialOptions } from './initial-options';
 
     const dispatch = createEventDispatcher();
 
@@ -38,13 +39,13 @@
       dispatch('tab-change', tab);
     };
 
-    export let initialName: string | undefined = undefined;
-    let initialNameSet = false;
+    export let initialOpts: InitialOptions = {};
+    let initialValuesSet = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-    let contract: Contract = new ContractBuilder(initialName ?? 'MyToken');
+    let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
 
     $: functionCall && applyFunctionCall()
 
@@ -52,9 +53,28 @@
 
     $: {
       if (opts) {
-        if (!initialNameSet && initialName !== undefined) {
-          initialNameSet = true;
-          opts.name = initialName;
+        if (!initialValuesSet) {
+          switch (opts.kind) {
+            case 'ERC20':
+              opts.name = initialOpts.name ?? opts.name;
+              opts.symbol = initialOpts.symbol ?? opts.symbol;
+              opts.premint = initialOpts.premint ?? opts.premint;
+              break;
+            case 'ERC721':
+              opts.name = initialOpts.name ?? opts.name;
+              opts.symbol = initialOpts.symbol ?? opts.symbol;
+              break;
+            case 'ERC1155':
+              opts.name = initialOpts.name ?? opts.name;
+              break;
+            case 'Governor':
+              opts.name = initialOpts.name ?? opts.name;
+              break;
+            case 'Custom':
+              opts.name = initialOpts.name ?? opts.name;
+              break;
+          }
+          initialValuesSet = true;
         }
         try {
           contract = buildGeneric(opts);
