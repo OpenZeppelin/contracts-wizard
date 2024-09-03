@@ -7,6 +7,7 @@
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
+    import AccountControls from './AccountControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
@@ -50,6 +51,9 @@
             case 'ERC20':
               opts.premint = initialOpts.premint ?? opts.premint;
             case 'ERC721':
+              opts.symbol = initialOpts.symbol ?? opts.symbol;
+              break;
+            case 'Account':
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'ERC1155':
@@ -114,6 +118,9 @@
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
+        <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
+          Account
+        </button>
       </OverflowMenu>
     </div>
 
@@ -158,6 +165,9 @@
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
+      </div>
+      <div class:hidden={tab !== 'Account'}>
+        <AccountControls bind:opts={allOpts.Account} errors={errors.Account}/>
       </div>
     </div>
     <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

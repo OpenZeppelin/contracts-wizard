@@ -2,7 +2,7 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable', 'roles', 'account'] as const;
 
 export type Access = typeof accessOptions[number];
 
@@ -47,6 +47,14 @@ export type Access = typeof accessOptions[number];
       }
       break;
     }
+    case 'account': {
+      //c.addComponent(components.OwnableComponent, [{ lit:'owner' }], true);
+
+      c.addStandaloneImport('starknet::ContractAddress');
+      c.addConstructorArgument({ name: 'public_key', type: 'felt252'});
+
+      break;
+    }
   }
 }
 
@@ -78,6 +86,10 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
       
+      break;
+    }
+    case 'account': {
+      c.addFunctionCodeBefore(trait, fn, 'self.account.assert_only_self()');
       break;
     }
   }
