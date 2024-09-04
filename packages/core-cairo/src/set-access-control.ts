@@ -47,14 +47,12 @@ export type Access = typeof accessOptions[number];
       }
       break;
     }
-    case 'account': {
-      //c.addComponent(components.OwnableComponent, [{ lit:'owner' }], true);
+  }
+}
 
-      c.addStandaloneImport('starknet::ContractAddress');
-      c.addConstructorArgument({ name: 'public_key', type: 'felt252'});
-
-      break;
-    }
+export function requireAccessControl2(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
+  if (access === false) {
+    access = 'ownable';
   }
 }
 
@@ -86,10 +84,6 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
       
-      break;
-    }
-    case 'account': {
-      c.addFunctionCodeBefore(trait, fn, 'self.account.assert_only_self()');
       break;
     }
   }

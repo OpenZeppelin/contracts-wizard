@@ -3,9 +3,27 @@ import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20
 import { printERC721, defaults as erc721defaults, isAccessControlRequired as erc721IsAccessControlRequired, ERC721Options } from './erc721';
 import { printERC1155, defaults as erc1155defaults, isAccessControlRequired as erc1155IsAccessControlRequired, ERC1155Options } from './erc1155';
 import { printCustom, defaults as customDefaults, isAccessControlRequired as customIsAccessControlRequired, CustomOptions } from './custom';
-import { printAccount, defaults as accountDefaults, isAccessControlRequired as accountIsAccessControlRequired, AccountOptions } from './account';
+import { printAccount, accountDefaults, isAccessControlRequired as accountIsAccessControlRequired, AccountOptions } from './account';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
+  /**
+   * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
+   */
+  print: (opts?: Options) => string,
+  
+  /**
+   * The default options that are used for `print`.
+   */
+  defaults: Required<Options>;
+
+  /**
+   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the 
+   * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
+   */
+   isAccessControlRequired: (opts: Partial<Options>) => boolean,
+}
+
+export interface WizardAccountAPI<Options extends CommonOptions> {
   /**
    * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
    */

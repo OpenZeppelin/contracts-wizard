@@ -31,6 +31,29 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   requireAccessControl(c, t, functions.upgrade, access, 'UPGRADER', 'upgrader');
 }
 
+export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
+  if (upgradeable === false) {
+    return;
+  }
+
+  c.upgradeable = true;
+
+  c.addComponent(components.UpgradeableComponent, [], false);
+
+  c.addStandaloneImport('openzeppelin::upgrades::interface::IUpgradeable');
+  c.addStandaloneImport('starknet::ClassHash');
+
+  const t: BaseImplementedTrait = {
+    name: 'UpgradeableImpl',
+    of: 'IUpgradeable<ContractState>',
+    tags: [
+      'abi(embed_v0)'
+    ],
+  };
+  c.addImplementedTrait(t);
+  requireAccessControl(c, t, functions.upgrade, false, 'UPGRADER', 'upgrader');
+}
+
 const components = defineComponents( {
   UpgradeableComponent: {
     path: 'openzeppelin::upgrades',
