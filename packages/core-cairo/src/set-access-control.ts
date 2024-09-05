@@ -2,7 +2,7 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
-export const accessOptions = [false, 'ownable', 'roles', 'account'] as const;
+export const accessOptions = [false, 'ownable', 'roles'] as const;
 
 export type Access = typeof accessOptions[number];
 
@@ -47,12 +47,6 @@ export type Access = typeof accessOptions[number];
       }
       break;
     }
-  }
-}
-
-export function requireAccessControl2(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
-  if (access === false) {
-    access = 'ownable';
   }
 }
 

@@ -20,47 +20,55 @@
 
     export let accountType: Account;
     export let required: boolean;
-    let defaultValueWhenEnabled: 'account' | 'eth_account';
-
 
   </script>
-  
+
+
   <section class="controls-section">
     <h1>Account Type</h1>
-      <div class="checkbox-group">
-        <label>
-          <input type="radio" bind:group={accountType} value="account">
-          Starknet
-          <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
-            Standard Starknet account using the Stark curve.
-          </HelpTooltip>
-        </label>
-        <label class:checked={accountType === 'ethAccount'}>
-          <input type="radio" bind:group={accountType} value="ethAccount">
-          Ethereum
-          <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
-            Ethereum-flavored account using the Secp256k1 curve.
-          </HelpTooltip>
-        </label>
-      </div>
+  
+    <div class="checkbox-group">
+      <label class:checked={accountType === 'stark'}>
+        <input type="radio" bind:group={opts.type} value="stark">
+        Stark
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
+          Simple mechanism with a single account authorized for all privileged actions.
+        </HelpTooltip>
+      </label>
+      <label class:checked={accountType === 'eth'}>
+        <input type="radio" bind:group={opts.type} value="eth">
+        Ethereum
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+          Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+        </HelpTooltip>
+      </label>
+    </div>
   </section>
+
 
   <section class="controls-section">
     <h1>Features</h1>
 
     <div class="checkbox-group">
-      <label >
-        <input type="checkbox" >
+      <label class:checked={opts.declare}>
+        <input type="checkbox" bind:checked={opts.declare}>
         Declarable
         <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/account">
           Privileged accounts will be able to emit new tokens.
         </HelpTooltip>
       </label>
-      <label >
-        <input type="checkbox" >
+      <label class:checked={opts.deploy}>
+        <input type="checkbox" bind:checked={opts.deploy}>
         Deployable
         <HelpTooltip>
           Token holders will be able to destroy their tokens.
+        </HelpTooltip>
+      </label>
+      <label class:checked={opts.pubkey}>
+        <input type="checkbox" bind:checked={opts.pubkey}>
+        Public Key
+        <HelpTooltip>
+          The public key can be reset by the owner.
         </HelpTooltip>
       </label>
       <UpgradeabilityField bind:upgradeable={opts.upgradeable} />

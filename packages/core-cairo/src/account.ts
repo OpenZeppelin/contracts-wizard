@@ -2,7 +2,8 @@ import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { getSelfArg } from './common-options';
+import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
+import { defaults as commonDefaults } from './common-options';
 import { setUpgradeable, setAccountUpgradeable, Upgradeable } from './set-upgradeable';
 import { setInfo, Info } from './set-info';
 import { defineComponents } from './utils/define-components';
@@ -14,49 +15,95 @@ import { externalTrait } from './external-trait';
 import { toByteArray } from './utils/convert-strings';
 
 
-export const accountOptions = ['stark', 'secp256k1'] as const;
+export const accountOptions = ['stark', 'eth'] as const;
 
 export type Account = typeof accountOptions[number];
 
-
-export const accountDefaults: Required<AccountOptions> = {
-    name: "MyAccount",
+export const defaults: Required<AccountOptions> = {
+    name: 'MyAccount',
     type: 'stark',
-    upgradeable: true,
-    info: infoDefaults,
+    declare: true,
+    deploy: true,
+    pubkey: true,
+    access: commonDefaults.access,
+    upgradeable: commonDefaults.upgradeable,
+    info: commonDefaults.info
   } as const;
   
-  export interface AccountOptions {
-    name: string,
-    type: Account,
-    upgradeable: Upgradeable;
-    info: Info;
+  export function printAccount(opts: AccountOptions = defaults): string {
+    return printContract(buildAccount(opts));
   }
-
-export function printAccount(opts: AccountOptions = accountDefaults): string {
-  return printContract(buildAccount(opts));
-}
-
-function withDefaults(opts: AccountOptions): Required<AccountOptions> {
-  return {
-    ...opts,
-    ...accountDefaults
-  };
-}
-
-export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
-  return false;
-}
+  
+  export interface AccountOptions extends CommonOptions {
+    name: string;
+    type: Account;
+    declare: boolean,
+    deploy: boolean,
+    pubkey: boolean
+  }
+  
+  function withDefaults(opts: AccountOptions): Required<AccountOptions> {
+    return {
+      ...opts,
+      ...withCommonDefaults(opts),
+      type: opts.type ?? defaults.type,
+      declare: opts.declare ?? defaults.declare,
+      deploy: opts.deploy ?? defaults.deploy,
+      pubkey: opts.pubkey ?? defaults.pubkey
+    };
+  }
+  
+  export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
+    return opts.upgradeable === false;
+  }
 
 export function buildAccount(opts: AccountOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
   const allOpts = withDefaults(opts);
-
   if (opts.type === 'stark') {
-    addAccountMixin(c)
+    c.addConstructorArgument({ name:'public_key', type:'felt252' });
+    c.addConstructorCode('self.account.initializer(public_key)');
+
+    if (opts.declare && opts.deploy && opts.pubkey) {
+        addAccountMixin(c)
+    } else {
+        addSRC6(c)
+
+        if (opts.declare) {
+            addDeclarer(c)
+        }
+
+        if (opts.deploy) {
+            addDeployer(c)
+        }
+
+        if (opts.pubkey) {
+            addPublicKey(c)
+        }
+    }
   } else {
-    addEthAccountMixin(c)
+    c.addStandaloneImport('openzeppelin::account::interface::EthPublicKey;');
+    c.addConstructorArgument({ name:'recipient', type:'EthPublicKey' });
+    c.addConstructorCode('self.eth_account.initializer(public_key)');
+
+    if (opts.declare && opts.deploy && opts.pubkey) {
+        addEthAccountMixin(c)
+    } else {
+        addEthSRC6(c)
+
+        if (opts.declare) {
+            addEthDeclarer(c)
+        }
+
+        if (opts.deploy) {
+            addEthDeployer(c)
+        }
+
+        if (opts.pubkey) {
+            addEthPublicKey(c)
+        }
+    }
   }
 
   //setAccessControl(c, allOpts.access);
@@ -65,6 +112,66 @@ export function buildAccount(opts: AccountOptions): Contract {
   setInfo(c, allOpts.info);
 
   return c;
+}
+
+function addSRC6(c: ContractBuilder) {
+    c.addImplToComponent(components.AccountComponent, {
+        name: 'SRC6Impl',
+        value: 'AccountComponent::SRC6Impl<ContractState>',
+      });
+      c.addInterfaceFlag('ISRC5');
+      addSRC5Component(c);
+}
+
+function addEthSRC6(c: ContractBuilder) {
+    c.addImplToComponent(components.EthAccountComponent, {
+        name: 'SRC6Impl',
+        value: 'EthAccountComponent::SRC6Impl<ContractState>',
+      });
+      c.addInterfaceFlag('ISRC5');
+      addSRC5Component(c);
+}
+
+function addDeclarer(c: ContractBuilder) {
+    c.addImplToComponent(components.AccountComponent, {
+        name: 'DeclarerImpl',
+        value: 'AccountComponent::DeclarerImpl<ContractState>',
+      });
+}
+
+function addEthDeclarer(c: ContractBuilder) {
+    c.addImplToComponent(components.EthAccountComponent, {
+        name: 'DeclarerImpl',
+        value: 'EthAccountComponent::DeclarerImpl<ContractState>',
+      });
+}
+
+function addDeployer(c: ContractBuilder) {
+    c.addImplToComponent(components.AccountComponent, {
+        name: 'DeployerImpl',
+        value: 'AccountComponent::DeployerImpl<ContractState>',
+      });
+}
+
+function addEthDeployer(c: ContractBuilder) {
+    c.addImplToComponent(components.EthAccountComponent, {
+        name: 'DeployerImpl',
+        value: 'EthAccountComponent::DeployerImpl<ContractState>',
+      });
+}
+
+function addPublicKey(c: ContractBuilder) {
+    c.addImplToComponent(components.AccountComponent, {
+        name: 'PublicKeyImpl',
+        value: 'AccountComponent::PublicKeyImpl<ContractState>',
+      });
+}
+
+function addEthPublicKey(c: ContractBuilder) {
+    c.addImplToComponent(components.EthAccountComponent, {
+        name: 'PublicKeyImpl',
+        value: 'EthAccountComponent::PublicKeyImpl<ContractState>',
+      });
 }
 
 function addAccountMixin(c: ContractBuilder) {
@@ -84,18 +191,6 @@ function addEthAccountMixin(c: ContractBuilder) {
     c.addInterfaceFlag('ISRC5');
     addSRC5Component(c);
   }
-
-//function addBase(c: ContractBuilder, public_key: string) {
-//  //c.addComponent(
-//  //  components.AccountComponent,
-//  //  [
-//  //      public_key
-//  //  ],
-//  //  true,
-//  //);
-//  c.addConstructorArgument({ name:'public_key', type:'felt252' });
-//
-//}
 
 const components = defineComponents( {
   AccountComponent: {
