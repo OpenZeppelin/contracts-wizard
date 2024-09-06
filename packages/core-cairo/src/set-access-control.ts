@@ -2,7 +2,7 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable', 'roles', 'account', 'ethAccount'] as const;
 
 export type Access = typeof accessOptions[number];
 
@@ -47,6 +47,12 @@ export type Access = typeof accessOptions[number];
       }
       break;
     }
+    case 'account': {
+      break;
+    }
+    case 'ethAccount': {
+      break;
+    }
   }
 }
 
@@ -57,7 +63,7 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
   if (access === false) {
     access = 'ownable';
   }
-  
+
   setAccessControl(c, access);
 
   switch (access) {
@@ -73,11 +79,31 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
         if (addedSuper) {
           c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
-        }  
+        }
       }
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
-      
+      break;
+    }
+    case 'account': {
+      c.addFunctionCodeBefore(trait, fn, 'self.account.assert_only_self()');
+      break;
+    }
+    case 'ethAccount': {
+      c.addFunctionCodeBefore(trait, fn, 'self.eth_account.assert_only_self()');
+      break;
+    }
+  }
+}
+
+export function requireAccessControlAccount(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access) {
+  switch (access) {
+    case 'account': {
+      c.addFunctionCodeBefore(trait, fn, 'self.account.assert_only_self()');
+      break;
+    }
+    case 'ethAccount': {
+      c.addFunctionCodeBefore(trait, fn, 'self.eth_account.assert_only_self()');
       break;
     }
   }

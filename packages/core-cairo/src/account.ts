@@ -1,5 +1,5 @@
 import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
+import { Access, accessOptions, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
@@ -25,7 +25,7 @@ export const defaults: Required<AccountOptions> = {
     declare: true,
     deploy: true,
     pubkey: true,
-    access: commonDefaults.access,
+    access: 'account',
     upgradeable: commonDefaults.upgradeable,
     info: commonDefaults.info
   } as const;
@@ -63,7 +63,7 @@ export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
   if (opts.type === 'stark') {
     c.addConstructorArgument({ name:'public_key', type:'felt252' });
-    c.addConstructorCode('self.account.initializer(public_key)');
+    c.addComponent(components.AccountComponent, [{ lit:'public_key' }], true);
 
     if (opts.declare && opts.deploy && opts.pubkey) {
         addAccountMixin(c)
@@ -84,8 +84,8 @@ export function buildAccount(opts: AccountOptions): Contract {
     }
   } else {
     c.addStandaloneImport('openzeppelin::account::interface::EthPublicKey;');
-    c.addConstructorArgument({ name:'recipient', type:'EthPublicKey' });
-    c.addConstructorCode('self.eth_account.initializer(public_key)');
+    c.addConstructorArgument({ name:'public_key', type:'EthPublicKey' });
+    c.addComponent(components.EthAccountComponent, [{ lit:'public_key' }], true);
 
     if (opts.declare && opts.deploy && opts.pubkey) {
         addEthAccountMixin(c)
@@ -106,9 +106,7 @@ export function buildAccount(opts: AccountOptions): Contract {
     }
   }
 
-  //setAccessControl(c, allOpts.access);
-  //setUpgradeable(c, allOpts.upgradeable, allOpts.access);
-  setAccountUpgradeable(c, allOpts.upgradeable);
+  setAccountUpgradeable(c, allOpts.upgradeable, allOpts.type);
   setInfo(c, allOpts.info);
 
   return c;
@@ -194,7 +192,7 @@ function addEthAccountMixin(c: ContractBuilder) {
 
 const components = defineComponents( {
   AccountComponent: {
-    path: 'openzeppelin::token::account',
+    path: 'openzeppelin::account',
     substorage: {
       name: 'account',
       type: 'AccountComponent::Storage',

@@ -3,6 +3,7 @@ import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { Access, requireAccessControl } from './set-access-control';
 import { defineComponents } from './utils/define-components';
 import { defineFunctions } from './utils/define-functions';
+import { Account } from './account';
 
 export const upgradeableOptions = [false, true] as const;
 
@@ -31,7 +32,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   requireAccessControl(c, t, functions.upgrade, access, 'UPGRADER', 'upgrader');
 }
 
-export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable) {
+export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account) {
   if (upgradeable === false) {
     return;
   }
@@ -51,7 +52,12 @@ export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeab
     ],
   };
   c.addImplementedTrait(t);
-  requireAccessControl(c, t, functions.upgrade, false, 'UPGRADER', 'upgrader');
+
+  if (type === 'stark')
+    requireAccessControl(c, t, functions.upgrade, 'account', '', '');
+  else {
+    requireAccessControl(c, t, functions.upgrade, 'ethAccount', '', '');
+  }
 }
 
 const components = defineComponents( {
