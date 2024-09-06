@@ -39,6 +39,7 @@ export const defaults: Required<AccountOptions> = {
     return {
       ...opts,
       ...withCommonDefaults(opts),
+      name: opts.name ?? defaults.name,
       type: opts.type ?? defaults.type,
       declare: opts.declare ?? defaults.declare,
       deploy: opts.deploy ?? defaults.deploy,
@@ -54,50 +55,33 @@ export function buildAccount(opts: AccountOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
   const allOpts = withDefaults(opts);
+
   if (opts.type === 'stark') {
     c.addConstructorArgument({ name:'public_key', type:'felt252' });
     c.addComponent(components.AccountComponent, [{ lit:'public_key' }], true);
-
-    if (opts.declare && opts.deploy && opts.pubkey) {
-        addAccountMixin(c)
-    } else {
-        addSRC6(c)
-
-        if (opts.declare) {
-            addDeclarer(c)
-        }
-
-        if (opts.deploy) {
-            addDeployer(c)
-        }
-
-        if (opts.pubkey) {
-            addPublicKey(c)
-        }
-    }
-  } else {
+  } else if (opts.type === 'eth') {
     c.addStandaloneImport('openzeppelin::account::interface::EthPublicKey;');
     c.addConstructorArgument({ name:'public_key', type:'EthPublicKey' });
     c.addComponent(components.EthAccountComponent, [{ lit:'public_key' }], true);
+  }
 
     if (opts.declare && opts.deploy && opts.pubkey) {
-        addEthAccountMixin(c)
+        addAccountMixin(c, opts.type);
     } else {
-        addEthSRC6(c)
+        addSRC6(c, opts.type)
 
         if (opts.declare) {
-            addEthDeclarer(c)
+            addDeclarer(c, opts.type)
         }
 
         if (opts.deploy) {
-            addEthDeployer(c)
+            addDeployer(c, opts.type)
         }
 
         if (opts.pubkey) {
-            addEthPublicKey(c)
+            addPublicKey(c, opts.type)
         }
     }
-  }
 
   setAccountUpgradeable(c, allOpts.upgradeable, allOpts.type);
   setInfo(c, allOpts.info);
@@ -105,83 +89,59 @@ export function buildAccount(opts: AccountOptions): Contract {
   return c;
 }
 
-function addSRC6(c: ContractBuilder) {
-    c.addImplToComponent(components.AccountComponent, {
+function addSRC6(c: ContractBuilder, accountType: Account) {
+    let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
+    let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+
+    c.addImplToComponent(componentType, {
         name: 'SRC6Impl',
-        value: 'AccountComponent::SRC6Impl<ContractState>',
+        value: `${baseComponent}::SRC6Impl<ContractState>`,
       });
       c.addInterfaceFlag('ISRC5');
       addSRC5Component(c);
 }
 
-function addEthSRC6(c: ContractBuilder) {
-    c.addImplToComponent(components.EthAccountComponent, {
-        name: 'SRC6Impl',
-        value: 'EthAccountComponent::SRC6Impl<ContractState>',
+function addDeclarer(c: ContractBuilder, accountType: Account) {
+    let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
+    let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+
+    c.addImplToComponent(componentType, {
+        name: 'DeclarerImpl',
+        value: `${baseComponent}::DeclarerImpl<ContractState>`,
+      });
+}
+
+function addDeployer(c: ContractBuilder, accountType: Account) {
+    let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
+    let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+
+    c.addImplToComponent(componentType, {
+        name: 'DeployerImpl',
+        value: `${baseComponent}::DeployerImpl<ContractState>`,
+      });
+}
+
+function addPublicKey(c: ContractBuilder, accountType: Account) {
+    let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
+    let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+
+    c.addImplToComponent(componentType, {
+        name: 'PublicKeyImpl',
+        value: `${baseComponent}::PublicKeyImpl<ContractState>`,
+      });
+}
+
+function addAccountMixin(c: ContractBuilder, accountType: Account) {
+    let accountPrefix = accountType === 'stark' ? 'Account' : 'EthAccount';
+    let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+
+    c.addImplToComponent(componentType, {
+        name: `${accountPrefix}MixinImpl`,
+        value: `${accountPrefix}Component::${accountPrefix}MixinImpl<ContractState>`,
       });
       c.addInterfaceFlag('ISRC5');
       addSRC5Component(c);
 }
-
-function addDeclarer(c: ContractBuilder) {
-    c.addImplToComponent(components.AccountComponent, {
-        name: 'DeclarerImpl',
-        value: 'AccountComponent::DeclarerImpl<ContractState>',
-      });
-}
-
-function addEthDeclarer(c: ContractBuilder) {
-    c.addImplToComponent(components.EthAccountComponent, {
-        name: 'DeclarerImpl',
-        value: 'EthAccountComponent::DeclarerImpl<ContractState>',
-      });
-}
-
-function addDeployer(c: ContractBuilder) {
-    c.addImplToComponent(components.AccountComponent, {
-        name: 'DeployerImpl',
-        value: 'AccountComponent::DeployerImpl<ContractState>',
-      });
-}
-
-function addEthDeployer(c: ContractBuilder) {
-    c.addImplToComponent(components.EthAccountComponent, {
-        name: 'DeployerImpl',
-        value: 'EthAccountComponent::DeployerImpl<ContractState>',
-      });
-}
-
-function addPublicKey(c: ContractBuilder) {
-    c.addImplToComponent(components.AccountComponent, {
-        name: 'PublicKeyImpl',
-        value: 'AccountComponent::PublicKeyImpl<ContractState>',
-      });
-}
-
-function addEthPublicKey(c: ContractBuilder) {
-    c.addImplToComponent(components.EthAccountComponent, {
-        name: 'PublicKeyImpl',
-        value: 'EthAccountComponent::PublicKeyImpl<ContractState>',
-      });
-}
-
-function addAccountMixin(c: ContractBuilder) {
-  c.addImplToComponent(components.AccountComponent, {
-    name: 'AccountMixinImpl',
-    value: 'AccountComponent::AccountMixinImpl<ContractState>',
-  });
-  c.addInterfaceFlag('ISRC5');
-  addSRC5Component(c);
-}
-
-function addEthAccountMixin(c: ContractBuilder) {
-    c.addImplToComponent(components.EthAccountComponent, {
-      name: 'EthAccountMixinImpl',
-      value: 'EthAccountComponent::EthAccountMixinImpl<ContractState>',
-    });
-    c.addInterfaceFlag('ISRC5');
-    addSRC5Component(c);
-  }
 
 const components = defineComponents( {
   AccountComponent: {
