@@ -1,6 +1,6 @@
 <script lang="ts">
     import HelpTooltip from '../HelpTooltip.svelte';
-  
+
     import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
     import { account, Account, infoDefaults } from '@openzeppelin/wizard-cairo';
     import AccessControlSection from './AccessControlSection.svelte';
@@ -8,14 +8,13 @@
     import UpgradeabilityField from './UpgradeabilityField.svelte';
     import InfoSection from './InfoSection.svelte';
     import { error } from '../error-tooltip';
-    import ToggleRadio from '../inputs/ToggleRadio.svelte';
-    
+
     export const opts: Required<KindedOptions['Account']> = {
       kind: 'Account',
       ...account.defaults,
       info: { ...infoDefaults }, // create new object since Info is nested
     };
-  
+
     export let errors: undefined | OptionsErrorMessages;
 
     export let accountType: Account;
@@ -25,12 +24,19 @@
 
 
   <section class="controls-section">
+    <h1>Settings</h1>
+    <label class="labeled-input">
+      <span>Name</span>
+      <input bind:value={opts.name} use:error={errors?.name}>
+    </label>
+  </section>
+
+    <section class="controls-section">
     <h1>Account Type</h1>
-  
     <div class="checkbox-group">
       <label class:checked={accountType === 'stark'}>
         <input type="radio" bind:group={opts.type} value="stark">
-        Stark
+        Starknet
         <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
           Simple mechanism with a single account authorized for all privileged actions.
         </HelpTooltip>

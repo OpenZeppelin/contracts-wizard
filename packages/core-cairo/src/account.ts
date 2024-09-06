@@ -1,18 +1,11 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
-import { Access, accessOptions, requireAccessControl, setAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
-import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
+import { Contract, ContractBuilder } from './contract';
+import { CommonOptions, withCommonDefaults } from './common-options';
 import { defaults as commonDefaults } from './common-options';
-import { setUpgradeable, setAccountUpgradeable, Upgradeable } from './set-upgradeable';
-import { setInfo, Info } from './set-info';
+import { setAccountUpgradeable } from './set-upgradeable';
+import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
-//import { defaults as commonDefaults } from './common-options';
-import { defaults as infoDefaults } from "./set-info";
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
-import { externalTrait } from './external-trait';
-import { toByteArray } from './utils/convert-strings';
 
 
 export const accountOptions = ['stark', 'eth'] as const;
@@ -29,11 +22,11 @@ export const defaults: Required<AccountOptions> = {
     upgradeable: commonDefaults.upgradeable,
     info: commonDefaults.info
   } as const;
-  
+
   export function printAccount(opts: AccountOptions = defaults): string {
     return printContract(buildAccount(opts));
   }
-  
+
   export interface AccountOptions extends CommonOptions {
     name: string;
     type: Account;
@@ -41,7 +34,7 @@ export const defaults: Required<AccountOptions> = {
     deploy: boolean,
     pubkey: boolean
   }
-  
+
   function withDefaults(opts: AccountOptions): Required<AccountOptions> {
     return {
       ...opts,
@@ -52,7 +45,7 @@ export const defaults: Required<AccountOptions> = {
       pubkey: opts.pubkey ?? defaults.pubkey
     };
   }
-  
+
   export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
     return opts.upgradeable === false;
   }
