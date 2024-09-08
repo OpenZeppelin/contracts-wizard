@@ -13,26 +13,10 @@ export function injectHyperlinks(code: string) {
       libraryPathSegments.splice(1, 0, 'src');
 
       // Remove the component name
-      let lastItem = libraryPathSegments[libraryPathSegments.length - 1];
-      if (libraryPathSegments.length > 0 && lastItem !== 'interface') {
-        // Replace component name with 'upgradeable'
-        if (lastItem === 'UpgradeableComponent') {
-          libraryPathSegments.splice(-1, 1, 'upgradeable');
-        } else {
-          libraryPathSegments.pop();
-        }
-      }
+      removeComponentName(libraryPathSegments);
 
-      // Rebind variable after component name is removed
-      lastItem = libraryPathSegments[libraryPathSegments.length - 1];
-
-      // Duplicate file name as preceding directory in path
-      // unless coming from `notNestedPackages`
-      const notNestedPackages = ['security', 'introspection', 'upgrades'];
-      const packageName = libraryPathSegments[0];
-      if (lastItem !== undefined && packageName !== undefined && !notNestedPackages.includes(packageName) ) {
-        libraryPathSegments.splice(-1, 0, lastItem);
-      }
+      // Duplicate file name in path as preceding directory
+      duplicateFileAsDirectoryInPath(libraryPathSegments);
 
       if (libraryPathSegments !== undefined && libraryPathSegments.length > 0) {
         const replacedImportLine = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join('/')}.cairo' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>;`;
@@ -42,4 +26,27 @@ export function injectHyperlinks(code: string) {
     match = importRegex.exec(code);
   }
   return result;
+}
+
+function removeComponentName(libraryPathSegments: Array<string>) {
+  const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
+  if (libraryPathSegments.length > 0 && lastItem !== 'interface') {
+    // Replace component name with 'upgradeable'
+    if (lastItem === 'UpgradeableComponent') {
+      libraryPathSegments.splice(-1, 1, 'upgradeable');
+    } else {
+      libraryPathSegments.pop();
+    }
+  }
+}
+
+/// Duplicate file name as preceding directory in path unless
+/// package name (`libraryPathSegments[0]`) is in `ignoredPackages`.
+function duplicateFileAsDirectoryInPath(libraryPathSegments: Array<string>) {
+  const ignoredPackages = ['security', 'introspection', 'upgrades'];
+  const packageName = libraryPathSegments[0];
+  const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
+  if (lastItem !== undefined && packageName !== undefined && !ignoredPackages.includes(packageName) ) {
+    libraryPathSegments.splice(-1, 0, lastItem);
+  }
 }
