@@ -17,7 +17,7 @@ export function injectHyperlinks(code: string) {
       if (libraryPathSegments.length > 0 && lastItem !== 'interface') {
         // Replace component name with 'upgradeable'
         if (lastItem === 'UpgradeableComponent') {
-          libraryPathSegments.splice(-1, 1, 'upgradeable')
+          libraryPathSegments.splice(-1, 1, 'upgradeable');
         } else {
           libraryPathSegments.pop();
         }
