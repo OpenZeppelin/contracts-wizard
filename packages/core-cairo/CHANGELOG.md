@@ -4,6 +4,7 @@
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.15.0. ([#378](https://github.com/OpenZeppelin/contracts-wizard/pull/378))
+  - Use OpenZeppelin Contracts for Cairo v0.16.0. ([#384](https://github.com/OpenZeppelin/contracts-wizard/pull/384))
 
 ## 0.14.0 (2024-06-20)
 
