@@ -31,8 +31,8 @@ export function injectHyperlinks(code: string) {
 function removeComponentName(libraryPathSegments: Array<string>) {
   const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
   if (libraryPathSegments.length > 0 && lastItem !== 'interface') {
-    // Replace component name with 'upgradeable'
     if (lastItem === 'UpgradeableComponent') {
+      // Replace component name with 'upgradeable'
       libraryPathSegments.splice(-1, 1, 'upgradeable');
     } else {
       libraryPathSegments.pop();
