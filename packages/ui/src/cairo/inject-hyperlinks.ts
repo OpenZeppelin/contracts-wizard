@@ -26,12 +26,10 @@ export function injectHyperlinks(code: string) {
 
 function removeComponentName(libraryPathSegments: Array<string>) {
   const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
-  if (lastItem !== 'interface') {
-    if (lastItem === 'UpgradeableComponent') {
-      // Replace component name with 'upgradeable'
-      libraryPathSegments.splice(-1, 1, 'upgradeable');
-    } else {
-      libraryPathSegments.pop();
-    }
+  if (lastItem === 'UpgradeableComponent') {
+    // Replace component name with 'upgradeable'
+    libraryPathSegments.splice(-1, 1, 'upgradeable');
+  } else {
+    libraryPathSegments.pop();
   }
 }
