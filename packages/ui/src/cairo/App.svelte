@@ -166,7 +166,7 @@
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
       <div class:hidden={tab !== 'Account'}>
-        <AccountControls bind:opts={allOpts.Account} errors={errors.Account}/>
+        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
       </div>
     </div>
     <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
