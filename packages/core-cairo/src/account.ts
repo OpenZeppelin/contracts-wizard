@@ -9,7 +9,6 @@ import { addSRC5Component } from './common-components';
 
 
 export const accountOptions = ['stark', 'eth'] as const;
-
 export type Account = typeof accountOptions[number];
 
 export const defaults: Required<AccountOptions> = {
@@ -47,6 +46,7 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   }
 }
 
+// FIX ME
 export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
   return opts.upgradeable === false;
 }
