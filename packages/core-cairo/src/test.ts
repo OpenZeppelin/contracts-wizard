@@ -5,7 +5,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { custom, erc20, erc721, erc1155 } from './api';
+import { account, custom, erc20, erc721, erc1155 } from './api';
 
 
 interface Context {
@@ -30,6 +30,10 @@ test.serial('custom result generated', async t => {
   await testGenerate(t, 'Custom');
 });
 
+test.serial('account result generated', async t => {
+  await testGenerate(t, 'Account');
+});
+
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
@@ -48,6 +52,8 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc1155.isAccessControlRequired(opts);
     case 'Custom':
       return custom.isAccessControlRequired(opts);
+    case 'Account':
+      return account.isAccessControlRequired(opts);
     default:
       throw new Error("No such kind");
   }
