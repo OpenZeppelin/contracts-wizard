@@ -32,16 +32,16 @@
     <label class:checked={accountType === 'stark'}>
       <input type="radio" bind:group={opts.type} value="stark">
       Starknet
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
-        Simple mechanism with a single account authorized for all privileged actions.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#starknet_account">
+        Starknet native account contract that uses the STARK curve.
       </HelpTooltip>
     </label>
 
     <label class:checked={accountType === 'eth'}>
       <input type="radio" bind:group={opts.type} value="eth">
       Ethereum
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#ethereum_account">
+        Ethereum-flavored account that uses the Secp256k1 curve.
       </HelpTooltip>
     </label>
   </div>
@@ -54,16 +54,16 @@
     <label class:checked={opts.declare}>
       <input type="checkbox" bind:checked={opts.declare}>
       Declarable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/account">
-        Privileged accounts will be able to emit new tokens.
+      <HelpTooltip link="https://docs.starknet.io/architecture-and-concepts/smart-contracts/contract-classes/">
+        Enables the account to declare other contract classes.
       </HelpTooltip>
     </label>
 
     <label class:checked={opts.deploy}>
       <input type="checkbox" bind:checked={opts.deploy}>
       Deployable
-      <HelpTooltip>
-        Token holders will be able to destroy their tokens.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#deploying_an_account">
+        Enables the account to counterfactually deploy other contracts.
       </HelpTooltip>
     </label>
 
@@ -71,7 +71,7 @@
       <input type="checkbox" bind:checked={opts.pubkey}>
       Public Key
       <HelpTooltip>
-        The public key can be reset by the owner.
+        Enables the account to change its own public key.
       </HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
