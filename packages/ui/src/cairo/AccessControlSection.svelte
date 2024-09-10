@@ -22,8 +22,8 @@
     }
 
     wasRequired = required;
-    if (access !== false) {
-      defaultValueWhenEnabled = access;
+    if (access !== false && access !== 'account' && access !== 'ethAccount') {
+        defaultValueWhenEnabled = access;
     }
   }
 </script>
