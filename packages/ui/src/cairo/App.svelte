@@ -73,7 +73,7 @@
       }
     }
 
-    $: code = printContract(contract);
+    $: code = printContract(contract, opts?.kind === 'Account');
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
     const language = 'cairo';
@@ -114,11 +114,11 @@
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
-        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
-          Custom
-        </button>
         <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
           Account
+        </button>
+        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
+          Custom
         </button>
       </OverflowMenu>
     </div>
@@ -162,11 +162,11 @@
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155}/>
       </div>
-      <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
-      </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
+      </div>
+      <div class:hidden={tab !== 'Custom'}>
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
     <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
