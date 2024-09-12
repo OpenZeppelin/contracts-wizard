@@ -46,9 +46,8 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   }
 }
 
-// FIX ME
 export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
-  return opts.upgradeable === false;
+  return opts.upgradeable === true;
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
