@@ -35,20 +35,13 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
     t.is(account.print(opts), printContract(buildAccount({
       name: 'MyAccount',
       type: 'stark',
+      declare: true,
+      deploy: true,
+      pubkey: true,
       ...opts,
     })));
   });
 }
-
-function testEthAPIEquivalence(title: string, opts?: AccountOptions) {
-    test(title, t => {
-      t.is(account.print(opts), printContract(buildAccount({
-        name: 'MyAccount',
-        type: 'eth',
-        ...opts,
-      })));
-    });
-  }
 
 testAccount('basic account, non-upgradeable', {
   upgradeable: false,
@@ -156,7 +149,17 @@ testEthAccount('ethAccount full, upgradeable', {
   upgradeable: true
 });
 
-//testAPIEquivalence('account API default');
+testAPIEquivalence('account API default');
+
+testAPIEquivalence('account API basic', {
+  name: 'CustomAccount',
+  type: 'stark',
+  declare: false,
+  deploy: false,
+  pubkey: false,
+  access: 'account',
+  upgradeable: false,
+});
 
 testAPIEquivalence('account API full upgradeable', {
   name: 'CustomAccount',
@@ -172,12 +175,9 @@ test('account API assert defaults', async t => {
   t.is(account.print(account.defaults), account.print());
 });
 
-testEthAPIEquivalence('eth account API full upgradeable', {
-  name: 'CustomAccount',
-  type: 'eth',
-  declare: true,
-  deploy: true,
-  pubkey: true,
-  access: 'ethAccount',
-  upgradeable: true,
+test('account API isAccessControlRequired', async t => {
+  t.is(account.isAccessControlRequired({ declare: true }), false);
+  t.is(account.isAccessControlRequired({ deploy: true }), false);
+  t.is(account.isAccessControlRequired({ pubkey: true }), false);
+  t.is(account.isAccessControlRequired({ upgradeable: true }), true);
 });
