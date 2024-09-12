@@ -6,7 +6,9 @@ import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
-export function printContract(contract: Contract): string {
+export function printContract(contract: Contract, isAccount?: boolean): string {
+  let accountAttribute = isAccount ? "(account)" : "";
+  const contractAttribute = `#[starknet::contract${accountAttribute}]`;
   return formatLines(
     ...spaceBetween(
       [
@@ -15,7 +17,7 @@ export function printContract(contract: Contract): string {
       ],
       printSuperVariables(contract),
       [
-        `#[starknet::contract]`,
+        `${contractAttribute}`,
         `mod ${contract.name} {`,
         spaceBetween(
           printImports(contract),
