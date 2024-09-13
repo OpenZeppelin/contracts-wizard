@@ -26,12 +26,12 @@ test.serial('erc1155 result generated', async t => {
   await testGenerate(t, 'ERC1155');
 });
 
-test.serial('custom result generated', async t => {
-  await testGenerate(t, 'Custom');
-});
-
 test.serial('account result generated', async t => {
   await testGenerate(t, 'Account');
+});
+
+test.serial('custom result generated', async t => {
+  await testGenerate(t, 'Custom');
 });
 
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
@@ -50,10 +50,10 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc721.isAccessControlRequired(opts);
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
-    case 'Custom':
-      return custom.isAccessControlRequired(opts);
     case 'Account':
       return account.isAccessControlRequired(opts);
+    case 'Custom':
+      return custom.isAccessControlRequired(opts);
     default:
       throw new Error("No such kind");
   }

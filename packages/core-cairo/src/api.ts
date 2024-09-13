@@ -26,8 +26,8 @@ export interface WizardContractAPI<Options extends CommonOptions> {
 export type ERC20 = WizardContractAPI<ERC20Options>;
 export type ERC721 = WizardContractAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options>;
-export type Custom = WizardContractAPI<CustomOptions>;
 export type Account = WizardContractAPI<AccountOptions>;
+export type Custom = WizardContractAPI<CustomOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,
@@ -44,13 +44,13 @@ export const erc1155: ERC1155 = {
   defaults: erc1155defaults,
   isAccessControlRequired: erc1155IsAccessControlRequired
 }
-export const custom: Custom = {
-  print: printCustom,
-  defaults: customDefaults,
-  isAccessControlRequired: customIsAccessControlRequired
-}
 export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
   isAccessControlRequired: accountIsAccessControlRequired
+}
+export const custom: Custom = {
+  print: printCustom,
+  defaults: customDefaults,
+  isAccessControlRequired: customIsAccessControlRequired
 }
