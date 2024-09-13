@@ -23,7 +23,7 @@
 
     wasRequired = required;
     if (access !== false) {
-        defaultValueWhenEnabled = access;
+      defaultValueWhenEnabled = access;
     }
   }
 </script>
