@@ -89,8 +89,7 @@ export function buildAccount(opts: AccountOptions): Contract {
 }
 
 function addSRC6(c: ContractBuilder, accountType: Account) {
-  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
       name: 'SRC6Impl',
@@ -102,8 +101,7 @@ function addSRC6(c: ContractBuilder, accountType: Account) {
 }
 
 function addDeclarer(c: ContractBuilder, accountType: Account) {
-  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
       name: 'DeclarerImpl',
@@ -112,8 +110,7 @@ function addDeclarer(c: ContractBuilder, accountType: Account) {
 }
 
 function addDeployer(c: ContractBuilder, accountType: Account) {
-  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
       name: 'DeployerImpl',
@@ -122,8 +119,7 @@ function addDeployer(c: ContractBuilder, accountType: Account) {
 }
 
 function addPublicKey(c: ContractBuilder, accountType: Account) {
-  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
       name: 'PublicKeyImpl',
@@ -132,15 +128,21 @@ function addPublicKey(c: ContractBuilder, accountType: Account) {
 }
 
 function addAccountMixin(c: ContractBuilder, accountType: Account) {
-  let accountPrefix = accountType === 'stark' ? 'Account' : 'EthAccount';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const accountMixinImpl = accountType === 'stark' ? 'AccountMixinImpl' : 'EthAccountMixinImpl';
+  const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: `${accountPrefix}MixinImpl`,
-      value: `${accountPrefix}Component::${accountPrefix}MixinImpl<ContractState>`,
+      name: `${accountMixinImpl}`,
+      value: `${baseComponent}::${accountMixinImpl}<ContractState>`,
     });
     c.addInterfaceFlag('ISRC5');
     addSRC5Component(c);
+}
+
+function getBaseCompAndCompType(accountType: Account): [string, typeof componentType] {
+  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
+  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  return [baseComponent, componentType];
 }
 
 const components = defineComponents( {
