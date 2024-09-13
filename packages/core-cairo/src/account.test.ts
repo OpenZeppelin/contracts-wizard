@@ -1,9 +1,9 @@
 import test from 'ava';
 
-import { buildAccount, AccountOptions, Account } from './account';
+import { buildAccount, AccountOptions } from './account';
 import { printContract } from './print';
 
-import { account, OptionsError } from '.';
+import { account } from '.';
 
 function testAccount(title: string, opts: Partial<AccountOptions>) {
   test(title, t => {
