@@ -67,18 +67,18 @@ export function buildAccount(opts: AccountOptions): Contract {
   if (opts.declare && opts.deploy && opts.pubkey) {
     addAccountMixin(c, opts.type);
   } else {
-    addSRC6(c, opts.type)
+    addSRC6(c, opts.type);
 
     if (opts.declare) {
-      addDeclarer(c, opts.type)
+      addDeclarer(c, opts.type);
     }
 
     if (opts.deploy) {
-        addDeployer(c, opts.type)
+      addDeployer(c, opts.type);
     }
 
     if (opts.pubkey) {
-        addPublicKey(c, opts.type)
+      addPublicKey(c, opts.type);
     }
   }
 
@@ -92,46 +92,46 @@ function addSRC6(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: 'SRC6Impl',
-      value: `${baseComponent}::SRC6Impl<ContractState>`,
-    });
-    c.addImplToComponent(componentType, {
-      name: 'SRC6CamelOnlyImpl',
-      value: `${baseComponent}::SRC6CamelOnlyImpl<ContractState>`,
-    });
+    name: 'SRC6Impl',
+    value: `${baseComponent}::SRC6Impl<ContractState>`,
+  });
+  c.addImplToComponent(componentType, {
+    name: 'SRC6CamelOnlyImpl',
+    value: `${baseComponent}::SRC6CamelOnlyImpl<ContractState>`,
+  });
 
-    addSRC5Component(c);
+  addSRC5Component(c);
 }
 
 function addDeclarer(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: 'DeclarerImpl',
-      value: `${baseComponent}::DeclarerImpl<ContractState>`,
-    });
+    name: 'DeclarerImpl',
+    value: `${baseComponent}::DeclarerImpl<ContractState>`,
+  });
 }
 
 function addDeployer(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: 'DeployableImpl',
-      value: `${baseComponent}::DeployableImpl<ContractState>`,
-    });
+    name: 'DeployableImpl',
+    value: `${baseComponent}::DeployableImpl<ContractState>`,
+  });
 }
 
 function addPublicKey(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: 'PublicKeyImpl',
-      value: `${baseComponent}::PublicKeyImpl<ContractState>`,
-    });
-    c.addImplToComponent(componentType, {
-      name: 'PublicKeyCamelImpl',
-      value: `${baseComponent}::PublicKeyCamelImpl<ContractState>`,
-    });
+    name: 'PublicKeyImpl',
+    value: `${baseComponent}::PublicKeyImpl<ContractState>`,
+  });
+  c.addImplToComponent(componentType, {
+    name: 'PublicKeyCamelImpl',
+    value: `${baseComponent}::PublicKeyCamelImpl<ContractState>`,
+  });
 }
 
 function addAccountMixin(c: ContractBuilder, accountType: Account) {
@@ -139,11 +139,12 @@ function addAccountMixin(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: `${accountMixinImpl}`,
-      value: `${baseComponent}::${accountMixinImpl}<ContractState>`,
-    });
-    c.addInterfaceFlag('ISRC5');
-    addSRC5Component(c);
+    name: `${accountMixinImpl}`,
+    value: `${baseComponent}::${accountMixinImpl}<ContractState>`,
+  });
+
+  c.addInterfaceFlag('ISRC5');
+  addSRC5Component(c);
 }
 
 function getBaseCompAndCompType(accountType: Account): [string, typeof componentType] {
