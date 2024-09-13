@@ -7,14 +7,12 @@ export function injectHyperlinks(code: string) {
   while (match != null) {
     const [line, libraryPrefix, libraryPath] = match;
     if (line !== undefined && libraryPrefix !== undefined && libraryPath !== undefined) {
-      const githubPrefix = `https://github.com/OpenZeppelin/cairo-contracts/blob/${contractsVersionTag}/src/`;
+      const githubPrefix = `https://github.com/OpenZeppelin/cairo-contracts/blob/${contractsVersionTag}/packages/`;
 
       let libraryPathSegments = libraryPath.split('::');
+      libraryPathSegments.splice(1, 0, 'src');
 
-      // Remove the component name
-      if (libraryPathSegments.length > 0 && libraryPathSegments[libraryPathSegments.length - 1] !== 'interface') {
-        libraryPathSegments.pop();
-      }
+      removeComponentName(libraryPathSegments);
 
       if (libraryPathSegments !== undefined && libraryPathSegments.length > 0) {
         const replacedImportLine = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join('/')}.cairo' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>;`;
@@ -24,4 +22,14 @@ export function injectHyperlinks(code: string) {
     match = importRegex.exec(code);
   }
   return result;
+}
+
+function removeComponentName(libraryPathSegments: Array<string>) {
+  const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
+  if (lastItem === 'UpgradeableComponent') {
+    // Replace component name with 'upgradeable'
+    libraryPathSegments.splice(-1, 1, 'upgradeable');
+  } else {
+    libraryPathSegments.pop();
+  }
 }
