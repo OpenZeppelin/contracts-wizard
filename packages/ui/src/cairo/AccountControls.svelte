@@ -33,7 +33,7 @@
       <input type="radio" bind:group={opts.type} value="stark">
       Starknet
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#starknet_account">
-        Starknet native account contract that uses the STARK curve.
+        Starknet account that uses the STARK curve.
       </HelpTooltip>
     </label>
 
