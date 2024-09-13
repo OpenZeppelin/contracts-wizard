@@ -96,7 +96,6 @@ function addSRC6(c: ContractBuilder, accountType: Account) {
       value: `${baseComponent}::SRC6Impl<ContractState>`,
     });
 
-    c.addInterfaceFlag('ISRC5');
     addSRC5Component(c);
 }
 
