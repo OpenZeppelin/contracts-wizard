@@ -6,7 +6,7 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  let defaultValueWhenEnabled: 'ownable' | 'account' | 'ethAccount' | 'roles' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
@@ -22,7 +22,7 @@
     }
 
     wasRequired = required;
-    if (access !== false && access !== 'account' && access !== 'ethAccount') {
+    if (access !== false) {
         defaultValueWhenEnabled = access;
     }
   }
