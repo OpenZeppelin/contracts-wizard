@@ -95,6 +95,10 @@ function addSRC6(c: ContractBuilder, accountType: Account) {
       name: 'SRC6Impl',
       value: `${baseComponent}::SRC6Impl<ContractState>`,
     });
+    c.addImplToComponent(componentType, {
+      name: 'SRC6CamelOnlyImpl',
+      value: `${baseComponent}::SRC6CamelOnlyImpl<ContractState>`,
+    });
 
     addSRC5Component(c);
 }
@@ -123,6 +127,10 @@ function addPublicKey(c: ContractBuilder, accountType: Account) {
   c.addImplToComponent(componentType, {
       name: 'PublicKeyImpl',
       value: `${baseComponent}::PublicKeyImpl<ContractState>`,
+    });
+    c.addImplToComponent(componentType, {
+      name: 'PublicKeyCamelImpl',
+      value: `${baseComponent}::PublicKeyCamelImpl<ContractState>`,
     });
 }
 
