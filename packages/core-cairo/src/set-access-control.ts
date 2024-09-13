@@ -77,6 +77,7 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
       }
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
+
       break;
     }
   }
