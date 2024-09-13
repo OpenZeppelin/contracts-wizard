@@ -113,8 +113,8 @@ function addDeployer(c: ContractBuilder, accountType: Account) {
   const [baseComponent, componentType] = getBaseCompAndCompType(accountType);
 
   c.addImplToComponent(componentType, {
-      name: 'DeployerImpl',
-      value: `${baseComponent}::DeployerImpl<ContractState>`,
+      name: 'DeployableImpl',
+      value: `${baseComponent}::DeployableImpl<ContractState>`,
     });
 }
 
