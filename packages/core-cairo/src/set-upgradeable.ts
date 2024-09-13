@@ -1,6 +1,6 @@
 import { getSelfArg } from './common-options';
 import type { BaseImplementedTrait, ContractBuilder } from './contract';
-import { Access, requireAccessControl, requireAccessControlAccount } from './set-access-control';
+import { Access, requireAccessControl } from './set-access-control';
 import { defineComponents } from './utils/define-components';
 import { defineFunctions } from './utils/define-functions';
 import type { Account } from './account';
@@ -54,10 +54,9 @@ export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeab
   c.addImplementedTrait(t);
 
   if (type === 'stark')
-    // Change to setAccess...?
-    requireAccessControlAccount(c, t, functions.upgrade, 'account');
+    c.addFunctionCodeBefore(t, functions.upgrade, 'self.account.assert_only_self()');
   else {
-    requireAccessControlAccount(c, t, functions.upgrade, 'ethAccount');
+    c.addFunctionCodeBefore(t, functions.upgrade, 'self.eth_account.assert_only_self()');
   }
 }
 

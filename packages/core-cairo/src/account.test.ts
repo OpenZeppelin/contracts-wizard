@@ -82,7 +82,7 @@ testAccount('account full, non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: false
 });
 
@@ -92,7 +92,7 @@ testAccount('account full, upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: true
 });
 
@@ -135,7 +135,7 @@ testEthAccount('ethAccount full, non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: false
 });
 
@@ -145,7 +145,7 @@ testEthAccount('ethAccount full, upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: true
 });
 
@@ -157,7 +157,7 @@ testAPIEquivalence('account API basic', {
   declare: false,
   deploy: false,
   pubkey: false,
-  access: 'account',
+  access: false,
   upgradeable: false,
 });
 
@@ -167,7 +167,7 @@ testAPIEquivalence('account API full upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: true,
 });
 
@@ -179,5 +179,5 @@ test('account API isAccessControlRequired', async t => {
   t.is(account.isAccessControlRequired({ declare: true }), false);
   t.is(account.isAccessControlRequired({ deploy: true }), false);
   t.is(account.isAccessControlRequired({ pubkey: true }), false);
-  t.is(account.isAccessControlRequired({ upgradeable: true }), true);
+  t.is(account.isAccessControlRequired({ upgradeable: true }), false);
 });

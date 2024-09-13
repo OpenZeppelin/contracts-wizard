@@ -2,7 +2,7 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
-export const accessOptions = [false, 'ownable', 'roles', 'account', 'ethAccount'] as const;
+export const accessOptions = [false, 'ownable', 'roles'] as const;
 
 export type Access = typeof accessOptions[number];
 
@@ -77,19 +77,6 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
       }
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
-      break;
-    }
-  }
-}
-
-export function requireAccessControlAccount(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access) {
-  switch (access) {
-    case 'account': {
-      c.addFunctionCodeBefore(trait, fn, 'self.account.assert_only_self()');
-      break;
-    }
-    case 'ethAccount': {
-      c.addFunctionCodeBefore(trait, fn, 'self.eth_account.assert_only_self()');
       break;
     }
   }

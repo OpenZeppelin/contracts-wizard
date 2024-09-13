@@ -17,7 +17,7 @@ export const defaults: Required<AccountOptions> = {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: 'account',
+  access: false,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
@@ -47,7 +47,7 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
 }
 
 export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
-  return opts.upgradeable === true;
+  return false;
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
