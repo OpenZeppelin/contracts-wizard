@@ -47,12 +47,6 @@ export type Access = typeof accessOptions[number];
       }
       break;
     }
-    case 'account': {
-      break;
-    }
-    case 'ethAccount': {
-      break;
-    }
   }
 }
 
