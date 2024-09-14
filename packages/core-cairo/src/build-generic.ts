@@ -25,11 +25,11 @@ export function buildGeneric(opts: GenericOptions) {
     case 'ERC1155':
       return buildERC1155(opts);
 
-    case 'Custom':
-      return buildCustom(opts);
-
     case 'Account':
       return buildAccount(opts);
+
+    case 'Custom':
+      return buildCustom(opts);
 
     default:
       const _: never = opts;
