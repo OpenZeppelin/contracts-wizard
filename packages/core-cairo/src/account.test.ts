@@ -61,12 +61,12 @@ testAccount('account public key', {
   pubkey: true,
 });
 
-testAccount('account declarable deployable', {
+testAccount('account declarer deployable', {
   declare: true,
   deploy: true
 });
 
-testAccount('account declarable public key', {
+testAccount('account declarer public key', {
   declare: true,
   pubkey: true
 });
@@ -102,7 +102,7 @@ testEthAccount('basic ethAccount, non-upgradeable', {
 
 testEthAccount('basic ethAccount', {});
 
-testEthAccount('ethAccount declarable', {
+testEthAccount('ethAccount declarer', {
   declare: true,
 });
 
@@ -114,12 +114,12 @@ testEthAccount('ethAccount public key', {
   pubkey: true,
 });
 
-testEthAccount('ethAccount declarable deployable', {
+testEthAccount('ethAccount declarer deployable', {
   declare: true,
   deploy: true
 });
 
-testEthAccount('ethAccount declarable public key', {
+testEthAccount('ethAccount declarer public key', {
   declare: true,
   pubkey: true
 });
