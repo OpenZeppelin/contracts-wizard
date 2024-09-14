@@ -53,7 +53,7 @@
   <div class="checkbox-group">
     <label class:checked={opts.declare}>
       <input type="checkbox" bind:checked={opts.declare}>
-      Declarable
+      Declarer
       <HelpTooltip link="https://docs.starknet.io/architecture-and-concepts/smart-contracts/contract-classes/">
         Enables the account to declare other contract classes.
       </HelpTooltip>
