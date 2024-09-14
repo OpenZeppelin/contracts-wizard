@@ -49,7 +49,7 @@ testAccount('basic account, non-upgradeable', {
 
 testAccount('basic account', {});
 
-testAccount('account declarable', {
+testAccount('account declarer', {
   declare: true,
 });
 

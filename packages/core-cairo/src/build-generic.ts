@@ -8,8 +8,8 @@ export interface KindedOptions {
   ERC20:    { kind: 'ERC20' }    & ERC20Options;
   ERC721:   { kind: 'ERC721' }   & ERC721Options;
   ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
-  Custom:   { kind: 'Custom' }  & CustomOptions;
   Account:  { kind: 'Account' }  & AccountOptions;
+  Custom:   { kind: 'Custom' }  & CustomOptions;
 }
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];

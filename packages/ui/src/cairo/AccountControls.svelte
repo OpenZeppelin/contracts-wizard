@@ -33,7 +33,7 @@
       <input type="radio" bind:group={opts.type} value="stark">
       Starknet
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#starknet_account">
-        Starknet account that uses the STARK curve.
+        Starknet account that uses the STARK curve for signature checking.
       </HelpTooltip>
     </label>
 
@@ -41,7 +41,7 @@
       <input type="radio" bind:group={opts.type} value="eth">
       Ethereum
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#ethereum_account">
-        Ethereum-flavored account that uses the Secp256k1 curve.
+        Ethereum-flavored account that uses the Secp256k1 curve for signature checking.
       </HelpTooltip>
     </label>
   </div>
@@ -63,7 +63,7 @@
       <input type="checkbox" bind:checked={opts.deploy}>
       Deployable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#deploying_an_account">
-        Enables the account to counterfactually deploy other contracts.
+        Enables the account to be counterfactually deployed.
       </HelpTooltip>
     </label>
 
