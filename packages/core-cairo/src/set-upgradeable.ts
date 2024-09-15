@@ -29,6 +29,7 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
     ],
   };
   c.addImplementedTrait(t);
+
   return t;
 }
 
