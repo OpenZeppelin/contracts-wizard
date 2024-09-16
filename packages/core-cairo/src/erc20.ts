@@ -2,12 +2,12 @@ import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
+import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
 import { defineComponents } from './utils/define-components';
-import { defaults as commonDefaults } from './common-options';
+import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
@@ -31,7 +31,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
   return printContract(buildERC20(opts), { isAccount: false });
 }
 
-export interface ERC20Options extends CommonOptions {
+export interface ERC20Options extends CommonContractOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
@@ -46,7 +46,7 @@ export interface ERC20Options extends CommonOptions {
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
-    ...withCommonDefaults(opts),
+    ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,

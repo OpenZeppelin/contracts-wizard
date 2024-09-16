@@ -82,7 +82,6 @@ testAccount('account full, non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: false,
   upgradeable: false
 });
 
@@ -92,7 +91,6 @@ testAccount('account full, upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: false,
   upgradeable: true
 });
 
@@ -135,7 +133,6 @@ testEthAccount('ethAccount full, non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: false,
   upgradeable: false
 });
 
@@ -145,7 +142,6 @@ testEthAccount('ethAccount full, upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: false,
   upgradeable: true
 });
 
@@ -157,7 +153,6 @@ testAPIEquivalence('account API basic', {
   declare: false,
   deploy: false,
   pubkey: false,
-  access: false,
   upgradeable: false,
 });
 
@@ -167,7 +162,6 @@ testAPIEquivalence('account API full upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
-  access: false,
   upgradeable: true,
 });
 

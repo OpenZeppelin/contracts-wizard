@@ -2,11 +2,11 @@ import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, getSelfArg } from './common-options';
+import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
-import { defaults as commonDefaults } from './common-options';
+import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
@@ -28,7 +28,7 @@ export function printERC1155(opts: ERC1155Options = defaults): string {
   return printContract(buildERC1155(opts), { isAccount: false });
 }
 
-export interface ERC1155Options extends CommonOptions {
+export interface ERC1155Options extends CommonContractOptions {
   name: string;
   baseUri: string;
   burnable?: boolean;
@@ -40,7 +40,7 @@ export interface ERC1155Options extends CommonOptions {
 function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
   return {
     ...opts,
-    ...withCommonDefaults(opts),
+    ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
