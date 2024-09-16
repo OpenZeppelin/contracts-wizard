@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { generateERC20Options } from './erc20';
 import { generateERC721Options } from './erc721';
 import { generateERC1155Options } from './erc1155';
+import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
@@ -32,6 +33,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'ERC1155') {
     for (const kindOpts of generateERC1155Options()) {
       yield { kind: 'ERC1155', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Account') {
+    for (const kindOpts of generateAccountOptions()) {
+      yield { kind: 'Account', ...kindOpts };
     }
   }
 
