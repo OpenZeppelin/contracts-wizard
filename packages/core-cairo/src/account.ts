@@ -151,8 +151,7 @@ function addAccountMixin(c: ContractBuilder, accountType: Account) {
 }
 
 function getBaseCompAndCompType(accountType: Account): [string, typeof componentType] {
-  let baseComponent = accountType === 'stark' ? 'AccountComponent' : 'EthAccountComponent';
-  let componentType = accountType === 'stark' ? components.AccountComponent : components.EthAccountComponent;
+  const [baseComponent, componentType] = accountType === 'stark' ? ['AccountComponent', components.AccountComponent] : ['EthAccountComponent', components.EthAccountComponent];
   return [baseComponent, componentType];
 }
 

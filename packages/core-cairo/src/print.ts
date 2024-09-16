@@ -7,8 +7,7 @@ import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
 export function printContract(contract: Contract, isAccount?: boolean): string {
-  let accountAttribute = isAccount ? "(account)" : "";
-  const contractAttribute = `#[starknet::contract${accountAttribute}]`;
+  const contractAttribute = isAccount ? '#[starknet::contract(account)]' : '#[starknet::contract]'
   return formatLines(
     ...spaceBetween(
       [
