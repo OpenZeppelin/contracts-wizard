@@ -57,13 +57,13 @@ export function buildAccount(opts: AccountOptions): Contract {
 
   switch (opts.type) {
     case 'stark':
-      c.addConstructorArgument({ name:'public_key', type:'felt252' });
-      c.addComponent(components.AccountComponent, [{ lit:'public_key' }], true);
+      c.addConstructorArgument({ name: 'public_key', type: 'felt252' });
+      c.addComponent(components.AccountComponent, [{ lit: 'public_key' }], true);
       break;
     case 'eth':
       c.addStandaloneImport('openzeppelin::account::interface::EthPublicKey;');
-      c.addConstructorArgument({ name:'public_key', type:'EthPublicKey' });
-      c.addComponent(components.EthAccountComponent, [{ lit:'public_key' }], true);
+      c.addConstructorArgument({ name: 'public_key', type: 'EthPublicKey' });
+      c.addComponent(components.EthAccountComponent, [{ lit: 'public_key' }], true);
       break;
   }
 
