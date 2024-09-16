@@ -168,10 +168,3 @@ testAPIEquivalence('account API full upgradeable', {
 test('account API assert defaults', async t => {
   t.is(account.print(account.defaults), account.print());
 });
-
-test('account API isAccessControlRequired', async t => {
-  t.is(account.isAccessControlRequired({ declare: true }), false);
-  t.is(account.isAccessControlRequired({ deploy: true }), false);
-  t.is(account.isAccessControlRequired({ pubkey: true }), false);
-  t.is(account.isAccessControlRequired({ upgradeable: true }), false);
-});

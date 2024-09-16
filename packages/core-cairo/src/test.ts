@@ -5,7 +5,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { account, custom, erc20, erc721, erc1155 } from './api';
+import { custom, erc20, erc721, erc1155 } from './api';
 
 
 interface Context {
@@ -51,7 +51,7 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
     case 'Account':
-      return account.isAccessControlRequired(opts);
+      throw new Error("Not applicable for accounts");
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     default:
@@ -63,7 +63,7 @@ test('is access control required', async t => {
   for (const contract of generateSources('all')) {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
-    if (contract.options.kind === 'Account' || !contract.options.access) {
+    if (contract.options.kind !== 'Account' && !contract.options.access) {
       if (isAccessControlRequired(contract.options)) {
         t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
       } else {

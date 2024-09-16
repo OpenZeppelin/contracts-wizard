@@ -45,10 +45,6 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   }
 }
 
-export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
-  return false;
-}
-
 export function buildAccount(opts: AccountOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
