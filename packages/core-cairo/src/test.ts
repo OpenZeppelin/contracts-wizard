@@ -63,7 +63,7 @@ test('is access control required', async t => {
   for (const contract of generateSources('all')) {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
-    if (!contract.options.access) {
+    if (contract.options.kind === 'Account' || !contract.options.access) {
       if (isAccessControlRequired(contract.options)) {
         t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
       } else {
