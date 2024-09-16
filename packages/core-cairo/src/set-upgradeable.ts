@@ -43,10 +43,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account) {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
-    if (type === 'stark') {
-      c.addFunctionCodeBefore(trait, functions.upgrade, 'self.account.assert_only_self()');
-    } else if (type === 'eth') {
-      c.addFunctionCodeBefore(trait, functions.upgrade, 'self.eth_account.assert_only_self()');
+    switch (type) {
+      case 'stark':
+        c.addFunctionCodeBefore(trait, functions.upgrade, 'self.account.assert_only_self()');
+        break;
+      case 'eth':
+        c.addFunctionCodeBefore(trait, functions.upgrade, 'self.eth_account.assert_only_self()');
+        break;
     }
   }
 }
