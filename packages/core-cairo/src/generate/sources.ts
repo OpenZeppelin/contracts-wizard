@@ -91,7 +91,7 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
-    const source = printContract(c.contract);
+    const source = printContract(c.contract, { isAccount: kind === 'Account' });
     yield { ...c, source };
   }
 }

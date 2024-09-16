@@ -23,7 +23,7 @@ export const defaults: Required<AccountOptions> = {
 } as const;
 
 export function printAccount(opts: AccountOptions = defaults): string {
-  return printContract(buildAccount(opts));
+  return printContract(buildAccount(opts), { isAccount: true });
 }
 
 export interface AccountOptions extends CommonOptions {
