@@ -12,7 +12,7 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
       symbol: 'MTK',
       ...opts,
     });
-    t.snapshot(printContract(c));
+    t.snapshot(printContract(c, { isAccount: false }));
   });
 }
 
@@ -25,7 +25,7 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
-    })));
+    }), { isAccount: false }));
   });
 }
 

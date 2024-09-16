@@ -12,7 +12,7 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
       symbol: 'MTK',
       ...opts,
     });
-    t.snapshot(printContract(c));
+    t.snapshot(printContract(c, { isAccount: false }));
   });
 }
 
@@ -25,7 +25,7 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
-    })));
+    }), { isAccount: false }));
   });
 }
 
