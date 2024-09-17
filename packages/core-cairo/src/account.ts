@@ -8,8 +8,8 @@ import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 
 
-export const accountOptions = ['stark', 'eth'] as const;
-export type Account = typeof accountOptions[number];
+export const accountTypes = ['stark', 'eth'] as const;
+export type Account = typeof accountTypes[number];
 
 export const defaults: Required<AccountOptions> = {
   name: 'MyAccount',
