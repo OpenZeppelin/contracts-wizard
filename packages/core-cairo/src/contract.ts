@@ -3,11 +3,12 @@ import { toIdentifier } from './utils/convert-strings';
 export interface Contract {
   license: string;
   name: string;
+  account: boolean;
   standaloneImports: string[];
   components: Component[];
   constructorCode: string[];
   constructorArgs: Argument[];
-  upgradeable: boolean; 
+  upgradeable: boolean;
   implementedTraits: ImplementedTrait[];
   superVariables: Variable[];
 }
@@ -84,6 +85,7 @@ export interface Argument {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
+  readonly account: boolean;
   license: string = 'MIT';
   upgradeable = false;
 
@@ -96,8 +98,9 @@ export class ContractBuilder implements Contract {
   private standaloneImportsSet: Set<string> = new Set();
   private interfaceFlagsSet: Set<string> = new Set();
 
-  constructor(name: string) {
+  constructor(name: string, account: boolean = false) {
     this.name = toIdentifier(name, true);
+    this.account = account;
   }
 
   get components(): Component[] {
