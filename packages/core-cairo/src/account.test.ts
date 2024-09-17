@@ -12,7 +12,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
       type: 'stark',
       ...opts,
     });
-    t.snapshot(printContract(c, { isAccount: true }));
+    t.snapshot(printContract(c));
   });
 }
 
@@ -23,7 +23,7 @@ function testEthAccount(title: string, opts: Partial<AccountOptions>) {
       type: 'eth',
       ...opts,
     });
-    t.snapshot(printContract(c, { isAccount: true }));
+    t.snapshot(printContract(c));
   });
 }
 
@@ -39,7 +39,7 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
       deploy: true,
       pubkey: true,
       ...opts,
-    }), { isAccount: true }));
+    })));
   });
 }
 

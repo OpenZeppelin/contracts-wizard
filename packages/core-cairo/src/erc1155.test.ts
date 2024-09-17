@@ -11,7 +11,7 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
       baseUri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
       ...opts,
     });
-    t.snapshot(printContract(c, { isAccount: false }));
+    t.snapshot(printContract(c));
   });
 }
 
@@ -24,7 +24,7 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
       name: 'MyToken',
       baseUri: '',
       ...opts,
-    }), { isAccount: false }));
+    })));
   });
 }
 

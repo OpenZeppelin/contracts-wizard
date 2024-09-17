@@ -10,7 +10,7 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
       name: 'MyContract',
       ...opts,
     });
-    t.snapshot(printContract(c, { isAccount: false }));
+    t.snapshot(printContract(c));
   });
 }
 
@@ -22,7 +22,7 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
     t.is(custom.print(opts), printContract(buildCustom({
       name: 'MyContract',
       ...opts,
-    }), { isAccount: false }));
+    })));
   });
 }
 
