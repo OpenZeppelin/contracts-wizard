@@ -73,7 +73,7 @@
       }
     }
 
-    $: code = printContract(contract, { isAccount: opts?.kind === 'Account' });
+    $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
     const language = 'cairo';
