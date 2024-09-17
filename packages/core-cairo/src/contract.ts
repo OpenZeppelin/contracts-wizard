@@ -84,15 +84,15 @@ export interface Argument {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
-  license: string = 'MIT';
+  license = 'MIT';
   upgradeable = false;
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
 
-  private componentsMap: Map<string, Component> = new Map<string, Component>();
-  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map<string, ImplementedTrait>();
-  private superVariablesMap: Map<string, Variable> = new Map<string, Variable>();
+  private componentsMap: Map<string, Component> = new Map();
+  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
+  private superVariablesMap: Map<string, Variable> = new Map();
   private standaloneImportsSet: Set<string> = new Set();
   private interfaceFlagsSet: Set<string> = new Set();
 
@@ -123,7 +123,7 @@ export class ContractBuilder implements Contract {
     return this.interfaceFlagsSet;
   }
 
-  addStandaloneImport(fullyQualified: string) {
+  addStandaloneImport(fullyQualified: string): void {
     this.standaloneImportsSet.add(fullyQualified);
   }
 
@@ -138,7 +138,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addImplToComponent(component: Component, impl: Impl) {
+  addImplToComponent(component: Component, impl: Impl): void {
     this.addComponent(component);
     let c = this.componentsMap.get(component.name);
     if (c == undefined) {
@@ -150,7 +150,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addSuperVariable(variable: Variable) {
+  addSuperVariable(variable: Variable): boolean {
     if (this.superVariablesMap.has(variable.name)) {
       return false;
     } else {
@@ -159,7 +159,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addImplementedTrait(baseTrait: BaseImplementedTrait) {
+  addImplementedTrait(baseTrait: BaseImplementedTrait): ImplementedTrait {
     const key = baseTrait.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
@@ -177,7 +177,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction) {
+  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
     const t = this.addImplementedTrait(baseTrait);
 
     const signature = this.getFunctionSignature(fn);
@@ -200,17 +200,17 @@ export class ContractBuilder implements Contract {
     return contractFn;
   }
 
-  private getFunctionSignature(fn: BaseFunction) {
+  private getFunctionSignature(fn: BaseFunction): string {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string) {
+  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
   }
 
-  addConstructorArgument(arg: Argument) {
+  addConstructorArgument(arg: Argument): void {
     for (const existingArg of this.constructorArgs) {
       if (existingArg.name == arg.name) {
         return;
@@ -219,11 +219,11 @@ export class ContractBuilder implements Contract {
     this.constructorArgs.push(arg);
   }
 
-  addConstructorCode(code: string) {
+  addConstructorCode(code: string): void {
     this.constructorCode.push(code);
   }
 
-  addInterfaceFlag(flag: string) {
+  addInterfaceFlag(flag: string): void {
     this.interfaceFlagsSet.add(flag);
   }
 }
