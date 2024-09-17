@@ -28,17 +28,15 @@ export function printAccount(opts: AccountOptions = defaults): string {
 export interface AccountOptions extends CommonOptions {
   name: string;
   type: Account;
-  declare?: boolean,
-  deploy?: boolean,
-  pubkey?: boolean
+  declare?: boolean;
+  deploy?: boolean;
+  pubkey?: boolean;
 }
 
 function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
-    name: opts.name ?? defaults.name,
-    type: opts.type ?? defaults.type,
     declare: opts.declare ?? defaults.declare,
     deploy: opts.deploy ?? defaults.deploy,
     pubkey: opts.pubkey ?? defaults.pubkey
@@ -51,7 +49,7 @@ export function buildAccount(opts: AccountOptions): Contract {
 
   const allOpts = withDefaults(opts);
 
-  switch (opts.type) {
+  switch (allOpts.type) {
     case 'stark':
       c.addConstructorArgument({ name: 'public_key', type: 'felt252' });
       c.addComponent(components.AccountComponent, [{ lit: 'public_key' }], true);
@@ -63,21 +61,21 @@ export function buildAccount(opts: AccountOptions): Contract {
       break;
   }
 
-  if (opts.declare && opts.deploy && opts.pubkey) {
-    addAccountMixin(c, opts.type);
+  if (allOpts.declare && allOpts.deploy && allOpts.pubkey) {
+    addAccountMixin(c, allOpts.type);
   } else {
-    addSRC6(c, opts.type);
+    addSRC6(c, allOpts.type);
 
-    if (opts.declare) {
-      addDeclarer(c, opts.type);
+    if (allOpts.declare) {
+      addDeclarer(c, allOpts.type);
     }
 
-    if (opts.deploy) {
-      addDeployer(c, opts.type);
+    if (allOpts.deploy) {
+      addDeployer(c, allOpts.type);
     }
 
-    if (opts.pubkey) {
-      addPublicKey(c, opts.type);
+    if (allOpts.pubkey) {
+      addPublicKey(c, allOpts.type);
     }
   }
 
