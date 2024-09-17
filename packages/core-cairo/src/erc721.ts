@@ -19,6 +19,7 @@ export const defaults: Required<ERC721Options> = {
   burnable: false,
   pausable: false,
   mintable: false,
+  enumerable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -35,6 +36,7 @@ export interface ERC721Options extends CommonOptions {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  enumerable?: boolean;
 }
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -45,6 +47,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
+    enumerable: opts.enumerable ?? defaults.enumerable
   };
 }
 
@@ -62,9 +65,6 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
-    addPausableHook(c);
-  } else {
-    c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
   }
 
   if (allOpts.burnable) {
@@ -75,48 +75,61 @@ export function buildERC721(opts: ERC721Options): Contract {
     addMintable(c, allOpts.access);
   }
 
+  if (allOpts.enumerable) {
+    addEnumerable(c);
+  }
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
+  addHooks(c, allOpts);
 
   return c;
 }
 
-function addPausableHook(c: ContractBuilder) {
-  const ERC721HooksTrait: BaseImplementedTrait = {
-    name: `ERC721HooksImpl`,
-    of: 'ERC721Component::ERC721HooksTrait<ContractState>',
-    tags: [],
-    priority: 0,
-  };
-  c.addImplementedTrait(ERC721HooksTrait);
-
-  c.addStandaloneImport('starknet::ContractAddress');
-
-  c.addFunction(ERC721HooksTrait, {
-    name: 'before_update',
-    args: [
-      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-      { name: 'auth', type: 'ContractAddress' },
-    ],
-    code: [
-      'let contract_state = ERC721Component::HasComponent::get_contract(@self)',
-      'contract_state.pausable.assert_not_paused()',
-    ],
-  });
-
-  c.addFunction(ERC721HooksTrait, {
-    name: 'after_update',
-    args: [
-      { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_id', type: 'u256' },
-      { name: 'auth', type: 'ContractAddress' },
-    ],
-    code: [],
-  });
+function addHooks(c: ContractBuilder, opts: ERC721Options) {
+  const usesCustomHooks = opts.pausable || opts.enumerable;
+  if (usesCustomHooks) {
+    const ERC721HooksTrait: BaseImplementedTrait = {
+      name: `ERC721HooksImpl`,
+      of: 'ERC721Component::ERC721HooksTrait<ContractState>',
+      tags: [],
+      priority: 0,
+    };
+    c.addImplementedTrait(ERC721HooksTrait);
+    c.addStandaloneImport('starknet::ContractAddress');
+    
+    const beforeUpdateCode = [];
+    if (opts.pausable) {
+      beforeUpdateCode.push('self.get_contract().pausable.assert_not_paused()');
+    }
+    if (opts.enumerable) {
+      beforeUpdateCode.push('self.get_contract_mut().erc721_enumerable.before_update(to, token_id)');
+    }
+    c.addFunction(ERC721HooksTrait, {
+      name: 'before_update',
+      args: [
+        { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
+        { name: 'to', type: 'ContractAddress' },
+        { name: 'token_id', type: 'u256' },
+        { name: 'auth', type: 'ContractAddress' },
+      ],
+      code: beforeUpdateCode,
+    });
+  
+    c.addFunction(ERC721HooksTrait, {
+      name: 'after_update',
+      args: [
+        { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
+        { name: 'to', type: 'ContractAddress' },
+        { name: 'token_id', type: 'u256' },
+        { name: 'auth', type: 'ContractAddress' },
+      ],
+      code: [],
+    });
+  } else {
+    c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
+  }
 }
 
 function addERC721Mixin(c: ContractBuilder) {
@@ -136,6 +149,10 @@ function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: stri
     ],
     true,
   );
+}
+
+function addEnumerable(c: ContractBuilder) {
+  c.addComponent(components.ERC721EnumerableComponent, [], true);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -168,6 +185,27 @@ const components = defineComponents( {
     internalImpl: {
       name: 'ERC721InternalImpl',
       value: 'ERC721Component::InternalImpl<ContractState>',
+    },
+  },
+  ERC721EnumerableComponent: {
+    path: 'openzeppelin::token::erc721::extensions',
+    substorage: {
+      name: 'erc721_enumerable',
+      type: 'ERC721EnumerableComponent::Storage',
+    },
+    event: {
+      name: 'ERC721EnumerableEvent',
+      type: 'ERC721EnumerableComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC721EnumerableImpl',
+        value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
+      },
+    ],
+    internalImpl: {
+      name: 'ERC721EnumerableInternalImpl',
+      value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
     },
   },
 });

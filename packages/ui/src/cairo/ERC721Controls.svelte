@@ -60,6 +60,13 @@
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.enumerable}>
+      <input type="checkbox" bind:checked={opts.enumerable}>
+      Enumerable
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc721#ERC721EnumerableComponent">
+        Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token ids and all tokens owned by an address.
+      </HelpTooltip>
+    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
