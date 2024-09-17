@@ -43,40 +43,86 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
   });
 }
 
-testAccount('basic account, non-upgradeable', {
-  upgradeable: false,
+testAccount('default full account, mixin + upgradeable', {});
+
+testAccount('default full account, mixin + non-upgradeable', {
+  upgradeable: false
 });
 
-testAccount('basic account', {});
+testAccount('explicit full account, mixin + upgradeable', {
+  name: 'MyAccount',
+  type: 'stark',
+  declare: true,
+  deploy: true,
+  pubkey: true,
+  upgradeable: true
+});
+
+testAccount('explicit full account, mixin + non-upgradeable', {
+  name: 'MyAccount',
+  type: 'stark',
+  declare: true,
+  deploy: true,
+  pubkey: true,
+  upgradeable: false
+});
+
+testAccount('basic account, upgradeable', {
+  declare: false,
+  deploy: false,
+  pubkey: false
+});
+
+testAccount('basic account, non-upgradeable', {
+  declare: false,
+  deploy: false,
+  pubkey: false,
+  upgradeable: false
+});
 
 testAccount('account declarer', {
-  declare: true,
+  deploy: false,
+  pubkey: false
 });
 
 testAccount('account deployable', {
-  deploy: true,
+  declare: false,
+  pubkey: false
 });
 
 testAccount('account public key', {
-  pubkey: true,
+  declare: false,
+  deploy: false,
 });
 
-testAccount('account declarer deployable', {
+testAccount('account declarer, deployable', {
+  pubkey: false
+});
+
+testAccount('account declarer, public key', {
+  deploy: false
+});
+
+testAccount('account deployable, public key', {
+  declare: false
+});
+
+testEthAccount('default full ethAccount, mixin + upgradeable', {});
+
+testEthAccount('default full ethAccount, mixin + non-upgradeable', {
+  upgradeable: false
+});
+
+testEthAccount('explicit full ethAccount, mixin + upgradeable', {
+  name: 'MyAccount',
+  type: 'stark',
   declare: true,
-  deploy: true
-});
-
-testAccount('account declarer public key', {
-  declare: true,
-  pubkey: true
-});
-
-testAccount('account deployable public key', {
   deploy: true,
-  pubkey: true
+  pubkey: true,
+  upgradeable: true
 });
 
-testAccount('account full, non-upgradeable', {
+testEthAccount('explicit full ethAccount, mixin + non-upgradeable', {
   name: 'MyAccount',
   type: 'stark',
   declare: true,
@@ -85,64 +131,44 @@ testAccount('account full, non-upgradeable', {
   upgradeable: false
 });
 
-testAccount('account full, upgradeable', {
-  name: 'MyAccount',
-  type: 'stark',
-  declare: true,
-  deploy: true,
-  pubkey: true,
-  upgradeable: true
+testEthAccount('basic ethAccount, upgradeable', {
+  declare: false,
+  deploy: false,
+  pubkey: false
 });
 
 testEthAccount('basic ethAccount, non-upgradeable', {
-  upgradeable: false,
-});
-
-testEthAccount('basic ethAccount', {});
-
-testEthAccount('ethAccount declarer', {
-  declare: true,
-});
-
-testEthAccount('ethAccount deployable', {
-  deploy: true,
-});
-
-testEthAccount('ethAccount public key', {
-  pubkey: true,
-});
-
-testEthAccount('ethAccount declarer deployable', {
-  declare: true,
-  deploy: true
-});
-
-testEthAccount('ethAccount declarer public key', {
-  declare: true,
-  pubkey: true
-});
-
-testEthAccount('ethAccount deployable public key', {
-  deploy: true,
-  pubkey: true
-});
-
-testEthAccount('ethAccount full, non-upgradeable', {
-  name: 'MyAccount',
-  type: 'eth',
-  declare: true,
-  deploy: true,
-  pubkey: true,
+  declare: false,
+  deploy: false,
+  pubkey: false,
   upgradeable: false
 });
 
-testEthAccount('ethAccount full, upgradeable', {
-  name: 'MyAccount',
-  type: 'eth',
-  declare: true,
-  deploy: true,
-  pubkey: true,
-  upgradeable: true
+testEthAccount('ethAccount declarer', {
+  deploy: false,
+  pubkey: false
+});
+
+testEthAccount('ethAccount deployable', {
+  declare: false,
+  pubkey: false
+});
+
+testEthAccount('ethAccount public key', {
+  declare: false,
+  deploy: false,
+});
+
+testEthAccount('ethAccount declarer, deployable', {
+  pubkey: false
+});
+
+testEthAccount('ethAccount declarer, public key', {
+  deploy: false
+});
+
+testEthAccount('ethAccount deployable, public key', {
+  declare: false
 });
 
 testAPIEquivalence('account API default');
