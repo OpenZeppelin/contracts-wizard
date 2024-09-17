@@ -25,7 +25,7 @@ export const defaults: Required<ERC1155Options> = {
 } as const;
 
 export function printERC1155(opts: ERC1155Options = defaults): string {
-  return printContract(buildERC1155(opts), { isAccount: false });
+  return printContract(buildERC1155(opts));
 }
 
 export interface ERC1155Options extends CommonContractOptions {

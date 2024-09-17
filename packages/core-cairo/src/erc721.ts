@@ -25,7 +25,7 @@ export const defaults: Required<ERC721Options> = {
 } as const;
 
 export function printERC721(opts: ERC721Options = defaults): string {
-  return printContract(buildERC721(opts), { isAccount: false });
+  return printContract(buildERC721(opts));
 }
 
 export interface ERC721Options extends CommonContractOptions {

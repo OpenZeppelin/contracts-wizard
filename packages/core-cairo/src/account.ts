@@ -22,7 +22,7 @@ export const defaults: Required<AccountOptions> = {
 } as const;
 
 export function printAccount(opts: AccountOptions = defaults): string {
-  return printContract(buildAccount(opts), { isAccount: true });
+  return printContract(buildAccount(opts));
 }
 
 export interface AccountOptions extends CommonOptions {
@@ -46,7 +46,8 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
-  const c = new ContractBuilder(opts.name);
+  const isAccount = true;
+  const c = new ContractBuilder(opts.name, isAccount);
 
   const allOpts = withDefaults(opts);
 

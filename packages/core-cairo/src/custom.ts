@@ -16,7 +16,7 @@ export const defaults: Required<CustomOptions> = {
 } as const;
 
 export function printCustom(opts: CustomOptions = defaults): string {
-  return printContract(buildCustom(opts), { isAccount: false });
+  return printContract(buildCustom(opts));
 }
 
 export interface CustomOptions extends CommonContractOptions {
