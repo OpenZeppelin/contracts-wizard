@@ -99,12 +99,16 @@ function addHooks(c: ContractBuilder, opts: ERC721Options) {
     c.addImplementedTrait(ERC721HooksTrait);
     c.addStandaloneImport('starknet::ContractAddress');
     
-    const beforeUpdateCode = [];
+    const requiresMutState = opts.enumerable
+    const initStateLine = requiresMutState
+      ? 'let mut contract_state = self.get_contract_mut()' 
+      : 'let contract_state = self.get_contract()'
+    const beforeUpdateCode = [initStateLine];
     if (opts.pausable) {
-      beforeUpdateCode.push('self.get_contract().pausable.assert_not_paused()');
+      beforeUpdateCode.push('contract_state.pausable.assert_not_paused()');
     }
     if (opts.enumerable) {
-      beforeUpdateCode.push('self.get_contract_mut().erc721_enumerable.before_update(to, token_id)');
+      beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
     }
     c.addFunction(ERC721HooksTrait, {
       name: 'before_update',
