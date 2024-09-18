@@ -115,7 +115,7 @@ testEthAccount('default full ethAccount, mixin + non-upgradeable', {
 
 testEthAccount('explicit full ethAccount, mixin + upgradeable', {
   name: 'MyAccount',
-  type: 'stark',
+  type: 'eth',
   declare: true,
   deploy: true,
   pubkey: true,
@@ -124,7 +124,7 @@ testEthAccount('explicit full ethAccount, mixin + upgradeable', {
 
 testEthAccount('explicit full ethAccount, mixin + non-upgradeable', {
   name: 'MyAccount',
-  type: 'stark',
+  type: 'eth',
   declare: true,
   deploy: true,
   pubkey: true,
