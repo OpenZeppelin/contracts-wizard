@@ -24,11 +24,16 @@ export function injectHyperlinks(code: string) {
   return result;
 }
 
+const componentMappings: { [key: string]: string } = {
+  'AccountComponent': 'account',
+  'UpgradeableComponent': 'upgradeable',
+} as const;
+
 function removeComponentName(libraryPathSegments: Array<string>) {
   const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
-  if (lastItem === 'UpgradeableComponent') {
-    // Replace component name with 'upgradeable'
-    libraryPathSegments.splice(-1, 1, 'upgradeable');
+  if (lastItem !== undefined && componentMappings[lastItem] !== undefined) {
+    // Replace component name with the name of its .cairo file
+    libraryPathSegments.splice(-1, 1, componentMappings[lastItem]);
   } else {
     libraryPathSegments.pop();
   }
