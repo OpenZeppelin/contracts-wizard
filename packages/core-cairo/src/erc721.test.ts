@@ -51,6 +51,15 @@ testERC721('mintable', {
   mintable: true,
 });
 
+testERC721('enumerable', {
+  enumerable: true,
+});
+
+testERC721('pausable + enumerable', {
+  pausable: true,
+  enumerable: true,
+});
+
 testERC721('mintable + roles', {
   mintable: true,
   access: 'roles',
@@ -60,6 +69,7 @@ testERC721('full non-upgradeable', {
   mintable: true,
   pausable: true,
   burnable: true,
+  enumerable: true,
   upgradeable: false,
 });
 
@@ -67,6 +77,7 @@ testERC721('full upgradeable', {
   mintable: true,
   pausable: true,
   burnable: true,
+  enumerable: true,
   upgradeable: true,
 });
 
@@ -91,4 +102,6 @@ test('API isAccessControlRequired', async t => {
   t.is(erc721.isAccessControlRequired({ mintable: true }), true);
   t.is(erc721.isAccessControlRequired({ pausable: true }), true);
   t.is(erc721.isAccessControlRequired({ upgradeable: true }), true);
+  t.is(erc721.isAccessControlRequired({ burnable: true }), false);
+  t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
 });
