@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.15.0 (2024-09-19)
 
 - Add Account and EthAccount. ([#387](https://github.com/OpenZeppelin/contracts-wizard/pull/387))
 
