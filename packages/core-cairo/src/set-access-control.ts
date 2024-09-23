@@ -57,7 +57,7 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
   if (access === false) {
     access = 'ownable';
   }
-  
+
   setAccessControl(c, access);
 
   switch (access) {
@@ -73,11 +73,11 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
         if (addedSuper) {
           c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
-        }  
+        }
       }
 
       c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
-      
+
       break;
     }
   }

@@ -1,10 +1,10 @@
 import { Contract, ContractBuilder } from './contract';
 import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
-import { CommonOptions, withCommonDefaults } from './common-options';
+import { CommonContractOptions, withCommonContractDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
-import { defaults as commonDefaults } from './common-options';
+import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 
 export const defaults: Required<CustomOptions> = {
@@ -19,7 +19,7 @@ export function printCustom(opts: CustomOptions = defaults): string {
   return printContract(buildCustom(opts));
 }
 
-export interface CustomOptions extends CommonOptions {
+export interface CustomOptions extends CommonContractOptions {
   name: string;
   pausable?: boolean;
 }
@@ -27,7 +27,7 @@ export interface CustomOptions extends CommonOptions {
 function withDefaults(opts: CustomOptions): Required<CustomOptions> {
   return {
     ...opts,
-    ...withCommonDefaults(opts),
+    ...withCommonContractDefaults(opts),
     pausable: opts.pausable ?? defaults.pausable,
   };
 }

@@ -26,6 +26,10 @@ test.serial('erc1155 result generated', async t => {
   await testGenerate(t, 'ERC1155');
 });
 
+test.serial('account result generated', async t => {
+  await testGenerate(t, 'Account');
+});
+
 test.serial('custom result generated', async t => {
   await testGenerate(t, 'Custom');
 });
@@ -46,6 +50,8 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc721.isAccessControlRequired(opts);
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
+    case 'Account':
+      throw new Error("Not applicable for accounts");
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     default:
@@ -57,7 +63,7 @@ test('is access control required', async t => {
   for (const contract of generateSources('all')) {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
-    if (!contract.options.access) {
+    if (contract.options.kind !== 'Account' && !contract.options.access) {
       if (isAccessControlRequired(contract.options)) {
         t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
       } else {

@@ -16,6 +16,7 @@ The following contract types are supported:
 - `erc20`
 - `erc721`
 - `erc1155`
+- `account`
 - `custom`
 
 Each contract type has functions/constants as defined below.
@@ -33,6 +34,9 @@ function print(opts?: ERC721Options): string
 function print(opts?: ERC1155Options): string
 ```
 ```js
+function print(opts?: AccountOptions): string
+```
+```js
 function print(opts?: CustomOptions): string
 ```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
@@ -46,6 +50,9 @@ const defaults: Required<ERC721Options>
 ```
 ```js
 const defaults: Required<ERC1155Options>
+```
+```js
+const defaults: Required<AccountOptions>
 ```
 ```js
 const defaults: Required<CustomOptions>
@@ -67,6 +74,8 @@ function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
 ```
 Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
 
+> Note that account contracts handle permissions differently from the other supported contracts.
+Thus, the `account` contract type does not include `isAccessControlRequired`.
 
 ### Contract specific functions
 

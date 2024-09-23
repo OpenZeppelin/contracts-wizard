@@ -17,6 +17,7 @@ function isKind<T>(value: Kind | T): value is Kind {
     case 'ERC20':
     case 'ERC721':
     case 'ERC1155':
+    case 'Account':
     case 'Custom':
       return true;
 
