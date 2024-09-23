@@ -8,8 +8,8 @@ import { erc721 } from '.';
 const allFeaturesON: Partial<ERC721Options> = {
   mintable: true,
   burnable: true,
-  enumerable: true,
   pausable: true,
+  enumerable: true,
   upgradeable: true
 } as const;
 

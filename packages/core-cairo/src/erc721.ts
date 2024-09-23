@@ -99,10 +99,10 @@ function addHooks(c: ContractBuilder, opts: ERC721Options) {
     c.addImplementedTrait(ERC721HooksTrait);
     c.addStandaloneImport('starknet::ContractAddress');
     
-    const requiresMutState = opts.enumerable
+    const requiresMutState = opts.enumerable;
     const initStateLine = requiresMutState
       ? 'let mut contract_state = self.get_contract_mut()' 
-      : 'let contract_state = self.get_contract()'
+      : 'let contract_state = self.get_contract()';
     const beforeUpdateCode = [initStateLine];
     if (opts.pausable) {
       beforeUpdateCode.push('contract_state.pausable.assert_not_paused()');
