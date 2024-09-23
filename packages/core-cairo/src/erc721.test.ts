@@ -80,7 +80,7 @@ testERC721('full non-upgradeable', {
 
 testERC721('full upgradeable', allFeaturesON);
 
-testAPIEquivalence('API default', { upgradeable: true });
+testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
 
