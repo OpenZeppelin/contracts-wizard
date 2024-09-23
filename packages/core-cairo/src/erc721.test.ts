@@ -5,6 +5,14 @@ import { printContract } from './print';
 
 import { erc721 } from '.';
 
+const allFeaturesON: Partial<ERC721Options> = {
+  mintable: true,
+  burnable: true,
+  enumerable: true,
+  pausable: true,
+  upgradeable: true
+} as const;
+
 function testERC721(title: string, opts: Partial<ERC721Options>) {
   test(title, t => {
     const c = buildERC721({
@@ -66,32 +74,20 @@ testERC721('mintable + roles', {
 });
 
 testERC721('full non-upgradeable', {
-  mintable: true,
-  pausable: true,
-  burnable: true,
-  enumerable: true,
+  ...allFeaturesON,
   upgradeable: false,
 });
 
-testERC721('full upgradeable', {
-  mintable: true,
-  pausable: true,
-  burnable: true,
-  enumerable: true,
-  upgradeable: true,
-});
+testERC721('full upgradeable', allFeaturesON);
 
-testAPIEquivalence('API default');
+testAPIEquivalence('API default', { upgradeable: true });
 
 testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
 
 testAPIEquivalence('API full upgradeable', {
+  ...allFeaturesON,
   name: 'CustomToken',
-  symbol: 'CTK',
-  burnable: true,
-  mintable: true,
-  pausable: true,
-  upgradeable: true,
+  symbol: 'CTK'
 });
 
 test('API assert defaults', async t => {
