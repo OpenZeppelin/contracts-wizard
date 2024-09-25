@@ -1,12 +1,21 @@
 # Changelog
 
-## 0.15.0 (2024-09-19)
+## 0.17.0 (2024-09-25)
 
 - Add Account and EthAccount. ([#387](https://github.com/OpenZeppelin/contracts-wizard/pull/387))
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v0.15.0. ([#378](https://github.com/OpenZeppelin/contracts-wizard/pull/378))
+  - Use OpenZeppelin Contracts for Cairo v0.17.0. ([#395](https://github.com/OpenZeppelin/contracts-wizard/pull/395))
+
+## 0.16.0
+
+- **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.16.0. ([#384](https://github.com/OpenZeppelin/contracts-wizard/pull/384))
+
+## 0.15.0 (2024-09-19)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.15.0. ([#378](https://github.com/OpenZeppelin/contracts-wizard/pull/378))
 
 ## 0.14.0 (2024-06-20)
 

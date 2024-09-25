@@ -33,7 +33,7 @@ async function updateScarbToml() {
     .replace(/cairo-version = "\d+\.\d+\.\d+"/, `cairo-version = "${cairoVersion}"`)
     .replace(/scarb-version = "\d+\.\d+\.\d+"/, `scarb-version = "${scarbVersion}"`)
     .replace(/starknet = "\d+\.\d+\.\d+"/, `starknet = "${cairoVersion}"`)
-    .replace(/tag = "v\d+\.\d+\.\d+"/, `tag = "${contractsVersionTag}"`);
+    .replace(/openzeppelin = "\d+\.\d+\.\d+"/, `tag = "${contractsVersionTag}"`);
 
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
