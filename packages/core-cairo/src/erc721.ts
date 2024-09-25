@@ -120,17 +120,6 @@ function addHooks(c: ContractBuilder, opts: ERC721Options) {
       ],
       code: beforeUpdateCode,
     });
-  
-    c.addFunction(ERC721HooksTrait, {
-      name: 'after_update',
-      args: [
-        { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
-        { name: 'to', type: 'ContractAddress' },
-        { name: 'token_id', type: 'u256' },
-        { name: 'auth', type: 'ContractAddress' },
-      ],
-      code: [],
-    });
   } else {
     c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
   }
