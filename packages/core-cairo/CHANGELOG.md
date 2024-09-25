@@ -5,7 +5,7 @@
 - Add Account and EthAccount. ([#387](https://github.com/OpenZeppelin/contracts-wizard/pull/387))
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v0.17.0. ([#395](https://github.com/OpenZeppelin/contracts-wizard/pull/395))
+  - Use OpenZeppelin Contracts for Cairo v0.17.0. ([#396](https://github.com/OpenZeppelin/contracts-wizard/pull/396))
 
 ## 0.16.0
 
