@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.16.0 (2024-09-26)
 
 - Add ERC721Enumerable. ([#391](https://github.com/OpenZeppelin/contracts-wizard/pull/391))
 
