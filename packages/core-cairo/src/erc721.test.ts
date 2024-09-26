@@ -5,6 +5,14 @@ import { printContract } from './print';
 
 import { erc721 } from '.';
 
+const allFeaturesON: Partial<ERC721Options> = {
+  mintable: true,
+  burnable: true,
+  pausable: true,
+  enumerable: true,
+  upgradeable: true
+} as const;
+
 function testERC721(title: string, opts: Partial<ERC721Options>) {
   test(title, t => {
     const c = buildERC721({
@@ -51,36 +59,35 @@ testERC721('mintable', {
   mintable: true,
 });
 
+testERC721('enumerable', {
+  enumerable: true,
+});
+
+testERC721('pausable + enumerable', {
+  pausable: true,
+  enumerable: true,
+});
+
 testERC721('mintable + roles', {
   mintable: true,
   access: 'roles',
 });
 
 testERC721('full non-upgradeable', {
-  mintable: true,
-  pausable: true,
-  burnable: true,
+  ...allFeaturesON,
   upgradeable: false,
 });
 
-testERC721('full upgradeable', {
-  mintable: true,
-  pausable: true,
-  burnable: true,
-  upgradeable: true,
-});
+testERC721('full upgradeable', allFeaturesON);
 
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
 
 testAPIEquivalence('API full upgradeable', {
+  ...allFeaturesON,
   name: 'CustomToken',
-  symbol: 'CTK',
-  burnable: true,
-  mintable: true,
-  pausable: true,
-  upgradeable: true,
+  symbol: 'CTK'
 });
 
 test('API assert defaults', async t => {
@@ -91,4 +98,6 @@ test('API isAccessControlRequired', async t => {
   t.is(erc721.isAccessControlRequired({ mintable: true }), true);
   t.is(erc721.isAccessControlRequired({ pausable: true }), true);
   t.is(erc721.isAccessControlRequired({ upgradeable: true }), true);
+  t.is(erc721.isAccessControlRequired({ burnable: true }), false);
+  t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
 });
