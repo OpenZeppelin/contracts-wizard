@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add ERC721Enumerable. ([#391](https://github.com/OpenZeppelin/contracts-wizard/pull/391))
+
 ## 0.15.0 (2024-09-19)
 
 - Add Account and EthAccount. ([#387](https://github.com/OpenZeppelin/contracts-wizard/pull/387))

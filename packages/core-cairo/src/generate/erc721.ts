@@ -11,6 +11,7 @@ const blueprint = {
   symbol: ['MTK'],
   baseUri: ['https://example.com/'],
   burnable: booleans,
+  enumerable: booleans,
   pausable: booleans,
   mintable: booleans,
   access: accessOptions,
