@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import { writeGeneratedSources } from '../generate/sources';
-import { contractsVersionTag, edition, cairoVersion, scarbVersion } from '../utils/version';
+import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
 
 export async function updateScarbProject() {
   const generatedSourcesPath = path.join('test_project', 'src');
@@ -33,7 +33,7 @@ async function updateScarbToml() {
     .replace(/cairo-version = "\d+\.\d+\.\d+"/, `cairo-version = "${cairoVersion}"`)
     .replace(/scarb-version = "\d+\.\d+\.\d+"/, `scarb-version = "${scarbVersion}"`)
     .replace(/starknet = "\d+\.\d+\.\d+"/, `starknet = "${cairoVersion}"`)
-    .replace(/tag = "v\d+\.\d+\.\d+"/, `tag = "${contractsVersionTag}"`);
+    .replace(/openzeppelin = "\d+\.\d+\.\d+"/, `openzeppelin = "${contractsVersion}"`);
 
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
