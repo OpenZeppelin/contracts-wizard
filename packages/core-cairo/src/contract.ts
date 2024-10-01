@@ -57,6 +57,7 @@ export interface BaseImplementedTrait {
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
+  superVariables: Variable[];
   functions: ContractFunction[];
 }
 
@@ -172,12 +173,34 @@ export class ContractBuilder implements Contract {
         name: baseTrait.name,
         of: baseTrait.of,
         tags: [ ...baseTrait.tags ],
+        superVariables: [],
         functions: [],
         priority: baseTrait.priority,
       };
       this.implementedTraitsMap.set(key, t);
       return t;
     }
+  }
+
+  addSuperVariableToTrait(baseTrait: BaseImplementedTrait, newVar: Variable): boolean {
+    const trait = this.addImplementedTrait(baseTrait);
+    for (const existingVar of trait.superVariables) {
+      if (existingVar.name === newVar.name) {
+        if (existingVar.type !== newVar.type) {
+          throw new Error(
+            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
+          )
+        }
+        if (existingVar.value !== newVar.value) {
+          throw new Error(
+            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
+          )
+        }
+        return false; // No need to add, already exists
+      }
+    }
+    trait.superVariables.push(newVar);
+    return true;
   }
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
