@@ -11,6 +11,8 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
+import { addVotesComponent } from './common-components';
+
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -53,7 +55,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     mintable: opts.mintable ?? defaults.mintable,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
-    appVersion: opts.appVersion ?? defaults.appVersion,
+    appVersion: opts.appVersion ?? defaults.appVersion
   };
 }
 
@@ -150,7 +152,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
 
       afterUpdateFn.code.push(
         'let mut contract_state = ERC20Component::HasComponent::get_contract_mut(ref self);',
-        'contract_state.erc20_votes.transfer_voting_units(from, recipient, amount);',
+        'contract_state.votes.transfer_voting_units(from, recipient, amount);',
       );
     }
   } else {
@@ -194,7 +196,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     c.addStandaloneImport('starknet::ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`); 
+    c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
   }
 }
 
@@ -244,40 +246,6 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
-function addVotesComponent(c: ContractBuilder, name: string, version: string) {
-  c.addComponent(components.ERC20VotesComponent, [], false);
-  c.addComponent(components.NoncesComponent, [], false);
-  c.addStandaloneImport('openzeppelin::token::erc20::extensions::ERC20VotesComponent::InternalTrait as ERC20VotesInternalTrait');
-  c.addStandaloneImport('openzeppelin::utils::cryptography::snip12::SNIP12Metadata');
-  c.addStandaloneImport('starknet::ContractAddress');
-
-  const SNIP12Metadata: BaseImplementedTrait = {
-    name: 'SNIP12MetadataImpl',
-    of: 'SNIP12Metadata',
-    tags: [],
-    priority: 0,
-  };
-  c.addImplementedTrait(SNIP12Metadata);
-
-  c.addFunction(SNIP12Metadata, {
-    name: 'name',
-    args: [],
-    returns: 'felt252',
-    code: [
-      `'${name}'`,
-    ],
-  });
-
-  c.addFunction(SNIP12Metadata, {
-    name: 'version',
-    args: [],
-    returns: 'felt252',
-    code: [
-      `'${version}'`,
-    ],
-  });
-}
-
 const components = defineComponents( {
   ERC20Component: {
     path: 'openzeppelin::token::erc20',
@@ -294,40 +262,6 @@ const components = defineComponents( {
       name: 'ERC20InternalImpl',
       value: 'ERC20Component::InternalImpl<ContractState>',
     },
-  },
-  ERC20VotesComponent: {
-    path: 'openzeppelin::token::erc20::extensions',
-    substorage: {
-      name: 'erc20_votes',
-      type: 'ERC20VotesComponent::Storage',
-    },
-    event: {
-      name: 'ERC20VotesEvent',
-      type: 'ERC20VotesComponent::Event',
-    },
-    impls: [
-      {
-        name: 'ERC20VotesComponentImpl',
-        value: 'ERC20VotesComponent::ERC20VotesImpl<ContractState>',
-      },
-    ],
-  },
-  NoncesComponent: {
-    path: 'openzeppelin::utils::cryptography::nonces',
-    substorage: {
-      name: 'nonces',
-      type: 'NoncesComponent::Storage',
-    },
-    event: {
-      name: 'NoncesEvent',
-      type: 'NoncesComponent::Event',
-    },
-    impls: [
-      {
-        name: 'NoncesImpl',
-        value: 'NoncesComponent::NoncesImpl<ContractState>',
-      },
-    ],
   },
 });
 
