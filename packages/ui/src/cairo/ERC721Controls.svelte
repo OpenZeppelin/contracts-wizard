@@ -3,12 +3,12 @@
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo';
-  
+
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../error-tooltip';
-  
+
   export const opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
     ...erc721.defaults,
@@ -77,6 +77,37 @@
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Votes</span>
+      <span class="ml-1">
+        <input type="checkbox" bind:checked={opts.votes}>
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/api/erc20#ERC20VotesComponent">
+        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Application Name
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Application Version
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
+  </label>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />

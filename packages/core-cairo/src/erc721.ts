@@ -8,9 +8,10 @@ import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { addSRC5Component } from './common-components';
+import { addSRC5Component, addVotesComponent } from './common-components';
 import { externalTrait } from './external-trait';
-import { toByteArray } from './utils/convert-strings';
+import { toByteArray, toFelt252 } from './utils/convert-strings';
+import { OptionsError } from './error';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -20,6 +21,9 @@ export const defaults: Required<ERC721Options> = {
   pausable: false,
   mintable: false,
   enumerable: false,
+  votes: false,
+  appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
+  appVersion: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -37,6 +41,9 @@ export interface ERC721Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   enumerable?: boolean;
+  votes?: boolean;
+  appName?: string;
+  appVersion?: string;
 }
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -47,7 +54,10 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
-    enumerable: opts.enumerable ?? defaults.enumerable
+    enumerable: opts.enumerable ?? defaults.enumerable,
+    votes: opts.votes ?? defaults.votes,
+    appName: opts.appName ?? defaults.appName,
+    appVersion: opts.appVersion ?? defaults.appVersion
   };
 }
 
@@ -87,8 +97,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
-function addHooks(c: ContractBuilder, opts: ERC721Options) {
-  const usesCustomHooks = opts.pausable || opts.enumerable;
+function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
+  const usesCustomHooks = opts.pausable || opts.enumerable || opts.votes;
   if (usesCustomHooks) {
     const ERC721HooksTrait: BaseImplementedTrait = {
       name: `ERC721HooksImpl`,
@@ -98,10 +108,10 @@ function addHooks(c: ContractBuilder, opts: ERC721Options) {
     };
     c.addImplementedTrait(ERC721HooksTrait);
     c.addStandaloneImport('starknet::ContractAddress');
-    
-    const requiresMutState = opts.enumerable;
+
+    const requiresMutState = opts.enumerable || opts.votes;
     const initStateLine = requiresMutState
-      ? 'let mut contract_state = self.get_contract_mut()' 
+      ? 'let mut contract_state = self.get_contract_mut()'
       : 'let contract_state = self.get_contract()';
     const beforeUpdateCode = [initStateLine];
     if (opts.pausable) {
@@ -109,6 +119,23 @@ function addHooks(c: ContractBuilder, opts: ERC721Options) {
     }
     if (opts.enumerable) {
       beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
+    }
+    if (opts.votes) {
+        if (!opts.appName) {
+          throw new OptionsError({
+            appName: 'Application Name is required when Votes are enabled',
+          });
+        }
+
+        if (!opts.appVersion) {
+          throw new OptionsError({
+            appVersion: 'Application Version is required when Votes are enabled',
+          });
+        }
+
+      addVotesComponent(c, toFelt252(opts.appName, 'appName'), toFelt252(opts.appVersion, 'appVersion'));
+      beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
+      beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
     }
     c.addFunction(ERC721HooksTrait, {
       name: 'before_update',
