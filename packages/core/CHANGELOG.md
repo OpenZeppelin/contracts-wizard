@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update pragma and default compiler version to 0.8.22.
+
 ## 0.4.3 (2024-04-08)
 
 - Add timestamp based Governor and Votes clock options. ([#347](https://github.com/OpenZeppelin/contracts-wizard/pull/347))
