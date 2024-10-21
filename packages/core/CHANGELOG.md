@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Update pragma and default compiler version to 0.8.22.
+- Update pragma versions to 0.8.22.
 
 ## 0.4.3 (2024-04-08)
 
