@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.4 (2024-10-21)
 
-- Update pragma versions to 0.8.22.
+### Potentially breaking changes
+- Update pragma versions to 0.8.22. ([#401](https://github.com/OpenZeppelin/contracts-wizard/pull/401))
 
 ## 0.4.3 (2024-04-08)
 
