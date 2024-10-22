@@ -97,7 +97,8 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
-  if (allOpts.votes || allOpts.pausable) {
+  const usesCustomHooks = allOpts.pausable || allOpts.votes;
+  if (usesCustomHooks) {
     const hooksTrait = {
       name: 'ERC20HooksImpl',
       of: 'ERC20Component::ERC20HooksTrait<ContractState>',
@@ -106,31 +107,20 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
     };
     c.addImplementedTrait(hooksTrait);
 
-    const beforeUpdateFn = c.addFunction(hooksTrait, {
-      name: 'before_update',
-      args: [
-        { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
-        { name: 'from', type: 'ContractAddress' },
-        { name: 'recipient', type: 'ContractAddress' },
-        { name: 'amount', type: 'u256' },
-      ],
-      code: [],
-    });
-
-    const afterUpdateFn = c.addFunction(hooksTrait, {
-      name: 'after_update',
-      args: [
-        { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
-        { name: 'from', type: 'ContractAddress' },
-        { name: 'recipient', type: 'ContractAddress' },
-        { name: 'amount', type: 'u256' },
-      ],
-      code: [],
-    });
-
     if (allOpts.pausable) {
+      const beforeUpdateFn = c.addFunction(hooksTrait, {
+        name: 'before_update',
+        args: [
+          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'recipient', type: 'ContractAddress' },
+          { name: 'amount', type: 'u256' },
+        ],
+        code: [],
+      });
+
       beforeUpdateFn.code.push(
-        'let contract_state = ERC20Component::HasComponent::get_contract(@self);',
+        'let contract_state = self.get_contract();',
         'contract_state.pausable.assert_not_paused();',
       );
     }
@@ -150,8 +140,19 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
 
       addVotesComponent(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
 
+      const afterUpdateFn = c.addFunction(hooksTrait, {
+        name: 'after_update',
+        args: [
+          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'recipient', type: 'ContractAddress' },
+          { name: 'amount', type: 'u256' },
+        ],
+        code: [],
+      });
+
       afterUpdateFn.code.push(
-        'let mut contract_state = ERC20Component::HasComponent::get_contract_mut(ref self);',
+        'let mut contract_state = self.get_contract_mut();',
         'contract_state.votes.transfer_voting_units(from, recipient, amount);',
       );
     }

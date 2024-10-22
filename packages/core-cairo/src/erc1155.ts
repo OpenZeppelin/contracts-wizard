@@ -62,7 +62,6 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
-    addPausableHook(c);
   } else {
     c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
   }
@@ -79,6 +78,8 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addSetBaseUri(c, allOpts.access);
   }
 
+  addHooks(c, allOpts);
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
@@ -86,43 +87,35 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   return c;
 }
 
-function addPausableHook(c: ContractBuilder) {
-  const ERC1155HooksTrait: BaseImplementedTrait = {
-    name: `ERC1155HooksImpl`,
-    of: 'ERC1155Component::ERC1155HooksTrait<ContractState>',
-    tags: [],
-    priority: 0,
-  };
-  c.addImplementedTrait(ERC1155HooksTrait);
+function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
+  const usesCustomHooks = allOpts.pausable;
+  if (usesCustomHooks) {
+    const hooksTrait = {
+      name: 'ERC1155HooksImpl',
+      of: 'ERC1155Component::ERC1155HooksTrait<ContractState>',
+      tags: [],
+      priority: 1,
+    };
+    c.addImplementedTrait(hooksTrait);
+    c.addStandaloneImport('starknet::ContractAddress');
 
-  c.addStandaloneImport('starknet::ContractAddress');
-
-  c.addFunction(ERC1155HooksTrait, {
-    name: 'before_update',
-    args: [
-      { name: 'ref self', type: `ERC1155Component::ComponentState<ContractState>` },
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_ids', type: 'Span<u256>' },
-      { name: 'values', type: 'Span<u256>' },
-    ],
-    code: [
-      'let contract_state = ERC1155Component::HasComponent::get_contract(@self)',
-      'contract_state.pausable.assert_not_paused()',
-    ],
-  });
-
-  c.addFunction(ERC1155HooksTrait, {
-    name: 'after_update',
-    args: [
-      { name: 'ref self', type: `ERC1155Component::ComponentState<ContractState>` },
-      { name: 'from', type: 'ContractAddress' },
-      { name: 'to', type: 'ContractAddress' },
-      { name: 'token_ids', type: 'Span<u256>' },
-      { name: 'values', type: 'Span<u256>' },
-    ],
-    code: [],
-  });
+    c.addFunction(hooksTrait, {
+      name: 'before_update',
+      args: [
+        { name: 'ref self', type: `ERC1155Component::ComponentState<ContractState>` },
+        { name: 'from', type: 'ContractAddress' },
+        { name: 'to', type: 'ContractAddress' },
+        { name: 'token_ids', type: 'Span<u256>' },
+        { name: 'values', type: 'Span<u256>' },
+      ],
+      code: [
+        'let contract_state = self.get_contract()',
+        'contract_state.pausable.assert_not_paused()',
+      ],
+    });
+  } else {
+    c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
+  }
 }
 
 function addERC1155Mixin(c: ContractBuilder) {
