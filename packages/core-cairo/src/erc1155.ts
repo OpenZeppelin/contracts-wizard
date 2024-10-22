@@ -62,8 +62,6 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
-  } else {
-    c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
   }
 
   if (allOpts.burnable) {
