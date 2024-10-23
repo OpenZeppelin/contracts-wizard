@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "MIT",
   "repository": "github:OpenZeppelin/contracts-wizard",
@@ -20,8 +20,8 @@
     "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^5.0.0",
-    "@openzeppelin/contracts-upgradeable": "^5.0.0",
+    "@openzeppelin/contracts": "^5.1.0",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
     "array.prototype.flat": "^1.2.4",
