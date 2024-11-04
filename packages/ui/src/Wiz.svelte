@@ -37,6 +37,7 @@
     erc20: 'ERC20',
     erc721: 'ERC721',
     erc1155: 'ERC1155',
+    stablecoin: 'Stablecoin',
     governor: 'Governor',
     custom: 'Custom',
   }

@@ -35,6 +35,7 @@
     "typescript": "^4.9.0"
   },
   "dependencies": {
+    "@openzeppelin/community-contracts": "../openzeppelin-community-contracts",
     "array.prototype.flatmap": "^1.2.4"
   }
 }

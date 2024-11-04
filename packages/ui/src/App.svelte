@@ -6,6 +6,7 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
+    import StablecoinControls from './StablecoinControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
@@ -62,6 +63,7 @@
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'ERC1155':
+            case 'Stablecoin':
             case 'Governor':
             case 'Custom':
           }
@@ -146,6 +148,7 @@
       erc20: 'ERC20',
       erc721: 'ERC721',
       erc1155: 'ERC1155',
+      stablecoin: 'Stablecoin',
       governor: 'Governor',
       custom: 'Custom',
     }
@@ -182,6 +185,9 @@
         </button>
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
+        </button>
+        <button class:selected={tab === 'Stablecoin'} on:click={() => tab = 'Stablecoin'}>
+          Stablecoin
         </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
@@ -284,6 +290,9 @@
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
+      </div>
+      <div class:hidden={tab !== 'Stablecoin'}>
+        <StablecoinControls bind:opts={allOpts.Stablecoin} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
