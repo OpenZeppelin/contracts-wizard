@@ -43,6 +43,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
     }
   }
 
+  if (!kind || kind === 'RealWorldAssets') {
+    for (const kindOpts of generateStablecoinOptions()) {
+      yield { kind: 'RealWorldAssets', ...kindOpts };
+    }
+  }
+
   if (!kind || kind === 'Governor') {
     for (const kindOpts of generateGovernorOptions()) {
       yield { kind: 'Governor', ...kindOpts };

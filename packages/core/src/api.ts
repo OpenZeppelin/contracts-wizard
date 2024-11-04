@@ -28,6 +28,7 @@ export type ERC20 = WizardContractAPI<ERC20Options>;
 export type ERC721 = WizardContractAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions>;
+export type RealWorldAssets = WizardContractAPI<StablecoinOptions>;
 export type Governor = WizardContractAPI<GovernorOptions>;
 export type Custom = WizardContractAPI<CustomOptions>;
 
@@ -47,6 +48,11 @@ export const erc1155: ERC1155 = {
   isAccessControlRequired: erc1155IsAccessControlRequired
 }
 export const stablecoin: Stablecoin = {
+  print: printStablecoin,
+  defaults: stablecoinDefaults,
+  isAccessControlRequired: stablecoinIsAccessControlRequired
+}
+export const realWorldAssets: RealWorldAssets = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired

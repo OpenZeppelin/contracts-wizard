@@ -64,6 +64,7 @@
               break;
             case 'ERC1155':
             case 'Stablecoin':
+            case 'RealWorldAssets':
             case 'Governor':
             case 'Custom':
           }
@@ -149,6 +150,7 @@
       erc721: 'ERC721',
       erc1155: 'ERC1155',
       stablecoin: 'Stablecoin',
+      realWorldAssets: 'RealWorldAssets',
       governor: 'Governor',
       custom: 'Custom',
     }
@@ -188,6 +190,9 @@
         </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => tab = 'Stablecoin'}>
           Stablecoin
+        </button>
+        <button class:selected={tab === 'RealWorldAssets'} on:click={() => tab = 'RealWorldAssets'}>
+          Real-World Assets
         </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
@@ -292,6 +297,9 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
+        <StablecoinControls bind:opts={allOpts.Stablecoin} />
+      </div>
+      <div class:hidden={tab !== 'RealWorldAssets'}>
         <StablecoinControls bind:opts={allOpts.Stablecoin} />
       </div>
       <div class:hidden={tab !== 'Governor'}>

@@ -10,6 +10,7 @@ export interface KindedOptions {
   ERC721:   { kind: 'ERC721' }   & ERC721Options;
   ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
   Stablecoin:  { kind: 'Stablecoin' }  & StablecoinOptions;
+  RealWorldAssets:  { kind: 'RealWorldAssets' }  & StablecoinOptions;
   Governor: { kind: 'Governor' } & GovernorOptions;
   Custom:  { kind: 'Custom' }  & CustomOptions;
 }
@@ -28,6 +29,9 @@ export function buildGeneric(opts: GenericOptions) {
       return buildERC1155(opts);
 
     case 'Stablecoin':
+      return buildStablecoin(opts);
+
+    case 'RealWorldAssets':
       return buildStablecoin(opts);
 
     case 'Governor':
