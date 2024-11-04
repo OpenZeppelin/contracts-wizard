@@ -16,6 +16,7 @@ export interface StablecoinOptions extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
+  limitations?: boolean;
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
@@ -32,6 +33,7 @@ export const defaults: Required<StablecoinOptions> = {
   premint: '0',
   mintable: false,
   permit: true,
+  limitations: false,
   votes: false,
   flashmint: false,
   access: commonDefaults.access,
@@ -48,6 +50,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
     permit: opts.permit ?? defaults.permit,
+    limitations: opts.limitations ?? defaults.limitations,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
   };
@@ -84,6 +87,11 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
 
   if (allOpts.mintable) {
     addMintable(c, access);
+  }
+
+  if (allOpts.limitations) {
+    const type = allOpts.limitations === true ? 'allowlist' : allOpts.limitations;
+    addLimitations(c, access, type);
   }
 
   // Note: Votes requires Permit
@@ -162,6 +170,22 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 
+function addLimitations(c: ContractBuilder, access: Access, type: 'allowlist' | 'blocklist') {
+  if (type === 'allowlist') {
+    requireAccessControl(c, functions.allowUser, access, 'LIMITER', 'limiter');
+    c.addFunctionCode('_allowUser(user);', functions.allowUser);
+
+    requireAccessControl(c, functions.disallowUser, access, 'LIMITER', 'limiter');
+    c.addFunctionCode('_disallowUser(user);', functions.disallowUser);
+  } else {
+    requireAccessControl(c, functions.blockUser, access, 'LIMITER', 'limiter');
+    c.addFunctionCode('_blockUser(user);', functions.blockUser);
+
+    requireAccessControl(c, functions.unblockUser, access, 'LIMITER', 'limiter');
+    c.addFunctionCode('_unblockUser(user);', functions.unblockUser);
+  }
+}
+
 function addPermit(c: ContractBuilder, name: string) {
   const ERC20Permit = {
     name: 'ERC20Permit',
@@ -212,6 +236,34 @@ const functions = defineFunctions({
     args: [
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  allowUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  disallowUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  blockUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  unblockUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
     ],
   },
 
