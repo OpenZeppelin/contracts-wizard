@@ -16,7 +16,7 @@ export interface StablecoinOptions extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
-  limitations?: boolean;
+  limitations?: boolean | "allowlist" | "blocklist";
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
@@ -90,8 +90,7 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   }
 
   if (allOpts.limitations) {
-    const type = allOpts.limitations === true ? 'allowlist' : allOpts.limitations;
-    addLimitations(c, access, type);
+    addLimitations(c, access, allOpts.limitations);
   }
 
   // Note: Votes requires Permit
@@ -170,20 +169,25 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_mint(to, amount);', functions.mint);
 }
 
-function addLimitations(c: ContractBuilder, access: Access, type: 'allowlist' | 'blocklist') {
-  if (type === 'allowlist') {
-    requireAccessControl(c, functions.allowUser, access, 'LIMITER', 'limiter');
-    c.addFunctionCode('_allowUser(user);', functions.allowUser);
+function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
+  const type = mode === 'allowlist';
+  const ERC20Limitation = {
+    name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
+    path: `@openzeppelin/community-contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+  };
 
-    requireAccessControl(c, functions.disallowUser, access, 'LIMITER', 'limiter');
-    c.addFunctionCode('_disallowUser(user);', functions.disallowUser);
-  } else {
-    requireAccessControl(c, functions.blockUser, access, 'LIMITER', 'limiter');
-    c.addFunctionCode('_blockUser(user);', functions.blockUser);
+  c.addParent(ERC20Limitation);
+  c.addOverride(ERC20Limitation, functions._update);
 
-    requireAccessControl(c, functions.unblockUser, access, 'LIMITER', 'limiter');
-    c.addFunctionCode('_unblockUser(user);', functions.unblockUser);
-  }
+  const [addFn, removeFn] = type 
+    ? [functions.allowUser, functions.disallowUser]
+    : [functions.blockUser, functions.unblockUser];
+
+  requireAccessControl(c, addFn, access, 'LIMITER', 'limiter');
+  c.addFunctionCode(`_${type ? 'allowUser' : 'blockUser'}(user);`, addFn);
+
+  requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
+  c.addFunctionCode(`_${type ? 'disallowUser' : 'unblockUser'}(user);`, removeFn);
 }
 
 function addPermit(c: ContractBuilder, name: string) {
