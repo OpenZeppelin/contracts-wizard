@@ -76,6 +76,18 @@ testStablecoin('stablecoin permit', {
   permit: true,
 });
 
+testStablecoin('stablecoin custodian', {
+  custodian: true,
+});
+
+testStablecoin('stablecoin allowlist', {
+  limitations: 'allowlist',
+});
+
+testStablecoin('stablecoin blocklist', {
+  limitations: 'blocklist',
+});
+
 testStablecoin('stablecoin votes', {
   votes: true,
 });
