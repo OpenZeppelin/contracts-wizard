@@ -25,5 +25,7 @@ const blueprint = {
 };
 
 export function* generateStablecoinOptions(): Generator<Required<StablecoinOptions>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    yield { ...opts, upgradeable: false };
+  }
 }

@@ -5,7 +5,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { custom, erc1155, erc20, erc721, governor } from './api';
+import { custom, erc1155, stablecoin, erc20, erc721, governor } from './api';
 
 interface Context {
   generatedSourcesPath: string
@@ -23,6 +23,10 @@ test.serial('erc721 result compiles', async t => {
 
 test.serial('erc1155 result compiles', async t => {
   await testCompile(t, 'ERC1155');
+});
+
+test.serial('stablecoin result compiles', async t => {
+  await testCompile(t, 'Stablecoin');
 });
 
 test.serial('governor result compiles', async t => {
@@ -57,6 +61,10 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc721.isAccessControlRequired(opts);
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
+    case 'Stablecoin':
+      return stablecoin.isAccessControlRequired(opts);
+    case 'RealWorldAssets':
+      return stablecoin.isAccessControlRequired(opts);
     case 'Governor':
       return governor.isAccessControlRequired(opts);
     case 'Custom':

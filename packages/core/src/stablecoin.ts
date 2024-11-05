@@ -64,7 +64,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.limitations !== false || opts.custodian !== false || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.limitations !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
