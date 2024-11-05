@@ -87,6 +87,14 @@
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.custodian}>
+      <input type="checkbox" bind:checked={opts.custodian}>
+      Custodian
+      <HelpTooltip>
+        Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 

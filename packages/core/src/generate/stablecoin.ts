@@ -18,6 +18,7 @@ const blueprint = {
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
+  custodian: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,

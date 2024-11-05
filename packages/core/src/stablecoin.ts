@@ -23,6 +23,7 @@ export interface StablecoinOptions extends CommonOptions {
    */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
+  custodian?: boolean;
 }
 
 export const defaults: Required<StablecoinOptions> = {
@@ -36,6 +37,7 @@ export const defaults: Required<StablecoinOptions> = {
   limitations: false,
   votes: false,
   flashmint: false,
+  custodian: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -53,6 +55,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
     limitations: opts.limitations ?? defaults.limitations,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
+    custodian: opts.custodian ?? defaults.custodian,
   };
 }
 
@@ -61,7 +64,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.limitations !== false || opts.custodian !== false || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
@@ -93,6 +96,10 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
     addLimitations(c, access, allOpts.limitations);
   }
 
+  if (allOpts.custodian) {
+    addCustodian(c, access);
+  }
+
   // Note: Votes requires Permit
   if (allOpts.permit || allOpts.votes) {
     addPermit(c, allOpts.name);
@@ -108,7 +115,7 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   }
 
   setAccessControl(c, access);
-  setUpgradeable(c, upgradeable, access);
+  // setUpgradeable(c, upgradeable, access);
   setInfo(c, info);
 
   return c;
@@ -125,6 +132,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride(ERC20, functions._update);
+  c.addOverride(ERC20, functions._approve);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
@@ -173,11 +181,12 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
   const type = mode === 'allowlist';
   const ERC20Limitation = {
     name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+    path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
   };
 
   c.addParent(ERC20Limitation);
   c.addOverride(ERC20Limitation, functions._update);
+  c.addOverride(ERC20Limitation, functions._approve);
 
   const [addFn, removeFn] = type 
     ? [functions.allowUser, functions.disallowUser]
@@ -188,6 +197,47 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
 
   requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
   c.addFunctionCode(`_${type ? 'disallowUser' : 'unblockUser'}(user);`, removeFn);
+}
+
+function addCustodian(c: ContractBuilder, access: Access) {
+  const ERC20Custodian = {
+    name: 'ERC20Custodian',
+    path: '@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Custodian.sol',
+  };
+
+  c.addParent(ERC20Custodian);
+  c.addOverride(ERC20Custodian, functions._update);
+  c.addOverride(ERC20Custodian, functions._isCustodian);
+
+  if (access === false) {
+    access = 'ownable';
+  }
+  
+  setAccessControl(c, access);
+
+  switch (access) {
+    case 'ownable': {
+      c.setFunctionBody([`return user == owner();`], functions._isCustodian);
+      break;
+    }
+    case 'roles': {
+      const roleOwner = 'custodian';
+      const roleId = 'CUSTODIAN_ROLE';
+      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      if (roleOwner && addedConstant) {
+        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+      }
+      c.setFunctionBody([`return hasRole(CUSTODIAN_ROLE, user);`], functions._isCustodian);
+      break;
+    }
+    case 'managed': {
+      // TODO: solve below
+      // c.addModifier('restricted', functions._isCustodian);
+      c.setFunctionBody([`return user == authority();`], functions._isCustodian);
+      break;
+    }
+  }
 }
 
 function addPermit(c: ContractBuilder, name: string) {
@@ -233,6 +283,25 @@ const functions = defineFunctions({
       { name: 'to', type: 'address' },
       { name: 'value', type: 'uint256' },
     ],
+  },
+
+  _approve: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'emitEvent', type: 'bool' },
+    ],
+  },
+
+  _isCustodian: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'user', type: 'address' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const
   },
 
   mint: {
