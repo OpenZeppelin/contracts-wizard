@@ -22,7 +22,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^5.1.0",
     "@openzeppelin/contracts-upgradeable": "^5.1.0",
-    "@openzeppelin/community-contracts": "../openzeppelin-community-contracts",
+    "@openzeppelin/community-contracts": "https://github.com/OpenZeppelin/openzeppelin-community-contracts/",
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
     "array.prototype.flat": "^1.2.4",
