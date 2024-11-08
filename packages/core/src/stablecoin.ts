@@ -232,9 +232,12 @@ function addCustodian(c: ContractBuilder, access: Access) {
       break;
     }
     case 'managed': {
-      // TODO: solve below
-      // c.addModifier('restricted', functions._isCustodian);
-      c.setFunctionBody([`return user == authority();`], functions._isCustodian);
+      const logic = [
+        `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
+        `if (!immediate) revert AccessManagedUnauthorized(user);`,
+        `return true;`
+      ]
+      c.setFunctionBody(logic, functions._isCustodian);
       break;
     }
   }
