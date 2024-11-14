@@ -115,7 +115,10 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   }
 
   setAccessControl(c, access);
+
+  // Upgradeability is not yet available for the community contracts
   // setUpgradeable(c, upgradeable, access);
+
   setInfo(c, info);
 
   return c;
@@ -234,7 +237,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
     case 'managed': {
       const logic = [
         `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
-        `if (!immediate) revert AccessManagedUnauthorized(user);`,
+        `if (!immediate) return false;`,
         `return true;`
       ]
       c.setFunctionBody(logic, functions._isCustodian);
