@@ -237,8 +237,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
     case 'managed': {
       const logic = [
         `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
-        `if (!immediate) return false;`,
-        `return true;`
+        `return immediate;`
       ]
       c.setFunctionBody(logic, functions._isCustodian);
       break;
