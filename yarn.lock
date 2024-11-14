@@ -488,9 +488,9 @@
     "@nomicfoundation/solidity-analyzer-linux-x64-musl" "0.1.2"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.2"
 
-"@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts/":
+"@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
   version "0.0.1"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts/#e3406d834031e7a83b2ceb395d6620fbe22ba6ce"
+  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#e3406d834031e7a83b2ceb395d6620fbe22ba6ce"
   dependencies:
     "@openzeppelin/contracts" "^5.0.2"
     "@openzeppelin/contracts-upgradeable" "^5.0.2"
