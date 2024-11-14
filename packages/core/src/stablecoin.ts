@@ -16,7 +16,7 @@ export interface StablecoinOptions extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
-  limitations?: boolean | "allowlist" | "blocklist";
+  limitations?: false | "allowlist" | "blocklist";
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
