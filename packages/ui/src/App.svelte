@@ -7,6 +7,7 @@
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
     import StablecoinControls from './StablecoinControls.svelte';
+    import RealWorldAssetsControls from './RealWorldAssetsControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
@@ -150,7 +151,7 @@
       erc721: 'ERC721',
       erc1155: 'ERC1155',
       stablecoin: 'Stablecoin',
-      realWorldAssets: 'RealWorldAssets',
+      realworldassets: 'RealWorldAssets',
       governor: 'Governor',
       custom: 'Custom',
     }
@@ -221,6 +222,7 @@
         {/if}
       </button>
 
+      {#if opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAssets"}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -246,6 +248,7 @@
           <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
         </div>
       </Tooltip>
+      {/if}
 
       <Dropdown let:active>
         <button class="action-button" class:active slot="button">
@@ -262,7 +265,7 @@
           </div>
         </button>
 
-        {#if opts?.kind !== "Governor"}
+        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAssets"}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -272,7 +275,7 @@
         </button>
         {/if}
 
-        {#if opts?.kind !== "Governor"}
+        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAssets"}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -300,7 +303,7 @@
         <StablecoinControls bind:opts={allOpts.Stablecoin} />
       </div>
       <div class:hidden={tab !== 'RealWorldAssets'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} />
+        <RealWorldAssetsControls bind:opts={allOpts.RealWorldAssets} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
