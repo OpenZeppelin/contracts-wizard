@@ -14,7 +14,7 @@ const blueprint = {
   pausable: booleans,
   mintable: booleans,
   permit: booleans,
-  limitations: booleans,
+  limitations: [false, 'allowlist', 'blocklist'] as const,
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
