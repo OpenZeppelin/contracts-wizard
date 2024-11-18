@@ -37,8 +37,8 @@
     erc20: 'ERC20',
     erc721: 'ERC721',
     erc1155: 'ERC1155',
-    stablecoin: 'Stablecoin',
-    realworldasset: 'RealWorldAsset',
+    stablecoin: 'Stablecoin (Experimental)',
+    realworldasset: 'Real-World Asset (Experimental)',
     governor: 'Governor',
     custom: 'Custom',
   }
