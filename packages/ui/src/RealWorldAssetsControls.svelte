@@ -5,7 +5,6 @@
   import { realWorldAssets, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from './inputs/ToggleRadio.svelte';
 
@@ -18,6 +17,12 @@
 
   $: requireAccessControl = realWorldAssets.isAccessControlRequired(opts);
 </script>
+
+<section class="controls-section">
+  <div class="text-sm text-gray-500">
+    <strong>Experimental:</strong> <span class="italic">Some of the following features are not audited and subject to change</span>
+  </div>
+</section>
 
 <section class="controls-section">
   <h1>Settings</h1>
