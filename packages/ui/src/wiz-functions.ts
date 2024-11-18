@@ -95,6 +95,7 @@ export const stablecoinFunction = {
     properties: {
       ...erc20Function.parameters.properties,
       custodian: { type: 'boolean', description: 'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes' },
+      // 'false' gets converted to false
       limitations: { type: 'string', enum: ['false', 'allowlist', 'blocklist'], description: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them' },
     },
     required: ['name', 'symbol'],
