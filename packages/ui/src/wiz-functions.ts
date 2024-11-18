@@ -87,13 +87,16 @@ export const erc1155Function = {
   }
 }
 
+// Copy ERC20 options and remove upgradeable, since upgradeability is not yet available for the community contracts.
+const {upgradeable: _, ...erc20NonUpgradeableProperties} = erc20Function.parameters.properties;
+
 export const stablecoinFunction = {
   name: 'stablecoin',
   description: 'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: {
     type: 'object',
     properties: {
-      ...erc20Function.parameters.properties,
+      ...erc20NonUpgradeableProperties,
       custodian: { type: 'boolean', description: 'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.' },
       // 'false' gets converted to false
       limitations: { type: 'string', enum: ['false', 'allowlist', 'blocklist'], description: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.' },
