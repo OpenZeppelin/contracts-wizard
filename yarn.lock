@@ -488,12 +488,19 @@
     "@nomicfoundation/solidity-analyzer-linux-x64-musl" "0.1.2"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.2"
 
-"@openzeppelin/contracts-upgradeable@^5.1.0":
+"@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
+  version "0.0.1"
+  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#e3406d834031e7a83b2ceb395d6620fbe22ba6ce"
+  dependencies:
+    "@openzeppelin/contracts" "^5.0.2"
+    "@openzeppelin/contracts-upgradeable" "^5.0.2"
+
+"@openzeppelin/contracts-upgradeable@^5.0.2", "@openzeppelin/contracts-upgradeable@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.1.0.tgz#4d37648b7402929c53e2ff6e45749ecff91eb2b6"
   integrity sha512-AIElwP5Ck+cslNE+Hkemf5SxjJoF4wBvvjxc27Rp+9jaPs/CLIaUBMYe1FNzhdiN0cYuwGRmYaRHmmntuiju4Q==
 
-"@openzeppelin/contracts@^5.1.0":
+"@openzeppelin/contracts@^5.0.2", "@openzeppelin/contracts@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.1.0.tgz#4e61162f2a2bf414c4e10c45eca98ce5f1aadbd4"
   integrity sha512-p1ULhl7BXzjjbha5aqst+QMLY+4/LCWADXOCsmLHRM77AqiPjnd9vvUN9sosUfhL9JGKpZ0TjEGxgvnizmWGSA==

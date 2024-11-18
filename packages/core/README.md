@@ -16,8 +16,12 @@ The following contract types are supported:
 - `erc20`
 - `erc721`
 - `erc1155`
+- `stablecoin`
+- `realWorldAsset`
 - `governor`
 - `custom`
+
+Note that `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 
@@ -32,6 +36,9 @@ function print(opts?: ERC721Options): string
 ```
 ```js
 function print(opts?: ERC1155Options): string
+```
+```js
+function print(opts?: StablecoinOptions): string
 ```
 ```js
 function print(opts?: GovernorOptions): string
@@ -52,6 +59,9 @@ const defaults: Required<ERC721Options>
 const defaults: Required<ERC1155Options>
 ```
 ```js
+const defaults: Required<StablecoinOptions>
+```
+```js
 const defaults: Required<GovernorOptions>
 ```
 ```js
@@ -68,6 +78,9 @@ function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean

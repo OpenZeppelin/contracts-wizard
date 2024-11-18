@@ -6,6 +6,8 @@
     import ERC20Controls from './ERC20Controls.svelte';
     import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
+    import StablecoinControls from './StablecoinControls.svelte';
+    import RealWorldAssetControls from './RealWorldAssetControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from './icons/CopyIcon.svelte';
@@ -62,6 +64,8 @@
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'ERC1155':
+            case 'Stablecoin':
+            case 'RealWorldAsset':
             case 'Governor':
             case 'Custom':
           }
@@ -146,6 +150,8 @@
       erc20: 'ERC20',
       erc721: 'ERC721',
       erc1155: 'ERC1155',
+      stablecoin: 'Stablecoin',
+      realworldasset: 'RealWorldAsset',
       governor: 'Governor',
       custom: 'Custom',
     }
@@ -183,6 +189,12 @@
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
+        <button class:selected={tab === 'Stablecoin'} on:click={() => tab = 'Stablecoin'}>
+          Stablecoin*
+        </button>
+        <button class:selected={tab === 'RealWorldAsset'} on:click={() => tab = 'RealWorldAsset'}>
+          Real-World Asset*
+        </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
@@ -210,6 +222,7 @@
         {/if}
       </button>
 
+      {#if opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -235,6 +248,7 @@
           <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
         </div>
       </Tooltip>
+      {/if}
 
       <Dropdown let:active>
         <button class="action-button" class:active slot="button">
@@ -251,7 +265,7 @@
           </div>
         </button>
 
-        {#if opts?.kind !== "Governor"}
+        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -261,7 +275,7 @@
         </button>
         {/if}
 
-        {#if opts?.kind !== "Governor"}
+        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -284,6 +298,12 @@
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
+      </div>
+      <div class:hidden={tab !== 'Stablecoin'}>
+        <StablecoinControls bind:opts={allOpts.Stablecoin} />
+      </div>
+      <div class:hidden={tab !== 'RealWorldAsset'}>
+        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
