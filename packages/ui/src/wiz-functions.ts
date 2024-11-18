@@ -87,6 +87,28 @@ export const erc1155Function = {
   }
 }
 
+export const stablecoinFunction = {
+  name: 'stablecoin',
+  description: 'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: {
+    type: 'object',
+    properties: {
+      ...erc20Function.parameters.properties,
+      custodian: { type: 'boolean', description: 'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.' },
+      // 'false' gets converted to false
+      limitations: { type: 'string', enum: ['false', 'allowlist', 'blocklist'], description: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.' },
+      upgradeable: { type: 'string', enum: ['false'], description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts' },
+    },
+    required: ['name', 'symbol'],
+  }
+}
+
+export const realWorldAssetFunction = {
+  name: 'realworldasset',
+  description: 'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: stablecoinFunction.parameters,
+}
+
 export const governorFunction = {
   name: 'governor',
   description: 'Make a contract to implement governance, such as for a DAO',
