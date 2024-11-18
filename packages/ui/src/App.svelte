@@ -178,7 +178,7 @@
   <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
 
   <div class="header flex flex-row justify-between">
-    <div class="tab overflow-hidden">
+    <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
         <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
           ERC20
