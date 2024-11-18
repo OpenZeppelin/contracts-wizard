@@ -190,10 +190,10 @@
           ERC1155
         </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => tab = 'Stablecoin'}>
-          Stablecoin
+          Stablecoin*
         </button>
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => tab = 'RealWorldAsset'}>
-          Real-World Asset
+          Real-World Asset*
         </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
