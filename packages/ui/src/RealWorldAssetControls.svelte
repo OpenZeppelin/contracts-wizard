@@ -11,6 +11,8 @@
   export let opts: Required<KindedOptions['RealWorldAsset']> = {
     kind: 'RealWorldAsset',
     ...realWorldAsset.defaults,
+    name: 'MyRWA',
+    symbol: 'RWA',
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
