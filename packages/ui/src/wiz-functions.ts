@@ -90,6 +90,7 @@ export const erc1155Function = {
 export const stablecoinFunction = {
   name: 'stablecoin',
   description: 'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  strict: true,
   parameters: {
     type: 'object',
     properties: {
@@ -106,6 +107,7 @@ export const stablecoinFunction = {
 export const realWorldAssetFunction = {
   name: 'realworldasset',
   description: 'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  strict: true,
   parameters: stablecoinFunction.parameters,
 }
 
