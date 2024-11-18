@@ -24,7 +24,7 @@ jobs:
         if: matrix.package == 'core'
         uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --network-concurrency 1
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/${{matrix.package}}
