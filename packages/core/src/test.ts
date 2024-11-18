@@ -63,7 +63,7 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc1155.isAccessControlRequired(opts);
     case 'Stablecoin':
       return stablecoin.isAccessControlRequired(opts);
-    case 'RealWorldAssets':
+    case 'RealWorldAsset':
       return stablecoin.isAccessControlRequired(opts);
     case 'Governor':
       return governor.isAccessControlRequired(opts);

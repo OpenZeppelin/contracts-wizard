@@ -43,9 +43,9 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
     }
   }
 
-  if (!kind || kind === 'RealWorldAssets') {
+  if (!kind || kind === 'RealWorldAsset') {
     for (const kindOpts of generateStablecoinOptions()) {
-      yield { kind: 'RealWorldAssets', ...kindOpts };
+      yield { kind: 'RealWorldAsset', ...kindOpts };
     }
   }
 

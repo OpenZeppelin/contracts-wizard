@@ -2,20 +2,20 @@
   import HelpTooltip from './HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { realWorldAssets, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import { realWorldAsset, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from './inputs/ToggleRadio.svelte';
 
-  export let opts: Required<KindedOptions['RealWorldAssets']> = {
-    kind: 'RealWorldAssets',
-    ...realWorldAssets.defaults,
+  export let opts: Required<KindedOptions['RealWorldAsset']> = {
+    kind: 'RealWorldAsset',
+    ...realWorldAsset.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  $: requireAccessControl = realWorldAssets.isAccessControlRequired(opts);
+  $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">

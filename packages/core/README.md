@@ -17,11 +17,11 @@ The following contract types are supported:
 - `erc721`
 - `erc1155`
 - `stablecoin`
-- `realWorldAssets`
+- `realWorldAsset`
 - `governor`
 - `custom`
 
-Note that `stablecoin` and `realWorldAssets` are experimental and may be subject to change.
+Note that `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 
