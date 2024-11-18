@@ -97,7 +97,7 @@ export const stablecoinFunction = {
       custodian: { type: 'boolean', description: 'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.' },
       // 'false' gets converted to false
       limitations: { type: 'string', enum: ['false', 'allowlist', 'blocklist'], description: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.' },
-      upgradeable: { type: 'string', enum: ['false'], description: 'Upgradeability is not yet available for @openzeppelin/community-contracts' },
+      upgradeable: { type: 'string', enum: ['false'], description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts' },
     },
     required: ['name', 'symbol'],
   }
