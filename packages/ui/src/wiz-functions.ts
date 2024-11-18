@@ -87,6 +87,26 @@ export const erc1155Function = {
   }
 }
 
+export const stablecoinFunction = {
+  name: 'stablecoin',
+  description: 'Make a stablecoin using the ERC-20 standard, with optional features such as custodianship and transfer limitations. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: {
+    type: 'object',
+    properties: {
+      ...erc20Function.parameters.properties,
+      custodian: { type: 'boolean', description: 'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes' },
+      limitations: { type: 'string', enum: ['false', 'allowlist', 'blocklist'], description: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them' },
+    },
+    required: ['name', 'symbol'],
+  }
+}
+
+export const realWorldAssetFunction = {
+  name: 'realworldasset',
+  description: 'Make a real-world asset token using the ERC-20 standard, with optional features such as custodianship and transfer limitations. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: stablecoinFunction.parameters,
+}
+
 export const governorFunction = {
   name: 'governor',
   description: 'Make a contract to implement governance, such as for a DAO',

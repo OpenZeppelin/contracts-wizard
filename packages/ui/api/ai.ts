@@ -1,6 +1,6 @@
 import OpenAI from 'https://esm.sh/openai@4.11.0'
 import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16'
-import { erc20Function, erc721Function, erc1155Function, governorFunction, customFunction } from '../src/wiz-functions.ts'
+import { erc20Function, erc721Function, erc1155Function, stablecoinFunction, realWorldAssetFunction, governorFunction, customFunction } from '../src/wiz-functions.ts'
 import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1'
 
 export default async (req: Request) => {
@@ -39,7 +39,7 @@ export default async (req: Request) => {
       model: 'gpt-4-1106-preview',
       messages,
       functions: [
-        erc20Function, erc721Function, erc1155Function, governorFunction, customFunction
+        erc20Function, erc721Function, erc1155Function, stablecoinFunction, realWorldAssetFunction, governorFunction, customFunction
       ],
       temperature: 0.7,
       stream: true
