@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.5 (2024-11-18)
+
+- Add `stablecoin` and `realWorldAsset` contract types. ([#404](https://github.com/OpenZeppelin/contracts-wizard/pull/404))
+**Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
+
 ## 0.4.4 (2024-10-23)
 
 ### Potentially breaking changes
