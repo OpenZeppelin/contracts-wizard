@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ParentContract } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ImportContract } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -247,9 +247,9 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
 
-function printImports(imports: ParentContract[], helpers: Helpers): string[] {
+function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   // Combine imports by path
-  const pathMap = new Map<string, ParentContract[]>();
+  const pathMap = new Map<string, ImportContract[]>();
   for (const imp of imports) {
     const path = imp.path;
     if (!pathMap.has(path)) {

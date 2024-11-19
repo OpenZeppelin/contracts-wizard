@@ -250,7 +250,10 @@ function addCounting(c: ContractBuilder) {
 function addVotes(c: ContractBuilder) {
   const tokenArg = '_token';
 
-  c.addImportFrom('IVotes', `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`);
+  c.addImportFrom({
+    name: 'IVotes',
+    path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
+  });
   c.addConstructorArgument({
     type: {
       name: 'IVotes',
@@ -360,7 +363,7 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   const timelockArg = '_timelock';
   const { timelockType, timelockParent } = timelockModules[timelock];
 
-  c.addImportFrom(timelockType.name, timelockType.path);
+  c.addImportFrom(timelockType);
   c.addConstructorArgument({
     type: timelockType,
     name: timelockArg,

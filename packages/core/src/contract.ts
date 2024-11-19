@@ -5,7 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
-  imports: ParentContract[];
+  imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
@@ -16,11 +16,11 @@ export interface Contract {
 export type Value = string | number | { lit: string } | { note: string, value: Value };
 
 export interface Parent {
-  contract: ParentContract;
+  contract: ImportContract;
   params: Value[];
 }
 
-export interface ParentContract extends ReferencedContract {
+export interface ImportContract extends ReferencedContract {
   path: string;
 }
 
@@ -29,7 +29,7 @@ export interface ReferencedContract {
 }
 
 export interface Using {
-  library: ParentContract;
+  library: ImportContract;
   usingFor: string;
 }
 
@@ -103,7 +103,7 @@ export class ContractBuilder implements Contract {
     });
   }
 
-  get imports(): ParentContract[] {
+  get imports(): ImportContract[] {
     return [...this.importFromMap.entries()].map(([name, path]) => ({ name, path }));
   }
 
@@ -115,15 +115,15 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ParentContract, params: Value[] = []): boolean {
+  addParent(contract: ImportContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
-    this.addImportFrom(contract.name, contract.path);
+    this.addImportFrom(contract);
     return !present;
   }
 
-  addImportFrom(importName: string, from: string) {
-    this.importFromMap.set(importName, from);
+  addImportFrom(contract: ImportContract) {
+    this.importFromMap.set(contract.name, contract.path);
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

@@ -184,7 +184,10 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   c.addParent(ERC20Votes);
   c.addOverride(ERC20Votes, functions._update);
 
-  c.addImportFrom('Nonces', '@openzeppelin/contracts/utils/Nonces.sol');
+  c.addImportFrom({
+    name: 'Nonces',
+    path: '@openzeppelin/contracts/utils/Nonces.sol',
+  });
   c.addOverride({
     name: 'Nonces',
   }, functions.nonces);
