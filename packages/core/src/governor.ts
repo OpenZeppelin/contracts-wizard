@@ -250,6 +250,11 @@ function addCounting(c: ContractBuilder) {
 function addVotes(c: ContractBuilder) {
   const tokenArg = '_token';
 
+  c.addParent({
+    name: 'IVotes',
+    path: `@openzeppelin/contracts/governance/utils/IVotes.sol`,
+    transpiled: false,
+  });
   c.addConstructorArgument({
     type: {
       name: 'IVotes',
@@ -313,6 +318,7 @@ const timelockModules = {
   openzeppelin: {
     timelockType: {
       name: 'TimelockController',
+      path: `@openzeppelin/contracts/governance/TimelockController.sol`,
     },
     timelockParent: {
       name: 'GovernorTimelockControl',
@@ -322,6 +328,7 @@ const timelockModules = {
   compound: {
     timelockType: {
       name: 'ICompoundTimelock',
+      path: `@openzeppelin/contracts/vendor/compound/ICompoundTimelock.sol`,
       transpiled: false,
     },
     timelockParent: {
@@ -359,8 +366,9 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   const timelockArg = '_timelock';
   const { timelockType, timelockParent } = timelockModules[timelock];
 
+  c.addParent(timelockType);
   c.addConstructorArgument({
-    type: timelockType,
+    type: timelockType.name,
     name: timelockArg,
   });
 

@@ -16,10 +16,11 @@ const upgradeableImport = (p: ParentContract): ParentContract => {
   // Use path.posix to get forward slashes
   return {
     ...p,
+    name: upgradeableName(p.name), // Contract name
     path: path.posix.format({
       ext,
       dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
-      name: upgradeableName(name),
+      name: upgradeableName(name), // Solidity file name
     }),
   }
 };

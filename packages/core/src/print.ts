@@ -27,7 +27,10 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.imports.map(p => `import "${helpers.transformImport(p).path}";`),
+      contract.imports.map(p => {
+        const parent = helpers.transformImport(p);
+        return `import {${parent.name}} from "${parent.path}";`
+      }),
 
       [
         ...printNatspecTags(contract.natspecTags),
