@@ -5,7 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
-  imports: ImportContract[];
+  imports: ParentContract[];
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
@@ -16,12 +16,11 @@ export interface Contract {
 export type Value = string | number | { lit: string } | { note: string, value: Value };
 
 export interface Parent {
-  contract: ImportContract;
+  contract: ParentContract;
   params: Value[];
-  importOnly?: boolean;
 }
 
-export interface ImportContract extends ReferencedContract {
+export interface ParentContract extends ReferencedContract {
   path: string;
 }
 
@@ -31,7 +30,7 @@ export interface ReferencedContract {
 }
 
 export interface Using {
-  library: ImportContract;
+  library: ParentContract;
   usingFor: string;
 }
 
@@ -79,7 +78,6 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -87,6 +85,7 @@ export class ContractBuilder implements Contract {
   readonly variableSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
+  private importFromMap: Map<string, string> = new Map<string, string>();
   private functionMap: Map<string, ContractFunction> = new Map();
 
   constructor(name: string) {
@@ -94,7 +93,7 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()].filter(p => !p.importOnly).sort((a, b) => {
+    return [...this.parentMap.values()].sort((a, b) => {
       if (a.contract.name === 'Initializable') {
         return -1;
       } else if (b.contract.name === 'Initializable') {
@@ -105,11 +104,8 @@ export class ContractBuilder implements Contract {
     });
   }
 
-  get imports(): ImportContract[] {
-    return [
-      ...[...this.parentMap.values()].map(p => p.contract),
-      ...this.using.map(u => u.library),
-    ];
+  get imports(): ParentContract[] {
+    return [...this.importFromMap.entries()].map(([name, path]) => ({ name, path }));
   }
 
   get functions(): ContractFunction[] {
@@ -120,16 +116,15 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ImportContract, params: Value[] = []): boolean {
+  addParent(contract: ParentContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
+    this.addImportFrom(contract.name, contract.path);
     return !present;
   }
 
-  addImportOnly(contract: ImportContract): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params: [], importOnly: true });
-    return !present;
+  addImportFrom(importName: string, from: string) {
+    this.importFromMap.set(importName, from);
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

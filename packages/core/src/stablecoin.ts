@@ -235,10 +235,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
       break;
     }
     case 'managed': {
-      c.addImportOnly({
-        name: 'AuthorityUtils',
-        path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
-      });
+      c.addImportFrom('AuthorityUtils', `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`);
       const logic = [
         `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
         `return immediate;`
@@ -271,10 +268,7 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   c.addParent(ERC20Votes);
   c.addOverride(ERC20Votes, functions._update);
 
-  c.addImportOnly({
-    name: 'Nonces',
-    path: '@openzeppelin/contracts/utils/Nonces.sol',
-  })
+  c.addImportFrom('Nonces', '@openzeppelin/contracts/utils/Nonces.sol');
   c.addOverride({
     name: 'Nonces',
   }, functions.nonces);

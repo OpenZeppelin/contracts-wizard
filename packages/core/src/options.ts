@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Contract, ReferencedContract, ImportContract } from './contract';
+import type { Contract, ReferencedContract, ParentContract } from './contract';
 import { inferTranspiled } from './infer-transpiled';
 
 const upgradeableName = (n: string) => {
@@ -11,7 +11,7 @@ const upgradeableName = (n: string) => {
   }
 }
 
-const upgradeableImport = (p: ImportContract): ImportContract => {
+const upgradeableImport = (p: ParentContract): ParentContract => {
   const { dir, ext, name } = path.parse(p.path);
   // Use path.posix to get forward slashes
   return {
@@ -26,7 +26,7 @@ const upgradeableImport = (p: ImportContract): ImportContract => {
 };
 
 export interface Options {
-  transformImport?: (parent: ImportContract) => ImportContract;
+  transformImport?: (parent: ParentContract) => ParentContract;
 }
 
 export interface Helpers extends Required<Options> {
