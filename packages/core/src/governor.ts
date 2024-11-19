@@ -250,7 +250,7 @@ function addCounting(c: ContractBuilder) {
 function addVotes(c: ContractBuilder) {
   const tokenArg = '_token';
 
-  c.addParent({
+  c.addImportOnly({
     name: 'IVotes',
     path: `@openzeppelin/contracts/governance/utils/IVotes.sol`,
     transpiled: false,
@@ -366,7 +366,7 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   const timelockArg = '_timelock';
   const { timelockType, timelockParent } = timelockModules[timelock];
 
-  c.addParent(timelockType);
+  c.addImportOnly(timelockType);
   c.addConstructorArgument({
     type: timelockType.name,
     name: timelockArg,
