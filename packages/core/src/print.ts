@@ -248,6 +248,13 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
+  // Sort imports by name
+  imports.sort((a, b) => {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
+
   // Combine imports by path
   const pathMap = new Map<string, ImportContract[]>();
   for (const imp of imports) {
