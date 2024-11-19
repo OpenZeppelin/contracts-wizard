@@ -1,10 +1,10 @@
 import path from 'path';
 
 import type { Contract, ReferencedContract, ParentContract } from './contract';
-import { inferTranspiledName } from './infer-transpiled';
+import { inferTranspiled } from './infer-transpiled';
 
 const upgradeableName = (n: string) => {
-  if (n === 'Initializable' || !inferTranspiledName(n)) {
+  if (n === 'Initializable' || !inferTranspiled(n)) {
     return n;
   } else {
     return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');

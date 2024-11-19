@@ -131,7 +131,7 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
+  const useTranspiled = helpers.upgradeable && inferTranspiled(contract.name);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
   if (useTranspiled || params.length > 0) {
     return [
