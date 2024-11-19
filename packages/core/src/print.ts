@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ParentContract } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -27,10 +27,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.imports.map(p => {
-        const importContract = helpers.transformImport(p);
-        return `import {${importContract.name}} from "${importContract.path}";`
-      }),
+      printImports(contract.imports, helpers),
 
       [
         ...printNatspecTags(contract.natspecTags),
@@ -248,4 +245,26 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
 
 function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
+}
+
+function printImports(imports: ParentContract[], helpers: Helpers): string[] {
+  // Combine imports by path
+  const pathMap = new Map<string, ParentContract[]>();
+  for (const imp of imports) {
+    const path = imp.path;
+    if (!pathMap.has(path)) {
+      pathMap.set(path, []);
+    }
+    pathMap.get(path)!.push(imp);
+  }
+
+  const lines: string[] = [];
+  for (const [_, contracts] of pathMap) {
+    const names = contracts.map(c => helpers.transformImport(c));
+    if (names.length > 0) {
+      // All contracts in each group should have the same path
+      lines.push(`import {${names.map(n => n.name).join(', ')}} from "${names[0]!.path}";`);
+    }
+  }
+  return lines;
 }
