@@ -235,6 +235,10 @@ function addCustodian(c: ContractBuilder, access: Access) {
       break;
     }
     case 'managed': {
+      c.addImportOnly({
+        name: 'AuthorityUtils',
+        path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+      });
       const logic = [
         `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
         `return immediate;`

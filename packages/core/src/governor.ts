@@ -368,7 +368,7 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
 
   c.addImportOnly(timelockType);
   c.addConstructorArgument({
-    type: timelockType.name,
+    type: timelockType,
     name: timelockArg,
   });
 
