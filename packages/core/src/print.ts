@@ -28,8 +28,8 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
 
       contract.imports.map(p => {
-        const parent = helpers.transformImport(p);
-        return `import {${parent.name}} from "${parent.path}";`
+        const importContract = helpers.transformImport(p);
+        return `import {${importContract.name}} from "${importContract.path}";`
       }),
 
       [
