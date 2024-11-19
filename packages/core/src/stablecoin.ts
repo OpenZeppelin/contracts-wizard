@@ -256,10 +256,6 @@ function addPermit(c: ContractBuilder, name: string) {
   };
   c.addParent(ERC20Permit, [name]);
 
-  c.addImportOnly({
-    name: 'Nonces',
-    path: '@openzeppelin/contracts/utils/Nonces.sol',
-  })
   c.addOverride(ERC20Permit, functions.nonces);
 }
 
