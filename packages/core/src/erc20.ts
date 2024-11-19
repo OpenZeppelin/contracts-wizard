@@ -168,7 +168,6 @@ function addPermit(c: ContractBuilder, name: string) {
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
   };
   c.addParent(ERC20Permit, [name]);
-
   c.addOverride(ERC20Permit, functions.nonces);
 
 }
