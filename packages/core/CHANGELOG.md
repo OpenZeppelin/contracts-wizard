@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.6 (2024-11-20)
+
+- Use named imports. ([#411](https://github.com/OpenZeppelin/contracts-wizard/pull/411))
+
 ## 0.4.5 (2024-11-18)
 
 - Add `stablecoin` and `realWorldAsset` contract types. ([#404](https://github.com/OpenZeppelin/contracts-wizard/pull/404))

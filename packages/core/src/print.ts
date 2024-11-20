@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ImportContract } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -27,7 +27,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      contract.imports.map(p => `import "${helpers.transformImport(p).path}";`),
+      printImports(contract.imports, helpers),
 
       [
         ...printNatspecTags(contract.natspecTags),
@@ -245,4 +245,21 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
 
 function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
+}
+
+function printImports(imports: ImportContract[], helpers: Helpers): string[] {
+  // Sort imports by name
+  imports.sort((a, b) => {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
+
+  const lines: string[] = [];
+  imports.map(p => {
+    const importContract = helpers.transformImport(p);
+    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
+  });
+
+  return lines;
 }

@@ -131,6 +131,11 @@ testGovernor('governor with timestamp clock mode, non-updatable settings', {
   settings: false,
 });
 
+testGovernor('governor with erc20votes, upgradable', {
+  votes: 'erc20votes',
+  upgradeable: 'uups',
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomGovernor', delay: '2 weeks', period: '2 week' });
