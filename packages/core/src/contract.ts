@@ -18,6 +18,7 @@ export type Value = string | number | { lit: string } | { note: string, value: V
 export interface Parent {
   contract: ImportContract;
   params: Value[];
+  importOnly?: boolean;
 }
 
 export interface ImportContract extends ReferencedContract {
@@ -26,6 +27,7 @@ export interface ImportContract extends ReferencedContract {
 
 export interface ReferencedContract {
   name: string;
+  transpiled?: boolean;
 }
 
 export interface Using {
@@ -77,6 +79,7 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
+  readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -84,7 +87,6 @@ export class ContractBuilder implements Contract {
   readonly variableSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
-  private importFromMap: Map<string, string> = new Map<string, string>();
   private functionMap: Map<string, ContractFunction> = new Map();
 
   constructor(name: string) {
@@ -92,7 +94,7 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()].sort((a, b) => {
+    return [...this.parentMap.values()].filter(p => !p.importOnly).sort((a, b) => {
       if (a.contract.name === 'Initializable') {
         return -1;
       } else if (b.contract.name === 'Initializable') {
@@ -104,7 +106,10 @@ export class ContractBuilder implements Contract {
   }
 
   get imports(): ImportContract[] {
-    return [...this.importFromMap.entries()].map(([name, path]) => ({ name, path }));
+    return [
+      ...[...this.parentMap.values()].map(p => p.contract),
+      ...this.using.map(u => u.library),
+    ];
   }
 
   get functions(): ContractFunction[] {
@@ -118,12 +123,13 @@ export class ContractBuilder implements Contract {
   addParent(contract: ImportContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
-    this.addImportFrom(contract);
     return !present;
   }
 
-  addImportFrom(contract: ImportContract) {
-    this.importFromMap.set(contract.name, contract.path);
+  addImportOnly(contract: ImportContract): boolean {
+    const present = this.parentMap.has(contract.name);
+    this.parentMap.set(contract.name, { contract, params: [], importOnly: true });
+    return !present;
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

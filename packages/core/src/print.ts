@@ -1,6 +1,6 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ImportContract } from './contract';
+import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
@@ -27,7 +27,10 @@ export function printContract(contract: Contract, opts?: Options): string {
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      printImports(contract.imports, helpers),
+      contract.imports.map(p => {
+        const importContract = helpers.transformImport(p);
+        return `import {${importContract.name}} from "${importContract.path}";`
+      }),
 
       [
         ...printNatspecTags(contract.natspecTags),
@@ -131,7 +134,7 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const useTranspiled = helpers.upgradeable && inferTranspiled(contract.name);
+  const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
   if (useTranspiled || params.length > 0) {
     return [
@@ -245,33 +248,4 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
 
 function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
-}
-
-function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  // Sort imports by name
-  imports.sort((a, b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
-
-  // Combine imports by path
-  const pathMap = new Map<string, ImportContract[]>();
-  for (const imp of imports) {
-    const path = imp.path;
-    if (!pathMap.has(path)) {
-      pathMap.set(path, []);
-    }
-    pathMap.get(path)!.push(imp);
-  }
-
-  const lines: string[] = [];
-  for (const [_, contracts] of pathMap) {
-    const names = contracts.map(c => helpers.transformImport(c));
-    if (names.length > 0) {
-      // All contracts in each group should have the same path
-      lines.push(`import {${names.map(n => n.name).join(', ')}} from "${names[0]!.path}";`);
-    }
-  }
-  return lines;
 }

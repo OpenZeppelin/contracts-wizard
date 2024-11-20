@@ -4,7 +4,7 @@ import type { Contract, ReferencedContract, ImportContract } from './contract';
 import { inferTranspiled } from './infer-transpiled';
 
 const upgradeableName = (n: string) => {
-  if (n === 'Initializable' || !inferTranspiled(n)) {
+  if (n === 'Initializable') {
     return n;
   } else {
     return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
@@ -36,12 +36,12 @@ export interface Helpers extends Required<Options> {
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
   const contractUpgradeable = contract.upgradeable;
-  const transformName = (n: ReferencedContract) => contractUpgradeable ? upgradeableName(n.name) : n.name;
+  const transformName = (n: ReferencedContract) => contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
   return {
     upgradeable: contractUpgradeable,
     transformName,
     transformImport: p1 => {
-      const p2 = contractUpgradeable ? upgradeableImport(p1) : p1;
+      const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
   };
