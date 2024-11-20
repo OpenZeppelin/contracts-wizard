@@ -274,7 +274,7 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   c.addImportOnly({
     name: 'Nonces',
     path: '@openzeppelin/contracts/utils/Nonces.sol',
-  })
+  });
   c.addOverride({
     name: 'Nonces',
   }, functions.nonces);
