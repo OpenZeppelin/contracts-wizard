@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.6 (2024-11-20)
+
+- Use named imports. ([#411](https://github.com/OpenZeppelin/contracts-wizard/pull/411))
+
+## 0.4.5 (2024-11-18)
+
+- Add `stablecoin` and `realWorldAsset` contract types. ([#404](https://github.com/OpenZeppelin/contracts-wizard/pull/404))
+**Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
+
+## 0.4.4 (2024-10-23)
+
+### Potentially breaking changes
+- Update pragma versions to 0.8.22. ([#401](https://github.com/OpenZeppelin/contracts-wizard/pull/401))
+
 ## 0.4.3 (2024-04-08)
 
 - Add timestamp based Governor and Votes clock options. ([#347](https://github.com/OpenZeppelin/contracts-wizard/pull/347))

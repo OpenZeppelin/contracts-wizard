@@ -37,6 +37,8 @@
     erc20: 'ERC20',
     erc721: 'ERC721',
     erc1155: 'ERC1155',
+    stablecoin: 'Stablecoin (Experimental)',
+    realworldasset: 'Real-World Asset (Experimental)',
     governor: 'Governor',
     custom: 'Custom',
   }
@@ -108,6 +110,8 @@
           if (opts.access === 'false') { opts.access = false }
           if (opts.upgradeable === 'false') { opts.upgradeable = false }
           if (opts.timelock === 'false') { opts.timelock = false }
+          if (opts.votes === 'false') { opts.votes = false }
+          if (opts.limitations === 'false') { opts.limitations = false }
           if (opts.proposalThreshold) { opts.proposalThreshold = opts.proposalThreshold.toString() }
           if (opts.quorumAbsolute) { opts.quorumAbsolute = opts.quorumAbsolute.toString() }
           if (opts.premint) { opts.premint = opts.premint.toString() }

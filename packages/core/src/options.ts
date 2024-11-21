@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Contract, ReferencedContract, ParentContract } from './contract';
+import type { Contract, ReferencedContract, ImportContract } from './contract';
 import { inferTranspiled } from './infer-transpiled';
 
 const upgradeableName = (n: string) => {
@@ -11,21 +11,22 @@ const upgradeableName = (n: string) => {
   }
 }
 
-const upgradeableImport = (p: ParentContract): ParentContract => {
+const upgradeableImport = (p: ImportContract): ImportContract => {
   const { dir, ext, name } = path.parse(p.path);
   // Use path.posix to get forward slashes
   return {
     ...p,
+    name: upgradeableName(p.name), // Contract name
     path: path.posix.format({
       ext,
       dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
-      name: upgradeableName(name),
+      name: upgradeableName(name), // Solidity file name
     }),
   }
 };
 
 export interface Options {
-  transformImport?: (parent: ParentContract) => ParentContract;
+  transformImport?: (parent: ImportContract) => ImportContract;
 }
 
 export interface Helpers extends Required<Options> {

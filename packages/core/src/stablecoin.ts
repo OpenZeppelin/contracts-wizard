@@ -8,7 +8,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 
-export interface ERC20Options extends CommonOptions {
+export interface StablecoinOptions extends CommonOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
@@ -16,30 +16,34 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   mintable?: boolean;
   permit?: boolean;
+  limitations?: false | "allowlist" | "blocklist";
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
    */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
+  custodian?: boolean;
 }
 
-export const defaults: Required<ERC20Options> = {
-  name: 'MyToken',
-  symbol: 'MTK',
+export const defaults: Required<StablecoinOptions> = {
+  name: 'MyStablecoin',
+  symbol: 'MST',
   burnable: false,
   pausable: false,
   premint: '0',
   mintable: false,
   permit: true,
+  limitations: false,
   votes: false,
   flashmint: false,
+  custodian: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
 } as const;
 
-function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -48,20 +52,22 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
     permit: opts.permit ?? defaults.permit,
+    limitations: opts.limitations ?? defaults.limitations,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
+    custodian: opts.custodian ?? defaults.custodian,
   };
 }
 
-export function printERC20(opts: ERC20Options = defaults): string {
-  return printContract(buildERC20(opts));
+export function printStablecoin(opts: StablecoinOptions = defaults): string {
+  return printContract(buildStablecoin(opts));
 }
 
-export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
+  return opts.mintable || opts.limitations !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
 }
 
-export function buildERC20(opts: ERC20Options): Contract {
+export function buildStablecoin(opts: StablecoinOptions): Contract {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);
@@ -86,6 +92,14 @@ export function buildERC20(opts: ERC20Options): Contract {
     addMintable(c, access);
   }
 
+  if (allOpts.limitations) {
+    addLimitations(c, access, allOpts.limitations);
+  }
+
+  if (allOpts.custodian) {
+    addCustodian(c, access);
+  }
+
   // Note: Votes requires Permit
   if (allOpts.permit || allOpts.votes) {
     addPermit(c, allOpts.name);
@@ -101,7 +115,10 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   setAccessControl(c, access);
-  setUpgradeable(c, upgradeable, access);
+
+  // Upgradeability is not yet available for the community contracts
+  // setUpgradeable(c, upgradeable, access);
+
   setInfo(c, info);
 
   return c;
@@ -118,6 +135,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride(ERC20, functions._update);
+  c.addOverride(ERC20, functions._approve);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
@@ -160,6 +178,75 @@ function addPremint(c: ContractBuilder, amount: string) {
 function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
+}
+
+function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
+  const type = mode === 'allowlist';
+  const ERC20Limitation = {
+    name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
+    path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+  };
+
+  c.addParent(ERC20Limitation);
+  c.addOverride(ERC20Limitation, functions._update);
+  c.addOverride(ERC20Limitation, functions._approve);
+
+  const [addFn, removeFn] = type 
+    ? [functions.allowUser, functions.disallowUser]
+    : [functions.blockUser, functions.unblockUser];
+
+  requireAccessControl(c, addFn, access, 'LIMITER', 'limiter');
+  c.addFunctionCode(`_${type ? 'allowUser' : 'blockUser'}(user);`, addFn);
+
+  requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
+  c.addFunctionCode(`_${type ? 'disallowUser' : 'unblockUser'}(user);`, removeFn);
+}
+
+function addCustodian(c: ContractBuilder, access: Access) {
+  const ERC20Custodian = {
+    name: 'ERC20Custodian',
+    path: '@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Custodian.sol',
+  };
+
+  c.addParent(ERC20Custodian);
+  c.addOverride(ERC20Custodian, functions._update);
+  c.addOverride(ERC20Custodian, functions._isCustodian);
+
+  if (access === false) {
+    access = 'ownable';
+  }
+  
+  setAccessControl(c, access);
+
+  switch (access) {
+    case 'ownable': {
+      c.setFunctionBody([`return user == owner();`], functions._isCustodian);
+      break;
+    }
+    case 'roles': {
+      const roleOwner = 'custodian';
+      const roleId = 'CUSTODIAN_ROLE';
+      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      if (roleOwner && addedConstant) {
+        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+      }
+      c.setFunctionBody([`return hasRole(CUSTODIAN_ROLE, user);`], functions._isCustodian);
+      break;
+    }
+    case 'managed': {
+      c.addImportOnly({
+        name: 'AuthorityUtils',
+        path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+      });
+      const logic = [
+        `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
+        `return immediate;`
+      ]
+      c.setFunctionBody(logic, functions._isCustodian);
+      break;
+    }
+  }
 }
 
 function addPermit(c: ContractBuilder, name: string) {
@@ -212,11 +299,58 @@ const functions = defineFunctions({
     ],
   },
 
+  _approve: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'emitEvent', type: 'bool' },
+    ],
+  },
+
+  _isCustodian: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'user', type: 'address' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const
+  },
+
   mint: {
     kind: 'public' as const,
     args: [
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
+    ],
+  },
+
+  allowUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  disallowUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  blockUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
+    ],
+  },
+
+  unblockUser: {
+    kind: 'public' as const,
+    args: [
+      { name: 'user', type: 'address' }
     ],
   },
 

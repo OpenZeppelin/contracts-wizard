@@ -5,7 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
-  imports: ParentContract[];
+  imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
@@ -16,11 +16,12 @@ export interface Contract {
 export type Value = string | number | { lit: string } | { note: string, value: Value };
 
 export interface Parent {
-  contract: ParentContract;
+  contract: ImportContract;
   params: Value[];
+  importOnly?: boolean;
 }
 
-export interface ParentContract extends ReferencedContract {
+export interface ImportContract extends ReferencedContract {
   path: string;
 }
 
@@ -30,7 +31,7 @@ export interface ReferencedContract {
 }
 
 export interface Using {
-  library: ParentContract;
+  library: ImportContract;
   usingFor: string;
 }
 
@@ -93,7 +94,7 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()].sort((a, b) => {
+    return [...this.parentMap.values()].filter(p => !p.importOnly).sort((a, b) => {
       if (a.contract.name === 'Initializable') {
         return -1;
       } else if (b.contract.name === 'Initializable') {
@@ -104,7 +105,7 @@ export class ContractBuilder implements Contract {
     });
   }
 
-  get imports(): ParentContract[] {
+  get imports(): ImportContract[] {
     return [
       ...[...this.parentMap.values()].map(p => p.contract),
       ...this.using.map(u => u.library),
@@ -119,9 +120,15 @@ export class ContractBuilder implements Contract {
     return [...this.variableSet];
   }
 
-  addParent(contract: ParentContract, params: Value[] = []): boolean {
+  addParent(contract: ImportContract, params: Value[] = []): boolean {
     const present = this.parentMap.has(contract.name);
     this.parentMap.set(contract.name, { contract, params });
+    return !present;
+  }
+
+  addImportOnly(contract: ImportContract): boolean {
+    const present = this.parentMap.has(contract.name);
+    this.parentMap.set(contract.name, { contract, params: [], importOnly: true });
     return !present;
   }
 

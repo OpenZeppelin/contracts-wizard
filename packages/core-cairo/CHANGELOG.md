@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.0 (2024-11-15)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.19.0. ([#405](https://github.com/OpenZeppelin/contracts-wizard/pull/405))
+
+## 0.17.0 (2024-10-22)
+
+- Add ERC721 votes. ([#399](https://github.com/OpenZeppelin/contracts-wizard/pull/399))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.18.0. ([#399](https://github.com/OpenZeppelin/contracts-wizard/pull/399))
+  - Use `VotesComponent` for ERC20 votes.
+
 ## 0.16.0 (2024-09-26)
 
 - Add ERC721Enumerable. ([#391](https://github.com/OpenZeppelin/contracts-wizard/pull/391))
