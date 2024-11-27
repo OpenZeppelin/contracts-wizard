@@ -12,6 +12,7 @@ import { addSRC5Component, addVotesComponent } from './common-components';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 import { OptionsError } from './error';
+import { RoyaltyInfoOptions, setRoyaltyInfoIfNeeded, defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -22,6 +23,7 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   enumerable: false,
   votes: false,
+  royaltyInfo: royaltyInfoDefaults,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
   access: commonDefaults.access,
@@ -41,6 +43,7 @@ export interface ERC721Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   enumerable?: boolean;
+  royaltyInfo?: RoyaltyInfoOptions;
   votes?: boolean;
   appName?: string;
   appVersion?: string;
@@ -55,6 +58,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     enumerable: opts.enumerable ?? defaults.enumerable,
+    royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion
@@ -62,7 +66,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
+  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -92,6 +96,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
+  setRoyaltyInfoIfNeeded(c, allOpts.royaltyInfo, allOpts.access);
+  
   addHooks(c, allOpts);
 
   return c;
