@@ -227,6 +227,8 @@ export function printValue(value: Value): string {
     } else {
       throw new Error(`Number not representable (${value})`);
     }
+  } else if (typeof value === 'bigint') {
+    return `${value}`
   } else {
     return `"${value}"`;
   }
