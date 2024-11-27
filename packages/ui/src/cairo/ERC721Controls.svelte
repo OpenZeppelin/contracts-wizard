@@ -6,6 +6,7 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
+  import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../error-tooltip';
 
@@ -109,6 +110,8 @@
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
   </label>
 </section>
+
+<RoyaltyInfoSection bind:opts={opts.royaltyInfo} errors={errors} />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
