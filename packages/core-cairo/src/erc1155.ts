@@ -11,6 +11,7 @@ import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 import { externalTrait } from './external-trait';
 import { toByteArray } from './utils/convert-strings';
+import { RoyaltyInfoOptions, setRoyaltyInfoIfNeeded, defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
@@ -19,6 +20,7 @@ export const defaults: Required<ERC1155Options> = {
   pausable: false,
   mintable: false,
   updatableUri: true,
+  royaltyInfo: royaltyInfoDefaults,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
@@ -35,6 +37,7 @@ export interface ERC1155Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   updatableUri?: boolean;
+  royaltyInfo?: RoyaltyInfoOptions;
 }
 
 function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
@@ -45,11 +48,12 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     updatableUri: opts.updatableUri ?? defaults.updatableUri,
+    royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
   };
 }
 
 export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.updatableUri !== false || opts.upgradeable === true;
+  return opts.mintable === true || opts.pausable === true || opts.updatableUri !== false || opts.upgradeable === true || opts.royaltyInfo?.enabled === true;
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -76,11 +80,12 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addSetBaseUri(c, allOpts.access);
   }
 
-  addHooks(c, allOpts);
-
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
+  setRoyaltyInfoIfNeeded(c, allOpts.royaltyInfo, allOpts.access);
+  
+  addHooks(c, allOpts);
 
   return c;
 }
