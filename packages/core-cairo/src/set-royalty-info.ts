@@ -2,7 +2,7 @@ import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { defineComponents } from './utils/define-components';
 import { OptionsError } from "./error";
 import { toUint } from './utils/convert-strings';
-import type { Access } from './set-access-control';
+import { Access, setAccessControl } from './set-access-control';
 
 const DEFAULT_FEE_DENOMINATOR = BigInt(10_000);
 
@@ -28,6 +28,11 @@ export function setRoyaltyInfoIfNeeded(c: ContractBuilder, options: RoyaltyInfoO
   if (!options.enabled) {
     return false;
   }
+  if (access === false) {
+    access = 'ownable';
+  }
+  setAccessControl(c, access);
+
   const { defaultRoyaltyFraction, feeDenominator } = getRoyaltyParameters(options);
   const initParams = [
     { lit: 'default_royalty_receiver' },
@@ -52,8 +57,6 @@ export function setRoyaltyInfoIfNeeded(c: ContractBuilder, options: RoyaltyInfoO
       });
       c.addConstructorArgument({ name: 'royalty_admin', type: 'ContractAddress'});
       c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
-      break;
-    case false:
       break;
   }
   
