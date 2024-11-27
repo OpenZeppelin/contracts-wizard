@@ -4,7 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { erc1155, infoDefaults } from '@openzeppelin/wizard-cairo';
 
-  import AccessControlSection from './AccessControlSection.svelte';  
+  import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';

@@ -13,7 +13,7 @@ export interface Contract {
   superVariables: Variable[];
 }
 
-export type Value = string | number | BigInt | { lit: string } | { note: string, value: Value };
+export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
 
 export interface Component {
   name: string;

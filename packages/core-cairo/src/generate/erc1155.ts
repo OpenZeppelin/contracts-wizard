@@ -14,9 +14,9 @@ const blueprint = {
   pausable: booleans,
   mintable: booleans,
   updatableUri: booleans,
+  upgradeable: upgradeableOptions,
   royaltyInfo: [royaltyInfoEnabled],
   access: accessOptions,
-  upgradeable: upgradeableOptions,
   info: infoOptions,
 };
 

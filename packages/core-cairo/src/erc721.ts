@@ -43,8 +43,8 @@ export interface ERC721Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   enumerable?: boolean;
-  royaltyInfo?: RoyaltyInfoOptions;
   votes?: boolean;
+  royaltyInfo?: RoyaltyInfoOptions;
   appName?: string;
   appVersion?: string;
 }
