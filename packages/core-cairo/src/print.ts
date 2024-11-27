@@ -50,8 +50,11 @@ function printImports(contract: Contract): string[] {
 function sortImports(contract: Contract): string[] {
   const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
   const allImports = componentImports.concat(contract.standaloneImports);
-  if (contract.superVariables.length > 0) {
-    allImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
+  const superVars = contract.superVariables;
+  if (superVars.length === 1) {
+    allImports.push(`super::${superVars[0]!.name}`);
+  } else if (superVars.length > 1) {
+    allImports.push(`super::{${superVars.map(v => v.name).join(', ')}}`);
   }
   return allImports.sort();
 }
