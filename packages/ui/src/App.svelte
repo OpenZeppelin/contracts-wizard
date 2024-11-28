@@ -21,6 +21,7 @@
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
     import Wiz from './Wiz.svelte';
+    import DefenderDeployModal from './DefenderDeployModal.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -43,6 +44,8 @@
 
     export let initialOpts: InitialOptions = {};
     let initialValuesSet = false;
+
+    let showDeployModal = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
@@ -205,12 +208,10 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <a href="https://docs.openzeppelin.com/defender/v2/tutorial/deploy?utm_campaign=Defender%20GA_2024&utm_source=Wizard#environment_setup" target="_blank" rel="noopener noreferrer">
-        <button class="action-button min-w-[165px]">
-          <OzIcon />
-          Deploy with Defender
-        </button>
-      </a>
+      <button class="action-button min-w-[165px]" on:click={() => showDeployModal = true}>
+        <OzIcon />
+        Deploy with Defender
+      </button>
 
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
         {#if copied}
@@ -318,6 +319,8 @@
     </div>
   </div>
 </div>
+
+<DefenderDeployModal isOpen={showDeployModal} onClose={() => showDeployModal = false} />
 
 <style lang="postcss">
   .container {
