@@ -2,6 +2,7 @@
   export let isOpen = false;
   export let onClose = () => {};
 
+  // TODO: use flag to determine if we are in dev mode, and set the local url accordingly.
   const defenderDeployUrl = 'https://defeder-remix-deploy.netlify.app/';
   let loaded = false;
 
