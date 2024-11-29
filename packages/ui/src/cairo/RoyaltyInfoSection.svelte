@@ -35,7 +35,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Fee Denominator
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/token_common/ERC2981Component-IC-FEE_DENOMINATOR">The denominator used to interpret a token's fee and to calculate the result fee fraction.</HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/token_common#ERC2981Component-IC-FEE_DENOMINATOR">The denominator used to interpret a token's fee and to calculate the result fee fraction.</HelpTooltip>
     </span>
     <input bind:value={opts.feeDenominator} use:error={errors?.feeDenominator} disabled={!opts.enabled}>
   </label>
