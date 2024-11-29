@@ -80,11 +80,6 @@ export function toUint(str: string, field: string, type: UintType): bigint {
     });
   }
   const numValue = BigInt(str);
-  if (numValue < BigInt(0)) {
-    throw new OptionsError({
-      [field]: `${type} value cannot be negative`
-    });
-  }
   if (numValue > UINT_MAX_VALUES[type]) {
     throw new OptionsError({
       [field]: `Value is greater than ${type} max value`
