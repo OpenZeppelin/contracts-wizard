@@ -2,7 +2,7 @@ import type { ERC1155Options } from '../erc1155';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
-import { enabledDefaults as royaltyInfoEnabled } from '../set-royalty-info';
+import { testRoyaltyInfoOptions } from '../set-royalty-info';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
@@ -15,7 +15,7 @@ const blueprint = {
   mintable: booleans,
   updatableUri: booleans,
   upgradeable: upgradeableOptions,
-  royaltyInfo: [royaltyInfoEnabled],
+  royaltyInfo: testRoyaltyInfoOptions,
   access: accessOptions,
   info: infoOptions,
 };
