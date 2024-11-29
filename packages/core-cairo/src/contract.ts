@@ -189,12 +189,12 @@ export class ContractBuilder implements Contract {
         if (existingVar.type !== newVar.type) {
           throw new Error(
             `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
-          )
+          );
         }
         if (existingVar.value !== newVar.value) {
           throw new Error(
             `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
-          )
+          );
         }
         return false; // No need to add, already exists
       }
