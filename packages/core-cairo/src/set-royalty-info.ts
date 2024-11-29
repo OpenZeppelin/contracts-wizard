@@ -2,7 +2,7 @@ import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { defineComponents } from './utils/define-components';
 import { OptionsError } from "./error";
 import { toUint } from './utils/convert-strings';
-import { Access, setAccessControl } from './set-access-control';
+import { Access, setAccessControl, DEFAULT_ACCESS_CONTROL } from './set-access-control';
 
 const DEFAULT_FEE_DENOMINATOR = BigInt(10_000);
 
@@ -12,11 +12,19 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
 };
 
-export const enabledDefaults: RoyaltyInfoOptions = {
-  enabled: true,
-  defaultRoyaltyFraction: '10',
-  feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
-};
+export const testRoyaltyInfoOptions = [
+  defaults,
+  {
+    enabled: true,
+    defaultRoyaltyFraction: '500',
+    feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
+  },
+  {
+    enabled: true,
+    defaultRoyaltyFraction: '15125',
+    feeDenominator: '100000',
+  }
+];
 
 export type RoyaltyInfoOptions = {
   enabled: boolean,
@@ -24,12 +32,12 @@ export type RoyaltyInfoOptions = {
   feeDenominator: string,
 };
 
-export function setRoyaltyInfoIfNeeded(c: ContractBuilder, options: RoyaltyInfoOptions, access: Access): boolean {
+export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, access: Access): void {
   if (!options.enabled) {
-    return false;
+    return;
   }
   if (access === false) {
-    access = 'ownable';
+    access = DEFAULT_ACCESS_CONTROL;
   }
   setAccessControl(c, access);
 
@@ -75,7 +83,6 @@ export function setRoyaltyInfoIfNeeded(c: ContractBuilder, options: RoyaltyInfoO
       value: feeDenominator.toString()
     });
   }
-  return true;
 }
 
 function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): { defaultRoyaltyFraction: bigint, feeDenominator: bigint } {

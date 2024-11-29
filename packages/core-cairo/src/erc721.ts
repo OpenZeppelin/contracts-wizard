@@ -12,7 +12,7 @@ import { addSRC5Component, addVotesComponent } from './common-components';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 import { OptionsError } from './error';
-import { RoyaltyInfoOptions, setRoyaltyInfoIfNeeded, defaults as royaltyInfoDefaults } from './set-royalty-info';
+import { RoyaltyInfoOptions, setRoyaltyInfo, defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -96,7 +96,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
-  setRoyaltyInfoIfNeeded(c, allOpts.royaltyInfo, allOpts.access);
+  setRoyaltyInfo(c, allOpts.royaltyInfo, allOpts.access);
   
   addHooks(c, allOpts);
 
