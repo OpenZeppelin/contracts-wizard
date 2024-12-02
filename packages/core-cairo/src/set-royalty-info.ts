@@ -12,19 +12,19 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
 };
 
-export const testRoyaltyInfoOptions = [
-  defaults,
-  {
+export const royaltyInfoTestOptions = {
+  disabled: defaults,
+  enabledDefault: {
     enabled: true,
     defaultRoyaltyFraction: '500',
     feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
   },
-  {
+  enabledCustom: {
     enabled: true,
     defaultRoyaltyFraction: '15125',
     feeDenominator: '100000',
   }
-];
+}
 
 export type RoyaltyInfoOptions = {
   enabled: boolean,
