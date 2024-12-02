@@ -76,6 +76,30 @@ testERC721('mintable + roles', {
   access: 'roles',
 });
 
+testERC721('royalty info disabled', {
+  royaltyInfo: royaltyInfoOptions.disabled
+});
+
+testERC721('royalty info enabled default + ownable', {
+  royaltyInfo: royaltyInfoOptions.enabledDefault,
+  access: 'ownable'
+});
+
+testERC721('royalty info enabled default + roles', {
+  royaltyInfo: royaltyInfoOptions.enabledDefault,
+  access: 'roles'
+});
+
+testERC721('royalty info enabled custom + ownable', {
+  royaltyInfo: royaltyInfoOptions.enabledCustom,
+  access: 'ownable'
+});
+
+testERC721('royalty info enabled custom + roles', {
+  royaltyInfo: royaltyInfoOptions.enabledCustom,
+  access: 'roles'
+});
+
 testERC721('full non-upgradeable', {
   ...allFeaturesON,
   upgradeable: false,
