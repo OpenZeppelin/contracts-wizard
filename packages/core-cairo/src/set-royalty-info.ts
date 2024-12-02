@@ -12,7 +12,7 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
 };
 
-export const royaltyInfoTestOptions = {
+export const royaltyInfoOptions = {
   disabled: defaults,
   enabledDefault: {
     enabled: true,
