@@ -37,26 +37,29 @@ function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
-function printSuperVariables(contract: Contract) {
+function printSuperVariables(contract: Contract): string[] {
   return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
-function printImports(contract: Contract) {
+function printImports(contract: Contract): string[] {
   const lines: string[] = [];
   sortImports(contract).forEach(i => lines.push(`use ${i}`));
   return withSemicolons(lines);
 }
 
-function sortImports(contract: Contract) {
+function sortImports(contract: Contract): string[] {
   const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
   const allImports = componentImports.concat(contract.standaloneImports);
-  if (contract.superVariables.length > 0) {
-    allImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
+  const superVars = contract.superVariables;
+  if (superVars.length === 1) {
+    allImports.push(`super::${superVars[0]!.name}`);
+  } else if (superVars.length > 1) {
+    allImports.push(`super::{${superVars.map(v => v.name).join(', ')}}`);
   }
   return allImports.sort();
 }
 
-function printComponentDeclarations(contract: Contract) {
+function printComponentDeclarations(contract: Contract): string[] {
   const lines = [];
   for (const component of contract.components) {
     lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
@@ -64,7 +67,7 @@ function printComponentDeclarations(contract: Contract) {
   return lines;
 }
 
-function printImpls(contract: Contract) {
+function printImpls(contract: Contract): Lines[] {
   const externalImpls = contract.components.flatMap(c => c.impls);
   const internalImpls = contract.components.flatMap(c => c.internalImpl ? [c.internalImpl] : []);
 
@@ -74,7 +77,7 @@ function printImpls(contract: Contract) {
   );
 }
 
-function printImpl(impl: Impl, internal = false) {
+function printImpl(impl: Impl, internal = false): string[] {
   const lines = [];
   if (!internal) {
     lines.push('#[abi(embed_v0)]');
@@ -83,7 +86,7 @@ function printImpl(impl: Impl, internal = false) {
   return lines;
 }
 
-function printStorage(contract: Contract) {
+function printStorage(contract: Contract): (string | string[])[] {
   const lines = [];
   // storage is required regardless of whether there are components
   lines.push('#[storage]');
@@ -98,7 +101,7 @@ function printStorage(contract: Contract) {
   return lines;
 }
 
-function printEvents(contract: Contract) {
+function printEvents(contract: Contract): (string | string[])[] {
   const lines = [];
   if (contract.components.length > 0) {
     lines.push('#[event]');
@@ -115,7 +118,7 @@ function printEvents(contract: Contract) {
   return lines;
 }
 
-function printImplementedTraits(contract: Contract) {
+function printImplementedTraits(contract: Contract): Lines[] {
   const impls = [];
 
   // sort first by priority, then number of tags, then name
@@ -133,15 +136,22 @@ function printImplementedTraits(contract: Contract) {
     const implLines = [];
     implLines.push(...trait.tags.map(t => `#[${t}]`));
     implLines.push(`impl ${trait.name} of ${trait.of} {`);
+
+    const superVars = withSemicolons(
+      trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
+    );
+    implLines.push(superVars);
+
     const fns = trait.functions.map(fn => printFunction(fn));
     implLines.push(spaceBetween(...fns));
+
     implLines.push('}');
     impls.push(implLines);
   }
   return spaceBetween(...impls);
 }
 
-function printFunction(fn: ContractFunction) {
+function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
@@ -191,7 +201,7 @@ function printConstructor(contract: Contract): Lines[] {
   }
 }
 
-function hasInitializer(parent: Component) {
+function hasInitializer(parent: Component): boolean {
   return parent.initializer !== undefined && parent.substorage?.name !== undefined;
 }
 
@@ -220,6 +230,8 @@ export function printValue(value: Value): string {
     } else {
       throw new Error(`Number not representable (${value})`);
     }
+  } else if (typeof value === 'bigint') {
+    return `${value}`
   } else {
     return `"${value}"`;
   }
@@ -227,7 +239,14 @@ export function printValue(value: Value): string {
 
 // generic for functions and constructors
 // kindedName = 'fn foo'
-function printFunction2(kindedName: string, args: string[], tag: string | undefined, returns: string | undefined, returnLine: string | undefined, code: Lines[]): Lines[] {
+function printFunction2(
+  kindedName: string, 
+  args: string[], 
+  tag: string | undefined, 
+  returns: string | undefined, 
+  returnLine: string | undefined, 
+  code: Lines[]
+): Lines[] {
   const fn = [];
 
   if (tag !== undefined) {

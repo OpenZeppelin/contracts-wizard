@@ -33,7 +33,7 @@ function removeComponentName(libraryPathSegments: Array<string>) {
   const lastItem = libraryPathSegments[libraryPathSegments.length - 1];
   if (lastItem !== undefined && componentMappings[lastItem] !== undefined) {
     // Replace component name with the name of its .cairo file
-    libraryPathSegments.splice(-1, 1, componentMappings[lastItem]);
+    libraryPathSegments.splice(-1, 1, componentMappings[lastItem] as string);
   } else {
     libraryPathSegments.pop();
   }

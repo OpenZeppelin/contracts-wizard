@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.0 (2024-11-27)
+
+- Add ERC2981 (RoyaltyInfo) for ERC721 and ERC1155 ([#413](https://github.com/OpenZeppelin/contracts-wizard/pull/413))
+
 ## 0.18.0 (2024-11-15)
 
 - **Breaking changes**:
