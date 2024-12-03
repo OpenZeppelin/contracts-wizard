@@ -18,7 +18,7 @@ export interface UnsupportedVersionMessage {
 
 export interface DefenderDeployMessage {
   kind: 'oz-wizard-defender-deploy';
-  contract: Contract;
+  sources: Record<string, string>;
 }
 
 export function postMessage(msg: Message) {

@@ -27,6 +27,7 @@
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
+    import { getImports } from '@openzeppelin/wizard/get-imports';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
@@ -95,7 +96,13 @@
 
     // listens to contract changes and posts them 
     // to the defender deploy iframe.
-    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', contract });
+    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', sources: getSources(contract) });
+
+    const getSources = (contract: Contract) => {
+      const sources = getImports(contract);
+      sources[contract.name] = code;
+      return sources;
+    }
 
     const language = 'solidity';
 
