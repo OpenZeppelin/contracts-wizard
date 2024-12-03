@@ -33,6 +33,7 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
     import { InitialOptions } from './initial-options';
+    import { postMessageToIframe } from './post-message';
 
     const dispatch = createEventDispatcher();
 
@@ -91,6 +92,15 @@
 
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+
+    // listens to contract changes and posts them 
+    // to the defender deploy iframe.
+    $: if (contract) {
+      postMessageToIframe('defender-deploy', {
+      kind: 'oz-wizard-defender-deploy',
+        contract
+      });
+    } 
 
     const language = 'solidity';
 

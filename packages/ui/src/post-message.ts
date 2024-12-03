@@ -1,4 +1,6 @@
-export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage;
+import { Contract } from "@openzeppelin/wizard";
+
+export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage | DefenderDeployMessage;
 
 export interface ResizeMessage {
   kind: 'oz-wizard-resize';
@@ -14,8 +16,20 @@ export interface UnsupportedVersionMessage {
   kind: 'oz-wizard-unsupported-version';
 }
 
+export interface DefenderDeployMessage {
+  kind: 'oz-wizard-defender-deploy';
+  contract: Contract;
+}
+
 export function postMessage(msg: Message) {
   if (parent) {
     parent.postMessage(msg, '*');
+  }
+}
+
+export function postMessageToIframe(id: 'defender-deploy', msg: Message) {
+  var iframe: HTMLIFrameElement | null = document.getElementById(id) as HTMLIFrameElement;
+  if (iframe) {
+    iframe.contentWindow?.postMessage(msg, '*');
   }
 }

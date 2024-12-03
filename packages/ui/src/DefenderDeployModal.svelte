@@ -22,7 +22,8 @@
         </div>
       {/if}
 
-      <iframe 
+      <iframe
+        id="defender-deploy"
         title="Defender Deploy"
         src="https://defender-deploy-wizard.netlify.app/"
         class={`flex-grow border-none ${!loaded ? 'hidden' : ''}`}
