@@ -1,52 +1,33 @@
 <script lang="ts">
-  export let isOpen = false;
-  export let onClose = () => {};
+  import { fly } from 'svelte/transition';
 
-  // TODO: use flag to determine if we are in dev mode, and set the local url accordingly.
-  const defenderDeployUrl = 'https://defeder-remix-deploy.netlify.app/';
+  export let isOpen = false;
+
   let loaded = false;
 
-  const handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
+  const handleLoad = () => {
+    loaded = true;
   };
 </script>
 
-<svelte:window on:keydown={handleEscape}/>
-
 {#if isOpen}
   <div 
-    class="fixed inset-0 bg-black bg-opacity-30 z-40 flex items-center justify-center"
-    on:click={onClose}
-    on:keydown={() => {}}
+    class="fixed right-0 h-[calc(100vh-84px)] w-[500px] bg-white z-40"
+    transition:fly={{ x: 500, duration: 200 }}
   >
-    <div 
-      class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 z-50"
-      on:click|stopPropagation
-      on:keydown={() => {}}
-    >
-      <div class="flex flex-col gap-4">
-        <h2 class="text-xl font-bold">Deploy with Defender</h2>
-        {#if !loaded}
-          <div class="flex justify-center items-center h-[400px]">
-            loading...
-          </div>
-        {/if}
-        <iframe 
-          title="Defender Remix Deploy" 
-          class={!loaded ? 'hidden' : 'h-[400px]'} 
-          on:load={() => loaded = true} 
-          src={defenderDeployUrl} 
-          frameborder="0"
-        ></iframe>
-        <button
-          class="cursor-pointer px-4 py-2 rounded self-end font-semibold"
-          on:click={onClose}
-        >
-          Close
-        </button>
-      </div>
+    <div class="p-6 h-full flex flex-col">
+      {#if !loaded}
+        <div class="flex justify-center items-center flex-grow">
+          Loading...
+        </div>
+      {/if}
+
+      <iframe 
+        title="Defender Deploy"
+        src="https://defender-deploy-wizard.netlify.app/"
+        class={`flex-grow border-none ${!loaded ? 'hidden' : ''}`}
+        on:load={handleLoad}
+      />
     </div>
   </div>
 {/if}

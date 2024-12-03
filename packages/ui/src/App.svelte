@@ -17,6 +17,8 @@
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
     import OzIcon from './icons/OzIcon.svelte';
+    import ArrowsLeft from './icons/ArrowsLeft.svelte';
+    import ArrowsRight from './icons/ArrowsRight.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
@@ -208,11 +210,6 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[165px]" on:click={() => showDeployModal = true}>
-        <OzIcon />
-        Deploy with Defender
-      </button>
-
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
@@ -314,13 +311,29 @@
       </div>
     </div>
 
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      <button 
+        class="text-sm absolute top-4 right-4 p-2 pr-4 rounded-lg cursor-pointer flex items-center gap-2 z-50"
+        class:bg-blue-500={!showDeployModal}
+        class:bg-white={showDeployModal}
+        class:text-white={!showDeployModal}
+        class:text-gray-800={showDeployModal}
+        class:border-none={!showDeployModal}
+        class:border-gray-800={showDeployModal}
+        on:click={() => showDeployModal = !showDeployModal}
+      >
+        {#if showDeployModal} <ArrowsRight />
+        {:else} <ArrowsLeft />
+        {/if}
+        Deploy with Defender
+      </button>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
+      </pre>
+      <DefenderDeployModal isOpen={showDeployModal} onClose={() => showDeployModal = false} />
     </div>
   </div>
 </div>
-
-<DefenderDeployModal isOpen={showDeployModal} onClose={() => showDeployModal = false} />
 
 <style lang="postcss">
   .container {
