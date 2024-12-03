@@ -96,11 +96,11 @@
 
     // listens to contract changes and posts them 
     // to the defender deploy iframe.
-    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', sources: getSources(contract) });
+    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', sources: getSolcSources(contract) });
 
-    const getSources = (contract: Contract) => {
+    const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
-      sources[contract.name] = code;
+      sources[contract.name] = { content: code };
       return sources;
     }
 

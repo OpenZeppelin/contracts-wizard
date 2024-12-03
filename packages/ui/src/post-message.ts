@@ -1,4 +1,4 @@
-import { Contract } from "@openzeppelin/wizard";
+import { SolcInputSources } from '@openzeppelin/wizard/get-imports';
 
 export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage | DefenderDeployMessage;
 
@@ -18,7 +18,7 @@ export interface UnsupportedVersionMessage {
 
 export interface DefenderDeployMessage {
   kind: 'oz-wizard-defender-deploy';
-  sources: Record<string, string>;
+  sources: SolcInputSources;
 }
 
 export function postMessage(msg: Message) {

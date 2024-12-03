@@ -4,18 +4,25 @@ import { reachable } from './utils/transitive-closure';
 import contracts from '../openzeppelin-contracts';
 import { withHelpers } from './options';
 
+export interface SolcInputSources {
+  [source: string]: {
+    content: string;
+  };
+}
+
 /**
- * Gets the source code for all imports of a contract, including all transitive dependencies.
- *
- * Does not include the contract itself (use `printContract` for that if needed).
+* Gets the source code for all imports of a contract, including all transitive dependencies,
+* in a format compatible with the Solidity compiler input's `sources` field.
+*
+* Does not include the contract itself (use `printContract` for that if needed).
  *
  * @param c The contract to get imports for.
- * @returns A record of import paths to source code.
+ * @returns A record of import paths to `content` that contains the source code for each contract.
  */
-export function getImports(c: Contract): Record<string, string> {
+export function getImports(c: Contract): SolcInputSources {
   const { transformImport } = withHelpers(c);
 
-  const result: Record<string, string> = {};
+  const result: SolcInputSources = {};
 
   const fileName = c.name + '.sol';
 
@@ -31,7 +38,7 @@ export function getImports(c: Contract): Record<string, string> {
     if (source === undefined) {
       throw new Error(`Source for ${importPath} not found`);
     }
-    result[importPath] = source;
+    result[importPath] = { content: source };
   }
 
   return result;

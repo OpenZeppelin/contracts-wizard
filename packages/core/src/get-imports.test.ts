@@ -8,7 +8,7 @@ import { buildGeneric } from './build-generic';
 
 test('erc20 basic', t => {
   const c = buildERC20({ name: 'MyToken', symbol: 'MTK', permit: false });
-  const sources: Record<string, string> = getImports(c);
+  const sources = getImports(c);
   const files = Object.keys(sources).sort();
 
   t.deepEqual(files, [
@@ -22,7 +22,7 @@ test('erc20 basic', t => {
 
 test('erc721 auto increment', t => {
   const c = buildERC721({ name: 'MyToken', symbol: 'MTK', mintable: true, incremental: true });
-  const sources: Record<string, string> = getImports(c);
+  const sources = getImports(c);
   const files = Object.keys(sources).sort();
 
   t.deepEqual(files, [
@@ -46,7 +46,7 @@ test('erc721 auto increment', t => {
 
 test('erc721 auto increment uups', t => {
   const c = buildERC721({ name: 'MyToken', symbol: 'MTK', mintable: true, incremental: true, upgradeable: 'uups' });
-  const sources: Record<string, string> = getImports(c);
+  const sources = getImports(c);
   const files = Object.keys(sources).sort();
 
   t.deepEqual(files, [
