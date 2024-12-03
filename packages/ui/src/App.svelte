@@ -95,12 +95,7 @@
 
     // listens to contract changes and posts them 
     // to the defender deploy iframe.
-    $: if (contract) {
-      postMessageToIframe('defender-deploy', {
-      kind: 'oz-wizard-defender-deploy',
-        contract
-      });
-    } 
+    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', contract });
 
     const language = 'solidity';
 
