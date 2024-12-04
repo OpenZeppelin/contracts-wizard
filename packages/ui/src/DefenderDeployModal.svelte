@@ -1,6 +1,8 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
 
+  const devMode = window.location.href.includes('localhost');
+
   export let isOpen = false;
 
   let loaded = false;
@@ -25,8 +27,8 @@
       <iframe
         id="defender-deploy"
         title="Defender Deploy"
-        src="https://defender-deploy-wizard.netlify.app/"
-        class={`flex-grow border-none ${!loaded ? 'hidden' : ''}`}
+        src={devMode ? 'http://localhost:5173' : 'https://defender-deploy-wizard.netlify.app/'}
+        class={`flex-grow border-none mt-12 ${!loaded ? 'hidden' : ''}`}
         on:load={handleLoad}
       />
     </div>
