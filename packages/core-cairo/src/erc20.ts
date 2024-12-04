@@ -258,11 +258,11 @@ const components = defineComponents( {
       name: 'ERC20Event',
       type: 'ERC20Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC20InternalImpl',
+      embed: false,
       value: 'ERC20Component::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

@@ -65,18 +65,26 @@ function printComponentDeclarations(contract: Contract) {
 }
 
 function printImpls(contract: Contract) {
-  const externalImpls = contract.components.flatMap(c => c.impls);
-  const internalImpls = contract.components.flatMap(c => c.internalImpl ? [c.internalImpl] : []);
+  const impls = contract.components.flatMap(c => c.impls);
+
+  let grouped = impls.reduce(
+    (result:any, current:Impl) => {
+      let section = current.section ?? 'default';
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
+
+  
 
   return spaceBetween(
-    externalImpls.flatMap(impl => printImpl(impl)),
-    internalImpls.flatMap(impl => printImpl(impl, true))
+    impls.flatMap(impl => printImpl(impl)),
   );
 }
 
-function printImpl(impl: Impl, internal = false) {
+function printImpl(impl: Impl) {
   const lines = [];
-  if (!internal) {
+  // embed is optional, default to true
+  if (impl.embed ?? true) {
     lines.push('#[abi(embed_v0)]');
   }
   lines.push(`impl ${impl.name} = ${impl.value};`);

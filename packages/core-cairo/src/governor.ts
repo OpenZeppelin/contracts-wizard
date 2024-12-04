@@ -7,9 +7,8 @@ import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
-// import { durationToBlocks, durationToTimestamp } from "./utils/duration";
 import { defineComponents } from './utils/define-components';
-
+import { durationToTimestamp } from './utils/duration';
 export const clockModeOptions = ['blocknumber', 'timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = typeof clockModeOptions[number];
@@ -27,7 +26,6 @@ export const defaults: Required<GovernorOptions> = {
   quorumMode: 'percent',
   quorumPercent: 4,
   quorumAbsolute: '',
-  storage: false,
   settings: true,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -57,7 +55,6 @@ export interface GovernorOptions extends CommonContractOptions {
   votes?: VotesOptions;
   clockMode?: ClockMode;
   timelock?: TimelockOptions;
-  storage?: boolean;
   settings?: boolean;
 }
 
@@ -75,7 +72,6 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
-    storage: opts.storage ?? defaults.storage,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     clockMode: opts.clockMode ?? defaults.clockMode,
@@ -88,10 +84,10 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
-  // validateDecimals(allOpts.decimals);
+  validateDecimals(allOpts.decimals);
 
   addBase(c, allOpts);
-  // addSettings(c, allOpts);
+  addSettings(c, allOpts);
   // addCounting(c);
   // addStorage(c, allOpts);
   // addVotes(c);
@@ -119,104 +115,110 @@ const components = defineComponents( {
     impls: [{
       name: 'GovernorImpl',
       value: 'GovernorComponent::GovernorImpl<ContractState>',
+      embed: true,
+      section: 'Governor Core',
     }],
   },
+  GovernorSettingsComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'settings',
+      type: 'GovernorSettings::Storage',
+    },
+    event: {
+      name: 'GovernorSettingsEvent',
+      type: 'GovernorSettings::Event',
+    },
+    impls: [{
+      name: 'GovernorSettingsAdminImpl',
+      value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
+      embed: true,
+      section: 'Extensions (external)',
+    }, {
+      name: 'GovernorSettingsImpl',
+      value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }],
+  }
 });
 
-function addBase(c: ContractBuilder, { name }: GovernorOptions) {
+function addBase(c: ContractBuilder, _: GovernorOptions) {
+  c.addStandaloneImport('starknet::ContractAddress');
+  c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
   c.addComponent(components.GovernorComponent, [], true);
 }
 
-// function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
-//   if (allOpts.settings) {
-//     const GovernorSettings = {
-//       name: 'GovernorSettings',
-//       path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
-//     };
-//     c.addParent(
-//       GovernorSettings,
-//       [
-//         getVotingDelay(allOpts),
-//         getVotingPeriod(allOpts),
-//         { lit: getProposalThreshold(allOpts) },
-//       ],
-//     );
-//     c.addOverride(GovernorSettings, functions.votingDelay, 'view');
-//     c.addOverride(GovernorSettings, functions.votingPeriod, 'view');
-//     c.addOverride(GovernorSettings, functions.proposalThreshold, 'view');
-//   } else {
-//     setVotingParameters(c, allOpts);
-//     setProposalThreshold(c, allOpts);
-//   }
-// }
+function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+  if (allOpts.settings) {
+    c.addComponent(components.GovernorSettingsComponent, [
+      getVotingDelay(allOpts),
+      getVotingPeriod(allOpts),
+      { lit: getProposalThreshold(allOpts) },
+    ], true);
+  } else {
+    // setVotingParameters(c, allOpts);
+    // setProposalThreshold(c, allOpts);
+  }
+}
 
-// function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
-//   try {
-//     if (opts.clockMode === 'timestamp') {
-//       return {
-//         lit: durationToTimestamp(opts.delay),
-//       };
-//     } else {
-//       return {
-//         value: durationToBlocks(opts.delay, opts.blockTime),
-//         note: opts.delay
-//       };
-//     }
-//   } catch (e) {
-//     if (e instanceof Error) {
-//       throw new OptionsError({
-//         delay: e.message,
-//       });
-//     } else {
-//       throw e;
-//     }
-//   }
-// }
+function getVotingDelay(opts: Required<GovernorOptions>): number {
+  try {
+    if (opts.clockMode === 'timestamp') {
+       return durationToTimestamp(opts.delay);
+    } else {
+      throw new Error('Invalid clock mode');
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new OptionsError({
+        delay: e.message,
+      });
+    } else {
+      throw e;
+    }
+  }
+}
 
-// function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
-//   try {
-//     if (opts.clockMode === 'timestamp') {
-//       return {
-//         lit: durationToTimestamp(opts.period),
-//       };
-//     } else {
-//       return {
-//         value: durationToBlocks(opts.period, opts.blockTime),
-//         note: opts.period
-//       };
-//     }
-//   } catch (e) {
-//     if (e instanceof Error) {
-//       throw new OptionsError({
-//         period: e.message,
-//       });
-//     } else {
-//       throw e;
-//     }
-//   }
-// }
+function getVotingPeriod(opts: Required<GovernorOptions>): number {
+  try {
+    if (opts.clockMode === 'timestamp') {
+        return durationToTimestamp(opts.period);
+    } else {
+      throw new Error('Invalid clock mode');
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new OptionsError({
+        period: e.message,
+      });
+    } else {
+      throw e;
+    }
+  }
+}
 
-// function validateDecimals(decimals: number) {
-//   if (!/^\d+$/.test(decimals.toString())) {
-//     throw new OptionsError({
-//       decimals: 'Not a valid number',
-//     });
-//   }
-// }
+function validateDecimals(decimals: number) {
+  if (!/^\d+$/.test(decimals.toString())) {
+    throw new OptionsError({
+      decimals: 'Not a valid number',
+    });
+  }
+}
 
-// function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
-//   if (!/^\d+$/.test(proposalThreshold)) {
-//     throw new OptionsError({
-//       proposalThreshold: 'Not a valid number',
-//     });
-//   }
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
+  if (!/^\d+$/.test(proposalThreshold)) {
+    throw new OptionsError({
+      proposalThreshold: 'Not a valid number',
+    });
+  }
 
-//   if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
-//     return proposalThreshold;
-//   } else {
-//     return `${proposalThreshold}e${decimals}`;
-//   }
-// }
+  if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
+    return proposalThreshold;
+  } else {
+    return `${proposalThreshold}e${decimals}`; // TODO: use the corelib pow function
+  }
+}
 
 // function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
 //   const delayBlocks = getVotingDelay(opts);

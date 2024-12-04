@@ -21,7 +21,6 @@ export interface Component {
   substorage: Substorage;
   event: Event;
   impls: Impl[];
-  internalImpl?: Impl;
   initializer?: Initializer;
 }
 
@@ -38,6 +37,8 @@ export interface Event {
 export interface Impl {
   name: string;
   value: string;
+  embed?: boolean;
+  section?: string;
 }
 
 export interface Initializer {

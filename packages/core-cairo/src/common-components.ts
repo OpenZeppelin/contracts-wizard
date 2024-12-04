@@ -28,11 +28,11 @@ const components = defineComponents( {
       name: 'VotesEvent',
       type: 'VotesComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'VotesInternalImpl',
+      embed: false,
       value: 'VotesComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 
   NoncesComponent: {

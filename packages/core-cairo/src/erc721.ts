@@ -201,11 +201,11 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC721InternalImpl',
+      embed: false,
       value: 'ERC721Component::InternalImpl<ContractState>',
-    },
+    }],
   },
   ERC721EnumerableComponent: {
     path: 'openzeppelin::token::erc721::extensions',
@@ -217,16 +217,14 @@ const components = defineComponents( {
       name: 'ERC721EnumerableEvent',
       type: 'ERC721EnumerableComponent::Event',
     },
-    impls: [
-      {
-        name: 'ERC721EnumerableImpl',
-        value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'ERC721EnumerableImpl',
+      value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
+    }, {
       name: 'ERC721EnumerableInternalImpl',
+      embed: false,
       value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

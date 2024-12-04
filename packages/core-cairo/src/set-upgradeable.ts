@@ -65,11 +65,11 @@ const components = defineComponents( {
       name: 'UpgradeableEvent',
       type: 'UpgradeableComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'UpgradeableInternalImpl',
+      embed: false,
       value: 'UpgradeableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 
