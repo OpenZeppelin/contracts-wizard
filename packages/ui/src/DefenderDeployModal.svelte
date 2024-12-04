@@ -12,8 +12,8 @@
 
 {#if isOpen}
   <div 
-    class="fixed right-0 h-[calc(100vh-84px)] w-[500px] bg-white z-40"
-    transition:fly={{ x: 500, duration: 200 }}
+    class="fixed right-0 h-[calc(100vh-84px)] w-[360px] bg-white z-40"
+    transition:fly={{ x: 360, duration: 200 }}
   >
     <div class="p-6 h-full flex flex-col">
       {#if !loaded}
