@@ -55,10 +55,7 @@
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'Account':
-              break;
             case 'Governor':
-              opts.name = initialOpts.name ?? opts.name;
-              break;
             case 'ERC1155':
             case 'Custom':
           }
