@@ -16,7 +16,6 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
-    import OzIcon from './icons/OzIcon.svelte';
     import ArrowsLeft from './icons/ArrowsLeft.svelte';
     import ArrowsRight from './icons/ArrowsRight.svelte';
     import Dropdown from './Dropdown.svelte';
@@ -35,8 +34,18 @@
     import { injectHyperlinks } from './utils/inject-hyperlinks';
     import { InitialOptions } from './initial-options';
     import { postMessageToIframe } from './post-message';
+    import { debouncer } from './utils/helpers';
 
     const dispatch = createEventDispatcher();
+
+    // listens to contract changes and posts them to the defender deploy iframe.
+    // we debounce the call to avoid sending too many messages while the user is editing.
+    const debouncedPostMessage = debouncer((contract) => {
+      postMessageToIframe('defender-deploy', { 
+        kind: 'oz-wizard-defender-deploy',
+        sources: getSolcSources(contract)
+      });
+    }, 600);
 
     export let initialTab: string | undefined = 'ERC20';
 
@@ -94,9 +103,7 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
-    // listens to contract changes and posts them 
-    // to the defender deploy iframe.
-    $: if (contract) postMessageToIframe('defender-deploy', { kind: 'oz-wizard-defender-deploy', sources: getSolcSources(contract) });
+    $: if (contract || showDeployModal) debouncedPostMessage(contract);
 
     const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
@@ -342,7 +349,7 @@
       <pre class="flex flex-col grow basis-0 overflow-auto">
         <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
-      <DefenderDeployModal isOpen={showDeployModal} onClose={() => showDeployModal = false} />
+      <DefenderDeployModal isOpen={showDeployModal} />
     </div>
   </div>
 </div>
