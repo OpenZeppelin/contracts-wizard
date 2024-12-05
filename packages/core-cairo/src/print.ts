@@ -240,9 +240,9 @@ function printFunction(fn: ContractFunction): Lines[] {
 }
 
 function printConstructor(contract: Contract): Lines[] {
-  const hasParentParams = contract.components.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
+  const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasParentParams || hasConstructorCode) {
+  if (hasInitializers || hasConstructorCode) {
     const parents = contract.components
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p));

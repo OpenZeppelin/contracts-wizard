@@ -200,7 +200,6 @@
   </div>
 </section>
 
-
 <section class="controls-section">
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->

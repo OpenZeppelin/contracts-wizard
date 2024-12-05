@@ -5,7 +5,7 @@ import { OptionsError } from "./error";
 import { setAccessControl } from "./set-access-control";
 import { printContract } from "./print";
 import { setInfo } from "./set-info";
-import { setUpgradeable } from "./set-upgradeable";
+import { setUpgradeableGovernor } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
@@ -96,16 +96,16 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addBase(c, allOpts);
   addSRC5Component(c, 'SRC5');
   addSNIP12Metadata(c, allOpts.appName, allOpts.appVersion, 'SNIP12 Metadata');
-  addQuorum(c, allOpts);
+  addCounting(c, allOpts);
+  addQuorumAndVotes(c, allOpts);
   addSettings(c, allOpts);
-  // addCounting(c);
-  // addStorage(c, allOpts);
+  addExecution(c, allOpts);
   // addVotes(c);
   // addTimelock(c, allOpts);
 
   // setAccessControl(c, allOpts.access);
-  // setUpgradeable(c, allOpts.upgradeable, allOpts.access);
-  // setInfo(c, allOpts.info);
+  setUpgradeableGovernor(c, allOpts.upgradeable, allOpts.access);
+  setInfo(c, allOpts.info);
 
   return c;
 }
@@ -130,12 +130,12 @@ const components = defineComponents( {
   GovernorSettingsComponent: {
     path: 'openzeppelin::governance::governor::extensions',
     substorage: {
-      name: 'settings',
-      type: 'GovernorSettings::Storage',
+      name: 'governor_settings',
+      type: 'GovernorSettingsComponent::Storage',
     },
     event: {
       name: 'GovernorSettingsEvent',
-      type: 'GovernorSettings::Event',
+      type: 'GovernorSettingsComponent::Event',
     },
     impls: [{
       name: 'GovernorSettingsAdminImpl',
@@ -148,15 +148,36 @@ const components = defineComponents( {
       section: 'Extensions (internal)',
     }],
   },
+  GovernorVotesComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'governor_votes',
+      type: 'GovernorVotesComponent::Storage',
+    },
+    event: {
+      name: 'GovernorVotesEvent',
+      type: 'GovernorVotesComponent::Event',
+    },
+    impls: [{
+      name: 'VotesTokenImpl',
+      value: 'GovernorVotesComponent::VotesTokenImpl<ContractState>',
+      section: 'Extensions (external)',
+    }, {
+      name: 'GovernorVotesImpl',
+      value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }],
+  },
   GovernorVotesQuorumFractionComponent: {
     path: 'openzeppelin::governance::governor::extensions',
     substorage: {
       name: 'governor_votes',
-      type: 'GovernorVotesQuorumFraction::Storage',
+      type: 'GovernorVotesQuorumFractionComponent::Storage',
     },
     event: {
       name: 'GovernorVotesEvent',
-      type: 'GovernorVotesQuorumFraction::Event',
+      type: 'GovernorVotesQuorumFractionComponent::Event',
     },
     impls: [{
       name: 'GovernorQuorumImpl',
@@ -173,12 +194,68 @@ const components = defineComponents( {
       value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
       section: 'Extensions (external)',
     }],
-  }
+  },
+  GovernorCountingSimpleComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'governor_counting',
+      type: 'GovernorCountingSimpleComponent::Storage',
+    },
+    event: {
+      name: 'GovernorCountingSimpleEvent',
+      type: 'GovernorCountingSimpleComponent::Event',
+    },
+    impls: [{
+      name: 'GovernorCountingSimpleImpl',
+      value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }],
+  },
+  GovernorCoreExecutionComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'governor_execution',
+      type: 'GovernorCoreExecutionComponent::Storage',
+    },
+    event: {
+      name: 'GovernorCoreExecutionEvent',
+      type: 'GovernorCoreExecutionComponent::Event',
+    },
+    impls: [{
+      name: 'GovernorCoreExecutionImpl',
+      value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }],
+  },
+  GovernorTimelockExecutionComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'governor_timelock_execution',
+      type: 'GovernorTimelockExecutionComponent::Storage',
+    },
+    event: {
+      name: 'GovernorTimelockExecutionEvent',
+      type: 'GovernorTimelockExecutionComponent::Event',
+    },
+    impls: [{
+      name: 'TimelockedImpl',
+      value: 'GovernorTimelockExecutionComponent::TimelockedImpl<ContractState>',
+      section: 'Extensions (external)',
+    }, {
+      name: 'GovernorTimelockExecutionImpl',
+      value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }],
+  },
 });
 
 function addBase(c: ContractBuilder, _: GovernorOptions) {
   c.addStandaloneImport('starknet::ContractAddress');
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
+  c.addStandaloneImport('openzeppelin::governance::governor::GovernorComponent::InternalTrait as GovernorInternalTrait');
   c.addComponent(components.GovernorComponent, [], true);
 }
 
@@ -204,6 +281,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   });
 
   if (allOpts.settings) {
+    c.addStandaloneImport('openzeppelin::governance::governor::GovernorSettingsComponent::InternalTrait as GovernorSettingsInternalTrait');
     c.addComponent(components.GovernorSettingsComponent, [
       { lit: 'VOTING_DELAY' },
       { lit: 'VOTING_PERIOD' },
@@ -313,7 +391,7 @@ function addSettingsLocalImpl(c: ContractBuilder, _: Required<GovernorOptions>) 
   });
 }
 
-function addQuorum(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   if (allOpts.quorumMode === 'percent') {
     if (allOpts.quorumPercent > 100) {
       throw new OptionsError({
@@ -321,9 +399,8 @@ function addQuorum(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
       });
     }
 
-    addQuorumFractionComponent(c, allOpts.quorumPercent);
+    addVotesQuorumFractionComponent(c, allOpts.quorumPercent);
   }
-
   else if (allOpts.quorumMode === 'absolute') {
     if (!numberPattern.test(allOpts.quorumAbsolute)) {
       throw new OptionsError({
@@ -335,11 +412,12 @@ function addQuorum(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
       `${allOpts.quorumAbsolute}` :
       `${allOpts.quorumAbsolute}e${allOpts.decimals}`; // TODO: use the corelib pow function
 
+    addVotesComponent(c, allOpts);
     addQuorumLocalImpl(c, quorum);
   }
 }
 
-function addQuorumFractionComponent(c: ContractBuilder, quorumNumerator: number) {
+function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: number) {
   c.addConstant({
     name: 'QUORUM_NUMERATOR',
     type: 'u256',
@@ -347,9 +425,17 @@ function addQuorumFractionComponent(c: ContractBuilder, quorumNumerator: number)
     comment: `${quorumNumerator}%`,
     inlineComment: true,
   });
+  c.addStandaloneImport('openzeppelin::governance::governor::GovernorVotesQuorumFractionComponent::InternalTrait as GovernorVotesQuorumFractionInternalTrait');
   c.addComponent(components.GovernorVotesQuorumFractionComponent, [
     { lit: 'votes_token' },
     { lit: 'QUORUM_NUMERATOR' },
+  ], true);
+}
+
+function addVotesComponent(c: ContractBuilder, _: Required<GovernorOptions>) {
+  c.addStandaloneImport('openzeppelin::governance::governor::GovernorVotesComponent::InternalTrait as GovernorVotesInternalTrait');
+  c.addComponent(components.GovernorVotesComponent, [
+    { lit: 'votes_token' },
   ], true);
 }
 
@@ -382,201 +468,20 @@ function addQuorumLocalImpl(c: ContractBuilder, quorum: string) {
   });
 }
 
-// function addCounting(c: ContractBuilder) {
-//   c.addParent({
-//     name: 'GovernorCountingSimple',
-//     path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
-//   });
-// }
+function addCounting(c: ContractBuilder, _: Required<GovernorOptions>) {
+  c.addComponent(components.GovernorCountingSimpleComponent, [], false);
+}
 
-// function addVotes(c: ContractBuilder) {
-//   const tokenArg = '_token';
-
-//   c.addImportOnly({
-//     name: 'IVotes',
-//     path: `@openzeppelin/contracts/governance/utils/IVotes.sol`,
-//     transpiled: false,
-//   });
-//   c.addConstructorArgument({
-//     type: {
-//       name: 'IVotes',
-//       transpiled: false,
-//     },
-//     name: tokenArg,
-//   });
-
-//   c.addParent({
-//     name: 'GovernorVotes',
-//     path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
-//   }, [{ lit: tokenArg }]);
-// }
+function addExecution(c: ContractBuilder, { timelock }: Required<GovernorOptions>) {
+  if (timelock === false) {
+    c.addComponent(components.GovernorCoreExecutionComponent, [], false);
+  } else {
+    c.addConstructorArgument({ name: 'timelock_controller', type: 'ContractAddress' });
+    c.addStandaloneImport('openzeppelin::governance::governor::GovernorTimelockExecutionComponent::InternalTrait as GovernorTimelockExecutionInternalTrait');
+    c.addComponent(components.GovernorTimelockExecutionComponent, [
+      { lit: 'timelock_controller' },
+    ], true);
+  }
+}
 
 export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
-
-// const timelockModules = {
-//   openzeppelin: {
-//     timelockType: {
-//       name: 'TimelockController',
-//       path: `@openzeppelin/contracts/governance/TimelockController.sol`,
-//     },
-//     timelockParent: {
-//       name: 'GovernorTimelockControl',
-//       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol`,
-//     }
-//   },
-//   compound: {
-//     timelockType: {
-//       name: 'ICompoundTimelock',
-//       path: `@openzeppelin/contracts/vendor/compound/ICompoundTimelock.sol`,
-//       transpiled: false,
-//     },
-//     timelockParent: {
-//       name: 'GovernorTimelockCompound',
-//       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol`,
-//     }
-//   },
-// } as const;
-
-
-// function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>) {
-//   if (timelock === false) {
-//     return;
-//   }
-
-//   const timelockArg = '_timelock';
-//   const { timelockType, timelockParent } = timelockModules[timelock];
-
-//   c.addImportOnly(timelockType);
-//   c.addConstructorArgument({
-//     type: timelockType,
-//     name: timelockArg,
-//   });
-
-//   c.addParent(timelockParent, [{ lit: timelockArg }]);
-//   c.addOverride(timelockParent, functions._queueOperations);
-//   c.addOverride(timelockParent, functions._executeOperations);
-//   c.addOverride(timelockParent, functions._cancel);
-//   c.addOverride(timelockParent, functions._executor);
-//   c.addOverride(timelockParent, functions.state);
-//   c.addOverride(timelockParent, functions.proposalNeedsQueuing);
-// }
-
-// function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
-//   if (storage) {
-//     const GovernorStorage = {
-//       name: 'GovernorStorage',
-//       path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
-//     };
-//     c.addParent(GovernorStorage);
-//     c.addOverride(GovernorStorage, functions._propose);
-//   }
-// }
-
-// const functions = defineFunctions({
-//   votingDelay: {
-//     args: [],
-//     returns: ['uint256'],
-//     kind: 'public',
-//     mutability: 'pure',
-//   },
-//   votingPeriod: {
-//     args: [],
-//     returns: ['uint256'],
-//     kind: 'public',
-//     mutability: 'pure',
-//   },
-//   proposalThreshold: {
-//     args: [],
-//     returns: ['uint256'],
-//     kind: 'public',
-//     mutability: 'pure',
-//   },
-//   proposalNeedsQueuing: {
-//     args: [
-//       { name: 'proposalId', type: 'uint256' },
-//     ],
-//     returns: ['bool'],
-//     kind: 'public',
-//     mutability: 'view',
-//   },
-//   quorum: {
-//     args: [
-//       { name: 'blockNumber', type: 'uint256' },
-//     ],
-//     returns: ['uint256'],
-//     kind: 'public',
-//     mutability: 'view',
-//   },
-//   quorumDenominator: {
-//     args: [],
-//     returns: ['uint256'],
-//     kind: 'public',
-//     mutability: 'view',
-//   },
-//   propose: {
-//     args: [
-//       { name: 'targets', type: 'address[] memory' },
-//       { name: 'values', type: 'uint256[] memory' },
-//       { name: 'calldatas', type: 'bytes[] memory' },
-//       { name: 'description', type: 'string memory' },
-//     ],
-//     returns: ['uint256'],
-//     kind: 'public',
-//   },
-//   _propose: {
-//     args: [
-//       { name: 'targets', type: 'address[] memory' },
-//       { name: 'values', type: 'uint256[] memory' },
-//       { name: 'calldatas', type: 'bytes[] memory' },
-//       { name: 'description', type: 'string memory' },
-//       { name: 'proposer', type: 'address' },
-//     ],
-//     returns: ['uint256'],
-//     kind: 'internal',
-//   },
-//   _queueOperations: {
-//     args: [
-//       { name: 'proposalId', type: 'uint256' },
-//       { name: 'targets', type: 'address[] memory' },
-//       { name: 'values', type: 'uint256[] memory' },
-//       { name: 'calldatas', type: 'bytes[] memory' },
-//       { name: 'descriptionHash', type: 'bytes32' },
-//     ],
-//     kind: 'internal',
-//     returns: ['uint48'],
-//   },
-//   _executeOperations: {
-//     args: [
-//       { name: 'proposalId', type: 'uint256' },
-//       { name: 'targets', type: 'address[] memory' },
-//       { name: 'values', type: 'uint256[] memory' },
-//       { name: 'calldatas', type: 'bytes[] memory' },
-//       { name: 'descriptionHash', type: 'bytes32' },
-//     ],
-//     kind: 'internal',
-//   },
-//   _cancel: {
-//     args: [
-//       { name: 'targets', type: 'address[] memory' },
-//       { name: 'values', type: 'uint256[] memory' },
-//       { name: 'calldatas', type: 'bytes[] memory' },
-//       { name: 'descriptionHash', type: 'bytes32' },
-//     ],
-//     returns: ['uint256'],
-//     kind: 'internal',
-//   },
-//   state: {
-//     args: [
-//       { name: 'proposalId', type: 'uint256' },
-//     ],
-//     returns: ['ProposalState'],
-//     kind: 'public',
-//     mutability: 'view',
-//   },
-//   _executor: {
-//     args: [],
-//     returns: ['address'],
-//     kind: 'internal',
-//     mutability: 'view',
-//   },
-// });
