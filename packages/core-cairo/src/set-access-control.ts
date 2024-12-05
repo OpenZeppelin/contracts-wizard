@@ -101,16 +101,14 @@ const components = defineComponents( {
       name: 'OwnableEvent',
       type: 'OwnableComponent::Event',
     },
-    impls: [
-      {
-        name: 'OwnableMixinImpl',
-        value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'OwnableMixinImpl',
+      value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
+    }, {
       name: 'OwnableInternalImpl',
+      embed: false,
       value: 'OwnableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
   AccessControlComponent: {
     path: 'openzeppelin::access::accesscontrol',
@@ -122,10 +120,10 @@ const components = defineComponents( {
       name: 'AccessControlEvent',
       type: 'AccessControlComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'AccessControlInternalImpl',
+      embed: false,
       value: 'AccessControlComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });

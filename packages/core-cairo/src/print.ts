@@ -1,10 +1,12 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
+import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
+
+const DEFAULT_SECTION = '1. with no section';
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -20,6 +22,7 @@ export function printContract(contract: Contract): string {
         `mod ${contract.name} {`,
         spaceBetween(
           printImports(contract),
+          printConstants(contract),
           printComponentDeclarations(contract),
           printImpls(contract),
           printStorage(contract),
@@ -59,7 +62,26 @@ function sortImports(contract: Contract): string[] {
   return allImports.sort();
 }
 
-function printComponentDeclarations(contract: Contract): string[] {
+function printConstants(contract: Contract) {
+  const lines = [];
+  for (const constant of contract.constants) {
+    // inlineComment is optional, default to false
+    let inlineComment = constant.inlineComment ?? false;
+    let commented = !!constant.comment;
+
+    if (commented && !inlineComment) {
+      lines.push(`// ${constant.comment}`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    } else if (commented) {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; /* ${constant.comment} */`);
+    } else {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    }
+  }
+  return lines;
+}
+
+function printComponentDeclarations(contract: Contract): Lines[] {
   const lines = [];
   for (const component of contract.components) {
     lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
@@ -68,18 +90,36 @@ function printComponentDeclarations(contract: Contract): string[] {
 }
 
 function printImpls(contract: Contract): Lines[] {
-  const externalImpls = contract.components.flatMap(c => c.impls);
-  const internalImpls = contract.components.flatMap(c => c.internalImpl ? [c.internalImpl] : []);
+  const impls = contract.components.flatMap(c => c.impls);
 
-  return spaceBetween(
-    externalImpls.flatMap(impl => printImpl(impl)),
-    internalImpls.flatMap(impl => printImpl(impl, true))
+  // group by section
+  let grouped = impls.reduce(
+    (result:any, current:Impl) => {
+      // default section depends on embed
+      // embed defaults to true
+      let embed = current.embed ?? true;
+      let section = current.section ?? (embed ? 'External' : 'Internal');
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
+
+  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printSection(section, impls as Impl[]),
   );
+  return spaceBetween(...sections);
 }
 
-function printImpl(impl: Impl, internal = false): string[] {
+function printSection(section: string, impls: Impl[]): Lines[] {
   const lines = [];
-  if (!internal) {
+  lines.push(`// ${section}`);
+  impls.map(impl => lines.push(...printImpl(impl)));
+  return lines;
+}
+
+function printImpl(impl: Impl): Lines[] {
+  const lines = [];
+  // embed is optional, default to true
+  if (impl.embed ?? true) {
     lines.push('#[abi(embed_v0)]');
   }
   lines.push(`impl ${impl.name} = ${impl.value};`);
@@ -119,8 +159,6 @@ function printEvents(contract: Contract): (string | string[])[] {
 }
 
 function printImplementedTraits(contract: Contract): Lines[] {
-  const impls = [];
-
   // sort first by priority, then number of tags, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
@@ -132,23 +170,53 @@ function printImplementedTraits(contract: Contract): Lines[] {
     return a.name.localeCompare(b.name);
   });
 
-  for (const trait of sortedTraits) {
-    const implLines = [];
-    implLines.push(...trait.tags.map(t => `#[${t}]`));
-    implLines.push(`impl ${trait.name} of ${trait.of} {`);
+  // group by section
+  let grouped = sortedTraits.reduce(
+    (result:any, current:ImplementedTrait) => {
+      // default to no section
+      let section = current.section ?? DEFAULT_SECTION;
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
 
-    const superVars = withSemicolons(
-      trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
-    );
-    implLines.push(superVars);
+  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+  );
 
-    const fns = trait.functions.map(fn => printFunction(fn));
-    implLines.push(spaceBetween(...fns));
+  return spaceBetween(...sections);
+}
 
-    implLines.push('}');
-    impls.push(implLines);
+function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]) {
+  const lines = [];
+  const isDefaultSection = section === DEFAULT_SECTION;
+  if (!isDefaultSection) {
+    lines.push('//');
+    lines.push(`// ${section}`);
+    lines.push('//');
   }
-  return spaceBetween(...impls);
+  impls.forEach((trait, index) => {
+    if (index > 0 || !isDefaultSection) {
+      lines.push('');
+    }
+    lines.push(...printImplementedTrait(trait));
+  });
+  return lines;
+}
+
+function printImplementedTrait(trait: ImplementedTrait) {
+  const implLines = [];
+  implLines.push(...trait.tags.map(t => `#[${t}]`));
+  implLines.push(`impl ${trait.name} of ${trait.of} {`);
+
+  const superVars = withSemicolons(
+    trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
+  );
+  implLines.push(superVars);
+
+  const fns = trait.functions.map(fn => printFunction(fn));
+  implLines.push(spaceBetween(...fns));
+  implLines.push('}');
+  return implLines;
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
@@ -172,9 +240,9 @@ function printFunction(fn: ContractFunction): Lines[] {
 }
 
 function printConstructor(contract: Contract): Lines[] {
-  const hasParentParams = contract.components.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
+  const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasParentParams || hasConstructorCode) {
+  if (hasInitializers || hasConstructorCode) {
     const parents = contract.components
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p));

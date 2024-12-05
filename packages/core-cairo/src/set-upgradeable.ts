@@ -40,6 +40,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   }
 }
 
+export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
+  const trait = setUpgradeableBase(c, upgradeable);
+  if (trait !== undefined) {
+      c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
+  }
+}
+
 export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
@@ -65,11 +72,11 @@ const components = defineComponents( {
       name: 'UpgradeableEvent',
       type: 'UpgradeableComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'UpgradeableInternalImpl',
+      embed: false,
       value: 'UpgradeableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

@@ -160,11 +160,11 @@ const components = defineComponents( {
       name: 'AccountEvent',
       type: 'AccountComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'AccountInternalImpl',
+      embed: false,
       value: 'AccountComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
   EthAccountComponent: {
     path: 'openzeppelin::account::eth_account',
@@ -176,10 +176,10 @@ const components = defineComponents( {
       name: 'EthAccountEvent',
       type: 'EthAccountComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'EthAccountInternalImpl',
+      embed: false,
       value: 'EthAccountComponent::InternalImpl<ContractState>',
-    },
+    }]
   },
 });

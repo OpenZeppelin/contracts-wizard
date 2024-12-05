@@ -175,11 +175,11 @@ const components = defineComponents( {
       name: 'ERC1155Event',
       type: 'ERC1155Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC1155InternalImpl',
+      embed: false,
       value: 'ERC1155Component::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

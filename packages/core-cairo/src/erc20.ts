@@ -203,7 +203,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
 /**
  * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
- * 
+ *
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
  * @returns `premint` with zeros padded or removed based on `decimals`.
@@ -258,11 +258,11 @@ const components = defineComponents( {
       name: 'ERC20Event',
       type: 'ERC20Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC20InternalImpl',
+      embed: false,
       value: 'ERC20Component::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 
