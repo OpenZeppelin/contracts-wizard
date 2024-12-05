@@ -6,6 +6,7 @@ export interface Contract {
   account: boolean;
   standaloneImports: string[];
   components: Component[];
+  constants: Variable[];
   constructorCode: string[];
   constructorArgs: Argument[];
   upgradeable: boolean;
@@ -50,6 +51,7 @@ export interface BaseImplementedTrait {
   of: string;
   tags: string[];
   perItemTag?: string;
+  section?: string;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -59,6 +61,7 @@ export interface BaseImplementedTrait {
 
 export interface ImplementedTrait extends BaseImplementedTrait {
   functions: ContractFunction[];
+  section?: string;
 }
 
 export interface BaseFunction {
@@ -77,6 +80,8 @@ export interface Variable {
   name: string;
   type: string;
   value: string;
+  comment?: string;
+  inlineComment?: boolean;
 }
 
 export interface Argument {
@@ -96,6 +101,7 @@ export class ContractBuilder implements Contract {
   private componentsMap: Map<string, Component> = new Map();
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private superVariablesMap: Map<string, Variable> = new Map();
+  private constantsMap: Map<string, Variable> = new Map();
   private standaloneImportsSet: Set<string> = new Set();
   private interfaceFlagsSet: Set<string> = new Set();
 
@@ -114,6 +120,10 @@ export class ContractBuilder implements Contract {
 
   get superVariables(): Variable[] {
     return [...this.superVariablesMap.values()];
+  }
+
+  get constants(): Variable[] {
+    return [...this.constantsMap.values()];
   }
 
   get standaloneImports(): string[] {
@@ -154,6 +164,15 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  addConstant(constant: Variable): boolean {
+    if (this.constantsMap.has(constant.name)) {
+      return false;
+    } else {
+      this.constantsMap.set(constant.name, constant);
+      return true;
+    }
+  }
+
   addSuperVariable(variable: Variable): boolean {
     if (this.superVariablesMap.has(variable.name)) {
       return false;
@@ -174,6 +193,7 @@ export class ContractBuilder implements Contract {
         of: baseTrait.of,
         tags: [ ...baseTrait.tags ],
         functions: [],
+        section: baseTrait.section,
         priority: baseTrait.priority,
       };
       this.implementedTraitsMap.set(key, t);

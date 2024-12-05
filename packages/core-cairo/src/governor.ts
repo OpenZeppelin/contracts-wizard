@@ -148,15 +148,34 @@ function addBase(c: ContractBuilder, _: GovernorOptions) {
 }
 
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+  c.addConstant({
+    name: 'VOTING_DELAY',
+    type: 'u64',
+    value: getVotingDelay(allOpts).toString(),
+    comment: allOpts.delay,
+    inlineComment: true,
+  });
+  c.addConstant({
+    name: 'VOTING_PERIOD',
+    type: 'u64',
+    value: getVotingPeriod(allOpts).toString(),
+    comment: allOpts.period,
+    inlineComment: true,
+  });
+  c.addConstant({
+    name: 'PROPOSAL_THRESHOLD',
+    type: 'u256',
+    value: getProposalThreshold(allOpts),
+  });
+
   if (allOpts.settings) {
     c.addComponent(components.GovernorSettingsComponent, [
-      getVotingDelay(allOpts),
-      getVotingPeriod(allOpts),
-      { lit: getProposalThreshold(allOpts) },
+      { lit: 'VOTING_DELAY' },
+      { lit: 'VOTING_PERIOD' },
+      { lit: 'PROPOSAL_THRESHOLD' },
     ], true);
   } else {
-    // setVotingParameters(c, allOpts);
-    // setProposalThreshold(c, allOpts);
+    addSettingsLocalImpl(c, allOpts);
   }
 }
 
@@ -218,30 +237,46 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
   }
 }
 
-// function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
-//   const delayBlocks = getVotingDelay(opts);
-//   if ('lit' in delayBlocks) {
-//     c.setFunctionBody([`return ${delayBlocks.lit};`], functions.votingDelay);
-//   } else {
-//     c.setFunctionBody([`return ${delayBlocks.value}; // ${delayBlocks.note}`], functions.votingDelay);
-//   }
+function addSettingsLocalImpl(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+  const settingsTrait = {
+    name: 'GovernorSettings',
+    of: 'GovernorComponent::GovernorSettingsTrait<ContractState>',
+    tags: [],
+    section: 'Locally implemented extensions',
+    priority: 1,
+  };
+  c.addImplementedTrait(settingsTrait);
 
-//   const periodBlocks = getVotingPeriod(opts);
-//   if ('lit' in periodBlocks) {
-//     c.setFunctionBody([`return ${periodBlocks.lit};`], functions.votingPeriod);
-//   } else {
-//     c.setFunctionBody([`return ${periodBlocks.value}; // ${periodBlocks.note}`], functions.votingPeriod);
-//   }
-// }
+  c.addFunction(settingsTrait, {
+    name: 'voting_delay',
+    args: [{
+      name: 'self',
+      type: '@GovernorComponent::ComponentState<ContractState>'
+    }],
+    returns: 'u64',
+    code: ['VOTING_DELAY'],
+  });
 
-// function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions>) {
-//   const threshold = getProposalThreshold(opts);
-//   const nonZeroThreshold = parseInt(threshold) !== 0;
+  c.addFunction(settingsTrait, {
+    name: 'voting_period',
+    args: [{
+      name: 'self',
+      type: '@GovernorComponent::ComponentState<ContractState>'
+    }],
+    returns: 'u64',
+    code: ['VOTING_PERIOD'],
+  });
 
-//   if (nonZeroThreshold) {
-//     c.setFunctionBody([`return ${threshold};`], functions.proposalThreshold);
-//   }
-// }
+  c.addFunction(settingsTrait, {
+    name: 'proposal_threshold',
+    args: [{
+      name: 'self',
+      type: '@GovernorComponent::ComponentState<ContractState>'
+    }],
+    returns: 'u256',
+    code: ['PROPOSAL_THRESHOLD'],
+  });
+}
 
 // function addCounting(c: ContractBuilder) {
 //   c.addParent({

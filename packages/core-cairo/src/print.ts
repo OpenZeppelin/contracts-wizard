@@ -1,10 +1,12 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
+import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
+
+const DEFAULT_SECTION = 'with no section';
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -20,6 +22,7 @@ export function printContract(contract: Contract): string {
         `mod ${contract.name} {`,
         spaceBetween(
           printImports(contract),
+          printConstants(contract),
           printComponentDeclarations(contract),
           printImpls(contract),
           printStorage(contract),
@@ -54,6 +57,25 @@ function sortImports(contract: Contract) {
     allImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
   }
   return allImports.sort();
+}
+
+function printConstants(contract: Contract) {
+  const lines = [];
+  for (const constant of contract.constants) {
+    // inlineComment is optional, default to false
+    let inlineComment = constant.inlineComment ?? false;
+    let commented = !!constant.comment;
+
+    if (commented && !inlineComment) {
+      lines.push(`// ${constant.comment}`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    } else if (commented) {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value} /* ${constant.comment} */`);
+    } else {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    }
+  }
+  return lines;
 }
 
 function printComponentDeclarations(contract: Contract) {
@@ -134,8 +156,6 @@ function printEvents(contract: Contract) {
 }
 
 function printImplementedTraits(contract: Contract) {
-  const impls = [];
-
   // sort first by priority, then number of tags, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
@@ -147,16 +167,47 @@ function printImplementedTraits(contract: Contract) {
     return a.name.localeCompare(b.name);
   });
 
-  for (const trait of sortedTraits) {
-    const implLines = [];
-    implLines.push(...trait.tags.map(t => `#[${t}]`));
-    implLines.push(`impl ${trait.name} of ${trait.of} {`);
-    const fns = trait.functions.map(fn => printFunction(fn));
-    implLines.push(spaceBetween(...fns));
-    implLines.push('}');
-    impls.push(implLines);
+  // group by section
+  let grouped = sortedTraits.reduce(
+    (result:any, current:ImplementedTrait) => {
+      // default to no section
+      let section = current.section ?? DEFAULT_SECTION;
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
+
+  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+  );
+
+  return spaceBetween(...sections);
+}
+
+function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]) {
+  const lines = [];
+  const isDefaultSection = section === DEFAULT_SECTION;
+  if (!isDefaultSection) {
+    lines.push('//');
+    lines.push(`// ${section}`);
+    lines.push('//');
   }
-  return spaceBetween(...impls);
+  impls.forEach((trait, index) => {
+    if (index > 0 || !isDefaultSection) {
+      lines.push('');
+    }
+    lines.push(...printImplementedTrait(trait));
+  });
+  return lines;
+}
+
+function printImplementedTrait(trait: ImplementedTrait) {
+  const implLines = [];
+  implLines.push(...trait.tags.map(t => `#[${t}]`));
+  implLines.push(`impl ${trait.name} of ${trait.of} {`);
+  const fns = trait.functions.map(fn => printFunction(fn));
+  implLines.push(spaceBetween(...fns));
+  implLines.push('}');
+  return implLines;
 }
 
 function printFunction(fn: ContractFunction) {
