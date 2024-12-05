@@ -1,12 +1,10 @@
 import { contractDefaults as commonDefaults, withCommonContractDefaults } from './common-options';
-import { CommonContractOptions } from './common-options';
-import { ContractBuilder, Contract, Value } from "./contract";
+import type { CommonContractOptions } from './common-options';
+import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
-import { setAccessControl } from "./set-access-control";
 import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeableGovernor } from "./set-upgradeable";
-import { defineFunctions } from './utils/define-functions';
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
@@ -104,7 +102,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   // addTimelock(c, allOpts);
 
   // setAccessControl(c, allOpts.access);
-  setUpgradeableGovernor(c, allOpts.upgradeable, allOpts.access);
+  setUpgradeableGovernor(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
   return c;
