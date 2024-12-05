@@ -115,7 +115,6 @@ const components = defineComponents( {
     impls: [{
       name: 'GovernorImpl',
       value: 'GovernorComponent::GovernorImpl<ContractState>',
-      embed: true,
       section: 'Governor Core',
     }],
   },
@@ -132,7 +131,6 @@ const components = defineComponents( {
     impls: [{
       name: 'GovernorSettingsAdminImpl',
       value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
-      embed: true,
       section: 'Extensions (external)',
     }, {
       name: 'GovernorSettingsImpl',

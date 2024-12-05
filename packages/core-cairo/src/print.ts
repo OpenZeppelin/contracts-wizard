@@ -67,18 +67,28 @@ function printComponentDeclarations(contract: Contract) {
 function printImpls(contract: Contract) {
   const impls = contract.components.flatMap(c => c.impls);
 
+  // group by section
   let grouped = impls.reduce(
     (result:any, current:Impl) => {
-      let section = current.section ?? 'default';
+      // default section depends on embed
+      // embed defaults to true
+      let embed = current.embed ?? true;
+      let section = current.section ?? (embed ? 'External' : 'Internal');
       (result[section] = result[section] || []).push(current);
       return result;
     }, {});
 
-  
-
-  return spaceBetween(
-    impls.flatMap(impl => printImpl(impl)),
+  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printSection(section, impls as Impl[]),
   );
+  return spaceBetween(...sections);
+}
+
+function printSection(section: string, impls: Impl[]) {
+  const lines = [];
+  lines.push(`// ${section}`);
+  impls.map(impl => lines.push(...printImpl(impl)));
+  return lines;
 }
 
 function printImpl(impl: Impl) {
