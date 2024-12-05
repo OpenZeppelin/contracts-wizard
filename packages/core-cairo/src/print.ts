@@ -6,7 +6,7 @@ import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
-const DEFAULT_SECTION = 'with no section';
+const DEFAULT_SECTION = '1. with no section';
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -73,7 +73,7 @@ function printConstants(contract: Contract) {
       lines.push(`// ${constant.comment}`);
       lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
     } else if (commented) {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value} /* ${constant.comment} */`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; /* ${constant.comment} */`);
     } else {
       lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
     }
@@ -212,7 +212,7 @@ function printImplementedTrait(trait: ImplementedTrait) {
     trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
   );
   implLines.push(superVars);
-  
+
   const fns = trait.functions.map(fn => printFunction(fn));
   implLines.push(spaceBetween(...fns));
   implLines.push('}');

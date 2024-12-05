@@ -200,4 +200,33 @@
   </div>
 </section>
 
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex justify-between items-center tooltip-container pr-2">
+      <span>SNIP12 Metadata</span>
+      <HelpTooltip>
+        Metadata for the SNIP12 domain separator.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Application Name
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.appName} use:error={errors?.appName}>
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Application Version
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
+    </span>
+    <input bind:value={opts.appVersion} use:error={errors?.appVersion}>
+  </label>
+</section>
+
 <InfoSection bind:info={opts.info} />

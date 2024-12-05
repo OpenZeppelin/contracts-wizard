@@ -9,6 +9,7 @@ import { setUpgradeable } from "./set-upgradeable";
 import { defineFunctions } from './utils/define-functions';
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
+import { addSNIP12Metadata, addSRC5Component } from './common-components';
 export const clockModeOptions = ['blocknumber', 'timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = typeof clockModeOptions[number];
@@ -29,6 +30,8 @@ export const defaults: Required<GovernorOptions> = {
   settings: true,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
+  appName: 'OpenZeppelin Governor',
+  appVersion: 'v1',
   info: commonDefaults.info
 } as const;
 
@@ -56,6 +59,8 @@ export interface GovernorOptions extends CommonContractOptions {
   clockMode?: ClockMode;
   timelock?: TimelockOptions;
   settings?: boolean;
+  appName?: string;
+  appVersion?: string;
 }
 
 export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean {
@@ -75,7 +80,9 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     clockMode: opts.clockMode ?? defaults.clockMode,
-    timelock: opts.timelock ?? defaults.timelock
+    timelock: opts.timelock ?? defaults.timelock,
+    appName: opts.appName ?? defaults.appName,
+    appVersion: opts.appVersion ?? defaults.appVersion,
   };
 }
 
@@ -87,11 +94,13 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   validateDecimals(allOpts.decimals);
 
   addBase(c, allOpts);
+  addSRC5Component(c, 'SRC5');
+  addSNIP12Metadata(c, allOpts.appName, allOpts.appVersion, 'SNIP12 Metadata');
+  addQuorum(c, allOpts);
   addSettings(c, allOpts);
   // addCounting(c);
   // addStorage(c, allOpts);
   // addVotes(c);
-  // addQuorum(c, allOpts);
   // addTimelock(c, allOpts);
 
   // setAccessControl(c, allOpts.access);
@@ -137,6 +146,32 @@ const components = defineComponents( {
       value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
       embed: false,
       section: 'Extensions (internal)',
+    }],
+  },
+  GovernorVotesQuorumFractionComponent: {
+    path: 'openzeppelin::governance::governor::extensions',
+    substorage: {
+      name: 'governor_votes',
+      type: 'GovernorVotesQuorumFraction::Storage',
+    },
+    event: {
+      name: 'GovernorVotesEvent',
+      type: 'GovernorVotesQuorumFraction::Event',
+    },
+    impls: [{
+      name: 'GovernorQuorumImpl',
+      value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }, {
+      name: 'GovernorVotesImpl',
+      value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
+      embed: false,
+      section: 'Extensions (internal)',
+    }, {
+      name: 'QuorumFractionImpl',
+      value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
+      section: 'Extensions (external)',
     }],
   }
 });
@@ -237,13 +272,13 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
   }
 }
 
-function addSettingsLocalImpl(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+function addSettingsLocalImpl(c: ContractBuilder, _: Required<GovernorOptions>) {
   const settingsTrait = {
     name: 'GovernorSettings',
     of: 'GovernorComponent::GovernorSettingsTrait<ContractState>',
     tags: [],
     section: 'Locally implemented extensions',
-    priority: 1,
+    priority: 2,
   };
   c.addImplementedTrait(settingsTrait);
 
@@ -278,6 +313,75 @@ function addSettingsLocalImpl(c: ContractBuilder, allOpts: Required<GovernorOpti
   });
 }
 
+function addQuorum(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
+  if (allOpts.quorumMode === 'percent') {
+    if (allOpts.quorumPercent > 100) {
+      throw new OptionsError({
+        quorumPercent: 'Invalid percentage',
+      });
+    }
+
+    addQuorumFractionComponent(c, allOpts.quorumPercent);
+  }
+
+  else if (allOpts.quorumMode === 'absolute') {
+    if (!numberPattern.test(allOpts.quorumAbsolute)) {
+      throw new OptionsError({
+        quorumAbsolute: 'Not a valid number',
+      });
+    }
+
+    let quorum = (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') ?
+      `${allOpts.quorumAbsolute}` :
+      `${allOpts.quorumAbsolute}e${allOpts.decimals}`; // TODO: use the corelib pow function
+
+    addQuorumLocalImpl(c, quorum);
+  }
+}
+
+function addQuorumFractionComponent(c: ContractBuilder, quorumNumerator: number) {
+  c.addConstant({
+    name: 'QUORUM_NUMERATOR',
+    type: 'u256',
+    value: (quorumNumerator * 10).toString(),
+    comment: `${quorumNumerator}%`,
+    inlineComment: true,
+  });
+  c.addComponent(components.GovernorVotesQuorumFractionComponent, [
+    { lit: 'votes_token' },
+    { lit: 'QUORUM_NUMERATOR' },
+  ], true);
+}
+
+function addQuorumLocalImpl(c: ContractBuilder, quorum: string) {
+  c.addConstant({
+    name: 'QUORUM',
+    type: 'u256',
+    value: quorum,
+  });
+  const quorumTrait = {
+    name: 'GovernorQuorum',
+    of: 'GovernorComponent::GovernorQuorumTrait<ContractState>',
+    tags: [],
+    section: 'Locally implemented extensions',
+    priority: 1,
+  };
+  c.addImplementedTrait(quorumTrait);
+
+  c.addFunction(quorumTrait, {
+    name: 'quorum',
+    args: [{
+      name: 'self',
+      type: '@GovernorComponent::ComponentState<ContractState>'
+    }, {
+      name: 'timepoint',
+      type: 'u64',
+    }],
+    returns: 'u256',
+    code: ['QUORUM'],
+  });
+}
+
 // function addCounting(c: ContractBuilder) {
 //   c.addParent({
 //     name: 'GovernorCountingSimple',
@@ -307,50 +411,7 @@ function addSettingsLocalImpl(c: ContractBuilder, allOpts: Required<GovernorOpti
 //   }, [{ lit: tokenArg }]);
 // }
 
-// export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
-
-// function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
-//   if (opts.quorumMode === 'percent') {
-//     if (opts.quorumPercent > 100) {
-//       throw new OptionsError({
-//         quorumPercent: 'Invalid percentage',
-//       });
-//     }
-
-//     let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
-
-//     const GovernorVotesQuorumFraction = {
-//       name: 'GovernorVotesQuorumFraction',
-//       path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
-//     };
-
-//     if (quorumFractionDenominator !== undefined) {
-//       c.addOverride(GovernorVotesQuorumFraction, functions.quorumDenominator);
-//       c.setFunctionBody([
-//         `return ${quorumFractionDenominator};`
-//       ], functions.quorumDenominator, 'pure');
-//     }
-
-//     c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
-//     c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
-//   }
-
-//   else if (opts.quorumMode === 'absolute') {
-//     if (!numberPattern.test(opts.quorumAbsolute)) {
-//       throw new OptionsError({
-//         quorumAbsolute: 'Not a valid number',
-//       });
-//     }
-
-//     let returnStatement = (opts.decimals === 0 || opts.votes === 'erc721votes') ? 
-//       `return ${opts.quorumAbsolute};` :
-//       `return ${opts.quorumAbsolute}e${opts.decimals};`;
-
-//     c.setFunctionBody([
-//       returnStatement,
-//     ], functions.quorum, 'pure');
-//   }
-// }
+export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 // const timelockModules = {
 //   openzeppelin: {
@@ -376,25 +437,6 @@ function addSettingsLocalImpl(c: ContractBuilder, allOpts: Required<GovernorOpti
 //   },
 // } as const;
 
-// function getQuorumFractionComponents(quorumPercent: number): {quorumFractionNumerator: number, quorumFractionDenominator: string | undefined} {
-//   let quorumFractionNumerator = quorumPercent;
-//   let quorumFractionDenominator = undefined;
-
-//   const quorumPercentSegments = quorumPercent.toString().split(".");
-//   if (quorumPercentSegments.length > 2) {
-//     throw new OptionsError({
-//       quorumPercent: 'Invalid percentage',
-//     });
-//   } else if (quorumPercentSegments.length == 2 && quorumPercentSegments[0] !== undefined && quorumPercentSegments[1] !== undefined) {
-//     quorumFractionNumerator = parseInt(quorumPercentSegments[0].concat(quorumPercentSegments[1]));
-//     const decimals = quorumPercentSegments[1].length;
-//     quorumFractionDenominator = '100';
-//     while (quorumFractionDenominator.length < decimals + 3) {
-//       quorumFractionDenominator += '0';
-//     }
-//   }
-//   return { quorumFractionNumerator, quorumFractionDenominator };
-// }
 
 // function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>) {
 //   if (timelock === false) {
