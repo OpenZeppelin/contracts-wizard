@@ -1,4 +1,4 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import { Contract, ContractBuilder } from './contract';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
@@ -10,7 +10,7 @@ import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
-import { toByteArray, toFelt252 } from './utils/convert-strings';
+import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
 import { addVotesComponent } from './common-components';
 
 
@@ -193,7 +193,7 @@ function addPremint(c: ContractBuilder, amount: string) {
       });
     }
 
-    const premintAbsolute = getInitialSupply(amount, 18);
+    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
 
     c.addStandaloneImport('starknet::ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });

@@ -8,7 +8,7 @@ import UnsupportedVersion from './UnsupportedVersion.svelte';
 import semver from 'semver';
 import { compatibleContractsSemver as compatibleSolidityContractsSemver } from '@openzeppelin/wizard';
 import { compatibleContractsSemver as compatibleCairoContractsSemver } from '@openzeppelin/wizard-cairo';
-import { InitialOptions } from './initial-options';
+import type { InitialOptions } from './initial-options';
 
 function postResize() {
   const { height } = document.documentElement.getBoundingClientRect();

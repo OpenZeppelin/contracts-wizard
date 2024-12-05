@@ -33,14 +33,14 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
   return t;
 }
 
-export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
+export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     requireAccessControl(c, trait, functions.upgrade, access, 'UPGRADER', 'upgrader');
   }
 }
 
-export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account) {
+export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     switch (type) {

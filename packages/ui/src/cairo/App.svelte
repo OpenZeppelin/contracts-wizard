@@ -164,7 +164,7 @@
         <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721}/>
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155}/>
+        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155}/>
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>

@@ -3,13 +3,14 @@ import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = typeof accessOptions[number];
 
 /**
  * Sets access control for the contract by adding inheritance.
  */
- export function setAccessControl(c: ContractBuilder, access: Access) {
+ export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access) {
     case 'ownable': {
       c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
@@ -53,11 +54,17 @@ export type Access = typeof accessOptions[number];
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
+export function requireAccessControl(
+  c: ContractBuilder, 
+  trait: BaseImplementedTrait, 
+  fn: BaseFunction, 
+  access: Access, 
+  roleIdPrefix: string, 
+  roleOwner: string | undefined
+): void {
   if (access === false) {
-    access = 'ownable';
+    access = DEFAULT_ACCESS_CONTROL;
   }
-
   setAccessControl(c, access);
 
   switch (access) {
