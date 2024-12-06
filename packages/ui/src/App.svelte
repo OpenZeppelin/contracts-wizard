@@ -198,7 +198,7 @@
     }
 </script>
 
-<div class="container flex flex-col gap-4 p-4">
+<div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
 
   <div class="header flex flex-row justify-between">
@@ -229,13 +229,13 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+      <button class="action-button min-w-[40px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
-          Copied
+          
         {:else}
           <CopyIcon />
-          Copy to Clipboard
+          
         {/if}
       </button>
 
@@ -254,7 +254,7 @@
           on:click={remixHandler}
         >
           <RemixIcon />
-          Open in Remix
+          
         </button>
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
@@ -305,8 +305,8 @@
     </div>
   </div>
 
-  <div class="flex flex-row gap-4 grow">
-    <div class="controls w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+  <div class="flex flex-row grow">
+    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
@@ -330,22 +330,35 @@
       </div>
     </div>
 
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      <div class="
+      {showDeployModal ? '' : 'button-bg'}
+        absolute
+        p-px
+        right-4
+        rounded-full
+        top-4
+        z-30 
+        ">
       <button 
-        class="text-sm absolute top-4 right-4 p-2 pr-4 rounded-lg cursor-pointer flex items-center gap-2 z-50"
-        class:bg-blue-500={!showDeployModal}
-        class:bg-white={showDeployModal}
-        class:text-white={!showDeployModal}
-        class:text-gray-800={showDeployModal}
-        class:border-none={!showDeployModal}
-        class:border-gray-800={showDeployModal}
+        class="text-sm
+        border-solid
+        p-2
+        pr-4
+        pl-4
+        rounded-full
+        cursor-pointer
+        flex items-center
+        gap-2
+        {showDeployModal ? 'bg-white text-gray-800 border border-zinc-300' : 'bg-indigo-600 text-white border-indigo-600'}"
         on:click={() => showDeployModal = !showDeployModal}
       >
-        {#if showDeployModal} <ArrowsRight />
-        {:else} <ArrowsLeft />
+        {#if showDeployModal}Hide
+        {:else}Deploy with Defender
         {/if}
-        Deploy with Defender
+        
       </button>
+    </div>
       <pre class="flex flex-col grow basis-0 overflow-auto">
         <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
@@ -355,6 +368,76 @@
 </div>
 
 <style lang="postcss">
+ /* start of the magic */
+  @property --angle{
+  syntax: '<angle>'; 
+  inherits: false;
+  initial-value: 40deg;
+	}
+	@property --spread{
+  syntax: '<angle>'; 
+  inherits: false;
+  initial-value: 0deg;
+	}
+  @property --x {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --y {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --blur{
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;  
+  }
+@keyframes conic-effect {
+  0% {
+    --angle: 40deg;
+		--spread: 0deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+	10% {
+    --x: 2px;
+    --y: -2px;
+	}
+  20% {
+    --blur: 15px;
+		--spread: 80deg;
+  }
+
+	30% {
+    --x: -2px;
+    --y: -2px;
+	}
+	40% {
+    --angle: 320deg; 
+		--spread: 00deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+  100% {
+    --angle: 320deg;
+		--spread: 0deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+}
+.button-bg{
+  animation: conic-effect 12s ease-in-out infinite;
+  animation-delay: 4.2s;
+  background: conic-gradient(rgb(79, 70, 229) calc(var(--angle) - var(--spread)),#7E7ADA var(--angle),rgb(79, 70, 229) calc(var(--angle) + var(--spread)));
+  box-shadow: var(--x) var(--y) var(--blur) #9793da45;
+  display: inline-flex;
+}
+/* end of the magic */
   .container {
     background-color: var(--gray-1);
     border: 1px solid var(--gray-2);
@@ -371,7 +454,7 @@
   }
 
   .tab button, .action-button, :global(.overflow-btn) {
-    padding: var(--size-2) var(--size-3);
+    padding: var(--size-2);
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
@@ -415,7 +498,7 @@
     }
 
     :global(.icon) {
-      margin-right: var(--size-1);
+      margin: 0 var(--size-1);
     }
   }
 
@@ -424,10 +507,10 @@
     padding: var(--size-4);
   }
 
-  .controls, .output {
-    border-radius: 5px;
+  /* .controls, .output {
+    border-radius: 5px; 
     box-shadow: var(--shadow);
-  }
+  }*/
 
   .controls-footer {
     display: flex;
