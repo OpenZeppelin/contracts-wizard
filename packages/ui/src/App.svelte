@@ -229,7 +229,7 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[40px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
           
@@ -440,8 +440,6 @@
 /* end of the magic */
   .container {
     background-color: var(--gray-1);
-    border: 1px solid var(--gray-2);
-    border-radius: 10px;
     min-width: 32rem;
   }
 
@@ -453,11 +451,15 @@
     color: var(--gray-5);
   }
 
-  .tab button, .action-button, :global(.overflow-btn) {
-    padding: var(--size-2);
-    border-radius: 6px;
+  .tab button, :global(.overflow-btn) {
+    padding: var(--size-2) var(--size-4);
+    border-radius: 12px; 
     font-weight: bold;
     cursor: pointer;
+  }
+  .action-button {
+    padding: var(--size-2);
+    border-radius: 12px; 
   }
 
   .tab button, :global(.overflow-btn) {
