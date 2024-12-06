@@ -16,22 +16,36 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
-    import OzIcon from './icons/OzIcon.svelte';
+    import ArrowsLeft from './icons/ArrowsLeft.svelte';
+    import ArrowsRight from './icons/ArrowsRight.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
     import Wiz from './Wiz.svelte';
+    import DefenderDeployModal from './DefenderDeployModal.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
+    import { getImports } from '@openzeppelin/wizard/get-imports';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
     import { InitialOptions } from './initial-options';
+    import { postMessageToIframe } from './post-message';
+    import { debouncer } from './utils/helpers';
 
     const dispatch = createEventDispatcher();
+
+    // listens to contract changes and posts them to the defender deploy iframe.
+    // we debounce the call to avoid sending too many messages while the user is editing.
+    const debouncedPostMessage = debouncer((contract) => {
+      postMessageToIframe('defender-deploy', { 
+        kind: 'oz-wizard-defender-deploy',
+        sources: getSolcSources(contract)
+      });
+    }, 600);
 
     export let initialTab: string | undefined = 'ERC20';
 
@@ -43,6 +57,8 @@
 
     export let initialOpts: InitialOptions = {};
     let initialValuesSet = false;
+
+    let showDeployModal = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
@@ -86,6 +102,14 @@
 
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+
+    $: if (contract || showDeployModal) debouncedPostMessage(contract);
+
+    const getSolcSources = (contract: Contract) => {
+      const sources = getImports(contract);
+      sources[contract.name] = { content: code };
+      return sources;
+    }
 
     const language = 'solidity';
 
@@ -205,13 +229,6 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <a href="https://docs.openzeppelin.com/defender/v2/tutorial/deploy?utm_campaign=Defender%20GA_2024&utm_source=Wizard#environment_setup" target="_blank" rel="noopener noreferrer">
-        <button class="action-button min-w-[165px]">
-          <OzIcon />
-          Deploy with Defender
-        </button>
-      </a>
-
       <button class="action-button min-w-[165px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
@@ -313,8 +330,26 @@
       </div>
     </div>
 
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      <button 
+        class="text-sm absolute top-4 right-4 p-2 pr-4 rounded-lg cursor-pointer flex items-center gap-2 z-50"
+        class:bg-blue-500={!showDeployModal}
+        class:bg-white={showDeployModal}
+        class:text-white={!showDeployModal}
+        class:text-gray-800={showDeployModal}
+        class:border-none={!showDeployModal}
+        class:border-gray-800={showDeployModal}
+        on:click={() => showDeployModal = !showDeployModal}
+      >
+        {#if showDeployModal} <ArrowsRight />
+        {:else} <ArrowsLeft />
+        {/if}
+        Deploy with Defender
+      </button>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
+      </pre>
+      <DefenderDeployModal isOpen={showDeployModal} />
     </div>
   </div>
 </div>
