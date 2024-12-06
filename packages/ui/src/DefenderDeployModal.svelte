@@ -28,7 +28,7 @@
         id="defender-deploy"
         title="Defender Deploy"
         src={devMode ? 'http://localhost:5173' : 'https://defender-deploy-wizard.netlify.app/'}
-        class={`flex-grow border-none mt-12 ${!loaded ? 'hidden' : ''}`}
+        class={`flex-grow border-none mt-6 ${!loaded ? 'hidden' : ''}`}
         on:load={handleLoad}
       />
     </div>
