@@ -26,7 +26,7 @@
 <div class="dropdown" bind:this={dropdownElement} on:focusout={handleFocusout} on:click={handleClick}>
   <slot name="button"></slot>
 
-  <div class="dropdown-items" class:active>
+  <div class="dropdown-items z-50" class:active>
     <slot {active}></slot>
   </div>
 </div>

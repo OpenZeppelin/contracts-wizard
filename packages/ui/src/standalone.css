@@ -2,7 +2,7 @@
 @import "styles/vars.css";
 
 body {
-  background: #f9fafb;
+  /*background: #f9fafb;*/
   font-family: Helvetica, Arial, sans-serif;
   margin: 0;
   line-height: 1.8;
@@ -111,9 +111,9 @@ body {
   margin: -12rem auto 0;
 }
 .wizard {
-  background-color: #f9fafb;
+  /*background-color: #f9fafb;
   box-shadow: 0px 10px 40px rgb(108 133 171 / 20%);
-  border-radius: 1rem;
+   border-radius: 1rem; */
   min-width: 800px;
   max-width: 1500px;
   margin: auto;

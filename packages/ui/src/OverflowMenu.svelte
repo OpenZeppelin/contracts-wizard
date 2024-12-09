@@ -71,7 +71,7 @@
 -->
 <svelte:options immutable={true} />
 
-<div class="flex overflow-hidden" bind:this={container}>
+<div class="flex overflow-hidden gap-2" bind:this={container}>
   <slot overflow={false}></slot>
 
   <Tooltip let:trigger interactive theme="light border" arrow={false}>
