@@ -332,28 +332,30 @@
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
       <div class="
-      {showDeployModal ? '' : 'button-bg'}
+      {showDeployModal ? 'hide-deploy' : 'button-bg'}
         absolute
         p-px
         right-4
         rounded-full
         top-4
-        z-30 
+        z-10
         ">
       <button 
         class="text-sm
         border-solid
+        border
         p-2
         pr-4
-        pl-4
+
         rounded-full
         cursor-pointer
         flex items-center
         gap-2
-        {showDeployModal ? 'bg-white text-gray-800 border border-zinc-300' : 'bg-indigo-600 text-white border-indigo-600'}"
+        transition-all
+        {showDeployModal ? 'pl-2 bg-white border-white' : 'pl-4 bg-indigo-600 border-indigo-600 text-white'}"
         on:click={() => showDeployModal = !showDeployModal}
       >
-        {#if showDeployModal}Hide
+        {#if showDeployModal}<ArrowsRight/>
         {:else}Deploy with Defender
         {/if}
         
@@ -433,10 +435,38 @@
 .button-bg{
   animation: conic-effect 12s ease-in-out infinite;
   animation-delay: 4.2s;
-  background: conic-gradient(rgb(79, 70, 229) calc(var(--angle) - var(--spread)),#7E7ADA var(--angle),rgb(79, 70, 229) calc(var(--angle) + var(--spread)));
+  background: conic-gradient(#4f46e5 calc(var(--angle) - var(--spread)),#7E7ADA var(--angle),rgb(79, 70, 229) calc(var(--angle) + var(--spread)));
   box-shadow: var(--x) var(--y) var(--blur) #9793da45;
   display: inline-flex;
 }
+
+.button-bg:hover {
+  transform: translatex(-2px);;
+}
+
+.hide-deploy {
+  transform: translateX(-328px);
+  background-color: white; 
+  transition: transform 0.2s 300ms;
+
+}
+.hide-deploy button{
+  background-color: white;
+  border: 1px solid white;
+  /* transition: background-color 600ms linear; */
+}
+
+.hide-deploy:hover {
+  transform: translatex(-330px);
+}
+
+/* .button-bg button {
+  
+}
+.button-bg button:hover {
+  background-color: #453dd9;
+  border-color: #453dd9;
+} */
 /* end of the magic */
   .container {
     background-color: var(--gray-1);
@@ -508,11 +538,6 @@
     background-color: white;
     padding: var(--size-4);
   }
-
-  /* .controls, .output {
-    border-radius: 5px; 
-    box-shadow: var(--shadow);
-  }*/
 
   .controls-footer {
     display: flex;

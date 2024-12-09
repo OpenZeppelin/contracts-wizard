@@ -101,7 +101,7 @@
 
 </script>
 
-<div class="container flex flex-col gap-4 p-4">
+<div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
@@ -124,13 +124,13 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler}>
         {#if copied}
           <CheckIcon />
-          Copied
+          <!-- Copied -->
         {:else}
           <CopyIcon />
-          Copy to Clipboard
+          <!-- Copy to Clipboard -->
         {/if}
       </button>
 
@@ -151,8 +151,8 @@
     </div>
   </div>
 
-  <div class="flex flex-row gap-4 grow">
-    <div class="controls w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+  <div class="flex flex-row grow">
+    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
@@ -169,7 +169,7 @@
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
       <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
@@ -178,8 +178,8 @@
 <style lang="postcss">
   .container {
     background-color: var(--gray-1);
-    border: 1px solid var(--gray-2);
-    border-radius: 10px;
+    /* border: 1px solid var(--gray-2); */
+    /* border-radius: 10px; */
     min-width: 32rem;
   }
 
@@ -191,9 +191,9 @@
     color: var(--gray-5);
   }
 
-  .tab button, .action-button, :global(.overflow-btn) {
+  .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
-    border-radius: 6px;
+    border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
   }
@@ -201,6 +201,11 @@
   .tab button, :global(.overflow-btn) {
     border: 0;
     background-color: transparent;
+  }
+
+  .action-button {
+    padding: var(--size-2);
+    border-radius: 12px; 
   }
 
   .tab button:hover, :global(.overflow-btn):hover {
@@ -232,7 +237,7 @@
     }
 
     :global(.icon) {
-      margin-right: var(--size-1);
+      margin-right: 0 var(--size-1);
     }
   }
 
@@ -241,10 +246,6 @@
     padding: var(--size-4);
   }
 
-  .controls, .output {
-    border-radius: 5px;
-    box-shadow: var(--shadow);
-  }
 
   .controls-footer {
     display: flex;

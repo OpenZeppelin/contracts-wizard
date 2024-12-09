@@ -1,5 +1,6 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
+  import { elasticIn } from 'svelte/easing';
 
   const devMode = window.location.href.includes('localhost');
 
@@ -14,8 +15,8 @@
 
 {#if isOpen}
   <div 
-    class="fixed right-0 h-[calc(100vh-84px)] w-[360px] bg-white z-20"
-    transition:fly={{ x: 360, duration: 200 }}
+    class="fixed right-4 rounded-r-3xl h-[calc(100vh-84px)] w-[360px] bg-white z-20"
+    transition:fly={{x: 380, duration: 450 }}
   >
     <div class="p-2 h-full flex flex-col">
       {#if !loaded}
