@@ -31,9 +31,12 @@ export function postMessageToIframe(id: 'defender-deploy', msg: Message) {
   var iframe: HTMLIFrameElement | null = document.getElementById(id) as HTMLIFrameElement;
   if (iframe) {
     iframe.contentWindow?.postMessage(msg, '*');
-    // in case the iframe is still loading
+    // in case the iframe is still loading, waits
+    // a second to fully load and tries again
     iframe.onload = () => {
-      iframe?.contentWindow?.postMessage(msg, '*');
+      setTimeout(() => {
+        iframe?.contentWindow?.postMessage(msg, '*');
+      }, 1000);
     }
   }
 }
