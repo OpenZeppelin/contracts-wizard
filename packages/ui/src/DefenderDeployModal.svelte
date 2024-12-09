@@ -17,7 +17,7 @@
     class="fixed right-0 h-[calc(100vh-84px)] w-[360px] bg-white z-20"
     transition:fly={{ x: 360, duration: 200 }}
   >
-    <div class="p-6 h-full flex flex-col">
+    <div class="p-2 h-full flex flex-col">
       {#if !loaded}
         <div class="flex justify-center items-center flex-grow">
           Loading...
@@ -28,7 +28,7 @@
         id="defender-deploy"
         title="Defender Deploy"
         src={devMode ? 'http://localhost:5173' : 'https://defender-deploy-wizard.netlify.app/'}
-        class={`flex-grow border-none mt-12 ${!loaded ? 'hidden' : ''}`}
+        class={`flex-grow border-none mt-10 ${!loaded ? 'hidden' : ''}`}
         on:load={handleLoad}
       />
     </div>
