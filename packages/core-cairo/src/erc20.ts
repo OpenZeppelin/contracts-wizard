@@ -138,7 +138,12 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
         });
       }
 
-      addVotesComponent(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
+      addVotesComponent(
+        c,
+        toFelt252(allOpts.appName, 'appName'),
+        toFelt252(allOpts.appVersion, 'appVersion'),
+        'SNIP12 Metadata',
+      );
 
       const afterUpdateFn = c.addFunction(hooksTrait, {
         name: 'after_update',

@@ -139,7 +139,12 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
           });
         }
 
-      addVotesComponent(c, toFelt252(opts.appName, 'appName'), toFelt252(opts.appVersion, 'appVersion'));
+      addVotesComponent(
+        c,
+        toFelt252(opts.appName, 'appName'),
+        toFelt252(opts.appVersion, 'appVersion'),
+        'SNIP12 Metadata',
+      );
       beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
       beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
     }

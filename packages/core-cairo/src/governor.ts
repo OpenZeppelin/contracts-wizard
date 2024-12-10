@@ -8,9 +8,13 @@ import { setUpgradeableGovernor } from "./set-upgradeable";
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
-export const clockModeOptions = ['blocknumber', 'timestamp'] as const;
+export const clockModeOptions = ['timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = typeof clockModeOptions[number];
+
+const extensionPath = 'openzeppelin::governance::governor::extensions';
+const extensionExternalSection = 'Extensions (external)';
+const extensionInternalSection = 'Extensions (internal)';
 
 export const defaults: Required<GovernorOptions> = {
   name: 'MyGovernor',
@@ -19,7 +23,6 @@ export const defaults: Required<GovernorOptions> = {
   votes: 'erc20votes',
   clockMode: clockModeDefault,
   timelock: 'openzeppelin',
-  blockTime: 12,
   decimals: 18,
   proposalThreshold: '0',
   quorumMode: 'percent',
@@ -42,12 +45,10 @@ export type TimelockOptions = typeof timelockOptions[number];
 export function printGovernor(opts: GovernorOptions = defaults): string {
   return printContract(buildGovernor(opts));
 }
-
 export interface GovernorOptions extends CommonContractOptions {
   name: string;
   delay: string;
   period: string;
-  blockTime?: number;
   proposalThreshold?: string;
   decimals?: number;
   quorumMode?: 'percent' | 'absolute';
@@ -70,7 +71,6 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     ...opts,
     ...withCommonContractDefaults(opts),
     decimals: opts.decimals ?? defaults.decimals,
-    blockTime: opts.blockTime || defaults.blockTime,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
     proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
@@ -98,10 +98,6 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addQuorumAndVotes(c, allOpts);
   addSettings(c, allOpts);
   addExecution(c, allOpts);
-  // addVotes(c);
-  // addTimelock(c, allOpts);
-
-  // setAccessControl(c, allOpts.access);
   setUpgradeableGovernor(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
@@ -126,7 +122,7 @@ const components = defineComponents( {
     }],
   },
   GovernorSettingsComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_settings',
       type: 'GovernorSettingsComponent::Storage',
@@ -138,16 +134,16 @@ const components = defineComponents( {
     impls: [{
       name: 'GovernorSettingsAdminImpl',
       value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
-      section: 'Extensions (external)',
+      section: extensionExternalSection,
     }, {
       name: 'GovernorSettingsImpl',
       value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }],
   },
   GovernorVotesComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_votes',
       type: 'GovernorVotesComponent::Storage',
@@ -159,16 +155,16 @@ const components = defineComponents( {
     impls: [{
       name: 'VotesTokenImpl',
       value: 'GovernorVotesComponent::VotesTokenImpl<ContractState>',
-      section: 'Extensions (external)',
+      section: extensionExternalSection,
     }, {
       name: 'GovernorVotesImpl',
       value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }],
   },
   GovernorVotesQuorumFractionComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_votes',
       type: 'GovernorVotesQuorumFractionComponent::Storage',
@@ -181,20 +177,20 @@ const components = defineComponents( {
       name: 'GovernorQuorumImpl',
       value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }, {
       name: 'GovernorVotesImpl',
       value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }, {
       name: 'QuorumFractionImpl',
       value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
-      section: 'Extensions (external)',
+      section: extensionExternalSection,
     }],
   },
   GovernorCountingSimpleComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_counting',
       type: 'GovernorCountingSimpleComponent::Storage',
@@ -207,11 +203,11 @@ const components = defineComponents( {
       name: 'GovernorCountingSimpleImpl',
       value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }],
   },
   GovernorCoreExecutionComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_execution',
       type: 'GovernorCoreExecutionComponent::Storage',
@@ -224,11 +220,11 @@ const components = defineComponents( {
       name: 'GovernorCoreExecutionImpl',
       value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }],
   },
   GovernorTimelockExecutionComponent: {
-    path: 'openzeppelin::governance::governor::extensions',
+    path: extensionPath,
     substorage: {
       name: 'governor_timelock_execution',
       type: 'GovernorTimelockExecutionComponent::Storage',
@@ -240,18 +236,19 @@ const components = defineComponents( {
     impls: [{
       name: 'TimelockedImpl',
       value: 'GovernorTimelockExecutionComponent::TimelockedImpl<ContractState>',
-      section: 'Extensions (external)',
+      section: extensionExternalSection,
     }, {
       name: 'GovernorTimelockExecutionImpl',
       value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
       embed: false,
-      section: 'Extensions (internal)',
+      section: extensionInternalSection,
     }],
   },
 });
 
 function addBase(c: ContractBuilder, _: GovernorOptions) {
   c.addStandaloneImport('starknet::ContractAddress');
+  c.addStandaloneImport('openzeppelin::governance::governor::DefaultConfig');
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
   c.addStandaloneImport('openzeppelin::governance::governor::GovernorComponent::InternalTrait as GovernorInternalTrait');
   c.addComponent(components.GovernorComponent, [], true);
@@ -279,7 +276,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   });
 
   if (allOpts.settings) {
-    c.addStandaloneImport('openzeppelin::governance::governor::GovernorSettingsComponent::InternalTrait as GovernorSettingsInternalTrait');
+    c.addStandaloneImport(`$${extensionPath}::GovernorSettingsComponent::InternalTrait as GovernorSettingsInternalTrait`);
     c.addComponent(components.GovernorSettingsComponent, [
       { lit: 'VOTING_DELAY' },
       { lit: 'VOTING_PERIOD' },
@@ -423,7 +420,7 @@ function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: nu
     comment: `${quorumNumerator}%`,
     inlineComment: true,
   });
-  c.addStandaloneImport('openzeppelin::governance::governor::GovernorVotesQuorumFractionComponent::InternalTrait as GovernorVotesQuorumFractionInternalTrait');
+  c.addStandaloneImport(`${extensionPath}::GovernorVotesQuorumFractionComponent::InternalTrait as GovernorVotesQuorumFractionInternalTrait`);
   c.addComponent(components.GovernorVotesQuorumFractionComponent, [
     { lit: 'votes_token' },
     { lit: 'QUORUM_NUMERATOR' },
@@ -431,7 +428,7 @@ function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: nu
 }
 
 function addVotesComponent(c: ContractBuilder, _: Required<GovernorOptions>) {
-  c.addStandaloneImport('openzeppelin::governance::governor::GovernorVotesComponent::InternalTrait as GovernorVotesInternalTrait');
+  c.addStandaloneImport(`${extensionPath}::GovernorVotesComponent::InternalTrait as GovernorVotesInternalTrait`);
   c.addComponent(components.GovernorVotesComponent, [
     { lit: 'votes_token' },
   ], true);
@@ -475,7 +472,7 @@ function addExecution(c: ContractBuilder, { timelock }: Required<GovernorOptions
     c.addComponent(components.GovernorCoreExecutionComponent, [], false);
   } else {
     c.addConstructorArgument({ name: 'timelock_controller', type: 'ContractAddress' });
-    c.addStandaloneImport('openzeppelin::governance::governor::GovernorTimelockExecutionComponent::InternalTrait as GovernorTimelockExecutionInternalTrait');
+    c.addStandaloneImport(`${extensionPath}::GovernorTimelockExecutionComponent::InternalTrait as GovernorTimelockExecutionInternalTrait`);
     c.addComponent(components.GovernorTimelockExecutionComponent, [
       { lit: 'timelock_controller' },
     ], true);

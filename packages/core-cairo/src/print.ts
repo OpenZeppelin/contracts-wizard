@@ -62,7 +62,7 @@ function sortImports(contract: Contract): string[] {
   return allImports.sort();
 }
 
-function printConstants(contract: Contract) {
+function printConstants(contract: Contract): Lines[] {
   const lines = [];
   for (const constant of contract.constants) {
     // inlineComment is optional, default to false
@@ -94,7 +94,7 @@ function printImpls(contract: Contract): Lines[] {
 
   // group by section
   let grouped = impls.reduce(
-    (result:any, current:Impl) => {
+    (result: { [section: string]: Impl[] }, current:Impl) => {
       // default section depends on embed
       // embed defaults to true
       let embed = current.embed ?? true;
@@ -172,7 +172,7 @@ function printImplementedTraits(contract: Contract): Lines[] {
 
   // group by section
   let grouped = sortedTraits.reduce(
-    (result:any, current:ImplementedTrait) => {
+    (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
       // default to no section
       let section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
@@ -186,7 +186,7 @@ function printImplementedTraits(contract: Contract): Lines[] {
   return spaceBetween(...sections);
 }
 
-function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]) {
+function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]): Lines[] {
   const lines = [];
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
@@ -203,7 +203,7 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
   return lines;
 }
 
-function printImplementedTrait(trait: ImplementedTrait) {
+function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.name} of ${trait.of} {`);
@@ -308,11 +308,11 @@ export function printValue(value: Value): string {
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
-  kindedName: string, 
-  args: string[], 
-  tag: string | undefined, 
-  returns: string | undefined, 
-  returnLine: string | undefined, 
+  kindedName: string,
+  args: string[],
+  tag: string | undefined,
+  returns: string | undefined,
+  returnLine: string | undefined,
   code: Lines[]
 ): Lines[] {
   const fn = [];
@@ -343,13 +343,10 @@ function printFunction2(
   }
 
   fn.push(accum);
-  
   fn.push(code);
-  
   if (returnLine !== undefined) {
     fn.push([returnLine]);
   }
-
   fn.push('}');
 
   return fn;

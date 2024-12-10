@@ -67,8 +67,8 @@ export function addSRC5Component(c: ContractBuilder, section?: string) {
   }
 }
 
-export function addVotesComponent(c: ContractBuilder, name: string, version: string) {
-  addSNIP12Metadata(c, name, version);
+export function addVotesComponent(c: ContractBuilder, name: string, version: string, section?: string) {
+  addSNIP12Metadata(c, name, version, section);
   c.addComponent(components.NoncesComponent, [], false);
   c.addComponent(components.VotesComponent, [], false);
   c.addImplToComponent(components.VotesComponent, {
