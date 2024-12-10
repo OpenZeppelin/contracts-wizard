@@ -8,6 +8,8 @@ import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
+const MAX_USE_CLAUSE_LINE_LENGTH = 90;
+const TAB = "\t";
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -59,7 +61,8 @@ function printUseClauses(contract: Contract): Lines[] {
       return result;
     }, {});
 
-  return Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
+  const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
+  return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
 }
 
 function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lines[] {
@@ -96,6 +99,39 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
 
       lines.push(`use ${groupName}::{${clauses}};`);
     }
+  }
+  return lines;
+}
+
+// TODO: remove this when we can use a formatting js library
+function splitLongUseClauseLine(line: string): Lines[] {
+  const lines = [];
+
+  let containsBraces = line.indexOf('{') !== -1;
+  if (containsBraces && line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
+    // split at the first brace
+    lines.push(line.slice(0, line.indexOf('{') + 1));
+    lines.push(...splitLongLineInner(line.slice(line.indexOf('{') + 1, -2)));
+    lines.push("};");
+  } else {
+    lines.push(line);
+  }
+  return lines;
+}
+
+function splitLongLineInner(line: string): Lines[] {
+  const lines = [];
+  if (line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
+    const max_accessible_string = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
+    const lastCommaIndex = max_accessible_string.lastIndexOf(',');
+    if (lastCommaIndex !== -1) {
+      lines.push(TAB + max_accessible_string.slice(0, lastCommaIndex + 1));
+      lines.push(...splitLongLineInner(line.slice(lastCommaIndex + 2)));
+    } else {
+      lines.push(TAB + max_accessible_string);
+    }
+  } else {
+    lines.push(TAB + line);
   }
   return lines;
 }
