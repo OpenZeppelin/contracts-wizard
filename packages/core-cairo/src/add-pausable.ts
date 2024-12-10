@@ -25,16 +25,15 @@ const components = defineComponents( {
       name: 'PausableEvent',
       type: 'PausableComponent::Event',
     },
-    impls: [
-      {
+    impls: [{
         name: 'PausableImpl',
         value: 'PausableComponent::PausableImpl<ContractState>',
-      },
+      }, {
+        name: 'PausableInternalImpl',
+        embed: false,
+        value: 'PausableComponent::InternalImpl<ContractState>',
+      }
     ],
-    internalImpl: {
-      name: 'PausableInternalImpl',
-      value: 'PausableComponent::InternalImpl<ContractState>',
-    },
   },
 });
 

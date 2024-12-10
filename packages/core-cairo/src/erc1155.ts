@@ -100,7 +100,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
       priority: 1,
     };
     c.addImplementedTrait(hooksTrait);
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
 
     c.addFunction(hooksTrait, {
       name: 'before_update',
@@ -117,7 +117,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
       ],
     });
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc1155::ERC1155HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc1155', 'ERC1155HooksEmptyImpl');
   }
 }
 
@@ -141,15 +141,15 @@ function addBase(c: ContractBuilder, baseUri: string) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('starknet::ContractAddress');
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('starknet', 'ContractAddress');
+  c.addUseClause('starknet', 'get_caller_address');
   c.addFunction(externalTrait, functions.burn);
   c.addFunction(externalTrait, functions.batch_burn);
   c.addFunction(externalTrait, functions.batchBurn);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
   requireAccessControl(c, externalTrait, functions.batch_mint, access, 'MINTER', 'minter');
 
@@ -175,11 +175,11 @@ const components = defineComponents( {
       name: 'ERC1155Event',
       type: 'ERC1155Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC1155InternalImpl',
+      embed: false,
       value: 'ERC1155Component::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

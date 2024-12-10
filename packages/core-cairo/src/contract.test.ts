@@ -14,16 +14,15 @@ const FOO_COMPONENT: Component = {
     name: 'FooEvent',
     type: 'FooComponent::Event',
   },
-  impls: [
-    {
+  impls: [{
       name: 'FooImpl',
       value: 'FooComponent::FooImpl<ContractState>',
-    },
+    }, {
+      name: 'FooInternalImpl',
+      embed: false,
+      value: 'FooComponent::InternalImpl<ContractState>',
+    }
   ],
-  internalImpl: {
-    name: 'FooInternalImpl',
-    value: 'FooComponent::InternalImpl<ContractState>',
-  },
 };
 
 test('contract basics', t => {
@@ -107,6 +106,7 @@ test('contract with standalone import', t => {
   Foo.addComponent(
     FOO_COMPONENT,
   );
-  Foo.addStandaloneImport('some::library::SomeLibrary');
+  Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });
+

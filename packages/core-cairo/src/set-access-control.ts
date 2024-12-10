@@ -15,7 +15,7 @@ export type Access = typeof accessOptions[number];
     case 'ownable': {
       c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
 
-      c.addStandaloneImport('starknet::ContractAddress');
+      c.addUseClause('starknet', 'ContractAddress');
       c.addConstructorArgument({ name: 'owner', type: 'ContractAddress'});
 
       break;
@@ -40,10 +40,10 @@ export type Access = typeof accessOptions[number];
         }
         addSRC5Component(c);
 
-        c.addStandaloneImport('starknet::ContractAddress');
+        c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: 'default_admin', type: 'ContractAddress'});
 
-        c.addStandaloneImport('openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE');
+        c.addUseClause('openzeppelin::access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
         c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
@@ -76,7 +76,7 @@ export function requireAccessControl(
       const roleId = roleIdPrefix + '_ROLE';
       const addedSuper = c.addSuperVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
       if (roleOwner !== undefined) {
-        c.addStandaloneImport('starknet::ContractAddress');
+        c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
         if (addedSuper) {
           c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
@@ -101,16 +101,14 @@ const components = defineComponents( {
       name: 'OwnableEvent',
       type: 'OwnableComponent::Event',
     },
-    impls: [
-      {
-        name: 'OwnableMixinImpl',
-        value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'OwnableMixinImpl',
+      value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
+    }, {
       name: 'OwnableInternalImpl',
+      embed: false,
       value: 'OwnableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
   AccessControlComponent: {
     path: 'openzeppelin::access::accesscontrol',
@@ -122,10 +120,10 @@ const components = defineComponents( {
       name: 'AccessControlEvent',
       type: 'AccessControlComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'AccessControlInternalImpl',
+      embed: false,
       value: 'AccessControlComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });

@@ -55,7 +55,7 @@ export function buildAccount(opts: AccountOptions): Contract {
       c.addComponent(components.AccountComponent, [{ lit: 'public_key' }], true);
       break;
     case 'eth':
-      c.addStandaloneImport('openzeppelin::account::interface::EthPublicKey;');
+      c.addUseClause('openzeppelin::account::interface', 'EthPublicKey');
       c.addConstructorArgument({ name: 'public_key', type: 'EthPublicKey' });
       c.addComponent(components.EthAccountComponent, [{ lit: 'public_key' }], true);
       break;
@@ -160,11 +160,11 @@ const components = defineComponents( {
       name: 'AccountEvent',
       type: 'AccountComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'AccountInternalImpl',
+      embed: false,
       value: 'AccountComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
   EthAccountComponent: {
     path: 'openzeppelin::account::eth_account',
@@ -176,10 +176,10 @@ const components = defineComponents( {
       name: 'EthAccountEvent',
       type: 'EthAccountComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'EthAccountInternalImpl',
+      embed: false,
       value: 'EthAccountComponent::InternalImpl<ContractState>',
-    },
+    }]
   },
 });

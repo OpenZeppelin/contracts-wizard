@@ -138,7 +138,12 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
         });
       }
 
-      addVotesComponent(c, toFelt252(allOpts.appName, 'appName'), toFelt252(allOpts.appVersion, 'appVersion'));
+      addVotesComponent(
+        c,
+        toFelt252(allOpts.appName, 'appName'),
+        toFelt252(allOpts.appVersion, 'appVersion'),
+        'SNIP12 Metadata',
+      );
 
       const afterUpdateFn = c.addFunction(hooksTrait, {
         name: 'after_update',
@@ -157,7 +162,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       );
     }
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc20', 'ERC20HooksEmptyImpl');
   }
 }
 
@@ -179,7 +184,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('starknet', 'get_caller_address');
   c.addFunction(externalTrait, functions.burn);
 }
 
@@ -195,7 +200,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
 
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
     c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
   }
@@ -203,7 +208,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
 /**
  * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
- * 
+ *
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
  * @returns `premint` with zeros padded or removed based on `decimals`.
@@ -243,7 +248,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
@@ -258,11 +263,11 @@ const components = defineComponents( {
       name: 'ERC20Event',
       type: 'ERC20Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC20InternalImpl',
+      embed: false,
       value: 'ERC20Component::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

@@ -28,11 +28,11 @@ const components = defineComponents( {
       name: 'VotesEvent',
       type: 'VotesComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'VotesInternalImpl',
+      embed: false,
       value: 'VotesComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 
   NoncesComponent: {
@@ -54,32 +54,38 @@ const components = defineComponents( {
   },
 })
 
-export function addSRC5Component(c: ContractBuilder) {
+export function addSRC5Component(c: ContractBuilder, section?: string) {
   c.addComponent(components.SRC5Component, [], false);
 
   if (!c.interfaceFlags.has('ISRC5')) {
     c.addImplToComponent(components.SRC5Component, {
       name: 'SRC5Impl',
       value: 'SRC5Component::SRC5Impl<ContractState>',
+      section,
     });
     c.addInterfaceFlag('ISRC5');
   }
 }
 
-export function addVotesComponent(c: ContractBuilder, name: string, version: string) {
-  c.addStandaloneImport('openzeppelin::utils::cryptography::snip12::SNIP12Metadata');
+export function addVotesComponent(c: ContractBuilder, name: string, version: string, section?: string) {
+  addSNIP12Metadata(c, name, version, section);
   c.addComponent(components.NoncesComponent, [], false);
   c.addComponent(components.VotesComponent, [], false);
   c.addImplToComponent(components.VotesComponent, {
     name: 'VotesImpl',
     value: `VotesComponent::VotesImpl<ContractState>`,
   });
+}
+
+export function addSNIP12Metadata(c: ContractBuilder, name: string, version: string, section?: string) {
+  c.addUseClause('openzeppelin::utils::cryptography::snip12', 'SNIP12Metadata');
 
   const SNIP12Metadata: BaseImplementedTrait = {
     name: 'SNIP12MetadataImpl',
     of: 'SNIP12Metadata',
     tags: [],
     priority: 0,
+    section,
   };
   c.addImplementedTrait(SNIP12Metadata);
 
