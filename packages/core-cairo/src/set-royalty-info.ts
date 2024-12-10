@@ -48,7 +48,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   ];
 
   c.addComponent(components.ERC2981Component, initParams, true);
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   c.addConstructorArgument({ name: 'default_royalty_receiver', type: 'ContractAddress'});
 
   switch (access) {
@@ -69,7 +69,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   }
 
   if (feeDenominator === DEFAULT_FEE_DENOMINATOR) {
-    c.addStandaloneImport('openzeppelin::token::common::erc2981::DefaultConfig');
+    c.addUseClause('openzeppelin::token::common::erc2981', 'DefaultConfig');
   } else {
     const trait: BaseImplementedTrait = {
       name: 'ERC2981ImmutableConfig',

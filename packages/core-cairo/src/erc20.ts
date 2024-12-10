@@ -162,7 +162,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       );
     }
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc20::ERC20HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc20', 'ERC20HooksEmptyImpl');
   }
 }
 
@@ -184,7 +184,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('starknet', 'get_caller_address');
   c.addFunction(externalTrait, functions.burn);
 }
 
@@ -200,7 +200,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
 
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
     c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
   }
@@ -248,7 +248,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 

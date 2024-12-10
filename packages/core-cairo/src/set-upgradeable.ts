@@ -18,8 +18,8 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
 
   c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addStandaloneImport('openzeppelin::upgrades::interface::IUpgradeable');
-  c.addStandaloneImport('starknet::ClassHash');
+  c.addUseClause('openzeppelin::upgrades::interface', 'IUpgradeable');
+  c.addUseClause('starknet', 'ClassHash');
 
   const t: BaseImplementedTrait = {
     name: 'UpgradeableImpl',
@@ -43,7 +43,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
-    c.addStandaloneImport('openzeppelin::governance::governor::GovernorComponent::InternalExtendedImpl');
+    c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalExtendedImpl');
     c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
   }
 }

@@ -106,6 +106,7 @@ test('contract with standalone import', t => {
   Foo.addComponent(
     FOO_COMPONENT,
   );
-  Foo.addStandaloneImport('some::library::SomeLibrary');
+  Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });
+

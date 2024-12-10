@@ -247,10 +247,10 @@ const components = defineComponents( {
 });
 
 function addBase(c: ContractBuilder, _: GovernorOptions) {
-  c.addStandaloneImport('starknet::ContractAddress');
-  c.addStandaloneImport('openzeppelin::governance::governor::DefaultConfig');
+  c.addUseClause('starknet', 'ContractAddress');
+  c.addUseClause('openzeppelin::governance::governor', 'DefaultConfig');
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
-  c.addStandaloneImport('openzeppelin::governance::governor::GovernorComponent::InternalTrait as GovernorInternalTrait');
+  c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalTrait', { alias: 'GovernorInternalTrait' });
   c.addComponent(components.GovernorComponent, [], true);
 }
 
@@ -276,7 +276,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   });
 
   if (allOpts.settings) {
-    c.addStandaloneImport(`$${extensionPath}::GovernorSettingsComponent::InternalTrait as GovernorSettingsInternalTrait`);
+    c.addUseClause(`${extensionPath}::GovernorSettingsComponent`, 'InternalTrait', { alias: 'GovernorSettingsInternalTrait' });
     c.addComponent(components.GovernorSettingsComponent, [
       { lit: 'VOTING_DELAY' },
       { lit: 'VOTING_PERIOD' },
@@ -420,7 +420,7 @@ function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: nu
     comment: `${quorumNumerator}%`,
     inlineComment: true,
   });
-  c.addStandaloneImport(`${extensionPath}::GovernorVotesQuorumFractionComponent::InternalTrait as GovernorVotesQuorumFractionInternalTrait`);
+  c.addUseClause(`${extensionPath}::GovernorVotesQuorumFractionComponent`, 'InternalTrait', { alias: 'GovernorVotesQuorumFractionInternalTrait' });
   c.addComponent(components.GovernorVotesQuorumFractionComponent, [
     { lit: 'votes_token' },
     { lit: 'QUORUM_NUMERATOR' },
@@ -428,7 +428,7 @@ function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: nu
 }
 
 function addVotesComponent(c: ContractBuilder, _: Required<GovernorOptions>) {
-  c.addStandaloneImport(`${extensionPath}::GovernorVotesComponent::InternalTrait as GovernorVotesInternalTrait`);
+  c.addUseClause(`${extensionPath}::GovernorVotesComponent`, 'InternalTrait', { alias: 'GovernorVotesInternalTrait' });
   c.addComponent(components.GovernorVotesComponent, [
     { lit: 'votes_token' },
   ], true);
@@ -472,7 +472,7 @@ function addExecution(c: ContractBuilder, { timelock }: Required<GovernorOptions
     c.addComponent(components.GovernorCoreExecutionComponent, [], false);
   } else {
     c.addConstructorArgument({ name: 'timelock_controller', type: 'ContractAddress' });
-    c.addStandaloneImport(`${extensionPath}::GovernorTimelockExecutionComponent::InternalTrait as GovernorTimelockExecutionInternalTrait`);
+    c.addUseClause(`${extensionPath}::GovernorTimelockExecutionComponent`, 'InternalTrait', { alias: 'GovernorTimelockExecutionInternalTrait' });
     c.addComponent(components.GovernorTimelockExecutionComponent, [
       { lit: 'timelock_controller' },
     ], true);

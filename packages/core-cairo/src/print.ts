@@ -1,12 +1,13 @@
 import 'array.prototype.flatmap/auto';
 
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, } from './contract';
+import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
+const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -21,7 +22,7 @@ export function printContract(contract: Contract): string {
         `${contractAttribute}`,
         `mod ${contract.name} {`,
         spaceBetween(
-          printImports(contract),
+          printUseClauses(contract),
           printConstants(contract),
           printComponentDeclarations(contract),
           printImpls(contract),
@@ -44,22 +45,67 @@ function printSuperVariables(contract: Contract): string[] {
   return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
-function printImports(contract: Contract): string[] {
-  const lines: string[] = [];
-  sortImports(contract).forEach(i => lines.push(`use ${i}`));
-  return withSemicolons(lines);
+function printUseClauses(contract: Contract): Lines[] {
+  const useClauses = sortUseClauses(contract);
+
+  // group by containerPath
+  const grouped = useClauses.reduce(
+    (result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
+      if (useClause.groupable) {
+        (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
+      } else {
+        (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
+      }
+      return result;
+    }, {});
+
+  return Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
 }
 
-function sortImports(contract: Contract): string[] {
-  const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
-  const allImports = componentImports.concat(contract.standaloneImports);
-  const superVars = contract.superVariables;
-  if (superVars.length === 1) {
-    allImports.push(`super::${superVars[0]!.name}`);
-  } else if (superVars.length > 1) {
-    allImports.push(`super::{${superVars.map(v => v.name).join(', ')}}`);
+function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lines[] {
+  const lines = [];
+  if (groupName === STANDALONE_IMPORTS_GROUP) {
+    for (const useClause of group) {
+      let alias = useClause.alias ?? '';
+      if (alias.length > 0) {
+        lines.push(`use ${useClause.containerPath}::${useClause.name} as ${alias};`);
+      } else {
+        lines.push(`use ${useClause.containerPath}::${useClause.name};`);
+      }
+    }
+  } else {
+    if (group.length == 1) {
+      let alias = group[0]!.alias ?? '';
+      if (alias.length > 0) {
+        lines.push(`use ${groupName}::${group[0]!.name} as ${alias};`);
+      } else {
+        lines.push(`use ${groupName}::${group[0]!.name};`);
+      }
+
+    } else if (group.length > 1) {
+      let clauses = group.reduce((clauses, useClause) => {
+        let alias = useClause.alias ?? '';
+        if (alias.length > 0) {
+          clauses += `${useClause.name} as ${useClause.alias}, `;
+        } else {
+          clauses += `${useClause.name}, `;
+        }
+        return clauses;
+      }, '');
+      clauses = clauses.slice(0, -2);
+
+      lines.push(`use ${groupName}::{${clauses}};`);
+    }
   }
-  return allImports.sort();
+  return lines;
+}
+
+function sortUseClauses(contract: Contract): UseClause[] {
+  return contract.useClauses.sort((a, b) => {
+    const aFullPath = `${a.containerPath}::${a.name}`;
+    const bFullPath = `${b.containerPath}::${b.name}`;
+    return aFullPath.localeCompare(bFullPath);
+  });
 }
 
 function printConstants(contract: Contract): Lines[] {

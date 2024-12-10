@@ -78,7 +78,7 @@ export function addVotesComponent(c: ContractBuilder, name: string, version: str
 }
 
 export function addSNIP12Metadata(c: ContractBuilder, name: string, version: string, section?: string) {
-  c.addStandaloneImport('openzeppelin::utils::cryptography::snip12::SNIP12Metadata');
+  c.addUseClause('openzeppelin::utils::cryptography::snip12', 'SNIP12Metadata');
 
   const SNIP12Metadata: BaseImplementedTrait = {
     name: 'SNIP12MetadataImpl',

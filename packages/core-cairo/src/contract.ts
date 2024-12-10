@@ -4,7 +4,7 @@ export interface Contract {
   license: string;
   name: string;
   account: boolean;
-  standaloneImports: string[];
+  useClauses: UseClause[];
   components: Component[];
   constants: Variable[];
   constructorCode: string[];
@@ -15,6 +15,13 @@ export interface Contract {
 }
 
 export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
+
+export interface UseClause {
+  containerPath: string;
+  name: string;
+  groupable?: boolean;
+  alias?: string;
+}
 
 export interface Component {
   name: string;
@@ -103,7 +110,7 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private superVariablesMap: Map<string, Variable> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
-  private standaloneImportsSet: Set<string> = new Set();
+  private useClausesMap: Map<string, UseClause> = new Map();
   private interfaceFlagsSet: Set<string> = new Set();
 
   constructor(name: string, account: boolean = false) {
@@ -127,8 +134,8 @@ export class ContractBuilder implements Contract {
     return [...this.constantsMap.values()];
   }
 
-  get standaloneImports(): string[] {
-    return [...this.standaloneImportsSet];
+  get useClauses(): UseClause[] {
+    return [...this.useClausesMap.values()];
   }
 
   /**
@@ -138,11 +145,18 @@ export class ContractBuilder implements Contract {
     return this.interfaceFlagsSet;
   }
 
-  addStandaloneImport(fullyQualified: string): void {
-    this.standaloneImportsSet.add(fullyQualified);
+  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+    // groupable defaults to true
+    const groupable = options?.groupable ?? true;
+    const alias = options?.alias ?? '';
+    const present = this.useClausesMap.has(name);
+    if (!present) {
+      this.useClausesMap.set(name, { containerPath, name, groupable, alias });
+    }
   }
 
   addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
+    this.addUseClause(component.path, component.name);
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
@@ -179,6 +193,7 @@ export class ContractBuilder implements Contract {
       return false;
     } else {
       this.superVariablesMap.set(variable.name, variable);
+      this.addUseClause('super', variable.name);
       return true;
     }
   }
@@ -189,7 +204,7 @@ export class ContractBuilder implements Contract {
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = { 
+      const t: ImplementedTrait = {
         name: baseTrait.name,
         of: baseTrait.of,
         tags: [ ...baseTrait.tags ],

@@ -113,7 +113,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       priority: 0,
     };
     c.addImplementedTrait(ERC721HooksTrait);
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
 
     const requiresMutState = opts.enumerable || opts.votes;
     const initStateLine = requiresMutState
@@ -159,7 +159,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       code: beforeUpdateCode,
     });
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc721', 'ERC721HooksEmptyImpl');
   }
 }
 
@@ -187,14 +187,14 @@ function addEnumerable(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('core::num::traits::Zero');
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('core::num::traits', 'Zero');
+  c.addUseClause('starknet', 'get_caller_address');
 
   c.addFunction(externalTrait, functions.burn);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.safe_mint, access, 'MINTER', 'minter');
 
   // Camel case version of safe_mint. Access control and pausable are already set on safe_mint.
