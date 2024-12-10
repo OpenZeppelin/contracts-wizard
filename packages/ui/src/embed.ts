@@ -22,7 +22,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
     } else if (e.data.kind === 'oz-wizard-resize') {
       const iframe = iframes.get(e.source);
       if (iframe) {
-        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : 'calc(100vh - 158px)';
+        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : 'calc(100vh - 100px)';
       }
     }
   }
@@ -60,7 +60,7 @@ onDOMContentLoaded(function () {
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = 'calc(100vh - 158px)';
+    iframe.style.height = 'calc(100vh - 100px)';
 
     w.appendChild(iframe);
 
