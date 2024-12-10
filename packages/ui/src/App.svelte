@@ -331,8 +331,31 @@
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
-      <div class="
-      {showDeployModal ? 'hide-deploy' : 'button-bg'}
+     <div class="
+        absolute
+        p-px
+        right-6
+        rounded-full
+        top-4
+        z-10
+        {showDeployModal ? 'hide-deploy' : ''}">
+      <button 
+        class="text-sm
+        border-solid
+        border
+        p-2
+        pr-4
+        rounded-full
+        cursor-pointer
+        flex items-center
+        gap-2
+        transition-all
+        pl-2 bg-white border-white"
+        on:click={() => showDeployModal = !showDeployModal}
+      > 
+        <ArrowsRight/></button></div>
+        <div class="
+        button-bg
         absolute
         p-px
         right-4
@@ -346,21 +369,15 @@
         border
         p-2
         pr-4
-
         rounded-full
         cursor-pointer
         flex items-center
         gap-2
         transition-all
-        {showDeployModal ? 'pl-2 bg-white border-white' : 'pl-4 bg-indigo-600 border-indigo-600 text-white'}"
+        pl-4 bg-indigo-600 border-indigo-600 text-white"
         on:click={() => showDeployModal = !showDeployModal}
-      >
-        {#if showDeployModal}<ArrowsRight/>
-        {:else}Deploy with Defender
-        {/if}
-        
-      </button>
-    </div>
+      > 
+        Deploy with Defender</button></div>
       <pre class="flex flex-col grow basis-0 overflow-auto">
         <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
@@ -438,17 +455,17 @@
   background: conic-gradient(#4f46e5 calc(var(--angle) - var(--spread)),#7E7ADA var(--angle),rgb(79, 70, 229) calc(var(--angle) + var(--spread)));
   box-shadow: var(--x) var(--y) var(--blur) #9793da45;
   display: inline-flex;
+  transition: transform 300ms;
 }
 
 .button-bg:hover {
-  transform: translatex(-2px);;
+  transform: translateX(-2px);
+  transition: transform 300ms;
 }
 
 .hide-deploy {
-  transform: translateX(-328px);
-  background-color: white; 
+  transform: translateX(-320px);
   transition: transform 0.2s 300ms;
-
 }
 .hide-deploy button{
   background-color: white;
@@ -457,7 +474,7 @@
 }
 
 .hide-deploy:hover {
-  transform: translatex(-330px);
+  //transform: translatex(-330px);
 }
 
 /* .button-bg button {
