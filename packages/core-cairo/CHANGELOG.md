@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.20.0 (2024-12-10)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.20.0. ([#419](https://github.com/OpenZeppelin/contracts-wizard/pull/419))
+
 ## 0.19.0 (2024-11-27)
 
 - Add ERC2981 (RoyaltyInfo) for ERC721 and ERC1155 ([#413](https://github.com/OpenZeppelin/contracts-wizard/pull/413))
