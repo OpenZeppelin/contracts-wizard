@@ -149,7 +149,7 @@ export class ContractBuilder implements Contract {
     // groupable defaults to true
     const groupable = options?.groupable ?? true;
     const alias = options?.alias ?? '';
-    let uniqueName = alias.length > 0 ? alias : name;
+    const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
       this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
@@ -170,7 +170,7 @@ export class ContractBuilder implements Contract {
 
   addImplToComponent(component: Component, impl: Impl): void {
     this.addComponent(component);
-    let c = this.componentsMap.get(component.name);
+    const c = this.componentsMap.get(component.name);
     if (c == undefined) {
       throw new Error(`Component ${component.name} has not been added yet`);
     }

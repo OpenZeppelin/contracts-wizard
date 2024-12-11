@@ -69,7 +69,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
   const lines = [];
   if (groupName === STANDALONE_IMPORTS_GROUP) {
     for (const useClause of group) {
-      let alias = useClause.alias ?? '';
+      const alias = useClause.alias ?? '';
       if (alias.length > 0) {
         lines.push(`use ${useClause.containerPath}::${useClause.name} as ${alias};`);
       } else {
@@ -78,7 +78,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
     }
   } else {
     if (group.length == 1) {
-      let alias = group[0]!.alias ?? '';
+      const alias = group[0]!.alias ?? '';
       if (alias.length > 0) {
         lines.push(`use ${groupName}::${group[0]!.name} as ${alias};`);
       } else {
@@ -87,7 +87,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
 
     } else if (group.length > 1) {
       let clauses = group.reduce((clauses, useClause) => {
-        let alias = useClause.alias ?? '';
+        const alias = useClause.alias ?? '';
         if (alias.length > 0) {
           clauses += `${useClause.name} as ${useClause.alias}, `;
         } else {
@@ -107,7 +107,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
 function splitLongUseClauseLine(line: string): Lines[] {
   const lines = [];
 
-  let containsBraces = line.indexOf('{') !== -1;
+  const containsBraces = line.indexOf('{') !== -1;
   if (containsBraces && line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
     // split at the first brace
     lines.push(line.slice(0, line.indexOf('{') + 1));
@@ -148,8 +148,8 @@ function printConstants(contract: Contract): Lines[] {
   const lines = [];
   for (const constant of contract.constants) {
     // inlineComment is optional, default to false
-    let inlineComment = constant.inlineComment ?? false;
-    let commented = !!constant.comment;
+    const inlineComment = constant.inlineComment ?? false;
+    const commented = !!constant.comment;
 
     if (commented && !inlineComment) {
       lines.push(`// ${constant.comment}`);
@@ -175,17 +175,17 @@ function printImpls(contract: Contract): Lines[] {
   const impls = contract.components.flatMap(c => c.impls);
 
   // group by section
-  let grouped = impls.reduce(
+  const grouped = impls.reduce(
     (result: { [section: string]: Impl[] }, current:Impl) => {
       // default section depends on embed
       // embed defaults to true
-      let embed = current.embed ?? true;
-      let section = current.section ?? (embed ? 'External' : 'Internal');
+      const embed = current.embed ?? true;
+      const section = current.section ?? (embed ? 'External' : 'Internal');
       (result[section] = result[section] || []).push(current);
       return result;
     }, {});
 
-  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
     ([section, impls]) => printSection(section, impls as Impl[]),
   );
   return spaceBetween(...sections);
@@ -253,15 +253,15 @@ function printImplementedTraits(contract: Contract): Lines[] {
   });
 
   // group by section
-  let grouped = sortedTraits.reduce(
+  const grouped = sortedTraits.reduce(
     (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
       // default to no section
-      let section = current.section ?? DEFAULT_SECTION;
+      const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
       return result;
     }, {});
 
-  let sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
     ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
   );
 
@@ -406,7 +406,7 @@ function printFunction2(
   let accum = `${kindedName}(`;
 
   if (args.length > 0) {
-    let formattedArgs = args.join(', ');
+    const formattedArgs = args.join(', ');
     if (formattedArgs.length > 80) {
       fn.push(accum);
       accum = '';

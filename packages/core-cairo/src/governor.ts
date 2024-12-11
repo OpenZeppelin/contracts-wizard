@@ -403,7 +403,7 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
       });
     }
 
-    let quorum = (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') ?
+    const quorum = (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') ?
       `${allOpts.quorumAbsolute}` :
       `${allOpts.quorumAbsolute}e${allOpts.decimals}`; // TODO: use the corelib pow function
 
