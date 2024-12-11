@@ -346,7 +346,8 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
   if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
     return { value: proposalThreshold };
   } else {
-    return { value: `${BigInt(proposalThreshold)**BigInt(decimals)}`, comment: `pow!(${proposalThreshold}, ${decimals})` };
+    let value = `${BigInt(proposalThreshold)*BigInt(10)**BigInt(decimals)}`;
+    return { value: `${value}`, comment: `${proposalThreshold} * pow!(10, ${decimals})` };
   }
 }
 
@@ -408,12 +409,17 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
       });
     }
 
-    const quorum = (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') ?
-      `${allOpts.quorumAbsolute}` :
-      `${BigInt(allOpts.quorumAbsolute)**BigInt(allOpts.decimals)}`;
+    let quorum: string;
+    let comment = '';
+    if (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') {
+      quorum = `${allOpts.quorumAbsolute}`;
+    } else {
+      quorum = `${BigInt(allOpts.quorumAbsolute)*BigInt(10)**BigInt(allOpts.decimals)}`;
+      comment = `${allOpts.quorumAbsolute} * pow!(10, ${allOpts.decimals})`;
+    }
 
     addVotesComponent(c, allOpts);
-    addQuorumLocalImpl(c, quorum, `pow!(${allOpts.quorumAbsolute}, ${allOpts.decimals})`);
+    addQuorumLocalImpl(c, quorum, comment);
   }
 }
 
