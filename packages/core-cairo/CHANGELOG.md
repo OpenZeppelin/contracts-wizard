@@ -2,6 +2,8 @@
 
 ## 0.20.0 (2024-12-10)
 
+- Add Governor tab. ([#417](https://github.com/OpenZeppelin/contracts-wizard/pull/417))
+
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v0.20.0. ([#419](https://github.com/OpenZeppelin/contracts-wizard/pull/419))
 
