@@ -1,5 +1,5 @@
-import { contractDefaults as commonDefaults, withCommonContractDefaults } from './common-options';
-import type { CommonContractOptions } from './common-options';
+import { contractDefaults as commonDefaults, withCommonDefaults } from './common-options';
+import type { CommonOptions } from './common-options';
 import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
 import { printContract } from "./print";
@@ -29,12 +29,14 @@ export const defaults: Required<GovernorOptions> = {
   quorumPercent: 4,
   quorumAbsolute: '',
   settings: true,
-  access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   appName: 'OpenZeppelin Governor',
   appVersion: 'v1',
   info: commonDefaults.info
 } as const;
+
+export const quorumModeOptions = ['percent', 'absolute'] as const;
+export type QuorumMode = typeof quorumModeOptions[number];
 
 export const votesOptions = ['erc20votes', 'erc721votes'] as const;
 export type VotesOptions = typeof votesOptions[number];
@@ -45,13 +47,13 @@ export type TimelockOptions = typeof timelockOptions[number];
 export function printGovernor(opts: GovernorOptions = defaults): string {
   return printContract(buildGovernor(opts));
 }
-export interface GovernorOptions extends CommonContractOptions {
+export interface GovernorOptions extends CommonOptions {
   name: string;
   delay: string;
   period: string;
   proposalThreshold?: string;
   decimals?: number;
-  quorumMode?: 'percent' | 'absolute';
+  quorumMode?: QuorumMode;
   quorumPercent?: number;
   quorumAbsolute?: string;
   votes?: VotesOptions;
@@ -69,7 +71,7 @@ export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
-    ...withCommonContractDefaults(opts),
+    ...withCommonDefaults(opts),
     decimals: opts.decimals ?? defaults.decimals,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
