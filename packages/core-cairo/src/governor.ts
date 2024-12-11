@@ -72,10 +72,12 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    delay: opts.delay ?? defaults.delay,
+    period: opts.period ?? defaults.period,
+    proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     decimals: opts.decimals ?? defaults.decimals,
     quorumPercent: opts.quorumPercent ?? defaults.quorumPercent,
     quorumAbsolute: opts.quorumAbsolute ?? defaults.quorumAbsolute,
-    proposalThreshold: opts.proposalThreshold || defaults.proposalThreshold,
     settings: opts.settings ?? defaults.settings,
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,

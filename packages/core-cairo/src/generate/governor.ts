@@ -7,8 +7,8 @@ const booleans = [true, false];
 
 const blueprint = {
   name: ['MyGovernor'],
-  delay: ['1'],
-  period: ['1'],
+  delay: ['1 day'],
+  period: ['1 week'],
   proposalThreshold: ['1'],
   decimals: [18],
   quorumMode: quorumModeOptions,
