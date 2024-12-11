@@ -170,7 +170,7 @@
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
       </div>
       <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} governorType={allOpts.Governor?.type}/>
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
