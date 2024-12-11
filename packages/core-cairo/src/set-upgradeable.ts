@@ -24,6 +24,7 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
   const t: BaseImplementedTrait = {
     name: 'UpgradeableImpl',
     of: 'IUpgradeable<ContractState>',
+    section: 'Upgradeable',
     tags: [
       'abi(embed_v0)'
     ],

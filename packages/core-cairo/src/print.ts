@@ -155,7 +155,7 @@ function printConstants(contract: Contract): Lines[] {
       lines.push(`// ${constant.comment}`);
       lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
     } else if (commented) {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; /* ${constant.comment} */`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
     } else {
       lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
     }
@@ -370,7 +370,8 @@ export function printValue(value: Value): string {
     if ('lit' in value) {
       return value.lit;
     } else if ('note' in value) {
-      return `${printValue(value.value)} /* ${value.note} */`;
+      // TODO: add /* ${value.note} */ after lsp is fixed
+      return `${printValue(value.value)}`;
     } else {
       throw Error('Unknown value type');
     }

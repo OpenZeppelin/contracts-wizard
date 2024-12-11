@@ -276,7 +276,8 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   c.addConstant({
     name: 'PROPOSAL_THRESHOLD',
     type: 'u256',
-    value: getProposalThreshold(allOpts),
+    ...getProposalThreshold(allOpts),
+    inlineComment: true,
   });
 
   if (allOpts.settings) {
@@ -335,7 +336,7 @@ function validateDecimals(decimals: number) {
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): {value: string, comment?: string} {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
@@ -343,9 +344,9 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
   }
 
   if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
-    return proposalThreshold;
+    return { value: proposalThreshold };
   } else {
-    return `${proposalThreshold}e${decimals}`; // TODO: use the corelib pow function
+    return { value: `${BigInt(proposalThreshold)**BigInt(decimals)}`, comment: `pow!(${proposalThreshold}, ${decimals})` };
   }
 }
 
@@ -409,10 +410,10 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
 
     const quorum = (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') ?
       `${allOpts.quorumAbsolute}` :
-      `${allOpts.quorumAbsolute}e${allOpts.decimals}`; // TODO: use the corelib pow function
+      `${BigInt(allOpts.quorumAbsolute)**BigInt(allOpts.decimals)}`;
 
     addVotesComponent(c, allOpts);
-    addQuorumLocalImpl(c, quorum);
+    addQuorumLocalImpl(c, quorum, `pow!(${allOpts.quorumAbsolute}, ${allOpts.decimals})`);
   }
 }
 
@@ -438,11 +439,13 @@ function addVotesComponent(c: ContractBuilder, _: Required<GovernorOptions>) {
   ], true);
 }
 
-function addQuorumLocalImpl(c: ContractBuilder, quorum: string) {
+function addQuorumLocalImpl(c: ContractBuilder, quorum: string, comment: string) {
   c.addConstant({
     name: 'QUORUM',
     type: 'u256',
     value: quorum,
+    comment,
+    inlineComment: true,
   });
   const quorumTrait = {
     name: 'GovernorQuorum',
