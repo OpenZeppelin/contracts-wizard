@@ -1,16 +1,24 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import { elasticIn } from 'svelte/easing';
 
   const devMode = window.location.href.includes('localhost');
 
   export let isOpen = false;
-
   let loaded = false;
+  let showIframe = false;
 
   const handleLoad = () => {
     loaded = true;
   };
+
+  $: if (isOpen) {
+    // Show iframe after modal transition (450ms)
+    setTimeout(() => {
+      showIframe = true;
+    }, 450);
+  } else {
+    showIframe = false;
+  }
 </script>
 
 {#if isOpen}
@@ -24,14 +32,16 @@
           Loading...
         </div>
       {/if}
-
-      <iframe
-        id="defender-deploy"
-        title="Defender Deploy"
-        src={devMode ? 'http://localhost:5173' : 'https://defender-deploy-wizard.netlify.app/'}
-        class={`flex-grow border-none ${!loaded ? 'hidden' : ''}`}
-        on:load={handleLoad}
-      />
     </div>
   </div>
 {/if}
+
+<iframe
+  id="defender-deploy"
+  title="Defender Deploy"
+  src={devMode ? 'http://localhost:5173' : 'https://defender-deploy-wizard.netlify.app/'}
+  class={`fixed z-30 right-3.5 w-[360px] h-[calc(100vh-84px)] border-none 
+    ${!showIframe ? 'invisible' : ''} 
+    ${!loaded ? 'hidden' : ''}`}
+  on:load={handleLoad}
+/>
