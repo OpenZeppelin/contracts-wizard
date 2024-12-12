@@ -113,7 +113,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       priority: 0,
     };
     c.addImplementedTrait(ERC721HooksTrait);
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
 
     const requiresMutState = opts.enumerable || opts.votes;
     const initStateLine = requiresMutState
@@ -139,7 +139,12 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
           });
         }
 
-      addVotesComponent(c, toFelt252(opts.appName, 'appName'), toFelt252(opts.appVersion, 'appVersion'));
+      addVotesComponent(
+        c,
+        toFelt252(opts.appName, 'appName'),
+        toFelt252(opts.appVersion, 'appVersion'),
+        'SNIP12 Metadata',
+      );
       beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
       beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
     }
@@ -154,7 +159,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       code: beforeUpdateCode,
     });
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc721', 'ERC721HooksEmptyImpl');
   }
 }
 
@@ -182,14 +187,14 @@ function addEnumerable(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('core::num::traits::Zero');
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('core::num::traits', 'Zero');
+  c.addUseClause('starknet', 'get_caller_address');
 
   c.addFunction(externalTrait, functions.burn);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.safe_mint, access, 'MINTER', 'minter');
 
   // Camel case version of safe_mint. Access control and pausable are already set on safe_mint.
@@ -207,11 +212,11 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC721InternalImpl',
+      embed: false,
       value: 'ERC721Component::InternalImpl<ContractState>',
-    },
+    }],
   },
   ERC721EnumerableComponent: {
     path: 'openzeppelin::token::erc721::extensions',
@@ -223,16 +228,14 @@ const components = defineComponents( {
       name: 'ERC721EnumerableEvent',
       type: 'ERC721EnumerableComponent::Event',
     },
-    impls: [
-      {
-        name: 'ERC721EnumerableImpl',
-        value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'ERC721EnumerableImpl',
+      value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
+    }, {
       name: 'ERC721EnumerableInternalImpl',
+      embed: false,
       value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

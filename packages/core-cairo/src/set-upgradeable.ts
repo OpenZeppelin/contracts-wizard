@@ -18,12 +18,13 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
 
   c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addStandaloneImport('openzeppelin::upgrades::interface::IUpgradeable');
-  c.addStandaloneImport('starknet::ClassHash');
+  c.addUseClause('openzeppelin::upgrades::interface', 'IUpgradeable');
+  c.addUseClause('starknet', 'ClassHash');
 
   const t: BaseImplementedTrait = {
     name: 'UpgradeableImpl',
     of: 'IUpgradeable<ContractState>',
+    section: 'Upgradeable',
     tags: [
       'abi(embed_v0)'
     ],
@@ -37,6 +38,14 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     requireAccessControl(c, trait, functions.upgrade, access, 'UPGRADER', 'upgrader');
+  }
+}
+
+export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
+  const trait = setUpgradeableBase(c, upgradeable);
+  if (trait !== undefined) {
+    c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalExtendedImpl');
+    c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
   }
 }
 
@@ -65,11 +74,11 @@ const components = defineComponents( {
       name: 'UpgradeableEvent',
       type: 'UpgradeableComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'UpgradeableInternalImpl',
+      embed: false,
       value: 'UpgradeableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

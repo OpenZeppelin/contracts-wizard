@@ -3,6 +3,7 @@ import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20
 import { printERC721, defaults as erc721defaults, isAccessControlRequired as erc721IsAccessControlRequired, ERC721Options } from './erc721';
 import { printERC1155, defaults as erc1155defaults, isAccessControlRequired as erc1155IsAccessControlRequired, ERC1155Options } from './erc1155';
 import { printAccount, defaults as accountDefaults, AccountOptions } from './account';
+import { printGovernor, defaults as governorDefaults, isAccessControlRequired as governorIsAccessControlRequired, GovernorOptions } from './governor';
 import { printCustom, defaults as customDefaults, isAccessControlRequired as customIsAccessControlRequired, CustomOptions } from './custom';
 
 export interface WizardAccountAPI<Options extends CommonOptions>{
@@ -39,6 +40,7 @@ export type ERC20 = WizardContractAPI<ERC20Options>;
 export type ERC721 = WizardContractAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options>;
 export type Account = WizardAccountAPI<AccountOptions>;
+export type Governor = WizardContractAPI<GovernorOptions>;
 export type Custom = WizardContractAPI<CustomOptions>;
 
 export const erc20: ERC20 = {
@@ -59,6 +61,11 @@ export const erc1155: ERC1155 = {
 export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
+}
+export const governor: Governor = {
+  print: printGovernor,
+  defaults: governorDefaults,
+  isAccessControlRequired: governorIsAccessControlRequired
 }
 export const custom: Custom = {
   print: printCustom,

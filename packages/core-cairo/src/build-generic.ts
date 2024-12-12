@@ -3,12 +3,13 @@ import { ERC721Options, buildERC721 } from './erc721';
 import { ERC1155Options, buildERC1155 } from './erc1155';
 import { CustomOptions, buildCustom } from './custom';
 import { AccountOptions, buildAccount } from './account';
-
+import { GovernorOptions, buildGovernor } from './governor';
 export interface KindedOptions {
   ERC20:    { kind: 'ERC20' }    & ERC20Options;
   ERC721:   { kind: 'ERC721' }   & ERC721Options;
   ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
   Account:  { kind: 'Account' }  & AccountOptions;
+  Governor: { kind: 'Governor' } & GovernorOptions;
   Custom:   { kind: 'Custom' }   & CustomOptions;
 }
 
@@ -27,6 +28,9 @@ export function buildGeneric(opts: GenericOptions) {
 
     case 'Account':
       return buildAccount(opts);
+
+    case 'Governor':
+      return buildGovernor(opts);
 
     case 'Custom':
       return buildCustom(opts);

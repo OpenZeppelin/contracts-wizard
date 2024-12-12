@@ -8,6 +8,7 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
+    import GovernorControls from './GovernorControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
@@ -54,7 +55,7 @@
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'Account':
-              break;
+            case 'Governor':
             case 'ERC1155':
             case 'Custom':
           }
@@ -117,6 +118,9 @@
         <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
           Account
         </button>
+        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
+          Governor
+        </button>
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -164,6 +168,9 @@
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
+      </div>
+      <div class:hidden={tab !== 'Governor'}>
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
