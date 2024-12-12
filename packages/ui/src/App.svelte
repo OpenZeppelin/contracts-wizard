@@ -34,18 +34,8 @@
     import { injectHyperlinks } from './utils/inject-hyperlinks';
     import { InitialOptions } from './initial-options';
     import { postMessageToIframe } from './post-message';
-    import { debouncer } from './utils/helpers';
 
     const dispatch = createEventDispatcher();
-
-    // listens to contract changes and posts them to the defender deploy iframe.
-    // we debounce the call to avoid sending too many messages while the user is editing.
-    const debouncedPostMessage = debouncer((contract) => {
-      postMessageToIframe('defender-deploy', { 
-        kind: 'oz-wizard-defender-deploy',
-        sources: getSolcSources(contract)
-      });
-    }, 600);
 
     export let initialTab: string | undefined = 'ERC20';
 
@@ -103,7 +93,10 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
-    $: if (contract || showDeployModal) debouncedPostMessage(contract);
+    $: if (showDeployModal) postMessageToIframe('defender-deploy', { 
+      kind: 'oz-wizard-defender-deploy',
+      sources: getSolcSources(contract)
+    });;
 
     const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
