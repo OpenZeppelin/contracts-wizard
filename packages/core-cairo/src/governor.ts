@@ -8,6 +8,7 @@ import { setUpgradeableGovernor } from "./set-upgradeable";
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
+import { toUint } from './utils/convert-strings';
 export const clockModeOptions = ['timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = typeof clockModeOptions[number];
@@ -347,6 +348,7 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
     return { value: proposalThreshold };
   } else {
     let value = `${BigInt(proposalThreshold)*BigInt(10)**BigInt(decimals)}`;
+    value = toUint(value, 'proposalThreshold', 'u256').toString();
     return { value: `${value}`, comment: `${proposalThreshold} * pow!(10, ${decimals})` };
   }
 }
@@ -415,6 +417,7 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
       quorum = `${allOpts.quorumAbsolute}`;
     } else {
       quorum = `${BigInt(allOpts.quorumAbsolute)*BigInt(10)**BigInt(allOpts.decimals)}`;
+      quorum = toUint(quorum, 'quorumAbsolute', 'u256').toString();
       comment = `${allOpts.quorumAbsolute} * pow!(10, ${allOpts.decimals})`;
     }
 
