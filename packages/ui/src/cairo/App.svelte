@@ -178,8 +178,6 @@
 <style lang="postcss">
   .container {
     background-color: var(--gray-1);
-    /* border: 1px solid var(--gray-2); */
-    /* border-radius: 10px; */
     min-width: 32rem;
   }
 

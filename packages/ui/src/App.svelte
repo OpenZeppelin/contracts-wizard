@@ -387,7 +387,7 @@
 </div>
 
 <style lang="postcss">
- /* start of the magic */
+ /* deploy with defender button border animation start*/
   @property --angle{
   syntax: '<angle>'; 
   inherits: false;
@@ -457,6 +457,7 @@
   display: inline-flex;
   transition: transform 300ms;
 }
+/* end deploy with defender button border animation */
 
 .button-bg:hover {
   transform: translateX(-2px);
@@ -465,26 +466,17 @@
 
 .hide-deploy {
   transform: translateX(-320px);
-  transition: transform 0.2s 300ms;
+  transition: transform 0.45s;
 }
 .hide-deploy button{
   background-color: white;
   border: 1px solid white;
-  /* transition: background-color 600ms linear; */
 }
 
 .hide-deploy:hover {
-  //transform: translatex(-330px);
+  transform: translatex(-318px);
 }
 
-/* .button-bg button {
-  
-}
-.button-bg button:hover {
-  background-color: #453dd9;
-  border-color: #453dd9;
-} */
-/* end of the magic */
   .container {
     background-color: var(--gray-1);
     min-width: 32rem;
