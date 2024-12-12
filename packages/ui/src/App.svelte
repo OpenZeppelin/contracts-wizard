@@ -222,13 +222,11 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
           <CheckIcon />
-          
         {:else}
           <CopyIcon />
-          
         {/if}
       </button>
 
@@ -245,13 +243,14 @@
           class="action-button"
           class:disabled={opts?.upgradeable === "transparent"}
           on:click={remixHandler}
+          title="Open in Remix"
         >
           <RemixIcon />
           
         </button>
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
-          Try using Remix with UUPS upgradability or use Hardhat or Truffle with
+          Try using Remix with UUPS upgradability or use Hardhat or Foundry with
           <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
           <br />
           <!-- svelte-ignore a11y-invalid-attribute -->

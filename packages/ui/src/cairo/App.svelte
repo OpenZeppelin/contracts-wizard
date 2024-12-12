@@ -124,13 +124,11 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
           <CheckIcon />
-          <!-- Copied -->
         {:else}
           <CopyIcon />
-          <!-- Copy to Clipboard -->
         {/if}
       </button>
 
