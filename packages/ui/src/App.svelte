@@ -323,53 +323,22 @@
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
-     <div class="
-        absolute
-        p-px
-        right-6
-        rounded-full
-        top-4
-        z-10
-        {showDeployModal ? 'hide-deploy' : ''}">
-      <button 
-        class="text-sm
-        border-solid
-        border
-        p-2
-        pr-4
-        rounded-full
-        cursor-pointer
-        flex items-center
-        gap-2
-        transition-all
-        pl-2 bg-white border-white"
-        on:click={() => showDeployModal = !showDeployModal}
-      > 
-        <ArrowsRight/></button></div>
-        <div class="
-        button-bg
-        absolute
-        p-px
-        right-4
-        rounded-full
-        top-4
-        z-10
-        ">
-      <button 
-        class="text-sm
-        border-solid
-        border
-        p-2
-        pr-4
-        rounded-full
-        cursor-pointer
-        flex items-center
-        gap-2
-        transition-all
-        pl-4 bg-indigo-600 border-indigo-600 text-white"
-        on:click={() => showDeployModal = !showDeployModal}
-      > 
-        Deploy with Defender</button></div>
+      <div class="absolute p-px right-6 rounded-full top-4 z-10 {showDeployModal ? 'hide-deploy' : ''}">
+        <button
+          class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-2 bg-white border-white"
+          on:click={() => (showDeployModal = !showDeployModal)}
+        >
+          <ArrowsRight />
+        </button>
+      </div>
+      <div class="button-bg absolute p-px right-4 rounded-full top-4 z-10">
+        <button
+          class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-4 bg-indigo-600 border-indigo-600 text-white"
+          on:click={() => (showDeployModal = !showDeployModal)}
+        >
+          Deploy with Defender
+        </button>
+      </div>
       <pre class="flex flex-col grow basis-0 overflow-auto">
         <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
