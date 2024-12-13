@@ -258,7 +258,11 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   const lines: string[] = [];
   imports.map(p => {
     const importContract = helpers.transformImport(p);
-    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
+    if (importContract.name === ''){
+      lines.push(`import "${importContract.path}";`);
+    } else{
+      lines.push(`import {${importContract.name}} from "${importContract.path}";`);
+    }
   });
 
   return lines;

@@ -5,6 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
+  modules: ImportContract[];
   imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
@@ -80,6 +81,7 @@ export class ContractBuilder implements Contract {
   upgradeable = false;
 
   readonly using: Using[] = [];
+  readonly modules: ImportContract[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -109,6 +111,7 @@ export class ContractBuilder implements Contract {
     return [
       ...[...this.parentMap.values()].map(p => p.contract),
       ...this.using.map(u => u.library),
+      ...this.modules,
     ];
   }
 
@@ -126,10 +129,8 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addImportOnly(contract: ImportContract): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params: [], importOnly: true });
-    return !present;
+  addImportOnly(contract: ImportContract) {
+    this.modules.push(contract);
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
