@@ -334,7 +334,14 @@
       <div class="button-bg absolute p-px right-4 rounded-full top-4 z-10">
         <button
           class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-4 bg-indigo-600 border-indigo-600 text-white"
-          on:click={() => (showDeployModal = !showDeployModal)}
+          on:click={
+            async () => {
+              if (opts) {
+                await postConfig(opts, 'defender', language);
+              }
+              showDeployModal = !showDeployModal;
+            }
+          }
         >
           Deploy with Defender
         </button>
