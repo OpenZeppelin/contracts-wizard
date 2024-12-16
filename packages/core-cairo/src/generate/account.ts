@@ -11,6 +11,7 @@ const blueprint = {
   declare: booleans,
   deploy: booleans,
   pubkey: booleans,
+  outsideExecution: booleans,
   upgradeable: upgradeableOptions,
   info: infoOptions,
 };
