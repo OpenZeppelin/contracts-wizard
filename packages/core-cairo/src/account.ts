@@ -17,7 +17,7 @@ export const defaults: Required<AccountOptions> = {
   declare: true,
   deploy: true,
   pubkey: true,
-  outsideExecution: false,
+  outsideExecution: true,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;

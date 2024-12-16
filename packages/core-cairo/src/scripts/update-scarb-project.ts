@@ -9,7 +9,7 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const contractNames = await writeGeneratedSources(generatedSourcesPath, 'all', true);
+  const contractNames = await writeGeneratedSources(generatedSourcesPath, 'all', true, 'Account');
 
   // Generate lib.cairo file
   writeLibCairo(contractNames);
