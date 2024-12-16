@@ -138,3 +138,7 @@ input.input-inline {
 .glimmery {
   background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212))
 }
+
+.hljs{
+  background: linear-gradient(30deg, #151a24, #2b323e);
+}

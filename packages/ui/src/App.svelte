@@ -16,20 +16,24 @@
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import ZipIcon from './icons/ZipIcon.svelte';
     import FileIcon from './icons/FileIcon.svelte';
-    import OzIcon from './icons/OzIcon.svelte';
+    import ArrowsLeft from './icons/ArrowsLeft.svelte';
+    import ArrowsRight from './icons/ArrowsRight.svelte';
     import Dropdown from './Dropdown.svelte';
     import OverflowMenu from './OverflowMenu.svelte';
     import Tooltip from './Tooltip.svelte';
     import Wiz from './Wiz.svelte';
+    import DefenderDeployModal from './DefenderDeployModal.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
+    import { getImports } from '@openzeppelin/wizard/get-imports';
     import { postConfig } from './post-config';
     import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './utils/inject-hyperlinks';
     import { InitialOptions } from './initial-options';
+    import { postMessageToIframe } from './post-message';
 
     const dispatch = createEventDispatcher();
 
@@ -43,6 +47,8 @@
 
     export let initialOpts: InitialOptions = {};
     let initialValuesSet = false;
+
+    let showDeployModal = false;
 
     let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
@@ -86,6 +92,17 @@
 
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+
+    $: if (showDeployModal) postMessageToIframe('defender-deploy', { 
+      kind: 'oz-wizard-defender-deploy',
+      sources: getSolcSources(contract)
+    });;
+
+    const getSolcSources = (contract: Contract) => {
+      const sources = getImports(contract);
+      sources[contract.name] = { content: code };
+      return sources;
+    }
 
     const language = 'solidity';
 
@@ -174,7 +191,7 @@
     }
 </script>
 
-<div class="container flex flex-col gap-4 p-4">
+<div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
 
   <div class="header flex flex-row justify-between">
@@ -205,20 +222,11 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <a href="https://docs.openzeppelin.com/defender/v2/tutorial/deploy?utm_campaign=Defender%20GA_2024&utm_source=Wizard#environment_setup" target="_blank" rel="noopener noreferrer">
-        <button class="action-button min-w-[165px]">
-          <OzIcon />
-          Deploy with Defender
-        </button>
-      </a>
-
-      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
           <CheckIcon />
-          Copied
         {:else}
           <CopyIcon />
-          Copy to Clipboard
         {/if}
       </button>
 
@@ -235,13 +243,14 @@
           class="action-button"
           class:disabled={opts?.upgradeable === "transparent"}
           on:click={remixHandler}
+          title="Open in Remix"
         >
           <RemixIcon />
-          Open in Remix
+          
         </button>
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
-          Try using Remix with UUPS upgradability or use Hardhat or Truffle with
+          Try using Remix with UUPS upgradability or use Hardhat or Foundry with
           <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
           <br />
           <!-- svelte-ignore a11y-invalid-attribute -->
@@ -288,8 +297,8 @@
     </div>
   </div>
 
-  <div class="flex flex-row gap-4 grow">
-    <div class="controls w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+  <div class="flex flex-row grow">
+    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} />
       </div>
@@ -313,17 +322,131 @@
       </div>
     </div>
 
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      <div class="absolute p-px right-6 rounded-full top-4 z-10 {showDeployModal ? 'hide-deploy' : ''}">
+        <button
+          class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-2 bg-white border-white"
+          on:click={() => (showDeployModal = !showDeployModal)}
+        >
+          <ArrowsRight />
+        </button>
+      </div>
+      <div class="button-bg absolute p-px right-4 rounded-full top-4 z-10">
+        <button
+          class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-4 bg-indigo-600 border-indigo-600 text-white"
+          on:click={
+            async () => {
+              if (opts) {
+                await postConfig(opts, 'defender', language);
+              }
+              showDeployModal = !showDeployModal;
+            }
+          }
+        >
+          Deploy with Defender
+        </button>
+      </div>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
+      </pre>
+      <DefenderDeployModal isOpen={showDeployModal} />
     </div>
   </div>
 </div>
 
 <style lang="postcss">
+ /* deploy with defender button border animation start*/
+  @property --angle{
+  syntax: '<angle>'; 
+  inherits: false;
+  initial-value: 40deg;
+	}
+	@property --spread{
+  syntax: '<angle>'; 
+  inherits: false;
+  initial-value: 0deg;
+	}
+  @property --x {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --y {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --blur{
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;  
+  }
+@keyframes conic-effect {
+  0% {
+    --angle: 40deg;
+		--spread: 0deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+	10% {
+    --x: 2px;
+    --y: -2px;
+	}
+  20% {
+    --blur: 15px;
+		--spread: 80deg;
+  }
+
+	30% {
+    --x: -2px;
+    --y: -2px;
+	}
+	40% {
+    --angle: 320deg; 
+		--spread: 00deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+  100% {
+    --angle: 320deg;
+		--spread: 0deg;
+    --x: 0px;
+    --y: 0px;
+    --blur: 0px;
+  }
+}
+.button-bg{
+  animation: conic-effect 12s ease-in-out infinite;
+  animation-delay: 4.2s;
+  background: conic-gradient(#4f46e5 calc(var(--angle) - var(--spread)),#7E7ADA var(--angle),rgb(79, 70, 229) calc(var(--angle) + var(--spread)));
+  box-shadow: var(--x) var(--y) var(--blur) #9793da45;
+  display: inline-flex;
+  transition: transform 300ms;
+}
+/* end deploy with defender button border animation */
+
+.button-bg:hover {
+  transform: translateX(-2px);
+  transition: transform 300ms;
+}
+
+.hide-deploy {
+  transform: translateX(-320px);
+  transition: transform 0.45s;
+}
+.hide-deploy button{
+  background-color: white;
+  border: 1px solid white;
+}
+
+.hide-deploy:hover {
+  transform: translatex(-318px);
+}
+
   .container {
     background-color: var(--gray-1);
-    border: 1px solid var(--gray-2);
-    border-radius: 10px;
     min-width: 32rem;
   }
 
@@ -335,11 +458,15 @@
     color: var(--gray-5);
   }
 
-  .tab button, .action-button, :global(.overflow-btn) {
-    padding: var(--size-2) var(--size-3);
-    border-radius: 6px;
+  .tab button, :global(.overflow-btn) {
+    padding: var(--size-2) var(--size-4);
+    border-radius: 12px; 
     font-weight: bold;
     cursor: pointer;
+  }
+  .action-button {
+    padding: var(--size-2);
+    border-radius: 12px; 
   }
 
   .tab button, :global(.overflow-btn) {
@@ -380,18 +507,13 @@
     }
 
     :global(.icon) {
-      margin-right: var(--size-1);
+      margin: 0 var(--size-1);
     }
   }
 
   .controls {
     background-color: white;
     padding: var(--size-4);
-  }
-
-  .controls, .output {
-    border-radius: 5px;
-    box-shadow: var(--shadow);
   }
 
   .controls-footer {
