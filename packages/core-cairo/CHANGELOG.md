@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.1 (2024-12-17)
+
+- Add OutsideExecution to accounts. ([#422](https://github.com/OpenZeppelin/contracts-wizard/pull/422))
+
 ## 0.20.0 (2024-12-10)
 
 - Add Governor tab. ([#417](https://github.com/OpenZeppelin/contracts-wizard/pull/417))
@@ -9,7 +13,7 @@
 
 ## 0.19.0 (2024-11-27)
 
-- Add ERC2981 (RoyaltyInfo) for ERC721 and ERC1155 ([#413](https://github.com/OpenZeppelin/contracts-wizard/pull/413))
+- Add ERC2981 (RoyaltyInfo) for ERC721 and ERC1155. ([#413](https://github.com/OpenZeppelin/contracts-wizard/pull/413))
 
 ## 0.18.0 (2024-11-15)
 

@@ -51,6 +51,14 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
+    <label class:checked={opts.outsideExecution}>
+      <input type="checkbox" bind:checked={opts.outsideExecution}>
+      Outside Execution
+      <HelpTooltip link="https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-9.md">
+        Allows a protocol to submit transactions on behalf of the account, as long as it has the relevant signatures.
+      </HelpTooltip>
+    </label>
+
     <label class:checked={opts.declare}>
       <input type="checkbox" bind:checked={opts.declare}>
       Declarer
