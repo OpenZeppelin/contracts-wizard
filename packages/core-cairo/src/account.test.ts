@@ -85,6 +85,12 @@ testAccount('basic account, non-upgradeable', {
   upgradeable: false
 });
 
+testAccount('account outside execution', {
+  deploy: false,
+  pubkey: false,
+  declare: false,
+});
+
 testAccount('account declarer', {
   deploy: false,
   pubkey: false,
@@ -157,6 +163,12 @@ testEthAccount('basic ethAccount, non-upgradeable', {
   pubkey: false,
   outsideExecution: false,
   upgradeable: false
+});
+
+testEthAccount('ethAccount outside execution', {
+  deploy: false,
+  pubkey: false,
+  declare: false,
 });
 
 testEthAccount('ethAccount declarer', {
