@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
+
 ## 0.4.6 (2024-11-20)
 
 - Use named imports. ([#411](https://github.com/OpenZeppelin/contracts-wizard/pull/411))
