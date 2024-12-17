@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
+
 ## 0.20.1 (2024-12-17)
 
 - Add OutsideExecution to accounts. ([#422](https://github.com/OpenZeppelin/contracts-wizard/pull/422))
