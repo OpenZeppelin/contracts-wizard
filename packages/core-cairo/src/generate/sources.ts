@@ -99,10 +99,24 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     return contracts;
   } else {
     const getParents = (c: GeneratedContract) => c.contract.components.map(p => p.path);
+    function filterByUpgradeableSetTo(isUpgradeable: boolean) {
+      return (c: GeneratedContract) => {
+        switch (c.options.kind) {
+          case 'Vesting':
+            return isUpgradeable === false;
+          case 'Account':
+          case 'ERC20':
+          case 'ERC721':
+          case 'ERC1155':
+          case 'Governor':
+          case 'Custom':
+            return c.options.upgradeable === isUpgradeable;
+        }
+      }
+    }
     return [
-      ...findCover(contracts.filter(c => c.options.upgradeable === undefined), getParents),
-      ...findCover(contracts.filter(c => c.options.upgradeable === true), getParents),
-      ...findCover(contracts.filter(c => c.options.upgradeable === false), getParents),
+      ...findCover(contracts.filter(filterByUpgradeableSetTo(true)), getParents),
+      ...findCover(contracts.filter(filterByUpgradeableSetTo(false)), getParents),
     ];
   }
 }
