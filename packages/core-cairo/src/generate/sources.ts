@@ -8,6 +8,7 @@ import { generateERC1155Options } from './erc1155';
 import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { generateGovernorOptions } from './governor';
+import { generateVestingOptions } from './vesting';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
@@ -52,6 +53,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Governor') {
     for (const kindOpts of generateGovernorOptions()) {
       yield { kind: 'Governor', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Vesting') {
+    for (const kindOpts of generateVestingOptions()) {
+      yield { kind: 'Vesting', ...kindOpts };
     }
   }
 }
