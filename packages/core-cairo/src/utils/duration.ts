@@ -14,7 +14,7 @@ const secondsForUnit = { second, minute, hour, day, week, month, year };
 export function durationToTimestamp(duration: string): number {
   const match = duration.trim().match(durationPattern);
 
-  if (!match) {
+  if (!match || match.length < 2) {
     throw new Error('Bad duration format');
   }
 

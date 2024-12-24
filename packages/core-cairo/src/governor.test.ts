@@ -125,9 +125,9 @@ testAPIEquivalence('API erc721 votes + timelock', {
 });
 
 testAPIEquivalence('API custom name', {
+  name: 'CustomGovernor',
   delay: '1 day',
   period: '1 week',
-  name: 'CustomGovernor',
 });
 
 testAPIEquivalence('API custom settings', {
@@ -146,7 +146,8 @@ testAPIEquivalence('API quorum mode absolute', {
   quorumAbsolute: '200',
 });
 
-testAPIEquivalence('API quorum mode percent', { name: NAME,
+testAPIEquivalence('API quorum mode percent', { 
+  name: NAME,
   delay: '1 day',
   period: '1 week',
   quorumMode: 'percent',

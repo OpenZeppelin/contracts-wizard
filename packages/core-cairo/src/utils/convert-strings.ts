@@ -70,20 +70,28 @@ const UINT_MAX_VALUES = {
 export type UintType = keyof typeof UINT_MAX_VALUES;
 
 /**
- * Validates a string value to be a valid uint and converts it to bigint
+ * Checks that a string/number value is a valid `uint` value and converts it to bigint
  */
-export function toUint(str: string, field: string, type: UintType): bigint {
-  const isValidNumber = /^\d+$/.test(str);
+export function toUint(value: number | string, field: string, type: UintType): bigint {
+  const valueAsStr = value.toString(); 
+  const isValidNumber = /^\d+$/.test(valueAsStr);
   if (!isValidNumber) {
     throw new OptionsError({
       [field]: 'Not a valid number'
     });
   }
-  const numValue = BigInt(str);
+  const numValue = BigInt(valueAsStr);
   if (numValue > UINT_MAX_VALUES[type]) {
     throw new OptionsError({
       [field]: `Value is greater than ${type} max value`
     });
   }
   return numValue;
+}
+
+/**
+ * Checks that a string/number value is a valid `uint` value
+ */
+export function validateUint(value: number | string, field: string, type: UintType): void {
+  const _ = toUint(value, field, type);
 }
