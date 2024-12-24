@@ -11,7 +11,7 @@ export type Upgradeable = typeof upgradeableOptions[number];
 
 function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseImplementedTrait | undefined {
   if (upgradeable === false) {
-    return;
+    return undefined;
   }
 
   c.upgradeable = true;
