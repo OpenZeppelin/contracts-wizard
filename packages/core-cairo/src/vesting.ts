@@ -1,9 +1,9 @@
 import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import { contractDefaults as commonDefaults } from './common-options';
 import { setAccessControl } from './set-access-control';
 import { setUpgradeable } from './set-upgradeable';
 import { Info, setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
-import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { OptionsError } from './error';
 import { durationToTimestamp } from './utils/duration';

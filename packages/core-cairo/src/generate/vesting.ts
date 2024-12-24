@@ -4,7 +4,7 @@ import { generateAlternatives } from './alternatives';
 
 const blueprint = {
   name: ['MyVesting'],
-  startDate: [new Date().toDateString()],
+  startDate: ['2024-12-31T23:59'],
   duration: ['90 days', '1 year'],
   cliffDuration: ['0', '30 day'],
   schedule: ['linear', 'custom'] as const,

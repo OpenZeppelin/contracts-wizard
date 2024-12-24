@@ -63,12 +63,23 @@ test('is access control required', async t => {
   for (const contract of generateSources('all')) {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
-    if (contract.options.kind !== 'Account' && contract.options.kind !== 'Governor' && !contract.options.access) {
-      if (isAccessControlRequired(contract.options)) {
-        t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
-      } else {
-        t.notRegex(contract.source, regexOwnable, JSON.stringify(contract.options));
-      }
+    switch (contract.options.kind) {
+      case 'Account':
+      case 'Governor':
+      case 'Vesting':
+        // These contracts have no acess control
+        return
+      case 'ERC20':
+      case 'ERC721':
+      case 'ERC1155':
+      case 'Custom':
+        if (!contract.options.access) {
+          if (isAccessControlRequired(contract.options)) {
+            t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
+          } else {
+            t.notRegex(contract.source, regexOwnable, JSON.stringify(contract.options));
+          }
+        }
     }
   }
 });

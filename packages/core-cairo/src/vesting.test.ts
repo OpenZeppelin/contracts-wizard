@@ -12,7 +12,7 @@ const defaults: VestingOptions = {
 };
 
 const CUSTOM_NAME = 'CustomVesting';
-const CUSTOM_DATE = '2025-07-25T19:30';
+const CUSTOM_DATE = '2024-12-31T23:59';
 const CUSTOM_DURATION = '36 months';
 const CUSTOM_CLIFF = '90 days';
 

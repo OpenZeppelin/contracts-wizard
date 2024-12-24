@@ -100,8 +100,9 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   } else {
     const getParents = (c: GeneratedContract) => c.contract.components.map(p => p.path);
     return [
-      ...findCover(contracts.filter(c => c.options.upgradeable), getParents),
-      ...findCover(contracts.filter(c => !c.options.upgradeable), getParents),
+      ...findCover(contracts.filter(c => c.options.upgradeable === undefined), getParents),
+      ...findCover(contracts.filter(c => c.options.upgradeable === true), getParents),
+      ...findCover(contracts.filter(c => c.options.upgradeable === false), getParents),
     ];
   }
 }
