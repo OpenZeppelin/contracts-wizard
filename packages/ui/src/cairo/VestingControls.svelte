@@ -51,15 +51,15 @@
     <label class:checked={opts.schedule === "linear"}>
       <input type="radio" bind:group={opts.schedule} value="linear">
       Linear
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
-        Simple mechanism with a single account authorized for all privileged actions.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#LinearVestingSchedule">
+        A vesting schedule implementation when tokens are vested gradually following a linear curve.
       </HelpTooltip>
     </label>
     <label class:checked={opts.schedule === "custom"}>
       <input type="radio" bind:group={opts.schedule} value="custom">
       Custom
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#VestingComponent-Vesting-Schedule">
+        A custom vesting schedule that requires the implementation of the VestingSchedule trait.
       </HelpTooltip>
     </label>
   </div>
