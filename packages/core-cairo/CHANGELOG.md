@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.21.0 (2024-12-24)
+## 0.21.0 (2025-01-09)
 
 - Add Vesting tab. ([#425](https://github.com/OpenZeppelin/contracts-wizard/pull/425))
 - Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
