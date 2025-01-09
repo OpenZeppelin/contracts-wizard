@@ -7,7 +7,6 @@ import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
 import { custom, erc20, erc721, erc1155 } from './api';
 
-
 interface Context {
   generatedSourcesPath: string
 }
@@ -67,8 +66,8 @@ test('is access control required', async t => {
       case 'Account':
       case 'Governor':
       case 'Vesting':
-        // These contracts have no acess control
-        return
+        // These contracts have no access control option
+        break;
       case 'ERC20':
       case 'ERC721':
       case 'ERC1155':
@@ -80,6 +79,10 @@ test('is access control required', async t => {
             t.notRegex(contract.source, regexOwnable, JSON.stringify(contract.options));
           }
         }
+        break;
+      default:
+        const _: never = contract.options;
+        throw new Error('Unknown kind');
     }
   }
 });

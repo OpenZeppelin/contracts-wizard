@@ -111,6 +111,9 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
           case 'Governor':
           case 'Custom':
             return c.options.upgradeable === isUpgradeable;
+          default:
+            const _: never = c.options;
+            throw new Error('Unknown kind');
         }
       }
     }
