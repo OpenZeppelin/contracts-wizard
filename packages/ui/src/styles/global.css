@@ -21,7 +21,7 @@ svg.icon {
   fill: currentColor;
 }
 
-input:not([type]), input[type="text"], input[type="number"] {
+input:not([type]), input[type="text"], input[type="number"], input[type="datetime-local"] {
   border: 1px solid var(--gray-3);
   padding: var(--size-2) var(--size-3);
   border-radius: 6px;
