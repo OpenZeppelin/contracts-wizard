@@ -6,7 +6,7 @@ const blueprint = {
   name: ['MyVesting'],
   startDate: ['2024-12-31T23:59'],
   duration: ['90 days', '1 year'],
-  cliffDuration: ['0', '30 day'],
+  cliffDuration: ['0 seconds', '30 day'],
   schedule: ['linear', 'custom'] as const,
   info: infoOptions
 };
