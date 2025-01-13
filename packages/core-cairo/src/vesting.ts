@@ -44,10 +44,6 @@ function withDefaults(opts: VestingOptions): Required<VestingOptions> {
   };
 }
 
-export function isAccessControlRequired(_: Partial<VestingOptions>): boolean {
-  return true;
-}
-
 export function buildVesting(opts: VestingOptions): Contract {
   const c = new ContractBuilder(opts.name);
   const allOpts = withDefaults(opts);
