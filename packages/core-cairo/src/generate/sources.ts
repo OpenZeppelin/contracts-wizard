@@ -8,6 +8,7 @@ import { generateERC1155Options } from './erc1155';
 import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { generateGovernorOptions } from './governor';
+import { generateVestingOptions } from './vesting';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
@@ -54,6 +55,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
       yield { kind: 'Governor', ...kindOpts };
     }
   }
+
+  if (!kind || kind === 'Vesting') {
+    for (const kindOpts of generateVestingOptions()) {
+      yield { kind: 'Vesting', ...kindOpts };
+    }
+  }
 }
 
 interface GeneratedContract {
@@ -92,9 +99,27 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     return contracts;
   } else {
     const getParents = (c: GeneratedContract) => c.contract.components.map(p => p.path);
+    function filterByUpgradeableSetTo(isUpgradeable: boolean) {
+      return (c: GeneratedContract) => {
+        switch (c.options.kind) {
+          case 'Vesting':
+            return isUpgradeable === false;
+          case 'Account':
+          case 'ERC20':
+          case 'ERC721':
+          case 'ERC1155':
+          case 'Governor':
+          case 'Custom':
+            return c.options.upgradeable === isUpgradeable;
+          default:
+            const _: never = c.options;
+            throw new Error('Unknown kind');
+        }
+      }
+    }
     return [
-      ...findCover(contracts.filter(c => c.options.upgradeable), getParents),
-      ...findCover(contracts.filter(c => !c.options.upgradeable), getParents),
+      ...findCover(contracts.filter(filterByUpgradeableSetTo(true)), getParents),
+      ...findCover(contracts.filter(filterByUpgradeableSetTo(false)), getParents),
     ];
   }
 }

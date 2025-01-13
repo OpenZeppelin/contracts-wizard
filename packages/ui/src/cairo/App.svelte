@@ -23,6 +23,7 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import { InitialOptions } from '../initial-options';
+    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -56,6 +57,7 @@
               break;
             case 'Account':
             case 'Governor':
+            case 'Vesting':
             case 'ERC1155':
             case 'Custom':
           }
@@ -121,6 +123,9 @@
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
+        <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
+          Vesting
+        </button>
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -169,6 +174,9 @@
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
+      </div>
+      <div class:hidden={tab !== 'Vesting'}>
+        <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting}/>
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
