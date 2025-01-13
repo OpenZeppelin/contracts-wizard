@@ -5,7 +5,7 @@
 - Add Vesting tab. ([#425](https://github.com/OpenZeppelin/contracts-wizard/pull/425))
 
 - **Breaking changes**:
-  - Remove `isAccessControlRequired` from `governor` and `vesting`.
+  - Remove `isAccessControlRequired` from `governor` and `vesting`. ([#426](https://github.com/OpenZeppelin/contracts-wizard/pull/426))
   - Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
 
 ## 0.20.1 (2024-12-17)
