@@ -65,10 +65,6 @@ export interface GovernorOptions extends CommonOptions {
   appVersion?: string;
 }
 
-export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean {
-  return false;
-}
-
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
   return {
     ...opts,

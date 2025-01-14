@@ -109,10 +109,6 @@ testAPIEquivalence('API all custom settings', {
   schedule: 'custom'
 });
 
-test('Vesting API isAccessControlRequired', async t => {
-  t.is(vesting.isAccessControlRequired({}), true);
-});
-
 test('cliff too high', async t => {
   const error = t.throws(() => buildVesting({
     ...defaults,
