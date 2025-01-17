@@ -1,5 +1,3 @@
-import 'array.prototype.flatmap/auto';
-
 import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ImportContract } from './contract';
 import { Options, Helpers, withHelpers } from './options';
 

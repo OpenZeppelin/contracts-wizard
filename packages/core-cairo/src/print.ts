@@ -1,5 +1,3 @@
-import 'array.prototype.flatmap/auto';
-
 import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
