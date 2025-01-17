@@ -8,7 +8,6 @@
     "resolveJsonModule": true,
     "lib": ["es2019", "es2019.array"],
     "forceConsistentCasingInFileNames": true,
-    "importsNotUsedAsValues": "error",
     "isolatedModules": true
   },
   "ts-node": {

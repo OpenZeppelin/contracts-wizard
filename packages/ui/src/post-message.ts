@@ -1,4 +1,4 @@
-import { SolcInputSources } from '@openzeppelin/wizard/get-imports';
+import type { SolcInputSources } from '@openzeppelin/wizard/get-imports';
 
 export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage | DefenderDeployMessage;
 
