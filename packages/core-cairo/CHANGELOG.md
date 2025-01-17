@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
+
 ## 0.21.0 (2025-01-13)
 
 - Add Vesting tab. ([#425](https://github.com/OpenZeppelin/contracts-wizard/pull/425))
