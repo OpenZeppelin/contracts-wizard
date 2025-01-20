@@ -8,6 +8,7 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
+    import GovernorControls from './GovernorControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
@@ -22,6 +23,7 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import { InitialOptions } from '../initial-options';
+    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -54,7 +56,8 @@
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
             case 'Account':
-              break;
+            case 'Governor':
+            case 'Vesting':
             case 'ERC1155':
             case 'Custom':
           }
@@ -101,7 +104,7 @@
 
 </script>
 
-<div class="container flex flex-col gap-4 p-4">
+<div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
@@ -117,6 +120,12 @@
         <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
           Account
         </button>
+        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
+          Governor
+        </button>
+        <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
+          Vesting
+        </button>
         <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
           Custom
         </button>
@@ -124,13 +133,11 @@
     </div>
 
     <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button min-w-[165px]" on:click={copyHandler}>
+      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
           <CheckIcon />
-          Copied
         {:else}
           <CopyIcon />
-          Copy to Clipboard
         {/if}
       </button>
 
@@ -151,8 +158,8 @@
     </div>
   </div>
 
-  <div class="flex flex-row gap-4 grow">
-    <div class="controls w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+  <div class="flex flex-row grow">
+    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
@@ -160,16 +167,22 @@
         <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721}/>
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155}/>
+        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155}/>
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
+      </div>
+      <div class:hidden={tab !== 'Governor'}>
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
+      </div>
+      <div class:hidden={tab !== 'Vesting'}>
+        <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting}/>
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
-    <div class="output flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
       <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
@@ -178,8 +191,6 @@
 <style lang="postcss">
   .container {
     background-color: var(--gray-1);
-    border: 1px solid var(--gray-2);
-    border-radius: 10px;
     min-width: 32rem;
   }
 
@@ -191,9 +202,9 @@
     color: var(--gray-5);
   }
 
-  .tab button, .action-button, :global(.overflow-btn) {
+  .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
-    border-radius: 6px;
+    border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
   }
@@ -201,6 +212,11 @@
   .tab button, :global(.overflow-btn) {
     border: 0;
     background-color: transparent;
+  }
+
+  .action-button {
+    padding: var(--size-2);
+    border-radius: 12px; 
   }
 
   .tab button:hover, :global(.overflow-btn):hover {
@@ -232,7 +248,7 @@
     }
 
     :global(.icon) {
-      margin-right: var(--size-1);
+      margin-right: 0 var(--size-1);
     }
   }
 
@@ -241,10 +257,6 @@
     padding: var(--size-4);
   }
 
-  .controls, .output {
-    border-radius: 5px;
-    box-shadow: var(--shadow);
-  }
 
   .controls-footer {
     display: flex;

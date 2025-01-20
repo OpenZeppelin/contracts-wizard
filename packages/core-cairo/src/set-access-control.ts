@@ -3,18 +3,19 @@ import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = typeof accessOptions[number];
 
 /**
  * Sets access control for the contract by adding inheritance.
  */
- export function setAccessControl(c: ContractBuilder, access: Access) {
+ export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access) {
     case 'ownable': {
       c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
 
-      c.addStandaloneImport('starknet::ContractAddress');
+      c.addUseClause('starknet', 'ContractAddress');
       c.addConstructorArgument({ name: 'owner', type: 'ContractAddress'});
 
       break;
@@ -39,10 +40,10 @@ export type Access = typeof accessOptions[number];
         }
         addSRC5Component(c);
 
-        c.addStandaloneImport('starknet::ContractAddress');
+        c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: 'default_admin', type: 'ContractAddress'});
 
-        c.addStandaloneImport('openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE');
+        c.addUseClause('openzeppelin::access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
         c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
@@ -53,11 +54,17 @@ export type Access = typeof accessOptions[number];
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedTrait, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
+export function requireAccessControl(
+  c: ContractBuilder, 
+  trait: BaseImplementedTrait, 
+  fn: BaseFunction, 
+  access: Access, 
+  roleIdPrefix: string, 
+  roleOwner: string | undefined
+): void {
   if (access === false) {
-    access = 'ownable';
+    access = DEFAULT_ACCESS_CONTROL;
   }
-
   setAccessControl(c, access);
 
   switch (access) {
@@ -69,7 +76,7 @@ export function requireAccessControl(c: ContractBuilder, trait: BaseImplementedT
       const roleId = roleIdPrefix + '_ROLE';
       const addedSuper = c.addSuperVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
       if (roleOwner !== undefined) {
-        c.addStandaloneImport('starknet::ContractAddress');
+        c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
         if (addedSuper) {
           c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
@@ -94,16 +101,14 @@ const components = defineComponents( {
       name: 'OwnableEvent',
       type: 'OwnableComponent::Event',
     },
-    impls: [
-      {
-        name: 'OwnableMixinImpl',
-        value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'OwnableMixinImpl',
+      value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
+    }, {
       name: 'OwnableInternalImpl',
+      embed: false,
       value: 'OwnableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
   AccessControlComponent: {
     path: 'openzeppelin::access::accesscontrol',
@@ -115,10 +120,10 @@ const components = defineComponents( {
       name: 'AccessControlEvent',
       type: 'AccessControlComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'AccessControlInternalImpl',
+      embed: false,
       value: 'AccessControlComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });

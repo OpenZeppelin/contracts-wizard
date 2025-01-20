@@ -1,10 +1,13 @@
-import 'array.prototype.flatmap/auto';
-
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, } from './contract';
+import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
+
+const DEFAULT_SECTION = '1. with no section';
+const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
+const MAX_USE_CLAUSE_LINE_LENGTH = 90;
+const TAB = "\t";
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
@@ -19,7 +22,8 @@ export function printContract(contract: Contract): string {
         `${contractAttribute}`,
         `mod ${contract.name} {`,
         spaceBetween(
-          printImports(contract),
+          printUseClauses(contract),
+          printConstants(contract),
           printComponentDeclarations(contract),
           printImpls(contract),
           printStorage(contract),
@@ -37,26 +41,127 @@ function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
-function printSuperVariables(contract: Contract) {
+function printSuperVariables(contract: Contract): string[] {
   return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
-function printImports(contract: Contract) {
-  const lines: string[] = [];
-  sortImports(contract).forEach(i => lines.push(`use ${i}`));
-  return withSemicolons(lines);
+function printUseClauses(contract: Contract): Lines[] {
+  const useClauses = sortUseClauses(contract);
+
+  // group by containerPath
+  const grouped = useClauses.reduce(
+    (result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
+      if (useClause.groupable) {
+        (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
+      } else {
+        (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
+      }
+      return result;
+    }, {});
+
+  const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
+  return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
 }
 
-function sortImports(contract: Contract) {
-  const componentImports = contract.components.flatMap(c => `${c.path}::${c.name}`);
-  const allImports = componentImports.concat(contract.standaloneImports);
-  if (contract.superVariables.length > 0) {
-    allImports.push(`super::{${contract.superVariables.map(v => v.name).join(', ')}}`);
+function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lines[] {
+  const lines = [];
+  if (groupName === STANDALONE_IMPORTS_GROUP) {
+    for (const useClause of group) {
+      const alias = useClause.alias ?? '';
+      if (alias.length > 0) {
+        lines.push(`use ${useClause.containerPath}::${useClause.name} as ${alias};`);
+      } else {
+        lines.push(`use ${useClause.containerPath}::${useClause.name};`);
+      }
+    }
+  } else {
+    if (group.length == 1) {
+      const alias = group[0]!.alias ?? '';
+      if (alias.length > 0) {
+        lines.push(`use ${groupName}::${group[0]!.name} as ${alias};`);
+      } else {
+        lines.push(`use ${groupName}::${group[0]!.name};`);
+      }
+
+    } else if (group.length > 1) {
+      let clauses = group.reduce((clauses, useClause) => {
+        const alias = useClause.alias ?? '';
+        if (alias.length > 0) {
+          clauses += `${useClause.name} as ${useClause.alias}, `;
+        } else {
+          clauses += `${useClause.name}, `;
+        }
+        return clauses;
+      }, '');
+      clauses = clauses.slice(0, -2);
+
+      lines.push(`use ${groupName}::{${clauses}};`);
+    }
   }
-  return allImports.sort();
+  return lines;
 }
 
-function printComponentDeclarations(contract: Contract) {
+// TODO: remove this when we can use a formatting js library
+function splitLongUseClauseLine(line: string): Lines[] {
+  const lines = [];
+
+  const containsBraces = line.indexOf('{') !== -1;
+  if (containsBraces && line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
+    // split at the first brace
+    lines.push(line.slice(0, line.indexOf('{') + 1));
+    lines.push(...splitLongLineInner(line.slice(line.indexOf('{') + 1, -2)));
+    lines.push("};");
+  } else {
+    lines.push(line);
+  }
+  return lines;
+}
+
+function splitLongLineInner(line: string): Lines[] {
+  const lines = [];
+  if (line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
+    const max_accessible_string = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
+    const lastCommaIndex = max_accessible_string.lastIndexOf(',');
+    if (lastCommaIndex !== -1) {
+      lines.push(TAB + max_accessible_string.slice(0, lastCommaIndex + 1));
+      lines.push(...splitLongLineInner(line.slice(lastCommaIndex + 2)));
+    } else {
+      lines.push(TAB + max_accessible_string);
+    }
+  } else {
+    lines.push(TAB + line);
+  }
+  return lines;
+}
+
+function sortUseClauses(contract: Contract): UseClause[] {
+  return contract.useClauses.sort((a, b) => {
+    const aFullPath = `${a.containerPath}::${a.name}`;
+    const bFullPath = `${b.containerPath}::${b.name}`;
+    return aFullPath.localeCompare(bFullPath);
+  });
+}
+
+function printConstants(contract: Contract): Lines[] {
+  const lines = [];
+  for (const constant of contract.constants) {
+    // inlineComment is optional, default to false
+    const inlineComment = constant.inlineComment ?? false;
+    const commented = !!constant.comment;
+
+    if (commented && !inlineComment) {
+      lines.push(`// ${constant.comment}`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    } else if (commented) {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
+    } else {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    }
+  }
+  return lines;
+}
+
+function printComponentDeclarations(contract: Contract): Lines[] {
   const lines = [];
   for (const component of contract.components) {
     lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
@@ -64,26 +169,44 @@ function printComponentDeclarations(contract: Contract) {
   return lines;
 }
 
-function printImpls(contract: Contract) {
-  const externalImpls = contract.components.flatMap(c => c.impls);
-  const internalImpls = contract.components.flatMap(c => c.internalImpl ? [c.internalImpl] : []);
+function printImpls(contract: Contract): Lines[] {
+  const impls = contract.components.flatMap(c => c.impls);
 
-  return spaceBetween(
-    externalImpls.flatMap(impl => printImpl(impl)),
-    internalImpls.flatMap(impl => printImpl(impl, true))
+  // group by section
+  const grouped = impls.reduce(
+    (result: { [section: string]: Impl[] }, current:Impl) => {
+      // default section depends on embed
+      // embed defaults to true
+      const embed = current.embed ?? true;
+      const section = current.section ?? (embed ? 'External' : 'Internal');
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
+
+  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printSection(section, impls as Impl[]),
   );
+  return spaceBetween(...sections);
 }
 
-function printImpl(impl: Impl, internal = false) {
+function printSection(section: string, impls: Impl[]): Lines[] {
   const lines = [];
-  if (!internal) {
+  lines.push(`// ${section}`);
+  impls.map(impl => lines.push(...printImpl(impl)));
+  return lines;
+}
+
+function printImpl(impl: Impl): Lines[] {
+  const lines = [];
+  // embed is optional, default to true
+  if (impl.embed ?? true) {
     lines.push('#[abi(embed_v0)]');
   }
   lines.push(`impl ${impl.name} = ${impl.value};`);
   return lines;
 }
 
-function printStorage(contract: Contract) {
+function printStorage(contract: Contract): (string | string[])[] {
   const lines = [];
   // storage is required regardless of whether there are components
   lines.push('#[storage]');
@@ -98,7 +221,7 @@ function printStorage(contract: Contract) {
   return lines;
 }
 
-function printEvents(contract: Contract) {
+function printEvents(contract: Contract): (string | string[])[] {
   const lines = [];
   if (contract.components.length > 0) {
     lines.push('#[event]');
@@ -115,9 +238,7 @@ function printEvents(contract: Contract) {
   return lines;
 }
 
-function printImplementedTraits(contract: Contract) {
-  const impls = [];
-
+function printImplementedTraits(contract: Contract): Lines[] {
   // sort first by priority, then number of tags, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
@@ -129,19 +250,56 @@ function printImplementedTraits(contract: Contract) {
     return a.name.localeCompare(b.name);
   });
 
-  for (const trait of sortedTraits) {
-    const implLines = [];
-    implLines.push(...trait.tags.map(t => `#[${t}]`));
-    implLines.push(`impl ${trait.name} of ${trait.of} {`);
-    const fns = trait.functions.map(fn => printFunction(fn));
-    implLines.push(spaceBetween(...fns));
-    implLines.push('}');
-    impls.push(implLines);
-  }
-  return spaceBetween(...impls);
+  // group by section
+  const grouped = sortedTraits.reduce(
+    (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
+      // default to no section
+      const section = current.section ?? DEFAULT_SECTION;
+      (result[section] = result[section] || []).push(current);
+      return result;
+    }, {});
+
+  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+  );
+
+  return spaceBetween(...sections);
 }
 
-function printFunction(fn: ContractFunction) {
+function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]): Lines[] {
+  const lines = [];
+  const isDefaultSection = section === DEFAULT_SECTION;
+  if (!isDefaultSection) {
+    lines.push('//');
+    lines.push(`// ${section}`);
+    lines.push('//');
+  }
+  impls.forEach((trait, index) => {
+    if (index > 0 || !isDefaultSection) {
+      lines.push('');
+    }
+    lines.push(...printImplementedTrait(trait));
+  });
+  return lines;
+}
+
+function printImplementedTrait(trait: ImplementedTrait): Lines[] {
+  const implLines = [];
+  implLines.push(...trait.tags.map(t => `#[${t}]`));
+  implLines.push(`impl ${trait.name} of ${trait.of} {`);
+
+  const superVars = withSemicolons(
+    trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
+  );
+  implLines.push(superVars);
+
+  const fns = trait.functions.map(fn => printFunction(fn));
+  implLines.push(spaceBetween(...fns));
+  implLines.push('}');
+  return implLines;
+}
+
+function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
@@ -162,9 +320,9 @@ function printFunction(fn: ContractFunction) {
 }
 
 function printConstructor(contract: Contract): Lines[] {
-  const hasParentParams = contract.components.some(p => p.initializer !== undefined && p.initializer.params.length > 0);
+  const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasParentParams || hasConstructorCode) {
+  if (hasInitializers || hasConstructorCode) {
     const parents = contract.components
       .filter(hasInitializer)
       .flatMap(p => printParentConstructor(p));
@@ -191,7 +349,7 @@ function printConstructor(contract: Contract): Lines[] {
   }
 }
 
-function hasInitializer(parent: Component) {
+function hasInitializer(parent: Component): boolean {
   return parent.initializer !== undefined && parent.substorage?.name !== undefined;
 }
 
@@ -210,7 +368,8 @@ export function printValue(value: Value): string {
     if ('lit' in value) {
       return value.lit;
     } else if ('note' in value) {
-      return `${printValue(value.value)} /* ${value.note} */`;
+      // TODO: add /* ${value.note} */ after lsp is fixed
+      return `${printValue(value.value)}`;
     } else {
       throw Error('Unknown value type');
     }
@@ -220,6 +379,8 @@ export function printValue(value: Value): string {
     } else {
       throw new Error(`Number not representable (${value})`);
     }
+  } else if (typeof value === 'bigint') {
+    return `${value}`
   } else {
     return `"${value}"`;
   }
@@ -227,7 +388,14 @@ export function printValue(value: Value): string {
 
 // generic for functions and constructors
 // kindedName = 'fn foo'
-function printFunction2(kindedName: string, args: string[], tag: string | undefined, returns: string | undefined, returnLine: string | undefined, code: Lines[]): Lines[] {
+function printFunction2(
+  kindedName: string,
+  args: string[],
+  tag: string | undefined,
+  returns: string | undefined,
+  returnLine: string | undefined,
+  code: Lines[]
+): Lines[] {
   const fn = [];
 
   if (tag !== undefined) {
@@ -237,7 +405,7 @@ function printFunction2(kindedName: string, args: string[], tag: string | undefi
   let accum = `${kindedName}(`;
 
   if (args.length > 0) {
-    let formattedArgs = args.join(', ');
+    const formattedArgs = args.join(', ');
     if (formattedArgs.length > 80) {
       fn.push(accum);
       accum = '';
@@ -256,13 +424,10 @@ function printFunction2(kindedName: string, args: string[], tag: string | undefi
   }
 
   fn.push(accum);
-  
   fn.push(code);
-  
   if (returnLine !== undefined) {
     fn.push([returnLine]);
   }
-
   fn.push('}');
 
   return fn;

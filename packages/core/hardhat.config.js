@@ -8,8 +8,6 @@ const {
 } = require('hardhat/builtin-tasks/task-names');
 const SOLIDITY_VERSION = require('./src/solidity-version.json');
 
-require('array.prototype.flat/auto');
-
 // Unused parameter warnings are caused by OpenZeppelin Upgradeable Contracts.
 const WARN_UNUSED_PARAMETER = '5667';
 const WARN_CODE_SIZE = '5574';

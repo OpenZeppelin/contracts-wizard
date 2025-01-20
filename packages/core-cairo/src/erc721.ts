@@ -12,6 +12,7 @@ import { addSRC5Component, addVotesComponent } from './common-components';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 import { OptionsError } from './error';
+import { RoyaltyInfoOptions, setRoyaltyInfo, defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -22,6 +23,7 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   enumerable: false,
   votes: false,
+  royaltyInfo: royaltyInfoDefaults,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
   access: commonDefaults.access,
@@ -42,6 +44,7 @@ export interface ERC721Options extends CommonContractOptions {
   mintable?: boolean;
   enumerable?: boolean;
   votes?: boolean;
+  royaltyInfo?: RoyaltyInfoOptions;
   appName?: string;
   appVersion?: string;
 }
@@ -55,6 +58,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     enumerable: opts.enumerable ?? defaults.enumerable,
+    royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion
@@ -62,7 +66,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
+  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -92,6 +96,8 @@ export function buildERC721(opts: ERC721Options): Contract {
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
+  setRoyaltyInfo(c, allOpts.royaltyInfo, allOpts.access);
+  
   addHooks(c, allOpts);
 
   return c;
@@ -107,7 +113,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       priority: 0,
     };
     c.addImplementedTrait(ERC721HooksTrait);
-    c.addStandaloneImport('starknet::ContractAddress');
+    c.addUseClause('starknet', 'ContractAddress');
 
     const requiresMutState = opts.enumerable || opts.votes;
     const initStateLine = requiresMutState
@@ -133,7 +139,12 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
           });
         }
 
-      addVotesComponent(c, toFelt252(opts.appName, 'appName'), toFelt252(opts.appVersion, 'appVersion'));
+      addVotesComponent(
+        c,
+        toFelt252(opts.appName, 'appName'),
+        toFelt252(opts.appVersion, 'appVersion'),
+        'SNIP12 Metadata',
+      );
       beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
       beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
     }
@@ -148,7 +159,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       code: beforeUpdateCode,
     });
   } else {
-    c.addStandaloneImport('openzeppelin::token::erc721::ERC721HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::erc721', 'ERC721HooksEmptyImpl');
   }
 }
 
@@ -176,14 +187,14 @@ function addEnumerable(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addStandaloneImport('core::num::traits::Zero');
-  c.addStandaloneImport('starknet::get_caller_address');
+  c.addUseClause('core::num::traits', 'Zero');
+  c.addUseClause('starknet', 'get_caller_address');
 
   c.addFunction(externalTrait, functions.burn);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addStandaloneImport('starknet::ContractAddress');
+  c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.safe_mint, access, 'MINTER', 'minter');
 
   // Camel case version of safe_mint. Access control and pausable are already set on safe_mint.
@@ -201,11 +212,11 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'ERC721InternalImpl',
+      embed: false,
       value: 'ERC721Component::InternalImpl<ContractState>',
-    },
+    }],
   },
   ERC721EnumerableComponent: {
     path: 'openzeppelin::token::erc721::extensions',
@@ -217,16 +228,14 @@ const components = defineComponents( {
       name: 'ERC721EnumerableEvent',
       type: 'ERC721EnumerableComponent::Event',
     },
-    impls: [
-      {
-        name: 'ERC721EnumerableImpl',
-        value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
-      },
-    ],
-    internalImpl: {
+    impls: [{
+      name: 'ERC721EnumerableImpl',
+      value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
+    }, {
       name: 'ERC721EnumerableInternalImpl',
+      embed: false,
       value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

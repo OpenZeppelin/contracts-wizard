@@ -1,5 +1,33 @@
 # Changelog
 
+## Unreleased
+
+- Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
+- Remove unused dependencies. ([#430](https://github.com/OpenZeppelin/contracts-wizard/pull/430))
+
+## 0.21.0 (2025-01-13)
+
+- Add Vesting tab. ([#425](https://github.com/OpenZeppelin/contracts-wizard/pull/425))
+
+- **Breaking changes**:
+  - Remove `isAccessControlRequired` from `governor` and `vesting`. ([#426](https://github.com/OpenZeppelin/contracts-wizard/pull/426))
+  - Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
+
+## 0.20.1 (2024-12-17)
+
+- Add OutsideExecution to accounts. ([#422](https://github.com/OpenZeppelin/contracts-wizard/pull/422))
+
+## 0.20.0 (2024-12-10)
+
+- Add Governor tab. ([#417](https://github.com/OpenZeppelin/contracts-wizard/pull/417))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v0.20.0. ([#419](https://github.com/OpenZeppelin/contracts-wizard/pull/419))
+
+## 0.19.0 (2024-11-27)
+
+- Add ERC2981 (RoyaltyInfo) for ERC721 and ERC1155. ([#413](https://github.com/OpenZeppelin/contracts-wizard/pull/413))
+
 ## 0.18.0 (2024-11-15)
 
 - **Breaking changes**:

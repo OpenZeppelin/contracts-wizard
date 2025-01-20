@@ -4,6 +4,9 @@ publish = "packages/ui/public"
 
 edge_functions = "packages/ui/api"
 
+[build.environment]
+  YARN_FLAGS = "--network-concurrency 1"
+
 [[edge_functions]]
   path = "/ai"
   function = "ai"

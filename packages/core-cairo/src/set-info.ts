@@ -8,7 +8,7 @@ export type Info = {
   license?: string;
 }
 
-export function setInfo(c: ContractBuilder, info: Info) {
+export function setInfo(c: ContractBuilder, info: Info): void {
   const { license } = info;
 
   if (license) {

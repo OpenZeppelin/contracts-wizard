@@ -21,7 +21,7 @@ svg.icon {
   fill: currentColor;
 }
 
-input:not([type]), input[type="text"], input[type="number"] {
+input:not([type]), input[type="text"], input[type="number"], input[type="datetime-local"] {
   border: 1px solid var(--gray-3);
   padding: var(--size-2) var(--size-3);
   border-radius: 6px;
@@ -137,4 +137,8 @@ input.input-inline {
 
 .glimmery {
   background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212))
+}
+
+.hljs{
+  background: linear-gradient(30deg, #151a24, #2b323e);
 }

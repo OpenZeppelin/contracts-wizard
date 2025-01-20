@@ -11,19 +11,20 @@ export type Upgradeable = typeof upgradeableOptions[number];
 
 function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseImplementedTrait | undefined {
   if (upgradeable === false) {
-    return;
+    return undefined;
   }
 
   c.upgradeable = true;
 
   c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addStandaloneImport('openzeppelin::upgrades::interface::IUpgradeable');
-  c.addStandaloneImport('starknet::ClassHash');
+  c.addUseClause('openzeppelin::upgrades::interface', 'IUpgradeable');
+  c.addUseClause('starknet', 'ClassHash');
 
   const t: BaseImplementedTrait = {
     name: 'UpgradeableImpl',
     of: 'IUpgradeable<ContractState>',
+    section: 'Upgradeable',
     tags: [
       'abi(embed_v0)'
     ],
@@ -33,14 +34,22 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
   return t;
 }
 
-export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
+export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     requireAccessControl(c, trait, functions.upgrade, access, 'UPGRADER', 'upgrader');
   }
 }
 
-export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account) {
+export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
+  const trait = setUpgradeableBase(c, upgradeable);
+  if (trait !== undefined) {
+    c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalExtendedImpl');
+    c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
+  }
+}
+
+export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     switch (type) {
@@ -65,11 +74,11 @@ const components = defineComponents( {
       name: 'UpgradeableEvent',
       type: 'UpgradeableComponent::Event',
     },
-    impls: [],
-    internalImpl: {
+    impls: [{
       name: 'UpgradeableInternalImpl',
+      embed: false,
       value: 'UpgradeableComponent::InternalImpl<ContractState>',
-    },
+    }],
   },
 });
 

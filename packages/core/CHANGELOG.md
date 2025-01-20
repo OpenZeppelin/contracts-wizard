@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
+- Remove unused dependencies. ([#430](https://github.com/OpenZeppelin/contracts-wizard/pull/430))
+
+- **Breaking changes**:
+  - Update Contracts Wizard license to AGPLv3. ([#424](https://github.com/OpenZeppelin/contracts-wizard/pull/424))
+
 ## 0.4.6 (2024-11-20)
 
 - Use named imports. ([#411](https://github.com/OpenZeppelin/contracts-wizard/pull/411))

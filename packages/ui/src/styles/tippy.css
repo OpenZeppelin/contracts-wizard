@@ -1,4 +1,5 @@
 @import 'tippy.js/dist/tippy.css';
+@import 'tippy.js/themes/material.css';
 
 :root {
   --tippy-background: #333;
@@ -7,7 +8,7 @@
 }
 
 .tippy-box[data-theme~="light"] {
-  --tippy-background: #fff;
+  --tippy-background: #fffffff5;
   --tippy-text: #333;
 }
 

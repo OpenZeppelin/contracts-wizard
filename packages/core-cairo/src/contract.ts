@@ -4,8 +4,9 @@ export interface Contract {
   license: string;
   name: string;
   account: boolean;
-  standaloneImports: string[];
+  useClauses: UseClause[];
   components: Component[];
+  constants: Variable[];
   constructorCode: string[];
   constructorArgs: Argument[];
   upgradeable: boolean;
@@ -13,7 +14,14 @@ export interface Contract {
   superVariables: Variable[];
 }
 
-export type Value = string | number | { lit: string } | { note: string, value: Value };
+export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
+
+export interface UseClause {
+  containerPath: string;
+  name: string;
+  groupable?: boolean;
+  alias?: string;
+}
 
 export interface Component {
   name: string;
@@ -21,7 +29,6 @@ export interface Component {
   substorage: Substorage;
   event: Event;
   impls: Impl[];
-  internalImpl?: Impl;
   initializer?: Initializer;
 }
 
@@ -38,6 +45,8 @@ export interface Event {
 export interface Impl {
   name: string;
   value: string;
+  embed?: boolean;
+  section?: string;
 }
 
 export interface Initializer {
@@ -49,6 +58,7 @@ export interface BaseImplementedTrait {
   of: string;
   tags: string[];
   perItemTag?: string;
+  section?: string;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -57,7 +67,9 @@ export interface BaseImplementedTrait {
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
+  superVariables: Variable[];
   functions: ContractFunction[];
+  section?: string;
 }
 
 export interface BaseFunction {
@@ -76,6 +88,8 @@ export interface Variable {
   name: string;
   type: string;
   value: string;
+  comment?: string;
+  inlineComment?: boolean;
 }
 
 export interface Argument {
@@ -95,7 +109,8 @@ export class ContractBuilder implements Contract {
   private componentsMap: Map<string, Component> = new Map();
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private superVariablesMap: Map<string, Variable> = new Map();
-  private standaloneImportsSet: Set<string> = new Set();
+  private constantsMap: Map<string, Variable> = new Map();
+  private useClausesMap: Map<string, UseClause> = new Map();
   private interfaceFlagsSet: Set<string> = new Set();
 
   constructor(name: string, account: boolean = false) {
@@ -115,8 +130,12 @@ export class ContractBuilder implements Contract {
     return [...this.superVariablesMap.values()];
   }
 
-  get standaloneImports(): string[] {
-    return [...this.standaloneImportsSet];
+  get constants(): Variable[] {
+    return [...this.constantsMap.values()];
+  }
+
+  get useClauses(): UseClause[] {
+    return [...this.useClausesMap.values()];
   }
 
   /**
@@ -126,11 +145,19 @@ export class ContractBuilder implements Contract {
     return this.interfaceFlagsSet;
   }
 
-  addStandaloneImport(fullyQualified: string): void {
-    this.standaloneImportsSet.add(fullyQualified);
+  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+    // groupable defaults to true
+    const groupable = options?.groupable ?? true;
+    const alias = options?.alias ?? '';
+    const uniqueName = alias.length > 0 ? alias : name;
+    const present = this.useClausesMap.has(uniqueName);
+    if (!present) {
+      this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
+    }
   }
 
   addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
+    this.addUseClause(component.path, component.name);
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
@@ -143,7 +170,7 @@ export class ContractBuilder implements Contract {
 
   addImplToComponent(component: Component, impl: Impl): void {
     this.addComponent(component);
-    let c = this.componentsMap.get(component.name);
+    const c = this.componentsMap.get(component.name);
     if (c == undefined) {
       throw new Error(`Component ${component.name} has not been added yet`);
     }
@@ -153,11 +180,21 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  addConstant(constant: Variable): boolean {
+    if (this.constantsMap.has(constant.name)) {
+      return false;
+    } else {
+      this.constantsMap.set(constant.name, constant);
+      return true;
+    }
+  }
+
   addSuperVariable(variable: Variable): boolean {
     if (this.superVariablesMap.has(variable.name)) {
       return false;
     } else {
       this.superVariablesMap.set(variable.name, variable);
+      this.addUseClause('super', variable.name);
       return true;
     }
   }
@@ -168,16 +205,39 @@ export class ContractBuilder implements Contract {
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = { 
+      const t: ImplementedTrait = {
         name: baseTrait.name,
         of: baseTrait.of,
         tags: [ ...baseTrait.tags ],
+        superVariables: [],
         functions: [],
+        section: baseTrait.section,
         priority: baseTrait.priority,
       };
       this.implementedTraitsMap.set(key, t);
       return t;
     }
+  }
+
+  addSuperVariableToTrait(baseTrait: BaseImplementedTrait, newVar: Variable): boolean {
+    const trait = this.addImplementedTrait(baseTrait);
+    for (const existingVar of trait.superVariables) {
+      if (existingVar.name === newVar.name) {
+        if (existingVar.type !== newVar.type) {
+          throw new Error(
+            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
+          );
+        }
+        if (existingVar.value !== newVar.value) {
+          throw new Error(
+            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
+          );
+        }
+        return false; // No need to add, already exists
+      }
+    }
+    trait.superVariables.push(newVar);
+    return true;
   }
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {

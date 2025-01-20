@@ -10,10 +10,12 @@ export type { Access } from './set-access-control';
 export type { Account } from './account';
 export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
+export type { RoyaltyInfoOptions } from './set-royalty-info';
 
 export { premintPattern } from './erc20';
 
 export { defaults as infoDefaults } from './set-info';
+export { defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export type { OptionsErrorMessages } from './error';
 export { OptionsError } from './error';
@@ -23,4 +25,4 @@ export { sanitizeKind } from './kind';
 
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
-export { erc20, erc721, erc1155, account, custom } from './api';
+export { erc20, erc721, erc1155, account, governor, vesting, custom } from './api';

@@ -38,6 +38,7 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
       declare: true,
       deploy: true,
       pubkey: true,
+      outsideExecution: true,
       ...opts,
     })));
   });
@@ -55,6 +56,7 @@ testAccount('explicit full account, mixin + upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
+  outsideExecution: true,
   upgradeable: true
 });
 
@@ -64,47 +66,62 @@ testAccount('explicit full account, mixin + non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
+  outsideExecution: true,
   upgradeable: false
 });
 
 testAccount('basic account, upgradeable', {
   declare: false,
   deploy: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testAccount('basic account, non-upgradeable', {
   declare: false,
   deploy: false,
   pubkey: false,
+  outsideExecution: false,
   upgradeable: false
+});
+
+testAccount('account outside execution', {
+  deploy: false,
+  pubkey: false,
+  declare: false,
 });
 
 testAccount('account declarer', {
   deploy: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testAccount('account deployable', {
   declare: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testAccount('account public key', {
   declare: false,
   deploy: false,
+  outsideExecution: false,
 });
 
 testAccount('account declarer, deployable', {
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testAccount('account declarer, public key', {
-  deploy: false
+  deploy: false,
+  outsideExecution: false,
 });
 
 testAccount('account deployable, public key', {
-  declare: false
+  declare: false,
+  outsideExecution: false,
 });
 
 testEthAccount('default full ethAccount, mixin + upgradeable', {});
@@ -119,6 +136,7 @@ testEthAccount('explicit full ethAccount, mixin + upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
+  outsideExecution: true,
   upgradeable: true
 });
 
@@ -128,47 +146,62 @@ testEthAccount('explicit full ethAccount, mixin + non-upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
+  outsideExecution: true,
   upgradeable: false
 });
 
 testEthAccount('basic ethAccount, upgradeable', {
   declare: false,
   deploy: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testEthAccount('basic ethAccount, non-upgradeable', {
   declare: false,
   deploy: false,
   pubkey: false,
+  outsideExecution: false,
   upgradeable: false
+});
+
+testEthAccount('ethAccount outside execution', {
+  deploy: false,
+  pubkey: false,
+  declare: false,
 });
 
 testEthAccount('ethAccount declarer', {
   deploy: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testEthAccount('ethAccount deployable', {
   declare: false,
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testEthAccount('ethAccount public key', {
   declare: false,
   deploy: false,
+  outsideExecution: false,
 });
 
 testEthAccount('ethAccount declarer, deployable', {
-  pubkey: false
+  pubkey: false,
+  outsideExecution: false,
 });
 
 testEthAccount('ethAccount declarer, public key', {
-  deploy: false
+  deploy: false,
+  outsideExecution: false,
 });
 
 testEthAccount('ethAccount deployable, public key', {
-  declare: false
+  declare: false,
+  outsideExecution: false,
 });
 
 testAPIEquivalence('account API default');
@@ -179,6 +212,7 @@ testAPIEquivalence('account API basic', {
   declare: false,
   deploy: false,
   pubkey: false,
+  outsideExecution: false,
   upgradeable: false,
 });
 
@@ -188,6 +222,7 @@ testAPIEquivalence('account API full upgradeable', {
   declare: true,
   deploy: true,
   pubkey: true,
+  outsideExecution: true,
   upgradeable: true,
 });
 
