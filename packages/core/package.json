@@ -27,7 +27,6 @@
     "@openzeppelin/contracts-upgradeable": "^5.1.0",
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
-    "array.prototype.flat": "^1.2.4",
     "ava": "^6.0.0",
     "hardhat": "^2.1.1",
     "jszip": "^3.6.0",
@@ -36,8 +35,5 @@
     "solidity-ast": "^0.4.18",
     "ts-node": "^10.4.0",
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "array.prototype.flatmap": "^1.2.4"
   }
 }

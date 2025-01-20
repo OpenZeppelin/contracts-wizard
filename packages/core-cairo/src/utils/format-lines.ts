@@ -1,5 +1,3 @@
-import 'array.prototype.flatmap/auto';
-
 export type Lines = string | typeof whitespace | Lines[];
 
 const whitespace = Symbol('whitespace');

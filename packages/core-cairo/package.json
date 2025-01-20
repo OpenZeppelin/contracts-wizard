@@ -22,19 +22,12 @@
     "version": "node ../../scripts/bump-changelog.js"
   },
   "devDependencies": {
-    "@types/bn.js": "^5.1.0",
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
-    "array.prototype.flat": "^1.2.4",
     "ava": "^6.0.0",
     "rimraf": "^5.0.0",
     "ts-node": "^10.4.0",
     "typescript": "^5.0.0",
     "semver": "^7.6.0"
-  },
-  "dependencies": {
-    "array.prototype.flatmap": "^1.2.4",
-    "bn.js": "^5.2.0",
-    "ethereum-cryptography": "^3.0.0"
   }
 }
