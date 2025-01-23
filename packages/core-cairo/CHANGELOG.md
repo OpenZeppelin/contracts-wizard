@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.21.1 (2025-01-23)
 
 - Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
 - Remove unused dependencies. ([#430](https://github.com/OpenZeppelin/contracts-wizard/pull/430))
