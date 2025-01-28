@@ -4,6 +4,7 @@ import { ERC1155Options, buildERC1155 } from './erc1155';
 import { CustomOptions, buildCustom } from './custom';
 import { AccountOptions, buildAccount } from './account';
 import { GovernorOptions, buildGovernor } from './governor';
+import { MultisigOptions, buildMultisig } from './multisig';
 import { VestingOptions, buildVesting } from './vesting';
 
 export interface KindedOptions {
@@ -12,6 +13,7 @@ export interface KindedOptions {
   ERC1155:  { kind: 'ERC1155' }  & ERC1155Options;
   Account:  { kind: 'Account' }  & AccountOptions;
   Governor: { kind: 'Governor' } & GovernorOptions;
+  Multisig: { kind: 'Multisig' } & MultisigOptions;
   Vesting: { kind: 'Vesting' } & VestingOptions;
   Custom:   { kind: 'Custom' }   & CustomOptions;
 }
@@ -34,6 +36,9 @@ export function buildGeneric(opts: GenericOptions) {
 
     case 'Governor':
       return buildGovernor(opts);
+
+    case 'Multisig':
+      return buildMultisig(opts);
 
     case 'Vesting':
       return buildVesting(opts);

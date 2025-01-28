@@ -9,6 +9,8 @@
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
+    import VestingControls from './VestingControls.svelte';
+    import MultisigControls from './MultisigControls.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import CheckIcon from '../icons/CheckIcon.svelte';
     import DownloadIcon from '../icons/DownloadIcon.svelte';
@@ -23,7 +25,6 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import { InitialOptions } from '../initial-options';
-    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -57,6 +58,7 @@
               break;
             case 'Account':
             case 'Governor':
+            case 'Multisig':
             case 'Vesting':
             case 'ERC1155':
             case 'Custom':
@@ -123,6 +125,9 @@
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
+        <button class:selected={tab === 'Multisig'} on:click={() => tab = 'Multisig'}>
+          Multisig
+        </button>
         <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
           Vesting
         </button>
@@ -174,6 +179,9 @@
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
+      </div>
+      <div class:hidden={tab !== 'Multisig'}>
+        <MultisigControls bind:opts={allOpts.Multisig} errors={errors.Multisig}/>
       </div>
       <div class:hidden={tab !== 'Vesting'}>
         <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting}/>
