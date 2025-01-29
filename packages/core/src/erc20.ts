@@ -39,7 +39,7 @@ export const defaults: Required<ERC20Options> = {
   info: commonDefaults.info,
 } as const;
 
-function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -61,7 +61,7 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
   return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
 }
 
-export function buildERC20(opts: ERC20Options): Contract {
+export function buildERC20(opts: ERC20Options): ContractBuilder {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);
@@ -118,6 +118,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   );
 
   c.addOverride(ERC20, functions._update);
+  c.addOverride(ERC20, functions._approve); // allows override from stablecoin
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
@@ -202,13 +203,23 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-const functions = defineFunctions({
+export const functions = defineFunctions({
   _update: {
     kind: 'internal' as const,
     args: [
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'value', type: 'uint256' },
+    ],
+  },
+
+  _approve: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'emitEvent', type: 'bool' },
     ],
   },
 
