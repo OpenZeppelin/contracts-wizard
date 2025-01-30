@@ -7,6 +7,7 @@ import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
+import { supportsInterface } from './common-functions';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -22,6 +23,7 @@ export interface ERC20Options extends CommonOptions {
    */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
+  bridgeable?: boolean | 'superchain';
 }
 
 export const defaults: Required<ERC20Options> = {
@@ -34,6 +36,7 @@ export const defaults: Required<ERC20Options> = {
   permit: true,
   votes: false,
   flashmint: false,
+  bridgeable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -50,6 +53,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
+    bridgeable: opts.bridgeable ?? defaults.bridgeable,
   };
 }
 
@@ -98,6 +102,10 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   if (allOpts.flashmint) {
     addFlashMint(c);
+  }
+
+  if (allOpts.bridgeable) {
+    addBridgeable(c, allOpts.bridgeable, allOpts.upgradeable, access);
   }
 
   setAccessControl(c, access);
@@ -203,6 +211,31 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
+function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
+  if (bridgeable !== false) {
+    const ERC20Bridgeable = {
+      name: 'ERC20Bridgeable',
+      path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
+    };
+
+    c.addParent(ERC20Bridgeable);
+    c.addOverride(ERC20Bridgeable, supportsInterface);
+
+    if (upgradeable !== false) {
+      throw new Error('ERC20Bridgeable does not currently support usage with upgradeable contracts');
+    }
+
+    c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
+    if (bridgeable === 'superchain') {
+      c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
+      c.setFunctionBody(['if (msg.sender != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
+    } else {
+      c.setFunctionBody([], functions._checkTokenBridge);
+      requireAccessControl(c, functions._checkTokenBridge, access, 'TOKEN_BRIDGE', 'tokenBridge');
+    }
+  }
+}
+
 export const functions = defineFunctions({
   _update: {
     kind: 'internal' as const,
@@ -253,5 +286,12 @@ export const functions = defineFunctions({
     ],
     returns: ['uint256'],
     mutability: 'view' as const,
+  },
+
+  _checkTokenBridge: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'caller', type: 'address' },
+    ],
   }
 });

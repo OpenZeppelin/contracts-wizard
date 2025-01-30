@@ -7,7 +7,7 @@ import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
-const blueprint = {
+export const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   burnable: booleans,
@@ -17,11 +17,17 @@ const blueprint = {
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
+  bridgeable: [ ...booleans, 'superchain' ] as const,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    // Only yield options that are not both bridgeable and upgradeable, since ERC20Bridgeable does not currently support usage with upgradeable contracts.
+    if (!(opts.bridgeable && opts.upgradeable)) {
+      yield opts;
+    }
+  }
 }
