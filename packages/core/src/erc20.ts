@@ -224,6 +224,8 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
     if (upgradeable !== false) {
       throw new Error('ERC20Bridgeable does not currently support usage with upgradeable contracts');
     }
+    // TODO if ownable, throw error that ERC20Bridgeable does not support ownable, unless it is superchain
+    // or hardcode a variable for token bridge but require user to set it
 
     c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
     if (bridgeable === 'superchain') {

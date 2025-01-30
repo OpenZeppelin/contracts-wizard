@@ -92,6 +92,40 @@ testERC20('erc20 flashmint', {
   flashmint: true,
 });
 
+// TODO test for error
+// testERC20('erc20 bridgeable', {
+//   bridgeable: true,
+//   access: 'ownable',
+// });
+
+testERC20('erc20 bridgeable roles', {
+  bridgeable: true,
+  access: 'roles',
+});
+
+testERC20('erc20 bridgeable managed', {
+  bridgeable: true,
+  access: 'managed',
+});
+
+testERC20('erc20 bridgeable superchain', {
+  bridgeable: 'superchain',
+});
+
+testERC20('erc20 bridgeable superchain roles', {
+  bridgeable: 'superchain',
+  access: 'roles',
+});
+
+testERC20('erc20 bridgeable superchain managed', {
+  bridgeable: 'superchain',
+  access: 'managed',
+});
+
+// TODO test and catch error when bridgeable and upgradeable are both true
+
+// TODO test and catch error when bridgeable is 'superchain' and upgradeable is true 
+
 testERC20('erc20 full upgradeable transparent', {
   premint: '2000',
   access: 'roles',
