@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Potentially breaking changes**:
+  - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`.
+
 ## 0.5.0 (2025-01-23)
 
 - Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
