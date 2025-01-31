@@ -105,7 +105,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
         c.addConstructorArgument({type: 'address', name: roleOwner});
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
-      c.setFunctionBody([`return hasRole(CUSTODIAN_ROLE, user);`], functions._isCustodian);
+      c.setFunctionBody([`return hasRole(${roleId}, user);`], functions._isCustodian);
       break;
     }
     case 'managed': {

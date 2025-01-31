@@ -63,7 +63,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.bridgeable === true;
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -234,16 +234,44 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   if (bridgeable === 'superchain') {
     c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-    c.setFunctionBody(['if (msg.sender != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
+    c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
   } else {
-    if (access === 'ownable') {
-      throw new OptionsError({
-        bridgeable: 'Bridgeable requires roles or managed access control'
-      });
+    if (access === false) {
+      access = 'ownable';
     }
 
-    c.setFunctionBody([], functions._checkTokenBridge);
-    requireAccessControl(c, functions._checkTokenBridge, access, 'TOKEN_BRIDGE', 'tokenBridge');
+    setAccessControl(c, access);
+
+    switch (access) {
+      case 'ownable': {
+        // TODO add immutable and don't use owner
+        c.setFunctionBody([`return caller == owner();`], functions._checkTokenBridge);
+        break;
+      }
+      case 'roles': {
+        const roleOwner = 'tokenBridge';
+        const roleId = 'TOKEN_BRIDGE_ROLE';
+        const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+        if (roleOwner && addedConstant) {
+          c.addConstructorArgument({type: 'address', name: roleOwner});
+          c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+        }
+        c.setFunctionBody([`return hasRole(${roleId}, caller);`], functions._checkTokenBridge);
+        break;
+      }
+      case 'managed': {
+        c.addImportOnly({
+          name: 'AuthorityUtils',
+          path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+        });
+        const logic = [
+          `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
+          `return immediate;`
+        ]
+        c.setFunctionBody(logic, functions._checkTokenBridge);
+        break;
+      }
+    }
   }
 }
 
