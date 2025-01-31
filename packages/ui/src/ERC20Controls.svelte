@@ -8,6 +8,7 @@
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from './inputs/ToggleRadio.svelte';
+  import OPIcon from './icons/OPIcon.svelte';
 
   export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
@@ -114,7 +115,7 @@
   <div class="checkbox-group">
     <label class:checked={superchainSelected}>
       <input type="checkbox" bind:checked={superchainSelected} on:click={toggleSuperchain}>
-      SuperchainERC20
+      <OPIcon />&nbsp;SuperchainERC20
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
         Uses the predeployed <code>SuperchainTokenBridge</code> contract on the Superchain-compatible networks as the authorized token bridge.
       </HelpTooltip>
