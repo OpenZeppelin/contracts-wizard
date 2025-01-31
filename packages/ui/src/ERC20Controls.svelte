@@ -18,10 +18,11 @@
 
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
 
-  $: superchain = opts.bridgeable === 'superchain';
+  $: superchainSelected = opts.bridgeable === 'superchain';
 
   const toggleSuperchain = () => {
-    opts.bridgeable = superchain ? true : 'superchain';
+    // Set the inverse
+    opts.bridgeable = superchainSelected ? true : 'superchain';
   };
 </script>
 
@@ -111,8 +112,8 @@
   </h1>
 
   <div class="checkbox-group">
-    <label class:checked={superchain}>
-      <input type="checkbox" bind:checked={superchain} on:click={toggleSuperchain}>
+    <label class:checked={superchainSelected}>
+      <input type="checkbox" bind:checked={superchainSelected} on:click={toggleSuperchain}>
       SuperchainERC20
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
         Uses the predeployed <code>SuperchainTokenBridge</code> contract on the Superchain-compatible networks as the authorized token bridge.
