@@ -101,7 +101,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
       const roleOwner = 'custodian';
       const roleId = 'CUSTODIAN_ROLE';
       const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-      if (roleOwner && addedConstant) {
+      if (addedConstant) {
         c.addConstructorArgument({type: 'address', name: roleOwner});
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }

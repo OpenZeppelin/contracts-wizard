@@ -244,19 +244,24 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
 
     switch (access) {
       case 'ownable': {
-        // TODO add immutable and don't use owner
-        c.setFunctionBody([`return caller == owner();`], functions._checkTokenBridge);
+        const addedImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
+        if (addedImmutable) {
+          c.addConstructorArgument({type: 'address', name: 'tokenBridge'});
+          c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
+          c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
+        }
+        c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge);
         break;
       }
       case 'roles': {
         const roleOwner = 'tokenBridge';
         const roleId = 'TOKEN_BRIDGE_ROLE';
         const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-        if (roleOwner && addedConstant) {
+        if (addedConstant) {
           c.addConstructorArgument({type: 'address', name: roleOwner});
           c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
         }
-        c.setFunctionBody([`return hasRole(${roleId}, caller);`], functions._checkTokenBridge);
+        c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge);
         break;
       }
       case 'managed': {
@@ -266,7 +271,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
         });
         const logic = [
           `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
-          `return immediate;`
+          `if (!immediate) revert Unauthorized();`
         ]
         c.setFunctionBody(logic, functions._checkTokenBridge);
         break;
