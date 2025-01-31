@@ -8,6 +8,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
+import { OptionsError } from './error';
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -212,29 +213,37 @@ function addFlashMint(c: ContractBuilder) {
 }
 
 function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
-  if (bridgeable !== false) {
-    const ERC20Bridgeable = {
-      name: 'ERC20Bridgeable',
-      path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
-    };
+  if (bridgeable === false) {
+    return;
+  }
 
-    c.addParent(ERC20Bridgeable);
-    c.addOverride(ERC20Bridgeable, supportsInterface);
+  const ERC20Bridgeable = {
+    name: 'ERC20Bridgeable',
+    path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
+  };
 
-    if (upgradeable !== false) {
-      throw new Error('ERC20Bridgeable does not currently support usage with upgradeable contracts');
+  c.addParent(ERC20Bridgeable);
+  c.addOverride(ERC20Bridgeable, supportsInterface);
+
+  if (upgradeable) {
+    throw new OptionsError({
+      bridgeable: 'Bridgeable does not currently support use in upgradeable contracts'
+    });
+  }
+
+  c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
+  if (bridgeable === 'superchain') {
+    c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
+    c.setFunctionBody(['if (msg.sender != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
+  } else {
+    if (access === 'ownable') {
+      throw new OptionsError({
+        bridgeable: 'Bridgeable requires roles or managed access control'
+      });
     }
-    // TODO if ownable, throw error that ERC20Bridgeable does not support ownable, unless it is superchain
-    // or hardcode a variable for token bridge but require user to set it
 
-    c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
-    if (bridgeable === 'superchain') {
-      c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-      c.setFunctionBody(['if (msg.sender != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
-    } else {
-      c.setFunctionBody([], functions._checkTokenBridge);
-      requireAccessControl(c, functions._checkTokenBridge, access, 'TOKEN_BRIDGE', 'tokenBridge');
-    }
+    c.setFunctionBody([], functions._checkTokenBridge);
+    requireAccessControl(c, functions._checkTokenBridge, access, 'TOKEN_BRIDGE', 'tokenBridge');
   }
 }
 
