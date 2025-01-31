@@ -92,11 +92,13 @@ testERC20('erc20 flashmint', {
   flashmint: true,
 });
 
-// TODO test for error
-// testERC20('erc20 bridgeable', {
-//   bridgeable: true,
-//   access: 'ownable',
-// });
+testERC20('erc20 bridgeable', {
+  bridgeable: true,
+});
+
+testERC20('erc20 bridgeable ownable', {
+  bridgeable: true,
+});
 
 testERC20('erc20 bridgeable roles', {
   bridgeable: true,
@@ -110,6 +112,11 @@ testERC20('erc20 bridgeable managed', {
 
 testERC20('erc20 bridgeable superchain', {
   bridgeable: 'superchain',
+});
+
+testERC20('erc20 bridgeable superchain ownable', {
+  bridgeable: 'superchain',
+  access: 'ownable',
 });
 
 testERC20('erc20 bridgeable superchain roles', {
