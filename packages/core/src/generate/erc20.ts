@@ -25,7 +25,7 @@ export const blueprint = {
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
   for (const opts of generateAlternatives(blueprint)) {
-    // Only yield options that are not both bridgeable and upgradeable, since ERC20Bridgeable does not currently support usage with upgradeable contracts.
+    // bridgeable does not currently support upgradeable
     if (!(opts.bridgeable && opts.upgradeable)) {
       yield opts;
     }

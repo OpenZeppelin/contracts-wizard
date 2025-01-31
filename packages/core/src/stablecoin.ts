@@ -2,7 +2,7 @@ import { Contract, ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
-import { buildERC20, ERC20Options, defaults as erc20defaults, withDefaults as withERC20Defaults, functions as erc20functions } from './erc20';
+import { buildERC20, ERC20Options, defaults as erc20defaults, withDefaults as withERC20Defaults, functions as erc20functions, isAccessControlRequired as erc20IsAccessControlRequired } from './erc20';
 
 export interface StablecoinOptions extends ERC20Options {
   limitations?: false | "allowlist" | "blocklist";
@@ -32,7 +32,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.limitations !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
+  return erc20IsAccessControlRequired(opts) || opts.limitations !== false || opts.custodian === true;
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
