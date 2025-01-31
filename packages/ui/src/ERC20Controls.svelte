@@ -94,6 +94,39 @@
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
+      <span>Bridgeable</span>
+      <span class="ml-1">
+        <ToggleRadio bind:value={opts.bridgeable} defaultValue={true} />
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
+        Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.bridgeable === true}>
+      <input type="radio" bind:group={opts.bridgeable} value={true}>
+      Access Controlled
+      <HelpTooltip>
+        Uses access control to determine authorized token bridges.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.bridgeable === 'superchain'}>
+      <input type="radio" bind:group={opts.bridgeable} value="superchain">
+      SuperchainERC20
+      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract on the Superchain-compatible networks as the authorized token bridge.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
       <span>Votes</span>
       <span class="ml-1">
         <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
