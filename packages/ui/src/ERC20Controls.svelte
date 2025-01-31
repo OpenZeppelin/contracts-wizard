@@ -107,7 +107,7 @@
   <div class="checkbox-group">
     <label class:checked={opts.bridgeable === true}>
       <input type="radio" bind:group={opts.bridgeable} value={true}>
-      Access Controlled
+      Authorized Bridge
       <HelpTooltip>
         Uses access control to determine authorized token bridges.
       </HelpTooltip>
@@ -157,6 +157,6 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} disabled={opts.bridgeable}/>
 
 <InfoSection bind:info={opts.info} />
