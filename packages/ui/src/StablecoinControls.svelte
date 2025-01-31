@@ -20,7 +20,7 @@
 
 <section class="controls-section">
   <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and subject to change</span>
+    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and are subject to change</span>
   </div>
 </section>
 
