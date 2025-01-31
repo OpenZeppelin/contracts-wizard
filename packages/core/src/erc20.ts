@@ -63,7 +63,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.bridgeable === true;
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -236,13 +236,8 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
     c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
     c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
   } else {
-    if (access === false) {
-      access = 'ownable';
-    }
-
-    setAccessControl(c, access);
-
     switch (access) {
+      case false:
       case 'ownable': {
         const addedImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
         if (addedImmutable) {
@@ -254,6 +249,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
         break;
       }
       case 'roles': {
+        setAccessControl(c, access);
         const roleOwner = 'tokenBridge';
         const roleId = 'TOKEN_BRIDGE_ROLE';
         const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
@@ -265,6 +261,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
         break;
       }
       case 'managed': {
+        setAccessControl(c, access);
         c.addImportOnly({
           name: 'AuthorityUtils',
           path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
