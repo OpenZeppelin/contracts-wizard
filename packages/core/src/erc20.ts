@@ -234,7 +234,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   if (bridgeable === 'superchain') {
     c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-    c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge);
+    c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
   } else {
     if (access === false) {
       access = 'ownable';
@@ -250,7 +250,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
           c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
           c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
         }
-        c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge);
+        c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
         break;
       }
       case 'roles': {
@@ -261,7 +261,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
           c.addConstructorArgument({type: 'address', name: roleOwner});
           c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
         }
-        c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge);
+        c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
         break;
       }
       case 'managed': {
@@ -273,11 +273,12 @@ function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', u
           `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
           `if (!immediate) revert Unauthorized();`
         ]
-        c.setFunctionBody(logic, functions._checkTokenBridge);
+        c.setFunctionBody(logic, functions._checkTokenBridge, 'view');
         break;
       }
     }
   }
+  c.addVariable('error Unauthorized();');
 }
 
 export const functions = defineFunctions({
