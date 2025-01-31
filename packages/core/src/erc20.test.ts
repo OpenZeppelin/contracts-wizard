@@ -1,5 +1,5 @@
 import test from 'ava';
-import { erc20 } from '.';
+import { erc20, OptionsError } from '.';
 
 import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
@@ -129,9 +129,25 @@ testERC20('erc20 bridgeable superchain managed', {
   access: 'managed',
 });
 
-// TODO test and catch error when bridgeable and upgradeable are both true
+test('erc20 bridgeable, upgradeable not allowed', async t => {
+  let error = t.throws(() => buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    bridgeable: true,
+    upgradeable: 'transparent',
+  }));
+  t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
+});
 
-// TODO test and catch error when bridgeable is 'superchain' and upgradeable is true 
+test('erc20 bridgeable superchain, upgradeable not allowed', async t => {
+  let error = t.throws(() => buildERC20({
+    name: 'MyToken',
+    symbol: 'MTK',
+    bridgeable: 'superchain',
+    upgradeable: 'transparent',
+  }));
+  t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
+});
 
 testERC20('erc20 full upgradeable transparent', {
   premint: '2000',
