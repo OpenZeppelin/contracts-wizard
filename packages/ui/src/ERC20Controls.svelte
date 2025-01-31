@@ -117,7 +117,7 @@
       <input type="checkbox" bind:checked={superchainSelected} on:click={toggleSuperchain}>
       <OPIcon />&nbsp;SuperchainERC20
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract on the Superchain-compatible networks as the authorized token bridge.
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge.
       </HelpTooltip>
     </label>
   </div>
