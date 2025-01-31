@@ -102,7 +102,7 @@
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
-      <span>Bridgeable</span>
+      <span>Bridgeable*</span>
       <span class="ml-1">
         <ToggleRadio bind:value={opts.bridgeable} defaultValue={true} />
       </span>
@@ -115,12 +115,17 @@
   <div class="checkbox-group">
     <label class:checked={superchainSelected}>
       <input type="checkbox" bind:checked={superchainSelected} on:click={toggleSuperchain}>
-      <OPIcon />&nbsp;SuperchainERC20
+      <OPIcon />&nbsp;SuperchainERC20*
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
         Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge.
       </HelpTooltip>
     </label>
   </div>
+
+  <div class="text-sm text-gray-500">
+    <strong>* Experimental:</strong> <span class="italic">These features are not audited and subject to change</span>
+  </div>
+
 </section>
 
 <section class="controls-section">
