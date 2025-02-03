@@ -1,11 +1,8 @@
 [build]
-command = "yarn --cwd packages/ui build"
+command = "yarn global add husky && yarn --cwd packages/ui build"
 publish = "packages/ui/public"
 
 edge_functions = "packages/ui/api"
-
-[build.environment]
-  YARN_FLAGS = "--network-concurrency 1"
 
 [[edge_functions]]
   path = "/ai"
