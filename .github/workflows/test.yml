@@ -24,7 +24,9 @@ jobs:
         if: matrix.package == 'core'
         uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
-        run: yarn install --network-concurrency 1
+        run: yarn install
+      - name: Install husky (for community-contracts repo)
+        run: yarn global add husky
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/${{matrix.package}}
