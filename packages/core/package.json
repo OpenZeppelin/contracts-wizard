@@ -14,7 +14,7 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "prepare": "tsc && node dist/scripts/prepare.js",
+    "prepare": "yarn global add husky && tsc && node dist/scripts/prepare.js",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:watch": "ava --watch",
