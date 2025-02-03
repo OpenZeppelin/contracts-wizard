@@ -7,7 +7,9 @@ import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
-export const blueprint = {
+export const bridgeableOptions = [ ...booleans, 'superchain' ] as const;
+
+const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   burnable: booleans,
@@ -17,7 +19,7 @@ export const blueprint = {
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
-  bridgeable: [ ...booleans, 'superchain' ] as const,
+  bridgeable: bridgeableOptions,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
