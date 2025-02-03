@@ -14,7 +14,7 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "prepare": "yarn global add husky && tsc && node dist/scripts/prepare.js",
+    "prepare": "husky && tsc && node dist/scripts/prepare.js",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:watch": "ava --watch",
@@ -34,6 +34,7 @@
     "semver": "^7.6.0",
     "solidity-ast": "^0.4.18",
     "ts-node": "^10.4.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "husky": "^9.1.7"
   }
 }
