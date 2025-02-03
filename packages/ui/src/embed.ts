@@ -61,6 +61,7 @@ onDOMContentLoaded(function () {
     iframe.style.border = '0';
     iframe.style.width = '100%';
     iframe.style.height = 'calc(100vh - 100px)';
+    iframe.allow = 'clipboard-write';
 
     w.appendChild(iframe);
 
