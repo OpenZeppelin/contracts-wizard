@@ -467,9 +467,9 @@
     "@nomicfoundation/solidity-analyzer-linux-x64-musl" "0.1.2"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.2"
 
-"@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
+"@openzeppelin/community-contracts@https://github.com/ericglau/openzeppelin-community-contracts":
   version "0.0.1"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#4d029e17c22d8ece6eb94604e55306c7017cbdb2"
+  resolved "https://github.com/ericglau/openzeppelin-community-contracts#6a1c66e39002fadfbc1b7b707d63ca03c60fce79"
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^5.10.0"
 
