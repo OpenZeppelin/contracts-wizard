@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Access } from '@openzeppelin/wizard-cairo';
 
-  import ToggleRadio from '../../inputs/ToggleRadio.svelte';
-  import HelpTooltip from '../../HelpTooltip.svelte';
+  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let access: Access;
   export let required: boolean;

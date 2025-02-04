@@ -1,24 +1,24 @@
 <script lang="ts">
-  import HelpTooltip from '../../HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
-  import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import { error } from '../../error-tooltip';
+  import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['ERC721']> = {
-    kind: 'ERC721',
-    ...erc721.defaults,
+  export const opts: Required<KindedOptions['ERC20']> = {
+    kind: 'ERC20',
+    ...erc20.defaults,
+    premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc721.isAccessControlRequired(opts);
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -29,17 +29,19 @@
       <span>Name</span>
       <input bind:value={opts.name} use:error={errors?.name}>
     </label>
+
     <label class="labeled-input">
       <span>Symbol</span>
       <input bind:value={opts.symbol} use:error={errors?.symbol}>
     </label>
   </div>
+
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
-      Base URI
-      <HelpTooltip>Will be concatenated with token IDs to generate the token URIs.</HelpTooltip>
+      Premint
+      <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
     </span>
-    <input bind:value={opts.baseUri} placeholder="https://...">
+    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
   </label>
 </section>
 
@@ -50,10 +52,11 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc721">
-        Privileged accounts will be able to emit new tokens.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
+        Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
+
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
@@ -61,6 +64,7 @@
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
+
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
@@ -69,13 +73,7 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable}>
-      Enumerable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc721#ERC721EnumerableComponent">
-        Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token ids and all tokens owned by an address.
-      </HelpTooltip>
-    </label>
+
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
@@ -110,8 +108,6 @@
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
   </label>
 </section>
-
-<RoyaltyInfoSection bind:opts={opts.royaltyInfo} errors={errors} />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

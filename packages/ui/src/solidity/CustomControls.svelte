@@ -1,21 +1,18 @@
 <script lang="ts">
-  import HelpTooltip from '../../HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { custom, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import type { KindedOptions } from '@openzeppelin/wizard';
+  import { custom, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilityField from './UpgradeabilityField.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import { error } from '../../error-tooltip';
 
-  export const opts: Required<KindedOptions['Custom']> = {
+  export let opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
     ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
-
-  export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
@@ -25,7 +22,7 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name} use:error={errors?.name}>
+    <input bind:value={opts.name}>
   </label>
 </section>
 
@@ -36,17 +33,16 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
-
-    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
-
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />

@@ -1,28 +1,23 @@
 <script lang="ts">
-  import HelpTooltip from '../../HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { stablecoin, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ToggleRadio from '../../inputs/ToggleRadio.svelte';
+  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
 
-  export let opts: Required<KindedOptions['Stablecoin']> = {
-    kind: 'Stablecoin',
-    ...stablecoin.defaults,
+  export let opts: Required<KindedOptions['ERC20']> = {
+    kind: 'ERC20',
+    ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
-
-<section class="controls-section">
-  <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and subject to change</span>
-  </div>
-</section>
 
 <section class="controls-section">
   <h1>Settings</h1>
@@ -92,46 +87,6 @@
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
       </HelpTooltip>
     </label>
-
-    <label class:checked={opts.custodian}>
-      <input type="checkbox" bind:checked={opts.custodian}>
-      Custodian
-      <HelpTooltip>
-        Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
-      </HelpTooltip>
-    </label>
-  </div>
-</section>
-
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Limitations</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
-      </span>
-      <HelpTooltip align="right">
-        Restricts certain users from transferring tokens, either via allowing or blocking them.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  <div class="checkbox-group">
-    <label class:checked={opts.limitations === 'allowlist'}>
-      <input type="radio" bind:group={opts.limitations} value="allowlist">
-      Allowlist
-      <HelpTooltip>
-        Allows a list of addresses to transfer tokens.
-      </HelpTooltip>
-    </label>
-    <label class:checked={opts.limitations === 'blocklist'}>
-      <input type="radio" bind:group={opts.limitations} value="blocklist">
-      Blocklist
-      <HelpTooltip>
-        Blocks a list of addresses from transferring tokens.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 
@@ -168,5 +123,7 @@
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />
