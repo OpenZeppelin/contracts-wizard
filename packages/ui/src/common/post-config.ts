@@ -8,7 +8,7 @@ declare global {
 }
 
 export type Action = 'copy' | 'remix' | 'download-npm' | 'download-hardhat' | 'download-foundry' | 'defender';
-export type Language = 'solidity' | 'cairo';
+export type Language = 'solidity' | 'cairo' | 'stylus';
 
 export async function postConfig(opts: Required<GenericOptions> | Required<CairoOptions>, action: Action, language: Language) {
   window.gtag?.('event', 'wizard_action', { ...opts, action, wizard_lang: language });

@@ -1,7 +1,5 @@
 import hljs from 'highlight.js/lib/core';
-
-// @ts-ignore
-import hljsDefineCairo from 'highlightjs-cairo';
-hljsDefineCairo(hljs);
+import rust from 'highlight.js/lib/languages/rust';
+hljs.registerLanguage('rust', rust);
 
 export default hljs;

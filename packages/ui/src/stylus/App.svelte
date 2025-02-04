@@ -77,9 +77,9 @@
     }
 
     $: code = printContract(contract);
-    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
+    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'rust'}).value);
 
-    const language = 'cairo';
+    const language = 'stylus';
 
     let copied = false;
     const copyHandler = async () => {
