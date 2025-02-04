@@ -2,7 +2,7 @@
   import type { Info } from '@openzeppelin/wizard';
   import { infoDefaults } from '@openzeppelin/wizard';
 
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../../HelpTooltip.svelte';
 
   export let info: Info;
 </script>

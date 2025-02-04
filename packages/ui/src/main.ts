@@ -1,8 +1,8 @@
 import './styles/global.css';
 
 import type {} from 'svelte';
-import App from './App.svelte';
-import CairoApp from './cairo/App.svelte';
+import App from './lang/solidity/App.svelte';
+import CairoApp from './lang/cairo/App.svelte';
 import { postMessage } from './post-message';
 import UnsupportedVersion from './UnsupportedVersion.svelte';
 import semver from 'semver';

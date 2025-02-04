@@ -1,21 +1,23 @@
 <script lang="ts">
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../../HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
-  import { stablecoin, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import { realWorldAsset, premintPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ToggleRadio from './inputs/ToggleRadio.svelte';
+  import ToggleRadio from '../../inputs/ToggleRadio.svelte';
 
-  export let opts: Required<KindedOptions['Stablecoin']> = {
-    kind: 'Stablecoin',
-    ...stablecoin.defaults,
+  export let opts: Required<KindedOptions['RealWorldAsset']> = {
+    kind: 'RealWorldAsset',
+    ...realWorldAsset.defaults,
+    name: 'MyRWA',
+    symbol: 'RWA',
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
+  $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">

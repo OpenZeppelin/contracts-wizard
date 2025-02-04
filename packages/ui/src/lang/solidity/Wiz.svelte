@@ -1,13 +1,13 @@
 <script lang="ts">
-  import UserAvatar from './icons/UserAvatar.svelte';
-  import WizAvatar from './icons/WizAvatar.svelte'
-  import WizIcon from './icons/WizIcon.svelte'
-  import XIcon from './icons/XIcon.svelte';
+  import UserAvatar from '../../icons/UserAvatar.svelte';
+  import WizAvatar from '../../icons/WizAvatar.svelte'
+  import WizIcon from '../../icons/WizIcon.svelte'
+  import XIcon from '../../icons/XIcon.svelte';
   import type { GenericOptions } from '@openzeppelin/wizard';
   import { nanoid } from 'nanoid';
-  import MinimizeIcon from './icons/MinimizeIcon.svelte';
-  import MaximizeIcon from './icons/MaximizeIcon.svelte';
-  import HelpTooltip from './HelpTooltip.svelte';
+  import MinimizeIcon from '../../icons/MinimizeIcon.svelte';
+  import MaximizeIcon from '../../icons/MaximizeIcon.svelte';
+  import HelpTooltip from '../../HelpTooltip.svelte';
 
   export let functionCall: {
     name?: string,
