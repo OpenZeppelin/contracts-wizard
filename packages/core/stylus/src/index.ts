@@ -7,7 +7,6 @@ export { ContractBuilder } from './contract';
 export { printContract } from './print';
 
 export type { Access } from './set-access-control';
-export type { Account } from './account';
 export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
 export type { RoyaltyInfoOptions } from './set-royalty-info';
@@ -25,4 +24,4 @@ export { sanitizeKind } from './kind';
 
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
-export { erc20, erc721, erc1155, account, governor, vesting, custom } from './api';
+export { erc20 } from './api';

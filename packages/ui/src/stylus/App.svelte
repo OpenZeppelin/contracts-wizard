@@ -4,11 +4,6 @@
     import hljs from './highlightjs';
 
     import ERC20Controls from './ERC20Controls.svelte';
-    import ERC721Controls from './ERC721Controls.svelte';
-    import ERC1155Controls from './ERC1155Controls.svelte';
-    import CustomControls from './CustomControls.svelte';
-    import AccountControls from './AccountControls.svelte';
-    import GovernorControls from './GovernorControls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
     import CheckIcon from '../common/icons/CheckIcon.svelte';
     import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -23,7 +18,6 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import { InitialOptions } from '../common/initial-options';
-    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -52,12 +46,6 @@
           switch (opts.kind) {
             case 'ERC20':
               opts.premint = initialOpts.premint ?? opts.premint;
-            case 'ERC721':
-              opts.symbol = initialOpts.symbol ?? opts.symbol;
-              break;
-            case 'Vesting':
-            case 'ERC1155':
-            case 'Custom':
           }
           initialValuesSet = true;
         }
@@ -109,18 +97,6 @@
         <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
           ERC20
         </button>
-        <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
-          ERC721
-        </button>
-        <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
-          ERC1155
-        </button>
-        <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
-          Vesting
-        </button>
-        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
-          Custom
-        </button>
       </OverflowMenu>
     </div>
 
@@ -143,7 +119,7 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires a Scarb project with <code>openzeppelin</code> as a dependency.</p>
+            <p>Requires a Rust project with <code>openzeppelin-stylus</code> as a dependency.</p>
           </div>
         </button>
       </Dropdown>
@@ -154,24 +130,6 @@
     <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
-      </div>
-      <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721}/>
-      </div>
-      <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155}/>
-      </div>
-      <div class:hidden={tab !== 'Account'}>
-        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
-      </div>
-      <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
-      </div>
-      <div class:hidden={tab !== 'Vesting'}>
-        <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting}/>
-      </div>
-      <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

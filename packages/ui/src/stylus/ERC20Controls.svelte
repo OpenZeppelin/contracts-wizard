@@ -73,8 +73,6 @@
         Useful for emergency response.
       </HelpTooltip>
     </label>
-
-    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
 

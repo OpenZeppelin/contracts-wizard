@@ -3,7 +3,6 @@ import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { Access, requireAccessControl } from './set-access-control';
 import { defineComponents } from './utils/define-components';
 import { defineFunctions } from './utils/define-functions';
-import type { Account } from './account';
 
 export const upgradeableOptions = [false, true] as const;
 
@@ -38,28 +37,6 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
     requireAccessControl(c, trait, functions.upgrade, access, 'UPGRADER', 'upgrader');
-  }
-}
-
-export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
-  const trait = setUpgradeableBase(c, upgradeable);
-  if (trait !== undefined) {
-    c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalExtendedImpl');
-    c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
-  }
-}
-
-export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account): void {
-  const trait = setUpgradeableBase(c, upgradeable);
-  if (trait !== undefined) {
-    switch (type) {
-      case 'stark':
-        c.addFunctionCodeBefore(trait, functions.upgrade, 'self.account.assert_only_self()');
-        break;
-      case 'eth':
-        c.addFunctionCodeBefore(trait, functions.upgrade, 'self.eth_account.assert_only_self()');
-        break;
-    }
   }
 }
 

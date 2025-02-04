@@ -3,12 +3,6 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateERC20Options } from './erc20';
-import { generateERC721Options } from './erc721';
-import { generateERC1155Options } from './erc1155';
-import { generateAccountOptions } from './account';
-import { generateCustomOptions } from './custom';
-import { generateGovernorOptions } from './governor';
-import { generateVestingOptions } from './vesting';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
@@ -23,42 +17,6 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'ERC20') {
     for (const kindOpts of generateERC20Options()) {
       yield { kind: 'ERC20', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'ERC721') {
-    for (const kindOpts of generateERC721Options()) {
-      yield { kind: 'ERC721', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'ERC1155') {
-    for (const kindOpts of generateERC1155Options()) {
-      yield { kind: 'ERC1155', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'Account') {
-    for (const kindOpts of generateAccountOptions()) {
-      yield { kind: 'Account', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'Custom') {
-    for (const kindOpts of generateCustomOptions()) {
-      yield { kind: 'Custom', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'Governor') {
-    for (const kindOpts of generateGovernorOptions()) {
-      yield { kind: 'Governor', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'Vesting') {
-    for (const kindOpts of generateVestingOptions()) {
-      yield { kind: 'Vesting', ...kindOpts };
     }
   }
 }
@@ -102,17 +60,10 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     function filterByUpgradeableSetTo(isUpgradeable: boolean) {
       return (c: GeneratedContract) => {
         switch (c.options.kind) {
-          case 'Vesting':
-            return isUpgradeable === false;
-          case 'Account':
           case 'ERC20':
-          case 'ERC721':
-          case 'ERC1155':
-          case 'Governor':
-          case 'Custom':
             return c.options.upgradeable === isUpgradeable;
           default:
-            const _: never = c.options;
+            const _: never = c.options.kind; // TODO: When there are additional kinds above, change this assignment to just `c.options` instead of `c.options.kind`
             throw new Error('Unknown kind');
         }
       }
