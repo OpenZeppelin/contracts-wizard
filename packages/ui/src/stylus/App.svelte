@@ -55,8 +55,6 @@
             case 'ERC721':
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
-            case 'Account':
-            case 'Governor':
             case 'Vesting':
             case 'ERC1155':
             case 'Custom':
@@ -116,12 +114,6 @@
         </button>
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
-        </button>
-        <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
-          Account
-        </button>
-        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
-          Governor
         </button>
         <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
           Vesting
