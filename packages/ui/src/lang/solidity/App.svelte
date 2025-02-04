@@ -32,7 +32,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
-    import { InitialOptions } from './initial-options';
+    import { InitialOptions } from '../../initial-options';
     import { postMessageToIframe } from '../../post-message';
 
     const dispatch = createEventDispatcher();
