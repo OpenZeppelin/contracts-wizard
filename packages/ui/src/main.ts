@@ -1,8 +1,9 @@
 import './common/styles/global.css';
 
 import type {} from 'svelte';
-import App from './solidity/App.svelte';
+import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
+import StylusApp from './stylus/App.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -38,10 +39,19 @@ let app;
 if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSemver)) {
   postMessage({ kind: 'oz-wizard-unsupported-version' });
   app = new UnsupportedVersion({ target: document.body, props: { requestedVersion, compatibleVersionSemver }});
-} else if (lang === 'cairo') {
-  app = new CairoApp({ target: document.body, props: { initialTab, initialOpts } });
 } else {
-  app = new App({ target: document.body, props: { initialTab, initialOpts } });
+  switch (lang) {
+    case 'cairo':
+      app = new CairoApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+    case 'stylus':
+      app = new StylusApp({ target: document.body, props: { initialTab } });
+      break;
+    case 'solidity':
+    default:
+      app = new SolidityApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+  }
 }
 
 app.$on('tab-change', (e: CustomEvent) => {

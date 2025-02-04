@@ -91,6 +91,11 @@ body {
   --color-2: var(--cairo-orange-2);
 }
 
+.header .switch.switch-stylus {
+  --color-1: var(--stylus-pink-1);
+  --color-2: var(--stylus-pink-2);
+}
+
 .header .link {
   color: var(--text-color);
   display: block;
