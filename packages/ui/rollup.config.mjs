@@ -97,7 +97,7 @@ export default [
     },
     plugins: [
       // Generate openzeppelin-contracts.js data file
-      onStartRun(...'yarn --cwd ../core prepare'.split(' ')),
+      onStartRun(...'yarn --cwd ../core/solidity prepare'.split(' ')),
 
       svelte(await import('./svelte.config.js')),
 
@@ -132,7 +132,7 @@ export default [
       commonjs(),
 
       typescript({
-        include: ['src/**/*.ts', '../core/src/**/*.ts', '../core-cairo/src/**/*.ts'],
+        include: ['src/**/*.ts', '../core/solidity/src/**/*.ts', '../core/cairo/src/**/*.ts'],
         sourceMap: true,
         inlineSources: true,
       }),

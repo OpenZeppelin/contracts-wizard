@@ -19,7 +19,7 @@
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
     "test:watch": "ava --watch",
-    "version": "node ../../scripts/bump-changelog.js"
+    "version": "node ../../../scripts/bump-changelog.js"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

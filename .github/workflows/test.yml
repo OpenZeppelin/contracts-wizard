@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         package:
-          - core
-          - core-cairo
+          - solidity
+          - cairo
 
     runs-on: ubuntu-latest
     steps:
@@ -21,16 +21,16 @@ jobs:
           node-version: 18.x
           cache: 'yarn'
       - name: Install Foundry
-        if: matrix.package == 'core'
+        if: matrix.package == 'solidity'
         uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
         run: yarn install --network-concurrency 1
       - name: Compile TypeScript
         run: yarn tsc
-        working-directory: packages/${{matrix.package}}
+        working-directory: packages/core/${{matrix.package}}
       - name: Check Svelte
         run: yarn svelte-check
         working-directory: packages/ui
       - name: Run tests
         run: yarn test
-        working-directory: packages/${{matrix.package}}
+        working-directory: packages/core/${{matrix.package}}
