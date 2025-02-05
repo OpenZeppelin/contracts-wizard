@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Info } from '@openzeppelin/wizard-stellar';
-  import { infoDefaults } from '@openzeppelin/wizard-stellar';
+  import type { Info } from '@openzeppelin/wizard-soroban';
+  import { infoDefaults } from '@openzeppelin/wizard-soroban';
 
   export let info: Info;
 </script>

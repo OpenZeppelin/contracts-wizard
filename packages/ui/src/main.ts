@@ -4,7 +4,7 @@ import type {} from 'svelte';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import StylusApp from './stylus/App.svelte';
-import StellarApp from './stellar/App.svelte';
+import SorobanApp from './soroban/App.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -48,8 +48,8 @@ if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSem
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab } });
       break;
-    case 'stellar':
-      app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });
+    case 'soroban':
+      app = new SorobanApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
     default:

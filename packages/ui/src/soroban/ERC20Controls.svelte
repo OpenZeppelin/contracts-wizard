@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
-  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-stellar';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-soroban';
+  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-soroban';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';

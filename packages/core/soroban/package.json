@@ -1,5 +1,5 @@
 {
-  "name": "@openzeppelin/wizard-stellar",
+  "name": "@openzeppelin/wizard-soroban",
   "version": "0.0.1",
   "description": "A boilerplate generator to get started with OpenZeppelin Soroban Contracts",
   "license": "AGPL-3.0-only",

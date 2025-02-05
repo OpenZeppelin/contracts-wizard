@@ -1,12 +1,12 @@
-# OpenZeppelin Contracts Wizard for Stellar
+# OpenZeppelin Contracts Wizard for Soroban
 
 Interactively build a contract out of components from OpenZeppelin Soroban Contracts. Provide parameters and desired features for the kind of contract that you want, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
-This package provides a programmatic API. For a web interface, see https://wizard.openzeppelin.com/stellar
+This package provides a programmatic API. For a web interface, see https://wizard.openzeppelin.com/soroban
 
 ### Installation
 
-`npm install @openzeppelin/wizard-stellar`
+`npm install @openzeppelin/wizard-soroban`
 
 ### Contract types
 
@@ -37,10 +37,10 @@ Whether any of the provided options require access control to be enabled. If thi
 
 ### Examples
 
-Import the contract type(s) (for example, `erc20`) that you want to use from the `@openzeppelin/wizard-stellar` package:
+Import the contract type(s) (for example, `erc20`) that you want to use from the `@openzeppelin/wizard-soroban` package:
 
 ```js
-import { erc20 } from '@openzeppelin/wizard-stellar';
+import { erc20 } from '@openzeppelin/wizard-soroban';
 ```
 
 To generate the source code for an ERC20 contract with all of the default settings:
