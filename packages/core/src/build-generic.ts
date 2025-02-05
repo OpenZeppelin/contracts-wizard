@@ -4,6 +4,7 @@ import { ERC721Options, buildERC721 } from './erc721';
 import { ERC1155Options, buildERC1155 } from './erc1155';
 import { StablecoinOptions, buildStablecoin } from './stablecoin';
 import { GovernorOptions, buildGovernor } from './governor';
+import { Contract } from './contract';
 
 export interface KindedOptions {
   ERC20:    { kind: 'ERC20' }    & ERC20Options;
@@ -17,7 +18,7 @@ export interface KindedOptions {
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];
 
-export function buildGeneric(opts: GenericOptions) {
+export function buildGeneric(opts: GenericOptions): Contract {
   switch (opts.kind) {
     case 'ERC20':
       return buildERC20(opts);
