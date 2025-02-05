@@ -110,7 +110,7 @@
       </button>
 
       <Dropdown let:active>
-        <button class="action-button" class:active slot="button">
+        <button class="action-button with-text" class:active slot="button">
           <DownloadIcon />
           Download
         </button>
@@ -133,7 +133,7 @@
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -stylus grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
 </div>
@@ -154,9 +154,9 @@
 
   .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
-    border-radius: 12px;
-    font-weight: bold;
+    border-radius: 20px;
     cursor: pointer;
+    transition: background-color ease-in-out .2s;
   }
 
   .tab button, :global(.overflow-btn) {
@@ -165,8 +165,12 @@
   }
 
   .action-button {
-    padding: var(--size-2);
-    border-radius: 12px; 
+    padding: 7px;
+    border-radius: 20px; 
+    transition: background-color ease-in-out .2s;
+  }
+  .with-text {
+    padding-right: var(--size-3);
   }
 
   .tab button:hover, :global(.overflow-btn):hover {

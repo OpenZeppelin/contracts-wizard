@@ -139,6 +139,14 @@ input.input-inline {
   background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212))
 }
 
-.hljs{
+.hljs.-solidity{
   background: linear-gradient(30deg, #151a24, #2b323e);
+}
+
+.hljs.-cairo{
+  background: linear-gradient(30deg, #191717, #2a0f0f);
+}
+
+.hljs.-stylus{
+  background: linear-gradient(30deg, #181215, #360c1f);
 }

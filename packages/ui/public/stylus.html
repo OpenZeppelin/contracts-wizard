@@ -41,10 +41,7 @@
 
   <div class="header container flex flex-row justify-between overflow-auto">
     <div class="flex flex-row">
-      <img src="/logo.svg" alt="OpenZeppelin" width="300px">
-      <a class="switch switch-solidity switch-off" href="/">Solidity</a>
-      <a class="switch switch-cairo switch-off" href="/cairo">Cairo</a>
-      <a class="switch switch-stylus" href="#">Stylus</a>
+      <img src="/logo.svg" alt="OpenZeppelin" class="logo">
     </div>
     <div class="flex flex-row">
       <a class="link" href="https://forum.openzeppelin.com/" target="_blank" rel="noopener noreferrer">Forum</a>
@@ -53,8 +50,13 @@
       <a class="link" href="https://twitter.com/OpenZeppelin" target="_blank" rel="noopener noreferrer">Twitter</a>
     </div>
   </div>
-
+  <div class="nav">
+    <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
+    <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
+    <a class="switch switch-stylus active" href="#"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
+  </div>
   <div class="wizard-container">
+
     <oz-wizard class="wizard" data-sync-url="fragment" data-lang="stylus"></oz-wizard>
   </div>
 
