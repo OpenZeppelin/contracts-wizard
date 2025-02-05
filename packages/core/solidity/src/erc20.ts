@@ -162,7 +162,8 @@ function addPremint(c: ContractBuilder, amount: string) {
       const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
       const units = integer + decimals + zeroes;
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
-      c.addConstructorCode(`_mint(msg.sender, ${units} * 10 ** ${exp});`);
+      c.addConstructorArgument({type: 'address', name: 'recipient'});
+      c.addConstructorCode(`_mint(recipient, ${units} * 10 ** ${exp});`);
     }
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
   import { custom, infoDefaults } from '@openzeppelin/wizard';

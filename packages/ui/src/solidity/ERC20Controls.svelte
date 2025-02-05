@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions } from '@openzeppelin/wizard';
   import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
@@ -7,8 +7,8 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ToggleRadio from './inputs/ToggleRadio.svelte';
-  import OPIcon from './icons/OPIcon.svelte';
+  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import OPIcon from '../common/icons/OPIcon.svelte';
 
   export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',

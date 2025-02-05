@@ -1,15 +1,15 @@
 <script lang="ts">
-  import HelpTooltip from './HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { governor, infoDefaults } from '@openzeppelin/wizard';
 
-  import ToggleRadio from './inputs/ToggleRadio.svelte';
+  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   
-  import { error } from './error-tooltip';
-  import { resizeToFit } from './resize-to-fit';
+  import { error } from '../common/error-tooltip';
+  import { resizeToFit } from '../common/resize-to-fit';
 
   const defaults = governor.defaults;
 

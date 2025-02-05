@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Upgradeable } from '@openzeppelin/wizard-cairo';
 
-  import HelpTooltip from '../HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
 </script>
