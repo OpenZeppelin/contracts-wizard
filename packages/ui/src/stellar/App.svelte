@@ -95,7 +95,7 @@
     <div class="tab overflow-hidden">
       <OverflowMenu>
         <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
-          ERC20
+          Fungible Token
         </button>
       </OverflowMenu>
     </div>
