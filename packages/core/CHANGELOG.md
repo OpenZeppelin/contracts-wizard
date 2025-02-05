@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.1 (2025-02-05)
 
 - **Potentially breaking changes**:
   - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`.
