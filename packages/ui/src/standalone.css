@@ -1,5 +1,5 @@
 @tailwind utilities;
-@import "styles/vars.css";
+@import "common/styles/vars.css";
 
 body {
   font-family: Helvetica, Arial, sans-serif;

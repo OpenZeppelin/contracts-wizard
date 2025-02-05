@@ -1,11 +1,11 @@
 <script lang="ts">
-  import HelpTooltip from '../HelpTooltip.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { vesting, infoDefaults } from '@openzeppelin/wizard-cairo';
 
   import InfoSection from './InfoSection.svelte';
-  import { error } from '../error-tooltip';
+  import { error } from '../common/error-tooltip';
 
   export const opts: Required<KindedOptions['Vesting']> = {
     kind: 'Vesting',

@@ -9,20 +9,20 @@
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
-    import CopyIcon from '../icons/CopyIcon.svelte';
-    import CheckIcon from '../icons/CheckIcon.svelte';
-    import DownloadIcon from '../icons/DownloadIcon.svelte';
-    import Dropdown from '../Dropdown.svelte';
-    import OverflowMenu from '../OverflowMenu.svelte';
-    import FileIcon from '../icons/FileIcon.svelte';
+    import CopyIcon from '../common/icons/CopyIcon.svelte';
+    import CheckIcon from '../common/icons/CheckIcon.svelte';
+    import DownloadIcon from '../common/icons/DownloadIcon.svelte';
+    import Dropdown from '../common/Dropdown.svelte';
+    import OverflowMenu from '../common/OverflowMenu.svelte';
+    import FileIcon from '../common/icons/FileIcon.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
-    import { postConfig } from '../post-config';
+    import { postConfig } from '../common/post-config';
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
-    import { InitialOptions } from '../initial-options';
+    import { InitialOptions } from '../common/initial-options';
     import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();

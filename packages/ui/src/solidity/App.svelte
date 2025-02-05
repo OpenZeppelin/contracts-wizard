@@ -10,30 +10,30 @@
     import RealWorldAssetControls from './RealWorldAssetControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
-    import CopyIcon from './icons/CopyIcon.svelte';
-    import CheckIcon from './icons/CheckIcon.svelte';
-    import RemixIcon from './icons/RemixIcon.svelte';
-    import DownloadIcon from './icons/DownloadIcon.svelte';
-    import ZipIcon from './icons/ZipIcon.svelte';
-    import FileIcon from './icons/FileIcon.svelte';
-    import ArrowsLeft from './icons/ArrowsLeft.svelte';
-    import ArrowsRight from './icons/ArrowsRight.svelte';
-    import Dropdown from './Dropdown.svelte';
-    import OverflowMenu from './OverflowMenu.svelte';
-    import Tooltip from './Tooltip.svelte';
+    import CopyIcon from '../common/icons/CopyIcon.svelte';
+    import CheckIcon from '../common/icons/CheckIcon.svelte';
+    import RemixIcon from '../common/icons/RemixIcon.svelte';
+    import DownloadIcon from '../common/icons/DownloadIcon.svelte';
+    import ZipIcon from '../common/icons/ZipIcon.svelte';
+    import FileIcon from '../common/icons/FileIcon.svelte';
+    import ArrowsLeft from '../common/icons/ArrowsLeft.svelte';
+    import ArrowsRight from '../common/icons/ArrowsRight.svelte';
+    import Dropdown from '../common/Dropdown.svelte';
+    import OverflowMenu from '../common/OverflowMenu.svelte';
+    import Tooltip from '../common/Tooltip.svelte';
     import Wiz from './Wiz.svelte';
     import DefenderDeployModal from './DefenderDeployModal.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
     import { getImports } from '@openzeppelin/wizard/get-imports';
-    import { postConfig } from './post-config';
+    import { postConfig } from '../common/post-config';
     import { remixURL } from './remix';
 
     import { saveAs } from 'file-saver';
-    import { injectHyperlinks } from './utils/inject-hyperlinks';
-    import { InitialOptions } from './initial-options';
-    import { postMessageToIframe } from './post-message';
+    import { injectHyperlinks } from './inject-hyperlinks';
+    import { InitialOptions } from '../common/initial-options';
+    import { postMessageToIframe } from '../common/post-message';
 
     const dispatch = createEventDispatcher();
 
