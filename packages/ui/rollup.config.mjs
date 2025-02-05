@@ -132,7 +132,7 @@ export default [
       commonjs(),
 
       typescript({
-        include: ['src/**/*.ts', '../core/solidity/src/**/*.ts', '../core/cairo/src/**/*.ts', '../core/stylus/src/**/*.ts'],
+        include: ['src/**/*.ts', '../core/*/src/**/*.ts'],
         sourceMap: true,
         inlineSources: true,
       }),
