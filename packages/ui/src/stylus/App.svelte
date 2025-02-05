@@ -178,7 +178,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--stylus-pink-1);
+    background-color: var(--stylus-pink);
     color: white;
     order: -1;
   }

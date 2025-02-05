@@ -228,7 +228,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--cairo-orange-2);
+    background-color: var(--cairo-orange);
     color: white;
     order: -1;
   }
