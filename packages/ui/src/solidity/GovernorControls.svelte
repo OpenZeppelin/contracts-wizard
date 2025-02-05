@@ -1,13 +1,13 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { governor, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import { governor, infoDefaults } from '@openzeppelin/wizard';
 
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
-  import UpgradeabilityField from './UpgradeabilityField.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-
+  
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
 
@@ -48,7 +48,7 @@
       disabledDecimals = false;
     } else if (!wasERC721Votes && opts.votes === 'erc721votes') {
       previousDecimals = opts.decimals;
-      opts.decimals = 0;
+      opts.decimals = 0;     
       disabledDecimals = true;
     }
 
@@ -123,7 +123,14 @@
         Allow governance to update voting settings (delay, period, proposal threshold).
       </HelpTooltip>
     </label>
-    <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
+
+    <label class:checked={opts.storage}>
+      <input type="checkbox" bind:checked={opts.storage}>
+      Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/governance#GovernorStorage">
+        Enable storage of proposal details and enumerability of proposals.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 
@@ -134,7 +141,7 @@
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes">
       ERC20Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
         Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -142,7 +149,7 @@
     <label class:checked={opts.votes === 'erc721votes'}>
       <input type="radio" bind:group={opts.votes} value="erc721votes">
       ERC721Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -157,16 +164,36 @@
       <HelpTooltip>
         The clock mode used by the voting token.
         <br>
-        <b>NOTE:</b> This setting must be the same as what the token uses. For now, only timestamp mode is supported.
+        <b>NOTE:</b> This setting must be the same as what the token uses.
       </HelpTooltip>
     </label>
   </h1>
 
   <div class="checkbox-group">
+    <label class:checked={opts.clockMode === 'blocknumber'}>
+      <input type="radio" bind:group={opts.clockMode} value="blocknumber">
+      Block Number
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+        The token uses voting durations expressed as block numbers.
+      </HelpTooltip>
+    </label>
+    <p class="tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm">
+        1 block =
+        <input type="number" step="0.01" placeholder={defaults.blockTime.toString()} bind:value={opts.blockTime} class="input-inline" disabled={opts.clockMode === 'timestamp'} use:resizeToFit>
+        seconds
+      </label>
+      <HelpTooltip>
+        Assumed block time for converting voting time periods into block numbers.
+        <br>
+        Block time may drift and impact these periods in the future.
+      </HelpTooltip>
+    </p>
+
     <label class:checked={opts.clockMode === 'timestamp'}>
       <input type="radio" bind:group={opts.clockMode} value="timestamp">
       Timestamp
-      <HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         The token uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
@@ -188,44 +215,27 @@
       </HelpTooltip>
     </label>
   </h1>
-
+  
   <div class="checkbox-group">
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
       TimelockController
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#TimelockControllerComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/governance#GovernorTimelockControl">
         Module compatible with OpenZeppelin's <code>TimelockController</code>.
+        Allows multiple proposers and executors, in addition to the Governor itself.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.timelock === 'compound'}>
+      <input type="radio" bind:group={opts.timelock} value="compound">
+      Compound
+      <HelpTooltip link="https://github.com/compound-finance/compound-protocol/blob/master/contracts/Timelock.sol">
+        Module compatible with Compound's <code>Timelock</code> contract. Useful if assets and roles are already held in this contract.
       </HelpTooltip>
     </label>
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex justify-between items-center tooltip-container pr-2">
-      <span>SNIP12 Metadata</span>
-      <HelpTooltip>
-        Metadata for the SNIP12 domain separator.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
-    </span>
-    <input bind:value={opts.appName} use:error={errors?.appName}>
-  </label>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
-    </span>
-    <input bind:value={opts.appVersion} use:error={errors?.appVersion}>
-  </label>
-</section>
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />
