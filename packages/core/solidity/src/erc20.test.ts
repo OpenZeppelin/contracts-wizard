@@ -98,6 +98,7 @@ testERC20('erc20 bridgeable', {
 
 testERC20('erc20 bridgeable ownable', {
   bridgeable: true,
+  access: 'ownable',
 });
 
 testERC20('erc20 bridgeable roles', {
