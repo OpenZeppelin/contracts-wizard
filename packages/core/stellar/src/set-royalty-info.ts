@@ -80,7 +80,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     c.addSuperVariableToTrait(trait, {
       name: 'FEE_DENOMINATOR',
       type: 'u128',
-      value: feeDenominator.toString()
+      macro: feeDenominator.toString()
     });
   }
 }

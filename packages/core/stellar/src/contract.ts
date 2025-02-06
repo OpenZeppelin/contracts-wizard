@@ -3,7 +3,6 @@ import { toIdentifier } from './utils/convert-strings';
 export interface Contract {
   license: string;
   name: string;
-  account: boolean;
   useClauses: UseClause[];
   components: Component[];
   constants: Variable[];
@@ -11,7 +10,7 @@ export interface Contract {
   constructorArgs: Argument[];
   upgradeable: boolean;
   implementedTraits: ImplementedTrait[];
-  superVariables: Variable[];
+  variables: Variable[];
 }
 
 export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
@@ -88,6 +87,7 @@ export interface Variable {
   name: string;
   type: string;
   value: string;
+  imports: string[];
   comment?: string;
   inlineComment?: boolean;
 }
@@ -99,7 +99,6 @@ export interface Argument {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
-  readonly account: boolean;
   license = 'MIT';
   upgradeable = false;
 
@@ -108,14 +107,13 @@ export class ContractBuilder implements Contract {
 
   private componentsMap: Map<string, Component> = new Map();
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
-  private superVariablesMap: Map<string, Variable> = new Map();
+  private variablesMap: Map<string, Variable> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private interfaceFlagsSet: Set<string> = new Set();
 
-  constructor(name: string, account: boolean = false) {
+  constructor(name: string) {
     this.name = toIdentifier(name, true);
-    this.account = account;
   }
 
   get components(): Component[] {
@@ -126,8 +124,8 @@ export class ContractBuilder implements Contract {
     return [...this.implementedTraitsMap.values()];
   }
 
-  get superVariables(): Variable[] {
-    return [...this.superVariablesMap.values()];
+  get variables(): Variable[] {
+    return [...this.variablesMap.values()];
   }
 
   get constants(): Variable[] {
@@ -189,12 +187,16 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addSuperVariable(variable: Variable): boolean {
-    if (this.superVariablesMap.has(variable.name)) {
+  addVariable(variable: Variable): boolean {
+    if (this.variablesMap.has(variable.name)) {
       return false;
     } else {
-      this.superVariablesMap.set(variable.name, variable);
-      this.addUseClause('super', variable.name);
+      this.variablesMap.set(variable.name, variable);
+      this.addUseClause('soroban_sdk', variable.type);
+      for (const imp of variable.imports) {
+        this.addUseClause('soroban_sdk', imp);
+      }
+      // TODO if name is > 9 chars, use Symbol::new
       return true;
     }
   }

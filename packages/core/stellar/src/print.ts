@@ -10,39 +10,37 @@ const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = "\t";
 
 export function printContract(contract: Contract): string {
-  const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
   return formatLines(
     ...spaceBetween(
       [
-        `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts for Cairo ${compatibleContractsSemver}`,
+        `//! SPDX-License-Identifier: ${contract.license}`,
+        `//! Compatible with OpenZeppelin Contracts for Stellar ${compatibleContractsSemver}`,
       ],
-      printSuperVariables(contract),
-      [
-        `${contractAttribute}`,
-        `mod ${contract.name} {`,
-        spaceBetween(
-          printUseClauses(contract),
-          printConstants(contract),
-          printComponentDeclarations(contract),
-          printImpls(contract),
-          printStorage(contract),
-          printEvents(contract),
-          printConstructor(contract),
-          printImplementedTraits(contract),
-        ),
-        `}`,
-      ],
+      spaceBetween(
+        printUseClauses(contract),
+        printVariables(contract),
+        printContractStruct(contract),
+        // printContractErrors(contract), // similar to printEvents
+        printConstructor(contract),
+        printImplementedTraits(contract),
+      ),
     ),
   );
+}
+
+function printContractStruct(contract: Contract): Lines[] {
+  return [
+    '#[contract]',
+    `pub struct ${contract.name};`
+  ];
 }
 
 function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
-function printSuperVariables(contract: Contract): string[] {
-  return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
+function printVariables(contract: Contract): string[] {
+  return withSemicolons(contract.variables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
 function printUseClauses(contract: Contract): Lines[] {
@@ -323,15 +321,11 @@ function printConstructor(contract: Contract): Lines[] {
   const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasInitializers || hasConstructorCode) {
-    const parents = contract.components
-      .filter(hasInitializer)
-      .flatMap(p => printParentConstructor(p));
-    const tag = 'constructor';
-    const head = 'fn constructor';
+    const tag = 'TODO constructor';
+    const head = 'pub fn __constructor';
     const args = [ getSelfArg(), ...contract.constructorArgs ];
 
     const body = spaceBetween(
-        withSemicolons(parents),
         withSemicolons(contract.constructorCode),
       );
 
@@ -347,20 +341,6 @@ function printConstructor(contract: Contract): Lines[] {
   } else {
     return [];
   }
-}
-
-function hasInitializer(parent: Component): boolean {
-  return parent.initializer !== undefined && parent.substorage?.name !== undefined;
-}
-
-function printParentConstructor({ substorage, initializer }: Component): [] | [string] {
-  if (initializer === undefined || substorage?.name === undefined) {
-    return [];
-  }
-  const fn = `self.${substorage.name}.initializer`;
-  return [
-    fn + '(' + initializer.params.map(printValue).join(', ') + ')',
-  ];
 }
 
 export function printValue(value: Value): string {

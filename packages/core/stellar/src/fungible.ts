@@ -69,7 +69,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
-  addFungibleMixin(c);
+  // addFungibleMixin(c);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -87,10 +87,14 @@ export function buildFungible(opts: FungibleOptions): Contract {
     addMintable(c, allOpts.access);
   }
 
-  addHooks(c, allOpts);
+  c.addConstructorArgument({ name:'owner', type:'Address' });
+  c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
 
-  setAccessControl(c, allOpts.access);
-  setUpgradeable(c, allOpts.upgradeable, allOpts.access);
+
+  // addHooks(c, allOpts);
+
+  // setAccessControl(c, allOpts.access);
+  // setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
 
   return c;
@@ -166,13 +170,6 @@ function addHooks(c: ContractBuilder, allOpts: Required<FungibleOptions>) {
   }
 }
 
-function addFungibleMixin(c: ContractBuilder) {
-  c.addImplToComponent(components.FungibleComponent, {
-    name: 'FungibleMixinImpl',
-    value: 'FungibleComponent::FungibleMixinImpl<ContractState>',
-  });
-}
-
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addComponent(
     components.FungibleComponent,
@@ -181,6 +178,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     ],
     true,
   );
+  c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`, imports: ['symbol_short'] });
+
+  c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -200,9 +200,11 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
 
-    c.addUseClause('starknet', 'ContractAddress');
-    c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.fungible.mint(recipient, ${premintAbsolute})`);
+    c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+    c.addUseClause('soroban_sdk', 'Address');
+
+    c.addConstructorArgument({ name:'owner', type:'Address' });
+    c.addConstructorCode(`fungible::mintable::mint(e, &owner, ${premintAbsolute});`);
   }
 }
 
@@ -248,13 +250,17 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  c.addUseClause('starknet', 'ContractAddress');
+  c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+  c.addUseClause('soroban_sdk', 'Address');
+
+
+
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
 const components = defineComponents( {
   FungibleComponent: {
-    path: 'openzeppelin::token::fungible',
+    path: 'openzeppelin_fungible_token',
     substorage: {
       name: 'fungible',
       type: 'FungibleComponent::Storage',

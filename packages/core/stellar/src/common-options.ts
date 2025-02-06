@@ -37,10 +37,6 @@ export function withCommonContractDefaults(opts: CommonContractOptions): Require
   };
 }
 
-export function getSelfArg(scope: 'external' | 'view' = 'external'): Argument {
-  if (scope === 'view') {
-    return { name: 'self', type: '@ContractState' };
-  } else {
-    return { name: 'ref self', type: 'ContractState' };
-  }
+export function getSelfArg(): Argument {
+  return { name: 'e', type: '&Env' };
 }

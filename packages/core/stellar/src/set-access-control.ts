@@ -74,7 +74,7 @@ export function requireAccessControl(
     }
     case 'roles': {
       const roleId = roleIdPrefix + '_ROLE';
-      const addedSuper = c.addSuperVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
+      const addedSuper = c.addVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
       if (roleOwner !== undefined) {
         c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
