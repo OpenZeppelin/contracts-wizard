@@ -211,7 +211,10 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
 
   c.addFunction(fungibleMintableTrait, functions.mint);
 
-  requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
+  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, 'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set")');
+  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, 'owner.require_auth();');
+
+  // requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
 
   if (pausable) {
     c.addFunctionTag(fungibleMintableTrait, functions.mint, '#[when_not_paused]');
