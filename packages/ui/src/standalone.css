@@ -133,9 +133,6 @@ body {
 .nav .switch.switch-stylus.active {
   --color-2: #E3126F;
 } 
-.nav .switch.switch-stylus.active img{
-  filter: brightness(0) saturate(100%) invert(16%) sepia(96%) saturate(4083%) hue-rotate(323deg) brightness(91%) contrast(96%)
-}
 
 .nav .switch.switch-soroban.active {
   --color-2: #0F0F0F;
