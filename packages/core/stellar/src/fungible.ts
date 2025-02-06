@@ -11,7 +11,6 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
-import { addVotesComponent } from './common-components';
 
 
 export const defaults: Required<FungibleOptions> = {
