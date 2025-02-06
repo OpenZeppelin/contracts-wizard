@@ -14,7 +14,7 @@ import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
 import { addVotesComponent } from './common-components';
 
 
-export const defaults: Required<ERC20Options> = {
+export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
@@ -29,11 +29,11 @@ export const defaults: Required<ERC20Options> = {
   info: commonDefaults.info
 } as const;
 
-export function printERC20(opts: ERC20Options = defaults): string {
-  return printContract(buildERC20(opts));
+export function printFungible(opts: FungibleOptions = defaults): string {
+  return printContract(buildFungible(opts));
 }
 
-export interface ERC20Options extends CommonContractOptions {
+export interface FungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
@@ -45,7 +45,7 @@ export interface ERC20Options extends CommonContractOptions {
   appVersion?: string;
 }
 
-function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
@@ -59,17 +59,17 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+export function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean {
   return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
 }
 
-export function buildERC20(opts: ERC20Options): Contract {
+export function buildFungible(opts: FungibleOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
   const allOpts = withDefaults(opts);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
-  addERC20Mixin(c);
+  addFungibleMixin(c);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -96,12 +96,12 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
+function addHooks(c: ContractBuilder, allOpts: Required<FungibleOptions>) {
   const usesCustomHooks = allOpts.pausable || allOpts.votes;
   if (usesCustomHooks) {
     const hooksTrait = {
-      name: 'ERC20HooksImpl',
-      of: 'ERC20Component::ERC20HooksTrait<ContractState>',
+      name: 'FungibleHooksImpl',
+      of: 'FungibleComponent::FungibleHooksTrait<ContractState>',
       tags: [],
       priority: 1,
     };
@@ -111,7 +111,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       const beforeUpdateFn = c.addFunction(hooksTrait, {
         name: 'before_update',
         args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          { name: 'ref self', type: 'FungibleComponent::ComponentState<ContractState>' },
           { name: 'from', type: 'ContractAddress' },
           { name: 'recipient', type: 'ContractAddress' },
           { name: 'amount', type: 'u256' },
@@ -148,7 +148,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       const afterUpdateFn = c.addFunction(hooksTrait, {
         name: 'after_update',
         args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          { name: 'ref self', type: 'FungibleComponent::ComponentState<ContractState>' },
           { name: 'from', type: 'ContractAddress' },
           { name: 'recipient', type: 'ContractAddress' },
           { name: 'amount', type: 'u256' },
@@ -162,20 +162,20 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       );
     }
   } else {
-    c.addUseClause('openzeppelin::token::erc20', 'ERC20HooksEmptyImpl');
+    c.addUseClause('openzeppelin::token::fungible', 'FungibleHooksEmptyImpl');
   }
 }
 
-function addERC20Mixin(c: ContractBuilder) {
-  c.addImplToComponent(components.ERC20Component, {
-    name: 'ERC20MixinImpl',
-    value: 'ERC20Component::ERC20MixinImpl<ContractState>',
+function addFungibleMixin(c: ContractBuilder) {
+  c.addImplToComponent(components.FungibleComponent, {
+    name: 'FungibleMixinImpl',
+    value: 'FungibleComponent::FungibleMixinImpl<ContractState>',
   });
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addComponent(
-    components.ERC20Component,
+    components.FungibleComponent,
     [
       name, symbol
     ],
@@ -202,12 +202,12 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     c.addUseClause('starknet', 'ContractAddress');
     c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
+    c.addConstructorCode(`self.fungible.mint(recipient, ${premintAbsolute})`);
   }
 }
 
 /**
- * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
+ * Calculates the initial supply that would be used in an Fungible contract based on a given premint amount and number of decimals.
  *
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
@@ -253,20 +253,20 @@ function addMintable(c: ContractBuilder, access: Access) {
 }
 
 const components = defineComponents( {
-  ERC20Component: {
-    path: 'openzeppelin::token::erc20',
+  FungibleComponent: {
+    path: 'openzeppelin::token::fungible',
     substorage: {
-      name: 'erc20',
-      type: 'ERC20Component::Storage',
+      name: 'fungible',
+      type: 'FungibleComponent::Storage',
     },
     event: {
-      name: 'ERC20Event',
-      type: 'ERC20Component::Event',
+      name: 'FungibleEvent',
+      type: 'FungibleComponent::Event',
     },
     impls: [{
-      name: 'ERC20InternalImpl',
+      name: 'FungibleInternalImpl',
       embed: false,
-      value: 'ERC20Component::InternalImpl<ContractState>',
+      value: 'FungibleComponent::InternalImpl<ContractState>',
     }],
   },
 });
@@ -278,7 +278,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'u256' }
     ],
     code: [
-      'self.erc20.burn(get_caller_address(), value);'
+      'self.fungible.burn(get_caller_address(), value);'
     ]
   },
   mint: {
@@ -288,7 +288,7 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' }
     ],
     code: [
-      'self.erc20.mint(recipient, amount);'
+      'self.fungible.mint(recipient, amount);'
     ]
   },
 });

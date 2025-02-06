@@ -11,7 +11,7 @@ This package provides a programmatic API. For a web interface, see https://wizar
 ### Contract types
 
 The following contract types are supported:
-- `erc20`
+- `fungible`
 
 Each contract type has functions/constants as defined below.
 
@@ -19,45 +19,45 @@ Each contract type has functions/constants as defined below.
 
 #### `print`
 ```js
-function print(opts?: ERC20Options): string
+function print(opts?: FungibleOptions): string
 ```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
 #### `defaults`
 ```js
-const defaults: Required<ERC20Options>
+const defaults: Required<FungibleOptions>
 ```
 The default options that are used for [`print`](#print).
 
 #### `isAccessControlRequired`
 ```js
-function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
+function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean
 ```
 Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
 
 ### Examples
 
-Import the contract type(s) (for example, `erc20`) that you want to use from the `@openzeppelin/wizard-stellar` package:
+Import the contract type(s) (for example, `fungible`) that you want to use from the `@openzeppelin/wizard-stellar` package:
 
 ```js
-import { erc20 } from '@openzeppelin/wizard-stellar';
+import { fungible } from '@openzeppelin/wizard-stellar';
 ```
 
-To generate the source code for an ERC20 contract with all of the default settings:
+To generate the source code for an Fungible contract with all of the default settings:
 ```js
-const contract = erc20.print();
+const contract = fungible.print();
 ```
 
-To generate the source code for an ERC20 contract with some custom settings:
+To generate the source code for an Fungible contract with some custom settings:
 ```js
-const contract = erc20.print({
+const contract = fungible.print({
   pausable: true,
 });
 ```
 or
 ```js
-const contract = erc20.print({
-  ...erc20.defaults,
+const contract = fungible.print({
+  ...fungible.defaults,
   pausable: true,
 });
 ```

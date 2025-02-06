@@ -5,7 +5,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { erc20, } from './api';
+import { fungible, } from './api';
 
 interface Context {
   generatedSourcesPath: string
@@ -13,8 +13,8 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result generated', async t => {
-  await testGenerate(t, 'ERC20');
+test.serial('fungible result generated', async t => {
+  await testGenerate(t, 'Fungible');
 });
 
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
@@ -27,8 +27,8 @@ async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOpti
 
 function isAccessControlRequired(opts: GenericOptions) {
   switch(opts.kind) {
-    case 'ERC20':
-      return erc20.isAccessControlRequired(opts);
+    case 'Fungible':
+      return fungible.isAccessControlRequired(opts);
     default:
       throw new Error("No such kind");
   }
@@ -39,7 +39,7 @@ test('is access control required', async t => {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
 
     switch (contract.options.kind) {
-      case 'ERC20':
+      case 'Fungible':
         if (!contract.options.access) {
           if (isAccessControlRequired(contract.options)) {
             t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));

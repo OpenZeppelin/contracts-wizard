@@ -2,23 +2,23 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
-  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-stellar';
+  import { premintPattern, fungible, infoDefaults } from '@openzeppelin/wizard-stellar';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['ERC20']> = {
-    kind: 'ERC20',
-    ...erc20.defaults,
+  export const opts: Required<KindedOptions['Fungible']> = {
+    kind: 'Fungible',
+    ...fungible.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc20.isAccessControlRequired(opts);
+  $: requireAccessControl = fungible.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -52,7 +52,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/fungible-supply">
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>

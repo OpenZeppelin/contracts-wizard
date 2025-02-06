@@ -1,7 +1,7 @@
 import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { defineComponents } from "./utils/define-components";
 
-export const tokenTypes = ['ERC20', 'ERC721'] as const;
+export const tokenTypes = ['Fungible', 'ERC721'] as const;
 export type Token = typeof tokenTypes[number];
 
 const components = defineComponents( {

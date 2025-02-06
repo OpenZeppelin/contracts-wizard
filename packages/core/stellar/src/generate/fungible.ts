@@ -1,4 +1,4 @@
-import type { ERC20Options } from '../erc20';
+import type { FungibleOptions } from '../fungible';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
@@ -21,6 +21,6 @@ const blueprint = {
   info: infoOptions
 };
 
-export function* generateERC20Options(): Generator<Required<ERC20Options>> {
+export function* generateFungibleOptions(): Generator<Required<FungibleOptions>> {
   yield* generateAlternatives(blueprint);
 }

@@ -11,7 +11,7 @@ export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
 export type { RoyaltyInfoOptions } from './set-royalty-info';
 
-export { premintPattern } from './erc20';
+export { premintPattern } from './fungible';
 
 export { defaults as infoDefaults } from './set-info';
 export { defaults as royaltyInfoDefaults } from './set-royalty-info';
@@ -24,4 +24,4 @@ export { sanitizeKind } from './kind';
 
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
-export { erc20 } from './api';
+export { fungible } from './api';

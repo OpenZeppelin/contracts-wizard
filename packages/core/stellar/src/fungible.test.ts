@@ -1,13 +1,13 @@
 import test from 'ava';
 
-import { buildERC20, ERC20Options, getInitialSupply } from './erc20';
+import { buildFungible, FungibleOptions, getInitialSupply } from './fungible';
 import { printContract } from './print';
 
-import { erc20, OptionsError } from '.';
+import { fungible, OptionsError } from '.';
 
-function testERC20(title: string, opts: Partial<ERC20Options>) {
+function testFungible(title: string, opts: Partial<FungibleOptions>) {
   test(title, t => {
-    const c = buildERC20({
+    const c = buildFungible({
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
@@ -19,9 +19,9 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
 /**
  * Tests external API for equivalence with internal API
  */
-function testAPIEquivalence(title: string, opts?: ERC20Options) {
+function testAPIEquivalence(title: string, opts?: FungibleOptions) {
   test(title, t => {
-    t.is(erc20.print(opts), printContract(buildERC20({
+    t.is(fungible.print(opts), printContract(buildFungible({
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
@@ -29,62 +29,62 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   });
 }
 
-testERC20('basic erc20, non-upgradeable', {
+testFungible('basic fungible, non-upgradeable', {
   upgradeable: false,
 });
 
-testERC20('basic erc20', {});
+testFungible('basic fungible', {});
 
-testERC20('erc20 burnable', {
+testFungible('fungible burnable', {
   burnable: true,
 });
 
-testERC20('erc20 pausable', {
+testFungible('fungible pausable', {
   pausable: true,
   access: 'ownable',
 });
 
-testERC20('erc20 pausable with roles', {
+testFungible('fungible pausable with roles', {
   pausable: true,
   access: 'roles',
 });
 
-testERC20('erc20 burnable pausable', {
+testFungible('fungible burnable pausable', {
   burnable: true,
   pausable: true,
 });
 
-testERC20('erc20 preminted', {
+testFungible('fungible preminted', {
   premint: '1000',
 });
 
-testERC20('erc20 premint of 0', {
+testFungible('fungible premint of 0', {
   premint: '0',
 });
 
-testERC20('erc20 mintable', {
+testFungible('fungible mintable', {
   mintable: true,
   access: 'ownable',
 });
 
-testERC20('erc20 mintable with roles', {
+testFungible('fungible mintable with roles', {
   mintable: true,
   access: 'roles',
 });
 
-testERC20('erc20 votes', {
+testFungible('fungible votes', {
   votes: true,
   appName: 'MY_DAPP_NAME',
 });
 
-testERC20('erc20 votes, version', {
+testFungible('fungible votes, version', {
   votes: true,
   appName: 'MY_DAPP_NAME',
   appVersion: 'MY_DAPP_VERSION',
 });
 
-test('erc20 votes, no name', async t => {
-  let error = t.throws(() => buildERC20({
+test('fungible votes, no name', async t => {
+  let error = t.throws(() => buildFungible({
     name: 'MyToken',
     symbol: 'MTK',
     votes: true,
@@ -92,8 +92,8 @@ test('erc20 votes, no name', async t => {
   t.is((error as OptionsError).messages.appName, 'Application Name is required when Votes are enabled');
 });
 
-test('erc20 votes, empty version', async t => {
-  let error = t.throws(() => buildERC20({
+test('fungible votes, empty version', async t => {
+  let error = t.throws(() => buildFungible({
     name: 'MyToken',
     symbol: 'MTK',
     votes: true,
@@ -103,13 +103,13 @@ test('erc20 votes, empty version', async t => {
   t.is((error as OptionsError).messages.appVersion, 'Application Version is required when Votes are enabled');
 });
 
-testERC20('erc20 votes, non-upgradeable', {
+testFungible('fungible votes, non-upgradeable', {
   votes: true,
   appName: 'MY_DAPP_NAME',
   upgradeable: false,
 });
 
-testERC20('erc20 full, non-upgradeable', {
+testFungible('fungible full, non-upgradeable', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
@@ -121,7 +121,7 @@ testERC20('erc20 full, non-upgradeable', {
   appVersion: 'MY_DAPP_VERSION',
 });
 
-testERC20('erc20 full upgradeable', {
+testFungible('fungible full upgradeable', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
@@ -133,7 +133,7 @@ testERC20('erc20 full upgradeable', {
   appVersion: 'MY_DAPP_VERSION',
 });
 
-testERC20('erc20 full upgradeable with roles', {
+testFungible('fungible full upgradeable with roles', {
   premint: '2000',
   access: 'roles',
   burnable: true,
@@ -145,11 +145,11 @@ testERC20('erc20 full upgradeable with roles', {
   appVersion: 'MY_DAPP_VERSION',
 });
 
-testAPIEquivalence('erc20 API default');
+testAPIEquivalence('fungible API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
 
-testAPIEquivalence('erc20 API full upgradeable', {
+testAPIEquivalence('fungible API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   premint: '2000',
@@ -163,17 +163,17 @@ testAPIEquivalence('erc20 API full upgradeable', {
   appVersion: 'MY_DAPP_VERSION',
 });
 
-test('erc20 API assert defaults', async t => {
-  t.is(erc20.print(erc20.defaults), erc20.print());
+test('fungible API assert defaults', async t => {
+  t.is(fungible.print(fungible.defaults), fungible.print());
 });
 
-test('erc20 API isAccessControlRequired', async t => {
-  t.is(erc20.isAccessControlRequired({ mintable: true }), true);
-  t.is(erc20.isAccessControlRequired({ pausable: true }), true);
-  t.is(erc20.isAccessControlRequired({ upgradeable: true }), true);
+test('fungible API isAccessControlRequired', async t => {
+  t.is(fungible.isAccessControlRequired({ mintable: true }), true);
+  t.is(fungible.isAccessControlRequired({ pausable: true }), true);
+  t.is(fungible.isAccessControlRequired({ upgradeable: true }), true);
 });
 
-test('erc20 getInitialSupply', async t => {
+test('fungible getInitialSupply', async t => {
   t.is(getInitialSupply('1000', 18),   '1000000000000000000000');
   t.is(getInitialSupply('1000.1', 18), '1000100000000000000000');
   t.is(getInitialSupply('.1', 18),     '100000000000000000');

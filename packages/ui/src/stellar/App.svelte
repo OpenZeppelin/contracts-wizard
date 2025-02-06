@@ -3,7 +3,7 @@
 
     import hljs from './highlightjs';
 
-    import ERC20Controls from './ERC20Controls.svelte';
+    import FungibleControls from './FungibleControls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
     import CheckIcon from '../common/icons/CheckIcon.svelte';
     import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -21,7 +21,7 @@
 
     const dispatch = createEventDispatcher();
 
-    export let initialTab: string | undefined = 'ERC20';
+    export let initialTab: string | undefined = 'Fungible';
 
     export let tab: Kind = sanitizeKind(initialTab);
     $: {
@@ -44,7 +44,7 @@
         if (!initialValuesSet) {
           opts.name = initialOpts.name ?? opts.name;
           switch (opts.kind) {
-            case 'ERC20':
+            case 'Fungible':
               opts.premint = initialOpts.premint ?? opts.premint;
           }
           initialValuesSet = true;
@@ -94,8 +94,8 @@
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
-        <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
-          Fungible Token
+        <button class:selected={tab === 'Fungible'} on:click={() => tab = 'Fungible'}>
+          Fungible
         </button>
       </OverflowMenu>
     </div>
@@ -128,8 +128,8 @@
 
   <div class="flex flex-row grow">
     <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
-      <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
+      <div class:hidden={tab !== 'Fungible'}>
+        <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

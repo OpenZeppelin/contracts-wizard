@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-import { generateERC20Options } from './erc20';
+import { generateFungibleOptions } from './fungible';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
@@ -14,9 +14,9 @@ type Subset = 'all' | 'minimal-cover';
 type Kind = keyof KindedOptions;
 
 export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
-  if (!kind || kind === 'ERC20') {
-    for (const kindOpts of generateERC20Options()) {
-      yield { kind: 'ERC20', ...kindOpts };
+  if (!kind || kind === 'Fungible') {
+    for (const kindOpts of generateFungibleOptions()) {
+      yield { kind: 'Fungible', ...kindOpts };
     }
   }
 }
@@ -60,7 +60,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     function filterByUpgradeableSetTo(isUpgradeable: boolean) {
       return (c: GeneratedContract) => {
         switch (c.options.kind) {
-          case 'ERC20':
+          case 'Fungible':
             return c.options.upgradeable === isUpgradeable;
           default:
             const _: never = c.options.kind; // TODO: When there are additional kinds above, change this assignment to just `c.options` instead of `c.options.kind`

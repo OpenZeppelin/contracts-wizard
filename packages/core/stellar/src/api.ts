@@ -1,5 +1,5 @@
 import type { CommonOptions, CommonContractOptions } from './common-options';
-import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20IsAccessControlRequired, ERC20Options } from './erc20';
+import { printFungible, defaults as fungibledefaults, isAccessControlRequired as fungibleIsAccessControlRequired, FungibleOptions } from './fungible';
 
 export interface WizardAccountAPI<Options extends CommonOptions>{
   /**
@@ -33,10 +33,10 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
+export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<FungibleOptions>;
 
-export const erc20: ERC20 = {
-  print: printERC20,
-  defaults: erc20defaults,
-  isAccessControlRequired: erc20IsAccessControlRequired,
+export const fungible: Fungible = {
+  print: printFungible,
+  defaults: fungibledefaults,
+  isAccessControlRequired: fungibleIsAccessControlRequired,
 };
