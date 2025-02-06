@@ -82,11 +82,11 @@ export function buildFungible(opts: FungibleOptions): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c);
+    addBurnable(c, allOpts.pausable);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access);
+    addMintable(c, allOpts.access, allOpts.pausable);
   }
 
   c.addConstructorArgument({ name:'owner', type:'Address' });
@@ -102,76 +102,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
   return c;
 }
 
-function addHooks(c: ContractBuilder, allOpts: Required<FungibleOptions>) {
-  const usesCustomHooks = allOpts.pausable || allOpts.votes;
-  if (usesCustomHooks) {
-    const hooksTrait = {
-      name: 'FungibleHooksImpl',
-      of: 'FungibleComponent::FungibleHooksTrait<ContractState>',
-      tags: [],
-      priority: 1,
-    };
-    c.addImplementedTrait(hooksTrait);
-
-    if (allOpts.pausable) {
-      const beforeUpdateFn = c.addFunction(hooksTrait, {
-        name: 'before_update',
-        args: [
-          { name: 'ref self', type: 'FungibleComponent::ComponentState<ContractState>' },
-          { name: 'from', type: 'ContractAddress' },
-          { name: 'recipient', type: 'ContractAddress' },
-          { name: 'amount', type: 'u256' },
-        ],
-        code: [],
-      });
-
-      beforeUpdateFn.code.push(
-        'let contract_state = self.get_contract();',
-        'contract_state.pausable.assert_not_paused();',
-      );
-    }
-
-    if (allOpts.votes) {
-      if (!allOpts.appName) {
-        throw new OptionsError({
-          appName: 'Application Name is required when Votes are enabled',
-        });
-      }
-
-      if (!allOpts.appVersion) {
-        throw new OptionsError({
-          appVersion: 'Application Version is required when Votes are enabled',
-        });
-      }
-
-      addVotesComponent(
-        c,
-        toFelt252(allOpts.appName, 'appName'),
-        toFelt252(allOpts.appVersion, 'appVersion'),
-        'SNIP12 Metadata',
-      );
-
-      const afterUpdateFn = c.addFunction(hooksTrait, {
-        name: 'after_update',
-        args: [
-          { name: 'ref self', type: 'FungibleComponent::ComponentState<ContractState>' },
-          { name: 'from', type: 'ContractAddress' },
-          { name: 'recipient', type: 'ContractAddress' },
-          { name: 'amount', type: 'u256' },
-        ],
-        code: [],
-      });
-
-      afterUpdateFn.code.push(
-        'let mut contract_state = self.get_contract_mut();',
-        'contract_state.votes.transfer_voting_units(from, recipient, amount);',
-      );
-    }
-  } else {
-    c.addUseClause('openzeppelin::token::fungible', 'FungibleHooksEmptyImpl');
-  }
-}
-
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addComponent(
     components.FungibleComponent,
@@ -185,12 +115,26 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 }
 
-function addBurnable(c: ContractBuilder) {
+function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
+  const fungibleBurnableTrait = {
+    name: 'FungibleBurnable',
+    for: 'ExampleContract',
+    tags: [
+      '#[contractimpl]',
+    ],
+  }
+
   c.addFunction(fungibleBurnableTrait, functions.burn);
   c.addFunction(fungibleBurnableTrait, functions.burn_from);
+
+  if (pausable) {
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addFunctionTag(fungibleBurnableTrait, functions.burn, '#[when_not_paused]');
+    c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, '#[when_not_paused]');
+  }
 }
 
 export const premintPattern = /^(\d*\.?\d*)$/;
@@ -254,29 +198,25 @@ export function getInitialSupply(premint: string, decimals: number): string {
   return result;
 }
 
-function addMintable(c: ContractBuilder, access: Access) {
+function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
   c.addUseClause('soroban_sdk', 'Address');
+
+  const fungibleMintableTrait = {
+    name: 'FungibleMintable',
+    for: 'ExampleContract',
+    tags: [
+      '#[contractimpl]',
+    ],
+  }
 
   c.addFunction(fungibleMintableTrait, functions.mint);
 
   requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
-}
 
-const fungibleBurnableTrait = {
-  name: 'FungibleBurnable',
-  of: 'ExampleContract',
-  tags: [
-    '#[contractimpl]',
-  ],
-}
-
-const fungibleMintableTrait = {
-  name: 'FungibleMintable',
-  of: 'ExampleContract',
-  tags: [
-    '#[contractimpl]',
-  ],
+  if (pausable) {
+    c.addFunctionTag(fungibleMintableTrait, functions.mint, '#[when_not_paused]');
+  }
 }
 
 const components = defineComponents( {

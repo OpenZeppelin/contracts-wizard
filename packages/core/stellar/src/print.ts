@@ -284,7 +284,7 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
 function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} of ${trait.of} {`);
+  implLines.push(`impl ${trait.name} for ${trait.for} {`);
 
   const superVars = withSemicolons(
     trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)

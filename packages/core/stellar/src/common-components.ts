@@ -82,7 +82,7 @@ export function addSNIP12Metadata(c: ContractBuilder, name: string, version: str
 
   const SNIP12Metadata: BaseImplementedTrait = {
     name: 'SNIP12MetadataImpl',
-    of: 'SNIP12Metadata',
+    for: 'SNIP12Metadata',
     tags: [],
     priority: 0,
     section,

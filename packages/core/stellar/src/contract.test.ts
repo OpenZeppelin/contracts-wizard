@@ -46,7 +46,7 @@ test('contract with function code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    of: 'ExternalTrait',
+    for: 'ExternalTrait',
     tags: [
       'generate_trait',
       'abi(per_item)',
@@ -70,7 +70,7 @@ test('contract with function code before with semicolons', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    of: 'ExternalTrait',
+    for: 'ExternalTrait',
     tags: [
       'generate_trait',
       'abi(per_item)',

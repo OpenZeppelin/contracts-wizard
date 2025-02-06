@@ -73,14 +73,14 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   } else {
     const trait: BaseImplementedTrait = {
       name: 'ERC2981ImmutableConfig',
-      of: 'ERC2981Component::ImmutableConfig',
+      for: 'ERC2981Component::ImmutableConfig',
       tags: [],
     };
     c.addImplementedTrait(trait);
     c.addSuperVariableToTrait(trait, {
       name: 'FEE_DENOMINATOR',
       type: 'u128',
-      macro: feeDenominator.toString()
+      value: feeDenominator.toString()
     });
   }
 }

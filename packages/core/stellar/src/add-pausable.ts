@@ -16,7 +16,7 @@ export function addPausable(c: ContractBuilder, access: Access) {
 
 const components = defineComponents( {
   PausableComponent: {
-    path: 'openzeppelin::security::pausable',
+    path: 'openzeppelin_pausable',
     substorage: {
       name: 'pausable',
       type: 'PausableComponent::Storage',

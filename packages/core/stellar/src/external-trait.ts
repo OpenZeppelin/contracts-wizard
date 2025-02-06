@@ -2,7 +2,7 @@ import type { BaseImplementedTrait } from "./contract";
 
 export const externalTrait: BaseImplementedTrait = {
   name: 'ExternalImpl',
-  of: 'ExternalTrait',
+  for: 'ExternalTrait',
   tags: [
     '#[contractimpl]',
   ],

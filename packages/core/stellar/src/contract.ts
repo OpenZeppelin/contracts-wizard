@@ -54,7 +54,7 @@ export interface Initializer {
 
 export interface BaseImplementedTrait {
   name: string;
-  of: string;
+  for: string;
   tags: string[];
   perItemTag?: string;
   section?: string;
@@ -209,7 +209,7 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = {
         name: baseTrait.name,
-        of: baseTrait.of,
+        for: baseTrait.for,
         tags: [ ...baseTrait.tags ],
         superVariables: [],
         functions: [],
@@ -273,6 +273,12 @@ export class ContractBuilder implements Contract {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
+  }
+
+  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
+    this.addImplementedTrait(baseTrait);
+    const existingFn = this.addFunction(baseTrait, fn);
+    existingFn.tag = tag;
   }
 
   addConstructorArgument(arg: Argument): void {
