@@ -134,10 +134,10 @@ body {
   --color-2: #E3126F;
 } 
 
-.nav .switch.switch-soroban.active {
+.nav .switch.switch-stellar.active {
   --color-2: #0F0F0F;
 } 
-.nav .switch.switch-soroban.active img{
+.nav .switch.switch-stellar.active img{
   filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)
 }
 

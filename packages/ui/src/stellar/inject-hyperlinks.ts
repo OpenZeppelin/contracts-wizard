@@ -1,4 +1,4 @@
-import { contractsVersionTag } from "@openzeppelin/wizard-soroban/src";
+import { contractsVersionTag } from "@openzeppelin/wizard-stellar/src";
 
 export function injectHyperlinks(code: string) {
   const importRegex = /use<\/span> (openzeppelin)::([^A-Z]*)(::[a-zA-Z0-9]+|::{)/g

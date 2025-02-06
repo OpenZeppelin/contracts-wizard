@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Access } from '@openzeppelin/wizard-soroban';
+  import type { Access } from '@openzeppelin/wizard-stellar';
 
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';

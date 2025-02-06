@@ -11,8 +11,8 @@
     import OverflowMenu from '../common/OverflowMenu.svelte';
     import FileIcon from '../common/icons/FileIcon.svelte';
 
-    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-soroban';
-    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-soroban';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
+    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-stellar';
     import { postConfig } from '../common/post-config';
 
     import { saveAs } from 'file-saver';
@@ -65,7 +65,7 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'rust'}).value);
 
-    const language = 'soroban';
+    const language = 'stellar';
 
     let copied = false;
     const copyHandler = async () => {
@@ -119,7 +119,7 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires a Rust project with <code>openzeppelin-soroban</code> as a dependency.</p>
+            <p>Requires a Rust project with <code>openzeppelin-stellar</code> as a dependency.</p>
           </div>
         </button>
       </Dropdown>
@@ -133,7 +133,7 @@
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -soroban grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -stellar grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
 </div>
@@ -178,7 +178,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--soroban-black);
+    background-color: var(--stellar-black);
     color: white;
     order: -1;
   }
