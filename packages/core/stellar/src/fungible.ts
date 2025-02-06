@@ -186,8 +186,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addUseClause('starknet', 'get_caller_address');
-  c.addFunction(externalTrait, functions.burn);
+  c.addUseClause('openzeppelin_fungible_token', 'burnable::FungibleBurnable');
+  c.addUseClause('soroban_sdk', 'Address');
+
+  c.addFunction(fungibleBurnableTrait, functions.burn);
+  c.addFunction(fungibleBurnableTrait, functions.burn_from);
 }
 
 export const premintPattern = /^(\d*\.?\d*)$/;
@@ -255,19 +258,25 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
   c.addUseClause('soroban_sdk', 'Address');
 
-
-  const fungibleMintableTrait = {
-    name: 'FungibleMintable',
-    of: 'ExampleContract',
-    tags: [
-      '#[contractimpl]',
-    ],
-  }
-
   c.addFunction(fungibleMintableTrait, functions.mint);
 
-
   requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
+}
+
+const fungibleBurnableTrait = {
+  name: 'FungibleBurnable',
+  of: 'ExampleContract',
+  tags: [
+    '#[contractimpl]',
+  ],
+}
+
+const fungibleMintableTrait = {
+  name: 'FungibleMintable',
+  of: 'ExampleContract',
+  tags: [
+    '#[contractimpl]',
+  ],
 }
 
 const components = defineComponents( {
@@ -293,10 +302,22 @@ const functions = defineFunctions({
   burn: {
     args: [
       getSelfArg(),
-      { name: 'value', type: 'u256' }
+      { name: 'from', type: 'Address' },
+      { name: 'amount', type: 'i128' }
     ],
     code: [
-      'self.fungible.burn(get_caller_address(), value);'
+      'fungible::burnable::burn(e, &from, amount)'
+    ]
+  },
+  burn_from: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'fungible::burnable::burn_from(e, &spender, &from, amount)'
     ]
   },
   mint: {
