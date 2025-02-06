@@ -69,24 +69,25 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addFunctionCodeBefore(trait, fn, 'self.ownable.assert_only_owner()');
+      c.addFunctionCodeBefore(trait, fn, `let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");
+        owner.require_auth();`);
       break;
     }
-    case 'roles': {
-      const roleId = roleIdPrefix + '_ROLE';
-      const addedSuper = c.addVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
-      if (roleOwner !== undefined) {
-        c.addUseClause('starknet', 'ContractAddress');
-        c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
-        if (addedSuper) {
-          c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
-        }
-      }
+    // case 'roles': {
+    //   const roleId = roleIdPrefix + '_ROLE';
+    //   const addedSuper = c.addVariable({ name: roleId, type: 'felt252', value: `selector!("${roleId}")` })
+    //   if (roleOwner !== undefined) {
+    //     c.addUseClause('starknet', 'ContractAddress');
+    //     c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress'});
+    //     if (addedSuper) {
+    //       c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
+    //     }
+    //   }
 
-      c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
+    //   c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
 
-      break;
-    }
+    //   break;
+    // }
   }
 }
 

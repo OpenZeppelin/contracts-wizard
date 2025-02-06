@@ -4,8 +4,7 @@ export const externalTrait: BaseImplementedTrait = {
   name: 'ExternalImpl',
   of: 'ExternalTrait',
   tags: [
-    'generate_trait',
-    'abi(per_item)',
+    '#[contractimpl]',
   ],
   perItemTag: 'external(v0)',
 }

@@ -68,6 +68,8 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   const allOpts = withDefaults(opts);
 
+  allOpts.access = 'ownable';
+
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
   // addFungibleMixin(c);
 
@@ -254,8 +256,18 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addUseClause('soroban_sdk', 'Address');
 
 
+  const fungibleMintableTrait = {
+    name: 'FungibleMintable',
+    of: 'ExampleContract',
+    tags: [
+      '#[contractimpl]',
+    ],
+  }
 
-  requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
+  c.addFunction(fungibleMintableTrait, functions.mint);
+
+
+  requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
 const components = defineComponents( {
@@ -290,11 +302,11 @@ const functions = defineFunctions({
   mint: {
     args: [
       getSelfArg(),
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' }
+      { name: 'account', type: 'Address' },
+      { name: 'amount', type: 'i128' }
     ],
     code: [
-      'self.fungible.mint(recipient, amount);'
+      'fungible::mintable::mint(e, &account, amount);'
     ]
   },
 });
