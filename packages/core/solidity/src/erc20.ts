@@ -213,10 +213,7 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addBridgeable(c: ContractBuilder, bridgeable: boolean | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
-  if (bridgeable === false) {
-    return;
-  }
+function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
 
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
