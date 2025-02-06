@@ -214,7 +214,6 @@ function addFlashMint(c: ContractBuilder) {
 }
 
 function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
-
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
@@ -230,47 +229,58 @@ function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgr
   }
 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
-  if (bridgeable === 'superchain') {
-    c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-    c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
-  } else {
-    switch (access) {
-      case false:
-      case 'ownable': {
-        const addedImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
-        if (addedImmutable) {
-          c.addConstructorArgument({type: 'address', name: 'tokenBridge'});
-          c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
-          c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
+  switch (bridgeable) {
+    case 'superchain':
+      c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
+      c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
+      break;
+    case true: {
+      switch (access) {
+        case false:
+        case 'ownable': {
+          const addedImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
+          if (addedImmutable) {
+            c.addConstructorArgument({type: 'address', name: 'tokenBridge'});
+            c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
+            c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
+          }
+          c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+          break;
         }
-        c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
-        break;
-      }
-      case 'roles': {
-        setAccessControl(c, access);
-        const roleOwner = 'tokenBridge';
-        const roleId = 'TOKEN_BRIDGE_ROLE';
-        const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-        if (addedConstant) {
-          c.addConstructorArgument({type: 'address', name: roleOwner});
-          c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+        case 'roles': {
+          setAccessControl(c, access);
+          const roleOwner = 'tokenBridge';
+          const roleId = 'TOKEN_BRIDGE_ROLE';
+          const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+          if (addedConstant) {
+            c.addConstructorArgument({type: 'address', name: roleOwner});
+            c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+          }
+          c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+          break;
         }
-        c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
-        break;
+        case 'managed': {
+          setAccessControl(c, access);
+          c.addImportOnly({
+            name: 'AuthorityUtils',
+            path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+          });
+          c.setFunctionBody([
+            `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
+            `if (!immediate) revert Unauthorized();`
+          ], functions._checkTokenBridge, 'view');
+          break;
+        }
+        default: {
+          const _: never = access;
+          throw new Error('Unknown value for `access`');
+        }
       }
-      case 'managed': {
-        setAccessControl(c, access);
-        c.addImportOnly({
-          name: 'AuthorityUtils',
-          path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
-        });
-        const logic = [
-          `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
-          `if (!immediate) revert Unauthorized();`
-        ]
-        c.setFunctionBody(logic, functions._checkTokenBridge, 'view');
-        break;
-      }
+      break;
+    }
+    default: {
+      const _: never = bridgeable;
+      throw new Error('Unknown value for `bridgeable`');
     }
   }
   c.addVariable('error Unauthorized();');
