@@ -65,7 +65,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, pausable: boolean) {
+function addBase(c: ContractBuilder, pausable: boolean) {
   // Set token functions
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');

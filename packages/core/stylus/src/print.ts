@@ -20,20 +20,10 @@ export function printContract(contract: Contract): string {
         printUseClauses(contract),
         printVariables(contract),
         printStorage(contract),
-        printContractStruct(contract),
-        printContractErrors(contract),
-        printContractFunctions(contract),
         printImplementedTraits(contract),
       ),
     ),
   );
-}
-
-function printContractStruct(contract: Contract): Lines[] {
-  return [
-    '#[contract]',
-    `pub struct ${contract.name};`
-  ];
 }
 
 function printStorage(contract: Contract): Lines[] {
@@ -50,18 +40,6 @@ function printStorage(contract: Contract): Lines[] {
   ];
 }
 
-function printContractErrors(contract: Contract): Lines[] {
-  if (contract.errors.length === 0) {
-    return [];
-  }
-  return [
-    '#[contracterror]',
-    `pub enum ${contract.name}Error {`,
-    contract.errors.map(e => `${e.name} = ${e.num},`),
-    `}`
-  ]
-}
-
 function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
@@ -71,7 +49,10 @@ function printVariables(contract: Contract): string[] {
 }
 
 function printUseClauses(contract: Contract): Lines[] {
-  const useClauses = sortUseClauses(contract);
+  const useClauses = [
+    ...sortUseClauses(contract),
+    { containerPath: 'stylus_sdk::prelude', name: '*' },
+  ];
 
   // group by containerPath
   const grouped = useClauses.reduce(
@@ -246,15 +227,6 @@ function printFunction(fn: ContractFunction): Lines[] {
   }
 
   return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
-}
-
-function printContractFunctions(contract: Contract): Lines[] {
-  const implLines = [];
-  implLines.push('#[contractimpl]');
-  implLines.push(`impl ${contract.name} {`);
-  implLines.push(printConstructor(contract));
-  implLines.push('}');
-  return implLines;
 }
 
 function printConstructor(contract: Contract): Lines[] {
