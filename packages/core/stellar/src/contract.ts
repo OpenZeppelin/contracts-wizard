@@ -9,6 +9,8 @@ export interface Contract {
   implementedTraits: ImplementedTrait[];
   variables: Variable[];
   errors: Error[];
+  ownable: boolean;
+
 }
 
 export interface Error {
@@ -70,7 +72,7 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
-  upgradeable = false;
+  ownable = false;
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];

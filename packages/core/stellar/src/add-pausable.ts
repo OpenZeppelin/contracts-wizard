@@ -1,6 +1,6 @@
 import { getSelfArg } from './common-options';
 import type { ContractBuilder } from './contract';
-import { Access } from './set-access-control';
+import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, name: string, access: Access) {
@@ -16,20 +16,8 @@ export function addPausable(c: ContractBuilder, name: string, access: Access) {
   c.addFunction(pausableTrait, functions.pause);
   c.addFunction(pausableTrait, functions.unpause);
 
-  c.addUseClause('soroban_sdk', 'Address');
-  c.addUseClause('soroban_sdk', 'panic_with_error');
-  c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
-  const checkOwner = [
-    'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");',
-    'if owner != caller {',
-    `    panic_with_error!(e, ${name}Error::Unauthorized)`,
-    '}',
-  ];
-  c.addFunctionCodeBefore(pausableTrait, functions.pause, checkOwner);
-  c.addFunctionCodeBefore(pausableTrait, functions.unpause, checkOwner);
-
-  // requireAccessControl(c, externalTrait, functions.pause, access, 'PAUSER', 'pauser');
-  // requireAccessControl(c, externalTrait, functions.unpause, access, 'PAUSER', 'pauser');
+  requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
+  requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
 }
 
 const functions = defineFunctions({

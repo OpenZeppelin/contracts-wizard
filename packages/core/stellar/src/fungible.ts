@@ -50,8 +50,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   const allOpts = withDefaults(opts);
 
-  allOpts.access = 'ownable';
-
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
 
   if (allOpts.premint) {
@@ -70,8 +68,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
     addMintable(c, allOpts.name, allOpts.access, allOpts.pausable);
   }
 
-  // setAccessControl(c, allOpts.access);
-
+  setAccessControl(c, allOpts.access);
   setInfo(c, allOpts.info);
 
   return c;
@@ -80,13 +77,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   // Set metadata
   c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
-
-  // Set owner
-  c.addUseClause('soroban_sdk', 'symbol_short');
-  c.addUseClause('soroban_sdk', 'Symbol');
-  c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`});
-  c.addConstructorArgument({ name: 'owner', type: 'Address' });
-  c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
 
   // Set token functions
   c.addUseClause('openzeppelin_fungible_token', 'self as fungible');
@@ -209,7 +199,6 @@ export function getInitialSupply(premint: string, decimals: number): string {
 
 function addMintable(c: ContractBuilder, name: string, access: Access, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
-  c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleMintableTrait = {
     name: 'FungibleMintable',
@@ -221,12 +210,7 @@ function addMintable(c: ContractBuilder, name: string, access: Access, pausable:
 
   c.addFunction(fungibleMintableTrait, functions.mint);
 
-  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, [
-    'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set")',
-    'owner.require_auth();'
-  ]);
-
-  // requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
+  requireAccessControl(c, fungibleMintableTrait, functions.mint, access);
 
   if (pausable) {
     c.addFunctionTag(fungibleMintableTrait, functions.mint, 'when_not_paused');
