@@ -1,29 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder, BaseFunction, BaseImplementedTrait, Component } from './contract';
+import { ContractBuilder, BaseFunction, BaseImplementedTrait } from './contract';
 import { printContract } from './print';
-
-const FOO_COMPONENT: Component = {
-  name: 'FooComponent',
-  path: 'some::path',
-  substorage: {
-    name: 'foo',
-    type: 'FooComponent::Storage',
-  },
-  event: {
-    name: 'FooEvent',
-    type: 'FooComponent::Event',
-  },
-  impls: [{
-      name: 'FooImpl',
-      value: 'FooComponent::FooImpl<ContractState>',
-    }, {
-      name: 'FooInternalImpl',
-      embed: false,
-      value: 'FooComponent::InternalImpl<ContractState>',
-    }
-  ],
-};
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -62,7 +40,7 @@ test('contract with function code before', t => {
     ]
   };
   Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, 'before()');
+  Foo.addFunctionCodeBefore(trait, fn, ['before()']);
   t.snapshot(printContract(Foo));
 });
 
@@ -86,7 +64,7 @@ test('contract with function code before with semicolons', t => {
     ]
   };
   Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, 'before();');
+  Foo.addFunctionCodeBefore(trait, fn, ['before();']);
   t.snapshot(printContract(Foo));
 });
 
