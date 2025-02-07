@@ -106,7 +106,6 @@ test('fungible votes, empty version', async t => {
 testFungible('fungible votes, non-upgradeable', {
   votes: true,
   appName: 'MY_DAPP_NAME',
-  upgradeable: false,
 });
 
 testFungible('fungible full, non-upgradeable', {
@@ -116,7 +115,6 @@ testFungible('fungible full, non-upgradeable', {
   mintable: true,
   votes: true,
   pausable: true,
-  upgradeable: false,
   appName: 'MY_DAPP_NAME',
   appVersion: 'MY_DAPP_VERSION',
 });
@@ -128,19 +126,6 @@ testFungible('fungible full upgradeable', {
   mintable: true,
   votes: true,
   pausable: true,
-  upgradeable: true,
-  appName: 'MY_DAPP_NAME',
-  appVersion: 'MY_DAPP_VERSION',
-});
-
-testFungible('fungible full upgradeable with roles', {
-  premint: '2000',
-  access: 'roles',
-  burnable: true,
-  mintable: true,
-  votes: true,
-  pausable: true,
-  upgradeable: true,
   appName: 'MY_DAPP_NAME',
   appVersion: 'MY_DAPP_VERSION',
 });
@@ -158,19 +143,13 @@ testAPIEquivalence('fungible API full upgradeable', {
   mintable: true,
   votes: true,
   pausable: true,
-  upgradeable: true,
+  // upgradeable: true,
   appName: 'MY_DAPP_NAME',
   appVersion: 'MY_DAPP_VERSION',
 });
 
 test('fungible API assert defaults', async t => {
   t.is(fungible.print(fungible.defaults), fungible.print());
-});
-
-test('fungible API isAccessControlRequired', async t => {
-  t.is(fungible.isAccessControlRequired({ mintable: true }), true);
-  t.is(fungible.isAccessControlRequired({ pausable: true }), true);
-  t.is(fungible.isAccessControlRequired({ upgradeable: true }), true);
 });
 
 test('fungible getInitialSupply', async t => {

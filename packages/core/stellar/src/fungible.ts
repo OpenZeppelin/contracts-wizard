@@ -3,10 +3,10 @@ import { Access, requireAccessControl, setAccessControl } from './set-access-con
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
-import { setUpgradeable } from './set-upgradeable';
+// import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-import { defineComponents } from './utils/define-components';
+// import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { externalTrait } from './external-trait';
@@ -24,7 +24,7 @@ export const defaults: Required<FungibleOptions> = {
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
   access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
+  // upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
 
@@ -58,10 +58,6 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   };
 }
 
-export function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
-}
-
 export function buildFungible(opts: FungibleOptions): Contract {
   const c = new ContractBuilder(opts.name);
 
@@ -70,7 +66,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
   allOpts.access = 'ownable';
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
-  // addFungibleMixin(c);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -88,24 +83,25 @@ export function buildFungible(opts: FungibleOptions): Contract {
     addMintable(c, allOpts.access, allOpts.pausable);
   }
 
-  c.addConstructorArgument({ name:'owner', type:'Address' });
-  c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
-
-
-  // addHooks(c, allOpts);
-
   // setAccessControl(c, allOpts.access);
-  // setUpgradeable(c, allOpts.upgradeable, allOpts.access);
+
   setInfo(c, allOpts.info);
 
   return c;
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
+  // Set metadata
   c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
-  c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`, imports: ['symbol_short'] });
+  // Set owner
+  c.addUseClause('soroban_sdk', 'symbol_short');
+  c.addUseClause('soroban_sdk', 'Symbol');
+  c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`});
+  c.addConstructorArgument({ name: 'owner', type: 'Address' });
+  c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
 
+  // Set token functions
   c.addUseClause('openzeppelin_fungible_token', 'self as fungible');
   c.addUseClause('openzeppelin_fungible_token', 'FungibleToken');
   c.addUseClause('soroban_sdk', 'contract');

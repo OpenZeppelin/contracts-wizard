@@ -2,10 +2,10 @@ import type { Argument } from "./contract";
 import type { Access } from "./set-access-control";
 import type { Info } from "./set-info";
 import { defaults as infoDefaults } from "./set-info";
-import type { Upgradeable } from "./set-upgradeable";
+// import type { Upgradeable } from "./set-upgradeable";
 
 export const defaults: Required<CommonOptions> = {
-  upgradeable: true,
+  // upgradeable: true,
   info: infoDefaults,
 } as const;
 
@@ -15,7 +15,7 @@ export const contractDefaults: Required<CommonContractOptions> = {
 } as const;
 
 export interface CommonOptions {
-  upgradeable?: Upgradeable;
+  // upgradeable?: Upgradeable;
   info?: Info;
 }
 
@@ -25,7 +25,7 @@ export interface CommonContractOptions extends CommonOptions {
 
 export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
   return {
-    upgradeable: opts.upgradeable ?? defaults.upgradeable,
+    // upgradeable: opts.upgradeable ?? defaults.upgradeable,
     info: opts.info ?? defaults.info,
   };
 }

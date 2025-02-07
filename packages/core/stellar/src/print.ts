@@ -1,4 +1,4 @@
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type { Contract, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
@@ -140,24 +140,7 @@ function sortUseClauses(contract: Contract): UseClause[] {
   });
 }
 
-function printConstants(contract: Contract): Lines[] {
-  const lines = [];
-  for (const constant of contract.constants) {
-    // inlineComment is optional, default to false
-    const inlineComment = constant.inlineComment ?? false;
-    const commented = !!constant.comment;
 
-    if (commented && !inlineComment) {
-      lines.push(`// ${constant.comment}`);
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    } else if (commented) {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
-    } else {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    }
-  }
-  return lines;
-}
 
 // function printImpls(contract: Contract): Lines[] {
 //   const impls = contract.components.flatMap(c => c.impls);

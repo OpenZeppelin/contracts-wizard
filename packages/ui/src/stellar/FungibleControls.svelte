@@ -17,8 +17,6 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
-
-  $: requireAccessControl = fungible.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">

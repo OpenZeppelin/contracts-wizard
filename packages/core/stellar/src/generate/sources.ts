@@ -6,10 +6,7 @@ import { generateFungibleOptions } from './fungible';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
-import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
-
-type Subset = 'all' | 'minimal-cover';
 
 type Kind = keyof KindedOptions;
 
@@ -31,7 +28,7 @@ interface GeneratedSource extends GeneratedContract {
   source: string;
 }
 
-function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[] {
+function generateContractSubset(kind?: Kind): GeneratedContract[] {
   const contracts = [];
 
   for (const options of generateOptions(kind)) {
@@ -53,31 +50,12 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     }
   }
 
-  if (subset === 'all') {
-    return contracts;
-  } else {
-    const getParents = (c: GeneratedContract) => c.contract.components.map(p => p.path);
-    function filterByUpgradeableSetTo(isUpgradeable: boolean) {
-      return (c: GeneratedContract) => {
-        switch (c.options.kind) {
-          case 'Fungible':
-            return c.options.upgradeable === isUpgradeable;
-          default:
-            const _: never = c.options.kind; // TODO: When there are additional kinds above, change this assignment to just `c.options` instead of `c.options.kind`
-            throw new Error('Unknown kind');
-        }
-      }
-    }
-    return [
-      ...findCover(contracts.filter(filterByUpgradeableSetTo(true)), getParents),
-      ...findCover(contracts.filter(filterByUpgradeableSetTo(false)), getParents),
-    ];
-  }
+  return contracts;
 }
 
-export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
+export function* generateSources(uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
   let counter = 1;
-  for (const c of generateContractSubset(subset, kind)) {
+  for (const c of generateContractSubset(kind)) {
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
@@ -86,13 +64,13 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
   }
 }
 
-export async function writeGeneratedSources(dir: string, subset: Subset, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
+export async function writeGeneratedSources(dir: string, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
   let contractNames = [];
 
-  for (const { id, contract, source } of generateSources(subset, uniqueName, kind)) {
+  for (const { id, contract, source } of generateSources(uniqueName, kind)) {
     const name = uniqueName ? contract.name : id;
-    await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
+    await fs.writeFile(path.format({ dir, name, ext: '.rs' }), source);
     contractNames.push(name);
   }
 

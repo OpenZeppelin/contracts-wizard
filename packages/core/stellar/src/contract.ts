@@ -72,9 +72,6 @@ export interface Variable {
   name: string;
   type: string;
   value: string;
-  imports: string[];
-  comment?: string;
-  inlineComment?: boolean;
 }
 
 export interface Argument {
@@ -148,11 +145,6 @@ export class ContractBuilder implements Contract {
       return false;
     } else {
       this.variablesMap.set(variable.name, variable);
-      this.addUseClause('soroban_sdk', variable.type);
-      for (const imp of variable.imports) {
-        this.addUseClause('soroban_sdk', imp);
-      }
-      // TODO if name is > 9 chars, use Symbol::new
       return true;
     }
   }

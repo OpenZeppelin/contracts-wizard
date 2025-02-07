@@ -1,5 +1,5 @@
 import type { CommonOptions, CommonContractOptions } from './common-options';
-import { printFungible, defaults as fungibledefaults, isAccessControlRequired as fungibleIsAccessControlRequired, FungibleOptions } from './fungible';
+import { printFungible, defaults as fungibledefaults, FungibleOptions } from './fungible';
 
 export interface WizardAccountAPI<Options extends CommonOptions>{
   /**
@@ -33,10 +33,9 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<FungibleOptions>;
+export type Fungible = WizardContractAPI<FungibleOptions>;
 
 export const fungible: Fungible = {
   print: printFungible,
   defaults: fungibledefaults,
-  isAccessControlRequired: fungibleIsAccessControlRequired,
 };
