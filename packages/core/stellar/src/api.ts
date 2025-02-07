@@ -21,7 +21,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type Fungible = WizardContractAPI<FungibleOptions>;
+export type Fungible = WizardContractAPI<FungibleOptions>; // TODO add AccessControlAPI<FungibleOptions> when access control is implemented, if useful
 
 export const fungible: Fungible = {
   print: printFungible,
