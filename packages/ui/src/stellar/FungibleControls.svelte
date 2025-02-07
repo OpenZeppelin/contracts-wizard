@@ -50,7 +50,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/fungible-supply">
+      <HelpTooltip>
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
@@ -66,8 +66,8 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
+      <HelpTooltip>
+        Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
