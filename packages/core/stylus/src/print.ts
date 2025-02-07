@@ -169,20 +169,24 @@ function printImplementedTraits(contract: Contract): Lines[] {
       return result;
     }, {});
 
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printImplementedTraitsSection(contract, section, impls as ImplementedTrait[]),
-  );
+  const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
 
-  return spaceBetween(...sections);
+  const allTraits = sortedTraits.map(trait => trait.name);
+
+  const lines = [];
+  lines.push('#[public]');
+  lines.push(`#[inherit(${allTraits.join(', ')})]`);
+  lines.push(`impl ${contract.name} {`);
+  const sections = sortedGroups.map(
+    ([section, impls]) => printImplementedFunctions(section, impls as ImplementedTrait[])
+  );
+  lines.push(spaceBetween(...sections));
+  lines.push('}');
+  return lines;
 }
 
-function printImplementedTraitsSection(contract: Contract, section: string, impls: ImplementedTrait[]): Lines[] {
+function printImplementedFunctions(section: string, impls: ImplementedTrait[]): Lines[] {
   const lines = [];
-
-  lines.push('#[public]');
-  lines.push(`#[inherit(${impls.map(impl => impl.name).join(', ')})]`);
-  lines.push(`impl ${contract.name} {`);
-  
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
     lines.push('//');
@@ -193,18 +197,11 @@ function printImplementedTraitsSection(contract: Contract, section: string, impl
     if (index > 0 || !isDefaultSection) {
       lines.push('');
     }
-    lines.push(...printImplementedTraitFunctions(trait));
+    const fns = trait.functions.map(fn => printFunction(fn));
+    lines.push(...spaceBetween(...fns));
   });
 
-  lines.push('}');
   return lines;
-}
-
-function printImplementedTraitFunctions(trait: ImplementedTrait): Lines[] {
-  const implLines = [];
-  const fns = trait.functions.map(fn => printFunction(fn));
-  implLines.push(spaceBetween(...fns));
-  return implLines;
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
