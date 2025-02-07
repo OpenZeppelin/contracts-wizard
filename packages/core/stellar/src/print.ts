@@ -13,8 +13,8 @@ export function printContract(contract: Contract): string {
   return formatLines(
     ...spaceBetween(
       [
-        `//! SPDX-License-Identifier: ${contract.license}`,
-        `//! Compatible with OpenZeppelin Contracts for Stellar ${compatibleContractsSemver}`,
+        `// SPDX-License-Identifier: ${contract.license}`,
+        `// Compatible with OpenZeppelin Contracts for Stellar ${compatibleContractsSemver}`,
       ],
       spaceBetween(
         printUseClauses(contract),

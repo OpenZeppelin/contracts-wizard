@@ -123,6 +123,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
     tags: [
       'contractimpl',
     ],
+    section: 'Extensions',
   }
 
   c.addFunction(fungibleBurnableTrait, functions.burn);
@@ -206,6 +207,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
     tags: [
       'contractimpl',
     ],
+    section: 'Extensions',
   }
 
   c.addFunction(fungibleMintableTrait, functions.mint);
