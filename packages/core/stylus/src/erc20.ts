@@ -47,9 +47,9 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   addBase(c, allOpts.pausable);
 
-  // if (allOpts.pausable) {
-  //   addPausable(c, allOpts.access);
-  // }
+  if (allOpts.pausable) {
+    addPausable(c, allOpts.access);
+  }
 
   if (allOpts.burnable) {
     addBurnable(c, allOpts.pausable);
@@ -87,15 +87,17 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   };
   c.addStorage('erc20', 'Erc20');
 
-  c.addFunction(erc20Trait, functions.total_supply);
-  c.addFunction(erc20Trait, functions.balance);
-  c.addFunction(erc20Trait, functions.allowance);
-  c.addFunction(erc20Trait, functions.transfer);
-  c.addFunction(erc20Trait, functions.transfer_from);
-  c.addFunction(erc20Trait, functions.approve);
-  c.addFunction(erc20Trait, functions.decimals);
-  c.addFunction(erc20Trait, functions.name);
-  c.addFunction(erc20Trait, functions.symbol);
+  c.addImplementedTrait(erc20Trait);
+
+  // c.addFunction(erc20Trait, functions.total_supply);
+  // c.addFunction(erc20Trait, functions.balance);
+  // c.addFunction(erc20Trait, functions.allowance);
+  // c.addFunction(erc20Trait, functions.transfer);
+  // c.addFunction(erc20Trait, functions.transfer_from);
+  // c.addFunction(erc20Trait, functions.approve);
+  // c.addFunction(erc20Trait, functions.decimals);
+  // c.addFunction(erc20Trait, functions.name);
+  // c.addFunction(erc20Trait, functions.symbol);
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')

@@ -20,8 +20,8 @@ export function addPausable(c: ContractBuilder, access: Access) {
   c.addFunction(pausableTrait, functions.pause);
   c.addFunction(pausableTrait, functions.unpause);
 
-  requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
-  requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
+  // requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
+  // requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
 }
 
 const functions = defineFunctions({
