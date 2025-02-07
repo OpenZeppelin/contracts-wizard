@@ -3,13 +3,11 @@ import { Access, requireAccessControl, setAccessControl } from './set-access-con
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
-// import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-// import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
+import { toByteArray, toUint } from './utils/convert-strings';
 
 
 export const defaults: Required<FungibleOptions> = {
@@ -19,11 +17,7 @@ export const defaults: Required<FungibleOptions> = {
   pausable: false,
   premint: '0',
   mintable: false,
-  votes: false,
-  appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
-  appVersion: 'v1',
   access: commonDefaults.access,
-  // upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
 
@@ -38,9 +32,6 @@ export interface FungibleOptions extends CommonContractOptions {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
-  votes?: boolean;
-  appName?: string;
-  appVersion?: string;
 }
 
 function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
@@ -51,9 +42,6 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
-    votes: opts.votes ?? defaults.votes,
-    appName: opts.appName ?? defaults.appName,
-    appVersion: opts.appVersion ?? defaults.appVersion
   };
 }
 

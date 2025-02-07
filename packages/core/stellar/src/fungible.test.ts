@@ -58,26 +58,12 @@ testFungible('fungible mintable', {
   access: 'ownable',
 });
 
-testFungible('fungible full, non-upgradeable', {
+testFungible('fungible full', {
   premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
-  votes: true,
   pausable: true,
-  appName: 'MY_DAPP_NAME',
-  appVersion: 'MY_DAPP_VERSION',
-});
-
-testFungible('fungible full upgradeable', {
-  premint: '2000',
-  access: 'ownable',
-  burnable: true,
-  mintable: true,
-  votes: true,
-  pausable: true,
-  appName: 'MY_DAPP_NAME',
-  appVersion: 'MY_DAPP_VERSION',
 });
 
 testAPIEquivalence('fungible API default');
@@ -90,10 +76,7 @@ testAPIEquivalence('fungible API full', {
   premint: '2000',
   burnable: true,
   mintable: true,
-  votes: true,
   pausable: true,
-  appName: 'MY_DAPP_NAME',
-  appVersion: 'MY_DAPP_VERSION',
 });
 
 test('fungible API assert defaults', async t => {
