@@ -72,7 +72,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
   }
 
   if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
+    addPausable(c, allOpts.name, allOpts.access);
   }
 
   if (allOpts.burnable) {
@@ -233,8 +233,10 @@ function addMintable(c: ContractBuilder, name: string, access: Access, pausable:
 
   c.addFunction(fungibleMintableTrait, functions.mint);
 
-  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, 'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set")');
-  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, 'owner.require_auth();');
+  c.addFunctionCodeBefore(fungibleMintableTrait, functions.mint, [
+    'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set")',
+    'owner.require_auth();'
+  ]);
 
   // requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
 

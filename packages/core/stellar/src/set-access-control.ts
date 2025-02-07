@@ -40,8 +40,8 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addFunctionCodeBefore(trait, fn, `let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");
-        owner.require_auth();`);
+      // c.addFunctionCodeBefore(trait, fn, `let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");
+      //   owner.require_auth();`);
       break;
     }
   }

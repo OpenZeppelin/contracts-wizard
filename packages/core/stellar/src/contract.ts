@@ -158,10 +158,10 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string): void {
+  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
+    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], ...codeBefore ];
   }
 
   addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
