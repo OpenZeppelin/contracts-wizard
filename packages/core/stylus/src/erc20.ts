@@ -1,13 +1,9 @@
 import { Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
-import { setInfo } from './set-info';
-import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { toByteArray, toUint } from './utils/convert-strings';
 
 
 export const defaults: Required<ERC20Options> = {
@@ -54,13 +50,6 @@ export function buildERC20(opts: ERC20Options): Contract {
   if (allOpts.burnable) {
     addBurnable(c, allOpts.pausable);
   }
-
-  // if (allOpts.mintable) {
-  //   addMintable(c, allOpts.access, allOpts.pausable);
-  // }
-
-  // setAccessControl(c, allOpts.access);
-  // setInfo(c, allOpts.info);
 
   return c;
 }
@@ -116,89 +105,6 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
     c.addFunctionTag(erc20Trait, functions.burn_from, 'when_not_paused');
   }
 }
-
-export const premintPattern = /^(\d*\.?\d*)$/;
-
-function addPremint(c: ContractBuilder, amount: string) {
-  if (amount !== undefined && amount !== '0') {
-    if (!premintPattern.test(amount)) {
-      throw new OptionsError({
-        premint: 'Not a valid number',
-      });
-    }
-
-    // TODO: handle signed int?
-    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
-
-    c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
-    c.addUseClause('soroban_sdk', 'Address');
-
-    c.addConstructorArgument({ name:'owner', type:'Address' });
-    c.addConstructorCode(`erc20::mintable::mint(e, &owner, ${premintAbsolute});`);
-  }
-}
-
-/**
- * Calculates the initial supply that would be used in an ERC20 contract based on a given premint amount and number of decimals.
- *
- * @param premint Premint amount in token units, may be fractional
- * @param decimals The number of decimals in the token
- * @returns `premint` with zeros padded or removed based on `decimals`.
- * @throws OptionsError if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
- */
-export function getInitialSupply(premint: string, decimals: number): string {
-  let result;
-  const premintSegments = premint.split(".");
-  if (premintSegments.length > 2) {
-    throw new OptionsError({
-      premint: 'Not a valid number',
-    });
-  } else {
-    let firstSegment = premintSegments[0] ?? '';
-    let lastSegment = premintSegments[1] ?? '';
-    if (decimals > lastSegment.length) {
-      try {
-        lastSegment += "0".repeat(decimals - lastSegment.length);
-      } catch (e) {
-        // .repeat gives an error if decimals number is too large
-        throw new OptionsError({
-          premint: 'Decimals number too large',
-        });
-      }
-    } else if (decimals < lastSegment.length) {
-      throw new OptionsError({
-        premint: 'Too many decimals',
-      });
-    }
-    // concat segments without leading zeros
-    result = firstSegment.concat(lastSegment).replace(/^0+/, '');
-  }
-  if (result.length === 0) {
-    result = '0';
-  }
-  return result;
-}
-
-// function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-//   c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
-
-//   const erc20MintableTrait = {
-//     name: 'ERC20Mintable',
-//     for: c.name,
-//     tags: [
-//       'contractimpl',
-//     ],
-//     section: 'Extensions',
-//   }
-
-//   c.addFunction(erc20MintableTrait, functions.mint);
-
-//   requireAccessControl(c, erc20MintableTrait, functions.mint, access);
-
-//   if (pausable) {
-//     c.addFunctionTag(erc20MintableTrait, functions.mint, 'when_not_paused');
-//   }
-// }
 
 const erc20Trait = {
   name: 'Erc20',

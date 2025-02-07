@@ -2,7 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
-  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
+  import { erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
 
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
@@ -20,25 +20,12 @@
 <section class="controls-section">
   <h1>Settings</h1>
 
-  <div class="grid grid-cols-[2fr,1fr] gap-2">
+  <div class="grid gap-2">
     <label class="labeled-input">
       <span>Name</span>
       <input bind:value={opts.name} use:error={errors?.name}>
     </label>
-
-    <label class="labeled-input">
-      <span>Symbol</span>
-      <input bind:value={opts.symbol} use:error={errors?.symbol}>
-    </label>
   </div>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Premint
-      <HelpTooltip>Create an initial amount of tokens for the owner.</HelpTooltip>
-    </span>
-    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
-  </label>
 </section>
 
 <section class="controls-section">
