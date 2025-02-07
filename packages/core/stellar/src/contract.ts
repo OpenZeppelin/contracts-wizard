@@ -10,7 +10,6 @@ export interface Contract {
   variables: Variable[];
   errors: Error[];
   ownable: boolean;
-
 }
 
 export interface Error {

@@ -12,9 +12,6 @@ const blueprint = {
   pausable: booleans,
   mintable: booleans,
   premint: ['1'],
-  votes: booleans,
-  appName: ['MyApp'],
-  appVersion: ['v1'],
   access: accessOptions,
   info: infoOptions
 };

@@ -1,17 +1,5 @@
-import type { CommonOptions, CommonContractOptions } from './common-options';
+import type { CommonContractOptions } from './common-options';
 import { printFungible, defaults as fungibledefaults, FungibleOptions } from './fungible';
-
-export interface WizardAccountAPI<Options extends CommonOptions>{
-  /**
-   * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
-   */
-  print: (opts?: Options) => string;
-
-  /**
-   * The default options that are used for `print`.
-   */
-  defaults: Required<Options>;
-}
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
