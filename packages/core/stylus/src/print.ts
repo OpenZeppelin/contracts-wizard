@@ -19,6 +19,7 @@ export function printContract(contract: Contract): string {
       spaceBetween(
         printUseClauses(contract),
         printVariables(contract),
+        printStorage(contract),
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
@@ -32,6 +33,20 @@ function printContractStruct(contract: Contract): Lines[] {
   return [
     '#[contract]',
     `pub struct ${contract.name};`
+  ];
+}
+
+function printStorage(contract: Contract): Lines[] {
+  const storage = contract.storage.map(s => [
+    '#[borrow]',
+    `pub ${s.name}: ${s.type},`,
+  ]);
+  return [
+    '#[entrypoint]',
+    '#[storage]',
+    `struct ${contract.name} {`,
+    ...storage,
+    `}`
   ];
 }
 
@@ -200,7 +215,7 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
 function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} for ${trait.for} {`);
+  implLines.push(`impl ${trait.name} {`);
 
   const superVars = withSemicolons(
     trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)

@@ -12,10 +12,8 @@ import { toByteArray, toUint } from './utils/convert-strings';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
-  symbol: 'MTK',
   burnable: false,
   pausable: false,
-  premint: '0',
   mintable: false,
   access: commonDefaults.access,
   info: commonDefaults.info
@@ -27,10 +25,8 @@ export function printERC20(opts: ERC20Options = defaults): string {
 
 export interface ERC20Options extends CommonContractOptions {
   name: string;
-  symbol: string;
   burnable?: boolean;
   pausable?: boolean;
-  premint?: string;
   mintable?: boolean;
 }
 
@@ -40,7 +36,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
-    premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
   };
 }
@@ -50,66 +45,62 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
+  addBase(c, toByteArray(allOpts.name), allOpts.pausable);
 
-  if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
-  }
+  // if (allOpts.pausable) {
+  //   addPausable(c, allOpts.access);
+  // }
 
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
-  }
+  // if (allOpts.burnable) {
+  //   addBurnable(c, allOpts.pausable);
+  // }
 
-  if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
-  }
+  // if (allOpts.mintable) {
+  //   addMintable(c, allOpts.access, allOpts.pausable);
+  // }
 
-  if (allOpts.mintable) {
-    addMintable(c, allOpts.access, allOpts.pausable);
-  }
-
-  setAccessControl(c, allOpts.access);
-  setInfo(c, allOpts.info);
+  // setAccessControl(c, allOpts.access);
+  // setInfo(c, allOpts.info);
 
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
-  // Set metadata
-  c.addConstructorCode(`erc20::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
-
+function addBase(c: ContractBuilder, name: string, pausable: boolean) {
   // Set token functions
-  c.addUseClause('openzeppelin_erc20_token', 'self as erc20');
-  c.addUseClause('openzeppelin_erc20_token', 'ERC20Token');
-  c.addUseClause('soroban_sdk', 'contract');
-  c.addUseClause('soroban_sdk', 'contractimpl');
-  c.addUseClause('soroban_sdk', 'Address');
-  c.addUseClause('soroban_sdk', 'String');
-  c.addUseClause('soroban_sdk', 'Env');
-  c.addUseClause('soroban_sdk', 'Symbol');
+  c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
+  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
 
-  const erc20TokenTrait = {
-    name: 'ERC20Token',
-    for: c.name,
+  // c.addUseClause('openzeppelin_erc20_token', 'ERC20Token');
+  // c.addUseClause('soroban_sdk', 'contract');
+  // c.addUseClause('soroban_sdk', 'contractimpl');
+  // c.addUseClause('soroban_sdk', 'Address');
+  // c.addUseClause('soroban_sdk', 'String');
+  // c.addUseClause('soroban_sdk', 'Env');
+  // c.addUseClause('soroban_sdk', 'Symbol');
+
+  const erc20Trait = {
+    name: 'Erc20',
     tags: [
-      'contractimpl',
+      'public',
     ],
   };
+  c.addStorage('erc20', 'Erc20');
 
-  c.addFunction(erc20TokenTrait, functions.total_supply);
-  c.addFunction(erc20TokenTrait, functions.balance);
-  c.addFunction(erc20TokenTrait, functions.allowance);
-  c.addFunction(erc20TokenTrait, functions.transfer);
-  c.addFunction(erc20TokenTrait, functions.transfer_from);
-  c.addFunction(erc20TokenTrait, functions.approve);
-  c.addFunction(erc20TokenTrait, functions.decimals);
-  c.addFunction(erc20TokenTrait, functions.name);
-  c.addFunction(erc20TokenTrait, functions.symbol);
+  c.addFunction(erc20Trait, functions.total_supply);
+  c.addFunction(erc20Trait, functions.balance);
+  c.addFunction(erc20Trait, functions.allowance);
+  c.addFunction(erc20Trait, functions.transfer);
+  c.addFunction(erc20Trait, functions.transfer_from);
+  c.addFunction(erc20Trait, functions.approve);
+  c.addFunction(erc20Trait, functions.decimals);
+  c.addFunction(erc20Trait, functions.name);
+  c.addFunction(erc20Trait, functions.symbol);
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(erc20TokenTrait, functions.transfer, 'when_not_paused');
-    c.addFunctionTag(erc20TokenTrait, functions.transfer_from, 'when_not_paused');
+    c.addFunctionTag(erc20Trait, functions.transfer, 'when_not_paused');
+    c.addFunctionTag(erc20Trait, functions.transfer_from, 'when_not_paused');
   }
 }
 
@@ -198,26 +189,26 @@ export function getInitialSupply(premint: string, decimals: number): string {
   return result;
 }
 
-function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-  c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
+// function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
+//   c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
 
-  const erc20MintableTrait = {
-    name: 'ERC20Mintable',
-    for: c.name,
-    tags: [
-      'contractimpl',
-    ],
-    section: 'Extensions',
-  }
+//   const erc20MintableTrait = {
+//     name: 'ERC20Mintable',
+//     for: c.name,
+//     tags: [
+//       'contractimpl',
+//     ],
+//     section: 'Extensions',
+//   }
 
-  c.addFunction(erc20MintableTrait, functions.mint);
+//   c.addFunction(erc20MintableTrait, functions.mint);
 
-  requireAccessControl(c, erc20MintableTrait, functions.mint, access);
+//   requireAccessControl(c, erc20MintableTrait, functions.mint, access);
 
-  if (pausable) {
-    c.addFunctionTag(erc20MintableTrait, functions.mint, 'when_not_paused');
-  }
-}
+//   if (pausable) {
+//     c.addFunctionTag(erc20MintableTrait, functions.mint, 'when_not_paused');
+//   }
+// }
 
 const functions = defineFunctions({
   // Token Functions

@@ -4,12 +4,18 @@ export interface Contract {
   license: string;
   name: string;
   useClauses: UseClause[];
+  storage: Storage[];
   constructorCode: string[];
   constructorArgs: Argument[];
   implementedTraits: ImplementedTrait[];
   variables: Variable[];
   errors: Error[];
   ownable: boolean;
+}
+
+export interface Storage {
+  name: string;
+  type: string;
 }
 
 export interface Error {
@@ -28,7 +34,6 @@ export interface UseClause {
 
 export interface BaseImplementedTrait {
   name: string;
-  for: string;
   tags: string[];
   perItemTag?: string;
   section?: string;
@@ -80,6 +85,7 @@ export class ContractBuilder implements Contract {
   private variablesMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
+  private storageMap: Map<string, Storage> = new Map();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -101,12 +107,25 @@ export class ContractBuilder implements Contract {
     return [...this.errorsMap.values()];
   }
 
+  get storage(): Storage[] {
+    return [...this.storageMap.values()];
+  }
+
   addError(name: string, num: number): boolean {
     if (this.errorsMap.has(name)) {
       return false;
     } else {
       this.addUseClause('soroban_sdk', 'contracterror');
       this.errorsMap.set(name, { name, num });
+      return true;
+    }
+  }
+
+  addStorage(name: string, type: string): boolean {
+    if (this.storageMap.has(name)) {
+      return false;
+    } else {
+      this.storageMap.set(name, { name, type });
       return true;
     }
   }
@@ -139,7 +158,6 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = {
         name: baseTrait.name,
-        for: baseTrait.for,
         tags: [ ...baseTrait.tags ],
         superVariables: [],
         functions: [],
