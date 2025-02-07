@@ -4,7 +4,6 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
   import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
 
-  import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -16,8 +15,6 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
-
-  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -38,7 +35,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Premint
-      <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
+      <HelpTooltip>Create an initial amount of tokens for the owner.</HelpTooltip>
     </span>
     <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
   </label>
@@ -51,7 +48,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable}>
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
+      <HelpTooltip>
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
@@ -67,45 +64,12 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
+      <HelpTooltip>
+        Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label>
   </div>
 </section>
-
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Votes</span>
-      <span class="ml-1">
-        <input type="checkbox" bind:checked={opts.votes}>
-      </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/governance#votes">
-        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
-    </span>
-    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
-  </label>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
-    </span>
-    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
-  </label>
-</section>
-
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <InfoSection bind:info={opts.info} />
