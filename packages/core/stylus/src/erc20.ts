@@ -5,7 +5,6 @@ import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from '.
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 
-
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   burnable: false,
@@ -52,19 +51,9 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, pausable: boolean) {
-  // Set token functions
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
-
-  // c.addUseClause('openzeppelin_erc20_token', 'ERC20Token');
-  // c.addUseClause('soroban_sdk', 'contract');
-  // c.addUseClause('soroban_sdk', 'contractimpl');
-  // c.addUseClause('soroban_sdk', 'Address');
-  // c.addUseClause('soroban_sdk', 'String');
-  // c.addUseClause('soroban_sdk', 'Env');
-  // c.addUseClause('soroban_sdk', 'Symbol');
-
 
   c.addStorage('erc20', 'Erc20');
   c.addImplementedTrait(erc20Trait);
@@ -72,26 +61,24 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addStorage('metadata', 'Erc20Metadata');
   c.addImplementedTrait(erc20MetadataTrait);
 
-  // c.addFunction(erc20Trait, functions.total_supply);
-  // c.addFunction(erc20Trait, functions.balance);
-  // c.addFunction(erc20Trait, functions.allowance);
-  // c.addFunction(erc20Trait, functions.transfer);
-  // c.addFunction(erc20Trait, functions.transfer_from);
-  // c.addFunction(erc20Trait, functions.approve);
-  // c.addFunction(erc20Trait, functions.decimals);
-  // c.addFunction(erc20Trait, functions.name);
-  // c.addFunction(erc20Trait, functions.symbol);
-
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(erc20Trait, functions.transfer, 'when_not_paused');
-    c.addFunctionTag(erc20Trait, functions.transfer_from, 'when_not_paused');
+    c.addUseClause('alloy_primitives', 'Address');
+    c.addUseClause('alloy_primitives', 'U256');
+
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer, [
+      'self.pausable.when_not_paused()?;',
+    ]);
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, [
+      'self.pausable.when_not_paused()?;',
+    ]);
   }
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('openzeppelin_erc20_token', 'burnable::ERC20Burnable');
-  c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
+
+  c.addUseClause('alloy_primitives', 'Address');
+  c.addUseClause('alloy_primitives', 'U256');
 
   c.addFunction(erc20Trait, functions.burn);
   c.addFunction(erc20Trait, functions.burn_from);
@@ -116,104 +103,31 @@ const erc20MetadataTrait = {
 
 const functions = defineFunctions({
   // Token Functions
-  total_supply: {
-    args: [
-      getSelfArg()
-    ],
-    returns: 'i128',
-    code: [
-      'erc20::total_supply(e)'
-    ]
-  },
-  balance: {
-    args: [
-      getSelfArg(),
-      { name: 'account', type: 'Address' }
-    ],
-    returns: 'i128',
-    code: [
-      'erc20::balance(e, &account)'
-    ]
-  },
-  allowance: {
-    args: [
-      getSelfArg(),
-      { name: 'owner', type: 'Address' },
-      { name: 'spender', type: 'Address' }
-    ],
-    returns: 'i128',
-    code: [
-      'erc20::allowance(e, &owner, &spender)'
-    ]
-  },
   transfer: {
     args: [
       getSelfArg(),
-      { name: 'from', type: 'Address' },
       { name: 'to', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'value', type: 'U256' },
     ],
+    returns: 'Result<bool, Vec<u8>>',
+    visibility: 'pub',
     code: [
-      'erc20::transfer(e, &from, &to, amount)'
+      'self.erc20.transfer(to, value).map_err(|e| e.into())'
     ]
   },
   transfer_from: {
     args: [
       getSelfArg(),
-      { name: 'spender', type: 'Address' },
       { name: 'from', type: 'Address' },
       { name: 'to', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'value', type: 'U256' },
     ],
+    returns: 'Result<bool, Vec<u8>>',
+    visibility: 'pub',
     code: [
-      'erc20::transfer_from(e, &spender, &from, &to, amount)'
+      'self.erc20.transfer_from(from, to, value).map_err(|e| e.into())'
     ]
   },
-  approve: {
-    args: [
-      getSelfArg(),
-      { name: 'owner', type: 'Address' },
-      { name: 'spender', type: 'Address' },
-      { name: 'amount', type: 'i128' },
-      { name: 'live_until_ledger', type: 'u32' }
-    ],
-    code: [
-      'erc20::approve(e, &owner, &spender, amount, live_until_ledger)'
-    ]
-  },
-  decimals: {
-    args: [
-      getSelfArg()
-    ],
-    returns: 'u32',
-    code: [
-      'erc20::metadata::decimals(e)'
-    ]
-  },
-  name: {
-    args: [
-      getSelfArg()
-    ],
-    returns: 'String',
-    code: [
-      'erc20::metadata::name(e)'
-    ]
-  },
-  symbol: {
-    args: [
-      getSelfArg()
-    ],
-    returns: 'String',
-    code: [
-      'erc20::metadata::symbol(e)'
-    ]
-  },
-
-//   pub fn burn(&mut self, value: U256) -> Result<(), Vec<u8>> {
-//     self.pausable.when_not_paused()?;
-//     self.erc20.burn(value).map_err(|e| e.into())
-// }
-
 
   // Extensions
   burn: {
@@ -222,6 +136,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
+    visibility: 'pub',
     code: [
       'self.erc20.burn(value).map_err(|e| e.into())'
     ]
@@ -233,9 +148,9 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
+    visibility: 'pub',
     code: [
       'self.erc20.burn_from(account, value).map_err(|e| e.into())'
     ]
   },
-
 });

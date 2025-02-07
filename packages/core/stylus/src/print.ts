@@ -17,7 +17,10 @@ export function printContract(contract: Contract): string {
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
       ],
       spaceBetween(
-        printUseClauses(contract),
+        [
+          ...printUseClauses(contract),
+          'use stylus_sdk::prelude::{entrypoint, public, storage};',
+        ],
         printVariables(contract),
         printStorage(contract),
         printImplementedTraits(contract),
@@ -51,7 +54,6 @@ function printVariables(contract: Contract): string[] {
 function printUseClauses(contract: Contract): Lines[] {
   const useClauses = [
     ...sortUseClauses(contract),
-    { containerPath: 'stylus_sdk::prelude', name: '*' },
   ];
 
   // group by containerPath
