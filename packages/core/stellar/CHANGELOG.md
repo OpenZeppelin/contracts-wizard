@@ -2,4 +2,4 @@
 
 ## Unreleased
 
-- Placeholder. ([#0000](https://github.com/OpenZeppelin/contracts-wizard/pull/0000))
+- Initial version. ([#439](https://github.com/OpenZeppelin/contracts-wizard/pull/439))
