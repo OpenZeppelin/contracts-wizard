@@ -76,11 +76,11 @@ export function buildFungible(opts: FungibleOptions): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
+    addBurnable(c, allOpts.name, allOpts.pausable);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access, allOpts.pausable);
+    addMintable(c, allOpts.name, allOpts.access, allOpts.pausable);
   }
 
   // setAccessControl(c, allOpts.access);
@@ -113,7 +113,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 
   const fungibleTokenTrait = {
     name: 'FungibleToken',
-    for: 'ExampleContract',
+    for: name,
     tags: [
       '#[contractimpl]',
     ],
@@ -136,13 +136,13 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean) {
+function addBurnable(c: ContractBuilder, name: string, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
     name: 'FungibleBurnable',
-    for: 'ExampleContract',
+    for: name,
     tags: [
       '#[contractimpl]',
     ],
@@ -219,13 +219,13 @@ export function getInitialSupply(premint: string, decimals: number): string {
   return result;
 }
 
-function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
+function addMintable(c: ContractBuilder, name: string, access: Access, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleMintableTrait = {
     name: 'FungibleMintable',
-    for: 'ExampleContract',
+    for: name,
     tags: [
       '#[contractimpl]',
     ],

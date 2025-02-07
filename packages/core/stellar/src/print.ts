@@ -21,7 +21,7 @@ export function printContract(contract: Contract): string {
         printVariables(contract),
         printContractStruct(contract),
         // printContractErrors(contract), // similar to printEvents
-        printConstructor(contract),
+        printContractFunctions(contract),
         printImplementedTraits(contract),
       ),
     ),
@@ -292,10 +292,18 @@ function printFunction(fn: ContractFunction): Lines[] {
   return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
+function printContractFunctions(contract: Contract): Lines[] {
+  const implLines = [];
+  implLines.push('#[contractimpl]');
+  implLines.push(`impl ${contract.name} {`);
+  implLines.push(printConstructor(contract));
+  implLines.push('}');
+  return implLines;
+}
+
 function printConstructor(contract: Contract): Lines[] {
   // const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   if (contract.constructorCode.length > 0) {
-    const tag = 'TODO constructor';
     const head = 'pub fn __constructor';
     const args = [ getSelfArg(), ...contract.constructorArgs ];
 
@@ -306,7 +314,7 @@ function printConstructor(contract: Contract): Lines[] {
     const constructor = printFunction2(
       head,
       args.map(a => printArgument(a)),
-      tag,
+      undefined,
       undefined,
       undefined,
       body,
