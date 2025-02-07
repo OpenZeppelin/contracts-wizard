@@ -4,8 +4,6 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { premintPattern, fungible, infoDefaults } from '@openzeppelin/wizard-stellar';
 
-  import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
