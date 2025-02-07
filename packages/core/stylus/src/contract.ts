@@ -23,8 +23,6 @@ export interface Error {
   num: number;
 }
 
-export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
-
 export interface UseClause {
   containerPath: string;
   name: string;

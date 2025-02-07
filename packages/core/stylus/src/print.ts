@@ -1,7 +1,6 @@
-import type { Contract, Argument, Value, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
-import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
