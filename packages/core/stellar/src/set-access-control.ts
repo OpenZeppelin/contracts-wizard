@@ -1,7 +1,7 @@
 import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './contract';
 // import { defineComponents } from './utils/define-components';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = typeof accessOptions[number];
@@ -30,8 +30,6 @@ export function requireAccessControl(
   trait: BaseImplementedTrait, 
   fn: BaseFunction, 
   access: Access, 
-  roleIdPrefix: string, 
-  roleOwner: string | undefined
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -46,25 +44,3 @@ export function requireAccessControl(
     }
   }
 }
-
-// const components = defineComponents( {
-//   OwnableComponent: {
-//     path: 'openzeppelin::access::ownable',
-//     substorage: {
-//       name: 'ownable',
-//       type: 'OwnableComponent::Storage',
-//     },
-//     event: {
-//       name: 'OwnableEvent',
-//       type: 'OwnableComponent::Event',
-//     },
-//     impls: [{
-//       name: 'OwnableMixinImpl',
-//       value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
-//     }, {
-//       name: 'OwnableInternalImpl',
-//       embed: false,
-//       value: 'OwnableComponent::InternalImpl<ContractState>',
-//     }],
-//   },
-// });
