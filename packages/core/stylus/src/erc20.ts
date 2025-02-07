@@ -79,15 +79,12 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   // c.addUseClause('soroban_sdk', 'Env');
   // c.addUseClause('soroban_sdk', 'Symbol');
 
-  const erc20Trait = {
-    name: 'Erc20',
-    tags: [
-      'public',
-    ],
-  };
-  c.addStorage('erc20', 'Erc20');
 
+  c.addStorage('erc20', 'Erc20');
   c.addImplementedTrait(erc20Trait);
+
+  c.addStorage('metadata', 'Erc20Metadata');
+  c.addImplementedTrait(erc20MetadataTrait);
 
   // c.addFunction(erc20Trait, functions.total_supply);
   // c.addFunction(erc20Trait, functions.balance);
@@ -110,22 +107,13 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_erc20_token', 'burnable::ERC20Burnable');
   c.addUseClause('soroban_sdk', 'Address');
 
-  const erc20BurnableTrait = {
-    name: 'ERC20Burnable',
-    for: c.name,
-    tags: [
-      'contractimpl',
-    ],
-    section: 'Extensions',
-  }
-
-  c.addFunction(erc20BurnableTrait, functions.burn);
-  c.addFunction(erc20BurnableTrait, functions.burn_from);
+  c.addFunction(erc20Trait, functions.burn);
+  c.addFunction(erc20Trait, functions.burn_from);
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(erc20BurnableTrait, functions.burn, 'when_not_paused');
-    c.addFunctionTag(erc20BurnableTrait, functions.burn_from, 'when_not_paused');
+    c.addFunctionTag(erc20Trait, functions.burn, 'when_not_paused');
+    c.addFunctionTag(erc20Trait, functions.burn_from, 'when_not_paused');
   }
 }
 
@@ -211,6 +199,14 @@ export function getInitialSupply(premint: string, decimals: number): string {
 //     c.addFunctionTag(erc20MintableTrait, functions.mint, 'when_not_paused');
 //   }
 // }
+
+const erc20Trait = {
+  name: 'Erc20',
+};
+
+const erc20MetadataTrait = {
+  name: 'Erc20Metadata',
+}
 
 const functions = defineFunctions({
   // Token Functions

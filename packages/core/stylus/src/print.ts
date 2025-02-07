@@ -149,13 +149,10 @@ function sortUseClauses(contract: Contract): UseClause[] {
 }
 
 function printImplementedTraits(contract: Contract): Lines[] {
-  // sort first by priority, then number of tags, then name
+  // sort first by priority, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
-    }
-    if (a.tags.length !== b.tags.length) {
-      return a.tags.length - b.tags.length;
     }
     return a.name.localeCompare(b.name);
   });

@@ -34,8 +34,6 @@ export interface UseClause {
 
 export interface BaseImplementedTrait {
   name: string;
-  tags: string[];
-  perItemTag?: string;
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -158,7 +156,6 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = {
         name: baseTrait.name,
-        tags: [ ...baseTrait.tags ],
         superVariables: [],
         functions: [],
         section: baseTrait.section,
@@ -186,7 +183,6 @@ export class ContractBuilder implements Contract {
     const contractFn: ContractFunction = {
       ...fn,
       codeBefore: [],
-      tag: baseTrait.perItemTag,
     };
     t.functions.push(contractFn);
     return contractFn;
