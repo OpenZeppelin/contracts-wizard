@@ -10,7 +10,6 @@ export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   burnable: false,
   pausable: false,
-  mintable: false,
   access: commonDefaults.access,
   info: commonDefaults.info
 } as const;
@@ -23,7 +22,6 @@ export interface ERC20Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
   pausable?: boolean;
-  mintable?: boolean;
 }
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -32,7 +30,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
-    mintable: opts.mintable ?? defaults.mintable,
   };
 }
 
@@ -100,9 +97,12 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addFunction(erc20Trait, functions.burn_from);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(erc20Trait, functions.burn, 'when_not_paused');
-    c.addFunctionTag(erc20Trait, functions.burn_from, 'when_not_paused');
+    c.addFunctionCodeBefore(erc20Trait, functions.burn, [
+      'self.pausable.when_not_paused()?;',
+    ]);
+    c.addFunctionCodeBefore(erc20Trait, functions.burn_from, [
+      'self.pausable.when_not_paused()?;',
+    ]);
   }
 }
 
@@ -209,36 +209,33 @@ const functions = defineFunctions({
     ]
   },
 
+//   pub fn burn(&mut self, value: U256) -> Result<(), Vec<u8>> {
+//     self.pausable.when_not_paused()?;
+//     self.erc20.burn(value).map_err(|e| e.into())
+// }
+
+
   // Extensions
   burn: {
     args: [
       getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'value', type: 'U256' },
     ],
+    returns: 'Result<(), Vec<u8>>',
     code: [
-      'erc20::burnable::burn(e, &from, amount)'
+      'self.erc20.burn(value).map_err(|e| e.into())'
     ]
   },
   burn_from: {
     args: [
       getSelfArg(),
-      { name: 'spender', type: 'Address' },
-      { name: 'from', type: 'Address' },
-      { name: 'amount', type: 'i128' }
-    ],
-    code: [
-      'erc20::burnable::burn_from(e, &spender, &from, amount)'
-    ]
-  },
-  mint: {
-    args: [
-      getSelfArg(),
       { name: 'account', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'value', type: 'U256' },
     ],
+    returns: 'Result<(), Vec<u8>>',
     code: [
-      'erc20::mintable::mint(e, &account, amount);'
+      'self.erc20.burn_from(account, value).map_err(|e| e.into())'
     ]
   },
+
 });

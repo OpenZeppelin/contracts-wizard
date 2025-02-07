@@ -10,7 +10,6 @@
   export const opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
     ...erc20.defaults,
-    premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
@@ -32,14 +31,6 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
-      Mintable
-      <HelpTooltip>
-        Privileged accounts will be able to create more supply.
-      </HelpTooltip>
-    </label>
-
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
