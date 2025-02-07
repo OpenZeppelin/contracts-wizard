@@ -4,6 +4,9 @@ import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, name: string, access: Access) {
+  c.addUseClause('openzeppelin_pausable', 'self as pausable');
+  c.addUseClause('openzeppelin_pausable', 'Pausable');
+
   const pausableTrait = {
     name: 'Pausable',
     for: name,
