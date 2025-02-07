@@ -37,7 +37,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Premint
-      <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
+      <HelpTooltip>Create an initial amount of tokens for the owner.</HelpTooltip>
     </span>
     <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
   </label>
