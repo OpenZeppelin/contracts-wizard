@@ -20,7 +20,6 @@ export function printContract(contract: Contract): string {
           ...printUseClauses(contract),
           'use stylus_sdk::prelude::{entrypoint, public, storage};',
         ],
-        printVariables(contract),
         printStorage(contract),
         printImplementedTraits(contract),
       ),
@@ -44,10 +43,6 @@ function printStorage(contract: Contract): Lines[] {
 
 function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
-}
-
-function printVariables(contract: Contract): string[] {
-  return withSemicolons(contract.variables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
 function printUseClauses(contract: Contract): Lines[] {

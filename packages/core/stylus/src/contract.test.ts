@@ -8,28 +8,10 @@ test('contract basics', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with constructor code', t => {
-  const Foo = new ContractBuilder('Foo');
-  Foo.addConstructorCode('someFunction()');
-  t.snapshot(printContract(Foo));
-});
-
-test('contract with constructor code with semicolon', t => {
-  const Foo = new ContractBuilder('Foo');
-  Foo.addConstructorCode('someFunction();');
-  t.snapshot(printContract(Foo));
-});
-
 test('contract with function code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    for: 'ExternalTrait',
-    tags: [
-      'othertag',
-      'contractimpl',
-    ],
-    perItemTag: 'peritemtag', // TODO: remove perItemTag from contract model if not useful for Stylus
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -48,12 +30,6 @@ test('contract with function code before with semicolons', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    for: 'ExternalTrait',
-    tags: [
-      'othertag',
-      'contractimpl',
-    ],
-    perItemTag: 'peritemtag',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
