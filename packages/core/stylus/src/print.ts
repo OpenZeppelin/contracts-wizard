@@ -220,35 +220,13 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
-}
-
-function printConstructor(contract: Contract): Lines[] {
-  if (contract.constructorCode.length > 0) {
-    const head = 'pub fn __constructor';
-    const args = [ getSelfArg(), ...contract.constructorArgs ];
-
-    const body = spaceBetween(
-        withSemicolons(contract.constructorCode),
-      );
-
-    const constructor = printFunction2(
-      head,
-      args.map(a => printArgument(a)),
-      undefined,
-      undefined,
-      undefined,
-      body,
-    );
-    return constructor;
-  } else {
-    return [];
-  }
+  return printFunction2(fn.comments, head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
+  comments: string[] | undefined,
   kindedName: string,
   args: string[],
   tag: string | undefined,
@@ -257,6 +235,10 @@ function printFunction2(
   code: Lines[]
 ): Lines[] {
   const fn = [];
+
+  if (comments !== undefined) {
+    fn.push(...comments);
+  }
 
   if (tag !== undefined) {
     fn.push(`#[${tag}]`);

@@ -54,6 +54,7 @@ export interface BaseFunction {
   code: string[];
   visibility?: 'pub';
   returns?: string;
+  comments?: string[];
 }
 
 export interface ContractFunction extends BaseFunction {
