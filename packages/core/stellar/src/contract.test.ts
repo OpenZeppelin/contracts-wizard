@@ -92,20 +92,11 @@ test('contract with function code before with semicolons', t => {
 
 test('contract with initializer params', t => {
   const Foo = new ContractBuilder('Foo');
-
-  Foo.addComponent(
-    FOO_COMPONENT,
-    ['param1'],
-    true
-  );
   t.snapshot(printContract(Foo));
 });
 
 test('contract with standalone import', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addComponent(
-    FOO_COMPONENT,
-  );
   Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });

@@ -29,10 +29,6 @@ function testAPIEquivalence(title: string, opts?: FungibleOptions) {
   });
 }
 
-testFungible('basic fungible, non-upgradeable', {
-  upgradeable: false,
-});
-
 testFungible('basic fungible', {});
 
 testFungible('fungible burnable', {
@@ -42,11 +38,6 @@ testFungible('fungible burnable', {
 testFungible('fungible pausable', {
   pausable: true,
   access: 'ownable',
-});
-
-testFungible('fungible pausable with roles', {
-  pausable: true,
-  access: 'roles',
 });
 
 testFungible('fungible burnable pausable', {
@@ -65,47 +56,6 @@ testFungible('fungible premint of 0', {
 testFungible('fungible mintable', {
   mintable: true,
   access: 'ownable',
-});
-
-testFungible('fungible mintable with roles', {
-  mintable: true,
-  access: 'roles',
-});
-
-testFungible('fungible votes', {
-  votes: true,
-  appName: 'MY_DAPP_NAME',
-});
-
-testFungible('fungible votes, version', {
-  votes: true,
-  appName: 'MY_DAPP_NAME',
-  appVersion: 'MY_DAPP_VERSION',
-});
-
-test('fungible votes, no name', async t => {
-  let error = t.throws(() => buildFungible({
-    name: 'MyToken',
-    symbol: 'MTK',
-    votes: true,
-  }));
-  t.is((error as OptionsError).messages.appName, 'Application Name is required when Votes are enabled');
-});
-
-test('fungible votes, empty version', async t => {
-  let error = t.throws(() => buildFungible({
-    name: 'MyToken',
-    symbol: 'MTK',
-    votes: true,
-    appName: 'MY_DAPP_NAME',
-    appVersion: '', // avoids default value of v1
-  }));
-  t.is((error as OptionsError).messages.appVersion, 'Application Version is required when Votes are enabled');
-});
-
-testFungible('fungible votes, non-upgradeable', {
-  votes: true,
-  appName: 'MY_DAPP_NAME',
 });
 
 testFungible('fungible full, non-upgradeable', {
@@ -134,16 +84,14 @@ testAPIEquivalence('fungible API default');
 
 testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
 
-testAPIEquivalence('fungible API full upgradeable', {
+testAPIEquivalence('fungible API full', {
   name: 'CustomToken',
   symbol: 'CTK',
   premint: '2000',
-  access: 'roles',
   burnable: true,
   mintable: true,
   votes: true,
   pausable: true,
-  // upgradeable: true,
   appName: 'MY_DAPP_NAME',
   appVersion: 'MY_DAPP_VERSION',
 });
