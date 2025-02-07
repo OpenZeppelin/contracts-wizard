@@ -45,15 +45,15 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), allOpts.pausable);
+  addBase(c, allOpts.pausable);
 
   // if (allOpts.pausable) {
   //   addPausable(c, allOpts.access);
   // }
 
-  // if (allOpts.burnable) {
-  //   addBurnable(c, allOpts.pausable);
-  // }
+  if (allOpts.burnable) {
+    addBurnable(c, allOpts.pausable);
+  }
 
   // if (allOpts.mintable) {
   //   addMintable(c, allOpts.access, allOpts.pausable);

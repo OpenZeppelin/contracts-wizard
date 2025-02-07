@@ -170,14 +170,19 @@ function printImplementedTraits(contract: Contract): Lines[] {
     }, {});
 
   const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+    ([section, impls]) => printImplementedTraitsSection(contract, section, impls as ImplementedTrait[]),
   );
 
   return spaceBetween(...sections);
 }
 
-function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]): Lines[] {
+function printImplementedTraitsSection(contract: Contract, section: string, impls: ImplementedTrait[]): Lines[] {
   const lines = [];
+
+  lines.push('#[public]');
+  lines.push(`#[inherit(${impls.map(impl => impl.name).join(', ')})]`);
+  lines.push(`impl ${contract.name} {`);
+  
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
     lines.push('//');
@@ -188,24 +193,17 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
     if (index > 0 || !isDefaultSection) {
       lines.push('');
     }
-    lines.push(...printImplementedTrait(trait));
+    lines.push(...printImplementedTraitFunctions(trait));
   });
+
+  lines.push('}');
   return lines;
 }
 
-function printImplementedTrait(trait: ImplementedTrait): Lines[] {
+function printImplementedTraitFunctions(trait: ImplementedTrait): Lines[] {
   const implLines = [];
-  implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} {`);
-
-  const superVars = withSemicolons(
-    trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
-  );
-  implLines.push(superVars);
-
   const fns = trait.functions.map(fn => printFunction(fn));
   implLines.push(spaceBetween(...fns));
-  implLines.push('}');
   return implLines;
 }
 
