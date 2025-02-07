@@ -1,4 +1,4 @@
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type { Contract, Argument, Value, ContractFunction, ImplementedTrait, UseClause, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
@@ -10,39 +10,49 @@ const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = "\t";
 
 export function printContract(contract: Contract): string {
-  const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
   return formatLines(
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts for Cairo ${compatibleContractsSemver}`,
+        `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
       ],
-      printSuperVariables(contract),
-      [
-        `${contractAttribute}`,
-        `mod ${contract.name} {`,
-        spaceBetween(
-          printUseClauses(contract),
-          printConstants(contract),
-          printComponentDeclarations(contract),
-          printImpls(contract),
-          printStorage(contract),
-          printEvents(contract),
-          printConstructor(contract),
-          printImplementedTraits(contract),
-        ),
-        `}`,
-      ],
+      spaceBetween(
+        printUseClauses(contract),
+        printVariables(contract),
+        printContractStruct(contract),
+        printContractErrors(contract),
+        printContractFunctions(contract),
+        printImplementedTraits(contract),
+      ),
     ),
   );
+}
+
+function printContractStruct(contract: Contract): Lines[] {
+  return [
+    '#[contract]',
+    `pub struct ${contract.name};`
+  ];
+}
+
+function printContractErrors(contract: Contract): Lines[] {
+  if (contract.errors.length === 0) {
+    return [];
+  }
+  return [
+    '#[contracterror]',
+    `pub enum ${contract.name}Error {`,
+    contract.errors.map(e => `${e.name} = ${e.num},`),
+    `}`
+  ]
 }
 
 function withSemicolons(lines: string[]): string[] {
   return lines.map(line => line.endsWith(';') ? line : line + ';');
 }
 
-function printSuperVariables(contract: Contract): string[] {
-  return withSemicolons(contract.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
+function printVariables(contract: Contract): string[] {
+  return withSemicolons(contract.variables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
 }
 
 function printUseClauses(contract: Contract): Lines[] {
@@ -142,102 +152,6 @@ function sortUseClauses(contract: Contract): UseClause[] {
   });
 }
 
-function printConstants(contract: Contract): Lines[] {
-  const lines = [];
-  for (const constant of contract.constants) {
-    // inlineComment is optional, default to false
-    const inlineComment = constant.inlineComment ?? false;
-    const commented = !!constant.comment;
-
-    if (commented && !inlineComment) {
-      lines.push(`// ${constant.comment}`);
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    } else if (commented) {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
-    } else {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    }
-  }
-  return lines;
-}
-
-function printComponentDeclarations(contract: Contract): Lines[] {
-  const lines = [];
-  for (const component of contract.components) {
-    lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
-  }
-  return lines;
-}
-
-function printImpls(contract: Contract): Lines[] {
-  const impls = contract.components.flatMap(c => c.impls);
-
-  // group by section
-  const grouped = impls.reduce(
-    (result: { [section: string]: Impl[] }, current:Impl) => {
-      // default section depends on embed
-      // embed defaults to true
-      const embed = current.embed ?? true;
-      const section = current.section ?? (embed ? 'External' : 'Internal');
-      (result[section] = result[section] || []).push(current);
-      return result;
-    }, {});
-
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printSection(section, impls as Impl[]),
-  );
-  return spaceBetween(...sections);
-}
-
-function printSection(section: string, impls: Impl[]): Lines[] {
-  const lines = [];
-  lines.push(`// ${section}`);
-  impls.map(impl => lines.push(...printImpl(impl)));
-  return lines;
-}
-
-function printImpl(impl: Impl): Lines[] {
-  const lines = [];
-  // embed is optional, default to true
-  if (impl.embed ?? true) {
-    lines.push('#[abi(embed_v0)]');
-  }
-  lines.push(`impl ${impl.name} = ${impl.value};`);
-  return lines;
-}
-
-function printStorage(contract: Contract): (string | string[])[] {
-  const lines = [];
-  // storage is required regardless of whether there are components
-  lines.push('#[storage]');
-  lines.push('struct Storage {');
-  const storageLines = [];
-  for (const component of contract.components) {
-    storageLines.push(`#[substorage(v0)]`);
-    storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
-  }
-  lines.push(storageLines);
-  lines.push('}');
-  return lines;
-}
-
-function printEvents(contract: Contract): (string | string[])[] {
-  const lines = [];
-  if (contract.components.length > 0) {
-    lines.push('#[event]');
-    lines.push('#[derive(Drop, starknet::Event)]');
-    lines.push('enum Event {')
-    const eventLines = [];
-    for (const component of contract.components) {
-      eventLines.push('#[flat]');
-      eventLines.push(`${component.event.name}: ${component.event.type},`);
-    }
-    lines.push(eventLines);
-    lines.push('}');
-  }
-  return lines;
-}
-
 function printImplementedTraits(contract: Contract): Lines[] {
   // sort first by priority, then number of tags, then name
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
@@ -286,7 +200,7 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
 function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} of ${trait.of} {`);
+  implLines.push(`impl ${trait.name} for ${trait.for} {`);
 
   const superVars = withSemicolons(
     trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
@@ -319,26 +233,28 @@ function printFunction(fn: ContractFunction): Lines[] {
   return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
+function printContractFunctions(contract: Contract): Lines[] {
+  const implLines = [];
+  implLines.push('#[contractimpl]');
+  implLines.push(`impl ${contract.name} {`);
+  implLines.push(printConstructor(contract));
+  implLines.push('}');
+  return implLines;
+}
+
 function printConstructor(contract: Contract): Lines[] {
-  const hasInitializers = contract.components.some(p => p.initializer !== undefined);
-  const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasInitializers || hasConstructorCode) {
-    const parents = contract.components
-      .filter(hasInitializer)
-      .flatMap(p => printParentConstructor(p));
-    const tag = 'constructor';
-    const head = 'fn constructor';
+  if (contract.constructorCode.length > 0) {
+    const head = 'pub fn __constructor';
     const args = [ getSelfArg(), ...contract.constructorArgs ];
 
     const body = spaceBetween(
-        withSemicolons(parents),
         withSemicolons(contract.constructorCode),
       );
 
     const constructor = printFunction2(
       head,
       args.map(a => printArgument(a)),
-      tag,
+      undefined,
       undefined,
       undefined,
       body,
@@ -346,43 +262,6 @@ function printConstructor(contract: Contract): Lines[] {
     return constructor;
   } else {
     return [];
-  }
-}
-
-function hasInitializer(parent: Component): boolean {
-  return parent.initializer !== undefined && parent.substorage?.name !== undefined;
-}
-
-function printParentConstructor({ substorage, initializer }: Component): [] | [string] {
-  if (initializer === undefined || substorage?.name === undefined) {
-    return [];
-  }
-  const fn = `self.${substorage.name}.initializer`;
-  return [
-    fn + '(' + initializer.params.map(printValue).join(', ') + ')',
-  ];
-}
-
-export function printValue(value: Value): string {
-  if (typeof value === 'object') {
-    if ('lit' in value) {
-      return value.lit;
-    } else if ('note' in value) {
-      // TODO: add /* ${value.note} */ after lsp is fixed
-      return `${printValue(value.value)}`;
-    } else {
-      throw Error('Unknown value type');
-    }
-  } else if (typeof value === 'number') {
-    if (Number.isSafeInteger(value)) {
-      return value.toFixed(0);
-    } else {
-      throw new Error(`Number not representable (${value})`);
-    }
-  } else if (typeof value === 'bigint') {
-    return `${value}`
-  } else {
-    return `"${value}"`;
   }
 }
 

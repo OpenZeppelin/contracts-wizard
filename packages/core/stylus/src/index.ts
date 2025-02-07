@@ -7,14 +7,11 @@ export { ContractBuilder } from './contract';
 export { printContract } from './print';
 
 export type { Access } from './set-access-control';
-export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
-export type { RoyaltyInfoOptions } from './set-royalty-info';
 
 export { premintPattern } from './erc20';
 
 export { defaults as infoDefaults } from './set-info';
-export { defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export type { OptionsErrorMessages } from './error';
 export { OptionsError } from './error';

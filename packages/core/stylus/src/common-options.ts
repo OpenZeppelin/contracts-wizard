@@ -2,10 +2,8 @@ import type { Argument } from "./contract";
 import type { Access } from "./set-access-control";
 import type { Info } from "./set-info";
 import { defaults as infoDefaults } from "./set-info";
-import type { Upgradeable } from "./set-upgradeable";
 
 export const defaults: Required<CommonOptions> = {
-  upgradeable: true,
   info: infoDefaults,
 } as const;
 
@@ -15,7 +13,6 @@ export const contractDefaults: Required<CommonContractOptions> = {
 } as const;
 
 export interface CommonOptions {
-  upgradeable?: Upgradeable;
   info?: Info;
 }
 
@@ -25,7 +22,6 @@ export interface CommonContractOptions extends CommonOptions {
 
 export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
   return {
-    upgradeable: opts.upgradeable ?? defaults.upgradeable,
     info: opts.info ?? defaults.info,
   };
 }
@@ -37,10 +33,6 @@ export function withCommonContractDefaults(opts: CommonContractOptions): Require
   };
 }
 
-export function getSelfArg(scope: 'external' | 'view' = 'external'): Argument {
-  if (scope === 'view') {
-    return { name: 'self', type: '@ContractState' };
-  } else {
-    return { name: 'ref self', type: 'ContractState' };
-  }
+export function getSelfArg(): Argument {
+  return { name: 'e', type: '&Env' };
 }

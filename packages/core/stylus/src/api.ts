@@ -1,17 +1,5 @@
-import type { CommonOptions, CommonContractOptions } from './common-options';
-import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20IsAccessControlRequired, ERC20Options } from './erc20';
-
-export interface WizardAccountAPI<Options extends CommonOptions>{
-  /**
-   * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
-   */
-  print: (opts?: Options) => string;
-
-  /**
-   * The default options that are used for `print`.
-   */
-  defaults: Required<Options>;
-}
+import type { CommonContractOptions } from './common-options';
+import { printERC20, defaults as erc20defaults, ERC20Options } from './erc20';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
@@ -33,10 +21,9 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
+export type ERC20 = WizardContractAPI<ERC20Options>; // TODO add AccessControlAPI<ERC20Options> when access control is implemented, if useful
 
 export const erc20: ERC20 = {
   print: printERC20,
   defaults: erc20defaults,
-  isAccessControlRequired: erc20IsAccessControlRequired,
 };

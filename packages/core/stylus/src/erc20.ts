@@ -3,15 +3,11 @@ import { Access, requireAccessControl, setAccessControl } from './set-access-con
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
-import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
-import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { externalTrait } from './external-trait';
-import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
-import { addVotesComponent } from './common-components';
+import { toByteArray, toUint } from './utils/convert-strings';
 
 
 export const defaults: Required<ERC20Options> = {
@@ -21,11 +17,7 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   premint: '0',
   mintable: false,
-  votes: false,
-  appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
-  appVersion: 'v1',
   access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
 } as const;
 
@@ -40,9 +32,6 @@ export interface ERC20Options extends CommonContractOptions {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
-  votes?: boolean;
-  appName?: string;
-  appVersion?: string;
 }
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -53,14 +42,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
-    votes: opts.votes ?? defaults.votes,
-    appName: opts.appName ?? defaults.appName,
-    appVersion: opts.appVersion ?? defaults.appVersion
   };
-}
-
-export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
@@ -68,8 +50,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
-  addERC20Mixin(c);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -80,112 +61,79 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c);
+    addBurnable(c, allOpts.pausable);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access);
+    addMintable(c, allOpts.access, allOpts.pausable);
   }
 
-  addHooks(c, allOpts);
-
   setAccessControl(c, allOpts.access);
-  setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
 
   return c;
 }
 
-function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
-  const usesCustomHooks = allOpts.pausable || allOpts.votes;
-  if (usesCustomHooks) {
-    const hooksTrait = {
-      name: 'ERC20HooksImpl',
-      of: 'ERC20Component::ERC20HooksTrait<ContractState>',
-      tags: [],
-      priority: 1,
-    };
-    c.addImplementedTrait(hooksTrait);
+function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
+  // Set metadata
+  c.addConstructorCode(`erc20::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
-    if (allOpts.pausable) {
-      const beforeUpdateFn = c.addFunction(hooksTrait, {
-        name: 'before_update',
-        args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
-          { name: 'from', type: 'ContractAddress' },
-          { name: 'recipient', type: 'ContractAddress' },
-          { name: 'amount', type: 'u256' },
-        ],
-        code: [],
-      });
+  // Set token functions
+  c.addUseClause('openzeppelin_erc20_token', 'self as erc20');
+  c.addUseClause('openzeppelin_erc20_token', 'ERC20Token');
+  c.addUseClause('soroban_sdk', 'contract');
+  c.addUseClause('soroban_sdk', 'contractimpl');
+  c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'String');
+  c.addUseClause('soroban_sdk', 'Env');
+  c.addUseClause('soroban_sdk', 'Symbol');
 
-      beforeUpdateFn.code.push(
-        'let contract_state = self.get_contract();',
-        'contract_state.pausable.assert_not_paused();',
-      );
-    }
+  const erc20TokenTrait = {
+    name: 'ERC20Token',
+    for: c.name,
+    tags: [
+      'contractimpl',
+    ],
+  };
 
-    if (allOpts.votes) {
-      if (!allOpts.appName) {
-        throw new OptionsError({
-          appName: 'Application Name is required when Votes are enabled',
-        });
-      }
+  c.addFunction(erc20TokenTrait, functions.total_supply);
+  c.addFunction(erc20TokenTrait, functions.balance);
+  c.addFunction(erc20TokenTrait, functions.allowance);
+  c.addFunction(erc20TokenTrait, functions.transfer);
+  c.addFunction(erc20TokenTrait, functions.transfer_from);
+  c.addFunction(erc20TokenTrait, functions.approve);
+  c.addFunction(erc20TokenTrait, functions.decimals);
+  c.addFunction(erc20TokenTrait, functions.name);
+  c.addFunction(erc20TokenTrait, functions.symbol);
 
-      if (!allOpts.appVersion) {
-        throw new OptionsError({
-          appVersion: 'Application Version is required when Votes are enabled',
-        });
-      }
-
-      addVotesComponent(
-        c,
-        toFelt252(allOpts.appName, 'appName'),
-        toFelt252(allOpts.appVersion, 'appVersion'),
-        'SNIP12 Metadata',
-      );
-
-      const afterUpdateFn = c.addFunction(hooksTrait, {
-        name: 'after_update',
-        args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
-          { name: 'from', type: 'ContractAddress' },
-          { name: 'recipient', type: 'ContractAddress' },
-          { name: 'amount', type: 'u256' },
-        ],
-        code: [],
-      });
-
-      afterUpdateFn.code.push(
-        'let mut contract_state = self.get_contract_mut();',
-        'contract_state.votes.transfer_voting_units(from, recipient, amount);',
-      );
-    }
-  } else {
-    c.addUseClause('openzeppelin::token::erc20', 'ERC20HooksEmptyImpl');
+  if (pausable) {
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addFunctionTag(erc20TokenTrait, functions.transfer, 'when_not_paused');
+    c.addFunctionTag(erc20TokenTrait, functions.transfer_from, 'when_not_paused');
   }
 }
 
-function addERC20Mixin(c: ContractBuilder) {
-  c.addImplToComponent(components.ERC20Component, {
-    name: 'ERC20MixinImpl',
-    value: 'ERC20Component::ERC20MixinImpl<ContractState>',
-  });
-}
+function addBurnable(c: ContractBuilder, pausable: boolean) {
+  c.addUseClause('openzeppelin_erc20_token', 'burnable::ERC20Burnable');
+  c.addUseClause('soroban_sdk', 'Address');
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
-  c.addComponent(
-    components.ERC20Component,
-    [
-      name, symbol
+  const erc20BurnableTrait = {
+    name: 'ERC20Burnable',
+    for: c.name,
+    tags: [
+      'contractimpl',
     ],
-    true,
-  );
-}
+    section: 'Extensions',
+  }
 
-function addBurnable(c: ContractBuilder) {
-  c.addUseClause('starknet', 'get_caller_address');
-  c.addFunction(externalTrait, functions.burn);
+  c.addFunction(erc20BurnableTrait, functions.burn);
+  c.addFunction(erc20BurnableTrait, functions.burn_from);
+
+  if (pausable) {
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addFunctionTag(erc20BurnableTrait, functions.burn, 'when_not_paused');
+    c.addFunctionTag(erc20BurnableTrait, functions.burn_from, 'when_not_paused');
+  }
 }
 
 export const premintPattern = /^(\d*\.?\d*)$/;
@@ -198,11 +146,14 @@ function addPremint(c: ContractBuilder, amount: string) {
       });
     }
 
-    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
+    // TODO: handle signed int?
+    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
 
-    c.addUseClause('starknet', 'ContractAddress');
-    c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
-    c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
+    c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
+    c.addUseClause('soroban_sdk', 'Address');
+
+    c.addConstructorArgument({ name:'owner', type:'Address' });
+    c.addConstructorCode(`erc20::mintable::mint(e, &owner, ${premintAbsolute});`);
   }
 }
 
@@ -247,48 +198,152 @@ export function getInitialSupply(premint: string, decimals: number): string {
   return result;
 }
 
-function addMintable(c: ContractBuilder, access: Access) {
-  c.addUseClause('starknet', 'ContractAddress');
-  requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
+function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
+  c.addUseClause('openzeppelin_erc20_token', 'mintable::ERC20Mintable');
+
+  const erc20MintableTrait = {
+    name: 'ERC20Mintable',
+    for: c.name,
+    tags: [
+      'contractimpl',
+    ],
+    section: 'Extensions',
+  }
+
+  c.addFunction(erc20MintableTrait, functions.mint);
+
+  requireAccessControl(c, erc20MintableTrait, functions.mint, access);
+
+  if (pausable) {
+    c.addFunctionTag(erc20MintableTrait, functions.mint, 'when_not_paused');
+  }
 }
 
-const components = defineComponents( {
-  ERC20Component: {
-    path: 'openzeppelin::token::erc20',
-    substorage: {
-      name: 'erc20',
-      type: 'ERC20Component::Storage',
-    },
-    event: {
-      name: 'ERC20Event',
-      type: 'ERC20Component::Event',
-    },
-    impls: [{
-      name: 'ERC20InternalImpl',
-      embed: false,
-      value: 'ERC20Component::InternalImpl<ContractState>',
-    }],
-  },
-});
-
 const functions = defineFunctions({
+  // Token Functions
+  total_supply: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'i128',
+    code: [
+      'erc20::total_supply(e)'
+    ]
+  },
+  balance: {
+    args: [
+      getSelfArg(),
+      { name: 'account', type: 'Address' }
+    ],
+    returns: 'i128',
+    code: [
+      'erc20::balance(e, &account)'
+    ]
+  },
+  allowance: {
+    args: [
+      getSelfArg(),
+      { name: 'owner', type: 'Address' },
+      { name: 'spender', type: 'Address' }
+    ],
+    returns: 'i128',
+    code: [
+      'erc20::allowance(e, &owner, &spender)'
+    ]
+  },
+  transfer: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'erc20::transfer(e, &from, &to, amount)'
+    ]
+  },
+  transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'erc20::transfer_from(e, &spender, &from, &to, amount)'
+    ]
+  },
+  approve: {
+    args: [
+      getSelfArg(),
+      { name: 'owner', type: 'Address' },
+      { name: 'spender', type: 'Address' },
+      { name: 'amount', type: 'i128' },
+      { name: 'live_until_ledger', type: 'u32' }
+    ],
+    code: [
+      'erc20::approve(e, &owner, &spender, amount, live_until_ledger)'
+    ]
+  },
+  decimals: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'u32',
+    code: [
+      'erc20::metadata::decimals(e)'
+    ]
+  },
+  name: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'String',
+    code: [
+      'erc20::metadata::name(e)'
+    ]
+  },
+  symbol: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'String',
+    code: [
+      'erc20::metadata::symbol(e)'
+    ]
+  },
+
+  // Extensions
   burn: {
     args: [
       getSelfArg(),
-      { name: 'value', type: 'u256' }
+      { name: 'from', type: 'Address' },
+      { name: 'amount', type: 'i128' }
     ],
     code: [
-      'self.erc20.burn(get_caller_address(), value);'
+      'erc20::burnable::burn(e, &from, amount)'
+    ]
+  },
+  burn_from: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'erc20::burnable::burn_from(e, &spender, &from, amount)'
     ]
   },
   mint: {
     args: [
       getSelfArg(),
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' }
+      { name: 'account', type: 'Address' },
+      { name: 'amount', type: 'i128' }
     ],
     code: [
-      'self.erc20.mint(recipient, amount);'
+      'erc20::mintable::mint(e, &account, amount);'
     ]
   },
 });

@@ -3,15 +3,18 @@ import { toIdentifier } from './utils/convert-strings';
 export interface Contract {
   license: string;
   name: string;
-  account: boolean;
   useClauses: UseClause[];
-  components: Component[];
-  constants: Variable[];
   constructorCode: string[];
   constructorArgs: Argument[];
-  upgradeable: boolean;
   implementedTraits: ImplementedTrait[];
-  superVariables: Variable[];
+  variables: Variable[];
+  errors: Error[];
+  ownable: boolean;
+}
+
+export interface Error {
+  name: string;
+  num: number;
 }
 
 export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
@@ -23,39 +26,9 @@ export interface UseClause {
   alias?: string;
 }
 
-export interface Component {
-  name: string;
-  path: string;
-  substorage: Substorage;
-  event: Event;
-  impls: Impl[];
-  initializer?: Initializer;
-}
-
-export interface Substorage {
-  name: string;
-  type: string;
-}
-
-export interface Event {
-  name: string;
-  type: string;
-}
-
-export interface Impl {
-  name: string;
-  value: string;
-  embed?: boolean;
-  section?: string;
-}
-
-export interface Initializer {
-  params: Value[];
-}
-
 export interface BaseImplementedTrait {
   name: string;
-  of: string;
+  for: string;
   tags: string[];
   perItemTag?: string;
   section?: string;
@@ -88,8 +61,6 @@ export interface Variable {
   name: string;
   type: string;
   value: string;
-  comment?: string;
-  inlineComment?: boolean;
 }
 
 export interface Argument {
@@ -99,50 +70,45 @@ export interface Argument {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
-  readonly account: boolean;
   license = 'MIT';
-  upgradeable = false;
+  ownable = false;
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
 
-  private componentsMap: Map<string, Component> = new Map();
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
-  private superVariablesMap: Map<string, Variable> = new Map();
-  private constantsMap: Map<string, Variable> = new Map();
+  private variablesMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
-  private interfaceFlagsSet: Set<string> = new Set();
+  private errorsMap: Map<string, Error> = new Map();
 
-  constructor(name: string, account: boolean = false) {
+  constructor(name: string) {
     this.name = toIdentifier(name, true);
-    this.account = account;
-  }
-
-  get components(): Component[] {
-    return [...this.componentsMap.values()];
   }
 
   get implementedTraits(): ImplementedTrait[] {
     return [...this.implementedTraitsMap.values()];
   }
 
-  get superVariables(): Variable[] {
-    return [...this.superVariablesMap.values()];
-  }
-
-  get constants(): Variable[] {
-    return [...this.constantsMap.values()];
+  get variables(): Variable[] {
+    return [...this.variablesMap.values()];
   }
 
   get useClauses(): UseClause[] {
     return [...this.useClausesMap.values()];
   }
 
-  /**
-   * Custom flags to denote that the contract implements a specific interface, e.g. ISRC5, to avoid duplicates
-   **/
-  get interfaceFlags(): Set<string> {
-    return this.interfaceFlagsSet;
+  get errors(): Error[] {
+    return [...this.errorsMap.values()];
+  }
+
+  addError(name: string, num: number): boolean {
+    if (this.errorsMap.has(name)) {
+      return false;
+    } else {
+      this.addUseClause('soroban_sdk', 'contracterror');
+      this.errorsMap.set(name, { name, num });
+      return true;
+    }
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
@@ -156,45 +122,11 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
-    this.addUseClause(component.path, component.name);
-    const key = component.name;
-    const present = this.componentsMap.has(key);
-    if (!present) {
-      const initializer = initializable ? { params } : undefined;
-      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
-      this.componentsMap.set(key, cp);
-    }
-    return !present;
-  }
-
-  addImplToComponent(component: Component, impl: Impl): void {
-    this.addComponent(component);
-    const c = this.componentsMap.get(component.name);
-    if (c == undefined) {
-      throw new Error(`Component ${component.name} has not been added yet`);
-    }
-
-    if (!c.impls.some(i => i.name === impl.name)) {
-      c.impls.push(impl);
-    }
-  }
-
-  addConstant(constant: Variable): boolean {
-    if (this.constantsMap.has(constant.name)) {
+  addVariable(variable: Variable): boolean {
+    if (this.variablesMap.has(variable.name)) {
       return false;
     } else {
-      this.constantsMap.set(constant.name, constant);
-      return true;
-    }
-  }
-
-  addSuperVariable(variable: Variable): boolean {
-    if (this.superVariablesMap.has(variable.name)) {
-      return false;
-    } else {
-      this.superVariablesMap.set(variable.name, variable);
-      this.addUseClause('super', variable.name);
+      this.variablesMap.set(variable.name, variable);
       return true;
     }
   }
@@ -207,7 +139,7 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = {
         name: baseTrait.name,
-        of: baseTrait.of,
+        for: baseTrait.for,
         tags: [ ...baseTrait.tags ],
         superVariables: [],
         functions: [],
@@ -217,27 +149,6 @@ export class ContractBuilder implements Contract {
       this.implementedTraitsMap.set(key, t);
       return t;
     }
-  }
-
-  addSuperVariableToTrait(baseTrait: BaseImplementedTrait, newVar: Variable): boolean {
-    const trait = this.addImplementedTrait(baseTrait);
-    for (const existingVar of trait.superVariables) {
-      if (existingVar.name === newVar.name) {
-        if (existingVar.type !== newVar.type) {
-          throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
-          );
-        }
-        if (existingVar.value !== newVar.value) {
-          throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
-          );
-        }
-        return false; // No need to add, already exists
-      }
-    }
-    trait.superVariables.push(newVar);
-    return true;
   }
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
@@ -267,10 +178,16 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string): void {
+  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
+    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], ...codeBefore ];
+  }
+
+  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
+    this.addImplementedTrait(baseTrait);
+    const existingFn = this.addFunction(baseTrait, fn);
+    existingFn.tag = tag;
   }
 
   addConstructorArgument(arg: Argument): void {
@@ -284,9 +201,5 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string): void {
     this.constructorCode.push(code);
-  }
-
-  addInterfaceFlag(flag: string): void {
-    this.interfaceFlagsSet.add(flag);
   }
 }

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { toIdentifier, toByteArray, toFelt252 } from './convert-strings';
+import { toIdentifier, toByteArray } from './convert-strings';
 import { OptionsError } from '../error';
 
 test('identifier - unmodified', t => {
@@ -69,31 +69,4 @@ test('toByteArray - escape backslash', t => {
 test('more than 31 characters', t => {
   t.is(toByteArray('A234567890123456789012345678901'), 'A234567890123456789012345678901');
   t.is(toByteArray('A2345678901234567890123456789012'), 'A2345678901234567890123456789012');
-});
-
-test('toFelt252 - unmodified', t => {
-  t.is(toFelt252('abc', 'foo'), 'abc');
-});
-
-test('toFelt252 - remove accents', t => {
-  t.is(toFelt252('ábc', 'foo'), 'abc');
-});
-
-test('toFelt252 - remove non-ascii-printable characters', t => {
-  t.is(toFelt252('abc😀', 'foo'), 'abc');
-});
-
-test('toFelt252 - escape single quote', t => {
-  t.is(toFelt252("abc'def", 'foo'), "abc\\'def");
-});
-
-test('toFelt252 - escape backslash', t => {
-  t.is(toFelt252('abc\\def', 'foo'), 'abc\\\\def');
-});
-
-test('toFelt252 - max 31 characters', t => {
-  t.is(toFelt252('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
-
-  let error = t.throws(() => toFelt252('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
-  t.is(error.messages.foo, 'String is longer than 31 characters');
 });

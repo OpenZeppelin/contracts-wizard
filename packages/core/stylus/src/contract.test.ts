@@ -1,29 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder, BaseFunction, BaseImplementedTrait, Component } from './contract';
+import { ContractBuilder, BaseFunction, BaseImplementedTrait } from './contract';
 import { printContract } from './print';
-
-const FOO_COMPONENT: Component = {
-  name: 'FooComponent',
-  path: 'some::path',
-  substorage: {
-    name: 'foo',
-    type: 'FooComponent::Storage',
-  },
-  event: {
-    name: 'FooEvent',
-    type: 'FooComponent::Event',
-  },
-  impls: [{
-      name: 'FooImpl',
-      value: 'FooComponent::FooImpl<ContractState>',
-    }, {
-      name: 'FooInternalImpl',
-      embed: false,
-      value: 'FooComponent::InternalImpl<ContractState>',
-    }
-  ],
-};
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -46,12 +24,12 @@ test('contract with function code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    of: 'ExternalTrait',
+    for: 'ExternalTrait',
     tags: [
-      'generate_trait',
-      'abi(per_item)',
+      'othertag',
+      'contractimpl',
     ],
-    perItemTag: 'external(v0)',
+    perItemTag: 'peritemtag', // TODO: remove perItemTag from contract model if not useful for Stylus
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -62,7 +40,7 @@ test('contract with function code before', t => {
     ]
   };
   Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, 'before()');
+  Foo.addFunctionCodeBefore(trait, fn, ['before()']);
   t.snapshot(printContract(Foo));
 });
 
@@ -70,12 +48,12 @@ test('contract with function code before with semicolons', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
-    of: 'ExternalTrait',
+    for: 'ExternalTrait',
     tags: [
-      'generate_trait',
-      'abi(per_item)',
+      'othertag',
+      'contractimpl',
     ],
-    perItemTag: 'external(v0)',
+    perItemTag: 'peritemtag',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -86,27 +64,19 @@ test('contract with function code before with semicolons', t => {
     ]
   };
   Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, 'before();');
-  t.snapshot(printContract(Foo));
-});
-
-test('contract with initializer params', t => {
-  const Foo = new ContractBuilder('Foo');
-
-  Foo.addComponent(
-    FOO_COMPONENT,
-    ['param1'],
-    true
-  );
+  Foo.addFunctionCodeBefore(trait, fn, ['before();']);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with standalone import', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addComponent(
-    FOO_COMPONENT,
-  );
   Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });
 
+test('contract with grouped imports', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addUseClause('some::library', 'SomeLibrary');
+  Foo.addUseClause('some::library', 'Misc');
+  t.snapshot(printContract(Foo));
+});

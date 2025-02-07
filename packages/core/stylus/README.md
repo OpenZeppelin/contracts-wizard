@@ -29,12 +29,6 @@ const defaults: Required<ERC20Options>
 ```
 The default options that are used for [`print`](#print).
 
-#### `isAccessControlRequired`
-```js
-function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
-```
-Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
-
 ### Examples
 
 Import the contract type(s) (for example, `erc20`) that you want to use from the `@openzeppelin/wizard-stylus` package:

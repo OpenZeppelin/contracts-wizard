@@ -2,57 +2,54 @@ import { getSelfArg } from './common-options';
 import type { ContractBuilder } from './contract';
 import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
-import { defineComponents } from './utils/define-components';
-import { externalTrait } from './external-trait';
 
 export function addPausable(c: ContractBuilder, access: Access) {
-  c.addComponent(components.PausableComponent, [], false);
+  c.addUseClause('openzeppelin_pausable', 'self as pausable');
+  c.addUseClause('openzeppelin_pausable', 'Pausable');
 
-  c.addFunction(externalTrait, functions.pause);
-  c.addFunction(externalTrait, functions.unpause);
-  requireAccessControl(c, externalTrait, functions.pause, access, 'PAUSER', 'pauser');
-  requireAccessControl(c, externalTrait, functions.unpause, access, 'PAUSER', 'pauser');
+  const pausableTrait = {
+    name: 'Pausable',
+    for: c.name,
+    tags: [
+      'contractimpl',
+    ],
+    section: 'Utils',
+  };
+
+  c.addFunction(pausableTrait, functions.paused);
+  c.addFunction(pausableTrait, functions.pause);
+  c.addFunction(pausableTrait, functions.unpause);
+
+  requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
+  requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
 }
 
-const components = defineComponents( {
-  PausableComponent: {
-    path: 'openzeppelin::security::pausable',
-    substorage: {
-      name: 'pausable',
-      type: 'PausableComponent::Storage',
-    },
-    event: {
-      name: 'PausableEvent',
-      type: 'PausableComponent::Event',
-    },
-    impls: [{
-        name: 'PausableImpl',
-        value: 'PausableComponent::PausableImpl<ContractState>',
-      }, {
-        name: 'PausableInternalImpl',
-        embed: false,
-        value: 'PausableComponent::InternalImpl<ContractState>',
-      }
-    ],
-  },
-});
-
 const functions = defineFunctions({
-  pause: {
+  paused: {
     args: [
       getSelfArg(),
     ],
+    returns: 'bool',
     code: [
-      'self.pausable.pause()'
-    ]
+      'pausable::paused(e)'
+    ],
+  },
+  pause: {
+    args: [
+      getSelfArg(),
+      { name: 'caller', type: 'Address' },
+    ],
+    code: [
+      'pausable::pause(e, &caller)'
+    ],
   },
   unpause: {
     args: [
       getSelfArg(),
+      { name: 'caller', type: 'Address' },
     ],
     code: [
-      'self.pausable.unpause()'
-    ]
+      'pausable::unpause(e, &caller)'
+    ],
   },
 });
-
