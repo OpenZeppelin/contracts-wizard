@@ -302,7 +302,6 @@ function printContractFunctions(contract: Contract): Lines[] {
 }
 
 function printConstructor(contract: Contract): Lines[] {
-  // const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   if (contract.constructorCode.length > 0) {
     const head = 'pub fn __constructor';
     const args = [ getSelfArg(), ...contract.constructorArgs ];

@@ -4,10 +4,8 @@ export interface Contract {
   license: string;
   name: string;
   useClauses: UseClause[];
-  constants: Variable[];
   constructorCode: string[];
   constructorArgs: Argument[];
-  upgradeable: boolean;
   implementedTraits: ImplementedTrait[];
   variables: Variable[];
 }
@@ -19,22 +17,6 @@ export interface UseClause {
   name: string;
   groupable?: boolean;
   alias?: string;
-}
-
-export interface Event {
-  name: string;
-  type: string;
-}
-
-export interface Impl {
-  name: string;
-  value: string;
-  embed?: boolean;
-  section?: string;
-}
-
-export interface Initializer {
-  params: Value[];
 }
 
 export interface BaseImplementedTrait {
@@ -105,19 +87,8 @@ export class ContractBuilder implements Contract {
     return [...this.variablesMap.values()];
   }
 
-  get constants(): Variable[] {
-    return [...this.constantsMap.values()];
-  }
-
   get useClauses(): UseClause[] {
     return [...this.useClausesMap.values()];
-  }
-
-  /**
-   * Custom flags to denote that the contract implements a specific interface, e.g. ISRC5, to avoid duplicates
-   **/
-  get interfaceFlags(): Set<string> {
-    return this.interfaceFlagsSet;
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
@@ -128,15 +99,6 @@ export class ContractBuilder implements Contract {
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
       this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
-    }
-  }
-
-  addConstant(constant: Variable): boolean {
-    if (this.constantsMap.has(constant.name)) {
-      return false;
-    } else {
-      this.constantsMap.set(constant.name, constant);
-      return true;
     }
   }
 
@@ -167,27 +129,6 @@ export class ContractBuilder implements Contract {
       this.implementedTraitsMap.set(key, t);
       return t;
     }
-  }
-
-  addSuperVariableToTrait(baseTrait: BaseImplementedTrait, newVar: Variable): boolean {
-    const trait = this.addImplementedTrait(baseTrait);
-    for (const existingVar of trait.superVariables) {
-      if (existingVar.name === newVar.name) {
-        if (existingVar.type !== newVar.type) {
-          throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
-          );
-        }
-        if (existingVar.value !== newVar.value) {
-          throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
-          );
-        }
-        return false; // No need to add, already exists
-      }
-    }
-    trait.superVariables.push(newVar);
-    return true;
   }
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
@@ -240,9 +181,5 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string): void {
     this.constructorCode.push(code);
-  }
-
-  addInterfaceFlag(flag: string): void {
-    this.interfaceFlagsSet.add(flag);
   }
 }
