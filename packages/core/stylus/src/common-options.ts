@@ -34,5 +34,5 @@ export function withCommonContractDefaults(opts: CommonContractOptions): Require
 }
 
 export function getSelfArg(): Argument {
-  return { name: 'e', type: '&Env' };
+  return { name: '&mut', type: 'self' };
 }

@@ -202,7 +202,7 @@ function printImplementedFunctions(section: string, impls: ImplementedTrait[]): 
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
-  const head = `fn ${fn.name}`;
+  const head = `${fn.visibility ? fn.visibility + ' ' : ''}fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
   const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;

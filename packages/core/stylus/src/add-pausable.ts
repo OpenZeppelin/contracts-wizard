@@ -16,7 +16,6 @@ export function addPausable(c: ContractBuilder, access: Access) {
     section: 'Pausable', // TODO remove this section name if it's not useful
   };
 
-  c.addFunction(pausableTrait, functions.paused);
   c.addFunction(pausableTrait, functions.pause);
   c.addFunction(pausableTrait, functions.unpause);
 
@@ -25,31 +24,32 @@ export function addPausable(c: ContractBuilder, access: Access) {
 }
 
 const functions = defineFunctions({
-  paused: {
-    args: [
-      getSelfArg(),
-    ],
-    returns: 'bool',
-    code: [
-      'pausable::paused(e)'
-    ],
-  },
   pause: {
     args: [
       getSelfArg(),
-      { name: 'caller', type: 'Address' },
     ],
+    returns: 'Result<(), Vec<u8>>',
+    visibility: 'pub',
     code: [
-      'pausable::pause(e, &caller)'
+      '/// WARNING: These functions are intended for **testing purposes** only. In',
+      '/// **production**, ensure strict access control to prevent unauthorized',
+      '/// pausing or unpausing, which can disrupt contract functionality. Remove',
+      '/// or secure these functions before deployment.',
+      'self.pausable.pause().map_err(|e| e.into())'
     ],
   },
   unpause: {
     args: [
       getSelfArg(),
-      { name: 'caller', type: 'Address' },
     ],
+    returns: 'Result<(), Vec<u8>>',
+    visibility: 'pub',
     code: [
-      'pausable::unpause(e, &caller)'
+      '/// WARNING: These functions are intended for **testing purposes** only. In',
+      '/// **production**, ensure strict access control to prevent unauthorized',
+      '/// pausing or unpausing, which can disrupt contract functionality. Remove',
+      '/// or secure these functions before deployment.',
+      'self.pausable.unpause().map_err(|e| e.into())'
     ],
-  },
+  }
 });
