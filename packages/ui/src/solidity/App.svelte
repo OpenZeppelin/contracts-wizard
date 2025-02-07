@@ -135,7 +135,7 @@
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
         saveAs(blob, opts.name + '.sol');
-        await postConfig(opts, 'download-npm', language);
+        await postConfig(opts, 'download-file', language);
       }
     };
 

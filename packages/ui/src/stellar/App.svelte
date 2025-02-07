@@ -79,12 +79,12 @@
       }, 1000);
     };
 
-    const downloadCairoHandler = async () => {
+    const downloadFileHandler = async () => {
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
         const name = ('name' in opts) ? opts.name : 'MyContract';
-        saveAs(blob, name + '.cairo');
-        await postConfig(opts, 'download-npm', language);
+        saveAs(blob, name + '.rs');
+        await postConfig(opts, 'download-file', language);
       }
     };
 
@@ -115,7 +115,7 @@
           Download
         </button>
 
-        <button class="download-option" on:click={downloadCairoHandler}>
+        <button class="download-option" on:click={downloadFileHandler}>
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>

@@ -98,7 +98,7 @@
       if (opts) {
         const name = ('name' in opts) ? opts.name : 'MyContract';
         saveAs(blob, name + '.cairo');
-        await postConfig(opts, 'download-npm', language);
+        await postConfig(opts, 'download-file', language);
       }
     };
 
