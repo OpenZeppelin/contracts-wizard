@@ -9,7 +9,6 @@ import { OptionsError } from './error';
 // import { defineComponents } from './utils/define-components';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
 
 
@@ -115,7 +114,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
     name: 'FungibleToken',
     for: name,
     tags: [
-      '#[contractimpl]',
+      'contractimpl',
     ],
   };
 
@@ -131,8 +130,8 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer, '#[when_not_paused]');
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, '#[when_not_paused]');
+    c.addFunctionTag(fungibleTokenTrait, functions.transfer, 'when_not_paused');
+    c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, 'when_not_paused');
   }
 }
 
@@ -144,7 +143,7 @@ function addBurnable(c: ContractBuilder, name: string, pausable: boolean) {
     name: 'FungibleBurnable',
     for: name,
     tags: [
-      '#[contractimpl]',
+      'contractimpl',
     ],
   }
 
@@ -153,8 +152,8 @@ function addBurnable(c: ContractBuilder, name: string, pausable: boolean) {
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn, '#[when_not_paused]');
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, '#[when_not_paused]');
+    c.addFunctionTag(fungibleBurnableTrait, functions.burn, 'when_not_paused');
+    c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, 'when_not_paused');
   }
 }
 
@@ -227,7 +226,7 @@ function addMintable(c: ContractBuilder, name: string, access: Access, pausable:
     name: 'FungibleMintable',
     for: name,
     tags: [
-      '#[contractimpl]',
+      'contractimpl',
     ],
   }
 
@@ -241,7 +240,7 @@ function addMintable(c: ContractBuilder, name: string, access: Access, pausable:
   // requireAccessControl(c, fungibleMintableTrait, functions.mint, access, 'MINTER', 'minter');
 
   if (pausable) {
-    c.addFunctionTag(fungibleMintableTrait, functions.mint, '#[when_not_paused]');
+    c.addFunctionTag(fungibleMintableTrait, functions.mint, 'when_not_paused');
   }
 }
 

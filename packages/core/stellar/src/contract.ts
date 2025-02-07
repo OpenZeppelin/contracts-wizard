@@ -8,6 +8,12 @@ export interface Contract {
   constructorArgs: Argument[];
   implementedTraits: ImplementedTrait[];
   variables: Variable[];
+  errors: Error[];
+}
+
+export interface Error {
+  name: string;
+  num: number;
 }
 
 export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
@@ -71,9 +77,8 @@ export class ContractBuilder implements Contract {
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private variablesMap: Map<string, Variable> = new Map();
-  private constantsMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
-  private interfaceFlagsSet: Set<string> = new Set();
+  private errorsMap: Map<string, Error> = new Map();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -89,6 +94,20 @@ export class ContractBuilder implements Contract {
 
   get useClauses(): UseClause[] {
     return [...this.useClausesMap.values()];
+  }
+
+  get errors(): Error[] {
+    return [...this.errorsMap.values()];
+  }
+
+  addError(name: string, num: number): boolean {
+    if (this.errorsMap.has(name)) {
+      return false;
+    } else {
+      this.addUseClause('soroban_sdk', 'contracterror');
+      this.errorsMap.set(name, { name, num });
+      return true;
+    }
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {

@@ -3,7 +3,7 @@ import type { ContractBuilder } from './contract';
 import { Access } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 // import { defineComponents } from './utils/define-components';
-import { externalTrait } from './external-trait';
+
 
 export function addPausable(c: ContractBuilder, name: string, access: Access) {
   // c.addComponent(components.PausableComponent, [], false);
@@ -12,7 +12,7 @@ export function addPausable(c: ContractBuilder, name: string, access: Access) {
     name: 'Pausable',
     for: name,
     tags: [
-      '#[contractimpl]',
+      'contractimpl',
     ],
   };
 
@@ -22,6 +22,7 @@ export function addPausable(c: ContractBuilder, name: string, access: Access) {
 
   c.addUseClause('soroban_sdk', 'Address');
   c.addUseClause('soroban_sdk', 'panic_with_error');
+  c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
   const checkOwner = [
     'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");',
     'if owner != caller {',

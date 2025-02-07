@@ -20,7 +20,7 @@ export function printContract(contract: Contract): string {
         printUseClauses(contract),
         printVariables(contract),
         printContractStruct(contract),
-        // printContractErrors(contract), // similar to printEvents
+        printContractErrors(contract),
         printContractFunctions(contract),
         printImplementedTraits(contract),
       ),
@@ -33,6 +33,18 @@ function printContractStruct(contract: Contract): Lines[] {
     '#[contract]',
     `pub struct ${contract.name};`
   ];
+}
+
+function printContractErrors(contract: Contract): Lines[] {
+  if (contract.errors.length === 0) {
+    return [];
+  }
+  return [
+    '#[contracterror]',
+    `pub enum ${contract.name}Error {`,
+    contract.errors.map(e => `${e.name} = ${e.num},`),
+    `}`
+  ]
 }
 
 function withSemicolons(lines: string[]): string[] {
