@@ -265,29 +265,6 @@ function printConstructor(contract: Contract): Lines[] {
   }
 }
 
-export function printValue(value: Value): string {
-  if (typeof value === 'object') {
-    if ('lit' in value) {
-      return value.lit;
-    } else if ('note' in value) {
-      // TODO: add /* ${value.note} */ after lsp is fixed
-      return `${printValue(value.value)}`;
-    } else {
-      throw Error('Unknown value type');
-    }
-  } else if (typeof value === 'number') {
-    if (Number.isSafeInteger(value)) {
-      return value.toFixed(0);
-    } else {
-      throw new Error(`Number not representable (${value})`);
-    }
-  } else if (typeof value === 'bigint') {
-    return `${value}`
-  } else {
-    return `"${value}"`;
-  }
-}
-
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
