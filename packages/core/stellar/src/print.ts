@@ -159,82 +159,74 @@ function printConstants(contract: Contract): Lines[] {
   return lines;
 }
 
-function printComponentDeclarations(contract: Contract): Lines[] {
-  const lines = [];
-  for (const component of contract.components) {
-    lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
-  }
-  return lines;
-}
+// function printImpls(contract: Contract): Lines[] {
+//   const impls = contract.components.flatMap(c => c.impls);
 
-function printImpls(contract: Contract): Lines[] {
-  const impls = contract.components.flatMap(c => c.impls);
+//   // group by section
+//   const grouped = impls.reduce(
+//     (result: { [section: string]: Impl[] }, current:Impl) => {
+//       // default section depends on embed
+//       // embed defaults to true
+//       const embed = current.embed ?? true;
+//       const section = current.section ?? (embed ? 'External' : 'Internal');
+//       (result[section] = result[section] || []).push(current);
+//       return result;
+//     }, {});
 
-  // group by section
-  const grouped = impls.reduce(
-    (result: { [section: string]: Impl[] }, current:Impl) => {
-      // default section depends on embed
-      // embed defaults to true
-      const embed = current.embed ?? true;
-      const section = current.section ?? (embed ? 'External' : 'Internal');
-      (result[section] = result[section] || []).push(current);
-      return result;
-    }, {});
+//   const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
+//     ([section, impls]) => printSection(section, impls as Impl[]),
+//   );
+//   return spaceBetween(...sections);
+// }
 
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printSection(section, impls as Impl[]),
-  );
-  return spaceBetween(...sections);
-}
+// function printSection(section: string, impls: Impl[]): Lines[] {
+//   const lines = [];
+//   lines.push(`// ${section}`);
+//   impls.map(impl => lines.push(...printImpl(impl)));
+//   return lines;
+// }
 
-function printSection(section: string, impls: Impl[]): Lines[] {
-  const lines = [];
-  lines.push(`// ${section}`);
-  impls.map(impl => lines.push(...printImpl(impl)));
-  return lines;
-}
+// function printImpl(impl: Impl): Lines[] {
+//   const lines = [];
+//   // embed is optional, default to true
+//   if (impl.embed ?? true) {
+//     lines.push('#[abi(embed_v0)]');
+//   }
+//   lines.push(`impl ${impl.name} = ${impl.value};`);
+//   return lines;
+// }
 
-function printImpl(impl: Impl): Lines[] {
-  const lines = [];
-  // embed is optional, default to true
-  if (impl.embed ?? true) {
-    lines.push('#[abi(embed_v0)]');
-  }
-  lines.push(`impl ${impl.name} = ${impl.value};`);
-  return lines;
-}
+// function printStorage(contract: Contract): (string | string[])[] {
+//   const lines = [];
+//   // storage is required regardless of whether there are components
+//   lines.push('#[storage]');
+//   lines.push('struct Storage {');
+//   const storageLines = [];
+//   for (const component of contract.components) {
+//     storageLines.push(`#[substorage(v0)]`);
+//     storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
+//   }
+//   lines.push(storageLines);
+//   lines.push('}');
+//   return lines;
+// }
 
-function printStorage(contract: Contract): (string | string[])[] {
-  const lines = [];
-  // storage is required regardless of whether there are components
-  lines.push('#[storage]');
-  lines.push('struct Storage {');
-  const storageLines = [];
-  for (const component of contract.components) {
-    storageLines.push(`#[substorage(v0)]`);
-    storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
-  }
-  lines.push(storageLines);
-  lines.push('}');
-  return lines;
-}
-
-function printEvents(contract: Contract): (string | string[])[] {
-  const lines = [];
-  if (contract.components.length > 0) {
-    lines.push('#[event]');
-    lines.push('#[derive(Drop, starknet::Event)]');
-    lines.push('enum Event {')
-    const eventLines = [];
-    for (const component of contract.components) {
-      eventLines.push('#[flat]');
-      eventLines.push(`${component.event.name}: ${component.event.type},`);
-    }
-    lines.push(eventLines);
-    lines.push('}');
-  }
-  return lines;
-}
+// function printEvents(contract: Contract): (string | string[])[] {
+//   const lines = [];
+//   if (contract.components.length > 0) {
+//     lines.push('#[event]');
+//     lines.push('#[derive(Drop, starknet::Event)]');
+//     lines.push('enum Event {')
+//     const eventLines = [];
+//     for (const component of contract.components) {
+//       eventLines.push('#[flat]');
+//       eventLines.push(`${component.event.name}: ${component.event.type},`);
+//     }
+//     lines.push(eventLines);
+//     lines.push('}');
+//   }
+//   return lines;
+// }
 
 function printImplementedTraits(contract: Contract): Lines[] {
   // sort first by priority, then number of tags, then name
@@ -318,9 +310,8 @@ function printFunction(fn: ContractFunction): Lines[] {
 }
 
 function printConstructor(contract: Contract): Lines[] {
-  const hasInitializers = contract.components.some(p => p.initializer !== undefined);
-  const hasConstructorCode = contract.constructorCode.length > 0;
-  if (hasInitializers || hasConstructorCode) {
+  // const hasInitializers = contract.components.some(p => p.initializer !== undefined);
+  if (contract.constructorCode.length > 0) {
     const tag = 'TODO constructor';
     const head = 'pub fn __constructor';
     const args = [ getSelfArg(), ...contract.constructorArgs ];

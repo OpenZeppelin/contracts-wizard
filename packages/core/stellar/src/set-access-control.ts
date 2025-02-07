@@ -12,7 +12,7 @@ export type Access = typeof accessOptions[number];
  export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access) {
     case 'ownable': {
-      c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
+      // c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
 
       c.addUseClause('starknet', 'ContractAddress');
       c.addConstructorArgument({ name: 'owner', type: 'ContractAddress'});

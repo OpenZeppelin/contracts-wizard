@@ -6,7 +6,7 @@ import { defineComponents } from './utils/define-components';
 import { externalTrait } from './external-trait';
 
 export function addPausable(c: ContractBuilder, access: Access) {
-  c.addComponent(components.PausableComponent, [], false);
+  // c.addComponent(components.PausableComponent, [], false);
 
 
   c.addFunction(externalTrait, functions.pause);

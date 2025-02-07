@@ -102,13 +102,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
-  c.addComponent(
-    components.FungibleComponent,
-    [
-      name, symbol
-    ],
-    true,
-  );
   c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
   c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`, imports: ['symbol_short'] });
@@ -253,25 +246,6 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
     c.addFunctionTag(fungibleMintableTrait, functions.mint, '#[when_not_paused]');
   }
 }
-
-const components = defineComponents( {
-  FungibleComponent: {
-    path: 'openzeppelin_fungible_token',
-    substorage: {
-      name: 'fungible',
-      type: 'FungibleComponent::Storage',
-    },
-    event: {
-      name: 'FungibleEvent',
-      type: 'FungibleComponent::Event',
-    },
-    impls: [{
-      name: 'FungibleInternalImpl',
-      embed: false,
-      value: 'FungibleComponent::InternalImpl<ContractState>',
-    }],
-  },
-});
 
 const functions = defineFunctions({
   // Token Functions

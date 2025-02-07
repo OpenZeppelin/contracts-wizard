@@ -4,7 +4,6 @@ export interface Contract {
   license: string;
   name: string;
   useClauses: UseClause[];
-  components: Component[];
   constants: Variable[];
   constructorCode: string[];
   constructorArgs: Argument[];
@@ -20,20 +19,6 @@ export interface UseClause {
   name: string;
   groupable?: boolean;
   alias?: string;
-}
-
-export interface Component {
-  name: string;
-  path: string;
-  substorage: Substorage;
-  event: Event;
-  impls: Impl[];
-  initializer?: Initializer;
-}
-
-export interface Substorage {
-  name: string;
-  type: string;
 }
 
 export interface Event {
@@ -105,7 +90,6 @@ export class ContractBuilder implements Contract {
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
 
-  private componentsMap: Map<string, Component> = new Map();
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private variablesMap: Map<string, Variable> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
@@ -114,10 +98,6 @@ export class ContractBuilder implements Contract {
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
-  }
-
-  get components(): Component[] {
-    return [...this.componentsMap.values()];
   }
 
   get implementedTraits(): ImplementedTrait[] {
@@ -151,30 +131,6 @@ export class ContractBuilder implements Contract {
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
       this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
-    }
-  }
-
-  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
-    this.addUseClause(component.path, component.name);
-    const key = component.name;
-    const present = this.componentsMap.has(key);
-    if (!present) {
-      const initializer = initializable ? { params } : undefined;
-      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
-      this.componentsMap.set(key, cp);
-    }
-    return !present;
-  }
-
-  addImplToComponent(component: Component, impl: Impl): void {
-    this.addComponent(component);
-    const c = this.componentsMap.get(component.name);
-    if (c == undefined) {
-      throw new Error(`Component ${component.name} has not been added yet`);
-    }
-
-    if (!c.impls.some(i => i.name === impl.name)) {
-      c.impls.push(impl);
     }
   }
 
