@@ -1,5 +1,7 @@
 import { OptionsError } from "../error";
 
+// TODO: Review and convert these to properly handle language restrictions for Stellar
+
 /**
  * Converts to an identifier according to the rules in https://docs.cairo-lang.org/language_constructs/identifiers.html
  */
