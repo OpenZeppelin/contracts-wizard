@@ -167,7 +167,8 @@ function addPremint(c: ContractBuilder, amount: string) {
       });
     }
 
-    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
+    // TODO: handle signed int?
+    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
 
     c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
     c.addUseClause('soroban_sdk', 'Address');
