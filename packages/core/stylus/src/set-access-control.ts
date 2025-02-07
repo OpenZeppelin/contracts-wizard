@@ -15,11 +15,11 @@ export type Access = typeof accessOptions[number];
     case 'ownable': {
       if (!c.ownable) {
         c.ownable = true;
-        c.addUseClause('soroban_sdk', 'symbol_short');
-        c.addUseClause('soroban_sdk', 'Symbol');
-        c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`});
-        c.addConstructorArgument({ name: 'owner', type: 'Address' });
-        c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
+        c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
+        c.addStorage('ownable', 'Ownable');
+        c.addImplementedTrait({
+          name: 'Ownable',
+        });
       }
       break;
     }
@@ -39,7 +39,6 @@ export function requireAccessControl(
   trait: BaseImplementedTrait, 
   fn: BaseFunction, 
   access: Access,
-  caller?: string,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -48,23 +47,10 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addUseClause('soroban_sdk', 'Address');
-      const getOwner = 'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");';
-      if (caller) {
-        c.addUseClause('soroban_sdk', 'panic_with_error');
-        c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
-        c.addFunctionCodeBefore(trait, fn, [
-          getOwner,
-          'if owner != caller {',
-          `    panic_with_error!(e, ${c.name}Error::Unauthorized)`,
-          '}',
-        ]);
-      } else {
-        c.addFunctionCodeBefore(trait, fn, [
-          getOwner,
-          'owner.require_auth();'
-        ]);
-      }
+      c.addFunctionCodeBefore(trait, fn, [
+        'self.ownable.only_owner()?;',
+      ]);
+
       break;
     }
     default:
