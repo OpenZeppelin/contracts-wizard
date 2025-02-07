@@ -68,6 +68,15 @@ testFungible('fungible full', {
   pausable: true,
 });
 
+testFungible('fungible full - complex name', {
+  name: 'Custom  $ Token',
+  premint: '2000',
+  access: 'ownable',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+});
+
 testAPIEquivalence('fungible API default');
 
 testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
