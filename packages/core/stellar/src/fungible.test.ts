@@ -37,7 +37,6 @@ testFungible('fungible burnable', {
 
 testFungible('fungible pausable', {
   pausable: true,
-  access: 'ownable',
 });
 
 testFungible('fungible burnable pausable', {
@@ -55,6 +54,9 @@ testFungible('fungible premint of 0', {
 
 testFungible('fungible mintable', {
   mintable: true,
+});
+
+testFungible('fungible ownable', {
   access: 'ownable',
 });
 
