@@ -26,10 +26,10 @@ test('contract with function code before', t => {
     name: 'External',
     for: 'ExternalTrait',
     tags: [
-      'generate_trait',
-      'abi(per_item)',
+      'othertag',
+      'contractimpl',
     ],
-    perItemTag: 'external(v0)',
+    perItemTag: 'peritemtag', // TODO: remove perItemTag from contract model if not useful for Stellar
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -50,10 +50,10 @@ test('contract with function code before with semicolons', t => {
     name: 'External',
     for: 'ExternalTrait',
     tags: [
-      'generate_trait',
-      'abi(per_item)',
+      'othertag',
+      'contractimpl',
     ],
-    perItemTag: 'external(v0)',
+    perItemTag: 'peritemtag',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -68,14 +68,15 @@ test('contract with function code before with semicolons', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with initializer params', t => {
-  const Foo = new ContractBuilder('Foo');
-  t.snapshot(printContract(Foo));
-});
-
 test('contract with standalone import', t => {
   const Foo = new ContractBuilder('Foo');
   Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });
 
+test('contract with grouped imports', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addUseClause('some::library', 'SomeLibrary');
+  Foo.addUseClause('some::library', 'Misc');
+  t.snapshot(printContract(Foo));
+});
