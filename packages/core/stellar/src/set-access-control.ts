@@ -1,5 +1,4 @@
 import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './contract';
-// import { defineComponents } from './utils/define-components';
 
 export const accessOptions = [false, 'ownable'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
@@ -50,18 +49,19 @@ export function requireAccessControl(
   switch (access) {
     case 'ownable': {
       c.addUseClause('soroban_sdk', 'Address');
+      const getOwner = 'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");';
       if (caller) {
         c.addUseClause('soroban_sdk', 'panic_with_error');
         c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
         c.addFunctionCodeBefore(trait, fn, [
-          'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");',
+          getOwner,
           'if owner != caller {',
           `    panic_with_error!(e, ${c.name}Error::Unauthorized)`,
           '}',
         ]);
       } else {
         c.addFunctionCodeBefore(trait, fn, [
-          'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set")',
+          getOwner,
           'owner.require_auth();'
         ]);
       }
