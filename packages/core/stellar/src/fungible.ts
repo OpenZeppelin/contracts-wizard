@@ -69,7 +69,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   allOpts.access = 'ownable';
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
   // addFungibleMixin(c);
 
   if (allOpts.premint) {
@@ -101,7 +101,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
+function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   c.addComponent(
     components.FungibleComponent,
     [
@@ -109,9 +109,42 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     ],
     true,
   );
+  c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+
   c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`, imports: ['symbol_short'] });
 
-  c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+  c.addUseClause('openzeppelin_fungible_token', 'self as fungible');
+  c.addUseClause('openzeppelin_fungible_token', 'FungibleToken');
+  c.addUseClause('soroban_sdk', 'contract');
+  c.addUseClause('soroban_sdk', 'contractimpl');
+  c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'String');
+  c.addUseClause('soroban_sdk', 'Env');
+  c.addUseClause('soroban_sdk', 'Symbol');
+
+  const fungibleTokenTrait = {
+    name: 'FungibleToken',
+    for: 'ExampleContract',
+    tags: [
+      '#[contractimpl]',
+    ],
+  };
+
+  c.addFunction(fungibleTokenTrait, functions.total_supply);
+  c.addFunction(fungibleTokenTrait, functions.balance);
+  c.addFunction(fungibleTokenTrait, functions.allowance);
+  c.addFunction(fungibleTokenTrait, functions.transfer);
+  c.addFunction(fungibleTokenTrait, functions.transfer_from);
+  c.addFunction(fungibleTokenTrait, functions.approve);
+  c.addFunction(fungibleTokenTrait, functions.decimals);
+  c.addFunction(fungibleTokenTrait, functions.name);
+  c.addFunction(fungibleTokenTrait, functions.symbol);
+
+  if (pausable) {
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addFunctionTag(fungibleTokenTrait, functions.transfer, '#[when_not_paused]');
+    c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, '#[when_not_paused]');
+  }
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
@@ -241,6 +274,101 @@ const components = defineComponents( {
 });
 
 const functions = defineFunctions({
+  // Token Functions
+  total_supply: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'i128',
+    code: [
+      'fungible::total_supply(e)'
+    ]
+  },
+  balance: {
+    args: [
+      getSelfArg(),
+      { name: 'account', type: 'Address' }
+    ],
+    returns: 'i128',
+    code: [
+      'fungible::balance(e, &account)'
+    ]
+  },
+  allowance: {
+    args: [
+      getSelfArg(),
+      { name: 'owner', type: 'Address' },
+      { name: 'spender', type: 'Address' }
+    ],
+    returns: 'i128',
+    code: [
+      'fungible::allowance(e, &owner, &spender)'
+    ]
+  },
+  transfer: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'fungible::transfer(e, &from, &to, amount)'
+    ]
+  },
+  transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'amount', type: 'i128' }
+    ],
+    code: [
+      'fungible::transfer_from(e, &spender, &from, &to, amount)'
+    ]
+  },
+  approve: {
+    args: [
+      getSelfArg(),
+      { name: 'owner', type: 'Address' },
+      { name: 'spender', type: 'Address' },
+      { name: 'amount', type: 'i128' },
+      { name: 'live_until_ledger', type: 'u32' }
+    ],
+    code: [
+      'fungible::approve(e, &owner, &spender, amount, live_until_ledger)'
+    ]
+  },
+  decimals: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'u32',
+    code: [
+      'fungible::metadata::decimals(e)'
+    ]
+  },
+  name: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'String',
+    code: [
+      'fungible::metadata::name(e)'
+    ]
+  },
+  symbol: {
+    args: [
+      getSelfArg()
+    ],
+    returns: 'String',
+    code: [
+      'fungible::metadata::symbol(e)'
+    ]
+  },
+
+  // Extensions
   burn: {
     args: [
       getSelfArg(),
