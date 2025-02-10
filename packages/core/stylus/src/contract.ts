@@ -5,7 +5,6 @@ export interface Contract {
   name: string;
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
-  ownable: boolean;
 }
 
 export interface Storage {
@@ -57,7 +56,6 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
-  ownable = false;
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
@@ -106,6 +104,10 @@ export class ContractBuilder implements Contract {
       this.implementedTraitsMap.set(key, t);
       return t;
     }
+  }
+
+  traitExists(name: string): boolean {
+    return this.implementedTraitsMap.has(name);
   }
 
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {

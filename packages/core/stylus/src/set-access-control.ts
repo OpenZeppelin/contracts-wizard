@@ -13,8 +13,7 @@ export type Access = typeof accessOptions[number];
     case false:
       break;
     case 'ownable': {
-      if (!c.ownable) {
-        c.ownable = true;
+      if (!c.traitExists('Ownable')) {
         c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
         c.addImplementedTrait({
           name: 'Ownable',
