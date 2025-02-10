@@ -14,7 +14,7 @@ export function printContract(contract: Contract): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts for Stellar ${compatibleContractsSemver}`,
+        `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
       ],
       spaceBetween(
         printUseClauses(contract),
@@ -193,12 +193,6 @@ function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.name} for ${trait.for} {`);
-
-  const superVars = withSemicolons(
-    trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
-  );
-  implLines.push(superVars);
-
   const fns = trait.functions.map(fn => printFunction(fn));
   implLines.push(spaceBetween(...fns));
   implLines.push('}');

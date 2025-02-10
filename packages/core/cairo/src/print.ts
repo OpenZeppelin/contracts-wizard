@@ -67,38 +67,21 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
   const lines = [];
   if (groupName === STANDALONE_IMPORTS_GROUP) {
     for (const useClause of group) {
-      const alias = useClause.alias ?? '';
-      if (alias.length > 0) {
-        lines.push(`use ${useClause.containerPath}::${useClause.name} as ${alias};`);
-      } else {
-        lines.push(`use ${useClause.containerPath}::${useClause.name};`);
-      }
+      lines.push(`use ${useClause.containerPath}::${nameWithAlias(useClause)};`);
     }
   } else {
     if (group.length == 1) {
-      const alias = group[0]!.alias ?? '';
-      if (alias.length > 0) {
-        lines.push(`use ${groupName}::${group[0]!.name} as ${alias};`);
-      } else {
-        lines.push(`use ${groupName}::${group[0]!.name};`);
-      }
-
+      lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
-      let clauses = group.reduce((clauses, useClause) => {
-        const alias = useClause.alias ?? '';
-        if (alias.length > 0) {
-          clauses += `${useClause.name} as ${useClause.alias}, `;
-        } else {
-          clauses += `${useClause.name}, `;
-        }
-        return clauses;
-      }, '');
-      clauses = clauses.slice(0, -2);
-
-      lines.push(`use ${groupName}::{${clauses}};`);
+      let names = group.map((useClause) => nameWithAlias(useClause)).join(', ');
+      lines.push(`use ${groupName}::{${names}};`);
     }
   }
   return lines;
+}
+
+function nameWithAlias(useClause: UseClause): string {
+  return useClause.alias ? `${useClause.name} as ${useClause.alias}` : useClause.name;
 }
 
 // TODO: remove this when we can use a formatting js library
@@ -136,8 +119,8 @@ function splitLongLineInner(line: string): Lines[] {
 
 function sortUseClauses(contract: Contract): UseClause[] {
   return contract.useClauses.sort((a, b) => {
-    const aFullPath = `${a.containerPath}::${a.name}`;
-    const bFullPath = `${b.containerPath}::${b.name}`;
+    const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
+    const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
     return aFullPath.localeCompare(bFullPath);
   });
 }
