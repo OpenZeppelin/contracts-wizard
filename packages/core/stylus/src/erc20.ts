@@ -55,10 +55,7 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
 
-  c.addStorage('erc20', 'Erc20');
   c.addImplementedTrait(erc20Trait);
-
-  c.addStorage('metadata', 'Erc20Metadata');
   c.addImplementedTrait(erc20MetadataTrait);
 
   if (pausable) {
@@ -95,10 +92,18 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 
 const erc20Trait = {
   name: 'Erc20',
+  storage: {
+    name: 'erc20',
+    type: 'Erc20',
+  }
 };
 
 const erc20MetadataTrait = {
   name: 'Erc20Metadata',
+  storage: {
+    name: 'metadata',
+    type: 'Erc20Metadata',
+  }
 }
 
 const functions = defineFunctions({

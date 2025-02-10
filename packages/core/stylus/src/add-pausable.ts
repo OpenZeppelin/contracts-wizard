@@ -8,6 +8,10 @@ export function addPausable(c: ContractBuilder, access: Access) {
 
   const pausableTrait = {
     name: 'Pausable',
+    storage: {
+      name: 'pausable',
+      type: 'Pausable',
+    },
     section: 'Pausable', // TODO remove section name if it's not useful
   };
 

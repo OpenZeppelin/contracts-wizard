@@ -12,6 +12,10 @@ test('contract with function code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
+    storage: {
+      name: 'external',
+      type: 'External',
+    },
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -30,6 +34,10 @@ test('contract with function code before with semicolons', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
+    storage: {
+      name: 'external',
+      type: 'External',
+    },
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {

@@ -23,6 +23,7 @@ export interface UseClause {
 
 export interface BaseImplementedTrait {
   name: string;
+  storage: Storage;
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -62,7 +63,6 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
-  private storageMap: Map<string, Storage> = new Map();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -81,16 +81,7 @@ export class ContractBuilder implements Contract {
   }
 
   get storage(): Storage[] {
-    return [...this.storageMap.values()];
-  }
-
-  addStorage(name: string, type: string): boolean {
-    if (this.storageMap.has(name)) {
-      return false;
-    } else {
-      this.storageMap.set(name, { name, type });
-      return true;
-    }
+    return this.implementedTraits.map(t => t.storage);
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
@@ -113,6 +104,7 @@ export class ContractBuilder implements Contract {
       const t: ImplementedTrait = {
         name: baseTrait.name,
         functions: [],
+        storage: baseTrait.storage,
         section: baseTrait.section,
         priority: baseTrait.priority,
       };

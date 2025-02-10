@@ -16,9 +16,12 @@ export type Access = typeof accessOptions[number];
       if (!c.ownable) {
         c.ownable = true;
         c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
-        c.addStorage('ownable', 'Ownable');
         c.addImplementedTrait({
           name: 'Ownable',
+          storage: {
+            name: 'ownable',
+            type: 'Ownable',
+          },
         });
       }
       break;
