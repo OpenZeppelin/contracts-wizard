@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { toIdentifier, toByteArray } from './convert-strings';
+import { toIdentifier } from './convert-strings';
 import { OptionsError } from '../error';
 
 test('identifier - unmodified', t => {
@@ -40,33 +40,4 @@ test('identifier - empty string', t => {
 test('identifier - no valid chars', t => {
   let error = t.throws(() => toIdentifier('123'),  { instanceOf: OptionsError });
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
-});
-
-test('toByteArray - unmodified', t => {
-  t.is(toByteArray('abc'), 'abc');
-});
-
-test('toByteArray - remove accents', t => {
-  t.is(toByteArray('ábc'), 'abc');
-});
-
-test('toByteArray - remove non-ascii-printable characters', t => {
-  t.is(toByteArray('abc😀'), 'abc');
-});
-
-test('toByteArray - escape double quote', t => {
-  t.is(toByteArray("abc\"def"), "abc\\\"def");
-});
-
-test('toByteArray - does not escape single quote', t => {
-  t.is(toByteArray("abc'def"), "abc'def");
-});
-
-test('toByteArray - escape backslash', t => {
-  t.is(toByteArray('abc\\def'), 'abc\\\\def');
-});
-
-test('more than 31 characters', t => {
-  t.is(toByteArray('A234567890123456789012345678901'), 'A234567890123456789012345678901');
-  t.is(toByteArray('A2345678901234567890123456789012'), 'A2345678901234567890123456789012');
 });

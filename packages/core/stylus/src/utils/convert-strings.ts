@@ -21,16 +21,6 @@ export function toIdentifier(str: string, capitalize = false): string {
   }
 }
 
-/**
- * Converts to a ByteArray compatible string literal
- */
-export function toByteArray(str: string): string {
-  return str
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
-    .replace(/[^\x20-\x7E]+/g, '') // remove non-ascii-printable characters
-    .replace(/(\\|")/g, (_, c) => '\\' + c); // escape backslash or double quotes
-}
-
 function maxValueOfUint(bits: number): bigint {
   if (bits <= 0) {
     throw new Error(`Number of bits must be positive (actual '${bits}').`)
