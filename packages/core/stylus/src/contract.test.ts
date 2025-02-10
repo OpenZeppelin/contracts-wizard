@@ -73,3 +73,23 @@ test('contract with sorted use clauses', t => {
   Foo.addUseClause('another::library', 'Foo', { alias: 'Custom1' });
   t.snapshot(printContract(Foo));
 });
+
+test('contract with sorted traits', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addFunction(
+    { name: 'Z', storage: { name: 'z', type: 'Z' } },
+    { name: 'funcZ', args: [], code: [] });
+  Foo.addFunction(
+    { name: 'A', storage: { name: 'a', type: 'A' } },
+    { name: 'funcA', args: [], code: [] }
+  );
+  Foo.addFunction(
+    { name: 'Special', storage: { name: 'special', type: 'Special' }, section: 'Special Section' },
+    { name: 'funcSpecial', args: [], code: [] }
+  );
+  Foo.addFunction(
+    { name: 'B', storage: { name: 'b', type: 'B' } },
+    { name: 'funcB', args: [], code: [] }
+  );
+  t.snapshot(printContract(Foo));
+});

@@ -4,7 +4,6 @@ export interface Contract {
   license: string;
   name: string;
   useClauses: UseClause[];
-  storage: Storage[];
   implementedTraits: ImplementedTrait[];
   ownable: boolean;
 }
@@ -78,10 +77,6 @@ export class ContractBuilder implements Contract {
 
   get errors(): Error[] {
     return [...this.errorsMap.values()];
-  }
-
-  get storage(): Storage[] {
-    return this.implementedTraits.map(t => t.storage);
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {

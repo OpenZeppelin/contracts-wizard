@@ -9,6 +9,7 @@ const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = "\t";
 
 export function printContract(contract: Contract): string {
+  const sortedGroups = sortImplsToGroups(contract);
   return formatLines(
     ...spaceBetween(
       [
@@ -20,25 +21,11 @@ export function printContract(contract: Contract): string {
           ...printUseClauses(contract),
           'use stylus_sdk::prelude::{entrypoint, public, storage};',
         ],
-        printStorage(contract),
-        printImplementedTraits(contract),
+        printStorage(contract.name, sortedGroups),
+        printImplementedTraits(contract.name, sortedGroups),
       ),
     ),
   );
-}
-
-function printStorage(contract: Contract): Lines[] {
-  const structLines = contract.storage.sort((a, b) => a.name.localeCompare(b.name)).map(s => [
-    '#[borrow]',
-    `pub ${s.name}: ${s.type},`,
-  ]);
-  return [
-    '#[entrypoint]',
-    '#[storage]',
-    `struct ${contract.name} {`,
-    ...structLines,
-    `}`
-  ];
 }
 
 function printUseClauses(contract: Contract): Lines[] {
@@ -123,8 +110,11 @@ function sortUseClauses(contract: Contract): UseClause[] {
   });
 }
 
-function printImplementedTraits(contract: Contract): Lines[] {
-  // sort first by priority, then name
+/**
+ * Sorts implemented traits by priority and name, and groups them by section.
+ * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
+ */
+function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
@@ -134,7 +124,7 @@ function printImplementedTraits(contract: Contract): Lines[] {
 
   // group by section
   const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
+    (result: { [section: string]: ImplementedTrait[]; }, current: ImplementedTrait) => {
       // default to no section
       const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
@@ -142,15 +132,32 @@ function printImplementedTraits(contract: Contract): Lines[] {
     }, {});
 
   const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
+  return sortedGroups;
+}
 
-  const allTraits = sortedTraits.map(trait => trait.name);
+function printStorage(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
+  const structLines = sortedGroups.flatMap(([_, impls]) => impls).flatMap(trait => trait.storage).map(s => [
+    '#[borrow]',
+    `pub ${s.name}: ${s.type},`,
+  ]);
+  return [
+    '#[entrypoint]',
+    '#[storage]',
+    `struct ${contractName} {`,
+    ...structLines,
+    `}`
+  ];
+}
+
+function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
+  const allTraits = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
 
   const lines = [];
   lines.push('#[public]');
   lines.push(`#[inherit(${allTraits.join(', ')})]`);
-  lines.push(`impl ${contract.name} {`);
+  lines.push(`impl ${contractName} {`);
   const sections = sortedGroups.map(
-    ([section, impls]) => printImplementedFunctions(section, impls as ImplementedTrait[])
+    ([section, impls]) => printImplementedFunctions(section, impls)
   );
   lines.push(spaceBetween(...sections));
   lines.push('}');
