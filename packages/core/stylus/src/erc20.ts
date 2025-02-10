@@ -4,6 +4,8 @@ import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
+import { setAccessControl } from './set-access-control';
+import { setInfo } from './set-info';
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -32,6 +34,10 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
+export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+  return opts.pausable === true;
+}
+
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
 
@@ -46,6 +52,9 @@ export function buildERC20(opts: ERC20Options): Contract {
   if (allOpts.burnable) {
     addBurnable(c, allOpts.pausable);
   }
+
+  setAccessControl(c, allOpts.access);
+  setInfo(c, allOpts.info);
 
   return c;
 }

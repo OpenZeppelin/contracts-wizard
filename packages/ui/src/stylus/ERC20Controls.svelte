@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
   import { erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
 
+  import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -14,6 +15,8 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -49,5 +52,7 @@
     </label>
   </div>
 </section>
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <InfoSection bind:info={opts.info} />

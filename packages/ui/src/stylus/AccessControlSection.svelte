@@ -36,7 +36,7 @@
       <span class="ml-1">
         <ToggleRadio bind:value={access} defaultValue="ownable" disabled={required} />
       </span>
-      <HelpTooltip align="right"">
+      <HelpTooltip align="right">
         Restrict who can access the functions of a contract or when they can do it.
       </HelpTooltip>
     </label>
@@ -51,5 +51,4 @@
       </HelpTooltip>
     </label>
   </div>
-
 </section>
