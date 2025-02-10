@@ -6,7 +6,7 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  let defaultValueWhenEnabled: 'ownable' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;

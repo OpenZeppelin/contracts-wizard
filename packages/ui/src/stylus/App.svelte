@@ -43,10 +43,6 @@
       if (opts) {
         if (!initialValuesSet) {
           opts.name = initialOpts.name ?? opts.name;
-          switch (opts.kind) {
-            case 'ERC20':
-              opts.premint = initialOpts.premint ?? opts.premint;
-          }
           initialValuesSet = true;
         }
         try {
