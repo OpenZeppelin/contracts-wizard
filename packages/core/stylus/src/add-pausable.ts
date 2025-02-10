@@ -4,6 +4,7 @@ import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access) {
+  c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('openzeppelin_stylus::utils', 'Pausable');
 
   const pausableTrait = {

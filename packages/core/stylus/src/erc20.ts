@@ -68,6 +68,7 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addImplementedTrait(erc20MetadataTrait);
 
   if (pausable) {
+    c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
 
@@ -83,6 +84,7 @@ function addBase(c: ContractBuilder, pausable: boolean) {
 function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
+  c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
 
