@@ -60,14 +60,20 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, pausable: boolean) {
+  // Add the base traits
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
-
   c.addImplementedTrait(erc20Trait);
   c.addImplementedTrait(erc20MetadataTrait);
 
+  // Override Ierc65 from Erc20 and Erc20Metadata
+  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
+  c.addUseClause('alloy_primitives', 'FixedBytes');
+  c.addFunction(erc20MetadataTrait, functions.supports_interface);
+
   if (pausable) {
+    // Add transfer functions with pause checks
     c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
@@ -142,6 +148,17 @@ const functions = defineFunctions({
     visibility: 'pub',
     code: [
       'self.erc20.transfer_from(from, to, value).map_err(|e| e.into())'
+    ]
+  },
+
+  // Overrides
+  supports_interface: {
+    args: [
+      { name: 'interface_id', type: 'FixedBytes<4>' },
+    ],
+    returns: 'bool',
+    code: [
+      'Erc20::supports_interface(interface_id) || Erc20Metadata::supports_interface(interface_id)'
     ]
   },
 
