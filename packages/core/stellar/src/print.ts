@@ -41,6 +41,8 @@ function printContractErrors(contract: Contract): Lines[] {
   }
   return [
     '#[contracterror]',
+    '#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]',
+    '#[repr(u32)]',
     `pub enum ${contract.name}Error {`,
     contract.errors.map(e => `${e.name} = ${e.num},`),
     `}`
