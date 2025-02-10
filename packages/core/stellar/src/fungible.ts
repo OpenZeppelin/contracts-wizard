@@ -79,7 +79,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
   // Set token functions
-  c.addUseClause('openzeppelin_fungible_token', 'self as fungible');
+  c.addUseClause('openzeppelin_fungible_token', 'self', { alias: 'fungible' });
   c.addUseClause('openzeppelin_fungible_token', 'FungibleToken');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
