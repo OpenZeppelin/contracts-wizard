@@ -28,7 +28,7 @@ export function printContract(contract: Contract): string {
 }
 
 function printStorage(contract: Contract): Lines[] {
-  const storage = contract.storage.map(s => [
+  const structLines = contract.storage.sort((a, b) => a.name.localeCompare(b.name)).map(s => [
     '#[borrow]',
     `pub ${s.name}: ${s.type},`,
   ]);
@@ -36,7 +36,7 @@ function printStorage(contract: Contract): Lines[] {
     '#[entrypoint]',
     '#[storage]',
     `struct ${contract.name} {`,
-    ...storage,
+    ...structLines,
     `}`
   ];
 }
