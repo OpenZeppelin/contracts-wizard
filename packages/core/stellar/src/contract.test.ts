@@ -29,7 +29,6 @@ test('contract with function code before', t => {
       'othertag',
       'contractimpl',
     ],
-    perItemTag: 'peritemtag', // TODO: remove perItemTag from contract model if not useful for Stellar
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -40,6 +39,7 @@ test('contract with function code before', t => {
     ]
   };
   Foo.addFunction(trait, fn);
+  Foo.addFunctionTag(trait, fn, 'functiontag');
   Foo.addFunctionCodeBefore(trait, fn, ['before()']);
   t.snapshot(printContract(Foo));
 });
@@ -53,7 +53,6 @@ test('contract with function code before with semicolons', t => {
       'othertag',
       'contractimpl',
     ],
-    perItemTag: 'peritemtag',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -64,6 +63,7 @@ test('contract with function code before with semicolons', t => {
     ]
   };
   Foo.addFunction(trait, fn);
+  Foo.addFunctionTag(trait, fn, 'functiontag');
   Foo.addFunctionCodeBefore(trait, fn, ['before();']);
   t.snapshot(printContract(Foo));
 });

@@ -30,7 +30,6 @@ export interface BaseImplementedTrait {
   name: string;
   for: string;
   tags: string[];
-  perItemTag?: string;
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -40,7 +39,6 @@ export interface BaseImplementedTrait {
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
-  superVariables: Variable[];
   functions: ContractFunction[];
   section?: string;
 }
@@ -141,7 +139,6 @@ export class ContractBuilder implements Contract {
         name: baseTrait.name,
         for: baseTrait.for,
         tags: [ ...baseTrait.tags ],
-        superVariables: [],
         functions: [],
         section: baseTrait.section,
         priority: baseTrait.priority,
@@ -168,7 +165,6 @@ export class ContractBuilder implements Contract {
     const contractFn: ContractFunction = {
       ...fn,
       codeBefore: [],
-      tag: baseTrait.perItemTag,
     };
     t.functions.push(contractFn);
     return contractFn;
