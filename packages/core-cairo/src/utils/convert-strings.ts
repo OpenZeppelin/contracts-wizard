@@ -1,5 +1,14 @@
 import { OptionsError } from "../error";
 
+const NATURAL_NUMBER_PATTERN = /^(?!$)\d+$/;
+
+/** 
+ * Checks if the input string is a natural number
+ */
+export function isNaturalNumber(str: string): boolean {
+  return NATURAL_NUMBER_PATTERN.test(str);
+}
+
 /**
  * Converts to an identifier according to the rules in https://docs.cairo-lang.org/language_constructs/identifiers.html
  */

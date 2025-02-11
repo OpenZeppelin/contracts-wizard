@@ -6,7 +6,7 @@ import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
 import { printContract } from './print';
 import { OptionsError } from './error';
-import { toUint } from './utils/convert-strings';
+import { toUint, isNaturalNumber } from './utils/convert-strings';
 
 export const defaults: Required<MultisigOptions> = {
   name: 'MultisigWallet',
@@ -67,7 +67,7 @@ function addBase(c: ContractBuilder, opts: MultisigOptions) {
 
 function getQuorum(opts: MultisigOptions): bigint {
   const quorumValue = opts.quorum;
-  if (!numberPattern.test(quorumValue)) {
+  if (!isNaturalNumber(quorumValue)) {
     throw new OptionsError({
       quorum: 'Not a valid number',
     });
@@ -102,5 +102,3 @@ const components = defineComponents({
     }],
   }
 });
-
-export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;

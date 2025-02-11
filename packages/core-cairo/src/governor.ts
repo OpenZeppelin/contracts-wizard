@@ -8,7 +8,7 @@ import { setUpgradeableGovernor } from "./set-upgradeable";
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
-import { toUint } from './utils/convert-strings';
+import { toUint, isNaturalNumber } from './utils/convert-strings';
 export const clockModeOptions = ['timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = typeof clockModeOptions[number];
@@ -401,7 +401,7 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
     addVotesQuorumFractionComponent(c, allOpts.quorumPercent);
   }
   else if (allOpts.quorumMode === 'absolute') {
-    if (!numberPattern.test(allOpts.quorumAbsolute)) {
+    if (!isNaturalNumber(allOpts.quorumAbsolute)) {
       throw new OptionsError({
         quorumAbsolute: 'Not a valid number',
       });
@@ -490,5 +490,3 @@ function addExecution(c: ContractBuilder, { timelock }: Required<GovernorOptions
     ], true);
   }
 }
-
-export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
