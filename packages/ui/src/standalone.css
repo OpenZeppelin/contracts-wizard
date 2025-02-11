@@ -46,7 +46,7 @@ body {
 /* Navigation */
 .nav {
   text-align: left;
-  margin: 1rem;
+  margin: 1rem auto;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   background: var(--gray-1);
   display: flex;
