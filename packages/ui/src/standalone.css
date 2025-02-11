@@ -9,72 +9,44 @@ body {
 }
 
 @font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-regular-webfont.eot');
-  src: url('/fonts/silka-regular-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-regular-webfont.woff2') format('woff2'),
-       url('/fonts/silka-regular-webfont.woff') format('woff'),
-       url('/fonts/silka-regular-webfont.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-semibold-webfont.eot');
-  src: url('/fonts/silka-semibold-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-semibold-webfont.woff2') format('woff2'),
-       url('/fonts/silka-semibold-webfont.woff') format('woff'),
-       url('/fonts/silka-semibold-webfont.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-bold-webfont.eot');
-  src: url('/fonts/silka-bold-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-bold-webfont.woff2') format('woff2'),
-       url('/fonts/silka-bold-webfont.woff') format('woff'),
-       url('/fonts/silka-bold-webfont.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
+  font-family: 'inter';
+  src: url('/fonts/Inter-VariableFont_opsz,wght.ttf');
 }
 
 .logo {
-  width: 161px;
+  position: relative;
+  top: 3px;
 }
 
 /* Header */
 .header {
   text-align: left;
-  padding: 1.5rem 1rem 1rem;
-  font-family: 'silka', Arial, Helvetica, sans-serif;
+  padding: 16px 20px;
+  font-family: 'inter', Arial, Helvetica, sans-serif;
   background: white;
   display: flex;
   flex-direction: row;
   min-width: 800px;
-}
-.header img {
-  margin: 0 2rem 0;
+  border-bottom: 1px #EAEAEA solid;
 }
 
 .header .link {
   color: var(--text-color);
   display: block;
   background: white;
-  font-size: 1rem;
+  font-size: 15px;
   line-height: 1;
-  font-weight: 500;
   text-decoration: none;
-  padding: 1rem 0.5rem;
   width: fit-content;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  margin-right:20px;
 }
 
 /* Navigation */
 .nav {
   text-align: left;
-  margin: 1rem auto;
+  margin: 1rem;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   background: var(--gray-1);
   display: flex;
