@@ -6,6 +6,7 @@ module.exports = {
     './public/index.html',
     './public/cairo.html',
     './public/stylus.html',
+    './public/stellar.html',
     './public/embed.html',
   ],
 
