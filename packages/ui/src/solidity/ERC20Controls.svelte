@@ -181,7 +181,7 @@
   </div>
 
   <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">This feature is not audited and is subject to change</span>
+    <strong>* Experimental:</strong> <span class="italic">These features are not audited and are subject to change</span>
   </div>
 </section>
 
