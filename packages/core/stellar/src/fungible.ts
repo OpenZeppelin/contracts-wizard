@@ -17,7 +17,7 @@ export const defaults: Required<FungibleOptions> = {
   pausable: false,
   premint: '0',
   mintable: false,
-  access: commonDefaults.access,
+  access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
   info: commonDefaults.info
 } as const;
 
