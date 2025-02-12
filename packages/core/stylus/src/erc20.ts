@@ -70,7 +70,7 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   // Override Ierc65 from Erc20 and Erc20Metadata
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc20MetadataTrait, functions.supports_interface);
+  c.addFunction(erc20MetadataTrait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc20 and Erc20Metadata. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
   if (pausable) {
     // Add transfer functions with pause checks
