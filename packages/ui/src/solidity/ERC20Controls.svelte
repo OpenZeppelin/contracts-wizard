@@ -27,11 +27,12 @@
   let superchainTooltip: TippyInstance;
   onMount(() => {
     superchainTooltip = tippy(superchainLabel, {
-      content: '<strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain.',
+      content: '<strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain. <a class="light-link" href="https://docs.optimism.io/stack/interop/superchain-erc20#requirements" target="_blank" rel="noopener noreferrer">Read more.</a>',
       trigger: 'manual',
       placement: 'bottom',
       maxWidth: '22em',
       allowHTML: true,
+      interactive: true,
     });
   });
 

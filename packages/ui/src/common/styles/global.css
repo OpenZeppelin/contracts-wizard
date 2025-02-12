@@ -142,3 +142,7 @@ input.input-inline {
 .hljs{
   background: linear-gradient(30deg, #151a24, #2b323e);
 }
+
+.light-link {
+  color: white;
+}
