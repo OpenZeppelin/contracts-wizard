@@ -18,6 +18,30 @@
   };
 
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
+
+  // Show notice when SuperchainERC20 is enabled
+  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+
+  let superchainLabel: HTMLElement;
+  let superchainTooltip: TippyInstance;
+  onMount(() => {
+    superchainTooltip = tippy(superchainLabel, {
+      content: '<strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain.',
+      trigger: 'manual',
+      placement: 'bottom',
+      maxWidth: '22em',
+      allowHTML: true,
+    });
+  });
+
+  let wasSuperchain = false;
+  $: {
+    if (!wasSuperchain && opts.bridgeable === 'superchain') {
+      superchainTooltip.show();
+    }
+    wasSuperchain = opts.bridgeable === 'superchain';
+  }
 </script>
 
 <section class="controls-section">
@@ -146,7 +170,7 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.bridgeable === 'superchain'}>
+    <label class:checked={opts.bridgeable === 'superchain'} bind:this={superchainLabel}>
       <input type="radio" bind:group={opts.bridgeable} value="superchain">
       <OPIcon />&nbsp;SuperchainERC20*
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
