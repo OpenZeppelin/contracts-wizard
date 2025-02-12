@@ -127,7 +127,7 @@
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
-      <span>Bridgeable*</span>
+      <span>Cross-Chain Bridging*</span>
       <span class="ml-1">
         <ToggleRadio bind:value={opts.bridgeable} defaultValue={true} />
       </span>
@@ -140,7 +140,7 @@
   <div class="checkbox-group">
     <label class:checked={opts.bridgeable === true}>
       <input type="radio" bind:group={opts.bridgeable} value={true}>
-      Custom Bridge*
+      Custom*
       <HelpTooltip>
         Uses custom bridge contract(s) as authorized token bridge(s).
       </HelpTooltip>
