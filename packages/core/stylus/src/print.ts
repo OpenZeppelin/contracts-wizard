@@ -16,6 +16,10 @@ export function printContract(contract: Contract): string {
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
       ],
+      [
+        `#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`,
+        `extern crate alloc;`,
+      ],
       spaceBetween(
         [
           ...printUseClauses(contract),
@@ -130,7 +134,7 @@ function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
       (result[section] = result[section] || []).push(current);
       return result;
     }, {});
-
+    
   const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   return sortedGroups;
 }
@@ -155,10 +159,18 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
   const lines = [];
   lines.push('#[public]');
   lines.push(`#[inherit(${allTraits.join(', ')})]`);
-  lines.push(`impl ${contractName} {`);
+  
+  
   const sections = sortedGroups.map(
     ([section, impls]) => printSectionFunctions(section, impls)
   );
+    
+  if (sections.length === 0 || sections.every(s => s.length === 0)) {
+    lines.push(`impl ${contractName} {}`);
+    return lines;
+  }
+  
+  lines.push(`impl ${contractName} {`);
   lines.push(spaceBetween(...sections));
   lines.push('}');
   return lines;
@@ -179,6 +191,7 @@ function printSectionFunctions(section: string, impls: ImplementedTrait[]): Line
       functionBlocks.push(printFunction(fn));
     });
   });
+  
   return spaceBetween(...functionBlocks);
 }
 
@@ -238,6 +251,11 @@ function printFunction2(
   }
   accum += ')';
 
+  if (code.length === 0) {
+    fn.push(' {}');
+    return fn;
+  }
+  
   if (returns === undefined) {
     accum += ' {';
   } else {
