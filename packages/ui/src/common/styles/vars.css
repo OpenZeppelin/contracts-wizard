@@ -29,8 +29,11 @@
   --solidity-blue-1: #51d4ff;
   --solidity-blue-2: #4e5de4;
 
-  --cairo-orange-1: #fe9149;
-  --cairo-orange-2: #fe4a3c;
+  --cairo-orange: #fe4a3c;
+
+  --stylus-pink: #e3066e;
+
+  --stellar-black: #0f0f0f;
 
   /* Dimensions (scale taken from Tailwind) */
 

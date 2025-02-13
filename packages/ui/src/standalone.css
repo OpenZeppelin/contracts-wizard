@@ -9,105 +9,117 @@ body {
 }
 
 @font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-regular-webfont.eot');
-  src: url('/fonts/silka-regular-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-regular-webfont.woff2') format('woff2'),
-       url('/fonts/silka-regular-webfont.woff') format('woff'),
-       url('/fonts/silka-regular-webfont.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
+  font-family: 'inter';
+  src: url('/fonts/Inter-VariableFont_opsz,wght.ttf');
 }
 
-@font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-semibold-webfont.eot');
-  src: url('/fonts/silka-semibold-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-semibold-webfont.woff2') format('woff2'),
-       url('/fonts/silka-semibold-webfont.woff') format('woff'),
-       url('/fonts/silka-semibold-webfont.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'silka';
-  src: url('/fonts/silka-bold-webfont.eot');
-  src: url('/fonts/silka-bold-webfont.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/silka-bold-webfont.woff2') format('woff2'),
-       url('/fonts/silka-bold-webfont.woff') format('woff'),
-       url('/fonts/silka-bold-webfont.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
+.logo {
+  position: relative;
+  top: 3px;
 }
 
 /* Header */
 .header {
   text-align: left;
-  padding: 1.5rem 1rem 1.5rem;
-  margin: 0 0 14rem;
-  font-family: 'silka', Arial, Helvetica, sans-serif;
+  padding: 16px 20px;
+  font-family: 'inter', Arial, Helvetica, sans-serif;
   background: white;
   display: flex;
   flex-direction: row;
   min-width: 800px;
-}
-.header img {
-  margin: 0 2rem 0;
-}
-
-.header .switch {
-  --color-1: var(--solidity-blue-1);
-  --color-2: var(--solidity-blue-2);
-  display: block;
-  background: linear-gradient(to right, var(--color-1), var(--color-2));
-  font-size: 1.1rem;
-  line-height: 1;
-  color: white;
-  font-weight: 500;
-  text-transform: none;
-  text-decoration: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.5rem;
-  width: fit-content;
-  margin: 0.5rem;
-  border-radius: 0.5rem;
-  white-space: nowrap;
-}
-
-.header .switch.switch-off:not(:hover, :focus) {
-  color: transparent;
-  background-clip: text;
-  box-shadow: 0 0 0 1px var(--color-2) inset;
-}
-
-.header .switch.switch-solidity {
-  --color-1: var(--solidity-blue-1);
-  --color-2: var(--solidity-blue-2);
-}
-
-.header .switch.switch-cairo {
-  --color-1: var(--cairo-orange-1);
-  --color-2: var(--cairo-orange-2);
+  border-bottom: 1px #EAEAEA solid;
 }
 
 .header .link {
   color: var(--text-color);
   display: block;
   background: white;
-  font-size: 1rem;
+  font-size: 15px;
   line-height: 1;
-  font-weight: 500;
   text-decoration: none;
-  padding: 1rem 0.5rem;
+  width: fit-content;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  margin-right:20px;
+}
+
+/* Navigation */
+.nav {
+  text-align: left;
+  margin: 1rem auto;
+  font-family: 'silka', Arial, Helvetica, sans-serif;
+  background: var(--gray-1);
+  display: flex;
+  flex-direction: row;
+  border-radius: 5rem;
   width: fit-content;
 }
+
+.nav img{
+  margin-right:4px;
+}
+
+.nav .switch {
+  --color-1: var(--solidity-blue-1);
+  --color-2: #6C6F88;
+  display: flex;
+  align-items:center;
+  font-size: 14.7px;
+  font-family: var(--sans-serif);
+  line-height: 1;
+  color: var(--color-2);
+  font-weight: 500;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 5rem;
+  padding: 0.5rem 1rem;
+  width: fit-content;
+  margin: 0.5rem;
+  border-radius: 5rem;
+  white-space: nowrap;
+  transition: background-color ease-in-out .3s;
+}
+
+.nav .switch:hover {
+  background-color: var(--gray-2);
+}
+
+.active{
+  background-color: white;
+}
+
+.nav .switch.switch-solidity.active{
+  --color-2: #2A2477;
+}
+.nav .switch.switch-solidity.active img{
+  filter: brightness(0) saturate(100%) invert(11%) sepia(51%) saturate(5259%) hue-rotate(243deg) brightness(80%) contrast(92%);
+}
+
+.nav .switch.switch-cairo.active {
+  --color-2: #EB5951;
+}
+.nav .switch.switch-cairo.active img{
+  filter: brightness(0) saturate(100%) invert(61%) sepia(90%) saturate(4391%) hue-rotate(331deg) brightness(98%) contrast(87%)
+}
+
+.nav .switch.switch-stylus.active {
+  --color-2: #E3126F;
+} 
+
+.nav .switch.switch-stellar.active {
+  --color-2: #0F0F0F;
+} 
+.nav .switch.switch-stellar.active img{
+  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)
+}
+
+
 
 /* Wizard */
 .wizard-container {
   padding: 0 1rem 1.5rem;
   max-width: 100%;
-  margin: -12rem auto 0;
+  margin: 0 auto 0;
 }
 .wizard {
   min-width: 800px;
