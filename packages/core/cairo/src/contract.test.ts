@@ -110,3 +110,14 @@ test('contract with standalone import', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract with sorted use clauses', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addComponent(
+    FOO_COMPONENT,
+  );
+  Foo.addUseClause('some::library', 'SomeLibrary');
+  Foo.addUseClause('another::library', 'AnotherLibrary');
+  Foo.addUseClause('another::library', 'Foo', { alias: 'Custom2' });
+  Foo.addUseClause('another::library', 'Foo', { alias: 'Custom1' });
+  t.snapshot(printContract(Foo));
+});
