@@ -161,6 +161,9 @@
       </HelpTooltip>
     </label>
   </h1>
+  <div class="text-sm text-gray-500">
+    <strong>* Experimental:</strong> <span class="italic">These features are not audited and are subject to change</span>
+  </div>
 
   <div class="checkbox-group">
     <label class:checked={opts.bridgeable === true}>
@@ -173,16 +176,14 @@
 
     <label class:checked={opts.bridgeable === 'superchain'} bind:this={superchainLabel}>
       <input type="radio" bind:group={opts.bridgeable} value="superchain">
-      <OPIcon />&nbsp;SuperchainERC20*
+      SuperchainERC20* &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge.
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge. <br><strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain.
       </HelpTooltip>
     </label>
   </div>
 
-  <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">These features are not audited and are subject to change</span>
-  </div>
+
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
