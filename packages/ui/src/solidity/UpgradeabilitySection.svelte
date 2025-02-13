@@ -41,7 +41,7 @@
       </HelpTooltip>
     </label>
   </h1>
-  <div class="text-sm text-gray-500" class:hidden={!disabled}>  <span class="italic">Upgradeability is not available with Cross-chain bridging.</span></div>
+  <div class="text-sm text-gray-500" class:hidden={!disabled}>  <span class="italic">Upgradeability is not currently supported with Cross-Chain Bridging.</span></div>
   <div class="checkbox-group">
     <label class:checked={upgradeable === 'transparent'}>
       <input type="radio" bind:group={upgradeable} value="transparent" disabled={disabled}>
