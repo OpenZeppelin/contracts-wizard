@@ -13,7 +13,6 @@ export function addPausable(c: ContractBuilder, access: Access) {
       name: 'pausable',
       type: 'Pausable',
     },
-    section: 'Pausable', // TODO remove section name if it's not useful
   };
 
   c.addFunction(pausableTrait, functions.pause);
