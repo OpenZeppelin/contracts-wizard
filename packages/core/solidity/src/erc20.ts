@@ -233,6 +233,13 @@ function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgr
     case 'superchain':
       c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
       c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
+      c.setFunctionComments([
+        '/**',
+        ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
+        ' *',
+        ' * IMPORTANT: This feature is only available on OP Chains.',
+        ' */',
+      ], functions._checkTokenBridge);
       break;
     case true: {
       switch (access) {
