@@ -93,10 +93,17 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
-    $: if (showDeployModal) postMessageToIframe('defender-deploy', { 
-      kind: 'oz-wizard-defender-deploy',
-      sources: getSolcSources(contract)
-    });;
+    $: if (showDeployModal) {
+      let deterministicReason: string | undefined;
+      if (opts.kind === 'ERC20' && opts.bridgeable === 'superchain') {
+        deterministicReason = 'SuperchainERC20 requires deploying your ERC20 contract to the same address on every chain in the Superchain.';
+      }
+      postMessageToIframe('defender-deploy', {
+        kind: 'oz-wizard-defender-deploy',
+        sources: getSolcSources(contract),
+        enforceDeterministicWithReason: deterministicReason,
+      });
+    }
 
     const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
