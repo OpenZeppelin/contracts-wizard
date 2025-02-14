@@ -144,13 +144,12 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
     '#[borrow]',
     `pub ${s.name}: ${s.type},`,
   ]);
-  return [
-    '#[entrypoint]',
-    '#[storage]',
-    `struct ${contractName} {`,
-    ...structLines,
-    `}`
-  ];
+  
+  const baseStruct = ['#[entrypoint]', '#[storage]'];
+  
+  return structLines.length === 0
+    ? [...baseStruct, `struct ${contractName} {}`]
+    : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
 }
 
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
@@ -159,7 +158,6 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
   const lines = [];
   lines.push('#[public]');
   lines.push(`#[inherit(${allTraits.join(', ')})]`);
-  
   
   const sections = sortedGroups.map(
     ([section, impls]) => printSectionFunctions(section, impls)
