@@ -1,13 +1,13 @@
 import test from 'ava';
 
-import { buildERC20, ERC20Options } from './erc20';
+import { buildERC721, ERC721Options } from './erc721';
 import { printContract } from './print';
 
-import { erc20 } from '.';
+import { erc721 } from '.';
 
-function testERC20(title: string, opts: Partial<ERC20Options>) {
+function testERC721(title: string, opts: Partial<ERC721Options>) {
   test(title, t => {
-    const c = buildERC20({
+    const c = buildERC721({
       name: 'MyToken',
       ...opts,
     });
@@ -18,46 +18,51 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
 /**
  * Tests external API for equivalence with internal API
  */
-function testAPIEquivalence(title: string, opts?: ERC20Options) {
+function testAPIEquivalence(title: string, opts?: ERC721Options) {
   test(title, t => {
-    t.is(erc20.print(opts), printContract(buildERC20({
-      name: 'MyToken',
-      ...opts,
-    })));
+    t.is(
+      erc721.print(opts),
+      printContract(
+        buildERC721({
+          name: 'MyToken',
+          ...opts,
+        })
+      )
+    );
   });
 }
 
-testERC20('basic erc20', {});
+testERC721('basic erc721', {});
 
-testERC20('erc20 burnable', {
+testERC721('erc721 burnable', {
   burnable: true,
 });
 
-// testERC20('erc20 pausable', {
+// testERC721('erc721 pausable', {
 //   pausable: true,
 // });
 
-// testERC20('erc20 burnable pausable', {
+// testERC721('erc721 burnable pausable', {
 //   burnable: true,
 //   pausable: true,
 // });
 
-testERC20('erc20 full - complex name', {
+testERC721('erc721 full - complex name', {
   name: 'Custom  $ Token',
   burnable: true,
   // pausable: true,
 });
 
-testAPIEquivalence('erc20 API default');
+testAPIEquivalence('erc721 API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken' });
+testAPIEquivalence('erc721 API basic', { name: 'CustomToken' });
 
-testAPIEquivalence('erc20 API full', {
+testAPIEquivalence('erc721 API full', {
   name: 'CustomToken',
   burnable: true,
   // pausable: true,
 });
 
-test('erc20 API assert defaults', async t => {
-  t.is(erc20.print(erc20.defaults), erc20.print());
+test('erc721 API assert defaults', async t => {
+  t.is(erc721.print(erc721.defaults), erc721.print());
 });
