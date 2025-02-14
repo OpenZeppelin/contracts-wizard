@@ -154,7 +154,7 @@ function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
       (result[section] = result[section] || []).push(current);
       return result;
     }, {});
-    
+
   const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   return sortedGroups;
 }
@@ -216,7 +216,6 @@ function printSectionFunctions(section: string, impls: ImplementedTrait[]): Line
       functionBlocks.push(printFunction(fn));
     });
   });
-  
   return spaceBetween(...functionBlocks);
 }
 
