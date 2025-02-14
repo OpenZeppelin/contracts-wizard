@@ -168,7 +168,7 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
     ([section, impls]) => printSectionFunctions(section, impls)
   );
     
-  return sections.length > 0 || sections.some(s => s.length > 0)
+  return sections.length > 0 && sections.some(s => s.length > 0)
     ? [
         ...header, 
         `impl ${contractName} {`,
