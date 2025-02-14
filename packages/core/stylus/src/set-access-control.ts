@@ -2,10 +2,10 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 
 export const accessOptions = [
   false,
-  // 'ownable',
-  // 'roles'
+  'ownable',
+  'roles'
 ] as const;
-export const DEFAULT_ACCESS_CONTROL = false;
+export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = typeof accessOptions[number];
 
@@ -16,34 +16,34 @@ export type Access = typeof accessOptions[number];
   switch (access) {
     case false:
       break;
-    // case 'ownable': {
-    //   if (!c.traitExists('Ownable')) {
-    //     c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
-    //     c.addImplementedTrait({
-    //       name: 'Ownable',
-    //       storage: {
-    //         name: 'ownable',
-    //         type: 'Ownable',
-    //       },
-    //     });
-    //   }
-    //   break;
-    // }
-    // case 'roles': {
-    //   if (!c.traitExists('AccessControl')) {
-    //     c.addUseClause('alloy_primitives', 'Address');
-    //     c.addUseClause('openzeppelin_stylus::access::control', 'AccessControl');
-    //     c.addUseClause('openzeppelin_stylus::access::control', 'IAccessControl');
-    //     c.addImplementedTrait({
-    //       name: 'AccessControl',
-    //       storage: {
-    //         name: 'access',
-    //         type: 'AccessControl',
-    //       },
-    //     });
-    //   }
-    //   break;
-    // }
+    case 'ownable': {
+      if (!c.traitExists('Ownable')) {
+        c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
+        c.addImplementedTrait({
+          name: 'Ownable',
+          storage: {
+            name: 'ownable',
+            type: 'Ownable',
+          },
+        });
+      }
+      break;
+    }
+    case 'roles': {
+      if (!c.traitExists('AccessControl')) {
+        c.addUseClause('alloy_primitives', 'Address');
+        c.addUseClause('openzeppelin_stylus::access::control', 'AccessControl');
+        c.addUseClause('openzeppelin_stylus::access::control', 'IAccessControl');
+        c.addImplementedTrait({
+          name: 'AccessControl',
+          storage: {
+            name: 'access',
+            type: 'AccessControl',
+          },
+        });
+      }
+      break;
+    }
     default:
       const _: never = access;
       throw new Error('Unknown value for `access`');
@@ -68,15 +68,15 @@ export function requireAccessControl(
   }
   setAccessControl(c, access);
 
-  // switch (access) {
-    // case 'ownable': {
-    //   c.addFunctionCodeBefore(trait, fn, [
-    //     'self.ownable.only_owner()?;',
-    //   ]);
+  switch (access) {
+    case 'ownable': {
+      c.addFunctionCodeBefore(trait, fn, [
+        'self.ownable.only_owner()?;',
+      ]);
 
-    //   break;
-    // }
-    // case 'roles': {
+      break;
+    }
+    case 'roles': {
     //   const roleId = roleIdPrefix + '_ROLE';
     //   const addedConstant = c.addConstant({ 
     //     name: roleId,
@@ -87,10 +87,10 @@ export function requireAccessControl(
     //     `self.access.only_role(${roleId}.into())?;`,
     //   ]);
 
-    //   break;
-    // }
-  //   default:
-  //     const _: never = access;
-  //     throw new Error('Unknown value for `access`');
-  // }
+      break;
+    }
+    default:
+      const _: never = access;
+      throw new Error('Unknown value for `access`');
+  }
 }

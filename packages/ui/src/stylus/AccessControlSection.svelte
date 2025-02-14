@@ -6,7 +6,7 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'roles'/** | 'ownable' */ = 'roles';
+  let defaultValueWhenEnabled: 'roles' | 'ownable' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
@@ -43,13 +43,13 @@
   </h1>
 
   <div class="checkbox-group">
-    <!-- <label class:checked={access === 'ownable'}>
+    <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable">
       Ownable
       <HelpTooltip>
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
-    </label> -->
+    </label>
     <label class:checked={access === 'roles'}>
       <input type="radio" bind:group={access} value="roles">
       Roles
