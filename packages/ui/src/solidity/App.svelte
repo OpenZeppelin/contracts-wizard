@@ -101,7 +101,7 @@
       postMessageToIframe('defender-deploy', {
         kind: 'oz-wizard-defender-deploy',
         sources: getSolcSources(contract),
-        enforceDeterministicWithReason: deterministicReason,
+        enforceDeterministicReason: deterministicReason,
       });
     }
 
