@@ -4,7 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
   import { erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
 
-  import AccessControlSection from './AccessControlSection.svelte';
+  // import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -42,17 +42,18 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.pausable}>
+    <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
       <HelpTooltip>
         Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
-    </label>
+    </label> -->
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<!-- TODO: uncomment once Stylus constructors are supported -->
+<!-- <AccessControlSection bind:access={opts.access} required={requireAccessControl} /> -->
 
 <InfoSection bind:info={opts.info} />

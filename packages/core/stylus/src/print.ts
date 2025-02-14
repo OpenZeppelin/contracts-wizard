@@ -25,6 +25,7 @@ export function printContract(contract: Contract): string {
           ...printUseClauses(contract),
           'use stylus_sdk::prelude::{entrypoint, public, storage};',
         ],
+        printConstants(contract),
         printStorage(contract.name, sortedGroups),
         printImplementedTraits(contract.name, sortedGroups),
       ),
@@ -50,6 +51,25 @@ function printUseClauses(contract: Contract): Lines[] {
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
+}
+
+function printConstants(contract: Contract): Lines[] {
+  const lines = [];
+  for (const constant of contract.constants) {
+    // inlineComment is optional, default to false
+    const inlineComment = constant.inlineComment ?? false;
+    const commented = !!constant.comment;
+
+    if (commented && !inlineComment) {
+      lines.push(`// ${constant.comment}`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    } else if (commented) {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
+    } else {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    }
+  }
+  return lines;
 }
 
 function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lines[] {

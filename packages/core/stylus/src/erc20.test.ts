@@ -33,19 +33,19 @@ testERC20('erc20 burnable', {
   burnable: true,
 });
 
-testERC20('erc20 pausable', {
-  pausable: true,
-});
+// testERC20('erc20 pausable', {
+//   pausable: true,
+// });
 
-testERC20('erc20 burnable pausable', {
-  burnable: true,
-  pausable: true,
-});
+// testERC20('erc20 burnable pausable', {
+//   burnable: true,
+//   pausable: true,
+// });
 
 testERC20('erc20 full - complex name', {
   name: 'Custom  $ Token',
   burnable: true,
-  pausable: true,
+  // pausable: true,
 });
 
 testAPIEquivalence('erc20 API default');
@@ -55,7 +55,7 @@ testAPIEquivalence('erc20 API basic', { name: 'CustomToken' });
 testAPIEquivalence('erc20 API full', {
   name: 'CustomToken',
   burnable: true,
-  pausable: true,
+  // pausable: true,
 });
 
 test('erc20 API assert defaults', async t => {

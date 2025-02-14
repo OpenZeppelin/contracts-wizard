@@ -41,6 +41,7 @@ export function injectHyperlinks(code: string) {
 
 const moduleMappings: { [key: string]: string } = {
   // 'Erc20Metadata': 'token/erc20/extensions/metadata.rs',
-  'Ownable': 'access/ownable.rs',
+  // 'Ownable': 'access/ownable.rs',
+  'AccessControl': 'access/control.rs',
   'IErc165': 'utils/introspection/erc165.rs',
 } as const;
