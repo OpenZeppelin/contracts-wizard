@@ -30,18 +30,18 @@ export type Access = typeof accessOptions[number];
       break;
     }
     case 'roles': {
-      if (!c.traitExists('AccessControl')) {
-        c.addUseClause('alloy_primitives', 'Address');
-        c.addUseClause('openzeppelin_stylus::access::control', 'AccessControl');
-        c.addUseClause('openzeppelin_stylus::access::control', 'IAccessControl');
-        c.addImplementedTrait({
-          name: 'AccessControl',
-          storage: {
-            name: 'access',
-            type: 'AccessControl',
-          },
-        });
-      }
+      // if (!c.traitExists('AccessControl')) {
+      //   c.addUseClause('alloy_primitives', 'Address');
+      //   c.addUseClause('openzeppelin_stylus::access::control', 'AccessControl');
+      //   c.addUseClause('openzeppelin_stylus::access::control', 'IAccessControl');
+      //   c.addImplementedTrait({
+      //     name: 'AccessControl',
+      //     storage: {
+      //       name: 'access',
+      //       type: 'AccessControl',
+      //     },
+      //   });
+      // }
       break;
     }
     default:
