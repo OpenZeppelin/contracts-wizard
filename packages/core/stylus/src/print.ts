@@ -250,7 +250,8 @@ function printFunction2(
   accum += ')';
 
   if (code.length === 0) {
-    fn.push(' {}');
+    accum += ' {}';
+    fn.push(accum);
     return fn;
   }
   
