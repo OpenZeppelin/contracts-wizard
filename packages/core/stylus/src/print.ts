@@ -153,25 +153,32 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
 }
 
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const allTraits = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
+  const traitNames = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
 
-  const lines = [];
-  lines.push('#[public]');
-  lines.push(`#[inherit(${allTraits.join(', ')})]`);
+  const inheritAttribute = traitNames.length > 0
+  ? `#[inherit(${traitNames.join(', ')})]`
+  : "#[inherit]";
+    
+  const header = [
+    '#[public]',
+    inheritAttribute
+  ];
   
   const sections = sortedGroups.map(
     ([section, impls]) => printSectionFunctions(section, impls)
   );
     
-  if (sections.length === 0 || sections.every(s => s.length === 0)) {
-    lines.push(`impl ${contractName} {}`);
-    return lines;
-  }
-  
-  lines.push(`impl ${contractName} {`);
-  lines.push(spaceBetween(...sections));
-  lines.push('}');
-  return lines;
+  return sections.length > 0 || sections.some(s => s.length > 0)
+    ? [
+        ...header, 
+        `impl ${contractName} {`,
+        spaceBetween(...sections),
+        '}'
+      ]
+    : [
+        ...header,
+        `impl ${contractName} {}`
+      ];
 }
 
 function printSectionFunctions(section: string, impls: ImplementedTrait[]): Lines[] {
