@@ -1,18 +1,14 @@
 import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './contract';
 
-export const accessOptions = [
-  false,
-  'ownable',
-  'roles'
-] as const;
+export const accessOptions = [false, 'ownable', 'roles'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
-export type Access = typeof accessOptions[number];
+export type Access = (typeof accessOptions)[number];
 
 /**
  * Sets access control for the contract via constructor args.
  */
- export function setAccessControl(c: ContractBuilder, access: Access): void {
+export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access) {
     case false:
       break;
@@ -56,11 +52,11 @@ export type Access = typeof accessOptions[number];
  * If `caller` is provided, requires that the caller is the owner. Otherwise, requires that the owner is authorized.
  */
 export function requireAccessControl(
-  c: ContractBuilder, 
-  trait: BaseImplementedTrait, 
-  fn: BaseFunction, 
+  c: ContractBuilder,
+  trait: BaseImplementedTrait,
+  fn: BaseFunction,
   access: Access,
-  roleIdPrefix: string, 
+  roleIdPrefix: string,
   roleOwner: string | undefined
 ): void {
   if (access === false) {
@@ -70,22 +66,20 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addFunctionCodeBefore(trait, fn, [
-        'self.ownable.only_owner()?;',
-      ]);
+      c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
 
       break;
     }
     case 'roles': {
-    //   const roleId = roleIdPrefix + '_ROLE';
-    //   const addedConstant = c.addConstant({ 
-    //     name: roleId,
-    //     type: '[u8; 32]',
-    //     value: `keccak_const::Keccak256::new().update(b"${roleId}").finalize();`
-    //   })
-    //   c.addFunctionCodeBefore(trait, fn, [
-    //     `self.access.only_role(${roleId}.into())?;`,
-    //   ]);
+      //   const roleId = roleIdPrefix + '_ROLE';
+      //   const addedConstant = c.addConstant({
+      //     name: roleId,
+      //     type: '[u8; 32]',
+      //     value: `keccak_const::Keccak256::new().update(b"${roleId}").finalize();`
+      //   })
+      //   c.addFunctionCodeBefore(trait, fn, [
+      //     `self.access.only_role(${roleId}.into())?;`,
+      //   ]);
 
       break;
     }
