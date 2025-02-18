@@ -5,7 +5,7 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 
 const defaults: MultisigOptions = {
-  name: 'MultisigWallet',
+  name: 'MyMultisig',
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info

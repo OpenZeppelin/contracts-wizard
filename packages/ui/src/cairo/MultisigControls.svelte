@@ -21,6 +21,12 @@
 
 <section class="controls-section">
   <h1>Settings</h1>
+
+  <label class="labeled-input">
+    <span>Name</span>
+    <input bind:value={opts.name}>
+  </label>
+
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Quorum

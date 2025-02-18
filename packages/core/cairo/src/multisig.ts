@@ -9,7 +9,7 @@ import { OptionsError } from './error';
 import { toUint, isNaturalNumber } from './utils/convert-strings';
 
 export const defaults: Required<MultisigOptions> = {
-  name: 'MultisigWallet',
+  name: 'MyMultisig',
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info
