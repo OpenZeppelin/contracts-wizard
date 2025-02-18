@@ -27,7 +27,7 @@
   let superchainTooltip: TippyInstance;
   onMount(() => {
     superchainTooltip = tippy(superchainLabel, {
-      content: '<strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain. <a class="light-link" href="https://docs.optimism.io/stack/interop/superchain-erc20#requirements" target="_blank" rel="noopener noreferrer">Read more.</a>',
+      content: '<strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain. <a class="light-link" href="https://docs.optimism.io/stack/interop/superchain-erc20#requirements" target="_blank" rel="noopener noreferrer">Read more.</a>',
       trigger: 'manual',
       placement: 'bottom',
       maxWidth: '22em',
@@ -178,12 +178,10 @@
       <input type="radio" bind:group={opts.bridgeable} value="superchain">
       SuperchainERC20* &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge. <br><strong>Important:</strong> Requires deploying your ERC20 contract to the same address on every chain in the Superchain.
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge. <br><strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain.
       </HelpTooltip>
     </label>
   </div>
-
-
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />

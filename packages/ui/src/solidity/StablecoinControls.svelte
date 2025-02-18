@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import OPIcon from '../common/icons/OPIcon.svelte';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
     kind: 'Stablecoin',
@@ -16,6 +17,31 @@
   };
 
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
+
+  // Show notice when SuperchainERC20 is enabled
+  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+
+  let superchainLabel: HTMLElement;
+  let superchainTooltip: TippyInstance;
+  onMount(() => {
+    superchainTooltip = tippy(superchainLabel, {
+      content: '<strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain. <a class="light-link" href="https://docs.optimism.io/stack/interop/superchain-erc20#requirements" target="_blank" rel="noopener noreferrer">Read more.</a>',
+      trigger: 'manual',
+      placement: 'bottom',
+      maxWidth: '22em',
+      allowHTML: true,
+      interactive: true,
+    });
+  });
+
+  let wasSuperchain = false;
+  $: {
+    if (!wasSuperchain && opts.bridgeable === 'superchain') {
+      superchainTooltip.show();
+    }
+    wasSuperchain = opts.bridgeable === 'superchain';
+  }
 </script>
 
 <section class="controls-section">
@@ -162,6 +188,42 @@
       Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Cross-Chain Bridging*</span>
+      <span class="ml-1">
+        <ToggleRadio bind:value={opts.bridgeable} defaultValue={true} />
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
+        Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
+      </HelpTooltip>
+    </label>
+  </h1>
+  <div class="text-sm text-gray-500">
+    <strong>* Experimental:</strong> <span class="italic">These features are not audited and are subject to change</span>
+  </div>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.bridgeable === true}>
+      <input type="radio" bind:group={opts.bridgeable} value={true}>
+      Custom*
+      <HelpTooltip>
+        Uses custom bridge contract(s) as authorized token bridge(s).
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.bridgeable === 'superchain'} bind:this={superchainLabel}>
+      <input type="radio" bind:group={opts.bridgeable} value="superchain">
+      SuperchainERC20* &nbsp;<OPIcon />
+      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge. <br><strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain.
       </HelpTooltip>
     </label>
   </div>

@@ -150,6 +150,18 @@ test('erc20 bridgeable superchain, upgradeable not allowed', async t => {
   t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
 });
 
+testERC20('erc20 full bridgeable non-upgradeable', {
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  permit: true,
+  votes: true,
+  flashmint: true,
+  bridgeable: true,
+});
+
 testERC20('erc20 full upgradeable transparent', {
   premint: '2000',
   access: 'roles',

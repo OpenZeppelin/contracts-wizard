@@ -96,7 +96,7 @@
     $: if (showDeployModal) {
       let deterministicReason: string | undefined;
       if (opts && opts.kind === 'ERC20' && opts.bridgeable === 'superchain') {
-        deterministicReason = 'SuperchainERC20 requires deploying your ERC20 contract to the same address on every chain in the Superchain.';
+        deterministicReason = 'SuperchainERC20 requires deploying your contract to the same address on every chain in the Superchain.';
       }
       postMessageToIframe('defender-deploy', {
         kind: 'oz-wizard-defender-deploy',
