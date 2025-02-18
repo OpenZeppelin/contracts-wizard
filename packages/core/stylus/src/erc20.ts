@@ -95,6 +95,7 @@ function addPermit(c: ContractBuilder, pausable: boolean): Trait {
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
 
   c.addImplementedTrait(erc20PermitTrait);
+  c.addEip712("ERC-20 Permit Example", "1");
   
   if (pausable) {   
     // Add transfer & permit functions with pause checks
@@ -160,7 +161,7 @@ const erc20Trait: Trait = {
 };
 
 const erc20PermitTrait: Trait = {
-  name: 'Erc20Permit',
+  name: 'Erc20Permit<Eip712>',
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',

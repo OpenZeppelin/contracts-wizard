@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, EIP712, } from './contract';
 
 import { formatLines, spaceBetween, Lines } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
@@ -27,6 +27,7 @@ export function printContract(contract: Contract): string {
         ],
         printConstants(contract),
         printStorage(contract.name, sortedGroups),
+        printEip712(contract.eip712),
         printImplementedTraits(contract.name, sortedGroups),
       ),
     ),
@@ -170,6 +171,24 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
   return structLines.length === 0
     ? [...baseStruct, `struct ${contractName} {}`]
     : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
+}
+
+function printEip712(eip712?: EIP712): Lines[] {
+  if (!eip712) {
+    return [];
+  }
+
+  return [
+    '#[storage]',
+    'struct Eip712 {}',
+    '',
+    'impl IEip712 for Eip712 {',
+    spaceBetween([
+      `const NAME: &'static str = "${eip712.name}";`,
+      `const VERSION: &'static str = "${eip712.version}";`,
+    ]),
+    '}',
+  ];
 }
 
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
