@@ -121,7 +121,7 @@
 
     <label class:checked={opts.custodian}>
       <input type="checkbox" bind:checked={opts.custodian}>
-      Custodian
+      Custodian*
       <HelpTooltip>
         Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
       </HelpTooltip>
@@ -133,7 +133,7 @@
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
-      <span>Limitations</span>
+      <span>Limitations*</span>
       <span class="ml-1">
         <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
       </span>
@@ -146,14 +146,14 @@
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist">
-      Allowlist
+      Allowlist*
       <HelpTooltip>
         Allows a list of addresses to transfer tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.limitations === 'blocklist'}>
       <input type="radio" bind:group={opts.limitations} value="blocklist">
-      Blocklist
+      Blocklist*
       <HelpTooltip>
         Blocks a list of addresses from transferring tokens.
       </HelpTooltip>
@@ -206,9 +206,6 @@
       </HelpTooltip>
     </label>
   </h1>
-  <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">These features are not audited and are subject to change</span>
-  </div>
 
   <div class="checkbox-group">
     <label class:checked={opts.bridgeable === true}>
