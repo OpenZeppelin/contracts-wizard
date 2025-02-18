@@ -135,7 +135,7 @@
       const blob = new Blob([code], { type: 'text/plain' });
       if (opts) {
         saveAs(blob, opts.name + '.sol');
-        await postConfig(opts, 'download-npm', language);
+        await postConfig(opts, 'download-file', language);
       }
     };
 
@@ -193,9 +193,10 @@
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
-
+  
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
+      
       <OverflowMenu>
         <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
           ERC20
@@ -260,7 +261,7 @@
       {/if}
 
       <Dropdown let:active>
-        <button class="action-button" class:active slot="button">
+        <button class="action-button with-text" class:active slot="button">
           <DownloadIcon />
           Download
         </button>
@@ -347,7 +348,7 @@
         </button>
       </div>
       <pre class="flex flex-col grow basis-0 overflow-auto">
-        <code class="hljs grow overflow-auto p-4">{@html highlightedCode}</code>
+        <code class="hljs -solidity grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
     </div>
@@ -460,13 +461,22 @@
 
   .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-4);
-    border-radius: 12px; 
-    font-weight: bold;
+    border-radius: 20px; 
     cursor: pointer;
+    transition: background-color ease-in-out .2s;
   }
   .action-button {
-    padding: var(--size-2);
-    border-radius: 12px; 
+    padding: 7px;
+    border-radius: 20px; 
+    transition: background-color ease-in-out .2s;
+  }
+
+  .with-text {
+    padding-right: var(--size-3);
+  }
+
+  .tab button{
+    
   }
 
   .tab button, :global(.overflow-btn) {
