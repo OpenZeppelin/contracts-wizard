@@ -238,7 +238,7 @@
         {/if}
       </button>
 
-      {#if opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+      {#if !(opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -282,7 +282,7 @@
           </div>
         </button>
 
-        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -292,7 +292,7 @@
         </button>
         {/if}
 
-        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">
