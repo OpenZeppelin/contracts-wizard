@@ -154,7 +154,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Cross-Chain Bridging*</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={opts.bridgeable} defaultValue={true} />
+        <ToggleRadio bind:value={opts.bridgeable} defaultValue="custom" />
       </span>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
         Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
@@ -166,8 +166,8 @@
   </div>
 
   <div class="checkbox-group">
-    <label class:checked={opts.bridgeable === true}>
-      <input type="radio" bind:group={opts.bridgeable} value={true}>
+    <label class:checked={opts.bridgeable === 'custom'}>
+      <input type="radio" bind:group={opts.bridgeable} value="custom">
       Custom*
       <HelpTooltip>
         Uses custom bridge contract(s) as authorized token bridge(s).

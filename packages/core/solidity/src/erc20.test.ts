@@ -93,21 +93,21 @@ testERC20('erc20 flashmint', {
 });
 
 testERC20('erc20 bridgeable', {
-  bridgeable: true,
+  bridgeable: 'custom',
 });
 
 testERC20('erc20 bridgeable ownable', {
-  bridgeable: true,
+  bridgeable: 'custom',
   access: 'ownable',
 });
 
 testERC20('erc20 bridgeable roles', {
-  bridgeable: true,
+  bridgeable: 'custom',
   access: 'roles',
 });
 
 testERC20('erc20 bridgeable managed', {
-  bridgeable: true,
+  bridgeable: 'custom',
   access: 'managed',
 });
 
@@ -134,7 +134,7 @@ test('erc20 bridgeable, upgradeable not allowed', async t => {
   let error = t.throws(() => buildERC20({
     name: 'MyToken',
     symbol: 'MTK',
-    bridgeable: true,
+    bridgeable: 'custom',
     upgradeable: 'transparent',
   }));
   t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
@@ -159,7 +159,7 @@ testERC20('erc20 full bridgeable non-upgradeable', {
   permit: true,
   votes: true,
   flashmint: true,
-  bridgeable: true,
+  bridgeable: 'custom',
 });
 
 testERC20('erc20 full upgradeable transparent', {

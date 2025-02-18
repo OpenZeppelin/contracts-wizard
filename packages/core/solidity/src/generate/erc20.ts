@@ -1,4 +1,4 @@
-import type { ERC20Options } from '../erc20';
+import { bridgeableOptions, type ERC20Options } from '../erc20';
 import { accessOptions } from '../set-access-control';
 import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';
@@ -6,8 +6,6 @@ import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
-
-export const bridgeableOptions = [ ...booleans, 'superchain' ] as const;
 
 const blueprint = {
   name: ['MyToken'],

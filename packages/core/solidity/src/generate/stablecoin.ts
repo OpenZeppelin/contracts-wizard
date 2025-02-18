@@ -1,8 +1,8 @@
+import { bridgeableOptions } from '../erc20';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import type { StablecoinOptions } from '../stablecoin';
 import { generateAlternatives } from './alternatives';
-import { bridgeableOptions } from './erc20';
 
 const booleans = [true, false];
 

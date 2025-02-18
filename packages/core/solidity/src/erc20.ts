@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { ContractBuilder } from './contract';
 import { Access, setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
@@ -9,6 +9,9 @@ import { printContract } from './print';
 import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
+
+export const bridgeableOptions = [false, 'custom', 'superchain'] as const;
+export type Bridgeable = typeof bridgeableOptions[number];
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -24,7 +27,7 @@ export interface ERC20Options extends CommonOptions {
    */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
-  bridgeable?: boolean | 'superchain';
+  bridgeable?: Bridgeable;
 }
 
 export const defaults: Required<ERC20Options> = {
@@ -213,7 +216,7 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
+function addBridgeable(c: ContractBuilder, bridgeable: 'custom' | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
@@ -241,7 +244,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgr
         ' */',
       ], functions._checkTokenBridge);
       break;
-    case true: {
+    case 'custom': {
       switch (access) {
         case false:
         case 'ownable': {
