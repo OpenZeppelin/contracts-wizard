@@ -67,10 +67,10 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addImplementedTrait(erc721Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
 
-  // Override IErc65 from Erc721 and Erc721Metadata
-  // c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  // c.addUseClause('alloy_primitives', 'FixedBytes');
-  // c.addFunction(erc721MetadataTrait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc721 and Erc721Metadata. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  // Call nested IErc65 from Erc721
+  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
+  c.addUseClause('alloy_primitives', 'FixedBytes');
+  c.addFunction(erc721Trait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc721. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
   if (pausable) {
     // Add transfer functions with pause checks
@@ -133,15 +133,11 @@ const functions = defineFunctions({
   },
 
   // Overrides
-  // supports_interface: {
-  //   args: [
-  //     { name: 'interface_id', type: 'FixedBytes<4>' },
-  //   ],
-  //   returns: 'bool',
-  //   code: [
-  //     'Erc721::supports_interface(interface_id) || Erc721Metadata::supports_interface(interface_id)'
-  //   ]
-  // },
+  supports_interface: {
+    args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
+    returns: 'bool',
+    code: ['Erc721::supports_interface(interface_id)'],
+  },
 
   // Extensions
   burn: {
