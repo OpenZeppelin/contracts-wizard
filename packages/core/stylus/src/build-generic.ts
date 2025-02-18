@@ -16,6 +16,7 @@ export function buildGeneric(opts: GenericOptions) {
       return buildERC721(opts);
 
     default:
+      const _: never = opts;
       throw new Error('Unknown ERC');
   }
 }
