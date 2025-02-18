@@ -237,7 +237,7 @@ function addBridgeable(c: ContractBuilder, bridgeable: true | 'superchain', upgr
         '/**',
         ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
         ' *',
-        ' * IMPORTANT: This feature is only available on OP Chains.',
+        ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on OP Chains.',
         ' */',
       ], functions._checkTokenBridge);
       break;
