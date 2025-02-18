@@ -7,13 +7,17 @@ import { writeGeneratedSources } from './generate/sources';
 import type { KindedOptions } from './build-generic';
 
 interface Context {
-  generatedSourcesPath: string
+  generatedSourcesPath: string;
 }
 
 const test = _test as TestFn<Context>;
 
 test.serial('erc20 result generated', async t => {
   await testGenerate(t, 'ERC20');
+});
+
+test.serial('erc1155 result generated', async t => {
+  await testGenerate(t, 'ERC1155');
 });
 
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {

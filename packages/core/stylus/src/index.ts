@@ -19,4 +19,4 @@ export { sanitizeKind } from './kind';
 
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
-export { erc20 } from './api';
+export { erc20, erc1155 } from './api';
