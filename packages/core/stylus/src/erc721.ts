@@ -136,6 +136,7 @@ const functions = defineFunctions({
   supports_interface: {
     args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
     returns: 'bool',
+    visibility: 'pub',
     code: ['Erc721::supports_interface(interface_id)'],
   },
 
