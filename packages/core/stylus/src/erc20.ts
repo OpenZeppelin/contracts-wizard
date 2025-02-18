@@ -58,7 +58,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, trait);
+    addBurnable(c, allOpts.pausable, allOpts.permit, trait);
   }
 
   setAccessControl(c, allOpts.access);
@@ -122,21 +122,21 @@ function addMetadata(c: ContractBuilder) {
   // c.addImplementedTrait(erc20MetadataTrait);
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, trait: Trait) {
+function addBurnable(c: ContractBuilder, pausable: boolean, permit: boolean, trait: Trait) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
 
-  c.addFunction(trait, functions(trait).burn);
-  c.addFunction(trait, functions(trait).burn_from);
+  c.addFunction(trait, functions(trait, permit).burn);
+  c.addFunction(trait, functions(trait, permit).burn_from);
 
   if (pausable) {
-    c.addFunctionCodeBefore(trait, functions(trait).burn, [
+    c.addFunctionCodeBefore(trait, functions(trait, permit).burn, [
       'self.pausable.when_not_paused()?;',
     ]);
-    c.addFunctionCodeBefore(trait, functions(trait).burn_from, [
+    c.addFunctionCodeBefore(trait, functions(trait, permit).burn_from, [
       'self.pausable.when_not_paused()?;',
     ]);
   }
@@ -147,7 +147,8 @@ type Trait = {
   storage: {
     name: string,
     type: string
-  }
+  },
+  deref?: Trait
 }
 
 const erc20Trait: Trait = {
@@ -163,7 +164,8 @@ const erc20PermitTrait: Trait = {
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
-  }
+  },
+  deref: erc20Trait
 };
 
 // const erc20MetadataTrait: Trait = {
@@ -174,7 +176,7 @@ const erc20PermitTrait: Trait = {
 //   }
 // }
 
-const functions = (trait: Trait) =>
+const functions = (trait: Trait, deref = false) =>
   defineFunctions({
     // Token Functions
     transfer: {
@@ -219,7 +221,7 @@ const functions = (trait: Trait) =>
       args: [getSelfArg(), { name: 'value', type: 'U256' }],
       returns: 'Result<(), Vec<u8>>',
       visibility: 'pub',
-      code: [`self.${trait.storage.name}.burn(value).map_err(|e| e.into())`],
+      code: [`self.${trait.storage.name}${deref ? `.${trait.deref!.storage.name}` : ""}.burn(value).map_err(|e| e.into())`],
     },
     burn_from: {
       args: [
@@ -230,7 +232,7 @@ const functions = (trait: Trait) =>
       returns: 'Result<(), Vec<u8>>',
       visibility: 'pub',
       code: [
-        `self.${trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`,
+        `self.${trait.storage.name}${deref ? `.${trait.deref!.storage.name}` : ""}.burn_from(account, value).map_err(|e| e.into())`,
       ],
     },
 
