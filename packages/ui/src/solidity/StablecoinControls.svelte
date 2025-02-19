@@ -8,6 +8,7 @@
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
+  import { superchainTooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
     kind: 'Stablecoin',
@@ -25,14 +26,7 @@
   let superchainLabel: HTMLElement;
   let superchainTooltip: TippyInstance;
   onMount(() => {
-    superchainTooltip = tippy(superchainLabel, {
-      content: '<strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain. <a class="light-link" href="https://docs.optimism.io/stack/interop/superchain-erc20#requirements" target="_blank" rel="noopener noreferrer">Read more.</a>',
-      trigger: 'manual',
-      placement: 'bottom',
-      maxWidth: '22em',
-      allowHTML: true,
-      interactive: true,
-    });
+    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
   });
 
   let wasSuperchain = false;
