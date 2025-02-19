@@ -29,7 +29,12 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
 
 testERC20('basic erc20', {});
 
+testERC20('basic erc20 nonpermit', {
+  permit: false
+});
+
 testERC20('erc20 burnable', {
+  permit: false,
   burnable: true,
 });
 
@@ -71,7 +76,10 @@ testERC20('erc20 full - complex name', {
 
 testAPIEquivalence('erc20 API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken' });
+testAPIEquivalence('erc20 API basic', { 
+  name: 'CustomToken',
+  permit: false
+});
 
 testAPIEquivalence('erc20 API full', {
   name: 'CustomToken',
