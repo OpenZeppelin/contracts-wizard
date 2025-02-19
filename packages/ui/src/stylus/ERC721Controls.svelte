@@ -42,6 +42,7 @@
       </HelpTooltip>
     </label>
 
+    <!-- TODO: uncomment once Pausable is supported -->
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
