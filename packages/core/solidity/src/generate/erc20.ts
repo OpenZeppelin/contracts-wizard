@@ -1,4 +1,4 @@
-import { bridgeableOptions, type ERC20Options } from '../erc20';
+import { crossChainBridgingOptions, type ERC20Options } from '../erc20';
 import { accessOptions } from '../set-access-control';
 import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';
@@ -17,7 +17,7 @@ const blueprint = {
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
-  bridgeable: bridgeableOptions,
+  crossChainBridging: crossChainBridgingOptions,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
@@ -25,8 +25,8 @@ const blueprint = {
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
   for (const opts of generateAlternatives(blueprint)) {
-    // bridgeable does not currently support upgradeable
-    if (!(opts.bridgeable && opts.upgradeable)) {
+    // crossChainBridging does not currently support upgradeable
+    if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
     }
   }

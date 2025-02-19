@@ -10,8 +10,8 @@ import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
 
-export const bridgeableOptions = [false, 'custom', 'superchain'] as const;
-export type Bridgeable = typeof bridgeableOptions[number];
+export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
+export type CrossChainBridging = typeof crossChainBridgingOptions[number];
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -27,7 +27,7 @@ export interface ERC20Options extends CommonOptions {
    */
   votes?: boolean | ClockMode;
   flashmint?: boolean;
-  bridgeable?: Bridgeable;
+  crossChainBridging?: CrossChainBridging;
 }
 
 export const defaults: Required<ERC20Options> = {
@@ -40,7 +40,7 @@ export const defaults: Required<ERC20Options> = {
   permit: true,
   votes: false,
   flashmint: false,
-  bridgeable: false,
+  crossChainBridging: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -57,7 +57,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
-    bridgeable: opts.bridgeable ?? defaults.bridgeable,
+    crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
   };
 }
 
@@ -108,8 +108,8 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
     addFlashMint(c);
   }
 
-  if (allOpts.bridgeable) {
-    addBridgeable(c, allOpts.bridgeable, allOpts.upgradeable, access);
+  if (allOpts.crossChainBridging) {
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.upgradeable, access);
   }
 
   setAccessControl(c, access);
@@ -216,7 +216,7 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addBridgeable(c: ContractBuilder, bridgeable: 'custom' | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
+function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
@@ -227,12 +227,12 @@ function addBridgeable(c: ContractBuilder, bridgeable: 'custom' | 'superchain', 
 
   if (upgradeable) {
     throw new OptionsError({
-      bridgeable: 'Bridgeable does not currently support use in upgradeable contracts'
+      crossChainBridging: 'Upgradeability is not currently supported with Cross-Chain Bridging'
     });
   }
 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
-  switch (bridgeable) {
+  switch (crossChainBridging) {
     case 'superchain':
       c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
       c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
@@ -289,8 +289,8 @@ function addBridgeable(c: ContractBuilder, bridgeable: 'custom' | 'superchain', 
       break;
     }
     default: {
-      const _: never = bridgeable;
-      throw new Error('Unknown value for `bridgeable`');
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
     }
   }
   c.addVariable('error Unauthorized();');

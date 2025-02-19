@@ -1,4 +1,4 @@
-import { bridgeableOptions } from '../erc20';
+import { crossChainBridgingOptions } from '../erc20';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import type { StablecoinOptions } from '../stablecoin';
@@ -16,7 +16,7 @@ const erc20Basic = {
   votes: [false] as const,
   flashmint: [false] as const,
   premint: ['1'],
-  bridgeable: [false] as const,
+  crossChainBridging: [false] as const,
   access: [false] as const,
   info: [{}] as const,
 }
@@ -31,7 +31,7 @@ const erc20Full = {
   votes: ['timestamp'] as const,
   flashmint: [true] as const,
   premint: ['1'],
-  bridgeable: bridgeableOptions,
+  crossChainBridging: crossChainBridgingOptions,
   access: accessOptions,
   info: infoOptions,
 };

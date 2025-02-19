@@ -92,65 +92,65 @@ testERC20('erc20 flashmint', {
   flashmint: true,
 });
 
-testERC20('erc20 bridgeable', {
-  bridgeable: 'custom',
+testERC20('erc20 crossChainBridging custom', {
+  crossChainBridging: 'custom',
 });
 
-testERC20('erc20 bridgeable ownable', {
-  bridgeable: 'custom',
+testERC20('erc20 crossChainBridging custom ownable', {
+  crossChainBridging: 'custom',
   access: 'ownable',
 });
 
-testERC20('erc20 bridgeable roles', {
-  bridgeable: 'custom',
+testERC20('erc20 crossChainBridging custom roles', {
+  crossChainBridging: 'custom',
   access: 'roles',
 });
 
-testERC20('erc20 bridgeable managed', {
-  bridgeable: 'custom',
+testERC20('erc20 crossChainBridging custom managed', {
+  crossChainBridging: 'custom',
   access: 'managed',
 });
 
-testERC20('erc20 bridgeable superchain', {
-  bridgeable: 'superchain',
+testERC20('erc20 crossChainBridging superchain', {
+  crossChainBridging: 'superchain',
 });
 
-testERC20('erc20 bridgeable superchain ownable', {
-  bridgeable: 'superchain',
+testERC20('erc20 crossChainBridging superchain ownable', {
+  crossChainBridging: 'superchain',
   access: 'ownable',
 });
 
-testERC20('erc20 bridgeable superchain roles', {
-  bridgeable: 'superchain',
+testERC20('erc20 crossChainBridging superchain roles', {
+  crossChainBridging: 'superchain',
   access: 'roles',
 });
 
-testERC20('erc20 bridgeable superchain managed', {
-  bridgeable: 'superchain',
+testERC20('erc20 crossChainBridging superchain managed', {
+  crossChainBridging: 'superchain',
   access: 'managed',
 });
 
-test('erc20 bridgeable, upgradeable not allowed', async t => {
+test('erc20 crossChainBridging custom, upgradeable not allowed', async t => {
   let error = t.throws(() => buildERC20({
     name: 'MyToken',
     symbol: 'MTK',
-    bridgeable: 'custom',
+    crossChainBridging: 'custom',
     upgradeable: 'transparent',
   }));
-  t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
+  t.is((error as OptionsError).messages.crossChainBridging, 'Upgradeability is not currently supported with Cross-Chain Bridging');
 });
 
-test('erc20 bridgeable superchain, upgradeable not allowed', async t => {
+test('erc20 crossChainBridging superchain, upgradeable not allowed', async t => {
   let error = t.throws(() => buildERC20({
     name: 'MyToken',
     symbol: 'MTK',
-    bridgeable: 'superchain',
+    crossChainBridging: 'superchain',
     upgradeable: 'transparent',
   }));
-  t.is((error as OptionsError).messages.bridgeable, 'Bridgeable does not currently support use in upgradeable contracts');
+  t.is((error as OptionsError).messages.crossChainBridging, 'Upgradeability is not currently supported with Cross-Chain Bridging');
 });
 
-testERC20('erc20 full bridgeable non-upgradeable', {
+testERC20('erc20 full crossChainBridging custom non-upgradeable', {
   premint: '2000',
   access: 'roles',
   burnable: true,
@@ -159,7 +159,7 @@ testERC20('erc20 full bridgeable non-upgradeable', {
   permit: true,
   votes: true,
   flashmint: true,
-  bridgeable: 'custom',
+  crossChainBridging: 'custom',
 });
 
 testERC20('erc20 full upgradeable transparent', {

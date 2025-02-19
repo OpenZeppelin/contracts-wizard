@@ -95,7 +95,7 @@
 
     $: if (showDeployModal) {
       let deterministicReason: string | undefined;
-      if (opts && opts.kind === 'ERC20' && opts.bridgeable === 'superchain') {
+      if (opts && opts.kind === 'ERC20' && opts.crossChainBridging === 'superchain') {
         deterministicReason = 'SuperchainERC20 requires deploying your contract to the same address on every chain in the Superchain.';
       }
       postMessageToIframe('defender-deploy', {
@@ -238,7 +238,7 @@
         {/if}
       </button>
 
-      {#if !(opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
+      {#if !(opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -282,7 +282,7 @@
           </div>
         </button>
 
-        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
+        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -292,7 +292,7 @@
         </button>
         {/if}
 
-        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.bridgeable))}
+        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">

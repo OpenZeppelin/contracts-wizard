@@ -38,10 +38,10 @@
 
   let wasSuperchain = false;
   $: {
-    if (!wasSuperchain && opts.bridgeable === 'superchain') {
+    if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
       superchainTooltip.show();
     }
-    wasSuperchain = opts.bridgeable === 'superchain';
+    wasSuperchain = opts.crossChainBridging === 'superchain';
   }
 </script>
 
@@ -154,7 +154,7 @@
     <label class="flex items-center tooltip-container pr-2">
       <span>Cross-Chain Bridging*</span>
       <span class="ml-1">
-        <ToggleRadio bind:value={opts.bridgeable} defaultValue="custom" />
+        <ToggleRadio bind:value={opts.crossChainBridging} defaultValue="custom" />
       </span>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
         Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
@@ -166,16 +166,16 @@
   </div>
 
   <div class="checkbox-group">
-    <label class:checked={opts.bridgeable === 'custom'}>
-      <input type="radio" bind:group={opts.bridgeable} value="custom">
+    <label class:checked={opts.crossChainBridging === 'custom'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="custom">
       Custom*
       <HelpTooltip>
         Uses custom bridge contract(s) as authorized token bridge(s).
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.bridgeable === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.bridgeable} value="superchain">
+    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="superchain">
       SuperchainERC20* &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
         Uses the predeployed <code>SuperchainTokenBridge</code> contract on Superchain-compatible networks as the authorized token bridge. <br><strong>Important:</strong> Requires deploying your contract to the same address on every chain in the Superchain.
@@ -186,6 +186,6 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} disabled={opts.bridgeable !== false}/>
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} disabled={opts.crossChainBridging !== false}/>
 
 <InfoSection bind:info={opts.info} />
