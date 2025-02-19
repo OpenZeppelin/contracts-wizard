@@ -105,6 +105,36 @@
       });
     }
 
+    $: showButtons = getButtonVisiblities(opts);
+
+    interface ButtonVisibilities {
+      openInRemix: boolean;
+      downloadHardhat: boolean;
+      downloadFoundry: boolean;
+    }
+
+    const getButtonVisiblities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+      if (opts?.kind === "Governor") {
+        return {
+          openInRemix: true,
+          downloadHardhat: false,
+          downloadFoundry: false,
+        }
+      } else if (opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging)) {
+        return {
+          openInRemix: false,
+          downloadHardhat: false,
+          downloadFoundry: false,
+        }
+      } else {
+        return {
+          openInRemix: true,
+          downloadHardhat: true,
+          downloadFoundry: true,
+        }
+      }
+    }
+
     const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
       sources[contract.name] = { content: code };
@@ -238,7 +268,7 @@
         {/if}
       </button>
 
-      {#if !(opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
+      {#if showButtons.openInRemix}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -282,7 +312,7 @@
           </div>
         </button>
 
-        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
+        {#if showButtons.downloadHardhat}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -292,7 +322,7 @@
         </button>
         {/if}
 
-        {#if !(opts?.kind === "Governor" || opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging))}
+        {#if showButtons.downloadFoundry}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">
