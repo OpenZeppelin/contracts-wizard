@@ -3,7 +3,7 @@ import { Access, setAccessControl, requireAccessControl } from './set-access-con
 import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setUpgradeable } from './set-upgradeable';
+import { setUpgradeable, Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
@@ -216,7 +216,7 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', upgradeable: false | 'transparent' | 'uups', access: Access) {
+function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', upgradeable: Upgradeable, access: Access) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
@@ -233,67 +233,73 @@ function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' 
 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   switch (crossChainBridging) {
-    case 'superchain':
-      c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-      c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
-      c.setFunctionComments([
-        '/**',
-        ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
-        ' *',
-        ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on OP Chains.',
-        ' */',
-      ], functions._checkTokenBridge);
+    case 'custom':
+      addCustomBridging(c, access);
       break;
-    case 'custom': {
-      switch (access) {
-        case false:
-        case 'ownable': {
-          const addedImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
-          if (addedImmutable) {
-            c.addConstructorArgument({type: 'address', name: 'tokenBridge'});
-            c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
-            c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
-          }
-          c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
-          break;
-        }
-        case 'roles': {
-          setAccessControl(c, access);
-          const roleOwner = 'tokenBridge';
-          const roleId = 'TOKEN_BRIDGE_ROLE';
-          const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
-          if (addedConstant) {
-            c.addConstructorArgument({type: 'address', name: roleOwner});
-            c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
-          }
-          c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
-          break;
-        }
-        case 'managed': {
-          setAccessControl(c, access);
-          c.addImportOnly({
-            name: 'AuthorityUtils',
-            path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
-          });
-          c.setFunctionBody([
-            `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
-            `if (!immediate) revert Unauthorized();`
-          ], functions._checkTokenBridge, 'view');
-          break;
-        }
-        default: {
-          const _: never = access;
-          throw new Error('Unknown value for `access`');
-        }
+    case 'superchain':
+      addSuperchainERC20(c);
+      break;
+    default:
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
+  }
+  c.addVariable('error Unauthorized();');
+}
+
+function addCustomBridging(c: ContractBuilder, access: Access) {
+  switch (access) {
+    case false:
+    case 'ownable': {
+      const addedBridgeImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
+      if (addedBridgeImmutable) {
+        c.addConstructorArgument({ type: 'address', name: 'tokenBridge' });
+        c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
+        c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
       }
+      c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      break;
+    }
+    case 'roles': {
+      setAccessControl(c, access);
+      const roleOwner = 'tokenBridge';
+      const roleId = 'TOKEN_BRIDGE_ROLE';
+      const addedRoleConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      if (addedRoleConstant) {
+        c.addConstructorArgument({ type: 'address', name: roleOwner });
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+      }
+      c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      break;
+    }
+    case 'managed': {
+      setAccessControl(c, access);
+      c.addImportOnly({
+        name: 'AuthorityUtils',
+        path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+      });
+      c.setFunctionBody([
+        `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
+        `if (!immediate) revert Unauthorized();`
+      ], functions._checkTokenBridge, 'view');
       break;
     }
     default: {
-      const _: never = crossChainBridging;
-      throw new Error('Unknown value for `crossChainBridging`');
+      const _: never = access;
+      throw new Error('Unknown value for `access`');
     }
   }
-  c.addVariable('error Unauthorized();');
+}
+
+function addSuperchainERC20(c: ContractBuilder) {
+  c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
+  c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
+  c.setFunctionComments([
+    '/**',
+    ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
+    ' *',
+    ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on OP Chains.',
+    ' */',
+  ], functions._checkTokenBridge);
 }
 
 export const functions = defineFunctions({
