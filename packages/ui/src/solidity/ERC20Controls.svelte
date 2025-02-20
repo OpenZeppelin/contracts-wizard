@@ -172,7 +172,7 @@
       <input type="radio" bind:group={opts.crossChainBridging} value="superchain">
       SuperchainERC20* &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract on OP Chains as the authorized token bridge.
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on chains in the Superchain.
       </HelpTooltip>
     </label>
   </div>

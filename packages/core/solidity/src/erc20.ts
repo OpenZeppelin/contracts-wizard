@@ -297,7 +297,7 @@ function addSuperchainERC20(c: ContractBuilder) {
     '/**',
     ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
     ' *',
-    ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on OP Chains.',
+    ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
     ' */',
   ], functions._checkTokenBridge);
 }
