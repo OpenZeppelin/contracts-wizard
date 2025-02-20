@@ -61,7 +61,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     const parents = parentsWithInitializers
       .flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
+    const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
     const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
