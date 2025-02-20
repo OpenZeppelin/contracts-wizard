@@ -13,6 +13,8 @@ Contracts Wizard is a web application to interactively build a contract out of c
 Install dependencies with `yarn install`.
 
 `packages/core` contains the code generation logic for each language under separately named subfolders.
+    * Run `yarn test` to run the tests.
+    * Run `yarn test:update-snapshots` to update AVA snapshots and run the tests.
 
 `packages/ui` is the interface built in Svelte. From the `packages/ui` directory, run `yarn dev` to spin up a local server to develop the UI.
 
