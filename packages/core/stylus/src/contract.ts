@@ -39,7 +39,6 @@ export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string[];
-  visibility?: 'pub';
   returns?: string;
   comments?: string[];
 }
