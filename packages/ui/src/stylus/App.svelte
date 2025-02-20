@@ -4,6 +4,7 @@
     import hljs from './highlightjs';
 
     import ERC20Controls from './ERC20Controls.svelte';
+    import ERC721Controls from './ERC721Controls.svelte';
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
     import CheckIcon from '../common/icons/CheckIcon.svelte';
@@ -94,6 +95,9 @@
         <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
           ERC20
         </button>
+        <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
+          ERC721
+        </button>
         <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
           ERC1155
         </button>
@@ -130,6 +134,9 @@
     <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
+      </div>
+      <div class:hidden={tab !== 'ERC721'}>
+        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155} />

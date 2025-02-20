@@ -23,7 +23,7 @@ export interface UseClause {
 export interface BaseImplementedTrait {
   name: string;
   storage: Storage;
-  section?: string; // TODO: check if ever necessary, remove if not
+  section?: string;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -39,7 +39,7 @@ export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string[];
-  visibility?: 'pub'; // TODO: check if at all necessary
+  visibility?: 'pub';
   returns?: string;
   comments?: string[];
 }
@@ -86,7 +86,7 @@ export class ContractBuilder implements Contract {
   get errors(): Error[] {
     return [...this.errorsMap.values()];
   }
-
+  
   get constants(): Variable[] {
     return [...this.constantsMap.values()];
   }

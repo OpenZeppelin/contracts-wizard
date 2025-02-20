@@ -162,7 +162,7 @@ function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
 function printStorage(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
   const structLines = sortedGroups.flatMap(([_, impls]) => impls).flatMap(trait => trait.storage).map(s => [
     '#[borrow]',
-    `pub ${s.name}: ${s.type},`,
+    `${s.name}: ${s.type},`,
   ]);
   
   const baseStruct = ['#[entrypoint]', '#[storage]'];

@@ -28,7 +28,6 @@ const functions = defineFunctions({
       getSelfArg(),
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.pausable.pause().map_err(|e| e.into())'
     ],
@@ -38,7 +37,6 @@ const functions = defineFunctions({
       getSelfArg(),
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.pausable.unpause().map_err(|e| e.into())'
     ],

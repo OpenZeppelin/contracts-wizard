@@ -122,7 +122,6 @@ const functions = defineFunctions({
   supports_interface: {
     args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
     returns: 'bool',
-    visibility: 'pub',
     code: ['Erc1155::supports_interface(interface_id)'],
   },
 
@@ -135,7 +134,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: ['self.erc1155.burn(account, token_id, value).map_err(|e| e.into())'],
   },
   burn_batch: {
@@ -146,7 +144,6 @@ const functions = defineFunctions({
       { name: 'values', type: 'Vec<U256>' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: ['self.erc1155.burn_batch(account, token_ids, values).map_err(|e| e.into())'],
   },
 });

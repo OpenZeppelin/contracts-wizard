@@ -1,16 +1,22 @@
 import type { CommonContractOptions } from './common-options';
 import {
+  printERC1155,
+  defaults as erc1155defaults,
+  isAccessControlRequired as erc1155IsAccessControlRequired,
+  ERC1155Options,
+} from './erc1155';
+import {
   printERC20,
   defaults as erc20defaults,
   isAccessControlRequired as erc20IsAccessControlRequired,
   ERC20Options,
 } from './erc20';
 import {
-  printERC1155,
-  defaults as erc1155defaults,
-  isAccessControlRequired as erc1155IsAccessControlRequired,
-  ERC1155Options,
-} from './erc1155';
+  printERC721,
+  defaults as erc721defaults,
+  isAccessControlRequired as erc721IsAccessControlRequired,
+  ERC721Options,
+} from './erc721';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
@@ -33,6 +39,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
 }
 
 export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
+export type ERC721 = WizardContractAPI<ERC721Options> & AccessControlAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC1155Options>;
 
 export const erc20: ERC20 = {
@@ -40,7 +47,11 @@ export const erc20: ERC20 = {
   defaults: erc20defaults,
   isAccessControlRequired: erc20IsAccessControlRequired,
 };
-
+export const erc721: ERC721 = {
+  print: printERC721,
+  defaults: erc721defaults,
+  isAccessControlRequired: erc721IsAccessControlRequired,
+};
 export const erc1155: ERC1155 = {
   print: printERC1155,
   defaults: erc1155defaults,
