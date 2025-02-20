@@ -16,6 +16,10 @@ test.serial('erc20 result generated', async t => {
   await testGenerate(t, 'ERC20');
 });
 
+test.serial('erc721 result generated', async t => {
+  await testGenerate(t, 'ERC721');
+});
+
 test.serial('erc1155 result generated', async t => {
   await testGenerate(t, 'ERC1155');
 });
