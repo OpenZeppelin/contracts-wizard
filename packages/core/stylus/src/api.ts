@@ -35,7 +35,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
    * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
    * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
    */
-  isAccessControlRequired: (opts: Partial<Options>) => boolean;
+  isAccessControlRequired: (opts: Required<Options>) => boolean;
 }
 
 export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;

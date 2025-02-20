@@ -7,6 +7,12 @@ import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
 
+export interface ERC20Options extends CommonContractOptions {
+  name: string;
+  burnable?: boolean;
+  pausable?: boolean;
+}
+
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   burnable: false,
@@ -19,12 +25,6 @@ export function printERC20(opts: ERC20Options = defaults): string {
   return printContract(buildERC20(opts));
 }
 
-export interface ERC20Options extends CommonContractOptions {
-  name: string;
-  burnable?: boolean;
-  pausable?: boolean;
-}
-
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
@@ -34,8 +34,8 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.pausable === true;
+export function isAccessControlRequired(opts: Required<ERC20Options>): boolean {
+  return opts.pausable;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
