@@ -16,11 +16,16 @@ export function printContract(contract: Contract): string {
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
       ],
+      [
+        `#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`,
+        `extern crate alloc;`,
+      ],
       spaceBetween(
         [
           ...printUseClauses(contract),
           'use stylus_sdk::prelude::{entrypoint, public, storage};',
         ],
+        printConstants(contract),
         printStorage(contract.name, sortedGroups),
         printImplementedTraits(contract.name, sortedGroups),
       ),
@@ -46,6 +51,25 @@ function printUseClauses(contract: Contract): Lines[] {
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
+}
+
+function printConstants(contract: Contract): Lines[] {
+  const lines = [];
+  for (const constant of contract.constants) {
+    // inlineComment is optional, default to false
+    const inlineComment = constant.inlineComment ?? false;
+    const commented = !!constant.comment;
+
+    if (commented && !inlineComment) {
+      lines.push(`// ${constant.comment}`);
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    } else if (commented) {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
+    } else {
+      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
+    }
+  }
+  return lines;
 }
 
 function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lines[] {
@@ -140,28 +164,41 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
     '#[borrow]',
     `pub ${s.name}: ${s.type},`,
   ]);
-  return [
-    '#[entrypoint]',
-    '#[storage]',
-    `struct ${contractName} {`,
-    ...structLines,
-    `}`
-  ];
+  
+  const baseStruct = ['#[entrypoint]', '#[storage]'];
+  
+  return structLines.length === 0
+    ? [...baseStruct, `struct ${contractName} {}`]
+    : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
 }
 
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const allTraits = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
+  const traitNames = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
 
-  const lines = [];
-  lines.push('#[public]');
-  lines.push(`#[inherit(${allTraits.join(', ')})]`);
-  lines.push(`impl ${contractName} {`);
+  const inheritAttribute = traitNames.length > 0
+  ? `#[inherit(${traitNames.join(', ')})]`
+  : "#[inherit]";
+    
+  const header = [
+    '#[public]',
+    inheritAttribute
+  ];
+  
   const sections = sortedGroups.map(
     ([section, impls]) => printSectionFunctions(section, impls)
   );
-  lines.push(spaceBetween(...sections));
-  lines.push('}');
-  return lines;
+    
+  return sections.length > 0 && sections.some(s => s.length > 0)
+    ? [
+        ...header, 
+        `impl ${contractName} {`,
+        spaceBetween(...sections),
+        '}'
+      ]
+    : [
+        ...header,
+        `impl ${contractName} {}`
+      ];
 }
 
 function printSectionFunctions(section: string, impls: ImplementedTrait[]): Lines[] {
@@ -238,6 +275,12 @@ function printFunction2(
   }
   accum += ')';
 
+  if (code.length === 0) {
+    accum += ' {}';
+    fn.push(accum);
+    return fn;
+  }
+  
   if (returns === undefined) {
     accum += ' {';
   } else {

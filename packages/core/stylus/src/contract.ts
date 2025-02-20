@@ -5,6 +5,7 @@ export interface Contract {
   name: string;
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
+  constants: Variable[];
 }
 
 export interface Storage {
@@ -48,6 +49,14 @@ export interface ContractFunction extends BaseFunction {
   tag?: string;
 }
 
+export interface Variable {
+  name: string;
+  type: string;
+  value: string;
+  comment?: string;
+  inlineComment?: boolean;
+}
+
 export interface Argument {
   name: string;
   type?: string;
@@ -60,6 +69,7 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
+  private constantsMap: Map<string, Variable> = new Map();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -75,6 +85,10 @@ export class ContractBuilder implements Contract {
 
   get errors(): Error[] {
     return [...this.errorsMap.values()];
+  }
+  
+  get constants(): Variable[] {
+    return [...this.constantsMap.values()];
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
@@ -103,6 +117,15 @@ export class ContractBuilder implements Contract {
       };
       this.implementedTraitsMap.set(key, t);
       return t;
+    }
+  }
+
+  addConstant(constant: Variable): boolean {
+    if (this.constantsMap.has(constant.name)) {
+      return false;
+    } else {
+      this.constantsMap.set(constant.name, constant);
+      return true;
     }
   }
 

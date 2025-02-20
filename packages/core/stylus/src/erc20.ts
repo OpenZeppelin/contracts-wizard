@@ -63,14 +63,14 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   // Add the base traits
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
+  // c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
   c.addImplementedTrait(erc20Trait);
-  c.addImplementedTrait(erc20MetadataTrait);
+  // c.addImplementedTrait(erc20MetadataTrait);
 
-  // Override Ierc65 from Erc20 and Erc20Metadata
-  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc20MetadataTrait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc20 and Erc20Metadata. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  // Override IErc65 from Erc20 and Erc20Metadata
+  // c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
+  // c.addUseClause('alloy_primitives', 'FixedBytes');
+  // c.addFunction(erc20MetadataTrait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc20 and Erc20Metadata. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
   if (pausable) {
     // Add transfer functions with pause checks
@@ -115,13 +115,13 @@ const erc20Trait = {
   }
 };
 
-const erc20MetadataTrait = {
-  name: 'Erc20Metadata',
-  storage: {
-    name: 'metadata',
-    type: 'Erc20Metadata',
-  }
-}
+// const erc20MetadataTrait = {
+//   name: 'Erc20Metadata',
+//   storage: {
+//     name: 'metadata',
+//     type: 'Erc20Metadata',
+//   }
+// }
 
 const functions = defineFunctions({
   // Token Functions
@@ -152,15 +152,15 @@ const functions = defineFunctions({
   },
 
   // Overrides
-  supports_interface: {
-    args: [
-      { name: 'interface_id', type: 'FixedBytes<4>' },
-    ],
-    returns: 'bool',
-    code: [
-      'Erc20::supports_interface(interface_id) || Erc20Metadata::supports_interface(interface_id)'
-    ]
-  },
+  // supports_interface: {
+  //   args: [
+  //     { name: 'interface_id', type: 'FixedBytes<4>' },
+  //   ],
+  //   returns: 'bool',
+  //   code: [
+  //     'Erc20::supports_interface(interface_id) || Erc20Metadata::supports_interface(interface_id)'
+  //   ]
+  // },
 
   // Extensions
   burn: {

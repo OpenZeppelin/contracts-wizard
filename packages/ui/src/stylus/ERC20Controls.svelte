@@ -4,7 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
   import { erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
 
-  import AccessControlSection from './AccessControlSection.svelte';
+  // import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -37,22 +37,24 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.pausable}>
+    <!-- TODO: uncomment once Pausable is supported -->
+    <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-pausable">
         Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
-    </label>
+    </label> -->
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<!-- TODO: uncomment once Stylus constructors are supported -->
+<!-- <AccessControlSection bind:access={opts.access} required={requireAccessControl} /> -->
 
 <InfoSection bind:info={opts.info} />

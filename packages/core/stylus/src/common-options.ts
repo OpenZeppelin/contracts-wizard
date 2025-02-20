@@ -33,6 +33,10 @@ export function withCommonContractDefaults(opts: CommonContractOptions): Require
   };
 }
 
-export function getSelfArg(): Argument {
-  return { name: '&mut', type: 'self' };
+export function getSelfArg(scope: 'mutable' | 'immutable' = 'mutable'): Argument {
+  if (scope === 'immutable') {
+    return { name: '&self' };
+  } else {
+    return { name: '&mut self' };
+  }
 }
