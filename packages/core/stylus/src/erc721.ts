@@ -117,7 +117,6 @@ const functions = defineFunctions({
   transfer: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<bool, Vec<u8>>',
-    visibility: 'pub',
     code: ['self.erc721.transfer(to, value).map_err(|e| e.into())'],
   },
   transfer_from: {
@@ -128,7 +127,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<bool, Vec<u8>>',
-    visibility: 'pub',
     code: ['self.erc721.transfer_from(from, to, value).map_err(|e| e.into())'],
   },
 
@@ -136,7 +134,6 @@ const functions = defineFunctions({
   supports_interface: {
     args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
     returns: 'bool',
-    visibility: 'pub',
     code: ['Erc721::supports_interface(interface_id)'],
   },
 
@@ -144,7 +141,6 @@ const functions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: ['self.erc721.burn(token_id).map_err(|e| e.into())'],
   },
 });

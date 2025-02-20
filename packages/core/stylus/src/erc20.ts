@@ -132,7 +132,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<bool, Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.erc20.transfer(to, value).map_err(|e| e.into())'
     ]
@@ -145,7 +144,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<bool, Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.erc20.transfer_from(from, to, value).map_err(|e| e.into())'
     ]
@@ -169,7 +167,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.erc20.burn(value).map_err(|e| e.into())'
     ]
@@ -181,7 +178,6 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    visibility: 'pub',
     code: [
       'self.erc20.burn_from(account, value).map_err(|e| e.into())'
     ]
