@@ -23,7 +23,6 @@ export interface UseClause {
 export interface BaseImplementedTrait {
   name: string;
   storage: Storage;
-  section?: string; // TODO: check if ever necessary, remove if not
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
