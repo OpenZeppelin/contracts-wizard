@@ -83,6 +83,19 @@ export function requireAccessControl(
 
       break;
     }
+    case 'roles': {
+    //   const roleId = roleIdPrefix + '_ROLE';
+    //   const addedConstant = c.addConstant({ 
+    //     name: roleId,
+    //     type: '[u8; 32]',
+    //     value: `keccak_const::Keccak256::new().update(b"${roleId}").finalize();`
+    //   })
+    //   c.addFunctionCodeBefore(trait, fn, [
+    //     `self.access.only_role(${roleId}.into())?;`,
+    //   ]);
+
+      break;
+    }
     default:
       const _: never = access;
       throw new Error('Unknown value for `access`');

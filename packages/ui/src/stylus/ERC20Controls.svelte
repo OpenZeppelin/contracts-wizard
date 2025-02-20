@@ -37,15 +37,16 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
 
+    <!-- TODO: uncomment once Pausable is supported -->
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-pausable">
         Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
