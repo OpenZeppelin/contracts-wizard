@@ -187,7 +187,6 @@ const functions = (trait: Trait, deref = false) =>
         { name: 'value', type: 'U256' },
       ],
       returns: 'Result<bool, Vec<u8>>',
-      visibility: 'pub',
       code: [
         `self.${trait.storage.name}.transfer(to, value).map_err(|e| e.into())`,
       ],
@@ -200,7 +199,6 @@ const functions = (trait: Trait, deref = false) =>
         { name: 'value', type: 'U256' },
       ],
       returns: 'Result<bool, Vec<u8>>',
-      visibility: 'pub',
       code: [
         `self.${trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`,
       ],
@@ -221,7 +219,6 @@ const functions = (trait: Trait, deref = false) =>
     burn: {
       args: [getSelfArg(), { name: 'value', type: 'U256' }],
       returns: 'Result<(), Vec<u8>>',
-      visibility: 'pub',
       code: [`self.${trait.storage.name}${deref ? `.${trait.deref!.storage.name}` : ""}.burn(value).map_err(|e| e.into())`],
     },
     burn_from: {
@@ -231,7 +228,6 @@ const functions = (trait: Trait, deref = false) =>
         { name: 'value', type: 'U256' },
       ],
       returns: 'Result<(), Vec<u8>>',
-      visibility: 'pub',
       code: [
         `self.${trait.storage.name}${deref ? `.${trait.deref!.storage.name}` : ""}.burn_from(account, value).map_err(|e| e.into())`,
       ],
@@ -249,7 +245,6 @@ const functions = (trait: Trait, deref = false) =>
         { name: 's', type: 'B256' },
       ],
       returns: 'Result<(), Vec<u8>>',
-      visibility: 'pub',
       code: [
         `self.${trait.storage.name}.permit(owner, spender, value, deadline, v, r, s).map_err(|e| e.into())`,
       ],

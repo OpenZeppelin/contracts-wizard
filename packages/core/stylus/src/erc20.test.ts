@@ -39,10 +39,12 @@ testERC20('erc20 burnable', {
 });
 
 // testERC20('erc20 pausable', {
+//   permit: false,
 //   pausable: true,
 // });
 
 // testERC20('erc20 burnable pausable', {
+//   permit: false,
 //   burnable: true,
 //   pausable: true,
 // });

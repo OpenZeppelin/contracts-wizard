@@ -2,21 +2,21 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
-  import { erc20, infoDefaults } from '@openzeppelin/wizard-stylus';
+  import { erc721, infoDefaults } from '@openzeppelin/wizard-stylus';
 
   // import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['ERC20']> = {
-    kind: 'ERC20',
-    ...erc20.defaults,
+  export const opts: Required<KindedOptions['ERC721']> = {
+    kind: 'ERC721',
+    ...erc721.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc20.isAccessControlRequired(opts);
+  $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -37,7 +37,7 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-burnable">
+      <HelpTooltip>
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
@@ -46,19 +46,11 @@
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-pausable">
+      <HelpTooltip>
         Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
     </label> -->
-
-    <label class:checked={opts.permit}>
-      <input type="checkbox" bind:checked={opts.permit}>
-      Permit
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-permit">
-        Without paying gas, token holders will be able to allow third parties to transfer from their account.
-      </HelpTooltip>
-    </label>
   </div>
 </section>
 
