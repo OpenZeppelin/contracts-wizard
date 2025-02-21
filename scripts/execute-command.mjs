@@ -1,9 +1,6 @@
 import { execSync } from "child_process";
 
-export function inLanguageFolderRunTYarnCommand(
-  languageInput,
-  commandAndFlagsInput
-) {
+export function runYarnCommandForLanguage(languageInput, commandAndFlagsInput) {
   try {
     execSync(
       `yarn --cwd ./packages/core/${languageInput} ${commandAndFlagsInput}`,
