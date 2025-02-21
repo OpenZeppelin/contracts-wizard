@@ -1,1 +1,1 @@
-module.exports = require("./dist/print-versioned");
+module.exports = require('./dist/print-versioned');

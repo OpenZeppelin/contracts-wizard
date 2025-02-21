@@ -1,4 +1,4 @@
-import { toIdentifier } from "./utils/to-identifier";
+import { toIdentifier } from './utils/to-identifier';
 
 export interface Contract {
   name: string;
@@ -13,11 +13,7 @@ export interface Contract {
   upgradeable: boolean;
 }
 
-export type Value =
-  | string
-  | number
-  | { lit: string }
-  | { note: string; value: Value };
+export type Value = string | number | { lit: string } | { note: string; value: Value };
 
 export interface Parent {
   contract: ImportContract;
@@ -56,19 +52,14 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
-export type FunctionKind = "internal" | "public";
+export type FunctionKind = 'internal' | 'public';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
-const mutabilityRank = ["pure", "view", "nonpayable", "payable"] as const;
+const mutabilityRank = ['pure', 'view', 'nonpayable', 'payable'] as const;
 
-function maxMutability(
-  a: FunctionMutability,
-  b: FunctionMutability,
-): FunctionMutability {
-  return mutabilityRank[
-    Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))
-  ]!;
+function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMutability {
+  return mutabilityRank[Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))]!;
 }
 
 export interface FunctionArgument {
@@ -83,7 +74,7 @@ export interface NatspecTag {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
-  license: string = "MIT";
+  license: string = 'MIT';
   upgradeable = false;
 
   readonly using: Using[] = [];
@@ -102,11 +93,11 @@ export class ContractBuilder implements Contract {
 
   get parents(): Parent[] {
     return [...this.parentMap.values()]
-      .filter((p) => !p.importOnly)
+      .filter(p => !p.importOnly)
       .sort((a, b) => {
-        if (a.contract.name === "Initializable") {
+        if (a.contract.name === 'Initializable') {
           return -1;
-        } else if (b.contract.name === "Initializable") {
+        } else if (b.contract.name === 'Initializable') {
           return 1;
         } else {
           return 0;
@@ -115,10 +106,7 @@ export class ContractBuilder implements Contract {
   }
 
   get imports(): ImportContract[] {
-    return [
-      ...[...this.parentMap.values()].map((p) => p.contract),
-      ...this.using.map((u) => u.library),
-    ];
+    return [...[...this.parentMap.values()].map(p => p.contract), ...this.using.map(u => u.library)];
   }
 
   get functions(): ContractFunction[] {
@@ -145,11 +133,7 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addOverride(
-    parent: ReferencedContract,
-    baseFn: BaseFunction,
-    mutability?: FunctionMutability,
-  ) {
+  addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
     if (mutability) {
@@ -164,18 +148,12 @@ export class ContractBuilder implements Contract {
 
   addNatspecTag(key: string, value: string) {
     // eslint-disable-next-line no-useless-escape
-    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key))
-      throw new Error(`Invalid natspec key: ${key}`);
+    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid natspec key: ${key}`);
     this.natspecTags.push({ key, value });
   }
 
   private addFunction(baseFn: BaseFunction): ContractFunction {
-    const signature = [
-      baseFn.name,
-      "(",
-      ...baseFn.args.map((a) => a.name),
-      ")",
-    ].join("");
+    const signature = [baseFn.name, '(', ...baseFn.args.map(a => a.name), ')'].join('');
     const got = this.functionMap.get(signature);
     if (got !== undefined) {
       return got;
@@ -184,7 +162,7 @@ export class ContractBuilder implements Contract {
         override: new Set<ReferencedContract>(),
         modifiers: [],
         code: [],
-        mutability: "nonpayable",
+        mutability: 'nonpayable',
         final: false,
         comments: [],
         ...baseFn,
@@ -202,11 +180,7 @@ export class ContractBuilder implements Contract {
     this.constructorCode.push(code);
   }
 
-  addFunctionCode(
-    code: string,
-    baseFn: BaseFunction,
-    mutability?: FunctionMutability,
-  ) {
+  addFunctionCode(code: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     if (fn.final) {
       throw new Error(`Function ${baseFn.name} is already finalized`);
@@ -217,11 +191,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  setFunctionBody(
-    code: string[],
-    baseFn: BaseFunction,
-    mutability?: FunctionMutability,
-  ) {
+  setFunctionBody(code: string[], baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {
       throw new Error(`Function ${baseFn.name} has additional code`);

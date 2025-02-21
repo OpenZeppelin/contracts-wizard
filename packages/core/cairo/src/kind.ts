@@ -1,26 +1,26 @@
-import type { GenericOptions } from "./build-generic";
+import type { GenericOptions } from './build-generic';
 
-export type Kind = GenericOptions["kind"];
+export type Kind = GenericOptions['kind'];
 
 export function sanitizeKind(kind: unknown): Kind {
-  if (typeof kind === "string") {
-    const sanitized = kind.replace(/^(ERC|.)/i, (c) => c.toUpperCase());
+  if (typeof kind === 'string') {
+    const sanitized = kind.replace(/^(ERC|.)/i, c => c.toUpperCase());
     if (isKind(sanitized)) {
       return sanitized;
     }
   }
-  return "ERC20";
+  return 'ERC20';
 }
 
 function isKind<T>(value: Kind | T): value is Kind {
   switch (value) {
-    case "ERC20":
-    case "ERC721":
-    case "ERC1155":
-    case "Account":
-    case "Governor":
-    case "Vesting":
-    case "Custom":
+    case 'ERC20':
+    case 'ERC721':
+    case 'ERC1155':
+    case 'Account':
+    case 'Governor':
+    case 'Vesting':
+    case 'Custom':
       return true;
 
     default: {

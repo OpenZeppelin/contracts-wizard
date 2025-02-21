@@ -1,18 +1,15 @@
-import JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
-import type { Contract } from "./contract";
-import { printContract } from "./print";
-import SOLIDITY_VERSION from "./solidity-version.json";
-import {
-  formatLinesWithSpaces,
-  Lines,
-  spaceBetween,
-} from "./utils/format-lines";
+import JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
+import type { Contract } from './contract';
+import { printContract } from './print';
+import SOLIDITY_VERSION from './solidity-version.json';
+import type { Lines } from './utils/format-lines';
+import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ""}
+${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -56,10 +53,7 @@ artifacts
 `;
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(getImports(c), getTestCase(c)),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getImports(c), getTestCase(c)));
 
   function getTestCase(c: Contract) {
     const args = getAddressArgs(c);
@@ -68,45 +62,37 @@ const test = (c: Contract, opts?: GenericOptions) => {
       [
         'it("Test contract", async function () {',
         spaceBetween(
-          [
-            `const ContractFactory = await ethers.getContractFactory("${c.name}");`,
-          ],
+          [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
           getAddressVariables(args),
-          [
-            `const instance = await ${getDeploymentCall(c, args)};`,
-            "await instance.waitForDeployment();",
-          ],
+          [`const instance = await ${getDeploymentCall(c, args)};`, 'await instance.waitForDeployment();'],
           getExpects(),
         ),
-        "});",
+        '});',
       ],
-      "});",
+      '});',
     ];
   }
 
   function getImports(c: Contract) {
-    return [
-      'import { expect } from "chai";',
-      `import { ${getHardhatPlugins(c).join(", ")} } from "hardhat";`,
-    ];
+    return ['import { expect } from "chai";', `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`];
   }
 
   function getExpects(): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
-        case "ERC20":
-        case "ERC721":
+        case 'ERC20':
+        case 'ERC721':
           return [`expect(await instance.name()).to.equal("${opts.name}");`];
 
-        case "ERC1155":
+        case 'ERC1155':
           return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
 
-        case "Governor":
-        case "Custom":
+        case 'Governor':
+        case 'Custom':
           break;
 
         default:
-          throw new Error("Unknown ERC");
+          throw new Error('Unknown ERC');
       }
     }
     return [];
@@ -115,9 +101,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   function getAddressVariables(args: string[]): Lines[] {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
-      vars.push(
-        `const ${args[i]} = (await ethers.getSigners())[${i}].address;`,
-      );
+      vars.push(`const ${args[i]} = (await ethers.getSigners())[${i}].address;`);
     }
     return vars;
   }
@@ -126,7 +110,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
 function getAddressArgs(c: Contract): string[] {
   const args = [];
   for (const constructorArg of c.constructorArgs) {
-    if (constructorArg.type === "address") {
+    if (constructorArg.type === 'address') {
       args.push(constructorArg.name);
     }
   }
@@ -135,29 +119,23 @@ function getAddressArgs(c: Contract): string[] {
 
 function getDeploymentCall(c: Contract, args: string[]): string {
   return c.upgradeable
-    ? `upgrades.deployProxy(ContractFactory, [${args.join(", ")}])`
-    : `ContractFactory.deploy(${args.join(", ")})`;
+    ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`
+    : `ContractFactory.deploy(${args.join(', ')})`;
 }
 
 const script = (c: Contract) => {
   const args = getAddressArgs(c);
   return `\
-import { ${getHardhatPlugins(c).join(", ")} } from "hardhat";
+import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
 
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
-  ${
-    args.length > 0
-      ? "// TODO: Set addresses for the contract arguments below"
-      : ""
-  }
+  ${args.length > 0 ? '// TODO: Set addresses for the contract arguments below' : ''}
   const instance = await ${getDeploymentCall(c, args)};
   await instance.waitForDeployment();
 
-  console.log(\`${
-    c.upgradeable ? "Proxy" : "Contract"
-  } deployed to \${await instance.getAddress()}\`);
+  console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -196,9 +174,9 @@ npx hardhat run --network <network-name> scripts/deploy.ts
 `;
 
 function getHardhatPlugins(c: Contract) {
-  const plugins = ["ethers"];
+  const plugins = ['ethers'];
   if (c.upgradeable) {
-    plugins.push("upgrades");
+    plugins.push('upgrades');
   }
   return plugins;
 }
@@ -207,24 +185,24 @@ export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   const { default: packageJson } = c.upgradeable
-    ? await import("./environments/hardhat/upgradeable/package.json")
-    : await import("./environments/hardhat/package.json");
+    ? await import('./environments/hardhat/upgradeable/package.json')
+    : await import('./environments/hardhat/package.json');
   packageJson.license = c.license;
 
   const { default: packageLock } = c.upgradeable
-    ? await import("./environments/hardhat/upgradeable/package-lock.json")
-    : await import("./environments/hardhat/package-lock.json");
-  packageLock.packages[""].license = c.license;
+    ? await import('./environments/hardhat/upgradeable/package-lock.json')
+    : await import('./environments/hardhat/package-lock.json');
+  packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
-  zip.file("test/test.ts", test(c, opts));
-  zip.file("scripts/deploy.ts", script(c));
-  zip.file(".gitignore", gitIgnore);
-  zip.file("hardhat.config.ts", hardhatConfig(c.upgradeable));
-  zip.file("package.json", JSON.stringify(packageJson, null, 2));
+  zip.file('test/test.ts', test(c, opts));
+  zip.file('scripts/deploy.ts', script(c));
+  zip.file('.gitignore', gitIgnore);
+  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
+  zip.file('package.json', JSON.stringify(packageJson, null, 2));
   zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
-  zip.file("README.md", readme);
-  zip.file("tsconfig.json", tsConfig);
+  zip.file('README.md', readme);
+  zip.file('tsconfig.json', tsConfig);
 
   return zip;
 }

@@ -1,40 +1,40 @@
-import type { CommonOptions } from "./common-options";
+import type { CommonOptions } from './common-options';
+import type { ERC20Options } from './erc20';
 import {
   printERC20,
   defaults as erc20defaults,
   isAccessControlRequired as erc20IsAccessControlRequired,
-  ERC20Options,
-} from "./erc20";
+} from './erc20';
+import type { ERC721Options } from './erc721';
 import {
   printERC721,
   defaults as erc721defaults,
   isAccessControlRequired as erc721IsAccessControlRequired,
-  ERC721Options,
-} from "./erc721";
+} from './erc721';
+import type { ERC1155Options } from './erc1155';
 import {
   printERC1155,
   defaults as erc1155defaults,
   isAccessControlRequired as erc1155IsAccessControlRequired,
-  ERC1155Options,
-} from "./erc1155";
+} from './erc1155';
+import type { StablecoinOptions } from './stablecoin';
 import {
   printStablecoin,
   defaults as stablecoinDefaults,
   isAccessControlRequired as stablecoinIsAccessControlRequired,
-  StablecoinOptions,
-} from "./stablecoin";
+} from './stablecoin';
+import type { GovernorOptions } from './governor';
 import {
   printGovernor,
   defaults as governorDefaults,
   isAccessControlRequired as governorIsAccessControlRequired,
-  GovernorOptions,
-} from "./governor";
+} from './governor';
+import type { CustomOptions } from './custom';
 import {
   printCustom,
   defaults as customDefaults,
   isAccessControlRequired as customIsAccessControlRequired,
-  CustomOptions,
-} from "./custom";
+} from './custom';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**

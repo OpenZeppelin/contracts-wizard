@@ -1,16 +1,6 @@
-const durationUnits = [
-  "second",
-  "minute",
-  "hour",
-  "day",
-  "week",
-  "month",
-  "year",
-] as const;
+const durationUnits = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year'] as const;
 type DurationUnit = (typeof durationUnits)[number];
-export const durationPattern = new RegExp(
-  `^(\\d+(?:\\.\\d+)?) +(${durationUnits.join("|")})s?$`,
-);
+export const durationPattern = new RegExp(`^(\\d+(?:\\.\\d+)?) +(${durationUnits.join('|')})s?$`);
 
 const second = 1;
 const minute = 60 * second;
@@ -25,7 +15,7 @@ export function durationToTimestamp(duration: string): number {
   const match = duration.trim().match(durationPattern);
 
   if (!match || match.length < 2) {
-    throw new Error("Bad duration format");
+    throw new Error('Bad duration format');
   }
 
   const value = parseFloat(match[1]!);

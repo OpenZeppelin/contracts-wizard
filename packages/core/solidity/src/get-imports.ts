@@ -1,8 +1,8 @@
-import type { Contract } from "./contract";
-import { reachable } from "./utils/transitive-closure";
+import type { Contract } from './contract';
+import { reachable } from './utils/transitive-closure';
 
-import contracts from "../openzeppelin-contracts";
-import { withHelpers } from "./options";
+import contracts from '../openzeppelin-contracts';
+import { withHelpers } from './options';
 
 export interface SolcInputSources {
   [source: string]: {
@@ -24,10 +24,10 @@ export function getImports(c: Contract): SolcInputSources {
 
   const result: SolcInputSources = {};
 
-  const fileName = c.name + ".sol";
+  const fileName = c.name + '.sol';
 
   const dependencies = {
-    [fileName]: c.imports.map((i) => transformImport(i).path),
+    [fileName]: c.imports.map(i => transformImport(i).path),
     ...contracts.dependencies,
   };
 

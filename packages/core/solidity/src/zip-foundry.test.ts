@@ -1,21 +1,22 @@
-import _test, { TestFn, ExecutionContext } from "ava";
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 
-import { zipFoundry } from "./zip-foundry";
+import { zipFoundry } from './zip-foundry';
 
-import { buildERC20 } from "./erc20";
-import { buildERC721 } from "./erc721";
-import { buildERC1155 } from "./erc1155";
-import { buildCustom } from "./custom";
-import { promises as fs } from "fs";
-import path from "path";
-import os from "os";
-import util from "util";
-import child from "child_process";
-import type { Contract } from "./contract";
-import { rimraf } from "rimraf";
-import type { JSZipObject } from "jszip";
-import type JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
+import { buildERC20 } from './erc20';
+import { buildERC721 } from './erc721';
+import { buildERC1155 } from './erc1155';
+import { buildCustom } from './custom';
+import { promises as fs } from 'fs';
+import path from 'path';
+import os from 'os';
+import util from 'util';
+import child from 'child_process';
+import type { Contract } from './contract';
+import { rimraf } from 'rimraf';
+import type { JSZipObject } from 'jszip';
+import type JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
 
 interface Context {
   tempFolder: string;
@@ -23,23 +24,21 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.beforeEach(async (t) => {
-  t.context.tempFolder = await fs.mkdtemp(
-    path.join(os.tmpdir(), "openzeppelin-wizard-"),
-  );
+test.beforeEach(async t => {
+  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
 });
 
-test.afterEach.always(async (t) => {
+test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial("erc20 full", async (t) => {
+test.serial('erc20 full', async t => {
   const opts: GenericOptions = {
-    kind: "ERC20",
-    name: "My Token",
-    symbol: "MTK",
-    premint: "2000",
-    access: "roles",
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
     burnable: true,
     mintable: true,
     pausable: true,
@@ -51,74 +50,70 @@ test.serial("erc20 full", async (t) => {
   await runTest(c, t, opts);
 });
 
-test.serial("erc20 uups, roles", async (t) => {
+test.serial('erc20 uups, roles', async t => {
   const opts: GenericOptions = {
-    kind: "ERC20",
-    name: "My Token",
-    symbol: "MTK",
-    upgradeable: "uups",
-    access: "roles",
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    upgradeable: 'uups',
+    access: 'roles',
   };
   const c = buildERC20(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("erc721 uups, ownable", async (t) => {
+test.serial('erc721 uups, ownable', async t => {
   const opts: GenericOptions = {
-    kind: "ERC721",
-    name: "My Token",
-    symbol: "MTK",
-    upgradeable: "uups",
-    access: "ownable",
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+    upgradeable: 'uups',
+    access: 'ownable',
   };
   const c = buildERC721(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("erc1155 basic", async (t) => {
+test.serial('erc1155 basic', async t => {
   const opts: GenericOptions = {
-    kind: "ERC1155",
-    name: "My Token",
-    uri: "https://myuri/{id}",
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://myuri/{id}',
   };
   const c = buildERC1155(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("erc1155 transparent, ownable", async (t) => {
+test.serial('erc1155 transparent, ownable', async t => {
   const opts: GenericOptions = {
-    kind: "ERC1155",
-    name: "My Token",
-    uri: "https://myuri/{id}",
-    upgradeable: "transparent",
-    access: "ownable",
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://myuri/{id}',
+    upgradeable: 'transparent',
+    access: 'ownable',
   };
   const c = buildERC1155(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("custom basic", async (t) => {
-  const opts: GenericOptions = { kind: "Custom", name: "My Contract" };
+test.serial('custom basic', async t => {
+  const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("custom transparent, managed", async (t) => {
+test.serial('custom transparent, managed', async t => {
   const opts: GenericOptions = {
-    kind: "Custom",
-    name: "My Contract",
-    upgradeable: "transparent",
-    access: "managed",
+    kind: 'Custom',
+    name: 'My Contract',
+    upgradeable: 'transparent',
+    access: 'managed',
   };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
 
-async function runTest(
-  c: Contract,
-  t: ExecutionContext<Context>,
-  opts: GenericOptions,
-) {
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipFoundry(c, opts);
 
   assertLayout(zip, c, t);
@@ -128,25 +123,21 @@ async function runTest(
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files)
-    .map((f) => f.name)
+    .map(f => f.name)
     .sort();
   t.deepEqual(sorted, [
-    "README.md",
-    "script/",
+    'README.md',
+    'script/',
     `script/${c.name}.s.sol`,
-    "setup.sh",
-    "src/",
+    'setup.sh',
+    'src/',
     `src/${c.name}.sol`,
-    "test/",
+    'test/',
     `test/${c.name}.t.sol`,
   ]);
 }
 
-async function extractAndRunPackage(
-  zip: JSZip,
-  c: Contract,
-  t: ExecutionContext<Context>,
-) {
+async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
   const tempFolder = t.context.tempFolder;
@@ -156,22 +147,16 @@ async function extractAndRunPackage(
     if (item.dir) {
       await fs.mkdir(path.join(tempFolder, item.name));
     } else {
-      await fs.writeFile(
-        path.join(tempFolder, item.name),
-        await asString(item),
-      );
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
     }
   }
 
-  const setGitUser =
-    'git init && git config user.email "test@test.test" && git config user.name "Test"';
-  const setup = "bash setup.sh";
-  const test = "forge test" + (c.upgradeable ? " --force" : "");
-  const script =
-    `forge script script/${c.name}.s.sol` + (c.upgradeable ? " --force" : "");
+  const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
+  const setup = 'bash setup.sh';
+  const test = 'forge test' + (c.upgradeable ? ' --force' : '');
+  const script = `forge script script/${c.name}.s.sol` + (c.upgradeable ? ' --force' : '');
 
-  const exec = (cmd: string) =>
-    util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: "" } });
+  const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
 
   const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
   const result = await exec(command);
@@ -190,13 +175,8 @@ async function extractAndRunPackage(
   t.regex(rerunResult.stdout, /Foundry project already initialized\./);
 }
 
-async function assertContents(
-  zip: JSZip,
-  c: Contract,
-  t: ExecutionContext<Context>,
-) {
-  const normalizeVersion = (text: string) =>
-    text.replace(/\bv\d+\.\d+\.\d+\b/g, "vX.Y.Z");
+async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+  const normalizeVersion = (text: string) => text.replace(/\bv\d+\.\d+\.\d+\b/g, 'vX.Y.Z');
 
   const contentComparison = [
     normalizeVersion(await getItemString(zip, `setup.sh`)),
@@ -218,5 +198,5 @@ async function getItemString(zip: JSZip, key: string) {
 }
 
 async function asString(item: JSZipObject) {
-  return Buffer.from(await item.async("arraybuffer")).toString();
+  return Buffer.from(await item.async('arraybuffer')).toString();
 }

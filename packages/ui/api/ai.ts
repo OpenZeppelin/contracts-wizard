@@ -1,5 +1,5 @@
-import OpenAI from "https://esm.sh/openai@4.11.0";
-import { OpenAIStream, StreamingTextResponse } from "https://esm.sh/ai@2.2.16";
+import OpenAI from 'https://esm.sh/openai@4.11.0';
+import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16';
 import {
   erc20Function,
   erc721Function,
@@ -8,19 +8,19 @@ import {
   realWorldAssetFunction,
   governorFunction,
   customFunction,
-} from "../src/solidity/wiz-functions.ts";
-import { Redis } from "https://esm.sh/@upstash/redis@1.25.1";
+} from '../src/solidity/wiz-functions.ts';
+import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
 
 export default async (req: Request) => {
   try {
     const data = await req.json();
-    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
 
-    const redisUrl = Deno.env.get("REDIS_URL");
-    const redisToken = Deno.env.get("REDIS_TOKEN");
+    const redisUrl = Deno.env.get('REDIS_URL');
+    const redisToken = Deno.env.get('REDIS_TOKEN');
 
     if (!redisUrl || !redisToken) {
-      throw new Error("missing redis credentials");
+      throw new Error('missing redis credentials');
     }
 
     const redis = new Redis({
@@ -32,15 +32,13 @@ export default async (req: Request) => {
       apiKey: apiKey,
     });
 
-    const validatedMessages = data.messages.filter(
-      (message: { role: string; content: string }) => {
-        return message.content.length < 500;
-      },
-    );
+    const validatedMessages = data.messages.filter((message: { role: string; content: string }) => {
+      return message.content.length < 500;
+    });
 
     const messages = [
       {
-        role: "system",
+        role: 'system',
         content: `
         You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
         The current options are ${JSON.stringify(data.currentOpts)}.
@@ -51,7 +49,7 @@ export default async (req: Request) => {
     ];
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
+      model: 'gpt-4-1106-preview',
       messages,
       functions: [
         erc20Function,
@@ -77,7 +75,7 @@ export default async (req: Request) => {
             ...messages,
             {
               content: completion,
-              role: "assistant",
+              role: 'assistant',
             },
           ],
         };
@@ -91,9 +89,9 @@ export default async (req: Request) => {
     });
     return new StreamingTextResponse(stream);
   } catch (e) {
-    console.error("Could not retrieve results:", e);
+    console.error('Could not retrieve results:', e);
     return Response.json({
-      error: "Could not retrieve results.",
+      error: 'Could not retrieve results.',
     });
   }
 };
