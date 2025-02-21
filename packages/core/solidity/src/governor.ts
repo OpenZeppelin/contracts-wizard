@@ -1,42 +1,46 @@
 import { supportsInterface } from "./common-functions";
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from "./common-options";
-import { ContractBuilder, Contract, Value } from "./contract";
+import {
+  CommonOptions,
+  withCommonDefaults,
+  defaults as commonDefaults,
+} from "./common-options";
+import { ContractBuilder, Contract } from "./contract";
 import { OptionsError } from "./error";
 import { setAccessControl } from "./set-access-control";
 import { printContract } from "./print";
 import { setInfo } from "./set-info";
 import { setUpgradeable } from "./set-upgradeable";
-import { defineFunctions } from './utils/define-functions';
+import { defineFunctions } from "./utils/define-functions";
 import { durationToBlocks, durationToTimestamp } from "./utils/duration";
 import { clockModeDefault, type ClockMode } from "./set-clock-mode";
 
 export const defaults: Required<GovernorOptions> = {
-  name: 'MyGovernor',
-  delay: '1 day',
-  period: '1 week',
+  name: "MyGovernor",
+  delay: "1 day",
+  period: "1 week",
 
-  votes: 'erc20votes',
+  votes: "erc20votes",
   clockMode: clockModeDefault,
-  timelock: 'openzeppelin',
+  timelock: "openzeppelin",
   blockTime: 12,
   decimals: 18,
-  proposalThreshold: '0',
-  quorumMode: 'percent',
+  proposalThreshold: "0",
+  quorumMode: "percent",
   quorumPercent: 4,
-  quorumAbsolute: '',
+  quorumAbsolute: "",
   storage: false,
   settings: true,
-  
+
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
-export const votesOptions = ['erc20votes', 'erc721votes'] as const;
-export type VotesOptions = typeof votesOptions[number];
+export const votesOptions = ["erc20votes", "erc721votes"] as const;
+export type VotesOptions = (typeof votesOptions)[number];
 
-export const timelockOptions = [false, 'openzeppelin', 'compound'] as const;
-export type TimelockOptions = typeof timelockOptions[number];
+export const timelockOptions = [false, "openzeppelin", "compound"] as const;
+export type TimelockOptions = (typeof timelockOptions)[number];
 
 export function printGovernor(opts: GovernorOptions = defaults): string {
   return printContract(buildGovernor(opts));
@@ -49,7 +53,7 @@ export interface GovernorOptions extends CommonOptions {
   blockTime?: number;
   proposalThreshold?: string;
   decimals?: number;
-  quorumMode?: 'percent' | 'absolute';
+  quorumMode?: "percent" | "absolute";
   quorumPercent?: number;
   quorumAbsolute?: string;
   votes?: VotesOptions;
@@ -59,8 +63,10 @@ export interface GovernorOptions extends CommonOptions {
   settings?: boolean;
 }
 
-export function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean {
-  return opts.upgradeable === 'uups';
+export function isAccessControlRequired(
+  opts: Partial<GovernorOptions>
+): boolean {
+  return opts.upgradeable === "uups";
 }
 
 function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
@@ -77,7 +83,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     quorumMode: opts.quorumMode ?? defaults.quorumMode,
     votes: opts.votes ?? defaults.votes,
     clockMode: opts.clockMode ?? defaults.clockMode,
-    timelock: opts.timelock ?? defaults.timelock
+    timelock: opts.timelock ?? defaults.timelock,
   };
 }
 
@@ -105,8 +111,8 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
 function addBase(c: ContractBuilder, { name }: GovernorOptions) {
   const Governor = {
-    name: 'Governor',
-    path: '@openzeppelin/contracts/governance/Governor.sol',
+    name: "Governor",
+    path: "@openzeppelin/contracts/governance/Governor.sol",
   };
   c.addParent(Governor, [name]);
   c.addOverride(Governor, functions.votingDelay);
@@ -127,36 +133,35 @@ function addBase(c: ContractBuilder, { name }: GovernorOptions) {
 function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   if (allOpts.settings) {
     const GovernorSettings = {
-      name: 'GovernorSettings',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol',
+      name: "GovernorSettings",
+      path: "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol",
     };
-    c.addParent(
-      GovernorSettings,
-      [
-        getVotingDelay(allOpts),
-        getVotingPeriod(allOpts),
-        { lit: getProposalThreshold(allOpts) },
-      ],
-    );
-    c.addOverride(GovernorSettings, functions.votingDelay, 'view');
-    c.addOverride(GovernorSettings, functions.votingPeriod, 'view');
-    c.addOverride(GovernorSettings, functions.proposalThreshold, 'view');
+    c.addParent(GovernorSettings, [
+      getVotingDelay(allOpts),
+      getVotingPeriod(allOpts),
+      { lit: getProposalThreshold(allOpts) },
+    ]);
+    c.addOverride(GovernorSettings, functions.votingDelay, "view");
+    c.addOverride(GovernorSettings, functions.votingPeriod, "view");
+    c.addOverride(GovernorSettings, functions.proposalThreshold, "view");
   } else {
     setVotingParameters(c, allOpts);
     setProposalThreshold(c, allOpts);
   }
 }
 
-function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
+function getVotingDelay(
+  opts: Required<GovernorOptions>
+): { lit: string } | { note: string; value: number } {
   try {
-    if (opts.clockMode === 'timestamp') {
+    if (opts.clockMode === "timestamp") {
       return {
         lit: durationToTimestamp(opts.delay),
       };
     } else {
       return {
         value: durationToBlocks(opts.delay, opts.blockTime),
-        note: opts.delay
+        note: opts.delay,
       };
     }
   } catch (e) {
@@ -170,16 +175,18 @@ function getVotingDelay(opts: Required<GovernorOptions>): { lit: string } | { no
   }
 }
 
-function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { note: string, value: number } {
+function getVotingPeriod(
+  opts: Required<GovernorOptions>
+): { lit: string } | { note: string; value: number } {
   try {
-    if (opts.clockMode === 'timestamp') {
+    if (opts.clockMode === "timestamp") {
       return {
         lit: durationToTimestamp(opts.period),
       };
     } else {
       return {
         value: durationToBlocks(opts.period, opts.blockTime),
-        note: opts.period
+        note: opts.period,
       };
     }
   } catch (e) {
@@ -196,42 +203,62 @@ function getVotingPeriod(opts: Required<GovernorOptions>): { lit: string } | { n
 function validateDecimals(decimals: number) {
   if (!/^\d+$/.test(decimals.toString())) {
     throw new OptionsError({
-      decimals: 'Not a valid number',
+      decimals: "Not a valid number",
     });
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): string {
+function getProposalThreshold({
+  proposalThreshold,
+  decimals,
+  votes,
+}: Required<GovernorOptions>): string {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
-      proposalThreshold: 'Not a valid number',
+      proposalThreshold: "Not a valid number",
     });
   }
 
-  if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
+  if (
+    /^0+$/.test(proposalThreshold) ||
+    decimals === 0 ||
+    votes === "erc721votes"
+  ) {
     return proposalThreshold;
   } else {
     return `${proposalThreshold}e${decimals}`;
   }
 }
 
-function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>) {
+function setVotingParameters(
+  c: ContractBuilder,
+  opts: Required<GovernorOptions>
+) {
   const delayBlocks = getVotingDelay(opts);
-  if ('lit' in delayBlocks) {
+  if ("lit" in delayBlocks) {
     c.setFunctionBody([`return ${delayBlocks.lit};`], functions.votingDelay);
   } else {
-    c.setFunctionBody([`return ${delayBlocks.value}; // ${delayBlocks.note}`], functions.votingDelay);
+    c.setFunctionBody(
+      [`return ${delayBlocks.value}; // ${delayBlocks.note}`],
+      functions.votingDelay
+    );
   }
 
   const periodBlocks = getVotingPeriod(opts);
-  if ('lit' in periodBlocks) {
+  if ("lit" in periodBlocks) {
     c.setFunctionBody([`return ${periodBlocks.lit};`], functions.votingPeriod);
   } else {
-    c.setFunctionBody([`return ${periodBlocks.value}; // ${periodBlocks.note}`], functions.votingPeriod);
+    c.setFunctionBody(
+      [`return ${periodBlocks.value}; // ${periodBlocks.note}`],
+      functions.votingPeriod
+    );
   }
 }
 
-function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions>) {
+function setProposalThreshold(
+  c: ContractBuilder,
+  opts: Required<GovernorOptions>
+) {
   const threshold = getProposalThreshold(opts);
   const nonZeroThreshold = parseInt(threshold) !== 0;
 
@@ -242,128 +269,143 @@ function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions
 
 function addCounting(c: ContractBuilder) {
   c.addParent({
-    name: 'GovernorCountingSimple',
-    path: '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol',
+    name: "GovernorCountingSimple",
+    path: "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol",
   });
 }
 
 function addVotes(c: ContractBuilder) {
-  const tokenArg = '_token';
+  const tokenArg = "_token";
 
   c.addImportOnly({
-    name: 'IVotes',
+    name: "IVotes",
     path: `@openzeppelin/contracts/governance/utils/IVotes.sol`,
     transpiled: false,
   });
   c.addConstructorArgument({
     type: {
-      name: 'IVotes',
+      name: "IVotes",
       transpiled: false,
     },
     name: tokenArg,
   });
 
-  c.addParent({
-    name: 'GovernorVotes',
-    path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
-  }, [{ lit: tokenArg }]);
+  c.addParent(
+    {
+      name: "GovernorVotes",
+      path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
+    },
+    [{ lit: tokenArg }]
+  );
 }
 
 export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
-  if (opts.quorumMode === 'percent') {
+  if (opts.quorumMode === "percent") {
     if (opts.quorumPercent > 100) {
       throw new OptionsError({
-        quorumPercent: 'Invalid percentage',
+        quorumPercent: "Invalid percentage",
       });
     }
 
-    let { quorumFractionNumerator, quorumFractionDenominator } = getQuorumFractionComponents(opts.quorumPercent);
+    const { quorumFractionNumerator, quorumFractionDenominator } =
+      getQuorumFractionComponents(opts.quorumPercent);
 
     const GovernorVotesQuorumFraction = {
-      name: 'GovernorVotesQuorumFraction',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol',
+      name: "GovernorVotesQuorumFraction",
+      path: "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol",
     };
 
     if (quorumFractionDenominator !== undefined) {
       c.addOverride(GovernorVotesQuorumFraction, functions.quorumDenominator);
-      c.setFunctionBody([
-        `return ${quorumFractionDenominator};`
-      ], functions.quorumDenominator, 'pure');
+      c.setFunctionBody(
+        [`return ${quorumFractionDenominator};`],
+        functions.quorumDenominator,
+        "pure"
+      );
     }
 
     c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
     c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
-  }
-
-  else if (opts.quorumMode === 'absolute') {
+  } else if (opts.quorumMode === "absolute") {
     if (!numberPattern.test(opts.quorumAbsolute)) {
       throw new OptionsError({
-        quorumAbsolute: 'Not a valid number',
+        quorumAbsolute: "Not a valid number",
       });
     }
 
-    let returnStatement = (opts.decimals === 0 || opts.votes === 'erc721votes') ? 
-      `return ${opts.quorumAbsolute};` :
-      `return ${opts.quorumAbsolute}e${opts.decimals};`;
+    const returnStatement =
+      opts.decimals === 0 || opts.votes === "erc721votes"
+        ? `return ${opts.quorumAbsolute};`
+        : `return ${opts.quorumAbsolute}e${opts.decimals};`;
 
-    c.setFunctionBody([
-      returnStatement,
-    ], functions.quorum, 'pure');
+    c.setFunctionBody([returnStatement], functions.quorum, "pure");
   }
 }
 
 const timelockModules = {
   openzeppelin: {
     timelockType: {
-      name: 'TimelockController',
+      name: "TimelockController",
       path: `@openzeppelin/contracts/governance/TimelockController.sol`,
     },
     timelockParent: {
-      name: 'GovernorTimelockControl',
+      name: "GovernorTimelockControl",
       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol`,
-    }
+    },
   },
   compound: {
     timelockType: {
-      name: 'ICompoundTimelock',
+      name: "ICompoundTimelock",
       path: `@openzeppelin/contracts/vendor/compound/ICompoundTimelock.sol`,
       transpiled: false,
     },
     timelockParent: {
-      name: 'GovernorTimelockCompound',
+      name: "GovernorTimelockCompound",
       path: `@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol`,
-    }
+    },
   },
 } as const;
 
-function getQuorumFractionComponents(quorumPercent: number): {quorumFractionNumerator: number, quorumFractionDenominator: string | undefined} {
+function getQuorumFractionComponents(quorumPercent: number): {
+  quorumFractionNumerator: number;
+  quorumFractionDenominator: string | undefined;
+} {
   let quorumFractionNumerator = quorumPercent;
   let quorumFractionDenominator = undefined;
 
   const quorumPercentSegments = quorumPercent.toString().split(".");
   if (quorumPercentSegments.length > 2) {
     throw new OptionsError({
-      quorumPercent: 'Invalid percentage',
+      quorumPercent: "Invalid percentage",
     });
-  } else if (quorumPercentSegments.length == 2 && quorumPercentSegments[0] !== undefined && quorumPercentSegments[1] !== undefined) {
-    quorumFractionNumerator = parseInt(quorumPercentSegments[0].concat(quorumPercentSegments[1]));
+  } else if (
+    quorumPercentSegments.length == 2 &&
+    quorumPercentSegments[0] !== undefined &&
+    quorumPercentSegments[1] !== undefined
+  ) {
+    quorumFractionNumerator = parseInt(
+      quorumPercentSegments[0].concat(quorumPercentSegments[1])
+    );
     const decimals = quorumPercentSegments[1].length;
-    quorumFractionDenominator = '100';
+    quorumFractionDenominator = "100";
     while (quorumFractionDenominator.length < decimals + 3) {
-      quorumFractionDenominator += '0';
+      quorumFractionDenominator += "0";
     }
   }
   return { quorumFractionNumerator, quorumFractionDenominator };
 }
 
-function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>) {
+function addTimelock(
+  c: ContractBuilder,
+  { timelock }: Required<GovernorOptions>
+) {
   if (timelock === false) {
     return;
   }
 
-  const timelockArg = '_timelock';
+  const timelockArg = "_timelock";
   const { timelockType, timelockParent } = timelockModules[timelock];
 
   c.addImportOnly(timelockType);
@@ -384,8 +426,8 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
 function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
   if (storage) {
     const GovernorStorage = {
-      name: 'GovernorStorage',
-      path: '@openzeppelin/contracts/governance/extensions/GovernorStorage.sol',
+      name: "GovernorStorage",
+      path: "@openzeppelin/contracts/governance/extensions/GovernorStorage.sol",
     };
     c.addParent(GovernorStorage);
     c.addOverride(GovernorStorage, functions._propose);
@@ -395,108 +437,102 @@ function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {
 const functions = defineFunctions({
   votingDelay: {
     args: [],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'pure',
+    returns: ["uint256"],
+    kind: "public",
+    mutability: "pure",
   },
   votingPeriod: {
     args: [],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'pure',
+    returns: ["uint256"],
+    kind: "public",
+    mutability: "pure",
   },
   proposalThreshold: {
     args: [],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'pure',
+    returns: ["uint256"],
+    kind: "public",
+    mutability: "pure",
   },
   proposalNeedsQueuing: {
-    args: [
-      { name: 'proposalId', type: 'uint256' },
-    ],
-    returns: ['bool'],
-    kind: 'public',
-    mutability: 'view',
+    args: [{ name: "proposalId", type: "uint256" }],
+    returns: ["bool"],
+    kind: "public",
+    mutability: "view",
   },
   quorum: {
-    args: [
-      { name: 'blockNumber', type: 'uint256' },
-    ],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'view',
+    args: [{ name: "blockNumber", type: "uint256" }],
+    returns: ["uint256"],
+    kind: "public",
+    mutability: "view",
   },
   quorumDenominator: {
     args: [],
-    returns: ['uint256'],
-    kind: 'public',
-    mutability: 'view',
+    returns: ["uint256"],
+    kind: "public",
+    mutability: "view",
   },
   propose: {
     args: [
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'description', type: 'string memory' },
+      { name: "targets", type: "address[] memory" },
+      { name: "values", type: "uint256[] memory" },
+      { name: "calldatas", type: "bytes[] memory" },
+      { name: "description", type: "string memory" },
     ],
-    returns: ['uint256'],
-    kind: 'public',
+    returns: ["uint256"],
+    kind: "public",
   },
   _propose: {
     args: [
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'description', type: 'string memory' },
-      { name: 'proposer', type: 'address' },
+      { name: "targets", type: "address[] memory" },
+      { name: "values", type: "uint256[] memory" },
+      { name: "calldatas", type: "bytes[] memory" },
+      { name: "description", type: "string memory" },
+      { name: "proposer", type: "address" },
     ],
-    returns: ['uint256'],
-    kind: 'internal',
+    returns: ["uint256"],
+    kind: "internal",
   },
   _queueOperations: {
     args: [
-      { name: 'proposalId', type: 'uint256' },
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'descriptionHash', type: 'bytes32' },
+      { name: "proposalId", type: "uint256" },
+      { name: "targets", type: "address[] memory" },
+      { name: "values", type: "uint256[] memory" },
+      { name: "calldatas", type: "bytes[] memory" },
+      { name: "descriptionHash", type: "bytes32" },
     ],
-    kind: 'internal',
-    returns: ['uint48'],
+    kind: "internal",
+    returns: ["uint48"],
   },
   _executeOperations: {
     args: [
-      { name: 'proposalId', type: 'uint256' },
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'descriptionHash', type: 'bytes32' },
+      { name: "proposalId", type: "uint256" },
+      { name: "targets", type: "address[] memory" },
+      { name: "values", type: "uint256[] memory" },
+      { name: "calldatas", type: "bytes[] memory" },
+      { name: "descriptionHash", type: "bytes32" },
     ],
-    kind: 'internal',
+    kind: "internal",
   },
   _cancel: {
     args: [
-      { name: 'targets', type: 'address[] memory' },
-      { name: 'values', type: 'uint256[] memory' },
-      { name: 'calldatas', type: 'bytes[] memory' },
-      { name: 'descriptionHash', type: 'bytes32' },
+      { name: "targets", type: "address[] memory" },
+      { name: "values", type: "uint256[] memory" },
+      { name: "calldatas", type: "bytes[] memory" },
+      { name: "descriptionHash", type: "bytes32" },
     ],
-    returns: ['uint256'],
-    kind: 'internal',
+    returns: ["uint256"],
+    kind: "internal",
   },
   state: {
-    args: [
-      { name: 'proposalId', type: 'uint256' },
-    ],
-    returns: ['ProposalState'],
-    kind: 'public',
-    mutability: 'view',
+    args: [{ name: "proposalId", type: "uint256" }],
+    returns: ["ProposalState"],
+    kind: "public",
+    mutability: "view",
   },
   _executor: {
     args: [],
-    returns: ['address'],
-    kind: 'internal',
-    mutability: 'view',
+    returns: ["address"],
+    kind: "internal",
+    mutability: "view",
   },
 });
