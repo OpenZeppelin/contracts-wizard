@@ -65,23 +65,10 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   const parentsWithInitializers = contract.parents.filter(hasInitializer);
-<<<<<<< HEAD
-  if (
-    hasParentParams ||
-    hasConstructorCode ||
-    (helpers.upgradeable && parentsWithInitializers.length > 0)
-  ) {
-    const parents = parentsWithInitializers.flatMap((p) =>
-      printParentConstructor(p, helpers),
-    );
-    const modifiers = helpers.upgradeable ? ["public initializer"] : parents;
-    const args = contract.constructorArgs.map((a) => printArgument(a, helpers));
-=======
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     const parents = parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
+    const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
->>>>>>> ce5fcd3 (Add consistent-type-imports rule)
     const body = helpers.upgradeable
       ? spaceBetween(
           parents.map(p => p + ';'),
@@ -173,13 +160,8 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   }
   const modifiers: string[] = [fn.kind];
 
-<<<<<<< HEAD
-  if (fn.mutability !== "nonpayable") {
-    modifiers.push(fn.mutability);
-=======
   if (fn.mutability !== 'nonpayable') {
-    modifiers.splice(1, 0, fn.mutability);
->>>>>>> ce5fcd3 (Add consistent-type-imports rule)
+    modifiers.push(fn.mutability);
   }
 
   if (fn.override.size === 1) {
@@ -197,13 +179,8 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   const code = [...fn.code];
 
   if (fn.override.size > 0 && !fn.final) {
-<<<<<<< HEAD
-    const superCall = `super.${fn.name}(${fn.args.map((a) => a.name).join(", ")});`;
-    code.push(fn.returns?.length ? "return " + superCall : superCall);
-=======
     const superCall = `super.${fn.name}(${fn.args.map(a => a.name).join(', ')});`;
     code.push(fn.returns?.length ? 'return ' + superCall : superCall);
->>>>>>> ce5fcd3 (Add consistent-type-imports rule)
   }
 
   if (modifiers.length + fn.code.length > 1) {
