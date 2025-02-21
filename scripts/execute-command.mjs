@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 
-export function inLanguageFolderRunTYarnCommand(
+export function runYarnCommandForLanguage(
   languageInput,
   commandAndFlagsInput
 ) {
