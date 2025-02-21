@@ -2,7 +2,9 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "prepare": "wsrun -m prepare"
+    "prepare": "wsrun -m prepare",
+    "dev:ui": "yarn --cwd ./packages/ui dev",
+    "for:run": "node ./scripts/for-language-run.mjs"
   },
   "workspaces": {
     "packages": [
