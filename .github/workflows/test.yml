@@ -6,6 +6,20 @@ on:
   pull_request: {}
 
 jobs:
+  lint:
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
+      - name: Run linter
+        run: yarn lint
+
   build:
     strategy:
       matrix:
@@ -31,8 +45,6 @@ jobs:
       - name: Check Svelte
         run: yarn svelte-check
         working-directory: packages/ui
-      - name: Run linter
-        run: yarn lint
       - name: Run tests
         run: yarn test
         working-directory: packages/core/${{matrix.package}}
