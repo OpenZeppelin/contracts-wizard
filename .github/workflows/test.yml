@@ -31,6 +31,8 @@ jobs:
       - name: Check Svelte
         run: yarn svelte-check
         working-directory: packages/ui
+      - name: Run linter
+        run: yarn lint
       - name: Run tests
         run: yarn test
         working-directory: packages/core/${{matrix.package}}
