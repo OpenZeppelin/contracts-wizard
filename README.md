@@ -20,6 +20,9 @@ Install dependencies with `yarn install`.
 
 You'll need to supply your own environment variables if you want to enable Wizard AI Assistant (OPENAI_API_KEY) and/or logging (REDIS_URL, REDIS_TOKEN).
 
+You can run yarn commands directly into `core/{language}` folders with `yarn run:core`
+for example `yarn run:core cairo test` will run tests for cairo.
+
 ## Embedding
 
 To embed Contracts Wizard on your site, first include the script tag:
