@@ -1,7 +1,11 @@
 import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import {
+  CommonContractOptions,
+  withCommonContractDefaults,
+  getSelfArg,
+} from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
@@ -12,6 +16,7 @@ export interface ERC20Options extends CommonContractOptions {
   burnable?: boolean;
   pausable?: boolean;
   permit?: boolean;
+  flashmint?: boolean;
 }
 
 export const defaults: Required<ERC20Options> = {
@@ -19,8 +24,9 @@ export const defaults: Required<ERC20Options> = {
   burnable: false,
   pausable: false,
   permit: true,
+  flashmint: false,
   access: commonDefaults.access,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printERC20(opts: ERC20Options = defaults): string {
@@ -34,6 +40,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     permit: opts.permit ?? defaults.permit,
+    flashmint: opts.flashmint ?? defaults.flashmint,
   };
 }
 
@@ -50,7 +57,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const trait = allOpts.permit
     ? addPermit(c, allOpts.pausable)
     : addBase(c, allOpts.pausable);
-  
+
   addMetadata(c);
 
   if (allOpts.pausable) {
@@ -59,6 +66,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (allOpts.burnable) {
     addBurnable(c, allOpts.pausable, trait);
+  }
+
+  if (allOpts.flashmint) {
+    addFlashMint(c, allOpts.pausable, trait);
   }
 
   setAccessControl(c, allOpts.access);
@@ -86,7 +97,7 @@ function addBase(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
       'self.pausable.when_not_paused()?;',
     ]);
   }
-  
+
   return erc20Trait;
 }
 
@@ -96,26 +107,32 @@ function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait 
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
 
   c.addImplementedTrait(erc20PermitTrait);
-  c.addEip712("ERC-20 Permit Example", "1");
-  
-  if (pausable) {   
+  c.addEip712('ERC-20 Permit Example', '1');
+
+  if (pausable) {
     // Add transfer & permit functions with pause checks
     c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
     c.addUseClause('alloy_primitives', 'B256');
 
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).permit, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).transfer, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).transfer_from, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(
+      erc20PermitTrait,
+      functions(erc20PermitTrait).permit,
+      ['self.pausable.when_not_paused()?;']
+    );
+    c.addFunctionCodeBefore(
+      erc20PermitTrait,
+      functions(erc20PermitTrait).transfer,
+      ['self.pausable.when_not_paused()?;']
+    );
+    c.addFunctionCodeBefore(
+      erc20PermitTrait,
+      functions(erc20PermitTrait).transfer_from,
+      ['self.pausable.when_not_paused()?;']
+    );
   }
-  
+
   return erc20PermitTrait;
 }
 
@@ -144,12 +161,38 @@ function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplement
   }
 }
 
+function addFlashMint(c: ContractBuilder, pausable: boolean, baseTrait: BaseImplementedTrait) {
+  c.addUseClause(
+    'openzeppelin_stylus::token::erc20::extensions',
+    'Erc20FlashMint'
+  );
+  c.addUseClause(
+    'openzeppelin_stylus::token::erc20::extensions',
+    'IErc3156FlashLender'
+  );
+
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
+
+  c.addImplementedTrait(flashMintTrait);
+  
+  const fns = functions(flashMintTrait, baseTrait);
+  c.addFunction(flashMintTrait, fns.max_flash_loan);
+  c.addFunction(flashMintTrait, fns.flash_fee);
+  c.addFunction(flashMintTrait, fns.flash_loan);
+  
+  if (pausable) {
+    c.addFunctionCodeBefore(flashMintTrait, fns.flash_loan, [
+      'self.pausable.when_not_paused()?;',
+    ]);
+  }
+}
+
 const erc20Trait: BaseImplementedTrait = {
   name: 'Erc20',
   storage: {
     name: 'erc20',
     type: 'Erc20',
-  }
+  },
 };
 
 const erc20PermitTrait: BaseImplementedTrait = {
@@ -157,7 +200,16 @@ const erc20PermitTrait: BaseImplementedTrait = {
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
-  }
+  },
+};
+
+const flashMintTrait: BaseImplementedTrait = {
+  name: 'Erc20FlashMint',
+  storage: {
+    name: 'flash_mint',
+    type: 'Erc20FlashMint',
+  },
+  omit_inherit: true
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -168,7 +220,7 @@ const erc20PermitTrait: BaseImplementedTrait = {
 //   }
 // }
 
-const functions = (trait: BaseImplementedTrait) =>
+const functions = (trait: BaseImplementedTrait, base?: BaseImplementedTrait) =>
   defineFunctions({
     // Token Functions
     transfer: {
@@ -238,6 +290,41 @@ const functions = (trait: BaseImplementedTrait) =>
       returns: 'Result<(), Vec<u8>>',
       code: [
         `self.${trait.storage.name}.permit(owner, spender, value, deadline, v, r, s).map_err(|e| e.into())`,
+      ],
+    },
+
+    max_flash_loan: {
+      args: [
+        getSelfArg("immutable"),
+        { name: 'token', type: 'Address' },
+      ],
+      returns: 'U256',
+      code: [
+        `self.${trait.storage.name}.max_flash_loan(token, &self.${base!.storage.name}).map_err(|e| e.into())`,
+      ],
+    },
+    flash_fee: {
+      args: [
+        getSelfArg("immutable"),
+        { name: 'token', type: 'Address' },
+        { name: 'value', type: 'U256' },
+      ],
+      returns: 'U256',
+      code: [
+        `self.${trait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
+      ],
+    },
+    flash_loan: {
+      args: [
+        getSelfArg(),
+        { name: 'receiver', type: 'Address' },
+        { name: 'token', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: 'Result<(), Vec<u8>>',
+      code: [
+        `self.${trait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${base!.storage.name}).map_err(|e| e.into())`,
       ],
     },
   });

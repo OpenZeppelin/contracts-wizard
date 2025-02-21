@@ -10,8 +10,9 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   permit: booleans,
+  flashmint: booleans,
   access: accessOptions,
-  info: infoOptions
+  info: infoOptions,
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
