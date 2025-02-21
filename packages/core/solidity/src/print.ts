@@ -61,7 +61,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     const parents = parentsWithInitializers
       .flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['initializer public'] : parents;
+    const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
     const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
@@ -166,18 +166,19 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
     return []
   }
-
-  const modifiers: string[] = [fn.kind, ...fn.modifiers];
+  const modifiers: string[] = [fn.kind]
 
   if (fn.mutability !== 'nonpayable') {
-    modifiers.splice(1, 0, fn.mutability);
+    modifiers.push(fn.mutability);
   }
-
+  
   if (fn.override.size === 1) {
     modifiers.push(`override`);
   } else if (fn.override.size > 1) {
     modifiers.push(`override(${[...fn.override].map(transformName).join(', ')})`);
   }
+
+  modifiers.push(...fn.modifiers);
 
   if (fn.returns?.length) {
     modifiers.push(`returns (${fn.returns.join(', ')})`);

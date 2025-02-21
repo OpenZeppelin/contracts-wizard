@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix modifiers order to follow Solidity style guides. ([#450](https://github.com/OpenZeppelin/contracts-wizard/pull/450))
+
 ## 0.5.1 (2025-02-05)
 
 - **Potentially breaking changes**:

@@ -18,6 +18,7 @@
     "update_scarb_project": "ts-node src/scripts/update-scarb-project.ts",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
+    "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
     "version": "node ../../../scripts/bump-changelog.js"
   },
