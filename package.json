@@ -4,7 +4,7 @@
   "scripts": {
     "prepare": "wsrun -m prepare",
     "dev:ui": "yarn --cwd ./packages/ui dev",
-    "for:run": "node ./scripts/for-language-run.mjs"
+    "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {
     "packages": [
