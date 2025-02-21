@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from "./contract";
+import { BaseFunction, Contract, ContractBuilder } from "./contract";
 import {
   Access,
   setAccessControl,
@@ -255,8 +255,11 @@ const functions = defineFunctions({
   },
 });
 
-function getMintFunction(incremental: boolean, uriStorage: boolean) {
-  const fn = {
+function getMintFunction(
+  incremental: boolean,
+  uriStorage: boolean
+): BaseFunction {
+  const fn: BaseFunction = {
     name: "safeMint",
     kind: "public" as const,
     args: [{ name: "to", type: "address" }],
