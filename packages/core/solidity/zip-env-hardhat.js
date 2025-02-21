@@ -1,1 +1,1 @@
-module.exports = require("./dist/zip-hardhat");
+module.exports = require('./dist/zip-hardhat');

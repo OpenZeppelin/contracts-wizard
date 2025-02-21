@@ -1,8 +1,8 @@
-import type { ContractBuilder } from "./contract";
+import type { ContractBuilder } from './contract';
 
-export const infoOptions = [{}, { license: "WTFPL" }] as const;
+export const infoOptions = [{}, { license: 'WTFPL' }] as const;
 
-export const defaults: Info = { license: "MIT" };
+export const defaults: Info = { license: 'MIT' };
 
 export type Info = {
   license?: string;

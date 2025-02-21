@@ -1,12 +1,12 @@
-import { accountTypes, type AccountOptions } from "../account";
-import { infoOptions } from "../set-info";
-import { upgradeableOptions } from "../set-upgradeable";
-import { generateAlternatives } from "./alternatives";
+import { accountTypes, type AccountOptions } from '../account';
+import { infoOptions } from '../set-info';
+import { upgradeableOptions } from '../set-upgradeable';
+import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
 const blueprint = {
-  name: ["MyAccount"],
+  name: ['MyAccount'],
   type: accountTypes,
   declare: booleans,
   deploy: booleans,

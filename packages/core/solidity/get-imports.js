@@ -1,1 +1,1 @@
-module.exports = require("./dist/get-imports");
+module.exports = require('./dist/get-imports');

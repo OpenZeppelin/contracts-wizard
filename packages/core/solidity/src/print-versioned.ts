@@ -1,16 +1,13 @@
-import contracts from "../openzeppelin-contracts";
-import type { Contract } from "./contract";
-import { printContract } from "./print";
+import contracts from '../openzeppelin-contracts';
+import type { Contract } from './contract';
+import { printContract } from './print';
 
 export function printContractVersioned(contract: Contract): string {
   return printContract(contract, {
-    transformImport: (p) => {
+    transformImport: p => {
       return {
         ...p,
-        path: p.path.replace(
-          /^@openzeppelin\/contracts(-upgradeable)?/,
-          `$&@${contracts.version}`,
-        ),
+        path: p.path.replace(/^@openzeppelin\/contracts(-upgradeable)?/, `$&@${contracts.version}`),
       };
     },
   });

@@ -1,20 +1,15 @@
-import { Contract, ContractBuilder } from "./contract";
-import {
-  Access,
-  setAccessControl,
-  requireAccessControl,
-} from "./set-access-control";
-import { addPauseFunctions } from "./add-pausable";
-import { supportsInterface } from "./common-functions";
-import { defineFunctions } from "./utils/define-functions";
-import {
-  CommonOptions,
-  withCommonDefaults,
-  defaults as commonDefaults,
-} from "./common-options";
-import { setUpgradeable } from "./set-upgradeable";
-import { setInfo } from "./set-info";
-import { printContract } from "./print";
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { setAccessControl, requireAccessControl } from './set-access-control';
+import { addPauseFunctions } from './add-pausable';
+import { supportsInterface } from './common-functions';
+import { defineFunctions } from './utils/define-functions';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults, defaults as commonDefaults } from './common-options';
+import { setUpgradeable } from './set-upgradeable';
+import { setInfo } from './set-info';
+import { printContract } from './print';
 
 export interface ERC1155Options extends CommonOptions {
   name: string;
@@ -27,8 +22,8 @@ export interface ERC1155Options extends CommonOptions {
 }
 
 export const defaults: Required<ERC1155Options> = {
-  name: "MyToken",
-  uri: "",
+  name: 'MyToken',
+  uri: '',
   burnable: false,
   pausable: false,
   mintable: false,
@@ -55,15 +50,8 @@ export function printERC1155(opts: ERC1155Options = defaults): string {
   return printContract(buildERC1155(opts));
 }
 
-export function isAccessControlRequired(
-  opts: Partial<ERC1155Options>,
-): boolean {
-  return (
-    opts.mintable ||
-    opts.pausable ||
-    opts.updatableUri !== false ||
-    opts.upgradeable === "uups"
-  );
+export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
+  return opts.mintable || opts.pausable || opts.updatableUri !== false || opts.upgradeable === 'uups';
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -104,8 +92,8 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
 function addBase(c: ContractBuilder, uri: string) {
   const ERC1155 = {
-    name: "ERC1155",
-    path: "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
+    name: 'ERC1155',
+    path: '@openzeppelin/contracts/token/ERC1155/ERC1155.sol',
   };
   c.addParent(ERC1155, [uri]);
 
@@ -115,8 +103,8 @@ function addBase(c: ContractBuilder, uri: string) {
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
   const ERC1155Pausable = {
-    name: "ERC1155Pausable",
-    path: "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol",
+    name: 'ERC1155Pausable',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol',
   };
   c.addParent(ERC1155Pausable);
   c.addOverride(ERC1155Pausable, functions._update);
@@ -126,27 +114,27 @@ function addPausableExtension(c: ContractBuilder, access: Access) {
 
 function addBurnable(c: ContractBuilder) {
   c.addParent({
-    name: "ERC1155Burnable",
-    path: "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol",
+    name: 'ERC1155Burnable',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol',
   });
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.mint, access, "MINTER", "minter");
-  requireAccessControl(c, functions.mintBatch, access, "MINTER", "minter");
-  c.addFunctionCode("_mint(account, id, amount, data);", functions.mint);
-  c.addFunctionCode("_mintBatch(to, ids, amounts, data);", functions.mintBatch);
+  requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
+  requireAccessControl(c, functions.mintBatch, access, 'MINTER', 'minter');
+  c.addFunctionCode('_mint(account, id, amount, data);', functions.mint);
+  c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
 function addSetUri(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, functions.setURI, access, "URI_SETTER", undefined);
-  c.addFunctionCode("_setURI(newuri);", functions.setURI);
+  requireAccessControl(c, functions.setURI, access, 'URI_SETTER', undefined);
+  c.addFunctionCode('_setURI(newuri);', functions.setURI);
 }
 
 function addSupply(c: ContractBuilder) {
   const ERC1155Supply = {
-    name: "ERC1155Supply",
-    path: "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol",
+    name: 'ERC1155Supply',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol',
   };
   c.addParent(ERC1155Supply);
   c.addOverride(ERC1155Supply, functions._update);
@@ -154,37 +142,37 @@ function addSupply(c: ContractBuilder) {
 
 const functions = defineFunctions({
   _update: {
-    kind: "internal" as const,
+    kind: 'internal' as const,
     args: [
-      { name: "from", type: "address" },
-      { name: "to", type: "address" },
-      { name: "ids", type: "uint256[] memory" },
-      { name: "values", type: "uint256[] memory" },
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'ids', type: 'uint256[] memory' },
+      { name: 'values', type: 'uint256[] memory' },
     ],
   },
 
   setURI: {
-    kind: "public" as const,
-    args: [{ name: "newuri", type: "string memory" }],
+    kind: 'public' as const,
+    args: [{ name: 'newuri', type: 'string memory' }],
   },
 
   mint: {
-    kind: "public" as const,
+    kind: 'public' as const,
     args: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-      { name: "amount", type: "uint256" },
-      { name: "data", type: "bytes memory" },
+      { name: 'account', type: 'address' },
+      { name: 'id', type: 'uint256' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'data', type: 'bytes memory' },
     ],
   },
 
   mintBatch: {
-    kind: "public" as const,
+    kind: 'public' as const,
     args: [
-      { name: "to", type: "address" },
-      { name: "ids", type: "uint256[] memory" },
-      { name: "amounts", type: "uint256[] memory" },
-      { name: "data", type: "bytes memory" },
+      { name: 'to', type: 'address' },
+      { name: 'ids', type: 'uint256[] memory' },
+      { name: 'amounts', type: 'uint256[] memory' },
+      { name: 'data', type: 'bytes memory' },
     ],
   },
 });

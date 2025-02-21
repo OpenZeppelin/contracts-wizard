@@ -1,21 +1,22 @@
-import _test, { TestFn, ExecutionContext } from "ava";
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 
-import { zipHardhat } from "./zip-hardhat";
+import { zipHardhat } from './zip-hardhat';
 
-import { buildERC20 } from "./erc20";
-import { buildERC721 } from "./erc721";
-import { buildERC1155 } from "./erc1155";
-import { buildCustom } from "./custom";
-import { promises as fs } from "fs";
-import path from "path";
-import os from "os";
-import util from "util";
-import child from "child_process";
-import type { Contract } from "./contract";
-import { rimraf } from "rimraf";
-import type { JSZipObject } from "jszip";
-import type JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
+import { buildERC20 } from './erc20';
+import { buildERC721 } from './erc721';
+import { buildERC1155 } from './erc1155';
+import { buildCustom } from './custom';
+import { promises as fs } from 'fs';
+import path from 'path';
+import os from 'os';
+import util from 'util';
+import child from 'child_process';
+import type { Contract } from './contract';
+import { rimraf } from 'rimraf';
+import type { JSZipObject } from 'jszip';
+import type JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
 
 interface Context {
   tempFolder: string;
@@ -23,23 +24,21 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.beforeEach(async (t) => {
-  t.context.tempFolder = await fs.mkdtemp(
-    path.join(os.tmpdir(), "openzeppelin-wizard-"),
-  );
+test.beforeEach(async t => {
+  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
 });
 
-test.afterEach.always(async (t) => {
+test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial("erc20 full", async (t) => {
+test.serial('erc20 full', async t => {
   const opts: GenericOptions = {
-    kind: "ERC20",
-    name: "My Token",
-    symbol: "MTK",
-    premint: "2000",
-    access: "roles",
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'roles',
     burnable: true,
     mintable: true,
     pausable: true,
@@ -51,48 +50,44 @@ test.serial("erc20 full", async (t) => {
   await runTest(c, t, opts);
 });
 
-test.serial("erc721 upgradeable", async (t) => {
+test.serial('erc721 upgradeable', async t => {
   const opts: GenericOptions = {
-    kind: "ERC721",
-    name: "My Token",
-    symbol: "MTK",
-    upgradeable: "uups",
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+    upgradeable: 'uups',
   };
   const c = buildERC721(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("erc1155 basic", async (t) => {
+test.serial('erc1155 basic', async t => {
   const opts: GenericOptions = {
-    kind: "ERC1155",
-    name: "My Token",
-    uri: "https://myuri/{id}",
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://myuri/{id}',
   };
   const c = buildERC1155(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("custom basic", async (t) => {
-  const opts: GenericOptions = { kind: "Custom", name: "My Contract" };
+test.serial('custom basic', async t => {
+  const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
 
-test.serial("custom upgradeable", async (t) => {
+test.serial('custom upgradeable', async t => {
   const opts: GenericOptions = {
-    kind: "Custom",
-    name: "My Contract",
-    upgradeable: "transparent",
+    kind: 'Custom',
+    name: 'My Contract',
+    upgradeable: 'transparent',
   };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
 
-async function runTest(
-  c: Contract,
-  t: ExecutionContext<Context>,
-  opts: GenericOptions,
-) {
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
   assertLayout(zip, c, t);
@@ -102,29 +97,25 @@ async function runTest(
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files)
-    .map((f) => f.name)
+    .map(f => f.name)
     .sort();
   t.deepEqual(sorted, [
-    ".gitignore",
-    "README.md",
-    "contracts/",
+    '.gitignore',
+    'README.md',
+    'contracts/',
     `contracts/${c.name}.sol`,
-    "hardhat.config.ts",
-    "package-lock.json",
-    "package.json",
-    "scripts/",
-    "scripts/deploy.ts",
-    "test/",
-    "test/test.ts",
-    "tsconfig.json",
+    'hardhat.config.ts',
+    'package-lock.json',
+    'package.json',
+    'scripts/',
+    'scripts/deploy.ts',
+    'test/',
+    'test/test.ts',
+    'tsconfig.json',
   ]);
 }
 
-async function extractAndRunPackage(
-  zip: JSZip,
-  c: Contract,
-  t: ExecutionContext<Context>,
-) {
+async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
   const tempFolder = t.context.tempFolder;
@@ -134,17 +125,14 @@ async function extractAndRunPackage(
     if (item.dir) {
       await fs.mkdir(path.join(tempFolder, item.name));
     } else {
-      await fs.writeFile(
-        path.join(tempFolder, item.name),
-        await asString(item),
-      );
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
     }
   }
 
   let command = `cd "${tempFolder}" && npm install && npm test`;
   if (c.constructorArgs === undefined) {
     // only test deploying the contract if there are no constructor args needed
-    command += " && npx hardhat run scripts/deploy.ts";
+    command += ' && npx hardhat run scripts/deploy.ts';
   }
 
   const exec = util.promisify(child.exec);
@@ -156,17 +144,13 @@ async function extractAndRunPackage(
   }
 }
 
-async function assertContents(
-  zip: JSZip,
-  c: Contract,
-  t: ExecutionContext<Context>,
-) {
+async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
-    await getItemString(zip, "hardhat.config.ts"),
-    await getItemString(zip, "package.json"),
-    await getItemString(zip, "scripts/deploy.ts"),
-    await getItemString(zip, "test/test.ts"),
+    await getItemString(zip, 'hardhat.config.ts'),
+    await getItemString(zip, 'package.json'),
+    await getItemString(zip, 'scripts/deploy.ts'),
+    await getItemString(zip, 'test/test.ts'),
   ];
 
   t.snapshot(contentComparison);
@@ -181,5 +165,5 @@ async function getItemString(zip: JSZip, key: string) {
 }
 
 async function asString(item: JSZipObject) {
-  return Buffer.from(await item.async("arraybuffer")).toString();
+  return Buffer.from(await item.async('arraybuffer')).toString();
 }

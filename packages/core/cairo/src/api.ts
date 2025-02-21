@@ -1,43 +1,34 @@
-import type { CommonOptions, CommonContractOptions } from "./common-options";
+import type { CommonOptions, CommonContractOptions } from './common-options';
+import type { ERC20Options } from './erc20';
 import {
   printERC20,
   defaults as erc20defaults,
   isAccessControlRequired as erc20IsAccessControlRequired,
-  ERC20Options,
-} from "./erc20";
+} from './erc20';
+import type { ERC721Options } from './erc721';
 import {
   printERC721,
   defaults as erc721defaults,
   isAccessControlRequired as erc721IsAccessControlRequired,
-  ERC721Options,
-} from "./erc721";
+} from './erc721';
+import type { ERC1155Options } from './erc1155';
 import {
   printERC1155,
   defaults as erc1155defaults,
   isAccessControlRequired as erc1155IsAccessControlRequired,
-  ERC1155Options,
-} from "./erc1155";
-import {
-  printAccount,
-  defaults as accountDefaults,
-  AccountOptions,
-} from "./account";
-import {
-  printGovernor,
-  defaults as governorDefaults,
-  GovernorOptions,
-} from "./governor";
+} from './erc1155';
+import type { AccountOptions } from './account';
+import { printAccount, defaults as accountDefaults } from './account';
+import type { GovernorOptions } from './governor';
+import { printGovernor, defaults as governorDefaults } from './governor';
+import type { CustomOptions } from './custom';
 import {
   printCustom,
   defaults as customDefaults,
   isAccessControlRequired as customIsAccessControlRequired,
-  CustomOptions,
-} from "./custom";
-import {
-  printVesting,
-  defaults as vestingDefaults,
-  VestingOptions,
-} from "./vesting";
+} from './custom';
+import type { VestingOptions } from './vesting';
+import { printVesting, defaults as vestingDefaults } from './vesting';
 
 export interface WizardAccountAPI<Options extends CommonOptions> {
   /**
@@ -71,17 +62,13 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type ERC20 = WizardContractAPI<ERC20Options> &
-  AccessControlAPI<ERC20Options>;
-export type ERC721 = WizardContractAPI<ERC721Options> &
-  AccessControlAPI<ERC721Options>;
-export type ERC1155 = WizardContractAPI<ERC1155Options> &
-  AccessControlAPI<ERC1155Options>;
+export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
+export type ERC721 = WizardContractAPI<ERC721Options> & AccessControlAPI<ERC721Options>;
+export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC1155Options>;
 export type Account = WizardAccountAPI<AccountOptions>;
 export type Governor = WizardContractAPI<GovernorOptions>;
 export type Vesting = WizardContractAPI<VestingOptions>;
-export type Custom = WizardContractAPI<CustomOptions> &
-  AccessControlAPI<CustomOptions>;
+export type Custom = WizardContractAPI<CustomOptions> & AccessControlAPI<CustomOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,

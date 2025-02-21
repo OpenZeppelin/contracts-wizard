@@ -1,34 +1,23 @@
-import JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
-import type { Contract } from "./contract";
-import { printContract } from "./print";
-import SOLIDITY_VERSION from "./solidity-version.json";
-import contracts from "../openzeppelin-contracts";
-import {
-  formatLinesWithSpaces,
-  Lines,
-  spaceBetween,
-} from "./utils/format-lines";
+import JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
+import type { Contract } from './contract';
+import { printContract } from './print';
+import SOLIDITY_VERSION from './solidity-version.json';
+import contracts from '../openzeppelin-contracts';
+import type { Lines } from './utils/format-lines';
+import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
 function getHeader(c: Contract) {
-  return [
-    `// SPDX-License-Identifier: ${c.license}`,
-    `pragma solidity ^${SOLIDITY_VERSION};`,
-  ];
+  return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
 }
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)));
 
   function getImports(c: Contract) {
     const result = ['import {Test} from "forge-std/Test.sol";'];
     if (c.upgradeable) {
-      result.push(
-        'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";',
-      );
+      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
     }
     result.push(`import {${c.name}} from "src/${c.name}.sol";`);
     return result;
@@ -40,55 +29,39 @@ const test = (c: Contract, opts?: GenericOptions) => {
       `contract ${c.name}Test is Test {`,
       spaceBetween(
         [`${c.name} public instance;`],
-        [
-          "function setUp() public {",
-          getAddressVariables(c, args),
-          getDeploymentCode(c, args),
-          "}",
-        ],
+        ['function setUp() public {', getAddressVariables(c, args), getDeploymentCode(c, args), '}'],
         getContractSpecificTestFunction(),
       ),
-      "}",
+      '}',
     ];
   }
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     if (c.upgradeable) {
-      if (opts?.upgradeable === "transparent") {
+      if (opts?.upgradeable === 'transparent') {
         return [
           `address proxy = Upgrades.deployTransparentProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `initialOwner,`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(", ")}))`,
-          ],
-          ");",
+          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
           `instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
           `address proxy = Upgrades.deployUUPSProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(", ")}))`,
-          ],
-          ");",
+          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
           `instance = ${c.name}(proxy);`,
         ];
       }
     } else {
-      return [`instance = new ${c.name}(${args.join(", ")});`];
+      return [`instance = new ${c.name}(${args.join(', ')});`];
     }
   }
 
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
     let i = 1; // private key index starts from 1 since it must be non-zero
-    if (
-      c.upgradeable &&
-      opts?.upgradeable === "transparent" &&
-      !args.includes("initialOwner")
-    ) {
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push(`address initialOwner = vm.addr(${i++});`);
     }
     for (const arg of args) {
@@ -100,31 +73,19 @@ const test = (c: Contract, opts?: GenericOptions) => {
   function getContractSpecificTestFunction(): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
-        case "ERC20":
-        case "ERC721":
-          return [
-            "function testName() public view {",
-            [`assertEq(instance.name(), "${opts.name}");`],
-            "}",
-          ];
+        case 'ERC20':
+        case 'ERC721':
+          return ['function testName() public view {', [`assertEq(instance.name(), "${opts.name}");`], '}'];
 
-        case "ERC1155":
-          return [
-            "function testUri() public view {",
-            [`assertEq(instance.uri(0), "${opts.uri}");`],
-            "}",
-          ];
+        case 'ERC1155':
+          return ['function testUri() public view {', [`assertEq(instance.uri(0), "${opts.uri}");`], '}'];
 
-        case "Governor":
-        case "Custom":
-          return [
-            "function testSomething() public {",
-            ["// Add your test here"],
-            "}",
-          ];
+        case 'Governor':
+        case 'Custom':
+          return ['function testSomething() public {', ['// Add your test here'], '}'];
 
         default:
-          throw new Error("Unknown ERC");
+          throw new Error('Unknown ERC');
       }
     }
     return [];
@@ -134,7 +95,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
 function getAddressArgs(c: Contract): string[] {
   const args = [];
   for (const constructorArg of c.constructorArgs) {
-    if (constructorArg.type === "address") {
+    if (constructorArg.type === 'address') {
       args.push(constructorArg.name);
     }
   }
@@ -142,20 +103,12 @@ function getAddressArgs(c: Contract): string[] {
 }
 
 const script = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(getHeader(c), getImports(c), getScript(c)),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getScript(c)));
 
   function getImports(c: Contract) {
-    const result = [
-      'import {Script} from "forge-std/Script.sol";',
-      'import {console} from "forge-std/console.sol";',
-    ];
+    const result = ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";'];
     if (c.upgradeable) {
-      result.push(
-        'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";',
-      );
+      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
     }
     result.push(`import {${c.name}} from "src/${c.name}.sol";`);
     return result;
@@ -164,65 +117,48 @@ const script = (c: Contract, opts?: GenericOptions) => {
   function getScript(c: Contract) {
     const args = getAddressArgs(c);
     const deploymentLines = [
-      "vm.startBroadcast();",
+      'vm.startBroadcast();',
       ...getAddressVariables(c, args),
       ...getDeploymentCode(c, args),
-      `console.log("${c.upgradeable ? "Proxy" : "Contract"} deployed to %s", address(instance));`,
-      "vm.stopBroadcast();",
+      `console.log("${c.upgradeable ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
+      'vm.stopBroadcast();',
     ];
     return [
       `contract ${c.name}Script is Script {`,
       spaceBetween(
-        ["function setUp() public {}"],
-        [
-          "function run() public {",
-          args.length > 0
-            ? addTodoAndCommentOut(deploymentLines)
-            : deploymentLines,
-          "}",
-        ],
+        ['function setUp() public {}'],
+        ['function run() public {', args.length > 0 ? addTodoAndCommentOut(deploymentLines) : deploymentLines, '}'],
       ),
-      "}",
+      '}',
     ];
   }
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     if (c.upgradeable) {
-      if (opts?.upgradeable === "transparent") {
+      if (opts?.upgradeable === 'transparent') {
         return [
           `address proxy = Upgrades.deployTransparentProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `initialOwner,`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(", ")}))`,
-          ],
-          ");",
+          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
           `${c.name} instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
           `address proxy = Upgrades.deployUUPSProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(", ")}))`,
-          ],
-          ");",
+          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
           `${c.name} instance = ${c.name}(proxy);`,
         ];
       }
     } else {
-      return [`${c.name} instance = new ${c.name}(${args.join(", ")});`];
+      return [`${c.name} instance = new ${c.name}(${args.join(', ')});`];
     }
   }
 
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
-    if (
-      c.upgradeable &&
-      opts?.upgradeable === "transparent" &&
-      !args.includes("initialOwner")
-    ) {
-      vars.push("address initialOwner = <Set initialOwner address here>;");
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
+      vars.push('address initialOwner = <Set initialOwner address here>;');
     }
     for (const arg of args) {
       vars.push(`address ${arg} = <Set ${arg} address here>;`);
@@ -232,10 +168,10 @@ const script = (c: Contract, opts?: GenericOptions) => {
 
   function addTodoAndCommentOut(lines: Lines[]) {
     return [
-      "// TODO: Set addresses for the variables below, then uncomment the following section:",
-      "/*",
+      '// TODO: Set addresses for the variables below, then uncomment the following section:',
+      '/*',
       ...lines,
-      "*/",
+      '*/',
     ];
   }
 };
@@ -341,7 +277,7 @@ bash setup.sh
 ## Testing the contract
 
 \`\`\`
-forge test${c.upgradeable ? " --force" : ""}
+forge test${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 ## Deploying the contract
@@ -349,7 +285,7 @@ forge test${c.upgradeable ? " --force" : ""}
 You can simulate a deployment by running the script:
 
 \`\`\`
-forge script script/${c.name}.s.sol${c.upgradeable ? " --force" : ""}
+forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
@@ -361,8 +297,8 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`src/${c.name}.sol`, printContract(c));
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c, opts));
-  zip.file("setup.sh", setupSh(c));
-  zip.file("README.md", readme(c));
+  zip.file('setup.sh', setupSh(c));
+  zip.file('README.md', readme(c));
 
   return zip;
 }

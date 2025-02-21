@@ -1,1 +1,1 @@
-export * from "./src/zip-hardhat";
+export * from './src/zip-hardhat';

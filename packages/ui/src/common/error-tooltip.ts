@@ -1,13 +1,13 @@
-import tippy from "tippy.js";
+import tippy from 'tippy.js';
 
-const klass = "has-error";
+const klass = 'has-error';
 
 export function error(node: HTMLElement, content?: string) {
   let shown = false;
 
   const t = tippy(node, {
-    placement: "right",
-    theme: "light-red border",
+    placement: 'right',
+    theme: 'light-red border',
     showOnCreate: false,
     onShow: () => {
       shown = true;

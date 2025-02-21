@@ -1,4 +1,4 @@
-import { version as contractsVersion } from "@openzeppelin/contracts/package.json";
+import { version as contractsVersion } from '@openzeppelin/contracts/package.json';
 
 export function injectHyperlinks(code: string) {
   // We are modifying HTML, so use HTML escaped chars. The pattern excludes paths that include /../ in the URL.
