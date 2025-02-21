@@ -1,11 +1,14 @@
-import { sortedBy } from './sorted-by';
+import { sortedBy } from "./sorted-by";
 
 // Greedy approximation of minimum set cover.
 
-export function findCover<T extends object>(sets: T[], getElements: (set: T) => unknown[]): T[] {
+export function findCover<T extends object>(
+  sets: T[],
+  getElements: (set: T) => unknown[],
+): T[] {
   const sortedSets = sortedBy(
-    sets.map(set => ({ set, elems: getElements(set) })),
-    s => -s.elems.length,
+    sets.map((set) => ({ set, elems: getElements(set) })),
+    (s) => -s.elems.length,
   );
 
   const seen = new Set<unknown>();

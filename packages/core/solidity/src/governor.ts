@@ -64,7 +64,7 @@ export interface GovernorOptions extends CommonOptions {
 }
 
 export function isAccessControlRequired(
-  opts: Partial<GovernorOptions>
+  opts: Partial<GovernorOptions>,
 ): boolean {
   return opts.upgradeable === "uups";
 }
@@ -151,7 +151,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
 }
 
 function getVotingDelay(
-  opts: Required<GovernorOptions>
+  opts: Required<GovernorOptions>,
 ): { lit: string } | { note: string; value: number } {
   try {
     if (opts.clockMode === "timestamp") {
@@ -176,7 +176,7 @@ function getVotingDelay(
 }
 
 function getVotingPeriod(
-  opts: Required<GovernorOptions>
+  opts: Required<GovernorOptions>,
 ): { lit: string } | { note: string; value: number } {
   try {
     if (opts.clockMode === "timestamp") {
@@ -232,7 +232,7 @@ function getProposalThreshold({
 
 function setVotingParameters(
   c: ContractBuilder,
-  opts: Required<GovernorOptions>
+  opts: Required<GovernorOptions>,
 ) {
   const delayBlocks = getVotingDelay(opts);
   if ("lit" in delayBlocks) {
@@ -240,7 +240,7 @@ function setVotingParameters(
   } else {
     c.setFunctionBody(
       [`return ${delayBlocks.value}; // ${delayBlocks.note}`],
-      functions.votingDelay
+      functions.votingDelay,
     );
   }
 
@@ -250,14 +250,14 @@ function setVotingParameters(
   } else {
     c.setFunctionBody(
       [`return ${periodBlocks.value}; // ${periodBlocks.note}`],
-      functions.votingPeriod
+      functions.votingPeriod,
     );
   }
 }
 
 function setProposalThreshold(
   c: ContractBuilder,
-  opts: Required<GovernorOptions>
+  opts: Required<GovernorOptions>,
 ) {
   const threshold = getProposalThreshold(opts);
   const nonZeroThreshold = parseInt(threshold) !== 0;
@@ -295,7 +295,7 @@ function addVotes(c: ContractBuilder) {
       name: "GovernorVotes",
       path: `@openzeppelin/contracts/governance/extensions/GovernorVotes.sol`,
     },
-    [{ lit: tokenArg }]
+    [{ lit: tokenArg }],
   );
 }
 
@@ -322,7 +322,7 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
       c.setFunctionBody(
         [`return ${quorumFractionDenominator};`],
         functions.quorumDenominator,
-        "pure"
+        "pure",
       );
     }
 
@@ -386,7 +386,7 @@ function getQuorumFractionComponents(quorumPercent: number): {
     quorumPercentSegments[1] !== undefined
   ) {
     quorumFractionNumerator = parseInt(
-      quorumPercentSegments[0].concat(quorumPercentSegments[1])
+      quorumPercentSegments[0].concat(quorumPercentSegments[1]),
     );
     const decimals = quorumPercentSegments[1].length;
     quorumFractionDenominator = "100";
@@ -399,7 +399,7 @@ function getQuorumFractionComponents(quorumPercent: number): {
 
 function addTimelock(
   c: ContractBuilder,
-  { timelock }: Required<GovernorOptions>
+  { timelock }: Required<GovernorOptions>,
 ) {
   if (timelock === false) {
     return;

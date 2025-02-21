@@ -65,7 +65,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
 }
 
 export function isAccessControlRequired(
-  opts: Partial<ERC1155Options>
+  opts: Partial<ERC1155Options>,
 ): boolean {
   return (
     opts.mintable === true ||
@@ -173,7 +173,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     functions.mint,
     access,
     "MINTER",
-    "minter"
+    "minter",
   );
   requireAccessControl(
     c,
@@ -181,7 +181,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     functions.batch_mint,
     access,
     "MINTER",
-    "minter"
+    "minter",
   );
 
   // Camel case version of batch_mint. Access control and pausable are already set on batch_mint.
@@ -195,7 +195,7 @@ function addSetBaseUri(c: ContractBuilder, access: Access) {
     functions.set_base_uri,
     access,
     "URI_SETTER",
-    "uri_setter"
+    "uri_setter",
   );
 
   // Camel case version of set_base_uri. Access control is already set on set_base_uri.

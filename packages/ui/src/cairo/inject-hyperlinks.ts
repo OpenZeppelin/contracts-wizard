@@ -24,7 +24,7 @@ export function injectHyperlinks(code: string) {
         if (suffix === "::{") {
           // Multiple components are imported, so remove components and link to the parent .cairo file
           replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
-            "/"
+            "/",
           )}.cairo' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>${suffix}`; // Exclude suffix from link
         } else {
           // Single component is imported
@@ -33,7 +33,7 @@ export function injectHyperlinks(code: string) {
           const mapping = componentMappings[componentName];
           const urlSuffix = mapping ? `/${mapping}.cairo` : ".cairo";
           replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
-            "/"
+            "/",
           )}${urlSuffix}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}${suffix}</a>`; // Include suffix (component) in link
         }
 

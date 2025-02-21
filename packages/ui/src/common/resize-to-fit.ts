@@ -14,7 +14,7 @@ export function resizeToFit(node: HTMLInputElement) {
       "border-right-width",
     ].map((p) => style.getPropertyValue(p));
     const result = `calc(5px + max(${minWidth}, ${textWidth}) + ${padding.join(
-      " + "
+      " + ",
     )})`;
     node.style.setProperty("width", result);
   };

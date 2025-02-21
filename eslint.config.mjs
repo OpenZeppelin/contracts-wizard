@@ -58,5 +58,5 @@ export default typescriptEslint.config(
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },
-  }
+  },
 );

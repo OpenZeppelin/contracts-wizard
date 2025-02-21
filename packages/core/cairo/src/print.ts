@@ -40,11 +40,11 @@ export function printContract(contract: Contract): string {
           printStorage(contract),
           printEvents(contract),
           printConstructor(contract),
-          printImplementedTraits(contract)
+          printImplementedTraits(contract),
         ),
         `}`,
-      ]
-    )
+      ],
+    ),
   );
 }
 
@@ -55,8 +55,8 @@ function withSemicolons(lines: string[]): string[] {
 function printSuperVariables(contract: Contract): string[] {
   return withSemicolons(
     contract.superVariables.map(
-      (v) => `const ${v.name}: ${v.type} = ${v.value}`
-    )
+      (v) => `const ${v.name}: ${v.type} = ${v.value}`,
+    ),
   );
 }
 
@@ -67,7 +67,7 @@ function printUseClauses(contract: Contract): Lines[] {
   const grouped = useClauses.reduce(
     (
       result: { [containerPath: string]: UseClause[] },
-      useClause: UseClause
+      useClause: UseClause,
     ) => {
       if (useClause.groupable) {
         (result[useClause.containerPath] =
@@ -78,24 +78,24 @@ function printUseClauses(contract: Contract): Lines[] {
       }
       return result;
     },
-    {}
+    {},
   );
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) =>
-    getLinesFromUseClausesGroup(group, groupName)
+    getLinesFromUseClausesGroup(group, groupName),
   );
   return lines.flatMap((line) => splitLongUseClauseLine(line.toString()));
 }
 
 function getLinesFromUseClausesGroup(
   group: UseClause[],
-  groupName: string
+  groupName: string,
 ): Lines[] {
   const lines = [];
   if (groupName === STANDALONE_IMPORTS_GROUP) {
     for (const useClause of group) {
       lines.push(
-        `use ${useClause.containerPath}::${nameWithAlias(useClause)};`
+        `use ${useClause.containerPath}::${nameWithAlias(useClause)};`,
       );
     }
   } else {
@@ -168,15 +168,15 @@ function printConstants(contract: Contract): Lines[] {
     if (commented && !inlineComment) {
       lines.push(`// ${constant.comment}`);
       lines.push(
-        `const ${constant.name}: ${constant.type} = ${constant.value};`
+        `const ${constant.name}: ${constant.type} = ${constant.value};`,
       );
     } else if (commented) {
       lines.push(
-        `const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`
+        `const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`,
       );
     } else {
       lines.push(
-        `const ${constant.name}: ${constant.type} = ${constant.value};`
+        `const ${constant.name}: ${constant.type} = ${constant.value};`,
       );
     }
   }
@@ -187,7 +187,7 @@ function printComponentDeclarations(contract: Contract): Lines[] {
   const lines = [];
   for (const component of contract.components) {
     lines.push(
-      `component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`
+      `component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`,
     );
   }
   return lines;
@@ -206,7 +206,7 @@ function printImpls(contract: Contract): Lines[] {
       (result[section] = result[section] || []).push(current);
       return result;
     },
-    {}
+    {},
   );
 
   const sections = Object.entries(grouped)
@@ -241,7 +241,7 @@ function printStorage(contract: Contract): (string | string[])[] {
   for (const component of contract.components) {
     storageLines.push(`#[substorage(v0)]`);
     storageLines.push(
-      `${component.substorage.name}: ${component.substorage.type},`
+      `${component.substorage.name}: ${component.substorage.type},`,
     );
   }
   lines.push(storageLines);
@@ -282,20 +282,20 @@ function printImplementedTraits(contract: Contract): Lines[] {
   const grouped = sortedTraits.reduce(
     (
       result: { [section: string]: ImplementedTrait[] },
-      current: ImplementedTrait
+      current: ImplementedTrait,
     ) => {
       // default to no section
       const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
       return result;
     },
-    {}
+    {},
   );
 
   const sections = Object.entries(grouped)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([section, impls]) =>
-      printImplementedTraitsSection(section, impls as ImplementedTrait[])
+      printImplementedTraitsSection(section, impls as ImplementedTrait[]),
     );
 
   return spaceBetween(...sections);
@@ -303,7 +303,7 @@ function printImplementedTraits(contract: Contract): Lines[] {
 
 function printImplementedTraitsSection(
   section: string,
-  impls: ImplementedTrait[]
+  impls: ImplementedTrait[],
 ): Lines[] {
   const lines = [];
   const isDefaultSection = section === DEFAULT_SECTION;
@@ -327,7 +327,7 @@ function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   implLines.push(`impl ${trait.name} of ${trait.of} {`);
 
   const superVars = withSemicolons(
-    trait.superVariables.map((v) => `const ${v.name}: ${v.type} = ${v.value}`)
+    trait.superVariables.map((v) => `const ${v.name}: ${v.type} = ${v.value}`),
   );
   implLines.push(superVars);
 
@@ -363,7 +363,7 @@ function printFunction(fn: ContractFunction): Lines[] {
 
 function printConstructor(contract: Contract): Lines[] {
   const hasInitializers = contract.components.some(
-    (p) => p.initializer !== undefined
+    (p) => p.initializer !== undefined,
   );
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasInitializers || hasConstructorCode) {
@@ -376,7 +376,7 @@ function printConstructor(contract: Contract): Lines[] {
 
     const body = spaceBetween(
       withSemicolons(parents),
-      withSemicolons(contract.constructorCode)
+      withSemicolons(contract.constructorCode),
     );
 
     const constructor = printFunction2(
@@ -385,7 +385,7 @@ function printConstructor(contract: Contract): Lines[] {
       tag,
       undefined,
       undefined,
-      body
+      body,
     );
     return constructor;
   } else {
@@ -441,7 +441,7 @@ function printFunction2(
   tag: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
-  code: Lines[]
+  code: Lines[],
 ): Lines[] {
   const fn = [];
 

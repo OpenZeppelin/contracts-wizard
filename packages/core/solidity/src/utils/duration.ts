@@ -1,6 +1,17 @@
-const durationUnits = ['block', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year'] as const;
-type DurationUnit = typeof durationUnits[number];
-export const durationPattern = new RegExp(`^(\\d+(?:\\.\\d+)?) +(${durationUnits.join('|')})s?$`);
+const durationUnits = [
+  "block",
+  "second",
+  "minute",
+  "hour",
+  "day",
+  "week",
+  "month",
+  "year",
+] as const;
+type DurationUnit = (typeof durationUnits)[number];
+export const durationPattern = new RegExp(
+  `^(\\d+(?:\\.\\d+)?) +(${durationUnits.join("|")})s?$`,
+);
 
 const second = 1;
 const minute = 60 * second;
@@ -15,15 +26,15 @@ export function durationToBlocks(duration: string, blockTime: number): number {
   const match = duration.trim().match(durationPattern);
 
   if (!match) {
-    throw new Error('Bad duration format');
+    throw new Error("Bad duration format");
   }
 
   const value = parseFloat(match[1]!);
   const unit = match[2]! as DurationUnit;
 
-  if (unit === 'block') {
+  if (unit === "block") {
     if (!Number.isInteger(value)) {
-      throw new Error('Invalid number of blocks');
+      throw new Error("Invalid number of blocks");
     }
 
     return value;
@@ -37,15 +48,15 @@ export function durationToTimestamp(duration: string): string {
   const match = duration.trim().match(durationPattern);
 
   if (!match) {
-    throw new Error('Bad duration format');
+    throw new Error("Bad duration format");
   }
 
   const value = match[1]!;
   const unit = match[2]! as DurationUnit;
 
   // unit must be a Solidity supported time unit
-  if (unit === 'block' || unit === 'month' || unit === 'year') {
-    throw new Error('Invalid unit for timestamp');
+  if (unit === "block" || unit === "month" || unit === "year") {
+    throw new Error("Invalid unit for timestamp");
   }
 
   return `${value} ${unit}s`;

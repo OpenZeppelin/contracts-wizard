@@ -64,7 +64,7 @@ const mutabilityRank = ["pure", "view", "nonpayable", "payable"] as const;
 
 function maxMutability(
   a: FunctionMutability,
-  b: FunctionMutability
+  b: FunctionMutability,
 ): FunctionMutability {
   return mutabilityRank[
     Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))
@@ -148,7 +148,7 @@ export class ContractBuilder implements Contract {
   addOverride(
     parent: ReferencedContract,
     baseFn: BaseFunction,
-    mutability?: FunctionMutability
+    mutability?: FunctionMutability,
   ) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
@@ -205,7 +205,7 @@ export class ContractBuilder implements Contract {
   addFunctionCode(
     code: string,
     baseFn: BaseFunction,
-    mutability?: FunctionMutability
+    mutability?: FunctionMutability,
   ) {
     const fn = this.addFunction(baseFn);
     if (fn.final) {
@@ -220,7 +220,7 @@ export class ContractBuilder implements Contract {
   setFunctionBody(
     code: string[],
     baseFn: BaseFunction,
-    mutability?: FunctionMutability
+    mutability?: FunctionMutability,
   ) {
     const fn = this.addFunction(baseFn);
     if (fn.code.length > 0) {

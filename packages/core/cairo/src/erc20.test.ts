@@ -28,8 +28,8 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
           name: "MyToken",
           symbol: "MTK",
           ...opts,
-        })
-      )
+        }),
+      ),
     );
   });
 }
@@ -94,11 +94,11 @@ test("erc20 votes, no name", async (t) => {
       name: "MyToken",
       symbol: "MTK",
       votes: true,
-    })
+    }),
   );
   t.is(
     (error as OptionsError).messages.appName,
-    "Application Name is required when Votes are enabled"
+    "Application Name is required when Votes are enabled",
   );
 });
 
@@ -110,11 +110,11 @@ test("erc20 votes, empty version", async (t) => {
       votes: true,
       appName: "MY_DAPP_NAME",
       appVersion: "", // avoids default value of v1
-    })
+    }),
   );
   t.is(
     (error as OptionsError).messages.appVersion,
-    "Application Version is required when Votes are enabled"
+    "Application Version is required when Votes are enabled",
   );
 });
 

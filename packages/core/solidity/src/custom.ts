@@ -1,10 +1,14 @@
-import { Contract, ContractBuilder } from './contract';
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setUpgradeable } from './set-upgradeable';
-import { setInfo } from './set-info';
-import { setAccessControl } from './set-access-control';
-import { addPausable } from './add-pausable';
-import { printContract } from './print';
+import { Contract, ContractBuilder } from "./contract";
+import {
+  CommonOptions,
+  withCommonDefaults,
+  defaults as commonDefaults,
+} from "./common-options";
+import { setUpgradeable } from "./set-upgradeable";
+import { setInfo } from "./set-info";
+import { setAccessControl } from "./set-access-control";
+import { addPausable } from "./add-pausable";
+import { printContract } from "./print";
 
 export interface CustomOptions extends CommonOptions {
   name: string;
@@ -12,7 +16,7 @@ export interface CustomOptions extends CommonOptions {
 }
 
 export const defaults: Required<CustomOptions> = {
-  name: 'MyContract',
+  name: "MyContract",
   pausable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -32,7 +36,7 @@ export function printCustom(opts: CustomOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<CustomOptions>): boolean {
-  return opts.pausable || opts.upgradeable === 'uups';
+  return opts.pausable || opts.upgradeable === "uups";
 }
 
 export function buildCustom(opts: CustomOptions): Contract {
@@ -52,4 +56,3 @@ export function buildCustom(opts: CustomOptions): Contract {
 
   return c;
 }
-

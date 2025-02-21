@@ -1,6 +1,8 @@
 type T = string;
 
-export function transitiveClosure(obj: Record<T, Iterable<T>>): Record<T, Set<T>> {
+export function transitiveClosure(
+  obj: Record<T, Iterable<T>>,
+): Record<T, Set<T>> {
   const closure = {} as Record<T, Set<T>>;
 
   for (const key in obj) {

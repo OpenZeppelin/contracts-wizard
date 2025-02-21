@@ -35,7 +35,7 @@ export default async (req: Request) => {
     const validatedMessages = data.messages.filter(
       (message: { role: string; content: string }) => {
         return message.content.length < 500;
-      }
+      },
     );
 
     const messages = [

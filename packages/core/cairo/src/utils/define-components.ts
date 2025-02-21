@@ -1,6 +1,6 @@
-import type { Component } from '../contract';
+import type { Component } from "../contract";
 
-type ImplicitNameComponent = Omit<Component, 'name'>;
+type ImplicitNameComponent = Omit<Component, "name">;
 
 export function defineComponents<F extends string>(
   fns: Record<F, ImplicitNameComponent>,

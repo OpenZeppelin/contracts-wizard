@@ -58,7 +58,7 @@ artifacts
 const test = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(
     2,
-    ...spaceBetween(getImports(c), getTestCase(c))
+    ...spaceBetween(getImports(c), getTestCase(c)),
   );
 
   function getTestCase(c: Contract) {
@@ -76,7 +76,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
             `const instance = await ${getDeploymentCall(c, args)};`,
             "await instance.waitForDeployment();",
           ],
-          getExpects()
+          getExpects(),
         ),
         "});",
       ],
@@ -116,7 +116,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
       vars.push(
-        `const ${args[i]} = (await ethers.getSigners())[${i}].address;`
+        `const ${args[i]} = (await ethers.getSigners())[${i}].address;`,
       );
     }
     return vars;

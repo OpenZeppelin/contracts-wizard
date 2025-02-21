@@ -199,7 +199,7 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
     {
       name: "Nonces",
     },
-    functions.nonces
+    functions.nonces,
   );
 
   setClockMode(c, ERC20Votes, clockMode);

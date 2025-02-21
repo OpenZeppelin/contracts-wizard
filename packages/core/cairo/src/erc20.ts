@@ -135,7 +135,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
 
       beforeUpdateFn.code.push(
         "let contract_state = self.get_contract();",
-        "contract_state.pausable.assert_not_paused();"
+        "contract_state.pausable.assert_not_paused();",
       );
     }
 
@@ -156,7 +156,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
         c,
         toFelt252(allOpts.appName, "appName"),
         toFelt252(allOpts.appVersion, "appVersion"),
-        "SNIP12 Metadata"
+        "SNIP12 Metadata",
       );
 
       const afterUpdateFn = c.addFunction(hooksTrait, {
@@ -175,7 +175,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
 
       afterUpdateFn.code.push(
         "let mut contract_state = self.get_contract_mut();",
-        "contract_state.votes.transfer_voting_units(from, recipient, amount);"
+        "contract_state.votes.transfer_voting_units(from, recipient, amount);",
       );
     }
   } else {
@@ -212,7 +212,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     const premintAbsolute = toUint(
       getInitialSupply(amount, 18),
       "premint",
-      "u256"
+      "u256",
     );
 
     c.addUseClause("starknet", "ContractAddress");
@@ -270,7 +270,7 @@ function addMintable(c: ContractBuilder, access: Access) {
     functions.mint,
     access,
     "MINTER",
-    "minter"
+    "minter",
   );
 }
 
