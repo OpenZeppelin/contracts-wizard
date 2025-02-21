@@ -1,4 +1,4 @@
-import type { Contract } from './contract';
+import type { BaseFunction, Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { setAccessControl, requireAccessControl } from './set-access-control';
@@ -189,6 +189,8 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   if (uriStorage) {
     c.addFunctionCode('_setTokenURI(tokenId, uri);', fn);
   }
+
+  if (incremental) c.addFunctionCode('return tokenId;', fn);
 }
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
@@ -244,11 +246,12 @@ const functions = defineFunctions({
   },
 });
 
-function getMintFunction(incremental: boolean, uriStorage: boolean) {
-  const fn = {
+function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunction {
+  const fn: BaseFunction = {
     name: 'safeMint',
     kind: 'public' as const,
     args: [{ name: 'to', type: 'address' }],
+    returns: incremental ? ['uint256'] : undefined,
   };
 
   if (!incremental) {

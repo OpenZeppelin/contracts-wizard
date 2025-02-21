@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "prepare": "wsrun -m prepare",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:ui": "yarn --cwd ./packages/ui dev",
+    "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {
     "packages": [
