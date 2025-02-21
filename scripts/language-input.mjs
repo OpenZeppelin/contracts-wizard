@@ -32,5 +32,3 @@ export function getAndCheckLanguageInput() {
   );
   process.exit(1);
 }
-
-export const languageInput = getAndCheckLanguageInput();
