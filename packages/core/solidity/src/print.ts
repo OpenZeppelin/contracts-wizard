@@ -19,7 +19,7 @@ export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
   const fns = mapValues(sortedFunctions(contract), (fns) =>
-    fns.map((fn) => printFunction(fn, helpers))
+    fns.map((fn) => printFunction(fn, helpers)),
   );
 
   const hasOverrides = fns.override.some((l) => l.length > 0);
@@ -50,18 +50,18 @@ export function printContract(contract: Contract, opts?: Options): string {
           hasOverrides
             ? [`// The following functions are overrides required by Solidity.`]
             : [],
-          ...fns.override
+          ...fns.override,
         ),
 
         `}`,
-      ]
-    )
+      ],
+    ),
   );
 }
 
 function printInheritance(
   contract: Contract,
-  { transformName }: Helpers
+  { transformName }: Helpers,
 ): [] | [string] {
   if (contract.parents.length > 0) {
     return [
@@ -82,14 +82,14 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     (helpers.upgradeable && parentsWithInitializers.length > 0)
   ) {
     const parents = parentsWithInitializers.flatMap((p) =>
-      printParentConstructor(p, helpers)
+      printParentConstructor(p, helpers),
     );
     const modifiers = helpers.upgradeable ? ["public initializer"] : parents;
     const args = contract.constructorArgs.map((a) => printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
           parents.map((p) => p + ";"),
-          contract.constructorCode
+          contract.constructorCode,
         )
       : contract.constructorCode;
     const head = helpers.upgradeable ? "function initialize" : "constructor";
@@ -144,7 +144,7 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 
 function printParentConstructor(
   { contract, params }: Parent,
-  helpers: Helpers
+  helpers: Helpers,
 ): [] | [string] {
   const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
@@ -196,7 +196,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
     modifiers.push(`override`);
   } else if (fn.override.size > 1) {
     modifiers.push(
-      `override(${[...fn.override].map(transformName).join(", ")})`
+      `override(${[...fn.override].map(transformName).join(", ")})`,
     );
   }
 
@@ -219,7 +219,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
       "function " + fn.name,
       fn.args.map((a) => printArgument(a, helpers)),
       modifiers,
-      code
+      code,
     );
   } else {
     return [];
@@ -233,7 +233,7 @@ function printFunction2(
   kindedName: string,
   args: string[],
   modifiers: string[],
-  code: Lines[]
+  code: Lines[],
 ): Lines[] {
   const fn: Lines[] = [...comments];
 
@@ -245,7 +245,7 @@ function printFunction2(
 
   if (headingLength <= 72) {
     fn.push(
-      [`${kindedName}(${args.join(", ")})`, ...modifiers, braces].join(" ")
+      [`${kindedName}(${args.join(", ")})`, ...modifiers, braces].join(" "),
     );
   } else {
     fn.push(`${kindedName}(${args.join(", ")})`, modifiers, braces);
@@ -260,7 +260,7 @@ function printFunction2(
 
 function printArgument(
   arg: FunctionArgument,
-  { transformName }: Helpers
+  { transformName }: Helpers,
 ): string {
   let type: string;
   if (typeof arg.type === "string") {
@@ -292,7 +292,7 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   imports.map((p) => {
     const importContract = helpers.transformImport(p);
     lines.push(
-      `import {${importContract.name}} from "${importContract.path}";`
+      `import {${importContract.name}} from "${importContract.path}";`,
     );
   });
 

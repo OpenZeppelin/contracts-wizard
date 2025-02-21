@@ -1,4 +1,4 @@
-import { toIdentifier } from './utils/convert-strings';
+import { toIdentifier } from "./utils/convert-strings";
 
 export interface Contract {
   license: string;
@@ -14,7 +14,12 @@ export interface Contract {
   superVariables: Variable[];
 }
 
-export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
+export type Value =
+  | string
+  | number
+  | bigint
+  | { lit: string }
+  | { note: string; value: Value };
 
 export interface UseClause {
   containerPath: string;
@@ -100,7 +105,7 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   readonly account: boolean;
-  license = 'MIT';
+  license = "MIT";
   upgradeable = false;
 
   readonly constructorArgs: Argument[] = [];
@@ -145,24 +150,41 @@ export class ContractBuilder implements Contract {
     return this.interfaceFlagsSet;
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+  addUseClause(
+    containerPath: string,
+    name: string,
+    options?: { groupable?: boolean; alias?: string },
+  ): void {
     // groupable defaults to true
     const groupable = options?.groupable ?? true;
-    const alias = options?.alias ?? '';
+    const alias = options?.alias ?? "";
     const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
-      this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
+      this.useClausesMap.set(uniqueName, {
+        containerPath,
+        name,
+        groupable,
+        alias,
+      });
     }
   }
 
-  addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
+  addComponent(
+    component: Component,
+    params: Value[] = [],
+    initializable: boolean = true,
+  ): boolean {
     this.addUseClause(component.path, component.name);
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {
       const initializer = initializable ? { params } : undefined;
-      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
+      const cp: Component = {
+        initializer,
+        ...component,
+        impls: [...component.impls],
+      }; // spread impls to deep copy from original component
       this.componentsMap.set(key, cp);
     }
     return !present;
@@ -175,7 +197,7 @@ export class ContractBuilder implements Contract {
       throw new Error(`Component ${component.name} has not been added yet`);
     }
 
-    if (!c.impls.some(i => i.name === impl.name)) {
+    if (!c.impls.some((i) => i.name === impl.name)) {
       c.impls.push(impl);
     }
   }
@@ -194,7 +216,7 @@ export class ContractBuilder implements Contract {
       return false;
     } else {
       this.superVariablesMap.set(variable.name, variable);
-      this.addUseClause('super', variable.name);
+      this.addUseClause("super", variable.name);
       return true;
     }
   }
@@ -208,7 +230,7 @@ export class ContractBuilder implements Contract {
       const t: ImplementedTrait = {
         name: baseTrait.name,
         of: baseTrait.of,
-        tags: [ ...baseTrait.tags ],
+        tags: [...baseTrait.tags],
         superVariables: [],
         functions: [],
         section: baseTrait.section,
@@ -219,18 +241,21 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addSuperVariableToTrait(baseTrait: BaseImplementedTrait, newVar: Variable): boolean {
+  addSuperVariableToTrait(
+    baseTrait: BaseImplementedTrait,
+    newVar: Variable,
+  ): boolean {
     const trait = this.addImplementedTrait(baseTrait);
     for (const existingVar of trait.superVariables) {
       if (existingVar.name === newVar.name) {
         if (existingVar.type !== newVar.type) {
           throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
+            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`,
           );
         }
         if (existingVar.value !== newVar.value) {
           throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
+            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`,
           );
         }
         return false; // No need to add, already exists
@@ -240,7 +265,10 @@ export class ContractBuilder implements Contract {
     return true;
   }
 
-  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
+  addFunction(
+    baseTrait: BaseImplementedTrait,
+    fn: BaseFunction,
+  ): ContractFunction {
     const t = this.addImplementedTrait(baseTrait);
 
     const signature = this.getFunctionSignature(fn);
@@ -248,7 +276,10 @@ export class ContractBuilder implements Contract {
     // Look for the existing function with the same signature and return it if found
     for (let i = 0; i < t.functions.length; i++) {
       const existingFn = t.functions[i];
-      if (existingFn !== undefined && this.getFunctionSignature(existingFn) === signature) {
+      if (
+        existingFn !== undefined &&
+        this.getFunctionSignature(existingFn) === signature
+      ) {
         return existingFn;
       }
     }
@@ -264,13 +295,17 @@ export class ContractBuilder implements Contract {
   }
 
   private getFunctionSignature(fn: BaseFunction): string {
-    return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
+    return [fn.name, "(", ...fn.args.map((a) => a.name), ")"].join("");
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string): void {
+  addFunctionCodeBefore(
+    baseTrait: BaseImplementedTrait,
+    fn: BaseFunction,
+    codeBefore: string,
+  ): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
+    existingFn.codeBefore = [...(existingFn.codeBefore ?? []), codeBefore];
   }
 
   addConstructorArgument(arg: Argument): void {

@@ -35,7 +35,7 @@ test.serial("custom result generated", async (t) => {
 
 async function testGenerate(
   t: ExecutionContext<Context>,
-  kind: keyof KindedOptions
+  kind: keyof KindedOptions,
 ) {
   const generatedSourcesPath = path.join(os.tmpdir(), "oz-wizard-cairo");
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
@@ -81,13 +81,13 @@ test("is access control required", async (t) => {
             t.regex(
               contract.source,
               regexOwnable,
-              JSON.stringify(contract.options)
+              JSON.stringify(contract.options),
             );
           } else {
             t.notRegex(
               contract.source,
               regexOwnable,
-              JSON.stringify(contract.options)
+              JSON.stringify(contract.options),
             );
           }
         }

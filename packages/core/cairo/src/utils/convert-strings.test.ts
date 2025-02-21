@@ -36,7 +36,7 @@ test("identifier - empty string", (t) => {
   const error = t.throws(() => toIdentifier(""), { instanceOf: OptionsError });
   t.is(
     error.messages.name,
-    "Identifier is empty or does not have valid characters"
+    "Identifier is empty or does not have valid characters",
   );
 });
 
@@ -46,7 +46,7 @@ test("identifier - no valid chars", (t) => {
   });
   t.is(
     error.messages.name,
-    "Identifier is empty or does not have valid characters"
+    "Identifier is empty or does not have valid characters",
   );
 });
 
@@ -77,11 +77,11 @@ test("toByteArray - escape backslash", (t) => {
 test("more than 31 characters", (t) => {
   t.is(
     toByteArray("A234567890123456789012345678901"),
-    "A234567890123456789012345678901"
+    "A234567890123456789012345678901",
   );
   t.is(
     toByteArray("A2345678901234567890123456789012"),
-    "A2345678901234567890123456789012"
+    "A2345678901234567890123456789012",
   );
 });
 
@@ -108,12 +108,12 @@ test("toFelt252 - escape backslash", (t) => {
 test("toFelt252 - max 31 characters", (t) => {
   t.is(
     toFelt252("A234567890123456789012345678901", "foo"),
-    "A234567890123456789012345678901"
+    "A234567890123456789012345678901",
   );
 
   const error = t.throws(
     () => toFelt252("A2345678901234567890123456789012", "foo"),
-    { instanceOf: OptionsError }
+    { instanceOf: OptionsError },
   );
   t.is(error.messages.foo, "String is longer than 31 characters");
 });

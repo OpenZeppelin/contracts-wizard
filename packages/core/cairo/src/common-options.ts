@@ -23,24 +23,28 @@ export interface CommonContractOptions extends CommonOptions {
   access?: Access;
 }
 
-export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
+export function withCommonDefaults(
+  opts: CommonOptions,
+): Required<CommonOptions> {
   return {
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     info: opts.info ?? defaults.info,
   };
 }
 
-export function withCommonContractDefaults(opts: CommonContractOptions): Required<CommonContractOptions> {
+export function withCommonContractDefaults(
+  opts: CommonContractOptions,
+): Required<CommonContractOptions> {
   return {
     ...withCommonDefaults(opts),
     access: opts.access ?? contractDefaults.access,
   };
 }
 
-export function getSelfArg(scope: 'external' | 'view' = 'external'): Argument {
-  if (scope === 'view') {
-    return { name: 'self', type: '@ContractState' };
+export function getSelfArg(scope: "external" | "view" = "external"): Argument {
+  if (scope === "view") {
+    return { name: "self", type: "@ContractState" };
   } else {
-    return { name: 'ref self', type: 'ContractState' };
+    return { name: "ref self", type: "ContractState" };
   }
 }

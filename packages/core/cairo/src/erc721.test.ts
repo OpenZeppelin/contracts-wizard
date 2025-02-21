@@ -50,8 +50,8 @@ function testAPIEquivalence(title: string, opts?: ERC721Options) {
           name: NAME,
           symbol: SYMBOL,
           ...opts,
-        })
-      )
+        }),
+      ),
     );
   });
 }
@@ -138,11 +138,11 @@ test("erc721 votes, no name", async (t) => {
       name: NAME,
       symbol: SYMBOL,
       votes: true,
-    })
+    }),
   );
   t.is(
     (error as OptionsError).messages.appName,
-    "Application Name is required when Votes are enabled"
+    "Application Name is required when Votes are enabled",
   );
 });
 
@@ -154,11 +154,11 @@ test("erc721 votes, no version", async (t) => {
       votes: true,
       appName: APP_NAME,
       appVersion: "",
-    })
+    }),
   );
   t.is(
     (error as OptionsError).messages.appVersion,
-    "Application Version is required when Votes are enabled"
+    "Application Version is required when Votes are enabled",
   );
 });
 
@@ -170,11 +170,11 @@ test("erc721 votes, empty version", async (t) => {
       votes: true,
       appName: APP_NAME,
       appVersion: "", // avoids default value of v1
-    })
+    }),
   );
   t.is(
     (error as OptionsError).messages.appVersion,
-    "Application Version is required when Votes are enabled"
+    "Application Version is required when Votes are enabled",
   );
 });
 
@@ -208,19 +208,19 @@ test("API isAccessControlRequired", async (t) => {
     erc721.isAccessControlRequired({
       royaltyInfo: royaltyInfoOptions.enabledDefault,
     }),
-    true
+    true,
   );
   t.is(
     erc721.isAccessControlRequired({
       royaltyInfo: royaltyInfoOptions.enabledCustom,
     }),
-    true
+    true,
   );
   t.is(
     erc721.isAccessControlRequired({
       royaltyInfo: royaltyInfoOptions.disabled,
     }),
-    false
+    false,
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);

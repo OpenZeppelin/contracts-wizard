@@ -1,1 +1,1 @@
-export * from './src/zip-foundry';
+export * from "./src/zip-foundry";

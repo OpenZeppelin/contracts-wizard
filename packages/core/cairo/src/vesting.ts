@@ -144,7 +144,7 @@ function addSchedule(c: ContractBuilder, opts: VestingOptions) {
 }
 
 function getVestingStart(
-  opts: VestingOptions
+  opts: VestingOptions,
 ): { timestampInSec: bigint; formattedDate: string } | undefined {
   if (opts.startDate === "" || opts.startDate === "NaN") {
     return undefined;
@@ -154,7 +154,7 @@ function getVestingStart(
   const timestampInSec = toUint(
     Math.floor(timestampInMillis / 1000),
     "startDate",
-    "u64"
+    "u64",
   );
   const formattedDate = startDate.toLocaleString("en-GB", {
     day: "2-digit",

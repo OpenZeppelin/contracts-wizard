@@ -33,7 +33,7 @@ export function postMessage(msg: Message) {
 
 export function postMessageToIframe(id: "defender-deploy", msg: Message) {
   const iframe: HTMLIFrameElement | null = document.getElementById(
-    id
+    id,
   ) as HTMLIFrameElement;
   if (iframe) {
     iframe.contentWindow?.postMessage(msg, "*");

@@ -1,38 +1,46 @@
-import type { BaseImplementedTrait, ContractBuilder } from './contract';
-import { defineComponents } from './utils/define-components';
+import type { BaseImplementedTrait, ContractBuilder } from "./contract";
+import { defineComponents } from "./utils/define-components";
 import { OptionsError } from "./error";
-import { toUint } from './utils/convert-strings';
-import { Access, setAccessControl, DEFAULT_ACCESS_CONTROL } from './set-access-control';
+import { toUint } from "./utils/convert-strings";
+import {
+  Access,
+  setAccessControl,
+  DEFAULT_ACCESS_CONTROL,
+} from "./set-access-control";
 
 const DEFAULT_FEE_DENOMINATOR = BigInt(10_000);
 
 export const defaults: RoyaltyInfoOptions = {
   enabled: false,
-  defaultRoyaltyFraction: '0',
-  feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
+  defaultRoyaltyFraction: "0",
+  feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
 };
 
 export const royaltyInfoOptions = {
   disabled: defaults,
   enabledDefault: {
     enabled: true,
-    defaultRoyaltyFraction: '500',
+    defaultRoyaltyFraction: "500",
     feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
   },
   enabledCustom: {
     enabled: true,
-    defaultRoyaltyFraction: '15125',
-    feeDenominator: '100000',
-  }
-}
-
-export type RoyaltyInfoOptions = {
-  enabled: boolean,
-  defaultRoyaltyFraction: string,
-  feeDenominator: string,
+    defaultRoyaltyFraction: "15125",
+    feeDenominator: "100000",
+  },
 };
 
-export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, access: Access): void {
+export type RoyaltyInfoOptions = {
+  enabled: boolean;
+  defaultRoyaltyFraction: string;
+  feeDenominator: string;
+};
+
+export function setRoyaltyInfo(
+  c: ContractBuilder,
+  options: RoyaltyInfoOptions,
+  access: Access,
+): void {
   if (!options.enabled) {
     return;
   }
@@ -41,61 +49,77 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   }
   setAccessControl(c, access);
 
-  const { defaultRoyaltyFraction, feeDenominator } = getRoyaltyParameters(options);
+  const { defaultRoyaltyFraction, feeDenominator } =
+    getRoyaltyParameters(options);
   const initParams = [
-    { lit: 'default_royalty_receiver' },
-    defaultRoyaltyFraction
+    { lit: "default_royalty_receiver" },
+    defaultRoyaltyFraction,
   ];
 
   c.addComponent(components.ERC2981Component, initParams, true);
-  c.addUseClause('starknet', 'ContractAddress');
-  c.addConstructorArgument({ name: 'default_royalty_receiver', type: 'ContractAddress'});
+  c.addUseClause("starknet", "ContractAddress");
+  c.addConstructorArgument({
+    name: "default_royalty_receiver",
+    type: "ContractAddress",
+  });
 
   switch (access) {
-    case 'ownable':
+    case "ownable":
       c.addImplToComponent(components.ERC2981Component, {
-        name: 'ERC2981AdminOwnableImpl',
+        name: "ERC2981AdminOwnableImpl",
         value: `ERC2981Component::ERC2981AdminOwnableImpl<ContractState>`,
       });
       break;
-    case 'roles':
+    case "roles":
       c.addImplToComponent(components.ERC2981Component, {
-        name: 'ERC2981AdminAccessControlImpl',
+        name: "ERC2981AdminAccessControlImpl",
         value: `ERC2981Component::ERC2981AdminAccessControlImpl<ContractState>`,
       });
-      c.addConstructorArgument({ name: 'royalty_admin', type: 'ContractAddress'});
-      c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      c.addConstructorArgument({
+        name: "royalty_admin",
+        type: "ContractAddress",
+      });
+      c.addConstructorCode(
+        "self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)",
+      );
       break;
   }
 
   if (feeDenominator === DEFAULT_FEE_DENOMINATOR) {
-    c.addUseClause('openzeppelin::token::common::erc2981', 'DefaultConfig');
+    c.addUseClause("openzeppelin::token::common::erc2981", "DefaultConfig");
   } else {
     const trait: BaseImplementedTrait = {
-      name: 'ERC2981ImmutableConfig',
-      of: 'ERC2981Component::ImmutableConfig',
+      name: "ERC2981ImmutableConfig",
+      of: "ERC2981Component::ImmutableConfig",
       tags: [],
     };
     c.addImplementedTrait(trait);
     c.addSuperVariableToTrait(trait, {
-      name: 'FEE_DENOMINATOR',
-      type: 'u128',
-      value: feeDenominator.toString()
+      name: "FEE_DENOMINATOR",
+      type: "u128",
+      value: feeDenominator.toString(),
     });
   }
 }
 
-function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): { defaultRoyaltyFraction: bigint, feeDenominator: bigint } {
-  const feeDenominator = toUint(opts.feeDenominator, 'feeDenominator', 'u128');
+function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): {
+  defaultRoyaltyFraction: bigint;
+  feeDenominator: bigint;
+} {
+  const feeDenominator = toUint(opts.feeDenominator, "feeDenominator", "u128");
   if (feeDenominator === BigInt(0)) {
     throw new OptionsError({
-      feeDenominator: 'Must be greater than 0'
+      feeDenominator: "Must be greater than 0",
     });
   }
-  const defaultRoyaltyFraction = toUint(opts.defaultRoyaltyFraction, 'defaultRoyaltyFraction', 'u128');
+  const defaultRoyaltyFraction = toUint(
+    opts.defaultRoyaltyFraction,
+    "defaultRoyaltyFraction",
+    "u128",
+  );
   if (defaultRoyaltyFraction > feeDenominator) {
     throw new OptionsError({
-      defaultRoyaltyFraction: 'Cannot be greater than fee denominator'
+      defaultRoyaltyFraction: "Cannot be greater than fee denominator",
     });
   }
   return { defaultRoyaltyFraction, feeDenominator };
@@ -103,29 +127,29 @@ function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): { defaultRoya
 
 const components = defineComponents({
   ERC2981Component: {
-    path: 'openzeppelin::token::common::erc2981',
+    path: "openzeppelin::token::common::erc2981",
     substorage: {
-      name: 'erc2981',
-      type: 'ERC2981Component::Storage',
+      name: "erc2981",
+      type: "ERC2981Component::Storage",
     },
     event: {
-      name: 'ERC2981Event',
-      type: 'ERC2981Component::Event',
+      name: "ERC2981Event",
+      type: "ERC2981Component::Event",
     },
     impls: [
       {
-        name: 'ERC2981Impl',
-        value: 'ERC2981Component::ERC2981Impl<ContractState>',
+        name: "ERC2981Impl",
+        value: "ERC2981Component::ERC2981Impl<ContractState>",
       },
       {
-        name: 'ERC2981InfoImpl',
-        value: 'ERC2981Component::ERC2981InfoImpl<ContractState>',
+        name: "ERC2981InfoImpl",
+        value: "ERC2981Component::ERC2981InfoImpl<ContractState>",
       },
       {
-        name: 'ERC2981InternalImpl',
-        value: 'ERC2981Component::InternalImpl<ContractState>',
-        embed: false
-      }
+        name: "ERC2981InternalImpl",
+        value: "ERC2981Component::InternalImpl<ContractState>",
+        embed: false,
+      },
     ],
   },
 });

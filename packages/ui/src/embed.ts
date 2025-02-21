@@ -1,7 +1,7 @@
-import type { Message } from './common/post-message';
+import type { Message } from "./common/post-message";
 
-if (!document.currentScript || !('src' in document.currentScript)) {
-  throw new Error('Unknown script URL');
+if (!document.currentScript || !("src" in document.currentScript)) {
+  throw new Error("Unknown script URL");
 }
 
 const currentScript = new URL(document.currentScript.src);
@@ -9,59 +9,61 @@ const currentScript = new URL(document.currentScript.src);
 const iframes = new WeakMap<MessageEventSource, HTMLIFrameElement>();
 
 let unsupportedVersion: boolean = false;
-const unsupportedVersionFrameHeight = 'auto';
+const unsupportedVersionFrameHeight = "auto";
 
-window.addEventListener('message', function (e: MessageEvent<Message>) {
+window.addEventListener("message", function (e: MessageEvent<Message>) {
   if (e.source) {
-    if (e.data.kind === 'oz-wizard-unsupported-version') {
+    if (e.data.kind === "oz-wizard-unsupported-version") {
       unsupportedVersion = true;
       const iframe = iframes.get(e.source);
       if (iframe) {
         iframe.style.height = unsupportedVersionFrameHeight;
       }
-    } else if (e.data.kind === 'oz-wizard-resize') {
+    } else if (e.data.kind === "oz-wizard-resize") {
       const iframe = iframes.get(e.source);
       if (iframe) {
-        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : 'calc(100vh - 100px)';
+        iframe.style.height = unsupportedVersion
+          ? unsupportedVersionFrameHeight
+          : "calc(100vh - 100px)";
       }
     }
   }
 });
 
 onDOMContentLoaded(function () {
-  const wizards = document.querySelectorAll<HTMLElement>('oz-wizard');
+  const wizards = document.querySelectorAll<HTMLElement>("oz-wizard");
 
   for (const w of wizards) {
-    w.style.display = 'block';
+    w.style.display = "block";
 
-    const src = new URL('embed', currentScript.origin);
+    const src = new URL("embed", currentScript.origin);
 
-    setSearchParam(w, src.searchParams, 'data-lang', 'lang');
-    setSearchParam(w, src.searchParams, 'data-tab', 'tab');
-    setSearchParam(w, src.searchParams, 'version', 'version');
+    setSearchParam(w, src.searchParams, "data-lang", "lang");
+    setSearchParam(w, src.searchParams, "data-tab", "tab");
+    setSearchParam(w, src.searchParams, "version", "version");
 
-    const sync = w.getAttribute('data-sync-url');
+    const sync = w.getAttribute("data-sync-url");
 
-    if (sync === 'fragment') {
+    if (sync === "fragment") {
       // Uses format: #tab&key=value&key=value...
-      const fragments = window.location.hash.replace('#', '').split('&');
+      const fragments = window.location.hash.replace("#", "").split("&");
       for (const fragment of fragments) {
-        const [key, value] = fragment.split('=', 2);
+        const [key, value] = fragment.split("=", 2);
         if (key && value) {
           src.searchParams.set(key, value);
         } else {
-          src.searchParams.set('tab', fragment);
+          src.searchParams.set("tab", fragment);
         }
       }
     }
 
-    const iframe = document.createElement('iframe');
+    const iframe = document.createElement("iframe");
     iframe.src = src.toString();
-    iframe.style.display = 'block';
-    iframe.style.border = '0';
-    iframe.style.width = '100%';
-    iframe.style.height = 'calc(100vh - 100px)';
-    iframe.allow = 'clipboard-write';
+    iframe.style.display = "block";
+    iframe.style.border = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "calc(100vh - 100px)";
+    iframe.allow = "clipboard-write";
 
     w.appendChild(iframe);
 
@@ -69,9 +71,9 @@ onDOMContentLoaded(function () {
       iframes.set(iframe.contentWindow, iframe);
     }
 
-    if (sync === 'fragment') {
-      window.addEventListener('message', (e: MessageEvent<Message>) => {
-        if (e.source && e.data.kind === 'oz-wizard-tab-change') {
+    if (sync === "fragment") {
+      window.addEventListener("message", (e: MessageEvent<Message>) => {
+        if (e.source && e.data.kind === "oz-wizard-tab-change") {
           if (iframe === iframes.get(e.source)) {
             window.location.hash = e.data.tab;
           }
@@ -81,7 +83,12 @@ onDOMContentLoaded(function () {
   }
 });
 
-function setSearchParam(w: HTMLElement, searchParams: URLSearchParams, dataParam: string, param: string) {
+function setSearchParam(
+  w: HTMLElement,
+  searchParams: URLSearchParams,
+  dataParam: string,
+  param: string,
+) {
   const value = w.getAttribute(dataParam) ?? w.getAttribute(param);
   if (value) {
     searchParams.set(param, value);
@@ -89,8 +96,8 @@ function setSearchParam(w: HTMLElement, searchParams: URLSearchParams, dataParam
 }
 
 function onDOMContentLoaded(callback: () => void) {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', callback);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", callback);
   } else {
     callback();
   }

@@ -1,6 +1,6 @@
-import type { BaseFunction } from '../contract';
+import type { BaseFunction } from "../contract";
 
-type ImplicitNameFunction = Omit<BaseFunction, 'name'>;
+type ImplicitNameFunction = Omit<BaseFunction, "name">;
 
 export function defineFunctions<F extends string>(
   fns: Record<F, ImplicitNameFunction>,

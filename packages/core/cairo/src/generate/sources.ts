@@ -75,7 +75,7 @@ interface GeneratedSource extends GeneratedContract {
 
 function generateContractSubset(
   subset: Subset,
-  kind?: Kind
+  kind?: Kind,
 ): GeneratedContract[] {
   const contracts = [];
 
@@ -125,11 +125,11 @@ function generateContractSubset(
     return [
       ...findCover(
         contracts.filter(filterByUpgradeableSetTo(true)),
-        getParents
+        getParents,
       ),
       ...findCover(
         contracts.filter(filterByUpgradeableSetTo(false)),
-        getParents
+        getParents,
       ),
     ];
   }
@@ -138,7 +138,7 @@ function generateContractSubset(
 export function* generateSources(
   subset: Subset,
   uniqueName?: boolean,
-  kind?: Kind
+  kind?: Kind,
 ): Generator<GeneratedSource> {
   let counter = 1;
   for (const c of generateContractSubset(subset, kind)) {
@@ -154,7 +154,7 @@ export async function writeGeneratedSources(
   dir: string,
   subset: Subset,
   uniqueName?: boolean,
-  kind?: Kind
+  kind?: Kind,
 ): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
@@ -162,7 +162,7 @@ export async function writeGeneratedSources(
   for (const { id, contract, source } of generateSources(
     subset,
     uniqueName,
-    kind
+    kind,
   )) {
     const name = uniqueName ? contract.name : id;
     await fs.writeFile(path.format({ dir, name, ext: ".cairo" }), source);

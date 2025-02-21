@@ -17,7 +17,7 @@ export async function updateScarbProject() {
   const contractNames = await writeGeneratedSources(
     generatedSourcesPath,
     "all",
-    true
+    true,
   );
 
   // Generate lib.cairo file
@@ -41,16 +41,16 @@ async function updateScarbToml() {
     .replace(/edition = "\w+"/, `edition = "${edition}"`)
     .replace(
       /cairo-version = "\d+\.\d+\.\d+"/,
-      `cairo-version = "${cairoVersion}"`
+      `cairo-version = "${cairoVersion}"`,
     )
     .replace(
       /scarb-version = "\d+\.\d+\.\d+"/,
-      `scarb-version = "${scarbVersion}"`
+      `scarb-version = "${scarbVersion}"`,
     )
     .replace(/starknet = "\d+\.\d+\.\d+"/, `starknet = "${cairoVersion}"`)
     .replace(
       /openzeppelin = "\d+\.\d+\.\d+"/,
-      `openzeppelin = "${contractsVersion}"`
+      `openzeppelin = "${contractsVersion}"`,
     );
 
   await fs.writeFile(scarbTomlPath, updatedContent, "utf8");
