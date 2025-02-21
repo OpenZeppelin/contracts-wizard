@@ -106,12 +106,7 @@ export class ContractBuilder implements Contract {
     const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
-      this.useClausesMap.set(uniqueName, {
-        containerPath,
-        name,
-        groupable,
-        alias,
-      });
+      this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
     }
   }
 
@@ -147,10 +142,7 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(
-    baseTrait: BaseImplementedTrait,
-    fn: BaseFunction
-  ): ContractFunction {
+  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
     const t = this.addImplementedTrait(baseTrait);
 
     const signature = this.getFunctionSignature(fn);
@@ -158,10 +150,7 @@ export class ContractBuilder implements Contract {
     // Look for the existing function with the same signature and return it if found
     for (let i = 0; i < t.functions.length; i++) {
       const existingFn = t.functions[i];
-      if (
-        existingFn !== undefined &&
-        this.getFunctionSignature(existingFn) === signature
-      ) {
+      if (existingFn !== undefined && this.getFunctionSignature(existingFn) === signature) {
         return existingFn;
       }
     }
@@ -179,21 +168,13 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(
-    baseTrait: BaseImplementedTrait,
-    fn: BaseFunction,
-    codeBefore: string[]
-  ): void {
+  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionTag(
-    baseTrait: BaseImplementedTrait,
-    fn: BaseFunction,
-    tag: string
-  ): void {
+  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.tag = tag;
