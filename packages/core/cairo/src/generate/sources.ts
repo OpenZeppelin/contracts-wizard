@@ -8,6 +8,7 @@ import { generateERC1155Options } from './erc1155';
 import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { generateGovernorOptions } from './governor';
+import { generateMultisigOptions } from './multisig';
 import { generateVestingOptions } from './vesting';
 import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
 import { printContract } from '../print';
@@ -53,6 +54,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Governor') {
     for (const kindOpts of generateGovernorOptions()) {
       yield { kind: 'Governor', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Multisig') {
+    for (const kindOpts of generateMultisigOptions()) {
+      yield { kind: 'Multisig', ...kindOpts };
     }
   }
 
@@ -109,6 +116,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
           case 'ERC721':
           case 'ERC1155':
           case 'Governor':
+          case 'Multisig':
           case 'Custom':
             return c.options.upgradeable === isUpgradeable;
           default:

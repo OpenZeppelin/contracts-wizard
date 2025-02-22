@@ -65,6 +65,7 @@ test('is access control required', async t => {
     switch (contract.options.kind) {
       case 'Account':
       case 'Governor':
+      case 'Multisig':
       case 'Vesting':
         // These contracts have no access control option
         break;

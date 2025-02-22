@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
+
 ## 0.21.1 (2025-01-23)
 
 - Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))
