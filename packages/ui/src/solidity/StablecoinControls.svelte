@@ -14,8 +14,18 @@
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+  let isVotesExpanded = false;
+  let isLimitationsExpanded = false;
 
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
+
+  
+  $: if (opts.votes !== false) {
+    isVotesExpanded = true;
+  }
+  $: if (opts.limitations !== false) {
+    isLimitationsExpanded = true;
+  }
 </script>
 
 <section class="controls-section">
@@ -111,12 +121,16 @@
       <span class="ml-1">
         <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
       </span>
+      <button on:click={() => isLimitationsExpanded = !isLimitationsExpanded} class='mx-2 px-1'>
+        {isLimitationsExpanded ? '▲' : '▼'}
+      </button>
       <HelpTooltip align="right">
         Restricts certain users from transferring tokens, either via allowing or blocking them.
       </HelpTooltip>
     </label>
   </h1>
 
+{#if isLimitationsExpanded}
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist">
@@ -133,6 +147,7 @@
       </HelpTooltip>
     </label>
   </div>
+  {/if}
 </section>
 
 <section class="controls-section">
@@ -143,12 +158,16 @@
       <span class="ml-1">
         <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
       </span>
+      <button on:click={() => isVotesExpanded = !isVotesExpanded} class='mx-2 px-1'>
+        {isVotesExpanded ? '▲' : '▼'}
+      </button>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
         Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
       </HelpTooltip>
     </label>
   </h1>
 
+  {#if isVotesExpanded}
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
@@ -165,6 +184,7 @@
       </HelpTooltip>
     </label>
   </div>
+  {/if}
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />

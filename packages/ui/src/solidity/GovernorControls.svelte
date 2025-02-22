@@ -19,6 +19,7 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
+    timelock: false, // set default to false
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -41,6 +42,7 @@
   let wasERC721Votes = opts.votes === 'erc721votes';
   let previousDecimals = opts.decimals;
   let disabledDecimals: boolean;
+  let isTimeLockedExpanded = false;
 
   $: {
     if (wasERC721Votes && opts.votes !== 'erc721votes') {
@@ -53,6 +55,10 @@
     }
 
     wasERC721Votes = opts.votes === 'erc721votes';
+  }
+
+  $: if (opts.timelock !== false) {
+    isTimeLockedExpanded = true;
   }
 
 </script>
@@ -209,6 +215,9 @@
         <span class="ml-1">
           <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
         </span>
+        <button on:click={() => isTimeLockedExpanded = !isTimeLockedExpanded} class='mx-2 px-1'>
+          {isTimeLockedExpanded ? '▲' : '▼'}
+        </button>
       </span>
       <HelpTooltip>
         Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions.
@@ -216,6 +225,7 @@
     </label>
   </h1>
   
+  {#if isTimeLockedExpanded}
   <div class="checkbox-group">
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
@@ -234,6 +244,7 @@
       </HelpTooltip>
     </label>
   </div>
+  {/if}
 </section>
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
