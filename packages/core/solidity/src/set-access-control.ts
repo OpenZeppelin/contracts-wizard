@@ -1,7 +1,7 @@
 import type { ContractBuilder, BaseFunction } from './contract';
 import { supportsInterface } from './common-functions';
 
-export const accessOptions = [false, 'ownable', 'roles', 'managed'] as const;
+export const accessOptions = [false, 'ownable', 'roles', 'managed', 'governance'] as const;
 
 export type Access = (typeof accessOptions)[number];
 
@@ -56,14 +56,20 @@ export function requireAccessControl(
     access = 'ownable';
   }
 
-  setAccessControl(c, access);
-
   switch (access) {
     case 'ownable': {
+      setAccessControl(c, access);
+
       c.addModifier('onlyOwner', fn);
       break;
     }
+    case 'governance': {
+      c.addModifier('onlyGovernance', fn);
+      break;
+    }
     case 'roles': {
+      setAccessControl(c, access);
+
       const roleId = roleIdPrefix + '_ROLE';
       const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
       if (roleOwner && addedConstant) {
@@ -74,6 +80,8 @@ export function requireAccessControl(
       break;
     }
     case 'managed': {
+      setAccessControl(c, access);
+
       c.addModifier('restricted', fn);
       break;
     }

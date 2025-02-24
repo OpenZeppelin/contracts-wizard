@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "prepare": "tsc && node dist/scripts/prepare.js",
+    "clean:prepare": "yarn prepublish && yarn prepare",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
