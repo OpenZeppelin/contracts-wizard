@@ -1,13 +1,36 @@
 import type { CommonOptions, CommonContractOptions } from './common-options';
-import { printERC20, defaults as erc20defaults, isAccessControlRequired as erc20IsAccessControlRequired, ERC20Options } from './erc20';
-import { printERC721, defaults as erc721defaults, isAccessControlRequired as erc721IsAccessControlRequired, ERC721Options } from './erc721';
-import { printERC1155, defaults as erc1155defaults, isAccessControlRequired as erc1155IsAccessControlRequired, ERC1155Options } from './erc1155';
-import { printAccount, defaults as accountDefaults, AccountOptions } from './account';
-import { printGovernor, defaults as governorDefaults, GovernorOptions } from './governor';
-import { printCustom, defaults as customDefaults, isAccessControlRequired as customIsAccessControlRequired, CustomOptions } from './custom';
-import { printVesting, defaults as vestingDefaults, VestingOptions } from './vesting';
+import type { ERC20Options } from './erc20';
+import {
+  printERC20,
+  defaults as erc20defaults,
+  isAccessControlRequired as erc20IsAccessControlRequired,
+} from './erc20';
+import type { ERC721Options } from './erc721';
+import {
+  printERC721,
+  defaults as erc721defaults,
+  isAccessControlRequired as erc721IsAccessControlRequired,
+} from './erc721';
+import type { ERC1155Options } from './erc1155';
+import {
+  printERC1155,
+  defaults as erc1155defaults,
+  isAccessControlRequired as erc1155IsAccessControlRequired,
+} from './erc1155';
+import type { AccountOptions } from './account';
+import { printAccount, defaults as accountDefaults } from './account';
+import type { GovernorOptions } from './governor';
+import { printGovernor, defaults as governorDefaults } from './governor';
+import type { CustomOptions } from './custom';
+import {
+  printCustom,
+  defaults as customDefaults,
+  isAccessControlRequired as customIsAccessControlRequired,
+} from './custom';
+import type { VestingOptions } from './vesting';
+import { printVesting, defaults as vestingDefaults } from './vesting';
 
-export interface WizardAccountAPI<Options extends CommonOptions>{
+export interface WizardAccountAPI<Options extends CommonOptions> {
   /**
    * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
    */
@@ -33,7 +56,7 @@ export interface WizardContractAPI<Options extends CommonContractOptions> {
 
 export interface AccessControlAPI<Options extends CommonContractOptions> {
   /**
-   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the 
+   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
    * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
    */
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
@@ -51,31 +74,31 @@ export const erc20: ERC20 = {
   print: printERC20,
   defaults: erc20defaults,
   isAccessControlRequired: erc20IsAccessControlRequired,
-}
+};
 export const erc721: ERC721 = {
   print: printERC721,
   defaults: erc721defaults,
-  isAccessControlRequired: erc721IsAccessControlRequired
-}
+  isAccessControlRequired: erc721IsAccessControlRequired,
+};
 export const erc1155: ERC1155 = {
   print: printERC1155,
   defaults: erc1155defaults,
-  isAccessControlRequired: erc1155IsAccessControlRequired
-}
+  isAccessControlRequired: erc1155IsAccessControlRequired,
+};
 export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
-}
+};
 export const governor: Governor = {
   print: printGovernor,
   defaults: governorDefaults,
-}
+};
 export const vesting: Vesting = {
   print: printVesting,
   defaults: vestingDefaults,
-}
+};
 export const custom: Custom = {
   print: printCustom,
   defaults: customDefaults,
-  isAccessControlRequired: customIsAccessControlRequired
-}
+  isAccessControlRequired: customIsAccessControlRequired,
+};

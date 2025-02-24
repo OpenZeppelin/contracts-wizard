@@ -33,12 +33,14 @@ test('identifier - remove starting numbers', t => {
 });
 
 test('identifier - empty string', t => {
-  let error = t.throws(() => toIdentifier(''), { instanceOf: OptionsError });
+  const error = t.throws(() => toIdentifier(''), { instanceOf: OptionsError });
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
 test('identifier - no valid chars', t => {
-  let error = t.throws(() => toIdentifier('123'),  { instanceOf: OptionsError });
+  const error = t.throws(() => toIdentifier('123'), {
+    instanceOf: OptionsError,
+  });
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
@@ -55,7 +57,7 @@ test('toByteArray - remove non-ascii-printable characters', t => {
 });
 
 test('toByteArray - escape double quote', t => {
-  t.is(toByteArray("abc\"def"), "abc\\\"def");
+  t.is(toByteArray('abc"def'), 'abc\\"def');
 });
 
 test('toByteArray - does not escape single quote', t => {
@@ -94,6 +96,6 @@ test('toFelt252 - escape backslash', t => {
 test('toFelt252 - max 31 characters', t => {
   t.is(toFelt252('A234567890123456789012345678901', 'foo'), 'A234567890123456789012345678901');
 
-  let error = t.throws(() => toFelt252('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
+  const error = t.throws(() => toFelt252('A2345678901234567890123456789012', 'foo'), { instanceOf: OptionsError });
   t.is(error.messages.foo, 'String is longer than 31 characters');
 });

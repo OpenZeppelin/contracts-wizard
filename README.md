@@ -15,6 +15,7 @@ Install dependencies with `yarn install`.
 `packages/core` contains the code generation logic for each language under separately named subfolders. From each language's subfolder:
 - Run `yarn test` to run the tests.
 - Run `yarn test:update-snapshots` to update AVA snapshots and run the tests.
+- Run `yarn lint` to run the linter across the codebase (optionally `yarn lint --fix` will automatically fix fixable issues, like formatting issues).
 
 `packages/ui` is the interface built in Svelte. From the `packages/ui` directory, run `yarn dev` to spin up a local server to develop the UI.
 

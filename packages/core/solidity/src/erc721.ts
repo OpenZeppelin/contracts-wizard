@@ -1,13 +1,17 @@
-import { BaseFunction, Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl, requireAccessControl } from './set-access-control';
+import type { BaseFunction, Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
+import type { ClockMode } from './set-clock-mode';
+import { clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC721Options extends CommonOptions {
   name: string;

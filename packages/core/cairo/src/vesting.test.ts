@@ -1,6 +1,8 @@
 import test from 'ava';
-import { OptionsError, vesting } from '.';
-import { buildVesting, VestingOptions } from './vesting';
+import type { OptionsError } from '.';
+import { vesting } from '.';
+import type { VestingOptions } from './vesting';
+import { buildVesting } from './vesting';
 import { printContract } from './print';
 
 const defaults: VestingOptions = {
@@ -8,7 +10,7 @@ const defaults: VestingOptions = {
   startDate: '',
   duration: '0 day',
   cliffDuration: '0 day',
-  schedule: 'linear'
+  schedule: 'linear',
 };
 
 const CUSTOM_NAME = 'CustomVesting';
@@ -24,7 +26,7 @@ function testVesting(title: string, opts: Partial<VestingOptions>) {
   test(title, t => {
     const c = buildVesting({
       ...defaults,
-      ...opts
+      ...opts,
     });
     t.snapshot(printContract(c));
   });
@@ -32,10 +34,15 @@ function testVesting(title: string, opts: Partial<VestingOptions>) {
 
 function testAPIEquivalence(title: string, opts?: VestingOptions) {
   test(title, t => {
-    t.is(vesting.print(opts), printContract(buildVesting({
-      ...defaults,
-      ...opts
-    })));
+    t.is(
+      vesting.print(opts),
+      printContract(
+        buildVesting({
+          ...defaults,
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -48,27 +55,27 @@ testVesting('custom name', {
 });
 
 testVesting('custom start date', {
-  startDate: CUSTOM_DATE
+  startDate: CUSTOM_DATE,
 });
 
 testVesting('custom duration', {
-  duration: CUSTOM_DURATION
+  duration: CUSTOM_DURATION,
 });
 
 testVesting('custom cliff', {
   duration: CUSTOM_DURATION,
-  cliffDuration: CUSTOM_CLIFF
+  cliffDuration: CUSTOM_CLIFF,
 });
 
 testVesting('custom schedule', {
-  schedule: 'custom'
+  schedule: 'custom',
 });
 
 testVesting('all custom settings', {
   startDate: CUSTOM_DATE,
   duration: CUSTOM_DURATION,
   cliffDuration: CUSTOM_CLIFF,
-  schedule: 'custom'
+  schedule: 'custom',
 });
 
 //
@@ -77,28 +84,28 @@ testVesting('all custom settings', {
 
 testAPIEquivalence('API custom name', {
   ...defaults,
-  name: CUSTOM_NAME
+  name: CUSTOM_NAME,
 });
 
 testAPIEquivalence('API custom start date', {
   ...defaults,
-  startDate: CUSTOM_DATE
+  startDate: CUSTOM_DATE,
 });
 
 testAPIEquivalence('API custom duration', {
   ...defaults,
-  duration: CUSTOM_DURATION
+  duration: CUSTOM_DURATION,
 });
 
 testAPIEquivalence('API custom cliff', {
   ...defaults,
   duration: CUSTOM_DURATION,
-  cliffDuration: CUSTOM_CLIFF
+  cliffDuration: CUSTOM_CLIFF,
 });
 
 testAPIEquivalence('API custom schedule', {
   ...defaults,
-  schedule: 'custom'
+  schedule: 'custom',
 });
 
 testAPIEquivalence('API all custom settings', {
@@ -106,14 +113,19 @@ testAPIEquivalence('API all custom settings', {
   startDate: CUSTOM_DATE,
   duration: CUSTOM_DURATION,
   cliffDuration: CUSTOM_CLIFF,
-  schedule: 'custom'
+  schedule: 'custom',
 });
 
 test('cliff too high', async t => {
-  const error = t.throws(() => buildVesting({
-    ...defaults,
-    duration: '20 days',
-    cliffDuration: '21 days'
-  }));
-  t.is((error as OptionsError).messages.cliffDuration, 'Cliff duration must be less than or equal to the total duration');
+  const error = t.throws(() =>
+    buildVesting({
+      ...defaults,
+      duration: '20 days',
+      cliffDuration: '21 days',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.cliffDuration,
+    'Cliff duration must be less than or equal to the total duration',
+  );
 });

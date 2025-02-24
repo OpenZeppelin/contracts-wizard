@@ -1,7 +1,9 @@
-import { Contract, ContractBuilder } from './contract';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
 import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
-import { CommonContractOptions, withCommonContractDefaults } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { contractDefaults as commonDefaults } from './common-options';
@@ -12,7 +14,7 @@ export const defaults: Required<CustomOptions> = {
   pausable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printCustom(opts: CustomOptions = defaults): string {
@@ -51,4 +53,3 @@ export function buildCustom(opts: CustomOptions): Contract {
 
   return c;
 }
-

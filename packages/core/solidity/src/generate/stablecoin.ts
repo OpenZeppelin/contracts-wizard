@@ -15,7 +15,7 @@ const blueprint = {
   mintable: booleans,
   permit: booleans,
   limitations: [false, 'allowlist', 'blocklist'] as const,
-  votes: [ ...booleans, ...clockModeOptions ] as const,
+  votes: [...booleans, ...clockModeOptions] as const,
   flashmint: booleans,
   premint: ['1'],
   custodian: booleans,

@@ -9,7 +9,8 @@ import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { generateGovernorOptions } from './governor';
 import { generateVestingOptions } from './vesting';
-import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
+import type { GenericOptions, KindedOptions } from '../build-generic';
+import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
@@ -77,11 +78,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   const contracts = [];
 
   for (const options of generateOptions(kind)) {
-    const id = crypto
-      .createHash('sha1')
-      .update(JSON.stringify(options))
-      .digest()
-      .toString('hex');
+    const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
 
     try {
       const contract = buildGeneric(options);
@@ -111,11 +108,12 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
           case 'Governor':
           case 'Custom':
             return c.options.upgradeable === isUpgradeable;
-          default:
+          default: {
             const _: never = c.options;
             throw new Error('Unknown kind');
+          }
         }
-      }
+      };
     }
     return [
       ...findCover(contracts.filter(filterByUpgradeableSetTo(true)), getParents),
@@ -135,9 +133,14 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
   }
 }
 
-export async function writeGeneratedSources(dir: string, subset: Subset, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
+export async function writeGeneratedSources(
+  dir: string,
+  subset: Subset,
+  uniqueName?: boolean,
+  kind?: Kind,
+): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
-  let contractNames = [];
+  const contractNames = [];
 
   for (const { id, contract, source } of generateSources(subset, uniqueName, kind)) {
     const name = uniqueName ? contract.name : id;

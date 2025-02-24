@@ -1,7 +1,17 @@
-import type { Contract, Parent, ContractFunction, FunctionArgument, Value, NatspecTag, ImportContract } from './contract';
-import { Options, Helpers, withHelpers } from './options';
+import type {
+  Contract,
+  Parent,
+  ContractFunction,
+  FunctionArgument,
+  Value,
+  NatspecTag,
+  ImportContract,
+} from './contract';
+import type { Options, Helpers } from './options';
+import { withHelpers } from './options';
 
-import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import type { Lines } from './utils/format-lines';
+import { formatLines, spaceBetween } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
@@ -10,10 +20,7 @@ import { compatibleContractsSemver } from './utils/version';
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
-  const fns = mapValues(
-    sortedFunctions(contract),
-    fns => fns.map(fn => printFunction(fn, helpers)),
-  );
+  const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
 
   const hasOverrides = fns.override.some(l => l.length > 0);
 
@@ -59,31 +66,21 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasConstructorCode = contract.constructorCode.length > 0;
   const parentsWithInitializers = contract.parents.filter(hasInitializer);
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
-    const parents = parentsWithInitializers
-      .flatMap(p => printParentConstructor(p, helpers));
+    const parents = parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers));
     const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
-    const args = contract.constructorArgs.map(a =>  printArgument(a, helpers));
+    const args = contract.constructorArgs.map(a => printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
-        parents.map(p => p + ';'),
-        contract.constructorCode,
-      )
+          parents.map(p => p + ';'),
+          contract.constructorCode,
+        )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
-    const constructor = printFunction2(
-      [],
-      head,
-      args,
-      modifiers,
-      body,
-    );
+    const constructor = printFunction2([], head, args, modifiers, body);
     if (!helpers.upgradeable) {
       return constructor;
     } else {
-      return spaceBetween(
-        DISABLE_INITIALIZERS,
-        constructor,
-      );
+      return spaceBetween(DISABLE_INITIALIZERS, constructor);
     }
   } else if (!helpers.upgradeable) {
     return [];
@@ -92,14 +89,11 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   }
 }
 
-const DISABLE_INITIALIZERS = 
-[
+const DISABLE_INITIALIZERS = [
   '/// @custom:oz-upgrades-unsafe-allow constructor',
   'constructor() {',
-  [
-    '_disableInitializers();'
-  ],
-  '}'
+  ['_disableInitializers();'],
+  '}',
 ];
 
 function hasInitializer(parent: Parent) {
@@ -132,9 +126,7 @@ function printParentConstructor({ contract, params }: Parent, helpers: Helpers):
   const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
   if (useTranspiled || params.length > 0) {
-    return [
-      fn + '(' + params.map(printValue).join(', ') + ')',
-    ];
+    return [fn + '(' + params.map(printValue).join(', ') + ')'];
   } else {
     return [];
   }
@@ -164,14 +156,14 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
   const { transformName } = helpers;
 
   if (fn.override.size <= 1 && fn.modifiers.length === 0 && fn.code.length === 0 && !fn.final) {
-    return []
+    return [];
   }
-  const modifiers: string[] = [fn.kind]
+  const modifiers: string[] = [fn.kind];
 
   if (fn.mutability !== 'nonpayable') {
     modifiers.push(fn.mutability);
   }
-  
+
   if (fn.override.size === 1) {
     modifiers.push(`override`);
   } else if (fn.override.size > 1) {
@@ -206,12 +198,16 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
 
 // generic for functions and constructors
 // kindedName = 'function foo' or 'constructor'
-function printFunction2(comments: string[], kindedName: string, args: string[], modifiers: string[], code: Lines[]): Lines[] {
-  const fn: Lines[] = [ ...comments ];
+function printFunction2(
+  comments: string[],
+  kindedName: string,
+  args: string[],
+  modifiers: string[],
+  code: Lines[],
+): Lines[] {
+  const fn: Lines[] = [...comments];
 
-  const headingLength = [kindedName, ...args, ...modifiers]
-    .map(s => s.length)
-    .reduce((a, b) => a + b);
+  const headingLength = [kindedName, ...args, ...modifiers].map(s => s.length).reduce((a, b) => a + b);
 
   const braces = code.length > 0 ? '{' : '{}';
 
@@ -232,6 +228,7 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
   let type: string;
   if (typeof arg.type === 'string') {
     if (/^[A-Z]/.test(arg.type)) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       `Type ${arg.type} is not a primitive type. Define it as a ContractReference`;
     }
     type = arg.type;

@@ -12,14 +12,10 @@ export default function serve() {
   return {
     writeBundle() {
       if (state.server) return;
-      state.server = proc.spawn(
-        'npm',
-        ['run', 'start', '--', '--dev'],
-        {
-          stdio: ['ignore', 'inherit', 'inherit'],
-          shell: true,
-        },
-      );
+      state.server = proc.spawn('npm', ['run', 'start', '--', '--dev'], {
+        stdio: ['ignore', 'inherit', 'inherit'],
+        shell: true,
+      });
 
       process.on('SIGTERM', toExit);
       process.on('exit', toExit);

@@ -13,7 +13,7 @@ export interface Contract {
   upgradeable: boolean;
 }
 
-export type Value = string | number | { lit: string } | { note: string, value: Value };
+export type Value = string | number | { lit: string } | { note: string; value: Value };
 
 export interface Parent {
   contract: ImportContract;
@@ -53,15 +53,13 @@ export interface ContractFunction extends BaseFunction {
 }
 
 export type FunctionKind = 'internal' | 'public';
-export type FunctionMutability = typeof mutabilityRank[number];
+export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
 const mutabilityRank = ['pure', 'view', 'nonpayable', 'payable'] as const;
 
 function maxMutability(a: FunctionMutability, b: FunctionMutability): FunctionMutability {
-  return mutabilityRank[
-    Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))
-  ]!;
+  return mutabilityRank[Math.max(mutabilityRank.indexOf(a), mutabilityRank.indexOf(b))]!;
 }
 
 export interface FunctionArgument {
@@ -94,22 +92,21 @@ export class ContractBuilder implements Contract {
   }
 
   get parents(): Parent[] {
-    return [...this.parentMap.values()].filter(p => !p.importOnly).sort((a, b) => {
-      if (a.contract.name === 'Initializable') {
-        return -1;
-      } else if (b.contract.name === 'Initializable') {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
+    return [...this.parentMap.values()]
+      .filter(p => !p.importOnly)
+      .sort((a, b) => {
+        if (a.contract.name === 'Initializable') {
+          return -1;
+        } else if (b.contract.name === 'Initializable') {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
   }
 
   get imports(): ImportContract[] {
-    return [
-      ...[...this.parentMap.values()].map(p => p.contract),
-      ...this.using.map(u => u.library),
-    ];
+    return [...[...this.parentMap.values()].map(p => p.contract), ...this.using.map(u => u.library)];
   }
 
   get functions(): ContractFunction[] {
@@ -128,7 +125,11 @@ export class ContractBuilder implements Contract {
 
   addImportOnly(contract: ImportContract): boolean {
     const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params: [], importOnly: true });
+    this.parentMap.set(contract.name, {
+      contract,
+      params: [],
+      importOnly: true,
+    });
     return !present;
   }
 
@@ -146,6 +147,7 @@ export class ContractBuilder implements Contract {
   }
 
   addNatspecTag(key: string, value: string) {
+    // eslint-disable-next-line no-useless-escape
     if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid natspec key: ${key}`);
     this.natspecTags.push({ key, value });
   }

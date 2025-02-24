@@ -1,4 +1,5 @@
-import { clockModeOptions, GovernorOptions, quorumModeOptions, timelockOptions, votesOptions } from '../governor';
+import type { GovernorOptions } from '../governor';
+import { clockModeOptions, quorumModeOptions, timelockOptions, votesOptions } from '../governor';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
@@ -27,4 +28,3 @@ const blueprint = {
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {
   yield* generateAlternatives(blueprint);
 }
-

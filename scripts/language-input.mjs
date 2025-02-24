@@ -1,10 +1,10 @@
-import { readdirSync, statSync } from "fs";
-import { join } from "path";
+import { readdirSync, statSync } from 'fs';
+import { join } from 'path';
 
-const coreSubfolderPath = "./packages/core";
+const coreSubfolderPath = './packages/core';
 
 function getSupportedLanguageInCoreSubfolder() {
-  return readdirSync(coreSubfolderPath).filter((subfolder) => {
+  return readdirSync(coreSubfolderPath).filter(subfolder => {
     const subfolderPath = join(coreSubfolderPath, subfolder);
     return statSync(subfolderPath).isDirectory();
   });
@@ -15,7 +15,7 @@ function getLanguageInput() {
 
   if (languageFolderName) return languageFolderName;
 
-  console.error("Please provide a language name.");
+  console.error('Please provide a language name.');
   process.exit(1);
 }
 
@@ -24,11 +24,8 @@ export function getAndCheckLanguageInput() {
 
   const supportedLanguages = getSupportedLanguageInCoreSubfolder();
 
-  if (supportedLanguages.includes(languageFolderName))
-    return languageFolderName;
+  if (supportedLanguages.includes(languageFolderName)) return languageFolderName;
 
-  console.error(
-    `Invalid language name ${languageFolderName}. Supported languages: ${supportedLanguages.join(", ")}`
-  );
+  console.error(`Invalid language name ${languageFolderName}. Supported languages: ${supportedLanguages.join(', ')}`);
   process.exit(1);
 }

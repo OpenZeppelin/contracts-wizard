@@ -9,7 +9,7 @@ const upgradeableName = (n: string) => {
   } else {
     return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
   }
-}
+};
 
 const upgradeableImport = (p: ImportContract): ImportContract => {
   const { dir, ext, name } = path.parse(p.path);
@@ -22,7 +22,7 @@ const upgradeableImport = (p: ImportContract): ImportContract => {
       dir: dir.replace(/^@openzeppelin\/contracts/, '@openzeppelin/contracts-upgradeable'),
       name: upgradeableName(name), // Solidity file name
     }),
-  }
+  };
 };
 
 export interface Options {
@@ -36,7 +36,8 @@ export interface Helpers extends Required<Options> {
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
   const contractUpgradeable = contract.upgradeable;
-  const transformName = (n: ReferencedContract) => contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
+  const transformName = (n: ReferencedContract) =>
+    contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
   return {
     upgradeable: contractUpgradeable,
     transformName,

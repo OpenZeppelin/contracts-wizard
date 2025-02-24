@@ -1,7 +1,8 @@
 import test from 'ava';
 import { governor } from '.';
 
-import { buildGovernor, GovernorOptions } from './governor';
+import type { GovernorOptions } from './governor';
+import { buildGovernor } from './governor';
 import { printContract } from './print';
 
 const NAME = 'MyGovernor';
@@ -23,21 +24,26 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
  */
 function testAPIEquivalence(title: string, opts?: GovernorOptions) {
   test(title, t => {
-    t.is(governor.print(opts), printContract(buildGovernor({
-      name: NAME,
-      delay: '1 day',
-      period: '1 week',
-      ...opts,
-    })));
+    t.is(
+      governor.print(opts),
+      printContract(
+        buildGovernor({
+          name: NAME,
+          delay: '1 day',
+          period: '1 week',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
 testGovernor('basic + upgradeable', {
-  upgradeable: true
+  upgradeable: true,
 });
 
 testGovernor('basic non-upgradeable', {
-  upgradeable: false
+  upgradeable: false,
 });
 
 testGovernor('erc20 votes + timelock', {
@@ -98,14 +104,14 @@ testAPIEquivalence('API basic + upgradeable', {
   name: NAME,
   delay: '1 day',
   period: '1 week',
-  upgradeable: true
+  upgradeable: true,
 });
 
 testAPIEquivalence('API basic non-upgradeable', {
   name: NAME,
   delay: '1 day',
   period: '1 week',
-  upgradeable: false
+  upgradeable: false,
 });
 
 testAPIEquivalence('API erc20 votes + timelock', {
@@ -146,7 +152,7 @@ testAPIEquivalence('API quorum mode absolute', {
   quorumAbsolute: '200',
 });
 
-testAPIEquivalence('API quorum mode percent', { 
+testAPIEquivalence('API quorum mode percent', {
   name: NAME,
   delay: '1 day',
   period: '1 week',

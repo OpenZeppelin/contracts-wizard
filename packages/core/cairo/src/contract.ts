@@ -14,7 +14,7 @@ export interface Contract {
   superVariables: Variable[];
 }
 
-export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
+export type Value = string | number | bigint | { lit: string } | { note: string; value: Value };
 
 export interface UseClause {
   containerPath: string;
@@ -145,14 +145,19 @@ export class ContractBuilder implements Contract {
     return this.interfaceFlagsSet;
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
     // groupable defaults to true
     const groupable = options?.groupable ?? true;
     const alias = options?.alias ?? '';
     const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
-      this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
+      this.useClausesMap.set(uniqueName, {
+        containerPath,
+        name,
+        groupable,
+        alias,
+      });
     }
   }
 
@@ -162,7 +167,11 @@ export class ContractBuilder implements Contract {
     const present = this.componentsMap.has(key);
     if (!present) {
       const initializer = initializable ? { params } : undefined;
-      const cp: Component = { initializer, ...component, impls: [ ...component.impls ] }; // spread impls to deep copy from original component
+      const cp: Component = {
+        initializer,
+        ...component,
+        impls: [...component.impls],
+      }; // spread impls to deep copy from original component
       this.componentsMap.set(key, cp);
     }
     return !present;
@@ -208,7 +217,7 @@ export class ContractBuilder implements Contract {
       const t: ImplementedTrait = {
         name: baseTrait.name,
         of: baseTrait.of,
-        tags: [ ...baseTrait.tags ],
+        tags: [...baseTrait.tags],
         superVariables: [],
         functions: [],
         section: baseTrait.section,
@@ -225,12 +234,12 @@ export class ContractBuilder implements Contract {
       if (existingVar.name === newVar.name) {
         if (existingVar.type !== newVar.type) {
           throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`
+            `Tried to add duplicate super var ${newVar.name} with different type: ${newVar.type} instead of ${existingVar.type}.`,
           );
         }
         if (existingVar.value !== newVar.value) {
           throw new Error(
-            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`
+            `Tried to add duplicate super var ${newVar.name} with different value: ${newVar.value} instead of ${existingVar.value}.`,
           );
         }
         return false; // No need to add, already exists
@@ -270,7 +279,7 @@ export class ContractBuilder implements Contract {
   addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], codeBefore ];
+    existingFn.codeBefore = [...(existingFn.codeBefore ?? []), codeBefore];
   }
 
   addConstructorArgument(arg: Argument): void {
