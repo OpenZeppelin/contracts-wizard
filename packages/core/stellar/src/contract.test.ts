@@ -1,6 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder, BaseFunction, BaseImplementedTrait } from './contract';
+import type { BaseFunction, BaseImplementedTrait } from './contract';
+import { ContractBuilder } from './contract';
 import { printContract } from './print';
 
 test('contract basics', t => {
@@ -25,18 +26,13 @@ test('contract with function code before', t => {
   const trait: BaseImplementedTrait = {
     name: 'External',
     for: 'ExternalTrait',
-    tags: [
-      'othertag',
-      'contractimpl',
-    ],
+    tags: ['othertag', 'contractimpl'],
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: [
-      'someFunction()'
-    ]
+    code: ['someFunction()'],
   };
   Foo.addFunction(trait, fn);
   Foo.addFunctionTag(trait, fn, 'functiontag');
@@ -49,18 +45,13 @@ test('contract with function code before with semicolons', t => {
   const trait: BaseImplementedTrait = {
     name: 'External',
     for: 'ExternalTrait',
-    tags: [
-      'othertag',
-      'contractimpl',
-    ],
+    tags: ['othertag', 'contractimpl'],
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: [
-      'someFunction();'
-    ]
+    code: ['someFunction();'],
   };
   Foo.addFunction(trait, fn);
   Foo.addFunctionTag(trait, fn, 'functiontag');

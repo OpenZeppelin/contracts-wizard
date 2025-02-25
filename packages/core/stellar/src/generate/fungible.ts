@@ -13,7 +13,7 @@ const blueprint = {
   mintable: booleans,
   premint: ['1'],
   access: accessOptions,
-  info: infoOptions
+  info: infoOptions,
 };
 
 export function* generateFungibleOptions(): Generator<Required<FungibleOptions>> {

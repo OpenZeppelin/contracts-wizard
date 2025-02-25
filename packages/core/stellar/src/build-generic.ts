@@ -1,7 +1,8 @@
-import { FungibleOptions, buildFungible } from './fungible';
+import type { FungibleOptions } from './fungible';
+import { buildFungible } from './fungible';
 
 export interface KindedOptions {
-  Fungible:    { kind: 'Fungible' }    & FungibleOptions;
+  Fungible: { kind: 'Fungible' } & FungibleOptions;
 }
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];

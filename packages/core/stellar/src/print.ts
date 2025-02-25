@@ -1,13 +1,14 @@
-import type { Contract, Argument, Value, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type { Contract, Argument, Value, ContractFunction, ImplementedTrait, UseClause } from './contract';
 
-import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import type { Lines } from './utils/format-lines';
+import { formatLines, spaceBetween } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
-const TAB = "    ";
+const TAB = '    ';
 
 export function printContract(contract: Contract): string {
   return formatLines(
@@ -29,10 +30,7 @@ export function printContract(contract: Contract): string {
 }
 
 function printContractStruct(contract: Contract): Lines[] {
-  return [
-    '#[contract]',
-    `pub struct ${contract.name};`
-  ];
+  return ['#[contract]', `pub struct ${contract.name};`];
 }
 
 function printContractErrors(contract: Contract): Lines[] {
@@ -45,12 +43,12 @@ function printContractErrors(contract: Contract): Lines[] {
     '#[repr(u32)]',
     `pub enum ${contract.name}Error {`,
     contract.errors.map(e => `${e.name} = ${e.num},`),
-    `}`
-  ]
+    `}`,
+  ];
 }
 
 function withSemicolons(lines: string[]): string[] {
-  return lines.map(line => line.endsWith(';') ? line : line + ';');
+  return lines.map(line => (line.endsWith(';') ? line : line + ';'));
 }
 
 function printVariables(contract: Contract): string[] {
@@ -61,15 +59,14 @@ function printUseClauses(contract: Contract): Lines[] {
   const useClauses = sortUseClauses(contract);
 
   // group by containerPath
-  const grouped = useClauses.reduce(
-    (result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
-      if (useClause.groupable) {
-        (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
-      } else {
-        (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
-      }
-      return result;
-    }, {});
+  const grouped = useClauses.reduce((result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
+    if (useClause.groupable) {
+      (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
+    } else {
+      (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
+    }
+    return result;
+  }, {});
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
@@ -85,7 +82,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
     if (group.length == 1) {
       lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
-      let names = group.map((useClause) => nameWithAlias(useClause)).join(', ');
+      const names = group.map(useClause => nameWithAlias(useClause)).join(', ');
       lines.push(`use ${groupName}::{${names}};`);
     }
   }
@@ -105,7 +102,7 @@ function splitLongUseClauseLine(line: string): Lines[] {
     // split at the first brace
     lines.push(line.slice(0, line.indexOf('{') + 1));
     lines.push(...splitLongLineInner(line.slice(line.indexOf('{') + 1, -2)));
-    lines.push("};");
+    lines.push('};');
   } else {
     lines.push(line);
   }
@@ -158,16 +155,18 @@ function printImplementedTraits(contract: Contract): Lines[] {
 
   // group by section
   const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
+    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
       // default to no section
       const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
       return result;
-    }, {});
-
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+    },
+    {},
   );
+
+  const sections = Object.entries(grouped)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]));
 
   return spaceBetween(...sections);
 }
@@ -231,11 +230,9 @@ function printContractFunctions(contract: Contract): Lines[] {
 function printConstructor(contract: Contract): Lines[] {
   if (contract.constructorCode.length > 0) {
     const head = 'pub fn __constructor';
-    const args = [ getSelfArg(), ...contract.constructorArgs ];
+    const args = [getSelfArg(), ...contract.constructorArgs];
 
-    const body = spaceBetween(
-        withSemicolons(contract.constructorCode),
-      );
+    const body = spaceBetween(withSemicolons(contract.constructorCode));
 
     const constructor = printFunction2(
       head,
@@ -259,7 +256,7 @@ function printFunction2(
   tag: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
-  code: Lines[]
+  code: Lines[],
 ): Lines[] {
   const fn = [];
 

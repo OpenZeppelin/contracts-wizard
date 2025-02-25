@@ -12,8 +12,9 @@ export type Action = 'copy' | 'remix' | 'download-file' | 'download-hardhat' | '
 export type Language = 'solidity' | 'cairo' | 'stellar';
 
 export async function postConfig(
-    opts: Required<SolidityOptions> | Required<CairoOptions> | Required<StellarOptions>,
-    action: Action,
-    language: Language) {
+  opts: Required<SolidityOptions> | Required<CairoOptions> | Required<StellarOptions>,
+  action: Action,
+  language: Language,
+) {
   window.gtag?.('event', 'wizard_action', { ...opts, action, wizard_lang: language });
 }
