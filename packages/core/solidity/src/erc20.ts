@@ -81,16 +81,20 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   addBase(c, allOpts.name, allOpts.symbol);
 
+  if (allOpts.crossChainBridging) {
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.upgradeable, access);
+  }
+
+  if (allOpts.premint) {
+    addPremint(c, allOpts.premint, allOpts.premintChainId, allOpts.crossChainBridging);
+  }
+
   if (allOpts.burnable) {
     addBurnable(c);
   }
 
   if (allOpts.pausable) {
     addPausableExtension(c, access);
-  }
-
-  if (allOpts.premint) {
-    addPremint(c, allOpts.premint, allOpts.premintChainId, allOpts.crossChainBridging);
   }
 
   if (allOpts.mintable) {
@@ -109,10 +113,6 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   if (allOpts.flashmint) {
     addFlashMint(c);
-  }
-
-  if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.upgradeable, access);
   }
 
   setAccessControl(c, access);
