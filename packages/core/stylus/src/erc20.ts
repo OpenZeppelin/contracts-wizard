@@ -152,14 +152,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplement
 }
 
 function addFlashMint(c: ContractBuilder, pausable: boolean, baseTrait: BaseImplementedTrait) {
-  c.addUseClause(
-    'openzeppelin_stylus::token::erc20::extensions',
-    'Erc20FlashMint'
-  );
-  c.addUseClause(
-    'openzeppelin_stylus::token::erc20::extensions',
-    'IErc3156FlashLender'
-  );
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20FlashMint');
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
 
   c.addUseClause('stylus_sdk::abi', 'Bytes');
 
@@ -289,7 +283,7 @@ const functions = (baseTrait: BaseImplementedTrait) =>
       ],
       returns: 'U256',
       code: [
-        `self.flash_mint.max_flash_loan(token, &self.${baseTrait.storage.name}).map_err(|e| e.into())`,
+        `self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${baseTrait.storage.name})`,
       ],
     },
     flash_fee: {
@@ -298,9 +292,9 @@ const functions = (baseTrait: BaseImplementedTrait) =>
         { name: 'token', type: 'Address' },
         { name: 'value', type: 'U256' },
       ],
-      returns: 'U256',
+      returns: 'Result<U256, Vec<u8>>',
       code: [
-        `self.flash_mint.flash_fee(token, value).map_err(|e| e.into())`,
+        `self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
       ],
     },
     flash_loan: {
@@ -311,9 +305,9 @@ const functions = (baseTrait: BaseImplementedTrait) =>
         { name: 'value', type: 'U256' },
         { name: 'data', type: 'Bytes' },
       ],
-      returns: 'Result<(), Vec<u8>>',
+      returns: 'Result<bool, Vec<u8>>',
       code: [
-        `self.flash_mint.flash_loan(receiver, token, value, data, &mut self.${baseTrait.storage.name}).map_err(|e| e.into())`,
+        `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${baseTrait.storage.name}).map_err(|e| e.into())`,
       ],
     },
   });
