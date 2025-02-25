@@ -68,7 +68,7 @@
         Premint
         <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
       </span>
-      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint}>
     </label>
 
     {#if showChainId}

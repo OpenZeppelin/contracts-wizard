@@ -199,6 +199,10 @@ function addPremint(c: ContractBuilder, amount: string, premintChainId: string, 
         c.addConstructorCode(mintLine);
       }
     }
+  } else {
+    throw new OptionsError({
+      premint: 'Not a valid number'
+    });
   }
 }
 
