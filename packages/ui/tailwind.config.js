@@ -5,7 +5,6 @@ module.exports = {
     // Using glob patterns results in infinite loop
     './public/index.html',
     './public/cairo.html',
-    './public/stylus.html',
     './public/stellar.html',
     './public/embed.html',
   ],
