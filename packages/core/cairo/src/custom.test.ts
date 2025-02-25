@@ -1,7 +1,8 @@
 import test from 'ava';
 import { custom } from '.';
 
-import { buildCustom, CustomOptions } from './custom';
+import type { CustomOptions } from './custom';
+import { buildCustom } from './custom';
 import { printContract } from './print';
 
 function testCustom(title: string, opts: Partial<CustomOptions>) {
@@ -17,12 +18,17 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
 /**
  * Tests external API for equivalence with internal API
  */
- function testAPIEquivalence(title: string, opts?: CustomOptions) {
+function testAPIEquivalence(title: string, opts?: CustomOptions) {
   test(title, t => {
-    t.is(custom.print(opts), printContract(buildCustom({
-      name: 'MyContract',
-      ...opts,
-    })));
+    t.is(
+      custom.print(opts),
+      printContract(
+        buildCustom({
+          name: 'MyContract',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 

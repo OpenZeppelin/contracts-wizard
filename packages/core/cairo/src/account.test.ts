@@ -1,6 +1,7 @@
 import test from 'ava';
 
-import { buildAccount, AccountOptions } from './account';
+import type { AccountOptions } from './account';
+import { buildAccount } from './account';
 import { printContract } from './print';
 
 import { account } from '.';
@@ -32,22 +33,27 @@ function testEthAccount(title: string, opts: Partial<AccountOptions>) {
  */
 function testAPIEquivalence(title: string, opts?: AccountOptions) {
   test(title, t => {
-    t.is(account.print(opts), printContract(buildAccount({
-      name: 'MyAccount',
-      type: 'stark',
-      declare: true,
-      deploy: true,
-      pubkey: true,
-      outsideExecution: true,
-      ...opts,
-    })));
+    t.is(
+      account.print(opts),
+      printContract(
+        buildAccount({
+          name: 'MyAccount',
+          type: 'stark',
+          declare: true,
+          deploy: true,
+          pubkey: true,
+          outsideExecution: true,
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
 testAccount('default full account, mixin + upgradeable', {});
 
 testAccount('default full account, mixin + non-upgradeable', {
-  upgradeable: false
+  upgradeable: false,
 });
 
 testAccount('explicit full account, mixin + upgradeable', {
@@ -57,7 +63,7 @@ testAccount('explicit full account, mixin + upgradeable', {
   deploy: true,
   pubkey: true,
   outsideExecution: true,
-  upgradeable: true
+  upgradeable: true,
 });
 
 testAccount('explicit full account, mixin + non-upgradeable', {
@@ -67,7 +73,7 @@ testAccount('explicit full account, mixin + non-upgradeable', {
   deploy: true,
   pubkey: true,
   outsideExecution: true,
-  upgradeable: false
+  upgradeable: false,
 });
 
 testAccount('basic account, upgradeable', {
@@ -82,7 +88,7 @@ testAccount('basic account, non-upgradeable', {
   deploy: false,
   pubkey: false,
   outsideExecution: false,
-  upgradeable: false
+  upgradeable: false,
 });
 
 testAccount('account outside execution', {
@@ -127,7 +133,7 @@ testAccount('account deployable, public key', {
 testEthAccount('default full ethAccount, mixin + upgradeable', {});
 
 testEthAccount('default full ethAccount, mixin + non-upgradeable', {
-  upgradeable: false
+  upgradeable: false,
 });
 
 testEthAccount('explicit full ethAccount, mixin + upgradeable', {
@@ -137,7 +143,7 @@ testEthAccount('explicit full ethAccount, mixin + upgradeable', {
   deploy: true,
   pubkey: true,
   outsideExecution: true,
-  upgradeable: true
+  upgradeable: true,
 });
 
 testEthAccount('explicit full ethAccount, mixin + non-upgradeable', {
@@ -147,7 +153,7 @@ testEthAccount('explicit full ethAccount, mixin + non-upgradeable', {
   deploy: true,
   pubkey: true,
   outsideExecution: true,
-  upgradeable: false
+  upgradeable: false,
 });
 
 testEthAccount('basic ethAccount, upgradeable', {
@@ -162,7 +168,7 @@ testEthAccount('basic ethAccount, non-upgradeable', {
   deploy: false,
   pubkey: false,
   outsideExecution: false,
-  upgradeable: false
+  upgradeable: false,
 });
 
 testEthAccount('ethAccount outside execution', {

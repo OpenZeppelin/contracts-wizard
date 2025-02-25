@@ -1,15 +1,16 @@
 import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import { defineComponents } from './utils/define-components';
-import { OptionsError } from "./error";
+import { OptionsError } from './error';
 import { toUint } from './utils/convert-strings';
-import { Access, setAccessControl, DEFAULT_ACCESS_CONTROL } from './set-access-control';
+import type { Access } from './set-access-control';
+import { setAccessControl, DEFAULT_ACCESS_CONTROL } from './set-access-control';
 
 const DEFAULT_FEE_DENOMINATOR = BigInt(10_000);
 
 export const defaults: RoyaltyInfoOptions = {
   enabled: false,
   defaultRoyaltyFraction: '0',
-  feeDenominator: DEFAULT_FEE_DENOMINATOR.toString()
+  feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
 };
 
 export const royaltyInfoOptions = {
@@ -23,13 +24,13 @@ export const royaltyInfoOptions = {
     enabled: true,
     defaultRoyaltyFraction: '15125',
     feeDenominator: '100000',
-  }
-}
+  },
+};
 
 export type RoyaltyInfoOptions = {
-  enabled: boolean,
-  defaultRoyaltyFraction: string,
-  feeDenominator: string,
+  enabled: boolean;
+  defaultRoyaltyFraction: string;
+  feeDenominator: string;
 };
 
 export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, access: Access): void {
@@ -42,14 +43,14 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   setAccessControl(c, access);
 
   const { defaultRoyaltyFraction, feeDenominator } = getRoyaltyParameters(options);
-  const initParams = [
-    { lit: 'default_royalty_receiver' },
-    defaultRoyaltyFraction
-  ];
+  const initParams = [{ lit: 'default_royalty_receiver' }, defaultRoyaltyFraction];
 
   c.addComponent(components.ERC2981Component, initParams, true);
   c.addUseClause('starknet', 'ContractAddress');
-  c.addConstructorArgument({ name: 'default_royalty_receiver', type: 'ContractAddress'});
+  c.addConstructorArgument({
+    name: 'default_royalty_receiver',
+    type: 'ContractAddress',
+  });
 
   switch (access) {
     case 'ownable':
@@ -63,7 +64,10 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
         name: 'ERC2981AdminAccessControlImpl',
         value: `ERC2981Component::ERC2981AdminAccessControlImpl<ContractState>`,
       });
-      c.addConstructorArgument({ name: 'royalty_admin', type: 'ContractAddress'});
+      c.addConstructorArgument({
+        name: 'royalty_admin',
+        type: 'ContractAddress',
+      });
       c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
   }
@@ -80,22 +84,25 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     c.addSuperVariableToTrait(trait, {
       name: 'FEE_DENOMINATOR',
       type: 'u128',
-      value: feeDenominator.toString()
+      value: feeDenominator.toString(),
     });
   }
 }
 
-function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): { defaultRoyaltyFraction: bigint, feeDenominator: bigint } {
+function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): {
+  defaultRoyaltyFraction: bigint;
+  feeDenominator: bigint;
+} {
   const feeDenominator = toUint(opts.feeDenominator, 'feeDenominator', 'u128');
   if (feeDenominator === BigInt(0)) {
     throw new OptionsError({
-      feeDenominator: 'Must be greater than 0'
+      feeDenominator: 'Must be greater than 0',
     });
   }
   const defaultRoyaltyFraction = toUint(opts.defaultRoyaltyFraction, 'defaultRoyaltyFraction', 'u128');
   if (defaultRoyaltyFraction > feeDenominator) {
     throw new OptionsError({
-      defaultRoyaltyFraction: 'Cannot be greater than fee denominator'
+      defaultRoyaltyFraction: 'Cannot be greater than fee denominator',
     });
   }
   return { defaultRoyaltyFraction, feeDenominator };
@@ -124,8 +131,8 @@ const components = defineComponents({
       {
         name: 'ERC2981InternalImpl',
         value: 'ERC2981Component::InternalImpl<ContractState>',
-        embed: false
-      }
+        embed: false,
+      },
     ],
   },
 });

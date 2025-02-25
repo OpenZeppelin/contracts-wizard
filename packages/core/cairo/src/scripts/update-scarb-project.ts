@@ -27,8 +27,8 @@ async function writeLibCairo(contractNames: string[]) {
 async function updateScarbToml() {
   const scarbTomlPath = path.join('test_project', 'Scarb.toml');
 
-  let currentContent = await fs.readFile(scarbTomlPath, 'utf8');
-  let updatedContent = currentContent
+  const currentContent = await fs.readFile(scarbTomlPath, 'utf8');
+  const updatedContent = currentContent
     .replace(/edition = "\w+"/, `edition = "${edition}"`)
     .replace(/cairo-version = "\d+\.\d+\.\d+"/, `cairo-version = "${cairoVersion}"`)
     .replace(/scarb-version = "\d+\.\d+\.\d+"/, `scarb-version = "${scarbVersion}"`)

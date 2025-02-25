@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import os from 'os';
-import _test, { TestFn, ExecutionContext } from 'ava';
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
@@ -8,7 +9,7 @@ import type { GenericOptions, KindedOptions } from './build-generic';
 import { custom, erc20, erc721, erc1155 } from './api';
 
 interface Context {
-  generatedSourcesPath: string
+  generatedSourcesPath: string;
 }
 
 const test = _test as TestFn<Context>;
@@ -42,7 +43,7 @@ async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOpti
 }
 
 function isAccessControlRequired(opts: GenericOptions) {
-  switch(opts.kind) {
+  switch (opts.kind) {
     case 'ERC20':
       return erc20.isAccessControlRequired(opts);
     case 'ERC721':
@@ -50,11 +51,11 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
     case 'Account':
-      throw new Error("Not applicable for accounts");
+      throw new Error('Not applicable for accounts');
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     default:
-      throw new Error("No such kind");
+      throw new Error('No such kind');
   }
 }
 
@@ -80,9 +81,10 @@ test('is access control required', async t => {
           }
         }
         break;
-      default:
+      default: {
         const _: never = contract.options;
         throw new Error('Unknown kind');
+      }
     }
   }
 });

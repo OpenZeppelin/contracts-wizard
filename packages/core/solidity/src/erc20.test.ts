@@ -1,7 +1,8 @@
 import test from 'ava';
 import { erc20, OptionsError } from '.';
 
-import { buildERC20, ERC20Options } from './erc20';
+import type { ERC20Options } from './erc20';
+import { buildERC20 } from './erc20';
 import { printContract } from './print';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
@@ -18,13 +19,18 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
 /**
  * Tests external API for equivalence with internal API
  */
- function testAPIEquivalence(title: string, opts?: ERC20Options) {
+function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.is(erc20.print(opts), printContract(buildERC20({
-      name: 'MyToken',
-      symbol: 'MTK',
-      ...opts,
-    })));
+    t.is(
+      erc20.print(opts),
+      printContract(
+        buildERC20({
+          name: 'MyToken',
+          symbol: 'MTK',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 

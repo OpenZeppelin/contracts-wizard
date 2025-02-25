@@ -127,10 +127,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
     name: 'ERC20',
     path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
   };
-  c.addParent(
-    ERC20,
-    [name, symbol],
-  );
+  c.addParent(ERC20, [name, symbol]);
 
   c.addOverride(ERC20, functions._update);
   c.addOverride(ERC20, functions._approve); // allows override from stablecoin
@@ -218,7 +215,6 @@ function addPermit(c: ContractBuilder, name: string) {
   };
   c.addParent(ERC20Permit, [name]);
   c.addOverride(ERC20Permit, functions.nonces);
-
 }
 
 function addVotes(c: ContractBuilder, clockMode: ClockMode) {
@@ -237,9 +233,12 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
     name: 'Nonces',
     path: '@openzeppelin/contracts/utils/Nonces.sol',
   });
-  c.addOverride({
-    name: 'Nonces',
-  }, functions.nonces);
+  c.addOverride(
+    {
+      name: 'Nonces',
+    },
+    functions.nonces,
+  );
 
   setClockMode(c, ERC20Votes, clockMode);
 }
@@ -382,9 +381,7 @@ export const functions = defineFunctions({
 
   nonces: {
     kind: 'public' as const,
-    args: [
-      { name: 'owner', type: 'address' },
-    ],
+    args: [{ name: 'owner', type: 'address' }],
     returns: ['uint256'],
     mutability: 'view' as const,
   },

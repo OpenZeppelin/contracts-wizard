@@ -8,7 +8,8 @@ import { generateERC1155Options } from './erc1155';
 import { generateStablecoinOptions } from './stablecoin';
 import { generateGovernorOptions } from './governor';
 import { generateCustomOptions } from './custom';
-import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
+import type { GenericOptions, KindedOptions } from '../build-generic';
+import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
@@ -76,11 +77,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   const contracts = [];
 
   for (const options of generateOptions(kind)) {
-    const id = crypto
-      .createHash('sha1')
-      .update(JSON.stringify(options))
-      .digest()
-      .toString('hex');
+    const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
 
     try {
       const contract = buildGeneric(options);
@@ -99,8 +96,14 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   } else {
     const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.contract.path);
     return [
-      ...findCover(contracts.filter(c => c.options.upgradeable), getParents),
-      ...findCover(contracts.filter(c => !c.options.upgradeable), getParents),
+      ...findCover(
+        contracts.filter(c => c.options.upgradeable),
+        getParents,
+      ),
+      ...findCover(
+        contracts.filter(c => !c.options.upgradeable),
+        getParents,
+      ),
     ];
   }
 }

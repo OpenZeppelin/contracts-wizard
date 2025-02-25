@@ -8,7 +8,7 @@ const blueprint = {
   duration: ['90 days', '1 year'],
   cliffDuration: ['0 seconds', '30 day'],
   schedule: ['linear', 'custom'] as const,
-  info: infoOptions
+  info: infoOptions,
 };
 
 export function* generateVestingOptions(): Generator<Required<VestingOptions>> {

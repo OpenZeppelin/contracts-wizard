@@ -1,7 +1,8 @@
 import test from 'ava';
 import { stablecoin } from '.';
 
-import { buildStablecoin, StablecoinOptions } from './stablecoin';
+import type { StablecoinOptions } from './stablecoin';
+import { buildStablecoin } from './stablecoin';
 import { printContract } from './print';
 
 function testStablecoin(title: string, opts: Partial<StablecoinOptions>) {
@@ -18,13 +19,18 @@ function testStablecoin(title: string, opts: Partial<StablecoinOptions>) {
 /**
  * Tests external API for equivalence with internal API
  */
- function testAPIEquivalence(title: string, opts?: StablecoinOptions) {
+function testAPIEquivalence(title: string, opts?: StablecoinOptions) {
   test(title, t => {
-    t.is(stablecoin.print(opts), printContract(buildStablecoin({
-      name: 'MyStablecoin',
-      symbol: 'MST',
-      ...opts,
-    })));
+    t.is(
+      stablecoin.print(opts),
+      printContract(
+        buildStablecoin({
+          name: 'MyStablecoin',
+          symbol: 'MST',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -123,7 +129,10 @@ testStablecoin('stablecoin full', {
 
 testAPIEquivalence('stablecoin API default');
 
-testAPIEquivalence('stablecoin API basic', { name: 'CustomStablecoin', symbol: 'CST' });
+testAPIEquivalence('stablecoin API basic', {
+  name: 'CustomStablecoin',
+  symbol: 'CST',
+});
 
 testAPIEquivalence('stablecoin API full', {
   name: 'CustomStablecoin',
@@ -139,7 +148,7 @@ testAPIEquivalence('stablecoin API full', {
   crossChainBridging: 'custom',
   premintChainId: '10',
   limitations: 'allowlist',
-  custodian: true
+  custodian: true,
 });
 
 test('stablecoin API assert defaults', async t => {

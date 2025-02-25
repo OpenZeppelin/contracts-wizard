@@ -1,10 +1,11 @@
 import type { ContractBuilder } from './contract';
-import { Access, requireAccessControl } from './set-access-control';
+import type { Access } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
 
-export type Upgradeable = typeof upgradeableOptions[number];
+export type Upgradeable = (typeof upgradeableOptions)[number];
 
 export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
   if (upgradeable === false) {
@@ -19,7 +20,8 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
   });
 
   switch (upgradeable) {
-    case 'transparent': break;
+    case 'transparent':
+      break;
 
     case 'uups': {
       requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
@@ -42,9 +44,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 
 const functions = defineFunctions({
   _authorizeUpgrade: {
-    args: [
-      { name: 'newImplementation', type: 'address' },
-    ],
+    args: [{ name: 'newImplementation', type: 'address' }],
     kind: 'internal',
   },
 });

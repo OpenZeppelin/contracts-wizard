@@ -1,9 +1,9 @@
-import type { ContractBuilder, ReferencedContract } from "./contract";
-import { defineFunctions } from "./utils/define-functions";
+import type { ContractBuilder, ReferencedContract } from './contract';
+import { defineFunctions } from './utils/define-functions';
 
 export const clockModeOptions = ['blocknumber', 'timestamp'] as const;
 export const clockModeDefault = 'blocknumber' as const;
-export type ClockMode = typeof clockModeOptions[number];
+export type ClockMode = (typeof clockModeOptions)[number];
 
 const functions = defineFunctions({
   clock: {
@@ -18,7 +18,7 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
-  }
+  },
 });
 
 export function setClockMode(c: ContractBuilder, parent: ReferencedContract, votes: ClockMode) {
