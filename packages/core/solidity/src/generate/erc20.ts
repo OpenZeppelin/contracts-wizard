@@ -17,6 +17,7 @@ const blueprint = {
   votes: [ ...booleans, ...clockModeOptions ] as const,
   flashmint: booleans,
   premint: ['1'],
+  premintChainId: ['10'],
   crossChainBridging: crossChainBridgingOptions,
   access: accessOptions,
   upgradeable: upgradeableOptions,

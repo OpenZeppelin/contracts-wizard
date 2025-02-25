@@ -19,6 +19,7 @@ export interface ERC20Options extends CommonOptions {
   burnable?: boolean;
   pausable?: boolean;
   premint?: string;
+  premintChainId?: string;
   mintable?: boolean;
   permit?: boolean;
   /**
@@ -36,6 +37,7 @@ export const defaults: Required<ERC20Options> = {
   burnable: false,
   pausable: false,
   premint: '0',
+  premintChainId: '',
   mintable: false,
   permit: true,
   votes: false,
@@ -53,6 +55,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
+    premintChainId: opts.premintChainId || defaults.premintChainId,
     mintable: opts.mintable ?? defaults.mintable,
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
@@ -87,7 +90,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   }
 
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
+    addPremint(c, allOpts.premint, allOpts.premintChainId, allOpts.crossChainBridging);
   }
 
   if (allOpts.mintable) {
@@ -153,7 +156,13 @@ function addBurnable(c: ContractBuilder) {
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
-function addPremint(c: ContractBuilder, amount: string) {
+export const chainIdPattern = /^(?!$)[1-9]\d*$/;
+
+export function isValidChainId(str: string): boolean {
+  return chainIdPattern.test(str);
+}
+
+function addPremint(c: ContractBuilder, amount: string, premintChainId: string, crossChainBridging: CrossChainBridging) {
   const m = amount.match(premintPattern);
   if (m) {
     const integer = m[1]?.replace(/^0+/, '') ?? '';
@@ -165,8 +174,30 @@ function addPremint(c: ContractBuilder, amount: string) {
       const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
       const units = integer + decimals + zeroes;
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+
       c.addConstructorArgument({type: 'address', name: 'recipient'});
-      c.addConstructorCode(`_mint(recipient, ${units} * 10 ** ${exp});`);
+
+      const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
+
+      if (crossChainBridging) {
+        if (premintChainId === '') {
+          throw new OptionsError({
+            premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging'
+          });
+        }
+
+        if (!isValidChainId(premintChainId)) {
+          throw new OptionsError({
+            premintChainId: 'Not a valid chain ID'
+          });
+        }
+
+        c.addConstructorCode(`if (block.chainid == ${premintChainId}) {`);
+        c.addConstructorCode(`    ${mintLine}`);
+        c.addConstructorCode(`}`);
+      } else {
+        c.addConstructorCode(mintLine);
+      }
     }
   }
 }

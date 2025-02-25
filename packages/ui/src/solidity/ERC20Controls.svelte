@@ -1,14 +1,16 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
-  import { erc20, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import { erc20, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
+  import { error } from '../common/error-tooltip';
+  import { resizeToFit } from '../common/resize-to-fit';
   import { superchainTooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['ERC20']> = {
@@ -17,6 +19,8 @@
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
 
@@ -36,6 +40,11 @@
       superchainTooltip.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
+  }
+
+  let showChainId = false;
+  $: {
+    showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
   }
 </script>
 
@@ -61,6 +70,16 @@
       </span>
       <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
     </label>
+
+    {#if showChainId}
+    <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm flex-1">
+        &nbsp;Chain ID:
+        <input type="number" bind:value={opts.premintChainId} placeholder={''} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
+      </label>
+      <HelpTooltip class="ml-2" style="margin-left: auto;">Chain ID of the network on which to premint tokens.</HelpTooltip>
+    </p>
+    {/if}
 </section>
 
 <section class="controls-section">

@@ -338,7 +338,7 @@
   <div class="flex flex-row grow">
     <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} />
+        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20}/>
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
