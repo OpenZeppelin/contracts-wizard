@@ -11,10 +11,9 @@ export function buildGeneric(opts: GenericOptions) {
   switch (opts.kind) {
     case 'Fungible':
       return buildFungible(opts);
-
-    default:
-      // eslint-disable-next-line no-case-declarations
+    default: {
       const _: never = opts.kind; // TODO: When there are additional kinds above, change this assignment to just `opts` instead of `opts.kind`
       throw new Error('Unknown ERC');
+    }
   }
 }
