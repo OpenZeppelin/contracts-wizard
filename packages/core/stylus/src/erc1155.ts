@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
@@ -11,12 +11,14 @@ export interface ERC1155Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
   pausable?: boolean;
+  supply?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
   burnable: false,
   pausable: false,
+  supply: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -31,6 +33,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
+    supply: opts.supply ?? defaults.supply,
   };
 }
 
@@ -43,14 +46,19 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, allOpts.pausable);
+  // Erc1155Supply overrides Erc1155 functionality
+  const trait = allOpts.supply
+    ? addSupply(c, allOpts.pausable)
+    : addBase(c, allOpts.pausable);
 
+  addMetadata(c);
+    
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
+    addBurnable(c, allOpts.pausable, trait);
   }
 
   setAccessControl(c, allOpts.access);
@@ -59,47 +67,73 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, pausable: boolean) {
+function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
   // Add the base traits
   c.addUseClause('openzeppelin_stylus::token::erc1155', 'Erc1155');
   c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
-  // c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'Erc1155Metadata');
+
   c.addImplementedTrait(erc1155Trait);
-  // c.addImplementedTrait(erc1155MetadataTrait);
 
   // Override IErc65 from Erc1155
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc1155Trait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  c.addFunction(erc1155Trait, functions(erc1155Trait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
-  if (pausable) {
+  // if (pausable) {
     // Add transfer functions with pause checks
-    c.addUseClause('alloc::vec', 'Vec');
-    c.addUseClause('alloy_primitives', 'Address');
-    c.addUseClause('alloy_primitives', 'U256');
+    // c.addUseClause('alloc::vec', 'Vec');
+    // c.addUseClause('alloy_primitives', 'Address');
+    // c.addUseClause('alloy_primitives', 'U256');
 
-    // c.addFunctionCodeBefore(erc1155Trait, functions.safe_transfer_from, ['self.pausable.when_not_paused()?;']);
-    // c.addFunctionCodeBefore(erc1155Trait, functions.safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
-  }
+    // c.addFunctionCodeBefore(erc1155Trait, functions(erc1155Trait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
+    // c.addFunctionCodeBefore(erc1155Trait, functions(erc1155Trait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
+  // }
+
+  return erc1155Trait;
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean) {
+function addSupply(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
+  c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'Erc1155Supply');
+  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
+
+  c.addImplementedTrait(erc1155SupplyTrait);
+
+  // Override IErc65 from Erc1155
+  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
+  c.addUseClause('alloy_primitives', 'FixedBytes');
+  c.addFunction(erc1155SupplyTrait, functions(erc1155SupplyTrait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+
+  // if (pausable) {   
+  //   // Add pausable checks to appropriate functions
+  // }
+
+  return erc1155SupplyTrait;
+}
+
+function addMetadata(_c: ContractBuilder) {
+  // c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'Erc1155Metadata');
+  // c.addImplementedTrait(erc1155MetadataTrait);
+}
+
+function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
   c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
 
-  c.addFunction(erc1155Trait, functions.burn);
-  c.addFunction(erc1155Trait, functions.burn_batch);
+  const fns = functions(trait);
+  
+  c.addFunction(trait, fns.burn);
+  c.addFunction(trait, fns.burn_batch);
 
   if (pausable) {
-    c.addFunctionCodeBefore(erc1155Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
-    c.addFunctionCodeBefore(erc1155Trait, functions.burn_batch, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(trait, fns.burn, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(trait, fns.burn_batch, ['self.pausable.when_not_paused()?;']);
   }
 }
 
-const erc1155Trait = {
+const erc1155Trait: BaseImplementedTrait = {
   name: 'Erc1155',
   storage: {
     name: 'erc1155',
@@ -107,7 +141,15 @@ const erc1155Trait = {
   },
 };
 
-// const erc1155MetadataTrait = {
+const erc1155SupplyTrait: BaseImplementedTrait = {
+  name: 'Erc1155Supply',
+  storage: {
+    name: 'erc1155_supply',
+    type: 'Erc1155Supply',
+  },
+};
+
+// const erc1155MetadataTrait: BaseImplementedTrait = {
 //   name: 'Erc1155Metadata',
 //   storage: {
 //     name: 'metadata',
@@ -115,14 +157,14 @@ const erc1155Trait = {
 //   }
 // }
 
-const functions = defineFunctions({
+const functions = (trait: BaseImplementedTrait) => defineFunctions({
   // Token Functions
 
   // Overrides
   supports_interface: {
     args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
     returns: 'bool',
-    code: ['Erc1155::supports_interface(interface_id)'],
+    code: [`${trait.storage.type}::supports_interface(interface_id)`],
   },
 
   // Extensions
@@ -134,7 +176,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    code: ['self.erc1155.burn(account, token_id, value).map_err(|e| e.into())'],
+    code: [`self.${trait.storage.name}.burn(account, token_id, value).map_err(|e| e.into())`],
   },
   burn_batch: {
     args: [
@@ -144,6 +186,6 @@ const functions = defineFunctions({
       { name: 'values', type: 'Vec<U256>' },
     ],
     returns: 'Result<(), Vec<u8>>',
-    code: ['self.erc1155.burn_batch(account, token_ids, values).map_err(|e| e.into())'],
+    code: [`self.${trait.storage.name}.burn_batch(account, token_ids, values).map_err(|e| e.into())`],
   },
 });
