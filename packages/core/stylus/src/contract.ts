@@ -6,6 +6,12 @@ export interface Contract {
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
+  eip712?: EIP712;
+}
+
+export interface EIP712 {
+  name: string;
+  version: string;
 }
 
 export interface Storage {
@@ -70,6 +76,8 @@ export class ContractBuilder implements Contract {
   private errorsMap: Map<string, Error> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
 
+  eip712?: EIP712;
+
   constructor(name: string) {
     this.name = toIdentifier(name, true);
   }
@@ -126,6 +134,10 @@ export class ContractBuilder implements Contract {
       this.constantsMap.set(constant.name, constant);
       return true;
     }
+  }
+
+  addEip712(name: string, version: string) {
+    this.eip712 = { name, version };
   }
 
   traitExists(name: string): boolean {

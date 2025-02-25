@@ -27,17 +27,44 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   });
 }
 
-testERC20('basic erc20', {});
+testERC20('basic erc20', {
+  permit: false
+});
+
+testERC20('default erc20', {});
 
 testERC20('erc20 burnable', {
+  permit: false,
   burnable: true,
 });
 
 // testERC20('erc20 pausable', {
+//   permit: false,
 //   pausable: true,
 // });
 
 // testERC20('erc20 burnable pausable', {
+//   permit: false,
+//   burnable: true,
+//   pausable: true,
+// });
+
+testERC20('erc20 permit', {
+  permit: true,
+});
+
+testERC20('erc20 permit burnable', {
+  permit: true,
+  burnable: true,
+});
+
+// testERC20('erc20 permit pausable', {
+//   permit: true,
+//   pausable: true,
+// });
+
+// testERC20('erc20 permit burnable pausable', {
+//   permit: true,
 //   burnable: true,
 //   pausable: true,
 // });
@@ -45,16 +72,21 @@ testERC20('erc20 burnable', {
 testERC20('erc20 full - complex name', {
   name: 'Custom  $ Token',
   burnable: true,
+  permit: true,
   // pausable: true,
 });
 
 testAPIEquivalence('erc20 API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken' });
+testAPIEquivalence('erc20 API basic', { 
+  name: 'CustomToken',
+  permit: false
+});
 
 testAPIEquivalence('erc20 API full', {
   name: 'CustomToken',
   burnable: true,
+  permit: true,
   // pausable: true,
 });
 

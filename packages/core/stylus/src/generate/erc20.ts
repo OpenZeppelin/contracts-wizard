@@ -9,6 +9,7 @@ const blueprint = {
   name: ['MyToken'],
   burnable: booleans,
   pausable: booleans,
+  permit: booleans,
   access: accessOptions,
   info: infoOptions
 };

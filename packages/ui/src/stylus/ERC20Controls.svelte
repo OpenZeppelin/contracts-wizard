@@ -51,6 +51,14 @@
         Useful for emergency response.
       </HelpTooltip>
     </label> -->
+
+    <label class:checked={opts.permit}>
+      <input type="checkbox" bind:checked={opts.permit}>
+      Permit
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-permit">
+        Without paying gas, token holders will be able to allow third parties to transfer from their account.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 
