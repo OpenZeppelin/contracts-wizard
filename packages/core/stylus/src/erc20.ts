@@ -92,6 +92,7 @@ function addBase(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
 
 function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Permit');
+  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
 
   c.addImplementedTrait(erc20PermitTrait);
