@@ -27,11 +27,11 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   });
 }
 
-testERC20('basic erc20', {});
-
-testERC20('basic erc20 nonpermit', {
+testERC20('basic erc20', {
   permit: false
 });
+
+testERC20('default erc20', {});
 
 testERC20('erc20 burnable', {
   permit: false,
