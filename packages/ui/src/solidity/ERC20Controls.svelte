@@ -77,7 +77,7 @@
         &nbsp;Chain ID:
         <input type="number" bind:value={opts.premintChainId} placeholder={''} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
       </label>
-      <HelpTooltip class="ml-2" style="margin-left: auto;">Chain ID of the network on which to premint tokens.</HelpTooltip>
+      <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
     </p>
     {/if}
 </section>
