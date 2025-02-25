@@ -20,7 +20,7 @@ const erc20Basic = {
   crossChainBridging: [false] as const,
   access: [false] as const,
   info: [{}] as const,
-}
+};
 
 const erc20Full = {
   name: ['MyStablecoin'],

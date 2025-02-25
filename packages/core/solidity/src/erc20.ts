@@ -1,17 +1,21 @@
 import { ContractBuilder } from './contract';
-import { Access, setAccessControl, requireAccessControl } from './set-access-control';
+import type { Access } from './set-access-control';
+import { setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setUpgradeable, Upgradeable } from './set-upgradeable';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults, defaults as commonDefaults } from './common-options';
+import type { Upgradeable } from './set-upgradeable';
+import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
+import type { ClockMode } from './set-clock-mode';
+import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
 
 export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
-export type CrossChainBridging = typeof crossChainBridgingOptions[number];
+export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export interface ERC20Options extends CommonOptions {
   name: string;
@@ -159,7 +163,12 @@ export function isValidChainId(str: string): boolean {
   return chainIdPattern.test(str);
 }
 
-function addPremint(c: ContractBuilder, amount: string, premintChainId: string, crossChainBridging: CrossChainBridging) {
+function addPremint(
+  c: ContractBuilder,
+  amount: string,
+  premintChainId: string,
+  crossChainBridging: CrossChainBridging,
+) {
   const m = amount.match(premintPattern);
   if (m) {
     const integer = m[1]?.replace(/^0+/, '') ?? '';
@@ -172,20 +181,20 @@ function addPremint(c: ContractBuilder, amount: string, premintChainId: string, 
       const units = integer + decimals + zeroes;
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
 
-      c.addConstructorArgument({type: 'address', name: 'recipient'});
+      c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
       const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
 
       if (crossChainBridging) {
         if (premintChainId === '') {
           throw new OptionsError({
-            premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging'
+            premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging',
           });
         }
 
         if (!isValidChainId(premintChainId)) {
           throw new OptionsError({
-            premintChainId: 'Not a valid chain ID'
+            premintChainId: 'Not a valid chain ID',
           });
         }
 
@@ -198,7 +207,7 @@ function addPremint(c: ContractBuilder, amount: string, premintChainId: string, 
     }
   } else {
     throw new OptionsError({
-      premint: 'Not a valid number'
+      premint: 'Not a valid number',
     });
   }
 }
@@ -250,7 +259,12 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', upgradeable: Upgradeable, access: Access) {
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'custom' | 'superchain',
+  upgradeable: Upgradeable,
+  access: Access,
+) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
@@ -261,7 +275,7 @@ function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' 
 
   if (upgradeable) {
     throw new OptionsError({
-      crossChainBridging: 'Upgradeability is not currently supported with Cross-Chain Bridging'
+      crossChainBridging: 'Upgradeability is not currently supported with Cross-Chain Bridging',
     });
   }
 
@@ -273,9 +287,10 @@ function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' 
     case 'superchain':
       addSuperchainERC20(c);
       break;
-    default:
+    default: {
       const _: never = crossChainBridging;
       throw new Error('Unknown value for `crossChainBridging`');
+    }
   }
   c.addVariable('error Unauthorized();');
 }
@@ -302,7 +317,11 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
         c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
-      c.setFunctionBody([`if (!hasRole(${roleId}, caller)) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      c.setFunctionBody(
+        [`if (!hasRole(${roleId}, caller)) revert Unauthorized();`],
+        functions._checkTokenBridge,
+        'view',
+      );
       break;
     }
     case 'managed': {
@@ -311,10 +330,14 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
         name: 'AuthorityUtils',
         path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
       });
-      c.setFunctionBody([
-        `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
-        `if (!immediate) revert Unauthorized();`
-      ], functions._checkTokenBridge, 'view');
+      c.setFunctionBody(
+        [
+          `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), caller, address(this), bytes4(_msgData()[0:4]));`,
+          `if (!immediate) revert Unauthorized();`,
+        ],
+        functions._checkTokenBridge,
+        'view',
+      );
       break;
     }
     default: {
@@ -326,14 +349,21 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
 
 function addSuperchainERC20(c: ContractBuilder) {
   c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
-  c.setFunctionBody(['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'], functions._checkTokenBridge, 'pure');
-  c.setFunctionComments([
-    '/**',
-    ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
-    ' *',
-    ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
-    ' */',
-  ], functions._checkTokenBridge);
+  c.setFunctionBody(
+    ['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'],
+    functions._checkTokenBridge,
+    'pure',
+  );
+  c.setFunctionComments(
+    [
+      '/**',
+      ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
+      ' *',
+      ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
+      ' */',
+    ],
+    functions._checkTokenBridge,
+  );
 }
 
 export const functions = defineFunctions({
@@ -388,8 +418,6 @@ export const functions = defineFunctions({
 
   _checkTokenBridge: {
     kind: 'internal' as const,
-    args: [
-      { name: 'caller', type: 'address' },
-    ],
-  }
+    args: [{ name: 'caller', type: 'address' }],
+  },
 });

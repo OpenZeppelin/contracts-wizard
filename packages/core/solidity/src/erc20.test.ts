@@ -1,5 +1,6 @@
 import test from 'ava';
-import { erc20, OptionsError } from '.';
+import type { OptionsError } from '.';
+import { erc20 } from '.';
 
 import type { ERC20Options } from './erc20';
 import { buildERC20 } from './erc20';
@@ -137,33 +138,48 @@ testERC20('erc20 crossChainBridging superchain managed', {
 });
 
 test('erc20 crossChainBridging custom, upgradeable not allowed', async t => {
-  let error = t.throws(() => buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    crossChainBridging: 'custom',
-    upgradeable: 'transparent',
-  }));
-  t.is((error as OptionsError).messages.crossChainBridging, 'Upgradeability is not currently supported with Cross-Chain Bridging');
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'custom',
+      upgradeable: 'transparent',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.crossChainBridging,
+    'Upgradeability is not currently supported with Cross-Chain Bridging',
+  );
 });
 
 test('erc20 crossChainBridging superchain, upgradeable not allowed', async t => {
-  let error = t.throws(() => buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    crossChainBridging: 'superchain',
-    upgradeable: 'transparent',
-  }));
-  t.is((error as OptionsError).messages.crossChainBridging, 'Upgradeability is not currently supported with Cross-Chain Bridging');
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'superchain',
+      upgradeable: 'transparent',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.crossChainBridging,
+    'Upgradeability is not currently supported with Cross-Chain Bridging',
+  );
 });
 
 test('erc20 crossChainBridging superchain, premintChainId required', async t => {
-  let error = t.throws(() => buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    crossChainBridging: 'superchain',
-    premint: '2000',
-  }));
-  t.is((error as OptionsError).messages.premintChainId, 'Chain ID is required when using Premint with Cross-Chain Bridging');
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'superchain',
+      premint: '2000',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.premintChainId,
+    'Chain ID is required when using Premint with Cross-Chain Bridging',
+  );
 });
 
 testERC20('erc20 premint ignores chainId when not crossChainBridging', {
