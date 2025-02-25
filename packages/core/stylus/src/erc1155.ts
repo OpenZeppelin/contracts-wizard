@@ -46,7 +46,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  // Erc1155Supply overrides Erc1155 functionality
+  // Erc1155Supply reexports Erc1155 functionality
   const trait = allOpts.supply
     ? addSupply(c, allOpts.pausable)
     : addBase(c, allOpts.pausable);
