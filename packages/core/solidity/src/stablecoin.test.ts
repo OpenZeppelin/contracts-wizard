@@ -116,6 +116,7 @@ testStablecoin('stablecoin full', {
   votes: true,
   flashmint: true,
   crossChainBridging: 'custom',
+  premintChainId: '10',
   limitations: 'allowlist',
   custodian: true,
 });
@@ -136,6 +137,7 @@ testAPIEquivalence('stablecoin API full', {
   votes: true,
   flashmint: true,
   crossChainBridging: 'custom',
+  premintChainId: '10',
   limitations: 'allowlist',
   custodian: true
 });
