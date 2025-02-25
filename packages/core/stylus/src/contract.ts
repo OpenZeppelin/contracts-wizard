@@ -41,11 +41,11 @@ export interface BaseFunction {
   code: string[];
   returns?: string;
   comments?: string[];
+  tag?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
   codeBefore?: string[];
-  tag?: string;
 }
 
 export interface Variable {

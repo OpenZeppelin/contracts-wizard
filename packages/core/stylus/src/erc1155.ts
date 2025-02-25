@@ -98,10 +98,16 @@ function addSupply(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait
 
   c.addImplementedTrait(erc1155SupplyTrait);
 
+  const fns = functions(erc1155SupplyTrait);
+  
+  c.addFunction(erc1155SupplyTrait, fns.total_supply);
+  c.addFunction(erc1155SupplyTrait, fns.total_supply_all);
+  c.addFunction(erc1155SupplyTrait, fns.exists);
+  
   // Override IErc65 from Erc1155
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc1155SupplyTrait, functions(erc1155SupplyTrait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  c.addFunction(erc1155SupplyTrait, fns.supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
   // if (pausable) {   
   //   // Add pausable checks to appropriate functions
@@ -187,5 +193,30 @@ const functions = (trait: BaseImplementedTrait) => defineFunctions({
     ],
     returns: 'Result<(), Vec<u8>>',
     code: [`self.${trait.storage.name}.burn_batch(account, token_ids, values).map_err(|e| e.into())`],
+  },
+  
+  total_supply: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'id', type: 'U256' },
+    ],
+    returns: 'U256',
+    code: [`self.${trait.storage.name}.total_supply(id)`],
+  },
+  total_supply_all: {
+    tag: 'selector(name = "totalSupply")',
+    args: [
+      getSelfArg("immutable"),
+    ],
+    returns: 'U256',
+    code: [`self.${trait.storage.name}.total_supply_all()`],
+  },
+  exists: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'id', type: 'U256' },
+    ],
+    returns: 'bool',
+    code: [`self.${trait.storage.name}.exists(id)`],
   },
 });
