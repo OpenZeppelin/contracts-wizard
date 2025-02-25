@@ -9,7 +9,7 @@ declare global {
 }
 
 export type Action = 'copy' | 'remix' | 'download-file' | 'download-hardhat' | 'download-foundry' | 'defender';
-export type Language = 'solidity' | 'cairo' | 'stellar';
+export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar';
 
 export async function postConfig(
   opts: Required<SolidityOptions> | Required<CairoOptions> | Required<StellarOptions>,
