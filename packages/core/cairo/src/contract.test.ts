@@ -1,6 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder, BaseFunction, BaseImplementedTrait, Component } from './contract';
+import type { BaseFunction, BaseImplementedTrait, Component } from './contract';
+import { ContractBuilder } from './contract';
 import { printContract } from './print';
 
 const FOO_COMPONENT: Component = {
@@ -14,14 +15,16 @@ const FOO_COMPONENT: Component = {
     name: 'FooEvent',
     type: 'FooComponent::Event',
   },
-  impls: [{
+  impls: [
+    {
       name: 'FooImpl',
       value: 'FooComponent::FooImpl<ContractState>',
-    }, {
+    },
+    {
       name: 'FooInternalImpl',
       embed: false,
       value: 'FooComponent::InternalImpl<ContractState>',
-    }
+    },
   ],
 };
 
@@ -47,19 +50,14 @@ test('contract with function code before', t => {
   const trait: BaseImplementedTrait = {
     name: 'External',
     of: 'ExternalTrait',
-    tags: [
-      'generate_trait',
-      'abi(per_item)',
-    ],
+    tags: ['generate_trait', 'abi(per_item)'],
     perItemTag: 'external(v0)',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: [
-      'someFunction()'
-    ]
+    code: ['someFunction()'],
   };
   Foo.addFunction(trait, fn);
   Foo.addFunctionCodeBefore(trait, fn, 'before()');
@@ -71,19 +69,14 @@ test('contract with function code before with semicolons', t => {
   const trait: BaseImplementedTrait = {
     name: 'External',
     of: 'ExternalTrait',
-    tags: [
-      'generate_trait',
-      'abi(per_item)',
-    ],
+    tags: ['generate_trait', 'abi(per_item)'],
     perItemTag: 'external(v0)',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: [
-      'someFunction();'
-    ]
+    code: ['someFunction();'],
   };
   Foo.addFunction(trait, fn);
   Foo.addFunctionCodeBefore(trait, fn, 'before();');
@@ -93,28 +86,20 @@ test('contract with function code before with semicolons', t => {
 test('contract with initializer params', t => {
   const Foo = new ContractBuilder('Foo');
 
-  Foo.addComponent(
-    FOO_COMPONENT,
-    ['param1'],
-    true
-  );
+  Foo.addComponent(FOO_COMPONENT, ['param1'], true);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with standalone import', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addComponent(
-    FOO_COMPONENT,
-  );
+  Foo.addComponent(FOO_COMPONENT);
   Foo.addUseClause('some::library', 'SomeLibrary');
   t.snapshot(printContract(Foo));
 });
 
 test('contract with sorted use clauses', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addComponent(
-    FOO_COMPONENT,
-  );
+  Foo.addComponent(FOO_COMPONENT);
   Foo.addUseClause('some::library', 'SomeLibrary');
   Foo.addUseClause('another::library', 'AnotherLibrary');
   Foo.addUseClause('another::library', 'Foo', { alias: 'Custom2' });

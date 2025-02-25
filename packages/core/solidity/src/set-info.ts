@@ -1,4 +1,4 @@
-import type { ContractBuilder } from "./contract";
+import type { ContractBuilder } from './contract';
 
 export const TAG_SECURITY_CONTACT = `@custom:security-contact`;
 
@@ -9,11 +9,11 @@ export const defaults: Info = { license: 'MIT' };
 export type Info = {
   securityContact?: string;
   license?: string;
-}
+};
 
 export function setInfo(c: ContractBuilder, info: Info) {
   const { securityContact, license } = info;
-  
+
   if (securityContact) {
     c.addNatspecTag(TAG_SECURITY_CONTACT, securityContact);
   }

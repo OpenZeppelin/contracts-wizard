@@ -4,7 +4,7 @@ import hre from 'hardhat';
 import type { BuildInfo } from 'hardhat/types';
 import { findAll } from 'solidity-ast/utils';
 import { rimraf } from 'rimraf';
-import { version } from "@openzeppelin/contracts/package.json";
+import { version } from '@openzeppelin/contracts/package.json';
 
 import type { OpenZeppelinContracts } from '../../openzeppelin-contracts';
 import { writeGeneratedSources } from '../generate/sources';
@@ -21,12 +21,13 @@ async function main() {
   const sources: Record<string, string> = {};
 
   for (const buildInfoPath of await hre.artifacts.getBuildInfoPaths()) {
-    const buildInfo: BuildInfo = JSON.parse(
-      await fs.readFile(buildInfoPath, 'utf8'),
-    );
+    const buildInfo: BuildInfo = JSON.parse(await fs.readFile(buildInfoPath, 'utf8'));
 
     for (const [sourceFile, { ast }] of Object.entries(buildInfo.output.sources)) {
-      if (sourceFile.startsWith('@openzeppelin/contracts') || sourceFile.startsWith('@openzeppelin/community-contracts')) {
+      if (
+        sourceFile.startsWith('@openzeppelin/contracts') ||
+        sourceFile.startsWith('@openzeppelin/community-contracts')
+      ) {
         const sourceDependencies = (dependencies[sourceFile] ??= new Set());
         for (const imp of findAll('ImportDirective', ast)) {
           sourceDependencies.add(imp.absolutePath);
@@ -35,7 +36,10 @@ async function main() {
     }
 
     for (const [sourceFile, { content }] of Object.entries(buildInfo.input.sources)) {
-      if (sourceFile.startsWith('@openzeppelin/contracts') || sourceFile.startsWith('@openzeppelin/community-contracts')) {
+      if (
+        sourceFile.startsWith('@openzeppelin/contracts') ||
+        sourceFile.startsWith('@openzeppelin/community-contracts')
+      ) {
         sources[sourceFile] = content;
       }
     }

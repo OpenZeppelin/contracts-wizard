@@ -1,1 +1,5 @@
-export interface InitialOptions { name?: string, symbol?: string, premint?: string };
+export interface InitialOptions {
+  name?: string;
+  symbol?: string;
+  premint?: string;
+}

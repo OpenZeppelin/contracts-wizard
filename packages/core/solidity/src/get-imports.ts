@@ -11,10 +11,10 @@ export interface SolcInputSources {
 }
 
 /**
-* Gets the source code for all imports of a contract, including all transitive dependencies,
-* in a format compatible with the Solidity compiler input's `sources` field.
-*
-* Does not include the contract itself (use `printContract` for that if needed).
+ * Gets the source code for all imports of a contract, including all transitive dependencies,
+ * in a format compatible with the Solidity compiler input's `sources` field.
+ *
+ * Does not include the contract itself (use `printContract` for that if needed).
  *
  * @param c The contract to get imports for.
  * @returns A record of import paths to `content` that contains the source code for each contract.

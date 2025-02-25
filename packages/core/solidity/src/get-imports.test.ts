@@ -21,7 +21,12 @@ test('erc20 basic', t => {
 });
 
 test('erc721 auto increment', t => {
-  const c = buildERC721({ name: 'MyToken', symbol: 'MTK', mintable: true, incremental: true });
+  const c = buildERC721({
+    name: 'MyToken',
+    symbol: 'MTK',
+    mintable: true,
+    incremental: true,
+  });
   const sources = getImports(c);
   const files = Object.keys(sources).sort();
 
@@ -45,7 +50,13 @@ test('erc721 auto increment', t => {
 });
 
 test('erc721 auto increment uups', t => {
-  const c = buildERC721({ name: 'MyToken', symbol: 'MTK', mintable: true, incremental: true, upgradeable: 'uups' });
+  const c = buildERC721({
+    name: 'MyToken',
+    symbol: 'MTK',
+    mintable: true,
+    incremental: true,
+    upgradeable: 'uups',
+  });
   const sources = getImports(c);
   const files = Object.keys(sources).sort();
 
