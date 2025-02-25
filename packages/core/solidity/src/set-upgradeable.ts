@@ -7,6 +7,9 @@ export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
 
 export type Upgradeable = (typeof upgradeableOptions)[number];
 
+export const isContractBuilderWithGovernorParent = (contractBuilder: ContractBuilder) =>
+  contractBuilder.parents.some(({ contract: { name } }) => name === 'Governor');
+
 export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
   if (upgradeable === false) {
     return;
@@ -24,7 +27,13 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
       break;
 
     case 'uups': {
-      requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
+      requireAccessControl(
+        c,
+        functions._authorizeUpgrade,
+        isContractBuilderWithGovernorParent(c) ? 'governance' : access,
+        'UPGRADER',
+        'upgrader',
+      );
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
