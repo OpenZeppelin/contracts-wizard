@@ -7,7 +7,7 @@ import { compatibleContractsSemver } from './utils/version';
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
-const TAB = "\t";
+const TAB = "    ";
 
 export function printContract(contract: Contract): string {
   return formatLines(
