@@ -7,6 +7,12 @@ import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
 
+export interface ERC721Options extends CommonContractOptions {
+  name: string;
+  burnable?: boolean;
+  pausable?: boolean;
+}
+
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   burnable: false,
@@ -19,12 +25,6 @@ export function printERC721(opts: ERC721Options = defaults): string {
   return printContract(buildERC721(opts));
 }
 
-export interface ERC721Options extends CommonContractOptions {
-  name: string;
-  burnable?: boolean;
-  pausable?: boolean;
-}
-
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   return {
     ...opts,
@@ -34,8 +34,8 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.pausable === true;
+export function isAccessControlRequired(opts: Required<ERC721Options>): boolean {
+  return opts.pausable;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {

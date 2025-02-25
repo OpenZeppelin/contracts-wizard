@@ -45,7 +45,6 @@ export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string[];
-  visibility?: 'pub';
   returns?: string;
   comments?: string[];
 }
@@ -99,7 +98,7 @@ export class ContractBuilder implements Contract {
     return [...this.constantsMap.values()];
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
     // groupable defaults to true
     const groupable = options?.groupable ?? true;
     const alias = options?.alias ?? '';
@@ -174,7 +173,7 @@ export class ContractBuilder implements Contract {
   addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], ...codeBefore ];
+    existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
   addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
