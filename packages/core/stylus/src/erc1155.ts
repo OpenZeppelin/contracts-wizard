@@ -204,7 +204,7 @@ const functions = (trait: BaseImplementedTrait) => defineFunctions({
     code: [`self.${trait.storage.name}.total_supply(id)`],
   },
   total_supply_all: {
-    tag: 'selector(name = "totalSupply")',
+    attribute: 'selector(name = "totalSupply")',
     args: [
       getSelfArg("immutable"),
     ],
