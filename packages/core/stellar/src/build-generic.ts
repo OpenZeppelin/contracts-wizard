@@ -13,6 +13,7 @@ export function buildGeneric(opts: GenericOptions) {
       return buildFungible(opts);
 
     default:
+      // eslint-disable-next-line no-case-declarations
       const _: never = opts.kind; // TODO: When there are additional kinds above, change this assignment to just `opts` instead of `opts.kind`
       throw new Error('Unknown ERC');
   }

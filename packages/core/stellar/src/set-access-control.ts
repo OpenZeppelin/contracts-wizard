@@ -24,6 +24,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       break;
     }
     default:
+      // eslint-disable-next-line no-case-declarations
       const _: never = access;
       throw new Error('Unknown value for `access`');
   }
@@ -65,6 +66,7 @@ export function requireAccessControl(
       break;
     }
     default:
+      // eslint-disable-next-line no-case-declarations
       const _: never = access;
       throw new Error('Unknown value for `access`');
   }

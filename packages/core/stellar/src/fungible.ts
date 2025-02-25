@@ -178,7 +178,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
     if (decimals > lastSegment.length) {
       try {
         lastSegment += '0'.repeat(decimals - lastSegment.length);
-      } catch (e) {
+      } catch {
         // .repeat gives an error if decimals number is too large
         throw new OptionsError({
           premint: 'Decimals number too large',

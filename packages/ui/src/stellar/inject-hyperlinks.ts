@@ -11,7 +11,7 @@ export function injectHyperlinks(code: string) {
 
       const mapping = importSourceMappings[libraryPrefix];
       if (mapping !== undefined) {
-        const replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${mapping}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}</a>`;
+        const replacement = `use</span> <a class="import-link" href='${githubPrefix}${mapping}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}</a>`;
         result = result.replace(line, replacement);
       }
     }
