@@ -152,8 +152,8 @@ function addPremint(c: ContractBuilder, amount: string) {
     c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
     c.addUseClause('soroban_sdk', 'Address');
 
-    c.addConstructorArgument({ name: 'owner', type: 'Address' });
-    c.addConstructorCode(`fungible::mintable::mint(e, &owner, ${premintAbsolute});`);
+    c.addConstructorArgument({ name: 'recipient', type: 'Address' });
+    c.addConstructorCode(`fungible::mintable::mint(e, &recipient, ${premintAbsolute});`);
   }
 }
 
