@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
@@ -67,7 +67,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, pausable: boolean): Trait {
+function addBase(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
   // Add the base traits
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
@@ -90,7 +90,7 @@ function addBase(c: ContractBuilder, pausable: boolean): Trait {
   return erc20Trait;
 }
 
-function addPermit(c: ContractBuilder, pausable: boolean): Trait {
+function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Permit');
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
 
@@ -123,7 +123,7 @@ function addMetadata(c: ContractBuilder) {
   // c.addImplementedTrait(erc20MetadataTrait);
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, trait: Trait) {
+function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
@@ -143,15 +143,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean, trait: Trait) {
   }
 }
 
-type Trait = {
-  name: string,
-  storage: {
-    name: string,
-    type: string
-  }
-}
-
-const erc20Trait: Trait = {
+const erc20Trait: BaseImplementedTrait = {
   name: 'Erc20',
   storage: {
     name: 'erc20',
@@ -159,7 +151,7 @@ const erc20Trait: Trait = {
   }
 };
 
-const erc20PermitTrait: Trait = {
+const erc20PermitTrait: BaseImplementedTrait = {
   name: 'Erc20Permit<Eip712>',
   storage: {
     name: 'erc20_permit',
@@ -167,7 +159,7 @@ const erc20PermitTrait: Trait = {
   }
 };
 
-// const erc20MetadataTrait: Trait = {
+// const erc20MetadataTrait: BaseImplementedTrait = {
 //   name: 'Erc20Metadata',
 //   storage: {
 //     name: 'metadata',
@@ -175,7 +167,7 @@ const erc20PermitTrait: Trait = {
 //   }
 // }
 
-const functions = (trait: Trait) =>
+const functions = (trait: BaseImplementedTrait) =>
   defineFunctions({
     // Token Functions
     transfer: {
