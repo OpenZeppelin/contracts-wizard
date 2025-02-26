@@ -47,11 +47,11 @@ export interface BaseFunction {
   code: string[];
   returns?: string;
   comments?: string[];
+  attribute?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
   codeBefore?: string[];
-  tag?: string;
 }
 
 export interface Variable {
@@ -176,9 +176,9 @@ export class ContractBuilder implements Contract {
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
+  addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.tag = tag;
+    existingFn.attribute = attribute;
   }
 }

@@ -255,7 +255,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.comments, head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
 
 // generic for functions and constructors
@@ -264,7 +264,7 @@ function printFunction2(
   comments: string[] | undefined,
   kindedName: string,
   args: string[],
-  tag: string | undefined,
+  attribute: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[]
@@ -275,8 +275,8 @@ function printFunction2(
     fn.push(...comments);
   }
 
-  if (tag !== undefined) {
-    fn.push(`#[${tag}]`);
+  if (attribute !== undefined) {
+    fn.push(`#[${attribute}]`);
   }
 
   let accum = `${kindedName}(`;
