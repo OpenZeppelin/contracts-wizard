@@ -1,8 +1,11 @@
-import { Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
@@ -12,7 +15,6 @@ import { printContract } from './print';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
 import { addVotesComponent } from './common-components';
-
 
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
@@ -26,7 +28,7 @@ export const defaults: Required<ERC20Options> = {
   appVersion: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printERC20(opts: ERC20Options = defaults): string {
@@ -55,7 +57,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     mintable: opts.mintable ?? defaults.mintable,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
-    appVersion: opts.appVersion ?? defaults.appVersion
+    appVersion: opts.appVersion ?? defaults.appVersion,
   };
 }
 
@@ -111,7 +113,10 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       const beforeUpdateFn = c.addFunction(hooksTrait, {
         name: 'before_update',
         args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          {
+            name: 'ref self',
+            type: 'ERC20Component::ComponentState<ContractState>',
+          },
           { name: 'from', type: 'ContractAddress' },
           { name: 'recipient', type: 'ContractAddress' },
           { name: 'amount', type: 'u256' },
@@ -148,7 +153,10 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       const afterUpdateFn = c.addFunction(hooksTrait, {
         name: 'after_update',
         args: [
-          { name: 'ref self', type: 'ERC20Component::ComponentState<ContractState>' },
+          {
+            name: 'ref self',
+            type: 'ERC20Component::ComponentState<ContractState>',
+          },
           { name: 'from', type: 'ContractAddress' },
           { name: 'recipient', type: 'ContractAddress' },
           { name: 'amount', type: 'u256' },
@@ -174,13 +182,7 @@ function addERC20Mixin(c: ContractBuilder) {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
-  c.addComponent(
-    components.ERC20Component,
-    [
-      name, symbol
-    ],
-    true,
-  );
+  c.addComponent(components.ERC20Component, [name, symbol], true);
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -201,7 +203,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
 
     c.addUseClause('starknet', 'ContractAddress');
-    c.addConstructorArgument({ name:'recipient', type:'ContractAddress' });
+    c.addConstructorArgument({ name: 'recipient', type: 'ContractAddress' });
     c.addConstructorCode(`self.erc20.mint(recipient, ${premintAbsolute})`);
   }
 }
@@ -216,18 +218,18 @@ function addPremint(c: ContractBuilder, amount: string) {
  */
 export function getInitialSupply(premint: string, decimals: number): string {
   let result;
-  const premintSegments = premint.split(".");
+  const premintSegments = premint.split('.');
   if (premintSegments.length > 2) {
     throw new OptionsError({
       premint: 'Not a valid number',
     });
   } else {
-    let firstSegment = premintSegments[0] ?? '';
+    const firstSegment = premintSegments[0] ?? '';
     let lastSegment = premintSegments[1] ?? '';
     if (decimals > lastSegment.length) {
       try {
-        lastSegment += "0".repeat(decimals - lastSegment.length);
-      } catch (e) {
+        lastSegment += '0'.repeat(decimals - lastSegment.length);
+      } catch {
         // .repeat gives an error if decimals number is too large
         throw new OptionsError({
           premint: 'Decimals number too large',
@@ -252,7 +254,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
-const components = defineComponents( {
+const components = defineComponents({
   ERC20Component: {
     path: 'openzeppelin::token::erc20',
     substorage: {
@@ -263,32 +265,23 @@ const components = defineComponents( {
       name: 'ERC20Event',
       type: 'ERC20Component::Event',
     },
-    impls: [{
-      name: 'ERC20InternalImpl',
-      embed: false,
-      value: 'ERC20Component::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'ERC20InternalImpl',
+        embed: false,
+        value: 'ERC20Component::InternalImpl<ContractState>',
+      },
+    ],
   },
 });
 
 const functions = defineFunctions({
   burn: {
-    args: [
-      getSelfArg(),
-      { name: 'value', type: 'u256' }
-    ],
-    code: [
-      'self.erc20.burn(get_caller_address(), value);'
-    ]
+    args: [getSelfArg(), { name: 'value', type: 'u256' }],
+    code: ['self.erc20.burn(get_caller_address(), value);'],
   },
   mint: {
-    args: [
-      getSelfArg(),
-      { name: 'recipient', type: 'ContractAddress' },
-      { name: 'amount', type: 'u256' }
-    ],
-    code: [
-      'self.erc20.mint(recipient, amount);'
-    ]
+    args: [getSelfArg(), { name: 'recipient', type: 'ContractAddress' }, { name: 'amount', type: 'u256' }],
+    code: ['self.erc20.mint(recipient, amount);'],
   },
 });

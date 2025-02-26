@@ -1,7 +1,8 @@
 import test from 'ava';
 import { erc1155 } from '.';
 
-import { buildERC1155, ERC1155Options } from './erc1155';
+import type { ERC1155Options } from './erc1155';
+import { buildERC1155 } from './erc1155';
 import { printContract } from './print';
 import { royaltyInfoOptions } from './set-royalty-info';
 
@@ -14,7 +15,7 @@ const allFeaturesON: Partial<ERC1155Options> = {
   burnable: true,
   pausable: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  upgradeable: true
+  upgradeable: true,
 } as const;
 
 function testERC1155(title: string, opts: Partial<ERC1155Options>) {
@@ -33,11 +34,16 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
  */
 function testAPIEquivalence(title: string, opts?: ERC1155Options) {
   test(title, t => {
-    t.is(erc1155.print(opts), printContract(buildERC1155({
-      name: NAME,
-      baseUri: '',
-      ...opts,
-    })));
+    t.is(
+      erc1155.print(opts),
+      printContract(
+        buildERC1155({
+          name: NAME,
+          baseUri: '',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -73,27 +79,27 @@ testERC1155('mintable + roles', {
 });
 
 testERC1155('royalty info disabled', {
-  royaltyInfo: royaltyInfoOptions.disabled
+  royaltyInfo: royaltyInfoOptions.disabled,
 });
 
 testERC1155('royalty info enabled default + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: 'ownable'
+  access: 'ownable',
 });
 
 testERC1155('royalty info enabled default + roles', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: 'roles'
+  access: 'roles',
 });
 
 testERC1155('royalty info enabled custom + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: 'ownable'
+  access: 'ownable',
 });
 
 testERC1155('royalty info enabled custom + roles', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: 'roles'
+  access: 'roles',
 });
 
 testERC1155('full non-upgradeable', {
@@ -129,8 +135,18 @@ test('API isAccessControlRequired', async t => {
   t.is(erc1155.isAccessControlRequired({ updatableUri: false, pausable: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false, upgradeable: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: true }), true);
-  t.is(erc1155.isAccessControlRequired({ royaltyInfo: royaltyInfoOptions.enabledDefault }), true);
-  t.is(erc1155.isAccessControlRequired({ royaltyInfo: royaltyInfoOptions.enabledCustom }), true);
+  t.is(
+    erc1155.isAccessControlRequired({
+      royaltyInfo: royaltyInfoOptions.enabledDefault,
+    }),
+    true,
+  );
+  t.is(
+    erc1155.isAccessControlRequired({
+      royaltyInfo: royaltyInfoOptions.enabledCustom,
+    }),
+    true,
+  );
   t.is(erc1155.isAccessControlRequired({ updatableUri: false }), false);
   t.is(erc1155.isAccessControlRequired({}), true); // updatableUri is true by default
 });

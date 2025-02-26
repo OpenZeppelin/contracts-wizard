@@ -1,8 +1,11 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
+import type { BaseImplementedTrait, Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
@@ -12,7 +15,8 @@ import { addSRC5Component, addVotesComponent } from './common-components';
 import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252 } from './utils/convert-strings';
 import { OptionsError } from './error';
-import { RoyaltyInfoOptions, setRoyaltyInfo, defaults as royaltyInfoDefaults } from './set-royalty-info';
+import type { RoyaltyInfoOptions } from './set-royalty-info';
+import { setRoyaltyInfo, defaults as royaltyInfoDefaults } from './set-royalty-info';
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
@@ -28,7 +32,7 @@ export const defaults: Required<ERC721Options> = {
   appVersion: 'v1',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printERC721(opts: ERC721Options = defaults): string {
@@ -61,12 +65,14 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
-    appVersion: opts.appVersion ?? defaults.appVersion
+    appVersion: opts.appVersion ?? defaults.appVersion,
   };
 }
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true;
+  return (
+    opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true
+  );
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -97,7 +103,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
   setRoyaltyInfo(c, allOpts.royaltyInfo, allOpts.access);
-  
+
   addHooks(c, allOpts);
 
   return c;
@@ -127,17 +133,17 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
     }
     if (opts.votes) {
-        if (!opts.appName) {
-          throw new OptionsError({
-            appName: 'Application Name is required when Votes are enabled',
-          });
-        }
+      if (!opts.appName) {
+        throw new OptionsError({
+          appName: 'Application Name is required when Votes are enabled',
+        });
+      }
 
-        if (!opts.appVersion) {
-          throw new OptionsError({
-            appVersion: 'Application Version is required when Votes are enabled',
-          });
-        }
+      if (!opts.appVersion) {
+        throw new OptionsError({
+          appVersion: 'Application Version is required when Votes are enabled',
+        });
+      }
 
       addVotesComponent(
         c,
@@ -151,7 +157,10 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
     c.addFunction(ERC721HooksTrait, {
       name: 'before_update',
       args: [
-        { name: 'ref self', type: `ERC721Component::ComponentState<ContractState>` },
+        {
+          name: 'ref self',
+          type: `ERC721Component::ComponentState<ContractState>`,
+        },
         { name: 'to', type: 'ContractAddress' },
         { name: 'token_id', type: 'u256' },
         { name: 'auth', type: 'ContractAddress' },
@@ -173,13 +182,7 @@ function addERC721Mixin(c: ContractBuilder) {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
-  c.addComponent(
-    components.ERC721Component,
-    [
-      name, symbol, baseUri,
-    ],
-    true,
-  );
+  c.addComponent(components.ERC721Component, [name, symbol, baseUri], true);
 }
 
 function addEnumerable(c: ContractBuilder) {
@@ -201,7 +204,7 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunction(externalTrait, functions.safeMint);
 }
 
-const components = defineComponents( {
+const components = defineComponents({
   ERC721Component: {
     path: 'openzeppelin::token::erc721',
     substorage: {
@@ -212,11 +215,13 @@ const components = defineComponents( {
       name: 'ERC721Event',
       type: 'ERC721Component::Event',
     },
-    impls: [{
-      name: 'ERC721InternalImpl',
-      embed: false,
-      value: 'ERC721Component::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'ERC721InternalImpl',
+        embed: false,
+        value: 'ERC721Component::InternalImpl<ContractState>',
+      },
+    ],
   },
   ERC721EnumerableComponent: {
     path: 'openzeppelin::token::erc721::extensions',
@@ -228,26 +233,24 @@ const components = defineComponents( {
       name: 'ERC721EnumerableEvent',
       type: 'ERC721EnumerableComponent::Event',
     },
-    impls: [{
-      name: 'ERC721EnumerableImpl',
-      value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
-    }, {
-      name: 'ERC721EnumerableInternalImpl',
-      embed: false,
-      value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'ERC721EnumerableImpl',
+        value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
+      },
+      {
+        name: 'ERC721EnumerableInternalImpl',
+        embed: false,
+        value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
+      },
+    ],
   },
 });
 
 const functions = defineFunctions({
   burn: {
-    args: [
-      getSelfArg(),
-      { name: 'token_id', type: 'u256' }
-    ],
-    code: [
-      'self.erc721.update(Zero::zero(), token_id, get_caller_address());',
-    ]
+    args: [getSelfArg(), { name: 'token_id', type: 'u256' }],
+    code: ['self.erc721.update(Zero::zero(), token_id, get_caller_address());'],
   },
   safe_mint: {
     args: [
@@ -256,9 +259,7 @@ const functions = defineFunctions({
       { name: 'token_id', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
     ],
-    code: [
-      'self.erc721.safe_mint(recipient, token_id, data);',
-    ]
+    code: ['self.erc721.safe_mint(recipient, token_id, data);'],
   },
   safeMint: {
     args: [
@@ -267,8 +268,6 @@ const functions = defineFunctions({
       { name: 'tokenId', type: 'u256' },
       { name: 'data', type: 'Span<felt252>' },
     ],
-    code: [
-      'self.safe_mint(recipient, tokenId, data);',
-    ]
+    code: ['self.safe_mint(recipient, tokenId, data);'],
   },
 });

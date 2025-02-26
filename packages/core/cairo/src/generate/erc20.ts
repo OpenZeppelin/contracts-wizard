@@ -18,7 +18,7 @@ const blueprint = {
   appVersion: ['v1'],
   access: accessOptions,
   upgradeable: upgradeableOptions,
-  info: infoOptions
+  info: infoOptions,
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {

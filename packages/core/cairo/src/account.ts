@@ -1,5 +1,7 @@
-import { Contract, ContractBuilder } from './contract';
-import { CommonOptions, withCommonDefaults } from './common-options';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults } from './common-options';
 import { defaults as commonDefaults } from './common-options';
 import { setAccountUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
@@ -7,9 +9,8 @@ import { defineComponents } from './utils/define-components';
 import { printContract } from './print';
 import { addSRC5Component } from './common-components';
 
-
 export const accountTypes = ['stark', 'eth'] as const;
-export type Account = typeof accountTypes[number];
+export type Account = (typeof accountTypes)[number];
 
 export const defaults: Required<AccountOptions> = {
   name: 'MyAccount',
@@ -19,7 +20,7 @@ export const defaults: Required<AccountOptions> = {
   pubkey: true,
   outsideExecution: true,
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printAccount(opts: AccountOptions = defaults): string {
@@ -42,8 +43,8 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
     declare: opts.declare ?? defaults.declare,
     deploy: opts.deploy ?? defaults.deploy,
     pubkey: opts.pubkey ?? defaults.pubkey,
-    outsideExecution: opts.outsideExecution ?? defaults.outsideExecution
-  }
+    outsideExecution: opts.outsideExecution ?? defaults.outsideExecution,
+  };
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
@@ -157,11 +158,14 @@ function addAccountMixin(c: ContractBuilder, accountType: Account) {
 }
 
 function getBaseCompAndCompType(accountType: Account): [string, typeof componentType] {
-  const [baseComponent, componentType] = accountType === 'stark' ? ['AccountComponent', components.AccountComponent] : ['EthAccountComponent', components.EthAccountComponent];
+  const [baseComponent, componentType] =
+    accountType === 'stark'
+      ? ['AccountComponent', components.AccountComponent]
+      : ['EthAccountComponent', components.EthAccountComponent];
   return [baseComponent, componentType];
 }
 
-const components = defineComponents( {
+const components = defineComponents({
   AccountComponent: {
     path: 'openzeppelin::account',
     substorage: {
@@ -172,11 +176,13 @@ const components = defineComponents( {
       name: 'AccountEvent',
       type: 'AccountComponent::Event',
     },
-    impls: [{
-      name: 'AccountInternalImpl',
-      embed: false,
-      value: 'AccountComponent::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'AccountInternalImpl',
+        embed: false,
+        value: 'AccountComponent::InternalImpl<ContractState>',
+      },
+    ],
   },
   EthAccountComponent: {
     path: 'openzeppelin::account::eth_account',
@@ -188,11 +194,13 @@ const components = defineComponents( {
       name: 'EthAccountEvent',
       type: 'EthAccountComponent::Event',
     },
-    impls: [{
-      name: 'EthAccountInternalImpl',
-      embed: false,
-      value: 'EthAccountComponent::InternalImpl<ContractState>',
-    }]
+    impls: [
+      {
+        name: 'EthAccountInternalImpl',
+        embed: false,
+        value: 'EthAccountComponent::InternalImpl<ContractState>',
+      },
+    ],
   },
   SRC9Component: {
     path: 'openzeppelin::account::extensions',
@@ -204,13 +212,16 @@ const components = defineComponents( {
       name: 'SRC9Event',
       type: 'SRC9Component::Event',
     },
-    impls: [{
-      name: 'OutsideExecutionV2Impl',
-      value: 'SRC9Component::OutsideExecutionV2Impl<ContractState>',
-    }, {
-      name: 'OutsideExecutionInternalImpl',
-      embed: false,
-      value: 'SRC9Component::InternalImpl<ContractState>',
-    }]
-  }
+    impls: [
+      {
+        name: 'OutsideExecutionV2Impl',
+        value: 'SRC9Component::OutsideExecutionV2Impl<ContractState>',
+      },
+      {
+        name: 'OutsideExecutionInternalImpl',
+        embed: false,
+        value: 'SRC9Component::InternalImpl<ContractState>',
+      },
+    ],
+  },
 });

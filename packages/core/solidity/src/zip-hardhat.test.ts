@@ -1,4 +1,5 @@
-import _test, { TestFn, ExecutionContext } from 'ava';
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 
 import { zipHardhat } from './zip-hardhat';
 
@@ -10,7 +11,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
 import util from 'util';
-import child from "child_process";
+import child from 'child_process';
 import type { Contract } from './contract';
 import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
@@ -50,13 +51,22 @@ test.serial('erc20 full', async t => {
 });
 
 test.serial('erc721 upgradeable', async t => {
-  const opts: GenericOptions = { kind: 'ERC721', name: 'My Token', symbol: 'MTK', upgradeable: 'uups' };
+  const opts: GenericOptions = {
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+    upgradeable: 'uups',
+  };
   const c = buildERC721(opts);
   await runTest(c, t, opts);
 });
 
 test.serial('erc1155 basic', async t => {
-  const opts: GenericOptions = { kind: 'ERC1155', name: 'My Token', uri: 'https://myuri/{id}' };
+  const opts: GenericOptions = {
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://myuri/{id}',
+  };
   const c = buildERC1155(opts);
   await runTest(c, t, opts);
 });
@@ -68,7 +78,11 @@ test.serial('custom basic', async t => {
 });
 
 test.serial('custom upgradeable', async t => {
-  const opts: GenericOptions = { kind: 'Custom',  name: 'My Contract', upgradeable: 'transparent' };
+  const opts: GenericOptions = {
+    kind: 'Custom',
+    name: 'My Contract',
+    upgradeable: 'transparent',
+  };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
@@ -82,7 +96,9 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 }
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files).map(f => f.name).sort();
+  const sorted = Object.values(zip.files)
+    .map(f => f.name)
+    .sort();
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',

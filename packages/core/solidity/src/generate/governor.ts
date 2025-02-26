@@ -1,4 +1,5 @@
-import { defaults, GovernorOptions, timelockOptions, votesOptions } from '../governor';
+import type { GovernorOptions } from '../governor';
+import { defaults, timelockOptions, votesOptions } from '../governor';
 import { accessOptions } from '../set-access-control';
 import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';

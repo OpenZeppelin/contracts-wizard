@@ -3,7 +3,7 @@ import { supportsInterface } from './common-functions';
 
 export const accessOptions = [false, 'ownable', 'roles', 'managed'] as const;
 
-export type Access = typeof accessOptions[number];
+export type Access = (typeof accessOptions)[number];
 
 /**
  * Sets access control for the contract by adding inheritance.
@@ -11,10 +11,10 @@ export type Access = typeof accessOptions[number];
 export function setAccessControl(c: ContractBuilder, access: Access) {
   switch (access) {
     case 'ownable': {
-      if (c.addParent(parents.Ownable, [ {lit: 'initialOwner'} ])) {
+      if (c.addParent(parents.Ownable, [{ lit: 'initialOwner' }])) {
         c.addConstructorArgument({
           type: 'address',
-          name: 'initialOwner'
+          name: 'initialOwner',
         });
       }
       break;
@@ -23,7 +23,7 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
       if (c.addParent(parents.AccessControl)) {
         c.addConstructorArgument({
           type: 'address',
-          name: 'defaultAdmin'
+          name: 'defaultAdmin',
         });
         c.addConstructorCode('_grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);');
       }
@@ -31,10 +31,10 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
       break;
     }
     case 'managed': {
-      if (c.addParent(parents.AccessManaged, [ {lit: 'initialAuthority'} ])) {
+      if (c.addParent(parents.AccessManaged, [{ lit: 'initialAuthority' }])) {
         c.addConstructorArgument({
           type: 'address',
-          name: 'initialAuthority'
+          name: 'initialAuthority',
         });
       }
       break;
@@ -45,11 +45,17 @@ export function setAccessControl(c: ContractBuilder, access: Access) {
 /**
  * Enables access control for the contract and restricts the given function with access control.
  */
-export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, access: Access, roleIdPrefix: string, roleOwner: string | undefined) {
+export function requireAccessControl(
+  c: ContractBuilder,
+  fn: BaseFunction,
+  access: Access,
+  roleIdPrefix: string,
+  roleOwner: string | undefined,
+) {
   if (access === false) {
     access = 'ownable';
   }
-  
+
   setAccessControl(c, access);
 
   switch (access) {
@@ -61,7 +67,7 @@ export function requireAccessControl(c: ContractBuilder, fn: BaseFunction, acces
       const roleId = roleIdPrefix + '_ROLE';
       const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
       if (roleOwner && addedConstant) {
-        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
       c.addModifier(`onlyRole(${roleId})`, fn);

@@ -1,9 +1,11 @@
 import test from 'ava';
 
-import { buildERC20, ERC20Options, getInitialSupply } from './erc20';
+import type { ERC20Options } from './erc20';
+import { buildERC20, getInitialSupply } from './erc20';
 import { printContract } from './print';
 
-import { erc20, OptionsError } from '.';
+import type { OptionsError } from '.';
+import { erc20 } from '.';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {
@@ -21,11 +23,16 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
  */
 function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.is(erc20.print(opts), printContract(buildERC20({
-      name: 'MyToken',
-      symbol: 'MTK',
-      ...opts,
-    })));
+    t.is(
+      erc20.print(opts),
+      printContract(
+        buildERC20({
+          name: 'MyToken',
+          symbol: 'MTK',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -84,22 +91,26 @@ testERC20('erc20 votes, version', {
 });
 
 test('erc20 votes, no name', async t => {
-  let error = t.throws(() => buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    votes: true,
-  }));
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      votes: true,
+    }),
+  );
   t.is((error as OptionsError).messages.appName, 'Application Name is required when Votes are enabled');
 });
 
 test('erc20 votes, empty version', async t => {
-  let error = t.throws(() => buildERC20({
-    name: 'MyToken',
-    symbol: 'MTK',
-    votes: true,
-    appName: 'MY_DAPP_NAME',
-    appVersion: '', // avoids default value of v1
-  }));
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      votes: true,
+      appName: 'MY_DAPP_NAME',
+      appVersion: '', // avoids default value of v1
+    }),
+  );
   t.is((error as OptionsError).messages.appVersion, 'Application Version is required when Votes are enabled');
 });
 
@@ -174,9 +185,9 @@ test('erc20 API isAccessControlRequired', async t => {
 });
 
 test('erc20 getInitialSupply', async t => {
-  t.is(getInitialSupply('1000', 18),   '1000000000000000000000');
+  t.is(getInitialSupply('1000', 18), '1000000000000000000000');
   t.is(getInitialSupply('1000.1', 18), '1000100000000000000000');
-  t.is(getInitialSupply('.1', 18),     '100000000000000000');
+  t.is(getInitialSupply('.1', 18), '100000000000000000');
   t.is(getInitialSupply('.01', 2), '1');
 
   let error = t.throws(() => getInitialSupply('.01', 1));

@@ -1,32 +1,21 @@
-import JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
-import type { Contract } from "./contract";
-import { printContract } from "./print";
+import JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
+import type { Contract } from './contract';
+import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
-import { formatLinesWithSpaces, Lines, spaceBetween } from "./utils/format-lines";
+import type { Lines } from './utils/format-lines';
+import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
 function getHeader(c: Contract) {
-  return [
-    `// SPDX-License-Identifier: ${c.license}`,
-    `pragma solidity ^${SOLIDITY_VERSION};`
-  ];
+  return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
 }
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(
-      getHeader(c),
-      getImports(c),
-      getTestCase(c),
-    ),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)));
 
   function getImports(c: Contract) {
-    const result = [
-      'import {Test} from "forge-std/Test.sol";',
-    ];
+    const result = ['import {Test} from "forge-std/Test.sol";'];
     if (c.upgradeable) {
       result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
     }
@@ -39,15 +28,8 @@ const test = (c: Contract, opts?: GenericOptions) => {
     return [
       `contract ${c.name}Test is Test {`,
       spaceBetween(
-        [
-          `${c.name} public instance;`,
-        ],
-        [
-          'function setUp() public {',
-          getAddressVariables(c, args),
-          getDeploymentCode(c, args),
-          '}',
-        ],
+        [`${c.name} public instance;`],
+        ['function setUp() public {', getAddressVariables(c, args), getDeploymentCode(c, args), '}'],
         getContractSpecificTestFunction(),
       ),
       '}',
@@ -59,29 +41,20 @@ const test = (c: Contract, opts?: GenericOptions) => {
       if (opts?.upgradeable === 'transparent') {
         return [
           `address proxy = Upgrades.deployTransparentProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `initialOwner,`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
-          ],
+          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
           ');',
           `instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
           `address proxy = Upgrades.deployUUPSProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
-          ],
+          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
           ');',
           `instance = ${c.name}(proxy);`,
         ];
       }
     } else {
-      return [
-        `instance = new ${c.name}(${args.join(', ')});`,
-      ];
+      return [`instance = new ${c.name}(${args.join(', ')});`];
     }
   }
 
@@ -102,32 +75,14 @@ const test = (c: Contract, opts?: GenericOptions) => {
       switch (opts.kind) {
         case 'ERC20':
         case 'ERC721':
-          return [
-            'function testName() public view {',
-            [
-              `assertEq(instance.name(), "${opts.name}");`
-            ],
-            '}',
-          ];
+          return ['function testName() public view {', [`assertEq(instance.name(), "${opts.name}");`], '}'];
 
         case 'ERC1155':
-          return [
-            'function testUri() public view {',
-            [
-              `assertEq(instance.uri(0), "${opts.uri}");`
-            ],
-            '}',
-          ];
+          return ['function testUri() public view {', [`assertEq(instance.uri(0), "${opts.uri}");`], '}'];
 
         case 'Governor':
         case 'Custom':
-          return [
-            'function testSomething() public {',
-            [
-              '// Add your test here',
-            ],
-            '}',
-          ]
+          return ['function testSomething() public {', ['// Add your test here'], '}'];
 
         default:
           throw new Error('Unknown ERC');
@@ -148,20 +103,10 @@ function getAddressArgs(c: Contract): string[] {
 }
 
 const script = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(
-      getHeader(c),
-      getImports(c),
-      getScript(c),
-    ),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getScript(c)));
 
   function getImports(c: Contract) {
-    const result = [
-      'import {Script} from "forge-std/Script.sol";',
-      'import {console} from "forge-std/console.sol";',
-    ];
+    const result = ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";'];
     if (c.upgradeable) {
       result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
     }
@@ -181,14 +126,8 @@ const script = (c: Contract, opts?: GenericOptions) => {
     return [
       `contract ${c.name}Script is Script {`,
       spaceBetween(
-        [
-          'function setUp() public {}',
-        ],
-        [
-          'function run() public {',
-          args.length > 0 ? addTodoAndCommentOut(deploymentLines) : deploymentLines,
-          '}',
-        ],
+        ['function setUp() public {}'],
+        ['function run() public {', args.length > 0 ? addTodoAndCommentOut(deploymentLines) : deploymentLines, '}'],
       ),
       '}',
     ];
@@ -199,29 +138,20 @@ const script = (c: Contract, opts?: GenericOptions) => {
       if (opts?.upgradeable === 'transparent') {
         return [
           `address proxy = Upgrades.deployTransparentProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `initialOwner,`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
-          ],
+          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
           ');',
           `${c.name} instance = ${c.name}(proxy);`,
         ];
       } else {
         return [
           `address proxy = Upgrades.deployUUPSProxy(`,
-          [
-            `"${c.name}.sol",`,
-            `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`
-          ],
+          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
           ');',
           `${c.name} instance = ${c.name}(proxy);`,
         ];
       }
     } else {
-      return [
-        `${c.name} instance = new ${c.name}(${args.join(', ')});`,
-      ];
+      return [`${c.name} instance = new ${c.name}(${args.join(', ')});`];
     }
   }
 
@@ -274,14 +204,18 @@ then
   # Initialize sample Foundry project
   forge init --force --no-commit --quiet
 
-${c.upgradeable ? `\
+${
+  c.upgradeable
+    ? `\
   # Install OpenZeppelin Contracts and Upgrades
   forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --no-commit --quiet
   forge install OpenZeppelin/openzeppelin-foundry-upgrades --no-commit --quiet\
-` : `\
+`
+    : `\
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet\
-`}
+`
+}
 
   # Remove unneeded Foundry template files
   rm src/Counter.sol
@@ -297,7 +231,9 @@ ${c.upgradeable ? `\
   then
     echo "" >> remappings.txt
   fi
-${c.upgradeable ? `\
+${
+  c.upgradeable
+    ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
   echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
 
@@ -307,9 +243,11 @@ ${c.upgradeable ? `\
   echo "ast = true" >> foundry.toml
   echo "build_info = true" >> foundry.toml
   echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml\
-` : `\
+`
+    : `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
-`}
+`
+}
 
   # Perform initial git commit
   git add .
