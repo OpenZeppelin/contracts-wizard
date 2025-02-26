@@ -434,7 +434,7 @@
       </div>
       {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
-        <code class="hljs -solidity grow overflow-auto p-4">{@html highlightedCode}</code>
+        <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}">{@html highlightedCode}</code>
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
     </div>
@@ -504,6 +504,11 @@
     --blur: 0px;
   }
 }
+
+.no-select {
+  user-select: none;
+}
+
 .button-bg{
   animation: conic-effect 12s ease-in-out infinite;
   animation-delay: 4.2s;
