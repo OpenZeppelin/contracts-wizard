@@ -25,6 +25,7 @@ jobs:
         package:
           - solidity
           - cairo
+          - stellar
 
     runs-on: ubuntu-latest
     steps:
