@@ -1,7 +1,9 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import type { BaseImplementedTrait, Contract } from './contract';
+import { ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
@@ -20,7 +22,7 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   permit: true,
   access: commonDefaults.access,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printERC20(opts: ERC20Options = defaults): string {
@@ -47,10 +49,8 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   // Erc20Permit overrides Erc20 functionality
-  const trait = allOpts.permit
-    ? addPermit(c, allOpts.pausable)
-    : addBase(c, allOpts.pausable);
-  
+  const trait = allOpts.permit ? addPermit(c, allOpts.pausable) : addBase(c, allOpts.pausable);
+
   addMetadata(c);
 
   if (allOpts.pausable) {
@@ -79,14 +79,10 @@ function addBase(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
 
-    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer_from, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer_from, ['self.pausable.when_not_paused()?;']);
   }
-  
+
   return erc20Trait;
 }
 
@@ -96,9 +92,9 @@ function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait 
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
 
   c.addImplementedTrait(erc20PermitTrait);
-  c.addEip712("ERC-20 Permit Example", "1");
-  
-  if (pausable) {   
+  c.addEip712('ERC-20 Permit Example', '1');
+
+  if (pausable) {
     // Add transfer & permit functions with pause checks
     c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
@@ -115,7 +111,7 @@ function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait 
       'self.pausable.when_not_paused()?;',
     ]);
   }
-  
+
   return erc20PermitTrait;
 }
 
@@ -135,12 +131,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplement
   c.addFunction(trait, functions(trait).burn_from);
 
   if (pausable) {
-    c.addFunctionCodeBefore(trait, functions(trait).burn, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(trait, functions(trait).burn_from, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(trait, functions(trait).burn, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(trait, functions(trait).burn_from, ['self.pausable.when_not_paused()?;']);
   }
 }
 
@@ -149,7 +141,7 @@ const erc20Trait: BaseImplementedTrait = {
   storage: {
     name: 'erc20',
     type: 'Erc20',
-  }
+  },
 };
 
 const erc20PermitTrait: BaseImplementedTrait = {
@@ -157,7 +149,7 @@ const erc20PermitTrait: BaseImplementedTrait = {
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
-  }
+  },
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -172,15 +164,9 @@ const functions = (trait: BaseImplementedTrait) =>
   defineFunctions({
     // Token Functions
     transfer: {
-      args: [
-        getSelfArg(),
-        { name: 'to', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: 'Result<bool, Vec<u8>>',
-      code: [
-        `self.${trait.storage.name}.transfer(to, value).map_err(|e| e.into())`,
-      ],
+      code: [`self.${trait.storage.name}.transfer(to, value).map_err(|e| e.into())`],
     },
     transfer_from: {
       args: [
@@ -190,9 +176,7 @@ const functions = (trait: BaseImplementedTrait) =>
         { name: 'value', type: 'U256' },
       ],
       returns: 'Result<bool, Vec<u8>>',
-      code: [
-        `self.${trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`,
-      ],
+      code: [`self.${trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`],
     },
 
     // Overrides
@@ -213,15 +197,9 @@ const functions = (trait: BaseImplementedTrait) =>
       code: [`self.${trait.storage.name}.burn(value).map_err(|e| e.into())`],
     },
     burn_from: {
-      args: [
-        getSelfArg(),
-        { name: 'account', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
+      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: 'Result<(), Vec<u8>>',
-      code: [
-        `self.${trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`,
-      ],
+      code: [`self.${trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`],
     },
 
     permit: {
@@ -236,8 +214,6 @@ const functions = (trait: BaseImplementedTrait) =>
         { name: 's', type: 'B256' },
       ],
       returns: 'Result<(), Vec<u8>>',
-      code: [
-        `self.${trait.storage.name}.permit(owner, spender, value, deadline, v, r, s).map_err(|e| e.into())`,
-      ],
+      code: [`self.${trait.storage.name}.permit(owner, spender, value, deadline, v, r, s).map_err(|e| e.into())`],
     },
   });

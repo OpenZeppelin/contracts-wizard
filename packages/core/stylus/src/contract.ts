@@ -93,7 +93,7 @@ export class ContractBuilder implements Contract {
   get errors(): Error[] {
     return [...this.errorsMap.values()];
   }
-  
+
   get constants(): Variable[] {
     return [...this.constantsMap.values()];
   }

@@ -4,9 +4,7 @@ type Alternatives<B extends Blueprint> = {
   [k in keyof B]: B[k][number];
 };
 
-export function* generateAlternatives<B extends Blueprint>(
-  blueprint: B,
-): Generator<Alternatives<B>> {
+export function* generateAlternatives<B extends Blueprint>(blueprint: B): Generator<Alternatives<B>> {
   const entries = Object.entries(blueprint).map(([key, values]) => ({
     key,
     values,
@@ -15,9 +13,7 @@ export function* generateAlternatives<B extends Blueprint>(
   }));
 
   for (; !done(); advance()) {
-    yield Object.fromEntries(
-      entries.map(e => [e.key, e.values[e.current % e.limit]]),
-    ) as Alternatives<B>;
+    yield Object.fromEntries(entries.map(e => [e.key, e.values[e.current % e.limit]])) as Alternatives<B>;
   }
 
   function done() {
