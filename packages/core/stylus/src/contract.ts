@@ -164,7 +164,7 @@ export class ContractBuilder implements Contract {
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
+  addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.attribute = attribute;
