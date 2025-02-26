@@ -93,6 +93,9 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
+    $: hasErrors = errors[tab] !== undefined;
+    $: showDeployModal = !hasErrors && showDeployModal;
+
     $: if (showDeployModal) {
       let deterministicReason: string | undefined;
       if (opts && opts.kind === 'ERC20' && opts.crossChainBridging === 'superchain') {
@@ -259,6 +262,49 @@
       </OverflowMenu>
     </div>
 
+    {#if hasErrors}
+    <div class="action flex flex-row gap-2 shrink-0">
+      <Tooltip
+        let:trigger
+        theme="light-red border"
+        hideOnClick={false}
+        interactive
+      >
+        <button
+          use:trigger
+          class="action-button p-3 min-w-[40px]"
+          class:disabled={true}
+          title="Copy to Clipboard"
+        >
+          <CopyIcon />
+        </button>
+        <div slot="content">
+          <p>There are errors in the input options.</p>
+          <p>Fix them to continue.</p>
+        </div>
+      </Tooltip>
+      <Tooltip
+        let:trigger
+        theme="light-red border"
+        hideOnClick={false}
+        interactive
+      >
+        <button
+          use:trigger
+          class="action-button with-text"
+          class:disabled={true}
+          title="Download"
+        >
+          <DownloadIcon />
+          Download
+        </button>
+        <div slot="content">
+          <p>There are errors in the input options.</p>
+          <p>Fix them to continue.</p>
+        </div>
+      </Tooltip>
+    </div>
+    {:else}
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
@@ -333,6 +379,7 @@
         {/if}
       </Dropdown>
     </div>
+    {/if}
   </div>
 
   <div class="flex flex-row grow">
@@ -361,6 +408,7 @@
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      {#if !hasErrors}
       <div class="absolute p-px right-6 rounded-full top-4 z-10 {showDeployModal ? 'hide-deploy' : ''}">
         <button
           class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-2 bg-white border-white"
@@ -384,6 +432,7 @@
           Deploy with Defender
         </button>
       </div>
+      {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
         <code class="hljs -solidity grow overflow-auto p-4">{@html highlightedCode}</code>
       </pre>
