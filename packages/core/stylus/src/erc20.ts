@@ -49,23 +49,22 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  // Erc20Permit overrides Erc20 functionality
-  const trait = allOpts.permit
-    ? addPermit(c, allOpts.pausable)
-    : addBase(c, allOpts.pausable);
-
-  addMetadata(c);
+  addBase(c, allOpts.pausable);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, trait);
+    addBurnable(c, allOpts.pausable);
+  }
+
+  if (allOpts.permit) {
+    addPermit(c, allOpts.pausable);
   }
 
   if (allOpts.flashmint) {
-    addFlashMint(c, allOpts.pausable, trait);
+    addFlashMint(c, allOpts.pausable);
   }
 
   setAccessControl(c, allOpts.access);
@@ -74,84 +73,72 @@ export function buildERC20(opts: ERC20Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
+function addBase(c: ContractBuilder, pausable: boolean) {
   // Add the base traits
   c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
   c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addImplementedTrait(erc20Trait);
 
+  // c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
+  // c.addImplementedTrait(erc20MetadataTrait);
+  
   if (pausable) {
-    // Add transfer functions with pause checks
     c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
 
-    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer, [
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer, [
       'self.pausable.when_not_paused()?;',
     ]);
-    c.addFunctionCodeBefore(erc20Trait, functions(erc20Trait).transfer_from, [
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, [
       'self.pausable.when_not_paused()?;',
     ]);
   }
-
-  return erc20Trait;
 }
 
-function addPermit(c: ContractBuilder, pausable: boolean): BaseImplementedTrait {
+function addPermit(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Permit');
-  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
+  
+  c.addUseClause('alloc::vec', 'Vec');
+  c.addUseClause('alloy_primitives', 'Address');
+  c.addUseClause('alloy_primitives', 'B256');
+  c.addUseClause('alloy_primitives', 'U256');
 
   c.addImplementedTrait(erc20PermitTrait);
   c.addEip712('ERC-20 Permit Example', '1');
+  c.addImplementedTrait(noncesTrait);
 
-  if (pausable) {
-    // Add transfer & permit functions with pause checks
-    c.addUseClause('alloc::vec', 'Vec');
-    c.addUseClause('alloy_primitives', 'Address');
-    c.addUseClause('alloy_primitives', 'U256');
-    c.addUseClause('alloy_primitives', 'B256');
+  c.addFunction(erc20PermitTrait, functions.permit);
 
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).permit, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).transfer, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20PermitTrait, functions(erc20PermitTrait).transfer_from, [
+  if (pausable) {   
+    c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, [
       'self.pausable.when_not_paused()?;',
     ]);
   }
-
-  return erc20PermitTrait;
 }
 
-function addMetadata(c: ContractBuilder) {
-  // c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
-  // c.addImplementedTrait(erc20MetadataTrait);
-}
-
-function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
+function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
 
-  c.addFunction(trait, functions(trait).burn);
-  c.addFunction(trait, functions(trait).burn_from);
+  c.addFunction(erc20Trait, functions.burn);
+  c.addFunction(erc20Trait, functions.burn_from);
 
   if (pausable) {
-    c.addFunctionCodeBefore(trait, functions(trait).burn, [
+    c.addFunctionCodeBefore(erc20Trait, functions.burn, [
       'self.pausable.when_not_paused()?;',
     ]);
-    c.addFunctionCodeBefore(trait, functions(trait).burn_from, [
+    c.addFunctionCodeBefore(erc20Trait, functions.burn_from, [
       'self.pausable.when_not_paused()?;',
     ]);
   }
 }
 
-function addFlashMint(c: ContractBuilder, pausable: boolean, baseTrait: BaseImplementedTrait) {
+function addFlashMint(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20FlashMint');
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
 
@@ -159,12 +146,12 @@ function addFlashMint(c: ContractBuilder, pausable: boolean, baseTrait: BaseImpl
 
   c.addImplementedTrait(flashMintTrait);
   
-  c.addFunction(flashMintTrait, functions(baseTrait).max_flash_loan);
-  c.addFunction(flashMintTrait, functions(baseTrait).flash_fee);
-  c.addFunction(flashMintTrait, functions(baseTrait).flash_loan);
+  c.addFunction(flashMintTrait, functions.max_flash_loan);
+  c.addFunction(flashMintTrait, functions.flash_fee);
+  c.addFunction(flashMintTrait, functions.flash_loan);
   
   if (pausable) {
-    c.addFunctionCodeBefore(flashMintTrait, functions(baseTrait).flash_loan, [
+    c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, [
       'self.pausable.when_not_paused()?;',
     ]);
   }
@@ -195,6 +182,14 @@ const flashMintTrait: BaseImplementedTrait = {
   omit_inherit: true
 };
 
+const noncesTrait: BaseImplementedTrait = {
+  name: 'Nonces',
+  storage: {
+    name: 'nonces',
+    type: 'Nonces',
+  }
+};
+
 // const erc20MetadataTrait: BaseImplementedTrait = {
 //   name: 'Erc20Metadata',
 //   storage: {
@@ -203,111 +198,100 @@ const flashMintTrait: BaseImplementedTrait = {
 //   }
 // }
 
-const functions = (baseTrait: BaseImplementedTrait) =>
-  defineFunctions({
-    // Token Functions
-    transfer: {
-      args: [
-        getSelfArg(),
-        { name: 'to', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: 'Result<bool, Vec<u8>>',
-      code: [
-        `self.${baseTrait.storage.name}.transfer(to, value).map_err(|e| e.into())`,
-      ],
-    },
-    transfer_from: {
-      args: [
-        getSelfArg(),
-        { name: 'from', type: 'Address' },
-        { name: 'to', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: 'Result<bool, Vec<u8>>',
-      code: [
-        `self.${baseTrait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`,
-      ],
-    },
+const functions = defineFunctions({
+  // Token Functions
+  transfer: {
+    args: [
+      getSelfArg(),
+      { name: 'to', type: 'Address' },
+      { name: 'value', type: 'U256' },
+    ],
+    returns: 'Result<bool, Vec<u8>>',
+    code: [
+      `self.${erc20Trait.storage.name}.transfer(to, value).map_err(|e| e.into())`,
+    ],
+  },
+  transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'value', type: 'U256' },
+    ],
+    returns: 'Result<bool, Vec<u8>>',
+    code: [
+      `self.${erc20Trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`,
+    ],
+  },
 
-    // Overrides
-    // supports_interface: {
-    //   args: [
-    //     { name: 'interface_id', type: 'FixedBytes<4>' },
-    //   ],
-    //   returns: 'bool',
-    //   code: [
-    //     'Erc20::supports_interface(interface_id) || Erc20Metadata::supports_interface(interface_id)'
-    //   ]
-    // },
+  // Extensions
+  burn: {
+    args: [getSelfArg(), { name: 'value', type: 'U256' }],
+    returns: 'Result<(), Vec<u8>>',
+    code: [`self.${erc20Trait.storage.name}.burn(value).map_err(|e| e.into())`],
+  },
+  burn_from: {
+    args: [
+      getSelfArg(),
+      { name: 'account', type: 'Address' },
+      { name: 'value', type: 'U256' },
+    ],
+    returns: 'Result<(), Vec<u8>>',
+    code: [
+      `self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`,
+    ],
+  },
 
-    // Extensions
-    burn: {
-      args: [getSelfArg(), { name: 'value', type: 'U256' }],
-      returns: 'Result<(), Vec<u8>>',
-      code: [`self.${baseTrait.storage.name}.burn(value).map_err(|e| e.into())`],
-    },
-    burn_from: {
-      args: [
-        getSelfArg(),
-        { name: 'account', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: 'Result<(), Vec<u8>>',
-      code: [
-        `self.${baseTrait.storage.name}.burn_from(account, value).map_err(|e| e.into())`,
-      ],
-    },
+  permit: {
+    attribute: 'allow(clippy::too_many_arguments)',
+    args: [
+      getSelfArg(),
+      { name: 'owner', type: 'Address' },
+      { name: 'spender', type: 'Address' },
+      { name: 'value', type: 'U256' },
+      { name: 'deadline', type: 'U256' },
+      { name: 'v', type: 'u8' },
+      { name: 'r', type: 'B256' },
+      { name: 's', type: 'B256' },
+    ],
+    returns: 'Result<(), Vec<u8>>',
+    code: [
+      `self.${erc20PermitTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
+    ],
+  },
 
-    permit: {
-      args: [
-        getSelfArg(),
-        { name: 'owner', type: 'Address' },
-        { name: 'spender', type: 'Address' },
-        { name: 'value', type: 'U256' },
-        { name: 'deadline', type: 'U256' },
-        { name: 'v', type: 'u8' },
-        { name: 'r', type: 'B256' },
-        { name: 's', type: 'B256' },
-      ],
-      returns: 'Result<(), Vec<u8>>',
-      code: [
-        `self.${baseTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s).map_err(|e| e.into())`,
-      ],
-    },
-
-    max_flash_loan: {
-      args: [
-        getSelfArg("immutable"),
-        { name: 'token', type: 'Address' },
-      ],
-      returns: 'U256',
-      code: [
-        `self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${baseTrait.storage.name})`,
-      ],
-    },
-    flash_fee: {
-      args: [
-        getSelfArg("immutable"),
-        { name: 'token', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: 'Result<U256, Vec<u8>>',
-      code: [
-        `self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
-      ],
-    },
-    flash_loan: {
-      args: [
-        getSelfArg(),
-        { name: 'receiver', type: 'Address' },
-        { name: 'token', type: 'Address' },
-        { name: 'value', type: 'U256' },
-        { name: 'data', type: 'Bytes' },
-      ],
-      returns: 'Result<bool, Vec<u8>>',
-      code: [
-        `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${baseTrait.storage.name}).map_err(|e| e.into())`,
-      ],
-    },
-  });
+  max_flash_loan: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'token', type: 'Address' },
+    ],
+    returns: 'U256',
+    code: [
+      `self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`,
+    ],
+  },
+  flash_fee: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'token', type: 'Address' },
+      { name: 'value', type: 'U256' },
+    ],
+    returns: 'Result<U256, Vec<u8>>',
+    code: [
+      `self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
+    ],
+  },
+  flash_loan: {
+    args: [
+      getSelfArg(),
+      { name: 'receiver', type: 'Address' },
+      { name: 'token', type: 'Address' },
+      { name: 'value', type: 'U256' },
+      { name: 'data', type: 'Bytes' },
+    ],
+    returns: 'Result<bool, Vec<u8>>',
+    code: [
+      `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.storage.name}).map_err(|e| e.into())`,
+    ],
+  },
+});
