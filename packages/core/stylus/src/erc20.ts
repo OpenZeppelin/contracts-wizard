@@ -12,6 +12,7 @@ export interface ERC20Options extends CommonContractOptions {
   burnable?: boolean;
   pausable?: boolean;
   permit?: boolean;
+  flashmint?: boolean;
 }
 
 export const defaults: Required<ERC20Options> = {
@@ -19,8 +20,9 @@ export const defaults: Required<ERC20Options> = {
   burnable: false,
   pausable: false,
   permit: true,
+  flashmint: false,
   access: commonDefaults.access,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printERC20(opts: ERC20Options = defaults): string {
@@ -34,6 +36,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     permit: opts.permit ?? defaults.permit,
+    flashmint: opts.flashmint ?? defaults.flashmint,
   };
 }
 
@@ -58,6 +61,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (allOpts.permit) {
     addPermit(c, allOpts.pausable);
+  }
+
+  if (allOpts.flashmint) {
+    addFlashMint(c, allOpts.pausable);
   }
 
   setAccessControl(c, allOpts.access);
@@ -132,12 +139,31 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   }
 }
 
+function addFlashMint(c: ContractBuilder, pausable: boolean) {
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20FlashMint');
+  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
+
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
+
+  c.addImplementedTrait(flashMintTrait);
+  
+  c.addFunction(flashMintTrait, functions.max_flash_loan);
+  c.addFunction(flashMintTrait, functions.flash_fee);
+  c.addFunction(flashMintTrait, functions.flash_loan);
+  
+  if (pausable) {
+    c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, [
+      'self.pausable.when_not_paused()?;',
+    ]);
+  }
+}
+
 const erc20Trait: BaseImplementedTrait = {
   name: 'Erc20',
   storage: {
     name: 'erc20',
     type: 'Erc20',
-  }
+  },
 };
 
 const erc20PermitTrait: BaseImplementedTrait = {
@@ -145,7 +171,16 @@ const erc20PermitTrait: BaseImplementedTrait = {
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
-  }
+  },
+};
+
+const flashMintTrait: BaseImplementedTrait = {
+  name: 'Erc20FlashMint',
+  storage: {
+    name: 'flash_mint',
+    type: 'Erc20FlashMint',
+  },
+  omit_inherit: true
 };
 
 const noncesTrait: BaseImplementedTrait = {
@@ -190,17 +225,6 @@ const functions = defineFunctions({
     ],
   },
 
-  // Overrides
-  // supports_interface: {
-  //   args: [
-  //     { name: 'interface_id', type: 'FixedBytes<4>' },
-  //   ],
-  //   returns: 'bool',
-  //   code: [
-  //     'Erc20::supports_interface(interface_id) || Erc20Metadata::supports_interface(interface_id)'
-  //   ]
-  // },
-
   // Extensions
   burn: {
     args: [getSelfArg(), { name: 'value', type: 'U256' }],
@@ -233,7 +257,42 @@ const functions = defineFunctions({
     ],
     returns: 'Result<(), Vec<u8>>',
     code: [
-      `self.${erc20PermitTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s, &mut self.erc20, &mut self.nonces).map_err(|e| e.into())`,
+      `self.${erc20PermitTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
+    ],
+  },
+
+  max_flash_loan: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'token', type: 'Address' },
+    ],
+    returns: 'U256',
+    code: [
+      `self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`,
+    ],
+  },
+  flash_fee: {
+    args: [
+      getSelfArg("immutable"),
+      { name: 'token', type: 'Address' },
+      { name: 'value', type: 'U256' },
+    ],
+    returns: 'Result<U256, Vec<u8>>',
+    code: [
+      `self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
+    ],
+  },
+  flash_loan: {
+    args: [
+      getSelfArg(),
+      { name: 'receiver', type: 'Address' },
+      { name: 'token', type: 'Address' },
+      { name: 'value', type: 'U256' },
+      { name: 'data', type: 'Bytes' },
+    ],
+    returns: 'Result<bool, Vec<u8>>',
+    code: [
+      `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.storage.name}).map_err(|e| e.into())`,
     ],
   },
 });

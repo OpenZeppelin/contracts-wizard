@@ -38,6 +38,17 @@ testERC20('erc20 burnable', {
   burnable: true,
 });
 
+testERC20('erc20 flash-mint', {
+  permit: false,
+  flashmint: true,
+});
+
+testERC20('erc20 burnable flash-mint', {
+  permit: false,
+  burnable: true,
+  flashmint: true,
+});
+
 // testERC20('erc20 pausable', {
 //   permit: false,
 //   pausable: true,
@@ -49,6 +60,12 @@ testERC20('erc20 burnable', {
 //   pausable: true,
 // });
 
+// testERC20('erc20 flash-mint pausable', {
+//   permit: false,
+//   flashmint: true,
+//   pausable: true,
+// });
+
 testERC20('erc20 permit', {
   permit: true,
 });
@@ -56,6 +73,11 @@ testERC20('erc20 permit', {
 testERC20('erc20 permit burnable', {
   permit: true,
   burnable: true,
+});
+
+testERC20('erc20 permit flash-mint', {
+  permit: true,
+  flashmint: true,
 });
 
 // testERC20('erc20 permit pausable', {
@@ -69,10 +91,17 @@ testERC20('erc20 permit burnable', {
 //   pausable: true,
 // });
 
+// testERC20('erc20 permit flash-mint pausable', {
+//   permit: true,
+//   flashmint: true,
+//   pausable: true,
+// });
+
 testERC20('erc20 full - complex name', {
   name: 'Custom  $ Token',
   burnable: true,
   permit: true,
+  flashmint: true,
   // pausable: true,
 });
 
@@ -87,6 +116,7 @@ testAPIEquivalence('erc20 API full', {
   name: 'CustomToken',
   burnable: true,
   permit: true,
+  flashmint: true,
   // pausable: true,
 });
 

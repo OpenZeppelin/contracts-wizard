@@ -59,6 +59,14 @@
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.flashmint}>
+      <input type="checkbox" bind:checked={opts.flashmint}>
+      Flash Minting
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-flash-mint">
+        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 
