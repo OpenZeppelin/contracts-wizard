@@ -20,6 +20,7 @@ export interface DefenderDeployMessage {
   kind: 'oz-wizard-defender-deploy';
   sources: SolcInputSources;
   enforceDeterministicReason?: string;
+  groupNetworksBy?: 'superchain';
 }
 
 export function postMessage(msg: Message) {
