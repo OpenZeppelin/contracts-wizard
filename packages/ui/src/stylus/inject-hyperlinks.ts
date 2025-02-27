@@ -15,7 +15,7 @@ export function injectHyperlinks(code: string) {
         let replacement;
         if (suffix === '::{') {
           // Multiple modules are imported, so remove components and link to the parent directory's mod.rs file
-          replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join('/')}/mod.rs' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>${suffix}`; // Exclude suffix from link
+          replacement = `use</span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join('/')}/mod.rs' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>${suffix}`; // Exclude suffix from link
         } else {
           // Single module is imported
           // If a mapping exists, link to the mapped file, otherwise remove the module and link to the parent directory's mod.rs file
@@ -28,7 +28,7 @@ export function injectHyperlinks(code: string) {
           } else {
             libraryPathReplacement = [...libraryPathSegments, 'mod.rs'].join('/');
           }
-          replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathReplacement}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}${suffix}</a>`; // Include suffix (component) in link
+          replacement = `use</span> <a class="import-link" href='${githubPrefix}${libraryPathReplacement}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}${suffix}</a>`; // Include suffix (component) in link
         }
 
         result = result.replace(line, replacement);
