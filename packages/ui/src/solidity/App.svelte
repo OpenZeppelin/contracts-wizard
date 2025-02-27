@@ -99,7 +99,11 @@
     $: if (showDeployModal) {
       let enforceDeterministicReason: string | undefined;
       let groupNetworksBy: 'superchain' | undefined;
-      if (opts !== undefined && (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset' ) && opts.crossChainBridging === 'superchain') {
+
+      const isSuperchainERC20 = opts !== undefined &&
+        (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') &&
+        opts.crossChainBridging === 'superchain';
+      if (isSuperchainERC20) {
         enforceDeterministicReason = 'SuperchainERC20 requires deploying your contract to the same address on every chain in the Superchain.';
         groupNetworksBy = 'superchain';
       }
