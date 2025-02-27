@@ -106,9 +106,8 @@ function addPermit(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('alloy_primitives', 'U256');
 
   c.addImplementedTrait(erc20PermitTrait);
+  c.addEip712('ERC-20 Permit Example', '1');
   c.addImplementedTrait(noncesTrait);
-
-  c.addEip712("ERC-20 Permit Example", "1");
 
   c.addFunction(erc20PermitTrait, functions.permit);
 
