@@ -1,4 +1,4 @@
-import { Contract, ContractBuilder } from './contract';
+import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
@@ -6,16 +6,19 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
+import { indent } from './utils/format-lines';
 
 export interface ERC721Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
+  enumerable?: boolean;
   pausable?: boolean;
 }
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   burnable: false,
+  enumerable: false,
   pausable: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
@@ -30,6 +33,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
+    enumerable: opts.enumerable ?? defaults.enumerable,
     pausable: opts.pausable ?? defaults.pausable,
   };
 }
@@ -50,7 +54,11 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
+    addBurnable(c, allOpts.pausable, allOpts.enumerable);
+  }
+
+  if (allOpts.enumerable) {
+    addEnumerable(c, allOpts.pausable);
   }
 
   setAccessControl(c, allOpts.access);
@@ -78,25 +86,74 @@ function addBase(c: ContractBuilder, pausable: boolean) {
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
 
-    c.addFunctionCodeBefore(erc721Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
     c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean) {
+function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'IErc721Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'U256');
 
+  // TODO: make this function non-last when enumerable == true
   c.addFunction(erc721Trait, functions.burn);
 
   if (pausable) {
     c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
   }
+  if (enumerable) {
+    c.addFunctionCodeBefore(
+      erc721Trait,
+      functions.burn,
+      ['let owner = self.erc721.owner_of(token_id)?;']
+    );
+    c.addFunctionCodeAfter(
+      erc721Trait,
+      functions.burn,
+      [
+        `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
+        `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
+        'Ok(())',
+      ]
+    );
+  }
 }
 
-const erc721Trait = {
+function addEnumerable(c: ContractBuilder, _pausable: boolean) {
+  c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'Erc721Enumerable');
+
+  c.addUseClause('alloc::vec', 'Vec');
+  c.addUseClause('alloy_primitives', 'Address');
+  c.addUseClause('alloy_primitives', 'U256');
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
+
+  c.addImplementedTrait(enumerableTrait);
+  
+  c.addFunctionCodeAfter(
+    erc721Trait,
+    functions.supports_interface,
+    [indent(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1)],
+  )
+  
+  c.addFunctionCodeBefore(
+    erc721Trait,
+    functions.transfer_from,
+    [`let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`]
+  );
+  
+  c.addFunctionCodeAfter(
+    erc721Trait,
+    functions.transfer_from,
+    [
+      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
+      `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
+      'Ok(())'
+    ]
+  );
+}
+
+const erc721Trait: BaseImplementedTrait = {
   name: 'Erc721',
   storage: {
     name: 'erc721',
@@ -104,7 +161,15 @@ const erc721Trait = {
   },
 };
 
-// const erc721MetadataTrait = {
+const enumerableTrait: BaseImplementedTrait = {
+  name: 'Erc721Enumerable',
+  storage: {
+    name: 'enumerable',
+    type: 'Erc721Enumerable',
+  },
+};
+
+// const erc721MetadataTrait: BaseImplementedTrait = {
 //   name: 'Erc721Metadata',
 //   storage: {
 //     name: 'metadata',
@@ -114,20 +179,15 @@ const erc721Trait = {
 
 const functions = defineFunctions({
   // Token Functions
-  transfer: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<bool, Vec<u8>>',
-    code: ['self.erc721.transfer(to, value).map_err(|e| e.into())'],
-  },
   transfer_from: {
     args: [
       getSelfArg(),
       { name: 'from', type: 'Address' },
       { name: 'to', type: 'Address' },
-      { name: 'value', type: 'U256' },
+      { name: 'token_id', type: 'U256' },
     ],
-    returns: 'Result<bool, Vec<u8>>',
-    code: ['self.erc721.transfer_from(from, to, value).map_err(|e| e.into())'],
+    returns: 'Result<(), Vec<u8>>',
+    code: [`self.${erc721Trait.storage.name}.transfer_from(from, to, token_id)?;`],
   },
 
   // Overrides
@@ -141,6 +201,6 @@ const functions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
     returns: 'Result<(), Vec<u8>>',
-    code: ['self.erc721.burn(token_id).map_err(|e| e.into())'],
+    code: [`self.${erc721Trait.storage.name}.burn(token_id).map_err(|e| e.into())`],
   },
 });

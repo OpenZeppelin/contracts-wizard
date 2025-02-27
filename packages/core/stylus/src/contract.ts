@@ -53,6 +53,7 @@ export interface BaseFunction {
 
 export interface ContractFunction extends BaseFunction {
   codeBefore?: string[];
+  codeAfter?: string[];
 }
 
 export interface Variable {
@@ -141,7 +142,7 @@ export class ContractBuilder implements Contract {
   traitExists(name: string): boolean {
     return this.implementedTraitsMap.has(name);
   }
-
+  
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
     const t = this.addImplementedTrait(baseTrait);
 
@@ -172,6 +173,12 @@ export class ContractBuilder implements Contract {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
+  }
+
+  addFunctionCodeAfter(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeAfter: string[]): void {
+    this.addImplementedTrait(baseTrait);
+    const existingFn = this.addFunction(baseTrait, fn);
+    existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
   addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {

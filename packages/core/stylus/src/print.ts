@@ -245,18 +245,7 @@ function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
-  const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
-  for (let i = 0; i < codeLines.length; i++) {
-    const line = codeLines[i];
-    const shouldEndWithSemicolon = i < codeLines.length - 1 || fn.returns === undefined;
-    if (line !== undefined && line.length > 0) {
-      if (shouldEndWithSemicolon && !['{', '}', ';'].includes(line.charAt(line.length - 1))) {
-        codeLines[i] += ';';
-      } else if (!shouldEndWithSemicolon && line.endsWith(';')) {
-        codeLines[i] = line.slice(0, line.length - 1);
-      }
-    }
-  }
+  const codeLines = (fn.codeBefore?.concat(fn.code) ?? fn.code).concat(fn.codeAfter ?? []);
 
   return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }

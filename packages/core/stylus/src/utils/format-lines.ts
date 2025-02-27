@@ -7,18 +7,22 @@ export function formatLines(...lines: Lines[]): string {
 }
 
 function* indentEach(
-  indent: number,
+  tabs: number,
   lines: Lines[],
 ): Generator<string | typeof whitespace> {
   for (const line of lines) {
     if (line === whitespace) {
       yield '';
     } else if (Array.isArray(line)) {
-      yield* indentEach(indent + 1, line);
+      yield* indentEach(tabs + 1, line);
     } else {
-      yield '    '.repeat(indent) + line;
+      yield indent(line, tabs);
     }
   }
+}
+
+export function indent(line: string, tabs: number): string {
+  return '    '.repeat(tabs) + line;
 }
 
 export function spaceBetween(...lines: Lines[][]): Lines[] {
