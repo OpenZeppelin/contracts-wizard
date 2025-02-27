@@ -1,7 +1,7 @@
-import type { Argument } from './contract';
-import type { Access } from './set-access-control';
-import type { Info } from './set-info';
-import { defaults as infoDefaults } from './set-info';
+import type { Argument } from "./contract";
+import type { Access } from "./set-access-control";
+import type { Info } from "./set-info";
+import { defaults as infoDefaults } from "./set-info";
 
 export const defaults: Required<CommonOptions> = {
   info: infoDefaults,

@@ -1,7 +1,6 @@
 import test from 'ava';
 
-import type { ERC1155Options } from './erc1155';
-import { buildERC1155 } from './erc1155';
+import { buildERC1155, ERC1155Options } from './erc1155';
 import { printContract } from './print';
 
 import { erc1155 } from '.';
@@ -27,8 +26,8 @@ function testAPIEquivalence(title: string, opts?: ERC1155Options) {
         buildERC1155({
           name: 'MyToken',
           ...opts,
-        }),
-      ),
+        })
+      )
     );
   });
 }

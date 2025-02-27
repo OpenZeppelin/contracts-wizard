@@ -11,7 +11,7 @@ const blueprint = {
   pausable: booleans,
   permit: booleans,
   access: accessOptions,
-  info: infoOptions,
+  info: infoOptions
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {

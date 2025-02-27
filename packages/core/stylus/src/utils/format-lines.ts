@@ -6,7 +6,10 @@ export function formatLines(...lines: Lines[]): string {
   return [...indentEach(0, lines)].join('\n') + '\n';
 }
 
-function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof whitespace> {
+function* indentEach(
+  indent: number,
+  lines: Lines[],
+): Generator<string | typeof whitespace> {
   for (const line of lines) {
     if (line === whitespace) {
       yield '';

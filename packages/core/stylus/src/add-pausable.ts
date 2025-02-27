@@ -1,7 +1,6 @@
 import { getSelfArg } from './common-options';
 import type { ContractBuilder } from './contract';
-import type { Access } from './set-access-control';
-import { requireAccessControl } from './set-access-control';
+import { Access, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access) {
@@ -25,13 +24,21 @@ export function addPausable(c: ContractBuilder, access: Access) {
 
 const functions = defineFunctions({
   pause: {
-    args: [getSelfArg()],
+    args: [
+      getSelfArg(),
+    ],
     returns: 'Result<(), Vec<u8>>',
-    code: ['self.pausable.pause().map_err(|e| e.into())'],
+    code: [
+      'self.pausable.pause().map_err(|e| e.into())'
+    ],
   },
   unpause: {
-    args: [getSelfArg()],
+    args: [
+      getSelfArg(),
+    ],
     returns: 'Result<(), Vec<u8>>',
-    code: ['self.pausable.unpause().map_err(|e| e.into())'],
-  },
+    code: [
+      'self.pausable.unpause().map_err(|e| e.into())'
+    ],
+  }
 });

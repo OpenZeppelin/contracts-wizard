@@ -1,7 +1,6 @@
 import test from 'ava';
 
-import type { ERC721Options } from './erc721';
-import { buildERC721 } from './erc721';
+import { buildERC721, ERC721Options } from './erc721';
 import { printContract } from './print';
 
 import { erc721 } from '.';
@@ -27,8 +26,8 @@ function testAPIEquivalence(title: string, opts?: ERC721Options) {
         buildERC721({
           name: 'MyToken',
           ...opts,
-        }),
-      ),
+        })
+      )
     );
   });
 }

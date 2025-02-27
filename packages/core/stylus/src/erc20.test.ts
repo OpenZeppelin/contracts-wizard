@@ -1,7 +1,6 @@
 import test from 'ava';
 
-import type { ERC20Options } from './erc20';
-import { buildERC20 } from './erc20';
+import { buildERC20, ERC20Options } from './erc20';
 import { printContract } from './print';
 
 import { erc20 } from '.';
@@ -21,20 +20,15 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
  */
 function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.is(
-      erc20.print(opts),
-      printContract(
-        buildERC20({
-          name: 'MyToken',
-          ...opts,
-        }),
-      ),
-    );
+    t.is(erc20.print(opts), printContract(buildERC20({
+      name: 'MyToken',
+      ...opts,
+    })));
   });
 }
 
 testERC20('basic erc20', {
-  permit: false,
+  permit: false
 });
 
 testERC20('default erc20', {});
@@ -84,9 +78,9 @@ testERC20('erc20 full - complex name', {
 
 testAPIEquivalence('erc20 API default');
 
-testAPIEquivalence('erc20 API basic', {
+testAPIEquivalence('erc20 API basic', { 
   name: 'CustomToken',
-  permit: false,
+  permit: false
 });
 
 testAPIEquivalence('erc20 API full', {

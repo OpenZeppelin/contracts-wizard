@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import os from 'os';
-import type { TestFn, ExecutionContext } from 'ava';
-import _test from 'ava';
+import _test, { TestFn, ExecutionContext } from 'ava';
 import path from 'path';
 
 import { writeGeneratedSources } from './generate/sources';
