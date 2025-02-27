@@ -170,7 +170,7 @@ const functions = (trait: BaseImplementedTrait) => defineFunctions({
   supports_interface: {
     args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
     returns: 'bool',
-    code: [`${trait.storage.type}::supports_interface(interface_id)`],
+    code: [`${erc1155Trait.storage.type}::supports_interface(interface_id)`],
   },
 
   // Extensions
