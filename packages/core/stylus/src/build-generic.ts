@@ -19,8 +19,9 @@ export function buildGeneric(opts: GenericOptions) {
       case 'ERC1155':
         return buildERC1155(opts);
 
-    default:
+    default: {
       const _: never = opts;
       throw new Error('Unknown ERC');
+    }
   }
 }

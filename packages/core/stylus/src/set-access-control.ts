@@ -40,9 +40,10 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       // }
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }
 
@@ -83,8 +84,9 @@ export function requireAccessControl(
 
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }
