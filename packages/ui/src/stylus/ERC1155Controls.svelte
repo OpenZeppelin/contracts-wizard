@@ -42,6 +42,14 @@
       </HelpTooltip>
     </label>
 
+    <label class:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply}>
+      Supply Tracking
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc1155-supply">
+        Keeps track of total supply of tokens.
+      </HelpTooltip>
+    </label>
+
     <!-- TODO: uncomment once Pausable is supported -->
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>

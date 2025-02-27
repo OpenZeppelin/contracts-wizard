@@ -192,11 +192,14 @@ function printEip712(eip712?: EIP712): Lines[] {
 }
 
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const traitNames = sortedGroups.flatMap(([_, impls]) => impls).map(trait => trait.name);
-
+  const traitNames = sortedGroups
+    .flatMap(([_, impls]) => impls)
+    .filter(trait => !trait.omit_inherit)
+    .map(trait => trait.name);
+    
   const inheritAttribute = traitNames.length > 0
-  ? `#[inherit(${traitNames.join(', ')})]`
-  : "#[inherit]";
+    ? `#[inherit(${traitNames.join(', ')})]`
+    : "#[inherit]";
     
   const header = [
     '#[public]',
@@ -255,7 +258,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.comments, head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
 
 // generic for functions and constructors
@@ -264,7 +267,7 @@ function printFunction2(
   comments: string[] | undefined,
   kindedName: string,
   args: string[],
-  tag: string | undefined,
+  attribute: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[]
@@ -275,8 +278,8 @@ function printFunction2(
     fn.push(...comments);
   }
 
-  if (tag !== undefined) {
-    fn.push(`#[${tag}]`);
+  if (attribute !== undefined) {
+    fn.push(`#[${attribute}]`);
   }
 
   let accum = `${kindedName}(`;

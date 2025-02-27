@@ -35,6 +35,7 @@ export interface BaseImplementedTrait {
    * Lower numbers are higher priority, undefined is lowest priority.
    */
   priority?: number;
+  omit_inherit?: boolean;
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -47,11 +48,11 @@ export interface BaseFunction {
   code: string[];
   returns?: string;
   comments?: string[];
+  attribute?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
   codeBefore?: string[];
-  tag?: string;
 }
 
 export interface Variable {
@@ -93,7 +94,7 @@ export class ContractBuilder implements Contract {
   get errors(): Error[] {
     return [...this.errorsMap.values()];
   }
-  
+
   get constants(): Variable[] {
     return [...this.constantsMap.values()];
   }
@@ -116,11 +117,8 @@ export class ContractBuilder implements Contract {
       return existingTrait;
     } else {
       const t: ImplementedTrait = {
-        name: baseTrait.name,
+        ...baseTrait,
         functions: [],
-        storage: baseTrait.storage,
-        section: baseTrait.section,
-        priority: baseTrait.priority,
       };
       this.implementedTraitsMap.set(key, t);
       return t;
@@ -176,9 +174,9 @@ export class ContractBuilder implements Contract {
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
+  addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.tag = tag;
+    existingFn.attribute = attribute;
   }
 }
