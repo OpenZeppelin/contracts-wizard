@@ -1,12 +1,13 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, EIP712, } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, EIP712 } from './contract';
 
-import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import type { Lines } from './utils/format-lines';
+import { formatLines, spaceBetween } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
-const TAB = "\t";
+const TAB = '\t';
 
 export function printContract(contract: Contract): string {
   const sortedGroups = sortImplsToGroups(contract);
@@ -16,15 +17,9 @@ export function printContract(contract: Contract): string {
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
       ],
-      [
-        `#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`,
-        `extern crate alloc;`,
-      ],
+      [`#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`, `extern crate alloc;`],
       spaceBetween(
-        [
-          ...printUseClauses(contract),
-          'use stylus_sdk::prelude::{entrypoint, public, storage};',
-        ],
+        [...printUseClauses(contract), 'use stylus_sdk::prelude::{entrypoint, public, storage};'],
         printConstants(contract),
         printStorage(contract.name, sortedGroups),
         printEip712(contract.eip712),
@@ -35,20 +30,17 @@ export function printContract(contract: Contract): string {
 }
 
 function printUseClauses(contract: Contract): Lines[] {
-  const useClauses = [
-    ...sortUseClauses(contract),
-  ];
+  const useClauses = [...sortUseClauses(contract)];
 
   // group by containerPath
-  const grouped = useClauses.reduce(
-    (result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
-      if (useClause.groupable) {
-        (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
-      } else {
-        (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
-      }
-      return result;
-    }, {});
+  const grouped = useClauses.reduce((result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
+    if (useClause.groupable) {
+      (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
+    } else {
+      (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
+    }
+    return result;
+  }, {});
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
@@ -83,7 +75,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
     if (group.length == 1) {
       lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
-      let names = group.map((useClause) => nameWithAlias(useClause)).join(', ');
+      const names = group.map(useClause => nameWithAlias(useClause)).join(', ');
       lines.push(`use ${groupName}::{${names}};`);
     }
   }
@@ -103,7 +95,7 @@ function splitLongUseClauseLine(line: string): Lines[] {
     // split at the first brace
     lines.push(line.slice(0, line.indexOf('{') + 1));
     lines.push(...splitLongLineInner(line.slice(line.indexOf('{') + 1, -2)));
-    lines.push("};");
+    lines.push('};');
   } else {
     lines.push(line);
   }
@@ -149,25 +141,27 @@ function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
 
   // group by section
   const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[]; }, current: ImplementedTrait) => {
+    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
       // default to no section
       const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
       return result;
-    }, {});
+    },
+    {},
+  );
 
   const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   return sortedGroups;
 }
 
 function printStorage(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const structLines = sortedGroups.flatMap(([_, impls]) => impls).flatMap(trait => trait.storage).map(s => [
-    '#[borrow]',
-    `${s.name}: ${s.type},`,
-  ]);
-  
+  const structLines = sortedGroups
+    .flatMap(([_, impls]) => impls)
+    .flatMap(trait => trait.storage)
+    .map(s => ['#[borrow]', `${s.name}: ${s.type},`]);
+
   const baseStruct = ['#[entrypoint]', '#[storage]'];
-  
+
   return structLines.length === 0
     ? [...baseStruct, `struct ${contractName} {}`]
     : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
@@ -196,44 +190,25 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
     .flatMap(([_, impls]) => impls)
     .filter(trait => !trait.omit_inherit)
     .map(trait => trait.name);
-    
-  const inheritAttribute = traitNames.length > 0
-    ? `#[inherit(${traitNames.join(', ')})]`
-    : "#[inherit]";
-    
-  const header = [
-    '#[public]',
-    inheritAttribute
-  ];
-  
-  const sections = sortedGroups.map(
-    ([section, impls]) => printSectionFunctions(section, impls)
-  );
-    
+
+  const inheritAttribute = traitNames.length > 0 ? `#[inherit(${traitNames.join(', ')})]` : '#[inherit]';
+
+  const header = ['#[public]', inheritAttribute];
+
+  const sections = sortedGroups.map(([section, impls]) => printSectionFunctions(section, impls));
+
   return sections.length > 0 && sections.some(s => s.length > 0)
-    ? [
-        ...header, 
-        `impl ${contractName} {`,
-        spaceBetween(...sections),
-        '}'
-      ]
-    : [
-        ...header,
-        `impl ${contractName} {}`
-      ];
+    ? [...header, `impl ${contractName} {`, spaceBetween(...sections), '}']
+    : [...header, `impl ${contractName} {}`];
 }
 
 function printSectionFunctions(section: string, impls: ImplementedTrait[]): Lines[] {
   const functionBlocks = [];
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
-    functionBlocks.push([
-      '//',
-      `// ${section}`,
-      '//',
-    ]);
+    functionBlocks.push(['//', `// ${section}`, '//']);
   }
-  impls.forEach((trait) => {
+  impls.forEach(trait => {
     trait.functions.forEach(fn => {
       functionBlocks.push(printFunction(fn));
     });
@@ -270,7 +245,7 @@ function printFunction2(
   attribute: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
-  code: Lines[]
+  code: Lines[],
 ): Lines[] {
   const fn = [];
 
@@ -302,7 +277,7 @@ function printFunction2(
     fn.push(accum);
     return fn;
   }
-  
+
   if (returns === undefined) {
     accum += ' {';
   } else {

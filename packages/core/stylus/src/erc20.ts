@@ -1,7 +1,9 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import type { BaseImplementedTrait, Contract } from './contract';
+import { ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
@@ -81,25 +83,21 @@ function addBase(c: ContractBuilder, pausable: boolean) {
 
   // c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
   // c.addImplementedTrait(erc20MetadataTrait);
-  
+
   if (pausable) {
     c.addUseClause('alloc::vec', 'Vec');
     c.addUseClause('alloy_primitives', 'Address');
     c.addUseClause('alloy_primitives', 'U256');
 
-    c.addFunctionCodeBefore(erc20Trait, functions.transfer, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   }
 }
 
 function addPermit(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Permit');
   c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
-  
+
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'B256');
@@ -111,10 +109,8 @@ function addPermit(c: ContractBuilder, pausable: boolean) {
 
   c.addFunction(erc20PermitTrait, functions.permit);
 
-  if (pausable) {   
-    c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+  if (pausable) {
+    c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
   }
 }
 
@@ -129,12 +125,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addFunction(erc20Trait, functions.burn_from);
 
   if (pausable) {
-    c.addFunctionCodeBefore(erc20Trait, functions.burn, [
-      'self.pausable.when_not_paused()?;',
-    ]);
-    c.addFunctionCodeBefore(erc20Trait, functions.burn_from, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(erc20Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
+    c.addFunctionCodeBefore(erc20Trait, functions.burn_from, ['self.pausable.when_not_paused()?;']);
   }
 }
 
@@ -145,15 +137,13 @@ function addFlashMint(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('stylus_sdk::abi', 'Bytes');
 
   c.addImplementedTrait(flashMintTrait);
-  
+
   c.addFunction(flashMintTrait, functions.max_flash_loan);
   c.addFunction(flashMintTrait, functions.flash_fee);
   c.addFunction(flashMintTrait, functions.flash_loan);
-  
+
   if (pausable) {
-    c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, [
-      'self.pausable.when_not_paused()?;',
-    ]);
+    c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);
   }
 }
 
@@ -179,7 +169,7 @@ const flashMintTrait: BaseImplementedTrait = {
     name: 'flash_mint',
     type: 'Erc20FlashMint',
   },
-  omit_inherit: true
+  omit_inherit: true,
 };
 
 const noncesTrait: BaseImplementedTrait = {
@@ -187,7 +177,7 @@ const noncesTrait: BaseImplementedTrait = {
   storage: {
     name: 'nonces',
     type: 'Nonces',
-  }
+  },
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -201,15 +191,9 @@ const noncesTrait: BaseImplementedTrait = {
 const functions = defineFunctions({
   // Token Functions
   transfer: {
-    args: [
-      getSelfArg(),
-      { name: 'to', type: 'Address' },
-      { name: 'value', type: 'U256' },
-    ],
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<bool, Vec<u8>>',
-    code: [
-      `self.${erc20Trait.storage.name}.transfer(to, value).map_err(|e| e.into())`,
-    ],
+    code: [`self.${erc20Trait.storage.name}.transfer(to, value).map_err(|e| e.into())`],
   },
   transfer_from: {
     args: [
@@ -219,9 +203,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'U256' },
     ],
     returns: 'Result<bool, Vec<u8>>',
-    code: [
-      `self.${erc20Trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`,
-    ],
+    code: [`self.${erc20Trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`],
   },
 
   // Extensions
@@ -231,15 +213,9 @@ const functions = defineFunctions({
     code: [`self.${erc20Trait.storage.name}.burn(value).map_err(|e| e.into())`],
   },
   burn_from: {
-    args: [
-      getSelfArg(),
-      { name: 'account', type: 'Address' },
-      { name: 'value', type: 'U256' },
-    ],
+    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<(), Vec<u8>>',
-    code: [
-      `self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`,
-    ],
+    code: [`self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`],
   },
 
   permit: {
@@ -261,25 +237,14 @@ const functions = defineFunctions({
   },
 
   max_flash_loan: {
-    args: [
-      getSelfArg("immutable"),
-      { name: 'token', type: 'Address' },
-    ],
+    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
     returns: 'U256',
-    code: [
-      `self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`,
-    ],
+    code: [`self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`],
   },
   flash_fee: {
-    args: [
-      getSelfArg("immutable"),
-      { name: 'token', type: 'Address' },
-      { name: 'value', type: 'U256' },
-    ],
+    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<U256, Vec<u8>>',
-    code: [
-      `self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`,
-    ],
+    code: [`self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`],
   },
   flash_loan: {
     args: [

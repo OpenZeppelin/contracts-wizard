@@ -33,11 +33,11 @@ test('identifier - remove starting numbers', t => {
 });
 
 test('identifier - empty string', t => {
-  let error = t.throws(() => toIdentifier(''), { instanceOf: OptionsError });
+  const error = t.throws(() => toIdentifier(''), { instanceOf: OptionsError });
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });
 
 test('identifier - no valid chars', t => {
-  let error = t.throws(() => toIdentifier('123'),  { instanceOf: OptionsError });
+  const error = t.throws(() => toIdentifier('123'), { instanceOf: OptionsError });
   t.is(error.messages.name, 'Identifier is empty or does not have valid characters');
 });

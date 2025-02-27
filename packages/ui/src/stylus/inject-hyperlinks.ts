@@ -1,7 +1,7 @@
-import { contractsVersionTag } from "@openzeppelin/wizard-stylus/src";
+import { contractsVersionTag } from '@openzeppelin/wizard-stylus/src';
 
 export function injectHyperlinks(code: string) {
-  const importRegex = /use<\/span> (openzeppelin_stylus)::([^{A-Z]*)(::[a-zA-Z0-9]+|::{)/g
+  const importRegex = /use<\/span> (openzeppelin_stylus)::([^{A-Z]*)(::[a-zA-Z0-9]+|::{)/g;
   let result = code;
   let match = importRegex.exec(code);
   while (match != null) {
@@ -9,7 +9,7 @@ export function injectHyperlinks(code: string) {
     if (line !== undefined && libraryPrefix !== undefined && libraryPath !== undefined && suffix !== undefined) {
       const githubPrefix = `https://github.com/OpenZeppelin/rust-contracts-stylus/blob/${contractsVersionTag}/contracts/src/`;
 
-      let libraryPathSegments = libraryPath.split('::');
+      const libraryPathSegments = libraryPath.split('::');
 
       if (libraryPathSegments !== undefined && libraryPathSegments.length > 0) {
         let replacement;
@@ -40,8 +40,8 @@ export function injectHyperlinks(code: string) {
 }
 
 const moduleMappings: { [key: string]: string } = {
-  'Erc20Metadata': 'token/erc20/extensions/metadata.rs',
-  'Ownable': 'access/ownable.rs',
-  'AccessControl': 'access/control.rs',
-  'IErc165': 'utils/introspection/erc165.rs',
+  Erc20Metadata: 'token/erc20/extensions/metadata.rs',
+  Ownable: 'access/ownable.rs',
+  AccessControl: 'access/control.rs',
+  IErc165: 'utils/introspection/erc165.rs',
 } as const;

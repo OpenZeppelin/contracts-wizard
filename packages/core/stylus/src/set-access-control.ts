@@ -58,7 +58,7 @@ export function requireAccessControl(
   fn: BaseFunction,
   access: Access,
   roleIdPrefix: string,
-  roleOwner: string | undefined
+  roleOwner: string | undefined,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
