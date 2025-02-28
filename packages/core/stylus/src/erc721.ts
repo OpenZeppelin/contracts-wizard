@@ -129,15 +129,16 @@ function addEnumerable(c: ContractBuilder, _pausable: boolean) {
     indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),
   ]);
 
-  c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, [
-    `let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
-  ]);
-
-  c.addFunctionCodeAfter(erc721Trait, functions.transfer_from, [
-    `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
-    `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
-    'Ok(())',
-  ]);
+  for (const fn of [functions.transfer_from, functions.safe_transfer_from, functions.safe_transfer_from_with_data]) {
+    c.addFunctionCodeBefore(erc721Trait, fn, [
+      `let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
+    ]);
+    c.addFunctionCodeAfter(erc721Trait, fn, [
+      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
+      `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
+      'Ok(())',
+    ]);
+  }
 }
 
 const erc721Trait: BaseImplementedTrait = {
@@ -176,6 +177,30 @@ const functions = defineFunctions({
     returns: 'Result<(), Vec<u8>>',
     // safe to end the code with `?;`, as when this code is set, it will have surrounding code
     code: [`self.${erc721Trait.storage.name}.transfer_from(from, to, token_id)?;`],
+  },
+  safe_transfer_from: {
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'token_id', type: 'U256' },
+    ],
+    returns: 'Result<(), Vec<u8>>',
+    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
+    code: [`self.${erc721Trait.storage.name}.safe_transfer_from(from, to, token_id)?;`],
+  },
+  safe_transfer_from_with_data: {
+    attribute: 'selector(name = "safeTransferFrom")',
+    args: [
+      getSelfArg(),
+      { name: 'from', type: 'Address' },
+      { name: 'to', type: 'Address' },
+      { name: 'token_id', type: 'U256' },
+      { name: 'data', type: 'Bytes' },
+    ],
+    returns: 'Result<(), Vec<u8>>',
+    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
+    code: [`self.${erc721Trait.storage.name}.safe_transfer_from_with_data(from, to, token_id, data)?;`],
   },
 
   // Overrides
