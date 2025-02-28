@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-escape */
 import { contractsVersionTag } from '@openzeppelin/wizard-cairo/src';
 
 export function injectHyperlinks(code: string) {
@@ -17,7 +16,7 @@ export function injectHyperlinks(code: string) {
         let replacement;
         if (suffix === '::{') {
           // Multiple components are imported, so remove components and link to the parent .cairo file
-          replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
+          replacement = `use</span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
             '/',
           )}.cairo' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}</a>${suffix}`; // Exclude suffix from link
         } else {
@@ -26,7 +25,7 @@ export function injectHyperlinks(code: string) {
           const componentName = suffix.substring(2, suffix.length);
           const mapping = componentMappings[componentName];
           const urlSuffix = mapping ? `/${mapping}.cairo` : '.cairo';
-          replacement = `use<\/span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
+          replacement = `use</span> <a class="import-link" href='${githubPrefix}${libraryPathSegments.join(
             '/',
           )}${urlSuffix}' target='_blank' rel='noopener noreferrer'>${libraryPrefix}::${libraryPath}${suffix}</a>`; // Include suffix (component) in link
         }

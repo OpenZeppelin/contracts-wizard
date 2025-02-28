@@ -1,5 +1,6 @@
 import type { GenericOptions as SolidityOptions } from '@openzeppelin/wizard';
 import type { GenericOptions as CairoOptions } from '@openzeppelin/wizard-cairo';
+import type { GenericOptions as StellarOptions } from '@openzeppelin/wizard-stellar';
 
 declare global {
   interface Window {
@@ -11,13 +12,9 @@ export type Action = 'copy' | 'remix' | 'download-file' | 'download-hardhat' | '
 export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar';
 
 export async function postConfig(
-  opts: Required<SolidityOptions> | Required<CairoOptions>,
+  opts: Required<SolidityOptions> | Required<CairoOptions> | Required<StellarOptions>,
   action: Action,
   language: Language,
 ) {
-  window.gtag?.('event', 'wizard_action', {
-    ...opts,
-    action,
-    wizard_lang: language,
-  });
+  window.gtag?.('event', 'wizard_action', { ...opts, action, wizard_lang: language });
 }

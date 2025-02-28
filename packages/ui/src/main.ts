@@ -3,6 +3,7 @@ import './common/styles/global.css';
 import type {} from 'svelte';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
+import StellarApp from './stellar/App.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -48,6 +49,9 @@ if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSem
         target: document.body,
         props: { initialTab, initialOpts },
       });
+      break;
+    case 'stellar':
+      app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
     default:

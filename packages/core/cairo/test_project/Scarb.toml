@@ -2,12 +2,12 @@
 name = "test_project"
 version = "0.1.0"
 edition = "2024_07"
-cairo-version = "2.9.1"
-scarb-version = "2.9.1"
+cairo-version = "2.9.4"
+scarb-version = "2.9.4"
 
 [dependencies]
-starknet = "2.9.1"
-openzeppelin = "0.20.0"
+starknet = "2.9.4"
+openzeppelin = "1.0.0"
 
 [lib]
 
