@@ -74,13 +74,14 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc721', 'Erc721');
   c.addUseClause('openzeppelin_stylus::token::erc721', 'IErc721');
   // c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'Erc721Metadata');
+
   c.addImplementedTrait(erc721Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
 
   // Call nested IErc65 from Erc721
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc721Trait, functions.supports_interface); // TODO: This is currently hardcoded to call Erc721. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  c.addFunction(erc721Trait, functions.supports_interface);
 
   if (pausable) {
     // Add transfer functions with pause checks
@@ -98,15 +99,15 @@ function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean)
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'U256');
 
-  // TODO: make this function non-last when enumerable == true
   c.addFunction(erc721Trait, functions.burn);
 
   if (pausable) {
     c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
   }
   if (enumerable) {
-    c.addFunctionCodeBefore(erc721Trait, functions.burn, ['let owner = self.erc721.owner_of(token_id)?;']);
-    c.addFunctionCodeAfter(erc721Trait, functions.burn, [
+    c.setFunctionCode(erc721Trait, functions.burn, [
+      `let owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
+      `self.${erc721Trait.storage.name}.burn(token_id)?;`,
       `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
       `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
       'Ok(())',
@@ -173,6 +174,7 @@ const functions = defineFunctions({
       { name: 'token_id', type: 'U256' },
     ],
     returns: 'Result<(), Vec<u8>>',
+    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
     code: [`self.${erc721Trait.storage.name}.transfer_from(from, to, token_id)?;`],
   },
 
