@@ -7,6 +7,8 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import OPIcon from '../common/icons/OPIcon.svelte';
+  import { superchainTooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['RealWorldAsset']> = {
     kind: 'RealWorldAsset',
@@ -18,11 +20,29 @@
   };
 
   $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
+
+  // Show notice when SuperchainERC20 is enabled
+  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+
+  let superchainLabel: HTMLElement;
+  let superchainTooltip: TippyInstance;
+  onMount(() => {
+    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
+  });
+
+  let wasSuperchain = false;
+  $: {
+    if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
+      superchainTooltip.show();
+    }
+    wasSuperchain = opts.crossChainBridging === 'superchain';
+  }
 </script>
 
 <section class="controls-section">
   <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and subject to change</span>
+    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and are subject to change</span>
   </div>
 </section>
 
@@ -97,7 +117,7 @@
 
     <label class:checked={opts.custodian}>
       <input type="checkbox" bind:checked={opts.custodian}>
-      Custodian
+      Custodian*
       <HelpTooltip>
         Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
       </HelpTooltip>
@@ -109,7 +129,7 @@
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex items-center tooltip-container pr-2">
-      <span>Limitations</span>
+      <span>Limitations*</span>
       <span class="ml-1">
         <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
       </span>
@@ -122,14 +142,14 @@
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist">
-      Allowlist
+      Allowlist*
       <HelpTooltip>
         Allows a list of addresses to transfer tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.limitations === 'blocklist'}>
       <input type="radio" bind:group={opts.limitations} value="blocklist">
-      Blocklist
+      Blocklist*
       <HelpTooltip>
         Blocks a list of addresses from transferring tokens.
       </HelpTooltip>
@@ -164,6 +184,39 @@
       Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="flex items-center tooltip-container pr-2">
+      <span>Cross-Chain Bridging*</span>
+      <span class="ml-1">
+        <ToggleRadio bind:value={opts.crossChainBridging} defaultValue="custom" />
+      </span>
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
+        Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
+      </HelpTooltip>
+    </label>
+  </h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.crossChainBridging === 'custom'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="custom">
+      Custom*
+      <HelpTooltip>
+        Uses custom bridge contract(s) as authorized token bridge(s).
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="superchain">
+      SuperchainERC20* &nbsp;<OPIcon />
+      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on chains in the Superchain.
       </HelpTooltip>
     </label>
   </div>
