@@ -1,6 +1,7 @@
 import { getSelfArg } from './common-options';
 import type { ContractBuilder } from './contract';
-import { Access, requireAccessControl } from './set-access-control';
+import type { Access } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access) {
@@ -10,9 +11,7 @@ export function addPausable(c: ContractBuilder, access: Access) {
   const pausableTrait = {
     name: 'Pausable',
     for: c.name,
-    tags: [
-      'contractimpl',
-    ],
+    tags: ['contractimpl'],
     section: 'Utils',
   };
 
@@ -26,30 +25,16 @@ export function addPausable(c: ContractBuilder, access: Access) {
 
 const functions = defineFunctions({
   paused: {
-    args: [
-      getSelfArg(),
-    ],
+    args: [getSelfArg()],
     returns: 'bool',
-    code: [
-      'pausable::paused(e)'
-    ],
+    code: ['pausable::paused(e)'],
   },
   pause: {
-    args: [
-      getSelfArg(),
-      { name: 'caller', type: 'Address' },
-    ],
-    code: [
-      'pausable::pause(e, &caller)'
-    ],
+    args: [getSelfArg(), { name: 'caller', type: 'Address' }],
+    code: ['pausable::pause(e, &caller)'],
   },
   unpause: {
-    args: [
-      getSelfArg(),
-      { name: 'caller', type: 'Address' },
-    ],
-    code: [
-      'pausable::unpause(e, &caller)'
-    ],
+    args: [getSelfArg(), { name: 'caller', type: 'Address' }],
+    code: ['pausable::unpause(e, &caller)'],
   },
 });

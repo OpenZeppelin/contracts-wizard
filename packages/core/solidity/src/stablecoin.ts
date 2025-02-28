@@ -1,11 +1,18 @@
-import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl, requireAccessControl } from './set-access-control';
+import type { Contract, ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { setAccessControl, requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
-import { buildERC20, ERC20Options, defaults as erc20defaults, withDefaults as withERC20Defaults, functions as erc20functions } from './erc20';
+import type { ERC20Options } from './erc20';
+import {
+  buildERC20,
+  defaults as erc20defaults,
+  withDefaults as withERC20Defaults,
+  functions as erc20functions,
+} from './erc20';
 
 export interface StablecoinOptions extends ERC20Options {
-  limitations?: false | "allowlist" | "blocklist";
+  limitations?: false | 'allowlist' | 'blocklist';
   custodian?: boolean;
 }
 
@@ -65,7 +72,7 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
   c.addOverride(ERC20Limitation, functions._update);
   c.addOverride(ERC20Limitation, functions._approve);
 
-  const [addFn, removeFn] = type 
+  const [addFn, removeFn] = type
     ? [functions.allowUser, functions.disallowUser]
     : [functions.blockUser, functions.unblockUser];
 
@@ -89,7 +96,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
   if (access === false) {
     access = 'ownable';
   }
-  
+
   setAccessControl(c, access);
 
   switch (access) {
@@ -102,7 +109,7 @@ function addCustodian(c: ContractBuilder, access: Access) {
       const roleId = 'CUSTODIAN_ROLE';
       const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
       if (roleOwner && addedConstant) {
-        c.addConstructorArgument({type: 'address', name: roleOwner});
+        c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
       }
       c.setFunctionBody([`return hasRole(CUSTODIAN_ROLE, user);`], functions._isCustodian);
@@ -115,8 +122,8 @@ function addCustodian(c: ContractBuilder, access: Access) {
       });
       const logic = [
         `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
-        `return immediate;`
-      ]
+        `return immediate;`,
+      ];
       c.setFunctionBody(logic, functions._isCustodian);
       break;
     }
@@ -128,40 +135,29 @@ const functions = {
   ...defineFunctions({
     _isCustodian: {
       kind: 'internal' as const,
-      args: [
-        { name: 'user', type: 'address' },
-      ],
+      args: [{ name: 'user', type: 'address' }],
       returns: ['bool'],
-      mutability: 'view' as const
+      mutability: 'view' as const,
     },
 
     allowUser: {
       kind: 'public' as const,
-      args: [
-        { name: 'user', type: 'address' }
-      ],
+      args: [{ name: 'user', type: 'address' }],
     },
 
     disallowUser: {
       kind: 'public' as const,
-      args: [
-        { name: 'user', type: 'address' }
-      ],
+      args: [{ name: 'user', type: 'address' }],
     },
 
     blockUser: {
       kind: 'public' as const,
-      args: [
-        { name: 'user', type: 'address' }
-      ],
+      args: [{ name: 'user', type: 'address' }],
     },
 
     unblockUser: {
       kind: 'public' as const,
-      args: [
-        { name: 'user', type: 'address' }
-      ],
+      args: [{ name: 'user', type: 'address' }],
     },
-  })
+  }),
 };
-

@@ -1,13 +1,14 @@
 import { promises as fs } from 'fs';
 import os from 'os';
-import _test, { TestFn, ExecutionContext } from 'ava';
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 import path from 'path';
 
 import { writeGeneratedSources } from './generate/sources';
 import type { KindedOptions } from './build-generic';
 
 interface Context {
-  generatedSourcesPath: string
+  generatedSourcesPath: string;
 }
 
 const test = _test as TestFn<Context>;

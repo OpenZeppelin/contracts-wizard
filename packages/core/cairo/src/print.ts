@@ -1,16 +1,26 @@
-import type { Contract, Component, Argument, Value, Impl, ContractFunction, ImplementedTrait, UseClause, } from './contract';
+import type {
+  Contract,
+  Component,
+  Argument,
+  Value,
+  Impl,
+  ContractFunction,
+  ImplementedTrait,
+  UseClause,
+} from './contract';
 
-import { formatLines, spaceBetween, Lines } from './utils/format-lines';
+import { formatLines, spaceBetween } from './utils/format-lines';
+import type { Lines } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
-const TAB = "\t";
+const TAB = '\t';
 
 export function printContract(contract: Contract): string {
-  const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]'
+  const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]';
   return formatLines(
     ...spaceBetween(
       [
@@ -38,7 +48,7 @@ export function printContract(contract: Contract): string {
 }
 
 function withSemicolons(lines: string[]): string[] {
-  return lines.map(line => line.endsWith(';') ? line : line + ';');
+  return lines.map(line => (line.endsWith(';') ? line : line + ';'));
 }
 
 function printSuperVariables(contract: Contract): string[] {
@@ -49,15 +59,14 @@ function printUseClauses(contract: Contract): Lines[] {
   const useClauses = sortUseClauses(contract);
 
   // group by containerPath
-  const grouped = useClauses.reduce(
-    (result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
-      if (useClause.groupable) {
-        (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
-      } else {
-        (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
-      }
-      return result;
-    }, {});
+  const grouped = useClauses.reduce((result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
+    if (useClause.groupable) {
+      (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
+    } else {
+      (result[STANDALONE_IMPORTS_GROUP] = result[STANDALONE_IMPORTS_GROUP] || []).push(useClause);
+    }
+    return result;
+  }, {});
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
@@ -73,7 +82,7 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
     if (group.length == 1) {
       lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
-      let names = group.map((useClause) => nameWithAlias(useClause)).join(', ');
+      const names = group.map(useClause => nameWithAlias(useClause)).join(', ');
       lines.push(`use ${groupName}::{${names}};`);
     }
   }
@@ -93,7 +102,7 @@ function splitLongUseClauseLine(line: string): Lines[] {
     // split at the first brace
     lines.push(line.slice(0, line.indexOf('{') + 1));
     lines.push(...splitLongLineInner(line.slice(line.indexOf('{') + 1, -2)));
-    lines.push("};");
+    lines.push('};');
   } else {
     lines.push(line);
   }
@@ -147,7 +156,9 @@ function printConstants(contract: Contract): Lines[] {
 function printComponentDeclarations(contract: Contract): Lines[] {
   const lines = [];
   for (const component of contract.components) {
-    lines.push(`component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`);
+    lines.push(
+      `component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`,
+    );
   }
   return lines;
 }
@@ -156,19 +167,18 @@ function printImpls(contract: Contract): Lines[] {
   const impls = contract.components.flatMap(c => c.impls);
 
   // group by section
-  const grouped = impls.reduce(
-    (result: { [section: string]: Impl[] }, current:Impl) => {
-      // default section depends on embed
-      // embed defaults to true
-      const embed = current.embed ?? true;
-      const section = current.section ?? (embed ? 'External' : 'Internal');
-      (result[section] = result[section] || []).push(current);
-      return result;
-    }, {});
+  const grouped = impls.reduce((result: { [section: string]: Impl[] }, current: Impl) => {
+    // default section depends on embed
+    // embed defaults to true
+    const embed = current.embed ?? true;
+    const section = current.section ?? (embed ? 'External' : 'Internal');
+    (result[section] = result[section] || []).push(current);
+    return result;
+  }, {});
 
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printSection(section, impls as Impl[]),
-  );
+  const sections = Object.entries(grouped)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([section, impls]) => printSection(section, impls as Impl[]));
   return spaceBetween(...sections);
 }
 
@@ -209,7 +219,7 @@ function printEvents(contract: Contract): (string | string[])[] {
   if (contract.components.length > 0) {
     lines.push('#[event]');
     lines.push('#[derive(Drop, starknet::Event)]');
-    lines.push('enum Event {')
+    lines.push('enum Event {');
     const eventLines = [];
     for (const component of contract.components) {
       eventLines.push('#[flat]');
@@ -235,16 +245,18 @@ function printImplementedTraits(contract: Contract): Lines[] {
 
   // group by section
   const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current:ImplementedTrait) => {
+    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
       // default to no section
       const section = current.section ?? DEFAULT_SECTION;
       (result[section] = result[section] || []).push(current);
       return result;
-    }, {});
-
-  const sections = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0])).map(
-    ([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]),
+    },
+    {},
   );
+
+  const sections = Object.entries(grouped)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]));
 
   return spaceBetween(...sections);
 }
@@ -271,9 +283,7 @@ function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.name} of ${trait.of} {`);
 
-  const superVars = withSemicolons(
-    trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`)
-  );
+  const superVars = withSemicolons(trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
   implLines.push(superVars);
 
   const fns = trait.functions.map(fn => printFunction(fn));
@@ -306,17 +316,12 @@ function printConstructor(contract: Contract): Lines[] {
   const hasInitializers = contract.components.some(p => p.initializer !== undefined);
   const hasConstructorCode = contract.constructorCode.length > 0;
   if (hasInitializers || hasConstructorCode) {
-    const parents = contract.components
-      .filter(hasInitializer)
-      .flatMap(p => printParentConstructor(p));
+    const parents = contract.components.filter(hasInitializer).flatMap(p => printParentConstructor(p));
     const tag = 'constructor';
     const head = 'fn constructor';
-    const args = [ getSelfArg(), ...contract.constructorArgs ];
+    const args = [getSelfArg(), ...contract.constructorArgs];
 
-    const body = spaceBetween(
-        withSemicolons(parents),
-        withSemicolons(contract.constructorCode),
-      );
+    const body = spaceBetween(withSemicolons(parents), withSemicolons(contract.constructorCode));
 
     const constructor = printFunction2(
       head,
@@ -341,9 +346,7 @@ function printParentConstructor({ substorage, initializer }: Component): [] | [s
     return [];
   }
   const fn = `self.${substorage.name}.initializer`;
-  return [
-    fn + '(' + initializer.params.map(printValue).join(', ') + ')',
-  ];
+  return [fn + '(' + initializer.params.map(printValue).join(', ') + ')'];
 }
 
 export function printValue(value: Value): string {
@@ -363,7 +366,7 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else if (typeof value === 'bigint') {
-    return `${value}`
+    return `${value}`;
   } else {
     return `"${value}"`;
   }
@@ -377,7 +380,7 @@ function printFunction2(
   tag: string | undefined,
   returns: string | undefined,
   returnLine: string | undefined,
-  code: Lines[]
+  code: Lines[],
 ): Lines[] {
   const fn = [];
 

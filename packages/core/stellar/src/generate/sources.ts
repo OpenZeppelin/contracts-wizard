@@ -3,7 +3,8 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateFungibleOptions } from './fungible';
-import { buildGeneric, GenericOptions, KindedOptions } from '../build-generic';
+import type { GenericOptions, KindedOptions } from '../build-generic';
+import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
 import type { Contract } from '../contract';
@@ -32,11 +33,7 @@ function generateContractSubset(kind?: Kind): GeneratedContract[] {
   const contracts = [];
 
   for (const options of generateOptions(kind)) {
-    const id = crypto
-      .createHash('sha1')
-      .update(JSON.stringify(options))
-      .digest()
-      .toString('hex');
+    const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
 
     try {
       const contract = buildGeneric(options);
@@ -66,7 +63,7 @@ export function* generateSources(uniqueName?: boolean, kind?: Kind): Generator<G
 
 export async function writeGeneratedSources(dir: string, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
-  let contractNames = [];
+  const contractNames = [];
 
   for (const { id, contract, source } of generateSources(uniqueName, kind)) {
     const name = uniqueName ? contract.name : id;

@@ -1,9 +1,10 @@
-import JSZip from "jszip";
-import type { GenericOptions } from "./build-generic";
-import type { Contract } from "./contract";
-import { printContract } from "./print";
+import JSZip from 'jszip';
+import type { GenericOptions } from './build-generic';
+import type { Contract } from './contract';
+import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
-import { formatLinesWithSpaces, Lines, spaceBetween } from "./utils/format-lines";
+import type { Lines } from './utils/format-lines';
+import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
@@ -52,13 +53,7 @@ artifacts
 `;
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(
-    2,
-    ...spaceBetween(
-      getImports(c),
-      getTestCase(c),
-    ),
-  );
+  return formatLinesWithSpaces(2, ...spaceBetween(getImports(c), getTestCase(c)));
 
   function getTestCase(c: Contract) {
     const args = getAddressArgs(c);
@@ -67,27 +62,19 @@ const test = (c: Contract, opts?: GenericOptions) => {
       [
         'it("Test contract", async function () {',
         spaceBetween(
-          [
-            `const ContractFactory = await ethers.getContractFactory("${c.name}");`,
-          ],
+          [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
           getAddressVariables(args),
-          [
-            `const instance = await ${getDeploymentCall(c, args)};`,
-            'await instance.waitForDeployment();'
-          ],
+          [`const instance = await ${getDeploymentCall(c, args)};`, 'await instance.waitForDeployment();'],
           getExpects(),
         ),
-        '});'
+        '});',
       ],
       '});',
     ];
   }
 
   function getImports(c: Contract) {
-    return [
-      'import { expect } from "chai";',
-      `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`,
-    ];
+    return ['import { expect } from "chai";', `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`];
   }
 
   function getExpects(): Lines[] {
@@ -131,7 +118,9 @@ function getAddressArgs(c: Contract): string[] {
 }
 
 function getDeploymentCall(c: Contract, args: string[]): string {
-  return c.upgradeable ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])` : `ContractFactory.deploy(${args.join(', ')})`;
+  return c.upgradeable
+    ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`
+    : `ContractFactory.deploy(${args.join(', ')})`;
 }
 
 const script = (c: Contract) => {
@@ -155,7 +144,8 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-`};
+`;
+};
 
 const readme = `\
 # Sample Hardhat Project
@@ -184,7 +174,7 @@ npx hardhat run --network <network-name> scripts/deploy.ts
 `;
 
 function getHardhatPlugins(c: Contract) {
-  let plugins = ['ethers'];
+  const plugins = ['ethers'];
   if (c.upgradeable) {
     plugins.push('upgrades');
   }
@@ -194,10 +184,14 @@ function getHardhatPlugins(c: Contract) {
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  const { default: packageJson } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package.json") : await import("./environments/hardhat/package.json");
+  const { default: packageJson } = c.upgradeable
+    ? await import('./environments/hardhat/upgradeable/package.json')
+    : await import('./environments/hardhat/package.json');
   packageJson.license = c.license;
 
-  const { default: packageLock } = c.upgradeable ? await import("./environments/hardhat/upgradeable/package-lock.json") : await import("./environments/hardhat/package-lock.json");
+  const { default: packageLock } = c.upgradeable
+    ? await import('./environments/hardhat/upgradeable/package-lock.json')
+    : await import('./environments/hardhat/package-lock.json');
   packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));

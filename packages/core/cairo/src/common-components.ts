@@ -1,10 +1,10 @@
 import type { BaseImplementedTrait, ContractBuilder } from './contract';
-import { defineComponents } from "./utils/define-components";
+import { defineComponents } from './utils/define-components';
 
 export const tokenTypes = ['ERC20', 'ERC721'] as const;
-export type Token = typeof tokenTypes[number];
+export type Token = (typeof tokenTypes)[number];
 
-const components = defineComponents( {
+const components = defineComponents({
   SRC5Component: {
     path: 'openzeppelin::introspection::src5',
     substorage: {
@@ -28,11 +28,13 @@ const components = defineComponents( {
       name: 'VotesEvent',
       type: 'VotesComponent::Event',
     },
-    impls: [{
-      name: 'VotesInternalImpl',
-      embed: false,
-      value: 'VotesComponent::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'VotesInternalImpl',
+        embed: false,
+        value: 'VotesComponent::InternalImpl<ContractState>',
+      },
+    ],
   },
 
   NoncesComponent: {
@@ -52,7 +54,7 @@ const components = defineComponents( {
       },
     ],
   },
-})
+});
 
 export function addSRC5Component(c: ContractBuilder, section?: string) {
   c.addComponent(components.SRC5Component, [], false);
@@ -93,17 +95,13 @@ export function addSNIP12Metadata(c: ContractBuilder, name: string, version: str
     name: 'name',
     args: [],
     returns: 'felt252',
-    code: [
-      `'${name}'`,
-    ],
+    code: [`'${name}'`],
   });
 
   c.addFunction(SNIP12Metadata, {
     name: 'version',
     args: [],
     returns: 'felt252',
-    code: [
-      `'${version}'`,
-    ],
+    code: [`'${version}'`],
   });
 }

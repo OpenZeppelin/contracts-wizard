@@ -10,11 +10,7 @@ export function formatLinesWithSpaces(spacesPerIndent: number, ...lines: Lines[]
   return [...indentEach(0, lines, spacesPerIndent)].join('\n') + '\n';
 }
 
-function* indentEach(
-  indent: number,
-  lines: Lines[],
-  spacesPerIndent: number,
-): Generator<string | typeof whitespace> {
+function* indentEach(indent: number, lines: Lines[], spacesPerIndent: number): Generator<string | typeof whitespace> {
   for (const line of lines) {
     if (line === whitespace) {
       yield '';

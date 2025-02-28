@@ -1,5 +1,6 @@
 import type { CommonContractOptions } from './common-options';
-import { printFungible, defaults as fungibledefaults, FungibleOptions } from './fungible';
+import type { FungibleOptions } from './fungible';
+import { printFungible, defaults as fungibledefaults } from './fungible';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
@@ -15,7 +16,7 @@ export interface WizardContractAPI<Options extends CommonContractOptions> {
 
 export interface AccessControlAPI<Options extends CommonContractOptions> {
   /**
-   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the 
+   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
    * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
    */
   isAccessControlRequired: (opts: Partial<Options>) => boolean;

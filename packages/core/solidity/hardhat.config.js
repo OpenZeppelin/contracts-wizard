@@ -15,7 +15,7 @@ const IGNORED_WARNINGS = [WARN_UNUSED_PARAMETER, WARN_CODE_SIZE];
 
 // Overriding this task so that warnings are considered errors.
 task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {
-  const errors = output.errors && output.errors.filter(e => !IGNORED_WARNINGS.includes(e.errorCode)) || [];
+  const errors = (output.errors && output.errors.filter(e => !IGNORED_WARNINGS.includes(e.errorCode))) || [];
 
   await run(TASK_COMPILE_SOLIDITY_LOG_COMPILATION_ERRORS, {
     output: { ...output, errors },
@@ -36,7 +36,6 @@ task(TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS, async ({ compilationJobs }, _
   const mergedChunks = await Promise.all(chunks.map(cj => runSuper({ compilationJobs: cj })));
   return mergedChunks.flat();
 });
-
 
 /**
  * @type import('hardhat/config').HardhatUserConfig

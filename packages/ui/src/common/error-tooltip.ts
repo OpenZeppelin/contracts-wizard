@@ -1,4 +1,4 @@
-import tippy, { Props } from 'tippy.js';
+import tippy from 'tippy.js';
 
 const klass = 'has-error';
 
@@ -9,7 +9,9 @@ export function error(node: HTMLElement, content?: string) {
     placement: 'right',
     theme: 'light-red border',
     showOnCreate: false,
-    onShow: () => { shown = true; },
+    onShow: () => {
+      shown = true;
+    },
   });
 
   t.disable();

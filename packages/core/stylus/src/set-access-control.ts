@@ -40,9 +40,10 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       // }
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }
 
@@ -57,7 +58,7 @@ export function requireAccessControl(
   fn: BaseFunction,
   access: Access,
   roleIdPrefix: string,
-  roleOwner: string | undefined
+  roleOwner: string | undefined,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -83,8 +84,9 @@ export function requireAccessControl(
 
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }

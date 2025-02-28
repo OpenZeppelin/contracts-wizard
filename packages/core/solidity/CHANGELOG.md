@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.2 (2025-02-21)
+
+- Fix modifiers order to follow Solidity style guides. ([#450](https://github.com/OpenZeppelin/contracts-wizard/pull/450))
+- ERC721: Return tokenId on safeMint with incremental id. ([#455](https://github.com/OpenZeppelin/contracts-wizard/pull/455))
+
 ## 0.5.1 (2025-02-05)
 
 - **Potentially breaking changes**:

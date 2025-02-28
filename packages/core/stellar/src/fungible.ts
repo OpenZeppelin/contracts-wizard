@@ -1,14 +1,16 @@
-import { Contract, ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { setInfo } from './set-info';
 import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
-
 
 export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
@@ -18,7 +20,7 @@ export const defaults: Required<FungibleOptions> = {
   premint: '0',
   mintable: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printFungible(opts: FungibleOptions = defaults): string {
@@ -76,7 +78,9 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   // Set metadata
-  c.addConstructorCode(`fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+  c.addConstructorCode(
+    `fungible::metadata::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`,
+  );
 
   // Set token functions
   c.addUseClause('openzeppelin_fungible_token', 'self', { alias: 'fungible' });
@@ -91,9 +95,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   const fungibleTokenTrait = {
     name: 'FungibleToken',
     for: c.name,
-    tags: [
-      'contractimpl',
-    ],
+    tags: ['contractimpl'],
   };
 
   c.addFunction(fungibleTokenTrait, functions.total_supply);
@@ -107,7 +109,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addFunction(fungibleTokenTrait, functions.symbol);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
     c.addFunctionTag(fungibleTokenTrait, functions.transfer, 'when_not_paused');
     c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, 'when_not_paused');
   }
@@ -120,17 +122,15 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   const fungibleBurnableTrait = {
     name: 'FungibleBurnable',
     for: c.name,
-    tags: [
-      'contractimpl',
-    ],
+    tags: ['contractimpl'],
     section: 'Extensions',
-  }
+  };
 
   c.addFunction(fungibleBurnableTrait, functions.burn);
   c.addFunction(fungibleBurnableTrait, functions.burn_from);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused')
+    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
     c.addFunctionTag(fungibleBurnableTrait, functions.burn, 'when_not_paused');
     c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, 'when_not_paused');
   }
@@ -152,8 +152,8 @@ function addPremint(c: ContractBuilder, amount: string) {
     c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
     c.addUseClause('soroban_sdk', 'Address');
 
-    c.addConstructorArgument({ name:'owner', type:'Address' });
-    c.addConstructorCode(`fungible::mintable::mint(e, &owner, ${premintAbsolute});`);
+    c.addConstructorArgument({ name: 'recipient', type: 'Address' });
+    c.addConstructorCode(`fungible::mintable::mint(e, &recipient, ${premintAbsolute});`);
   }
 }
 
@@ -167,18 +167,18 @@ function addPremint(c: ContractBuilder, amount: string) {
  */
 export function getInitialSupply(premint: string, decimals: number): string {
   let result;
-  const premintSegments = premint.split(".");
+  const premintSegments = premint.split('.');
   if (premintSegments.length > 2) {
     throw new OptionsError({
       premint: 'Not a valid number',
     });
   } else {
-    let firstSegment = premintSegments[0] ?? '';
+    const firstSegment = premintSegments[0] ?? '';
     let lastSegment = premintSegments[1] ?? '';
     if (decimals > lastSegment.length) {
       try {
-        lastSegment += "0".repeat(decimals - lastSegment.length);
-      } catch (e) {
+        lastSegment += '0'.repeat(decimals - lastSegment.length);
+      } catch {
         // .repeat gives an error if decimals number is too large
         throw new OptionsError({
           premint: 'Decimals number too large',
@@ -204,11 +204,9 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
   const fungibleMintableTrait = {
     name: 'FungibleMintable',
     for: c.name,
-    tags: [
-      'contractimpl',
-    ],
+    tags: ['contractimpl'],
     section: 'Extensions',
-  }
+  };
 
   c.addFunction(fungibleMintableTrait, functions.mint);
 
@@ -222,45 +220,28 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
 const functions = defineFunctions({
   // Token Functions
   total_supply: {
-    args: [
-      getSelfArg()
-    ],
+    args: [getSelfArg()],
     returns: 'i128',
-    code: [
-      'fungible::total_supply(e)'
-    ]
+    code: ['fungible::total_supply(e)'],
   },
   balance: {
-    args: [
-      getSelfArg(),
-      { name: 'account', type: 'Address' }
-    ],
+    args: [getSelfArg(), { name: 'account', type: 'Address' }],
     returns: 'i128',
-    code: [
-      'fungible::balance(e, &account)'
-    ]
+    code: ['fungible::balance(e, &account)'],
   },
   allowance: {
-    args: [
-      getSelfArg(),
-      { name: 'owner', type: 'Address' },
-      { name: 'spender', type: 'Address' }
-    ],
+    args: [getSelfArg(), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
     returns: 'i128',
-    code: [
-      'fungible::allowance(e, &owner, &spender)'
-    ]
+    code: ['fungible::allowance(e, &owner, &spender)'],
   },
   transfer: {
     args: [
       getSelfArg(),
       { name: 'from', type: 'Address' },
       { name: 'to', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'amount', type: 'i128' },
     ],
-    code: [
-      'fungible::transfer(e, &from, &to, amount)'
-    ]
+    code: ['fungible::transfer(e, &from, &to, amount)'],
   },
   transfer_from: {
     args: [
@@ -268,11 +249,9 @@ const functions = defineFunctions({
       { name: 'spender', type: 'Address' },
       { name: 'from', type: 'Address' },
       { name: 'to', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'amount', type: 'i128' },
     ],
-    code: [
-      'fungible::transfer_from(e, &spender, &from, &to, amount)'
-    ]
+    code: ['fungible::transfer_from(e, &spender, &from, &to, amount)'],
   },
   approve: {
     args: [
@@ -280,70 +259,42 @@ const functions = defineFunctions({
       { name: 'owner', type: 'Address' },
       { name: 'spender', type: 'Address' },
       { name: 'amount', type: 'i128' },
-      { name: 'live_until_ledger', type: 'u32' }
+      { name: 'live_until_ledger', type: 'u32' },
     ],
-    code: [
-      'fungible::approve(e, &owner, &spender, amount, live_until_ledger)'
-    ]
+    code: ['fungible::approve(e, &owner, &spender, amount, live_until_ledger)'],
   },
   decimals: {
-    args: [
-      getSelfArg()
-    ],
+    args: [getSelfArg()],
     returns: 'u32',
-    code: [
-      'fungible::metadata::decimals(e)'
-    ]
+    code: ['fungible::metadata::decimals(e)'],
   },
   name: {
-    args: [
-      getSelfArg()
-    ],
+    args: [getSelfArg()],
     returns: 'String',
-    code: [
-      'fungible::metadata::name(e)'
-    ]
+    code: ['fungible::metadata::name(e)'],
   },
   symbol: {
-    args: [
-      getSelfArg()
-    ],
+    args: [getSelfArg()],
     returns: 'String',
-    code: [
-      'fungible::metadata::symbol(e)'
-    ]
+    code: ['fungible::metadata::symbol(e)'],
   },
 
   // Extensions
   burn: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'amount', type: 'i128' }
-    ],
-    code: [
-      'fungible::burnable::burn(e, &from, amount)'
-    ]
+    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'amount', type: 'i128' }],
+    code: ['fungible::burnable::burn(e, &from, amount)'],
   },
   burn_from: {
     args: [
       getSelfArg(),
       { name: 'spender', type: 'Address' },
       { name: 'from', type: 'Address' },
-      { name: 'amount', type: 'i128' }
+      { name: 'amount', type: 'i128' },
     ],
-    code: [
-      'fungible::burnable::burn_from(e, &spender, &from, amount)'
-    ]
+    code: ['fungible::burnable::burn_from(e, &spender, &from, amount)'],
   },
   mint: {
-    args: [
-      getSelfArg(),
-      { name: 'account', type: 'Address' },
-      { name: 'amount', type: 'i128' }
-    ],
-    code: [
-      'fungible::mintable::mint(e, &account, amount);'
-    ]
+    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
+    code: ['fungible::mintable::mint(e, &account, amount);'],
   },
 });

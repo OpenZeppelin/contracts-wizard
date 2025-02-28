@@ -3,8 +3,8 @@ import './common/styles/global.css';
 import type {} from 'svelte';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
-import StylusApp from './stylus/App.svelte';
 import StellarApp from './stellar/App.svelte';
+import StylusApp from './stylus/App.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -32,28 +32,37 @@ const initialOpts: InitialOptions = {
   name: params.get('name') ?? undefined,
   symbol: params.get('symbol') ?? undefined,
   premint: params.get('premint') ?? undefined,
-}
+};
 
-let compatibleVersionSemver = lang === 'cairo' ? compatibleCairoContractsSemver : compatibleSolidityContractsSemver;
+const compatibleVersionSemver = lang === 'cairo' ? compatibleCairoContractsSemver : compatibleSolidityContractsSemver;
 
 let app;
 if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSemver)) {
   postMessage({ kind: 'oz-wizard-unsupported-version' });
-  app = new UnsupportedVersion({ target: document.body, props: { requestedVersion, compatibleVersionSemver }});
+  app = new UnsupportedVersion({
+    target: document.body,
+    props: { requestedVersion, compatibleVersionSemver },
+  });
 } else {
   switch (lang) {
     case 'cairo':
-      app = new CairoApp({ target: document.body, props: { initialTab, initialOpts } });
-      break;
-    case 'stylus':
-      app = new StylusApp({ target: document.body, props: { initialTab } });
+      app = new CairoApp({
+        target: document.body,
+        props: { initialTab, initialOpts },
+      });
       break;
     case 'stellar':
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
+    case 'stylus':
+      app = new StylusApp({ target: document.body, props: { initialTab } });
+      break;
     case 'solidity':
     default:
-      app = new SolidityApp({ target: document.body, props: { initialTab, initialOpts } });
+      app = new SolidityApp({
+        target: document.body,
+        props: { initialTab, initialOpts },
+      });
       break;
   }
 }
@@ -63,4 +72,3 @@ app.$on('tab-change', (e: CustomEvent) => {
 });
 
 export default app;
-

@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
-import _test, { TestFn, ExecutionContext } from 'ava';
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 import hre from 'hardhat';
 import path from 'path';
 
@@ -8,7 +9,7 @@ import type { GenericOptions, KindedOptions } from './build-generic';
 import { custom, erc1155, stablecoin, erc20, erc721, governor } from './api';
 
 interface Context {
-  generatedSourcesPath: string
+  generatedSourcesPath: string;
 }
 
 const test = _test as TestFn<Context>;
@@ -54,7 +55,7 @@ async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptio
 }
 
 function isAccessControlRequired(opts: GenericOptions) {
-  switch(opts.kind) {
+  switch (opts.kind) {
     case 'ERC20':
       return erc20.isAccessControlRequired(opts);
     case 'ERC721':
@@ -70,7 +71,7 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     default:
-      throw new Error("No such kind");
+      throw new Error('No such kind');
   }
 }
 

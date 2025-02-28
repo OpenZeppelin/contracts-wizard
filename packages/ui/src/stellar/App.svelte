@@ -119,7 +119,7 @@
           <FileIcon />
           <div class="download-option-content">
             <p>Single file</p>
-            <p>Requires a Rust project with <code>openzeppelin-stellar</code> as a dependency.</p>
+            <p>Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</p>
           </div>
         </button>
       </Dropdown>

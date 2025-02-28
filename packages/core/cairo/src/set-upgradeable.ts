@@ -1,13 +1,14 @@
 import { getSelfArg } from './common-options';
 import type { BaseImplementedTrait, ContractBuilder } from './contract';
-import { Access, requireAccessControl } from './set-access-control';
+import type { Access } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import { defineComponents } from './utils/define-components';
 import { defineFunctions } from './utils/define-functions';
 import type { Account } from './account';
 
 export const upgradeableOptions = [false, true] as const;
 
-export type Upgradeable = typeof upgradeableOptions[number];
+export type Upgradeable = (typeof upgradeableOptions)[number];
 
 function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseImplementedTrait | undefined {
   if (upgradeable === false) {
@@ -25,9 +26,7 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
     name: 'UpgradeableImpl',
     of: 'IUpgradeable<ContractState>',
     section: 'Upgradeable',
-    tags: [
-      'abi(embed_v0)'
-    ],
+    tags: ['abi(embed_v0)'],
   };
   c.addImplementedTrait(t);
 
@@ -63,7 +62,7 @@ export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeab
   }
 }
 
-const components = defineComponents( {
+const components = defineComponents({
   UpgradeableComponent: {
     path: 'openzeppelin::upgrades',
     substorage: {
@@ -74,22 +73,19 @@ const components = defineComponents( {
       name: 'UpgradeableEvent',
       type: 'UpgradeableComponent::Event',
     },
-    impls: [{
-      name: 'UpgradeableInternalImpl',
-      embed: false,
-      value: 'UpgradeableComponent::InternalImpl<ContractState>',
-    }],
+    impls: [
+      {
+        name: 'UpgradeableInternalImpl',
+        embed: false,
+        value: 'UpgradeableComponent::InternalImpl<ContractState>',
+      },
+    ],
   },
 });
 
 const functions = defineFunctions({
   upgrade: {
-    args: [
-      getSelfArg(),
-      { name: 'new_class_hash', type: 'ClassHash' },
-    ],
-    code: [
-      'self.upgradeable.upgrade(new_class_hash)'
-    ]
+    args: [getSelfArg(), { name: 'new_class_hash', type: 'ClassHash' }],
+    code: ['self.upgradeable.upgrade(new_class_hash)'],
   },
 });

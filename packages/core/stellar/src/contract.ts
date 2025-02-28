@@ -17,7 +17,7 @@ export interface Error {
   num: number;
 }
 
-export type Value = string | number | bigint | { lit: string } | { note: string, value: Value };
+export type Value = string | number | bigint | { lit: string } | { note: string; value: Value };
 
 export interface UseClause {
   containerPath: string;
@@ -109,7 +109,7 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean, alias?: string }): void {
+  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
     // groupable defaults to true
     const groupable = options?.groupable ?? true;
     const alias = options?.alias ?? '';
@@ -138,7 +138,7 @@ export class ContractBuilder implements Contract {
       const t: ImplementedTrait = {
         name: baseTrait.name,
         for: baseTrait.for,
-        tags: [ ...baseTrait.tags ],
+        tags: [...baseTrait.tags],
         functions: [],
         section: baseTrait.section,
         priority: baseTrait.priority,
@@ -177,7 +177,7 @@ export class ContractBuilder implements Contract {
   addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
-    existingFn.codeBefore = [ ...existingFn.codeBefore ?? [], ...codeBefore ];
+    existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
   addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
