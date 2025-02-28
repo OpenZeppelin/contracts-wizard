@@ -23,8 +23,7 @@ export function setAccessControl(_c: ContractBuilder, access: Access): void {
       //     },
       //   });
       // }
-      // break;
-      throw new Error('`ownable` not implemented');
+      break;
     }
     case 'roles': {
       // if (!c.traitExists('AccessControl')) {
@@ -39,8 +38,7 @@ export function setAccessControl(_c: ContractBuilder, access: Access): void {
       //     },
       //   });
       // }
-      // break;
-      throw new Error('`roles` not implemented');
+      break;
     }
     default: {
       const _: never = access;
@@ -71,8 +69,7 @@ export function requireAccessControl(
     case 'ownable': {
       // c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
 
-      // break;
-      throw new Error('`ownable` not implemented');
+      break;
     }
     case 'roles': {
       //   const roleId = roleIdPrefix + '_ROLE';
@@ -85,8 +82,7 @@ export function requireAccessControl(
       //     `self.access.only_role(${roleId}.into())?;`,
       //   ]);
 
-      // break;
-      throw new Error('`roles` not implemented');
+      break;
     }
     default: {
       const _: never = access;
