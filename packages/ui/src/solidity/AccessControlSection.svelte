@@ -10,6 +10,7 @@
 
   let wasRequired = required;
   let wasAccess = access;
+  let isExpanded = false; // New variable to track expanded state
 
   $: {
     if (wasRequired && !required) {
@@ -25,6 +26,16 @@
     if (access !== false) {
       defaultValueWhenEnabled = access;
     }
+
+    // Automatically expand the section if required is true
+    if (required) {
+      isExpanded = true;
+    }
+  }
+
+  // Expand the section when a valid access type is selected
+  $: if (access !== false) {
+    isExpanded = true;
   }
 </script>
 
@@ -36,34 +47,40 @@
       <span class="ml-1">
         <ToggleRadio bind:value={access} defaultValue="ownable" disabled={required} />
       </span>
+
+      <button on:click={() => isExpanded = !isExpanded} class='mx-2 px-1'>
+        {isExpanded ? '▲' : '▼'}
+      </button>
+
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/access">
         Restrict who can access the functions of a contract or when they can do it.
       </HelpTooltip>
     </label>
   </h1>
 
-  <div class="checkbox-group">
-    <label class:checked={access === 'ownable'}>
-      <input type="radio" bind:group={access} value="ownable">
-      Ownable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#Ownable">
-        Simple mechanism with a single account authorized for all privileged actions.
-      </HelpTooltip>
-    </label>
-    <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles">
-      Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessControl">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
-      </HelpTooltip>
-    </label>
-    <label class:checked={access === 'managed'}>
-      <input type="radio" bind:group={access} value="managed">
-      Managed
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessManaged">
-        Enables a central contract to define a policy that allows certain callers to access certain functions.
-      </HelpTooltip>
-    </label>
-  </div>
+  {#if isExpanded}
+    <div class="checkbox-group">
+      <label class:checked={access === 'ownable'}>
+        <input type="radio" bind:group={access} value="ownable">
+        Ownable
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#Ownable">
+          Simple mechanism with a single account authorized for all privileged actions.
+        </HelpTooltip>
+      </label>
+      <label class:checked={access === 'roles'}>
+        <input type="radio" bind:group={access} value="roles">
+        Roles
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessControl">
+          Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+        </HelpTooltip>
+      </label>
+      <label class:checked={access === 'managed'}>
+        <input type="radio" bind:group={access} value="managed">
+        Managed
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessManaged">
+          Enables a central contract to define a policy that allows certain callers to access certain functions.
+        </HelpTooltip>
+      </label>
+    </div>
+  {/if}
 </section>
-

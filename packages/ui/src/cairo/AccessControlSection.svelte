@@ -4,12 +4,13 @@
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  export let access: Access;
+  export let access: Access = false; // Set access to false by default
   export let required: boolean;
   let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
+  let isExpanded = false; // New variable to track expanded state
 
   $: {
     if (wasRequired && !required) {
@@ -25,6 +26,16 @@
     if (access !== false) {
       defaultValueWhenEnabled = access;
     }
+
+    // Automatically expand the section if required is true
+    if (required) {
+      isExpanded = true;
+    }
+  }
+
+  // Expand the section when a valid access type is selected
+  $: if (access !== false) {
+    isExpanded = true;
   }
 </script>
 
@@ -36,12 +47,16 @@
       <span class="ml-1">
         <ToggleRadio bind:value={access} defaultValue="ownable" disabled={required} />
       </span>
+      <button on:click={() => isExpanded = !isExpanded} class='mx-2 px-1'>
+        {isExpanded ? '▲' : '▼'}
+      </button>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/access">
         Restrict who can access the functions of a contract or when they can do it.
       </HelpTooltip>
     </label>
   </h1>
 
+  {#if isExpanded}
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable">
@@ -58,5 +73,5 @@
       </HelpTooltip>
     </label>
   </div>
-
+{/if}
 </section>

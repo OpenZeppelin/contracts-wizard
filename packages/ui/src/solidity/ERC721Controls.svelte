@@ -31,7 +31,13 @@
     wasIncremental = opts.incremental;
   }
 
+  let isVotesExpanded = false;
+
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
+
+  $: if (opts.votes !== false) {
+    isVotesExpanded = true;
+  }
 </script>
 
 <section class="controls-section">
@@ -114,12 +120,16 @@
       <span class="ml-1">
         <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
       </span>
+      <button on:click={() => isVotesExpanded = !isVotesExpanded} class='mx-2 px-1'>
+        {isVotesExpanded ? '▲' : '▼'}
+      </button>
       <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
         Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
       </HelpTooltip>
     </label>
   </h1>
 
+  {#if isVotesExpanded}
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
@@ -136,6 +146,7 @@
       </HelpTooltip>
     </label>
   </div>
+  {/if}
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
