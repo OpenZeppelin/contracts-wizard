@@ -3,12 +3,12 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 export const accessOptions = [false, 'ownable'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
-export type Access = typeof accessOptions[number];
+export type Access = (typeof accessOptions)[number];
 
 /**
  * Sets access control for the contract via constructor args.
  */
- export function setAccessControl(c: ContractBuilder, access: Access): void {
+export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access) {
     case false:
       break;
@@ -17,15 +17,16 @@ export type Access = typeof accessOptions[number];
         c.ownable = true;
         c.addUseClause('soroban_sdk', 'symbol_short');
         c.addUseClause('soroban_sdk', 'Symbol');
-        c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")`});
+        c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")` });
         c.addConstructorArgument({ name: 'owner', type: 'Address' });
         c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
       }
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }
 
@@ -35,9 +36,9 @@ export type Access = typeof accessOptions[number];
  * If `caller` is provided, requires that the caller is the owner. Otherwise, requires that the owner is authorized.
  */
 export function requireAccessControl(
-  c: ContractBuilder, 
-  trait: BaseImplementedTrait, 
-  fn: BaseFunction, 
+  c: ContractBuilder,
+  trait: BaseImplementedTrait,
+  fn: BaseFunction,
   access: Access,
   caller?: string,
 ): void {
@@ -60,15 +61,13 @@ export function requireAccessControl(
           '}',
         ]);
       } else {
-        c.addFunctionCodeBefore(trait, fn, [
-          getOwner,
-          'owner.require_auth();'
-        ]);
+        c.addFunctionCodeBefore(trait, fn, [getOwner, 'owner.require_auth();']);
       }
       break;
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }

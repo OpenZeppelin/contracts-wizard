@@ -142,7 +142,7 @@ export class ContractBuilder implements Contract {
   traitExists(name: string): boolean {
     return this.implementedTraitsMap.has(name);
   }
-  
+
   addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
     const t = this.addImplementedTrait(baseTrait);
 

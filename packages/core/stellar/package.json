@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-stellar",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Stellar Soroban Contracts",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -17,6 +17,7 @@
     "prepare": "tsc",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
+    "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
     "version": "node ../../../scripts/bump-changelog.js"
   },

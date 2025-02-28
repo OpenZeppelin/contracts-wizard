@@ -30,4 +30,3 @@ function isKind<T>(value: Kind | T): value is Kind {
     }
   }
 }
-

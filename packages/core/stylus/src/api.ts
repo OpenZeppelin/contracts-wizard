@@ -1,21 +1,21 @@
 import type { CommonContractOptions } from './common-options';
+import type { ERC1155Options } from './erc1155';
 import {
   printERC1155,
   defaults as erc1155defaults,
   isAccessControlRequired as erc1155IsAccessControlRequired,
-  ERC1155Options,
 } from './erc1155';
+import type { ERC20Options } from './erc20';
 import {
   printERC20,
   defaults as erc20defaults,
   isAccessControlRequired as erc20IsAccessControlRequired,
-  ERC20Options,
 } from './erc20';
+import type { ERC721Options } from './erc721';
 import {
   printERC721,
   defaults as erc721defaults,
   isAccessControlRequired as erc721IsAccessControlRequired,
-  ERC721Options,
 } from './erc721';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {

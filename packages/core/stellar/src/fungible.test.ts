@@ -1,9 +1,11 @@
 import test from 'ava';
 
-import { buildFungible, FungibleOptions, getInitialSupply } from './fungible';
+import type { FungibleOptions } from './fungible';
+import { buildFungible, getInitialSupply } from './fungible';
 import { printContract } from './print';
 
-import { fungible, OptionsError } from '.';
+import type { OptionsError } from '.';
+import { fungible } from '.';
 
 function testFungible(title: string, opts: Partial<FungibleOptions>) {
   test(title, t => {
@@ -21,11 +23,16 @@ function testFungible(title: string, opts: Partial<FungibleOptions>) {
  */
 function testAPIEquivalence(title: string, opts?: FungibleOptions) {
   test(title, t => {
-    t.is(fungible.print(opts), printContract(buildFungible({
-      name: 'MyToken',
-      symbol: 'MTK',
-      ...opts,
-    })));
+    t.is(
+      fungible.print(opts),
+      printContract(
+        buildFungible({
+          name: 'MyToken',
+          symbol: 'MTK',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -95,9 +102,9 @@ test('fungible API assert defaults', async t => {
 });
 
 test('fungible getInitialSupply', async t => {
-  t.is(getInitialSupply('1000', 18),   '1000000000000000000000');
+  t.is(getInitialSupply('1000', 18), '1000000000000000000000');
   t.is(getInitialSupply('1000.1', 18), '1000100000000000000000');
-  t.is(getInitialSupply('.1', 18),     '100000000000000000');
+  t.is(getInitialSupply('.1', 18), '100000000000000000');
   t.is(getInitialSupply('.01', 2), '1');
 
   let error = t.throws(() => getInitialSupply('.01', 1));

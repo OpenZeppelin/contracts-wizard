@@ -8,22 +8,23 @@ export type Access = (typeof accessOptions)[number];
 /**
  * Sets access control for the contract via constructor args.
  */
-export function setAccessControl(c: ContractBuilder, access: Access): void {
+export function setAccessControl(_c: ContractBuilder, access: Access): void {
   switch (access) {
     case false:
       break;
     case 'ownable': {
-      if (!c.traitExists('Ownable')) {
-        c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
-        c.addImplementedTrait({
-          name: 'Ownable',
-          storage: {
-            name: 'ownable',
-            type: 'Ownable',
-          },
-        });
-      }
-      break;
+      // if (!c.traitExists('Ownable')) {
+      //   c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
+      //   c.addImplementedTrait({
+      //     name: 'Ownable',
+      //     storage: {
+      //       name: 'ownable',
+      //       type: 'Ownable',
+      //     },
+      //   });
+      // }
+      // break;
+      throw new Error('`ownable` not implemented');
     }
     case 'roles': {
       // if (!c.traitExists('AccessControl')) {
@@ -38,11 +39,13 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       //     },
       //   });
       // }
-      break;
+      // break;
+      throw new Error('`roles` not implemented');
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }
 
@@ -53,11 +56,11 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
  */
 export function requireAccessControl(
   c: ContractBuilder,
-  trait: BaseImplementedTrait,
-  fn: BaseFunction,
+  _trait: BaseImplementedTrait,
+  _fn: BaseFunction,
   access: Access,
-  roleIdPrefix: string,
-  roleOwner: string | undefined
+  _roleIdPrefix: string,
+  _roleOwner: string | undefined,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -66,9 +69,10 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
+      // c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
 
-      break;
+      // break;
+      throw new Error('`ownable` not implemented');
     }
     case 'roles': {
       //   const roleId = roleIdPrefix + '_ROLE';
@@ -81,10 +85,12 @@ export function requireAccessControl(
       //     `self.access.only_role(${roleId}.into())?;`,
       //   ]);
 
-      break;
+      // break;
+      throw new Error('`roles` not implemented');
     }
-    default:
+    default: {
       const _: never = access;
       throw new Error('Unknown value for `access`');
+    }
   }
 }

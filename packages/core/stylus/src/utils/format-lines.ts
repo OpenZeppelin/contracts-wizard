@@ -6,23 +6,20 @@ export function formatLines(...lines: Lines[]): string {
   return [...indentEach(0, lines)].join('\n') + '\n';
 }
 
-function* indentEach(
-  tabs: number,
-  lines: Lines[],
-): Generator<string | typeof whitespace> {
+function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof whitespace> {
   for (const line of lines) {
     if (line === whitespace) {
       yield '';
     } else if (Array.isArray(line)) {
-      yield* indentEach(tabs + 1, line);
+      yield* indentEach(indent + 1, line);
     } else {
-      yield indent(line, tabs);
+      yield indentLine(line, indent);
     }
   }
 }
 
-export function indent(line: string, tabs: number): string {
-  return '    '.repeat(tabs) + line;
+export function indentLine(line: string, indent: number): string {
+  return '    '.repeat(indent) + line;
 }
 
 export function spaceBetween(...lines: Lines[][]): Lines[] {

@@ -1,6 +1,7 @@
 import test from 'ava';
 
-import { ContractBuilder, BaseFunction, BaseImplementedTrait } from './contract';
+import type { BaseFunction, BaseImplementedTrait } from './contract';
+import { ContractBuilder } from './contract';
 import { printContract } from './print';
 
 test('contract basics', t => {
@@ -21,9 +22,7 @@ test('contract with function code before', t => {
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: [
-      'someFunction();'
-    ]
+    code: ['someFunction();'],
   };
   Foo.addFunction(trait, fn);
   Foo.addFunctionCodeBefore(trait, fn, ['before();']);
@@ -54,20 +53,12 @@ test('contract with sorted use clauses', t => {
 
 test('contract with sorted traits', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addFunction(
-    { name: 'Z', storage: { name: 'z', type: 'Z' } },
-    { name: 'funcZ', args: [], code: [] });
-  Foo.addFunction(
-    { name: 'A', storage: { name: 'a', type: 'A' } },
-    { name: 'funcA', args: [], code: [] }
-  );
+  Foo.addFunction({ name: 'Z', storage: { name: 'z', type: 'Z' } }, { name: 'funcZ', args: [], code: [] });
+  Foo.addFunction({ name: 'A', storage: { name: 'a', type: 'A' } }, { name: 'funcA', args: [], code: [] });
   Foo.addFunction(
     { name: 'Special', storage: { name: 'special', type: 'Special' }, section: 'Special Section' },
-    { name: 'funcSpecial', args: [], code: [] }
+    { name: 'funcSpecial', args: [], code: [] },
   );
-  Foo.addFunction(
-    { name: 'B', storage: { name: 'b', type: 'B' } },
-    { name: 'funcB', args: [], code: [] }
-  );
+  Foo.addFunction({ name: 'B', storage: { name: 'b', type: 'B' } }, { name: 'funcB', args: [], code: [] });
   t.snapshot(printContract(Foo));
 });

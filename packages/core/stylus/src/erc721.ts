@@ -1,12 +1,14 @@
-import { BaseImplementedTrait, Contract, ContractBuilder } from './contract';
+import type { BaseImplementedTrait, Contract } from './contract';
+import { ContractBuilder } from './contract';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
-import { CommonContractOptions, withCommonContractDefaults, getSelfArg } from './common-options';
+import type { CommonContractOptions } from './common-options';
+import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
-import { indent } from './utils/format-lines';
+import { indentLine } from './utils/format-lines';
 
 export interface ERC721Options extends CommonContractOptions {
   name: string;
@@ -103,20 +105,12 @@ function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean)
     c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
   }
   if (enumerable) {
-    c.addFunctionCodeBefore(
-      erc721Trait,
-      functions.burn,
-      ['let owner = self.erc721.owner_of(token_id)?;']
-    );
-    c.addFunctionCodeAfter(
-      erc721Trait,
-      functions.burn,
-      [
-        `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
-        `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
-        'Ok(())',
-      ]
-    );
+    c.addFunctionCodeBefore(erc721Trait, functions.burn, ['let owner = self.erc721.owner_of(token_id)?;']);
+    c.addFunctionCodeAfter(erc721Trait, functions.burn, [
+      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
+      `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
+      'Ok(())',
+    ]);
   }
 }
 
@@ -129,28 +123,20 @@ function addEnumerable(c: ContractBuilder, _pausable: boolean) {
   c.addUseClause('stylus_sdk::abi', 'Bytes');
 
   c.addImplementedTrait(enumerableTrait);
-  
-  c.addFunctionCodeAfter(
-    erc721Trait,
-    functions.supports_interface,
-    [indent(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1)],
-  )
-  
-  c.addFunctionCodeBefore(
-    erc721Trait,
-    functions.transfer_from,
-    [`let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`]
-  );
-  
-  c.addFunctionCodeAfter(
-    erc721Trait,
-    functions.transfer_from,
-    [
-      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
-      `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
-      'Ok(())'
-    ]
-  );
+
+  c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
+    indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),
+  ]);
+
+  c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, [
+    `let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
+  ]);
+
+  c.addFunctionCodeAfter(erc721Trait, functions.transfer_from, [
+    `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
+    `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
+    'Ok(())',
+  ]);
 }
 
 const erc721Trait: BaseImplementedTrait = {
