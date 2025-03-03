@@ -76,13 +76,11 @@ export function buildERC20(opts: ERC20Options): Contract {
 }
 
 function addBase(c: ContractBuilder, pausable: boolean) {
-  // Add the base traits
-  c.addUseClause('openzeppelin_stylus::token::erc20', 'Erc20');
-  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
   c.addImplementedTrait(erc20Trait);
-
-  // c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Metadata');
   // c.addImplementedTrait(erc20MetadataTrait);
+
+  // the trait necessary to access Erc20 functions within custom functions of the child contract
+  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
 
   if (pausable) {
     c.addUseClause('alloc::vec', 'Vec');
@@ -95,17 +93,14 @@ function addBase(c: ContractBuilder, pausable: boolean) {
 }
 
 function addPermit(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20Permit');
-  c.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
+  c.addImplementedTrait(erc20PermitTrait);
+  c.addImplementedTrait(noncesTrait);
+  c.addEip712('ERC-20 Permit Example', '1');
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'B256');
   c.addUseClause('alloy_primitives', 'U256');
-
-  c.addImplementedTrait(erc20PermitTrait);
-  c.addEip712('ERC-20 Permit Example', '1');
-  c.addImplementedTrait(noncesTrait);
 
   c.addFunction(erc20PermitTrait, functions.permit);
 
@@ -131,12 +126,12 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 }
 
 function addFlashMint(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'Erc20FlashMint');
+  c.addImplementedTrait(flashMintTrait);
+
+  // the trait necessary to access Erc20FlashMint functions within custom functions of the child contract
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
 
   c.addUseClause('stylus_sdk::abi', 'Bytes');
-
-  c.addImplementedTrait(flashMintTrait);
 
   c.addFunction(flashMintTrait, functions.max_flash_loan);
   c.addFunction(flashMintTrait, functions.flash_fee);
@@ -153,14 +148,16 @@ const erc20Trait: BaseImplementedTrait = {
     name: 'erc20',
     type: 'Erc20',
   },
+  modulePath: 'openzeppelin_stylus::token::erc20',
 };
 
 const erc20PermitTrait: BaseImplementedTrait = {
-  name: 'Erc20Permit<Eip712>',
+  name: 'Erc20Permit',
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
   },
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 };
 
 const flashMintTrait: BaseImplementedTrait = {
@@ -170,6 +167,7 @@ const flashMintTrait: BaseImplementedTrait = {
     type: 'Erc20FlashMint',
   },
   omitInherit: true,
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 };
 
 const noncesTrait: BaseImplementedTrait = {
@@ -178,6 +176,7 @@ const noncesTrait: BaseImplementedTrait = {
     name: 'nonces',
     type: 'Nonces',
   },
+  modulePath: 'openzeppelin_stylus::utils::nonces',
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -186,6 +185,7 @@ const noncesTrait: BaseImplementedTrait = {
 //     name: 'metadata',
 //     type: 'Erc20Metadata',
 //   }
+//   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 // }
 
 const functions = defineFunctions({

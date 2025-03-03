@@ -64,15 +64,12 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     }
   }
 
-  // if (subset === 'all') {
+  if (subset === 'all') {
     return contracts;
-  // } else {
-  //   const getParents = (c: GeneratedContract) => c.contract.implementedTraits.map(p => p.);
-
-  //   return [
-  //     ...findCover(contracts, getParents),
-  //   ];
-  // }
+  } else {
+    const getParents = (c: GeneratedContract) => c.contract.implementedTraits.map(p => `${p.modulePath}::${p.name}`);
+    return [...findCover(contracts, getParents)];
+  }
 }
 
 export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
@@ -86,9 +83,12 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
   }
 }
 
-export async function writeGeneratedSources(dir: string, 
+export async function writeGeneratedSources(
+  dir: string,
   subset: Subset,
-  uniqueName?: boolean, kind?: Kind): Promise<string[]> {
+  uniqueName?: boolean,
+  kind?: Kind,
+): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 

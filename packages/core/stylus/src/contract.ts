@@ -36,6 +36,7 @@ export interface BaseImplementedTrait {
    */
   priority?: number;
   omitInherit?: boolean;
+  modulePath: string;
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -122,6 +123,7 @@ export class ContractBuilder implements Contract {
         functions: [],
       };
       this.implementedTraitsMap.set(key, t);
+      this.addUseClause(baseTrait.modulePath, baseTrait.name);
       return t;
     }
   }
@@ -136,6 +138,7 @@ export class ContractBuilder implements Contract {
   }
 
   addEip712(name: string, version: string) {
+    this.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
     this.eip712 = { name, version };
   }
 

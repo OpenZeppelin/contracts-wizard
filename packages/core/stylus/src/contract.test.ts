@@ -17,6 +17,7 @@ test('contract with function code before', t => {
       name: 'external',
       type: 'External',
     },
+    modulePath: 'mod_ext',
   };
   Foo.addImplementedTrait(trait);
   const fn: BaseFunction = {
@@ -53,12 +54,26 @@ test('contract with sorted use clauses', t => {
 
 test('contract with sorted traits', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addFunction({ name: 'Z', storage: { name: 'z', type: 'Z' } }, { name: 'funcZ', args: [], code: [] });
-  Foo.addFunction({ name: 'A', storage: { name: 'a', type: 'A' } }, { name: 'funcA', args: [], code: [] });
   Foo.addFunction(
-    { name: 'Special', storage: { name: 'special', type: 'Special' }, section: 'Special Section' },
+    { name: 'Z', storage: { name: 'z', type: 'Z' }, modulePath: 'mod_z' },
+    { name: 'funcZ', args: [], code: [] },
+  );
+  Foo.addFunction(
+    { name: 'A', storage: { name: 'a', type: 'A' }, modulePath: 'mod_a' },
+    { name: 'funcA', args: [], code: [] },
+  );
+  Foo.addFunction(
+    {
+      name: 'Special',
+      storage: { name: 'special', type: 'Special' },
+      modulePath: 'mod_special',
+      section: 'Special Section',
+    },
     { name: 'funcSpecial', args: [], code: [] },
   );
-  Foo.addFunction({ name: 'B', storage: { name: 'b', type: 'B' } }, { name: 'funcB', args: [], code: [] });
+  Foo.addFunction(
+    { name: 'B', storage: { name: 'b', type: 'B' }, modulePath: 'mod_b' },
+    { name: 'funcB', args: [], code: [] },
+  );
   t.snapshot(printContract(Foo));
 });

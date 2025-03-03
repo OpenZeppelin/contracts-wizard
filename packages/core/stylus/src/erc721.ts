@@ -70,13 +70,11 @@ export function buildERC721(opts: ERC721Options): Contract {
 }
 
 function addBase(c: ContractBuilder, pausable: boolean) {
-  // Add the base traits
-  c.addUseClause('openzeppelin_stylus::token::erc721', 'Erc721');
-  c.addUseClause('openzeppelin_stylus::token::erc721', 'IErc721');
-  // c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'Erc721Metadata');
-
   c.addImplementedTrait(erc721Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
+
+  // the trait necessary to access Erc721 functions within custom functions of the child contract
+  c.addUseClause('openzeppelin_stylus::token::erc721', 'IErc721');
 
   // Call nested IErc65 from Erc721
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
@@ -116,14 +114,12 @@ function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean)
 }
 
 function addEnumerable(c: ContractBuilder, _pausable: boolean) {
-  c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'Erc721Enumerable');
+  c.addImplementedTrait(enumerableTrait);
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
   c.addUseClause('stylus_sdk::abi', 'Bytes');
-
-  c.addImplementedTrait(enumerableTrait);
 
   c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
     indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),
@@ -147,6 +143,7 @@ const erc721Trait: BaseImplementedTrait = {
     name: 'erc721',
     type: 'Erc721',
   },
+  modulePath: 'openzeppelin_stylus::token::erc721',
 };
 
 const enumerableTrait: BaseImplementedTrait = {
@@ -155,6 +152,7 @@ const enumerableTrait: BaseImplementedTrait = {
     name: 'enumerable',
     type: 'Erc721Enumerable',
   },
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
 };
 
 // const erc721MetadataTrait: BaseImplementedTrait = {
@@ -163,6 +161,7 @@ const enumerableTrait: BaseImplementedTrait = {
 //     name: 'metadata',
 //     type: 'Erc721Metadata',
 //   }
+//   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
 // }
 
 const functions = defineFunctions({

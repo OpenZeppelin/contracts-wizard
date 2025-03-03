@@ -189,7 +189,7 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
   const traitNames = sortedGroups
     .flatMap(([_, impls]) => impls)
     .filter(trait => !trait.omitInherit)
-    .map(trait => trait.name);
+    .map(trait => trait.storage.type);
 
   const inheritAttribute = traitNames.length > 0 ? `#[inherit(${traitNames.join(', ')})]` : '#[inherit]';
 

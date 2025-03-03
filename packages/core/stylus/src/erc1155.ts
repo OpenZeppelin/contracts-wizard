@@ -51,7 +51,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   // Erc1155Supply reexports Erc1155 functionality
   const trait = allOpts.supply ? addSupply(c, allOpts.pausable) : addBase(c, allOpts.pausable);
 
-  addMetadata(c);
+  // c.addImplementedTrait(erc1155MetadataTrait);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -68,11 +68,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 }
 
 function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
-  // Add the base traits
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'Erc1155');
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
-
   c.addImplementedTrait(erc1155Trait);
+
+  // the trait necessary to access Erc1155 functions within custom functions of the child contract
+  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
 
   // Override IErc65 from Erc1155
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
@@ -93,10 +92,10 @@ function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
 }
 
 function addSupply(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
-  c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'Erc1155Supply');
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
-
   c.addImplementedTrait(erc1155SupplyTrait);
+
+  // the trait necessary to access Erc1155 functions within custom functions of the child contract
+  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
 
   const fns = functions(erc1155SupplyTrait);
 
@@ -114,11 +113,6 @@ function addSupply(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait
   // }
 
   return erc1155SupplyTrait;
-}
-
-function addMetadata(_c: ContractBuilder) {
-  // c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'Erc1155Metadata');
-  // c.addImplementedTrait(erc1155MetadataTrait);
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
@@ -145,6 +139,7 @@ const erc1155Trait: BaseImplementedTrait = {
     name: 'erc1155',
     type: 'Erc1155',
   },
+  modulePath: 'openzeppelin_stylus::token::erc1155',
 };
 
 const erc1155SupplyTrait: BaseImplementedTrait = {
@@ -153,6 +148,7 @@ const erc1155SupplyTrait: BaseImplementedTrait = {
     name: 'erc1155_supply',
     type: 'Erc1155Supply',
   },
+  modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
 };
 
 // const erc1155MetadataTrait: BaseImplementedTrait = {
@@ -161,6 +157,7 @@ const erc1155SupplyTrait: BaseImplementedTrait = {
 //     name: 'metadata',
 //     type: 'Erc1155Metadata',
 //   }
+//   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
 // }
 
 const functions = (trait: BaseImplementedTrait) =>
