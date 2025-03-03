@@ -1,19 +1,19 @@
 import { getSelfArg } from './common-options';
-import type { ContractBuilder } from './contract';
+import type { BaseImplementedTrait, ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access) {
   c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('openzeppelin_stylus::utils', 'Pausable');
 
-  const pausableTrait = {
+  const pausableTrait: BaseImplementedTrait = {
     name: 'Pausable',
     storage: {
       name: 'pausable',
       type: 'Pausable',
     },
+    modulePath: 'openzeppelin_stylus::utils',
   };
 
   c.addFunction(pausableTrait, functions.pause);
