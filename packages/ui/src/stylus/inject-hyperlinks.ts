@@ -40,8 +40,15 @@ export function injectHyperlinks(code: string) {
 }
 
 const moduleMappings: { [key: string]: string } = {
+  Erc1155Supply: 'token/erc1155/extensions/supply.rs',
+  IErc1155Burnable: 'token/erc1155/extensions/burnable.rs',
   Erc20Metadata: 'token/erc20/extensions/metadata.rs',
+  Erc20Permit: 'token/erc20/extensions/permit.rs',
+  IErc20Burnable: 'token/erc20/extensions/burnable.rs',
+  IErc721Burnable: 'token/erc721/extensions/burnable.rs',
+  IEip712: 'utils/cryptography/eip712.rs',
+  IErc165: 'utils/introspection/erc165.rs',
+  Nonces: 'utils/nonces.rs',
   Ownable: 'access/ownable.rs',
   AccessControl: 'access/control.rs',
-  IErc165: 'utils/introspection/erc165.rs',
 } as const;
