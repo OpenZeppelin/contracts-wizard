@@ -39,8 +39,8 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Required<ERC1155Options>): boolean {
-  return opts.pausable;
+export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
+  return opts.pausable === true;
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {

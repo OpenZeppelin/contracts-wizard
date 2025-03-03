@@ -40,8 +40,8 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Required<ERC721Options>): boolean {
-  return opts.pausable;
+export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
+  return opts.pausable === true;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {

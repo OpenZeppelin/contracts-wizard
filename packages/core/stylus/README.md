@@ -45,13 +45,13 @@ The default options that are used for [`print`](#print).
 
 #### `isAccessControlRequired`
 ```js
-function isAccessControlRequired(opts: Required<ERC20Options>): boolean
+function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
 ```
 ```js
-function isAccessControlRequired(opts: Required<ERC721Options>): boolean
+function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
 ```
 ```js
-function isAccessControlRequired(opts: Required<ERC1155Options>): boolean
+function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
 ```
 Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
 

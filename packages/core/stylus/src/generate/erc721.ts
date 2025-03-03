@@ -1,4 +1,4 @@
-import type { ERC20Options } from '../erc20';
+import type { ERC721Options } from '../erc721';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
@@ -7,14 +7,15 @@ const booleans = [true, false];
 
 const blueprint = {
   name: ['MyToken'],
+  symbol: ['MTK'],
   burnable: booleans,
+  enumerable: booleans,
   pausable: [false], // TODO: update to `booleans` on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
-  permit: booleans,
-  flashmint: booleans,
+  mintable: booleans,
   access: accessOptions,
   info: infoOptions,
 };
 
-export function* generateERC20Options(): Generator<Required<ERC20Options>> {
+export function* generateERC721Options(): Generator<Required<ERC721Options>> {
   yield* generateAlternatives(blueprint);
 }

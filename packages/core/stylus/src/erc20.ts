@@ -42,8 +42,8 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
-export function isAccessControlRequired(opts: Required<ERC20Options>): boolean {
-  return opts.pausable;
+export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
+  return opts.pausable === true;
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
