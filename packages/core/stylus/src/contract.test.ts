@@ -22,26 +22,6 @@ test('contract with function code before', t => {
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
-    code: ['someFunction()'],
-  };
-  Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, ['before()']);
-  t.snapshot(printContract(Foo));
-});
-
-test('contract with function code before with semicolons', t => {
-  const Foo = new ContractBuilder('Foo');
-  const trait: BaseImplementedTrait = {
-    name: 'External',
-    storage: {
-      name: 'external',
-      type: 'External',
-    },
-  };
-  Foo.addImplementedTrait(trait);
-  const fn: BaseFunction = {
-    name: 'someFunction',
-    args: [],
     code: ['someFunction();'],
   };
   Foo.addFunction(trait, fn);

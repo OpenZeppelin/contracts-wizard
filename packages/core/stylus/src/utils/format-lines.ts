@@ -13,9 +13,13 @@ function* indentEach(indent: number, lines: Lines[]): Generator<string | typeof 
     } else if (Array.isArray(line)) {
       yield* indentEach(indent + 1, line);
     } else {
-      yield '    '.repeat(indent) + line;
+      yield indentLine(line, indent);
     }
   }
+}
+
+export function indentLine(line: string, indent: number): string {
+  return '    '.repeat(indent) + line;
 }
 
 export function spaceBetween(...lines: Lines[][]): Lines[] {

@@ -39,6 +39,15 @@ testERC721('erc721 burnable', {
   burnable: true,
 });
 
+testERC721('erc721 enumerable', {
+  enumerable: true,
+});
+
+testERC721('erc721 burnable enumerable', {
+  burnable: true,
+  enumerable: true,
+});
+
 // testERC721('erc721 pausable', {
 //   pausable: true,
 // });
@@ -48,9 +57,15 @@ testERC721('erc721 burnable', {
 //   pausable: true,
 // });
 
+// testERC721('erc721 enumerable pausable', {
+//   enumerable: true,
+//   pausable: true,
+// });
+
 testERC721('erc721 full - complex name', {
   name: 'Custom  $ Token',
   burnable: true,
+  enumerable: true,
   // pausable: true,
 });
 
@@ -61,6 +76,7 @@ testAPIEquivalence('erc721 API basic', { name: 'CustomToken' });
 testAPIEquivalence('erc721 API full', {
   name: 'CustomToken',
   burnable: true,
+  enumerable: true,
   // pausable: true,
 });
 

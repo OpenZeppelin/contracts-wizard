@@ -8,21 +8,21 @@ export type Access = (typeof accessOptions)[number];
 /**
  * Sets access control for the contract via constructor args.
  */
-export function setAccessControl(c: ContractBuilder, access: Access): void {
+export function setAccessControl(_c: ContractBuilder, access: Access): void {
   switch (access) {
     case false:
       break;
     case 'ownable': {
-      if (!c.traitExists('Ownable')) {
-        c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
-        c.addImplementedTrait({
-          name: 'Ownable',
-          storage: {
-            name: 'ownable',
-            type: 'Ownable',
-          },
-        });
-      }
+      // if (!c.traitExists('Ownable')) {
+      //   c.addUseClause('openzeppelin_stylus::access::ownable', 'Ownable');
+      //   c.addImplementedTrait({
+      //     name: 'Ownable',
+      //     storage: {
+      //       name: 'ownable',
+      //       type: 'Ownable',
+      //     },
+      //   });
+      // }
       break;
     }
     case 'roles': {
@@ -54,11 +54,11 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
  */
 export function requireAccessControl(
   c: ContractBuilder,
-  trait: BaseImplementedTrait,
-  fn: BaseFunction,
+  _trait: BaseImplementedTrait,
+  _fn: BaseFunction,
   access: Access,
-  roleIdPrefix: string,
-  roleOwner: string | undefined,
+  _roleIdPrefix: string,
+  _roleOwner: string | undefined,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -67,7 +67,7 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
+      // c.addFunctionCodeBefore(trait, fn, ['self.ownable.only_owner()?;']);
 
       break;
     }
