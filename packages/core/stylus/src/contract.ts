@@ -35,7 +35,7 @@ export interface BaseImplementedTrait {
    * Lower numbers are higher priority, undefined is lowest priority.
    */
   priority?: number;
-  omit_inherit?: boolean;
+  omitInherit?: boolean;
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {

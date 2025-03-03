@@ -169,7 +169,7 @@ const flashMintTrait: BaseImplementedTrait = {
     name: 'flash_mint',
     type: 'Erc20FlashMint',
   },
-  omit_inherit: true,
+  omitInherit: true,
 };
 
 const noncesTrait: BaseImplementedTrait = {

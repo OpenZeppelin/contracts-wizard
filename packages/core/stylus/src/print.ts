@@ -188,7 +188,7 @@ function printEip712(eip712?: EIP712): Lines[] {
 function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
   const traitNames = sortedGroups
     .flatMap(([_, impls]) => impls)
-    .filter(trait => !trait.omit_inherit)
+    .filter(trait => !trait.omitInherit)
     .map(trait => trait.name);
 
   const inheritAttribute = traitNames.length > 0 ? `#[inherit(${traitNames.join(', ')})]` : '#[inherit]';
