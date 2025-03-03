@@ -55,7 +55,7 @@ if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSem
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'stylus':
-      app = new StylusApp({ target: document.body, props: { initialTab } });
+      app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
     default:

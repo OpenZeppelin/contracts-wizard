@@ -45,6 +45,16 @@
       if (opts) {
         if (!initialValuesSet) {
           opts.name = initialOpts.name ?? opts.name;
+          switch (opts.kind) {
+            case 'ERC20':
+              // TODO: uncomment once minting is enabled, see https://github.com/OpenZeppelin/rust-contracts-stylus/issues/547
+              // opts.premint = initialOpts.premint ?? opts.premint;
+            case 'ERC721':
+              // TODO: uncomment once metadata is enabled, see https://github.com/OpenZeppelin/rust-contracts-stylus/issues/558
+              // opts.symbol = initialOpts.symbol ?? opts.symbol;
+              break;
+            case 'ERC1155':
+          }
           initialValuesSet = true;
         }
         try {
