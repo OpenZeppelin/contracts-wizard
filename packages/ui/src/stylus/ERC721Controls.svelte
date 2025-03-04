@@ -42,6 +42,14 @@
       </HelpTooltip>
     </label>
 
+    <label class:checked={opts.enumerable}>
+      <input type="checkbox" bind:checked={opts.enumerable}>
+      Enumerable
+      <HelpTooltip>
+        Allows on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.
+      </HelpTooltip>
+    </label>
+
     <!-- TODO: uncomment once Pausable is supported -->
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
