@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import ExpandableSection from '../common/ExpandableSection.svelte';
 
   let isVotesExpanded = false;
   let isLimitationsExpanded = false;
@@ -115,24 +116,13 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Limitations</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
-      </span>
-      <button on:click={() => isLimitationsExpanded = !isLimitationsExpanded} class='mx-2 px-1'>
-        {isLimitationsExpanded ? '▲' : '▼'}
-      </button>
-      <HelpTooltip align="right">
-        Restricts certain users from transferring tokens, either via allowing or blocking them.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-{#if isLimitationsExpanded}
+<ExpandableSection
+  label="Limitations"
+  type="toggleradio"
+  bind:value={opts.limitations}
+  defaultValue="allowlist"
+  helpContent="Restricts certain users from transferring tokens, either via allowing or blocking them."
+>
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist">
@@ -149,27 +139,16 @@
       </HelpTooltip>
     </label>
   </div>
-  {/if}
-</section>
+</ExpandableSection>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Votes</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
-      </span>
-      <button on:click={() => isVotesExpanded = !isVotesExpanded} class='mx-2 px-1'>
-        {isVotesExpanded ? '▲' : '▼'}
-      </button>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
-        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  {#if isVotesExpanded}
+<ExpandableSection
+  label="Votes"
+  type="toggleradio"
+  bind:value={opts.votes}
+  defaultValue="blocknumber"
+  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+>
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
@@ -186,8 +165,7 @@
       </HelpTooltip>
     </label>
   </div>
-  {/if}
-</section>
+</ExpandableSection>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

@@ -4,9 +4,10 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { governor, infoDefaults } from '@openzeppelin/wizard-cairo';
 
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import ExpandableSection from '../common/ExpandableSection.svelte';
+
 
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -42,7 +43,6 @@
   let wasERC721Votes = opts.votes === 'erc721votes';
   let previousDecimals = opts.decimals;
   let disabledDecimals: boolean;
-  let isTimeLockedExpanded = false;
 
   $: {
     if (wasERC721Votes && opts.votes !== 'erc721votes') {
@@ -55,10 +55,6 @@
     }
 
     wasERC721Votes = opts.votes === 'erc721votes';
-  }
-
-  $: if (opts.timelock !== false) {
-    isTimeLockedExpanded = true;
   }
 
 </script>
@@ -179,26 +175,14 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex justify-between items-center tooltip-container pr-2">
-      <span>
-        <span>Timelock</span>
-        <span class="ml-1">
-          <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
-        </span>
-        <button on:click={() => isTimeLockedExpanded = !isTimeLockedExpanded} class='mx-2 px-1'>
-          {isTimeLockedExpanded ? '▲' : '▼'}
-        </button>
-      </span>
-      <HelpTooltip>
-        Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  {#if isTimeLockedExpanded}
+<ExpandableSection
+  label="Timelock"
+  type="toggleradio"
+  bind:value={opts.timelock}
+  defaultValue="openzeppelin"
+  helpContent="Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions."
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/api/governance#TimelockControllerComponent"
+>
   <div class="checkbox-group">
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
@@ -208,8 +192,7 @@
       </HelpTooltip>
     </label>
   </div>
-  {/if}
-</section>
+</ExpandableSection>
 
 <section class="controls-section">
   <h1>
