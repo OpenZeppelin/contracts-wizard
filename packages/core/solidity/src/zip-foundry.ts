@@ -288,7 +288,7 @@ You can simulate a deployment by running the script:
 forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
-See [Solidity scripting guide](https://book.getfoundry.sh/tutorials/solidity-scripting) for more information.
+See [Solidity scripting guide](https://book.getfoundry.sh/guides/scripting-with-solidity) for more information.
 `;
 
 export async function zipFoundry(c: Contract, opts?: GenericOptions) {
