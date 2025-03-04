@@ -50,7 +50,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   // Erc1155Supply reexports Erc1155 functionality
   const baseTrait = addBase(c, allOpts);
-  
+
   if (allOpts.supply) {
     addSupplyFunctions(c);
   }
@@ -93,7 +93,7 @@ function addBase(c: ContractBuilder, allOpts: ERC1155Options): BaseImplementedTr
   // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
   // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
-  
+
   return baseTrait;
 }
 
@@ -102,7 +102,7 @@ function addSupplyFunctions(c: ContractBuilder) {
   c.addFunction(erc1155SupplyTrait, fns.total_supply);
   c.addFunction(erc1155SupplyTrait, fns.total_supply_all);
   c.addFunction(erc1155SupplyTrait, fns.exists);
-  
+
   // if (pausable) {
   //   // Add pausable checks to appropriate functions
   // }

@@ -177,10 +177,7 @@ function printEip712(contract: Contract): Lines[] {
     'struct Eip712 {}',
     '',
     'impl IEip712 for Eip712 {',
-    spaceBetween([
-      `const NAME: &'static str = "${contract.name}";`,
-      `const VERSION: &'static str = "1";`,
-    ]),
+    spaceBetween([`const NAME: &'static str = "${contract.name}";`, `const VERSION: &'static str = "1";`]),
     '}',
   ];
 }
