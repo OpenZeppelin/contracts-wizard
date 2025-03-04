@@ -4,7 +4,7 @@ const state = (global.ROLLUP_SERVER = global.ROLLUP_SERVER || {
   server: undefined,
 });
 
-export default function serve() {
+export default function serve({ port = '8080' }) {
   function toExit() {
     if (state.server) state.server.kill(0);
   }
@@ -12,7 +12,7 @@ export default function serve() {
   return {
     writeBundle() {
       if (state.server) return;
-      state.server = proc.spawn('npm', ['run', 'start', '--', '--dev'], {
+      state.server = proc.spawn('npm', ['run', 'start', '--', '--dev', '-p', port], {
         stdio: ['ignore', 'inherit', 'inherit'],
         shell: true,
       });
