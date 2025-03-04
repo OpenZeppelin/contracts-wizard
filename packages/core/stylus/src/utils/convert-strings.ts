@@ -1,9 +1,8 @@
 import { OptionsError } from '../error';
 
-// TODO: Review and convert these to properly handle language restrictions for Stylus
-
 /**
- * Converts to an identifier according to the rules in https://docs.cairo-lang.org/language_constructs/identifiers.html
+ * Converts to an identifier according to the rules in https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityLexer.Identifier
+ * Note that although dollar signs ($) are supported in Solidity identifiers, we omit them as they are not supported in Rust.
  */
 export function toIdentifier(str: string, capitalize = false): string {
   const result = str
