@@ -49,7 +49,11 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const allOpts = withDefaults(opts);
 
   // Erc1155Supply reexports Erc1155 functionality
-  const trait = allOpts.supply ? addSupply(c, allOpts.pausable) : addBase(c, allOpts.pausable);
+  const baseTrait = addBase(c, allOpts);
+  
+  if (allOpts.supply) {
+    addSupplyFunctions(c, allOpts.pausable);
+  }
 
   // c.addImplementedTrait(erc1155MetadataTrait);
 
@@ -58,7 +62,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, trait);
+    addBurnable(c, allOpts.pausable, baseTrait);
   }
 
   setAccessControl(c, allOpts.access);
@@ -67,8 +71,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
-  c.addImplementedTrait(erc1155Trait);
+function addBase(c: ContractBuilder, allOpts: ERC1155Options): BaseImplementedTrait {
+  const baseTrait = allOpts.supply ? erc1155SupplyTrait : erc1155Trait;
+
+  c.addImplementedTrait(baseTrait);
 
   // the trait necessary to access Erc1155 functions within custom functions of the child contract
   c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
@@ -76,7 +82,7 @@ function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
   // Override IErc65 from Erc1155
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc1155Trait, functions(erc1155Trait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
+  c.addFunction(baseTrait, functions(baseTrait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
   // if (pausable) {
   // Add transfer functions with pause checks
@@ -84,35 +90,22 @@ function addBase(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
   // c.addUseClause('alloy_primitives', 'Address');
   // c.addUseClause('alloy_primitives', 'U256');
 
-  // c.addFunctionCodeBefore(erc1155Trait, functions(erc1155Trait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
-  // c.addFunctionCodeBefore(erc1155Trait, functions(erc1155Trait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
+  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
+  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
-
-  return erc1155Trait;
+  
+  return baseTrait;
 }
 
-function addSupply(c: ContractBuilder, _pausable: boolean): BaseImplementedTrait {
-  c.addImplementedTrait(erc1155SupplyTrait);
-
-  // the trait necessary to access Erc1155 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
-
+function addSupplyFunctions(c: ContractBuilder, _pausable: boolean) {
   const fns = functions(erc1155SupplyTrait);
-
   c.addFunction(erc1155SupplyTrait, fns.total_supply);
   c.addFunction(erc1155SupplyTrait, fns.total_supply_all);
   c.addFunction(erc1155SupplyTrait, fns.exists);
-
-  // Override IErc65 from Erc1155
-  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc1155SupplyTrait, fns.supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
-
+  
   // if (pausable) {
   //   // Add pausable checks to appropriate functions
   // }
-
-  return erc1155SupplyTrait;
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
