@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, EIP712 } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -22,7 +22,7 @@ export function printContract(contract: Contract): string {
         [...printUseClauses(contract), 'use stylus_sdk::prelude::{entrypoint, public, storage};'],
         printConstants(contract),
         printStorage(contract.name, sortedGroups),
-        printEip712(contract.eip712),
+        printEip712(contract.eip712Name),
         printImplementedTraits(contract.name, sortedGroups),
       ),
     ),
@@ -167,8 +167,8 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
     : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
 }
 
-function printEip712(eip712?: EIP712): Lines[] {
-  if (!eip712) {
+function printEip712(eip712Name?: string): Lines[] {
+  if (!eip712Name) {
     return [];
   }
 
@@ -178,8 +178,8 @@ function printEip712(eip712?: EIP712): Lines[] {
     '',
     'impl IEip712 for Eip712 {',
     spaceBetween([
-      `const NAME: &'static str = "${eip712.name}";`,
-      `const VERSION: &'static str = "${eip712.version}";`,
+      `const NAME: &'static str = "${eip712Name}";`,
+      `const VERSION: &'static str = "1";`,
     ]),
     '}',
   ];

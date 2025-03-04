@@ -6,12 +6,7 @@ export interface Contract {
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
-  eip712?: EIP712;
-}
-
-export interface EIP712 {
-  name: string;
-  version: string;
+  eip712Name?: string;
 }
 
 export interface Storage {
@@ -79,7 +74,7 @@ export class ContractBuilder implements Contract {
   private errorsMap: Map<string, Error> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
 
-  eip712?: EIP712;
+  eip712Name?: string;
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -137,9 +132,9 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addEip712(name: string, version: string) {
+  addEip712(name: string) {
     this.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
-    this.eip712 = { name, version };
+    this.eip712Name = name;
   }
 
   traitExists(name: string): boolean {
