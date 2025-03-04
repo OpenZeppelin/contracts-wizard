@@ -1,6 +1,5 @@
 import type { BaseImplementedTrait, Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -12,14 +11,14 @@ import { setInfo } from './set-info';
 export interface ERC1155Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
-  pausable?: boolean;
+  // pausable?: boolean;
   supply?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
   burnable: false,
-  pausable: false,
+  // pausable: false,
   supply: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
@@ -34,13 +33,14 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
-    pausable: opts.pausable ?? defaults.pausable,
+    // pausable: opts.pausable ?? defaults.pausable,
     supply: opts.supply ?? defaults.supply,
   };
 }
 
-export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
-  return opts.pausable === true;
+export function isAccessControlRequired(_opts: Partial<ERC1155Options>): boolean {
+  // return opts.pausable === true;
+  return false;
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -52,17 +52,17 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const baseTrait = addBase(c, allOpts);
   
   if (allOpts.supply) {
-    addSupplyFunctions(c, allOpts.pausable);
+    addSupplyFunctions(c);
   }
 
   // c.addImplementedTrait(erc1155MetadataTrait);
 
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
-  }
+  // if (allOpts.pausable) {
+  //   addPausable(c, allOpts.access);
+  // }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, baseTrait);
+    addBurnable(c, baseTrait);
   }
 
   setAccessControl(c, allOpts.access);
@@ -97,7 +97,7 @@ function addBase(c: ContractBuilder, allOpts: ERC1155Options): BaseImplementedTr
   return baseTrait;
 }
 
-function addSupplyFunctions(c: ContractBuilder, _pausable: boolean) {
+function addSupplyFunctions(c: ContractBuilder) {
   const fns = functions(erc1155SupplyTrait);
   c.addFunction(erc1155SupplyTrait, fns.total_supply);
   c.addFunction(erc1155SupplyTrait, fns.total_supply_all);
@@ -108,7 +108,7 @@ function addSupplyFunctions(c: ContractBuilder, _pausable: boolean) {
   // }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplementedTrait) {
+function addBurnable(c: ContractBuilder, trait: BaseImplementedTrait) {
   c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
@@ -120,10 +120,10 @@ function addBurnable(c: ContractBuilder, pausable: boolean, trait: BaseImplement
   c.addFunction(trait, fns.burn);
   c.addFunction(trait, fns.burn_batch);
 
-  if (pausable) {
-    c.addFunctionCodeBefore(trait, fns.burn, ['self.pausable.when_not_paused()?;']);
-    c.addFunctionCodeBefore(trait, fns.burn_batch, ['self.pausable.when_not_paused()?;']);
-  }
+  // if (pausable) {
+  //   c.addFunctionCodeBefore(trait, fns.burn, ['self.pausable.when_not_paused()?;']);
+  //   c.addFunctionCodeBefore(trait, fns.burn_batch, ['self.pausable.when_not_paused()?;']);
+  // }
 }
 
 const erc1155Trait: BaseImplementedTrait = {

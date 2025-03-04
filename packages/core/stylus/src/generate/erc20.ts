@@ -8,7 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   burnable: booleans,
-  pausable: [false], // TODO: update to `booleans` on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
+  // pausable: booleans, // TODO: uncomment on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
   permit: booleans,
   flashmint: booleans,
   access: accessOptions,

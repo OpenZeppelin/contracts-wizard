@@ -1,6 +1,5 @@
 import type { BaseImplementedTrait, Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -14,14 +13,14 @@ export interface ERC721Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
   enumerable?: boolean;
-  pausable?: boolean;
+  // pausable?: boolean;
 }
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   burnable: false,
   enumerable: false,
-  pausable: false,
+  // pausable: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -36,12 +35,13 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     enumerable: opts.enumerable ?? defaults.enumerable,
-    pausable: opts.pausable ?? defaults.pausable,
+    // pausable: opts.pausable ?? defaults.pausable,
   };
 }
 
-export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.pausable === true;
+export function isAccessControlRequired(_opts: Partial<ERC721Options>): boolean {
+  // return opts.pausable === true;
+  return false;
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -49,18 +49,18 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, allOpts.pausable);
+  addBase(c);
 
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
-  }
+  // if (allOpts.pausable) {
+  //   addPausable(c, allOpts.access);
+  // }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, allOpts.enumerable);
+    addBurnable(c, allOpts.enumerable);
   }
 
   if (allOpts.enumerable) {
-    addEnumerable(c, allOpts.pausable);
+    addEnumerable(c);
   }
 
   setAccessControl(c, allOpts.access);
@@ -69,7 +69,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, pausable: boolean) {
+function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc721Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
 
@@ -81,17 +81,17 @@ function addBase(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('alloy_primitives', 'FixedBytes');
   c.addFunction(erc721Trait, functions.supports_interface);
 
-  if (pausable) {
-    // Add transfer functions with pause checks
-    c.addUseClause('alloc::vec', 'Vec');
-    c.addUseClause('alloy_primitives', 'Address');
-    c.addUseClause('alloy_primitives', 'U256');
+  // if (pausable) {
+  //   // Add transfer functions with pause checks
+  //   c.addUseClause('alloc::vec', 'Vec');
+  //   c.addUseClause('alloy_primitives', 'Address');
+  //   c.addUseClause('alloy_primitives', 'U256');
 
-    c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
-  }
+  //   c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
+  // }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean) {
+function addBurnable(c: ContractBuilder, enumerable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'IErc721Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
@@ -99,9 +99,10 @@ function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean)
 
   c.addFunction(erc721Trait, functions.burn);
 
-  if (pausable) {
-    c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
-  }
+  // if (pausable) {
+  //   c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
+  // }
+
   if (enumerable) {
     c.setFunctionCode(erc721Trait, functions.burn, [
       `let owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
@@ -113,7 +114,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean, enumerable: boolean)
   }
 }
 
-function addEnumerable(c: ContractBuilder, _pausable: boolean) {
+function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
 
   c.addUseClause('alloc::vec', 'Vec');

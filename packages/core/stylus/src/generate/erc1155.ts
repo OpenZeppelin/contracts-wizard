@@ -10,7 +10,7 @@ const blueprint = {
   burnable: booleans,
   mintable: booleans,
   supply: booleans,
-  pausable: [false], // TODO: update to `booleans` on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
+  // pausable: booleans, // TODO: uncomment on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
   access: accessOptions,
   info: infoOptions,
 };

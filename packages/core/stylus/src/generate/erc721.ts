@@ -10,7 +10,7 @@ const blueprint = {
   symbol: ['MTK'],
   burnable: booleans,
   enumerable: booleans,
-  pausable: [false], // TODO: update to `booleans` on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
+  // pausable: booleans, // TODO: uncomment on https://github.com/OpenZeppelin/rust-contracts-stylus/issues/539
   mintable: booleans,
   access: accessOptions,
   info: infoOptions,
