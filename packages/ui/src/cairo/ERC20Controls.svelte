@@ -86,7 +86,7 @@
       <span class="ml-1">
         <input type="checkbox" bind:checked={opts.votes}>
       </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/api/governance#votes">
+      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/governance/votes">
         Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
       </HelpTooltip>
     </label>
