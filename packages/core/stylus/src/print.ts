@@ -22,7 +22,7 @@ export function printContract(contract: Contract): string {
         [...printUseClauses(contract), 'use stylus_sdk::prelude::{entrypoint, public, storage};'],
         printConstants(contract),
         printStorage(contract.name, sortedGroups),
-        printEip712(contract.eip712Name),
+        printEip712(contract),
         printImplementedTraits(contract.name, sortedGroups),
       ),
     ),
@@ -167,8 +167,8 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
     : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
 }
 
-function printEip712(eip712Name?: string): Lines[] {
-  if (!eip712Name) {
+function printEip712(contract: Contract): Lines[] {
+  if (!contract.eip712Needed) {
     return [];
   }
 
@@ -178,7 +178,7 @@ function printEip712(eip712Name?: string): Lines[] {
     '',
     'impl IEip712 for Eip712 {',
     spaceBetween([
-      `const NAME: &'static str = "${eip712Name}";`,
+      `const NAME: &'static str = "${contract.name}";`,
       `const VERSION: &'static str = "1";`,
     ]),
     '}',

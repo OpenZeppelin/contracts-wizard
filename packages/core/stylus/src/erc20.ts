@@ -95,7 +95,7 @@ function addBase(c: ContractBuilder, pausable: boolean) {
 function addPermit(c: ContractBuilder, pausable: boolean) {
   c.addImplementedTrait(erc20PermitTrait);
   c.addImplementedTrait(noncesTrait);
-  c.addEip712('ERC-20 Permit Example'); // TODO: will be the same as token name once metadata is enabled
+  c.addEip712();
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
