@@ -8,6 +8,7 @@
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import ExpandableSection from '../common/ExpandableSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export const opts: Required<KindedOptions['ERC721']> = {
@@ -80,24 +81,19 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Votes</span>
-      <span class="ml-1">
-        <input type="checkbox" bind:checked={opts.votes}>
-      </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts-cairo/governance/votes">
-        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableSection
+  label="Votes"
+  type="checkbox"
+  bind:checked={opts.votes}
+  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/governance#votes"
+>
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">
+        Name for domain separator. Prevents two applications from producing the same hash.
+      </HelpTooltip>
     </span>
     <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
   </label>
@@ -105,11 +101,13 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">
+        Version for domain separator. Prevents two versions of the same application from producing the same hash.
+      </HelpTooltip>
     </span>
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
   </label>
-</section>
+</ExpandableSection>
 
 <RoyaltyInfoSection bind:opts={opts.royaltyInfo} errors={errors} />
 
