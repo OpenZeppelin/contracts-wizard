@@ -61,8 +61,11 @@
   </div>
 
   <footer>
-    <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-2025 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
+    <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-<span id="currentYear"></span> |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
   </footer>
+
+<!-- Set current year -->
+<script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
 
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7795250.js"></script>
