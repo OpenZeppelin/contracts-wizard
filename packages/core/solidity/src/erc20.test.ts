@@ -108,7 +108,7 @@ testERC20('erc20 crossChainBridging custom ownable', {
   access: 'ownable',
 });
 
-testERC20('erc20 crossChainBridging custom ownable mintable', {
+testERC20('erc20 crossChainBridging custom ownable mintable burnable', {
   crossChainBridging: 'custom',
   access: 'ownable',
   mintable: true,
