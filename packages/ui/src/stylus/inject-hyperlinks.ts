@@ -46,6 +46,7 @@ const moduleMappings: { [key: string]: string } = {
   Erc20Permit: 'token/erc20/extensions/permit.rs',
   IErc20Burnable: 'token/erc20/extensions/burnable.rs',
   IErc721Burnable: 'token/erc721/extensions/burnable.rs',
+  Erc721Enumerable: 'token/erc721/extensions/enumerable.rs',
   IEip712: 'utils/cryptography/eip712.rs',
   IErc165: 'utils/introspection/erc165.rs',
   Nonces: 'utils/nonces.rs',
