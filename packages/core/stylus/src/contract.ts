@@ -3,7 +3,7 @@ import { escapeString, toIdentifier } from './utils/convert-strings';
 type Name = {
   identifier: string;
   stringLiteral: string;
-}
+};
 
 export interface Contract {
   license: string;
@@ -83,9 +83,9 @@ export class ContractBuilder implements Contract {
 
   constructor(name: string) {
     this.name = {
-     identifier: toIdentifier(name, true),
-     stringLiteral: escapeString(name),
-    }
+      identifier: toIdentifier(name, true),
+      stringLiteral: escapeString(name),
+    };
   }
 
   get implementedTraits(): ImplementedTrait[] {

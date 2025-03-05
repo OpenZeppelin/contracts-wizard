@@ -25,9 +25,7 @@ export function toIdentifier(str: string, capitalize = false): string {
  * Escapes backslash or double quotes
  */
 export function escapeString(str: string): string {
-  return str
-    .normalize('NFD')
-    .replace(/(\\|")/g, (_, c) => '\\' + c); // escape backslash or double quotes
+  return str.normalize('NFD').replace(/(\\|")/g, (_, c) => '\\' + c); // escape backslash or double quotes
 }
 
 function maxValueOfUint(bits: number): bigint {

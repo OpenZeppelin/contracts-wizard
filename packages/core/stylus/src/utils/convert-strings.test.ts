@@ -56,7 +56,7 @@ test('escapeString - escapes double quotes', t => {
 
 test('escapeString - escapes both backslashes and quotes together', t => {
   t.is(escapeString('a\\"b'), 'a\\\\\\"b');
-  t.is(escapeString('"\\'), '\\"\\\\'); 
+  t.is(escapeString('"\\'), '\\"\\\\');
   t.is(escapeString('\\"\\'), '\\\\\\"\\\\');
 });
 
@@ -68,24 +68,24 @@ test('escapeString - leaves other characters unchanged', t => {
   t.is(escapeString('abcdef'), 'abcdef');
   t.is(escapeString('123456'), '123456');
   t.is(escapeString('!@#$%^&*()'), '!@#$%^&*()');
-  t.is(escapeString('\n\t\r'), '\n\t\r');  // Note: These aren't escaped in your implementation
+  t.is(escapeString('\n\t\r'), '\n\t\r'); // Note: These aren't escaped in your implementation
 });
 
 test('escapeString - handles unicode characters and normalization', t => {
   // Testing NFD normalization (decomposed form)
-  const withAccent = 'café';  // 'é' as a single character
+  const withAccent = 'café'; // 'é' as a single character
   const decomposed = escapeString(withAccent);
   t.is(decomposed.length > withAccent.length, true); // Verify normalization happened
-  
+
   // Test a string with already decomposed characters
   const alreadyDecomposed = 'cafe\u0301'; // 'e' followed by combining acute accent
   t.is(escapeString(alreadyDecomposed), alreadyDecomposed); // Should remain unchanged except for any escaping
-  
+
   // Test other unicode characters
   t.is(escapeString('你好'), '你好'); // Chinese characters
   t.is(escapeString('こんにちは'), 'こんにちは'); // Japanese characters
   t.is(escapeString('안녕하세요'), '안녕하세요'.normalize('NFD')); // Korean characters
-  
+
   // Test emoji (these might be decomposed by NFD)
   const emoji = '😀';
   const escapedEmoji = escapeString(emoji);
@@ -100,6 +100,7 @@ test('escapeString - handles complex strings with multiple escape sequences', t 
 
 test('escapeString - handles strings with JSON-like content', t => {
   const jsonLike = '{"key": "value", "path": "C:\\\\folder\\"}';
+  // eslint-disable-next-line no-useless-escape
   const expected = '{\\\"key\\\": \\\"value\\\", \\\"path\\\": \\\"C:\\\\\\\\folder\\\\\\\"}';
   t.is(escapeString(jsonLike), expected);
 });

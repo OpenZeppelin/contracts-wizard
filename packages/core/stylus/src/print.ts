@@ -1,5 +1,4 @@
 import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
-import { toIdentifier } from './utils/convert-strings';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
