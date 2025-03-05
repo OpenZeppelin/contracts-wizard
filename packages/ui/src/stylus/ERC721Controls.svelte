@@ -16,7 +16,7 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc721.isAccessControlRequired(opts);
+  // $: requireAccessControl = erc721.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">

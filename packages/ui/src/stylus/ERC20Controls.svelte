@@ -16,7 +16,7 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc20.isAccessControlRequired(opts);
+  // $: requireAccessControl = erc20.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -37,7 +37,7 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable}>
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-burnable">
+      <HelpTooltip>
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
@@ -46,7 +46,7 @@
     <!-- <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable}>
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-pausable">
+      <HelpTooltip>
         Privileged accounts will be able to pause the functionality marked with <code>when_not_paused</code>.
         Useful for emergency response.
       </HelpTooltip>
@@ -55,7 +55,7 @@
     <label class:checked={opts.permit}>
       <input type="checkbox" bind:checked={opts.permit}>
       Permit
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-permit">
+      <HelpTooltip>
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
       </HelpTooltip>
     </label>
@@ -63,7 +63,7 @@
     <label class:checked={opts.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint}>
       Flash Minting
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc20-flash-mint">
+      <HelpTooltip>
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
       </HelpTooltip>
     </label>

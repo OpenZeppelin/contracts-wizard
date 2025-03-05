@@ -16,7 +16,7 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc1155.isAccessControlRequired(opts);
+  // $: requireAccessControl = erc1155.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -45,7 +45,7 @@
     <label class:checked={opts.supply}>
       <input type="checkbox" bind:checked={opts.supply}>
       Supply Tracking
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/erc1155-supply">
+      <HelpTooltip>
         Keeps track of total supply of tokens.
       </HelpTooltip>
     </label>
