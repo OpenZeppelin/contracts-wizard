@@ -76,7 +76,7 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
   let counter = 1;
   for (const c of generateContractSubset(subset, kind)) {
     if (uniqueName) {
-      c.contract.name = `Contract${counter++}`;
+      c.contract.name.identifier = `Contract${counter++}`;
     }
     const source = printContract(c.contract);
     yield { ...c, source };
@@ -93,7 +93,7 @@ export async function writeGeneratedSources(
   const contractNames = [];
 
   for (const { id, contract, source } of generateSources(subset, uniqueName, kind)) {
-    const name = uniqueName ? contract.name : id;
+    const name = uniqueName ? contract.name.identifier : id;
     await fs.writeFile(path.format({ dir, name, ext: '.rs' }), source);
     contractNames.push(name);
   }

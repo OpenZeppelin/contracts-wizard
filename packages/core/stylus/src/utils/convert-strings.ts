@@ -21,6 +21,15 @@ export function toIdentifier(str: string, capitalize = false): string {
   }
 }
 
+/**
+ * Escapes backslash or double quotes
+ */
+export function escapeString(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/(\\|")/g, (_, c) => '\\' + c); // escape backslash or double quotes
+}
+
 function maxValueOfUint(bits: number): bigint {
   if (bits <= 0) {
     throw new Error(`Number of bits must be positive (actual '${bits}').`);

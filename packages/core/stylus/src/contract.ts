@@ -1,8 +1,13 @@
-import { toIdentifier } from './utils/convert-strings';
+import { escapeString, toIdentifier } from './utils/convert-strings';
+
+type Name = {
+  identifier: string;
+  stringLiteral: string;
+}
 
 export interface Contract {
   license: string;
-  name: string;
+  name: Name;
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
@@ -66,7 +71,7 @@ export interface Argument {
 }
 
 export class ContractBuilder implements Contract {
-  readonly name: string;
+  readonly name: Name;
   license = 'MIT';
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
@@ -77,7 +82,10 @@ export class ContractBuilder implements Contract {
   eip712Needed?: boolean;
 
   constructor(name: string) {
-    this.name = toIdentifier(name, true);
+    this.name = {
+     identifier: toIdentifier(name, true),
+     stringLiteral: escapeString(name),
+    }
   }
 
   get implementedTraits(): ImplementedTrait[] {
