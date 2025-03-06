@@ -13,17 +13,21 @@
     export let defaultValue: string | undefined = undefined;
     export let helpContent: string;
     export let helpLink: string;
-    export let disabled = false;
+    export let required = false;
     
     // Keep track of expanded state separately from checkbox state
     let isExpanded = false;
+    let wasRequired = required;
     
     function toggleExpanded() {
         isExpanded = !isExpanded;
     }
 
-    $: if (checked || value) {
-        isExpanded = true;
+    $: {
+        if (checked || value || (!wasRequired && required)) {
+            isExpanded = true;
+        }
+        wasRequired = required;
     }
     </script>
     
@@ -49,13 +53,13 @@
                         <input
                             type="checkbox"
                             bind:checked={checked}
-                            disabled={disabled}
+                            disabled={required}
                         >
                     {:else if type === 'toggleradio'}
                         <ToggleRadio
                             bind:value={value}
                             {defaultValue}
-                            disabled={disabled}
+                            disabled={required}
                         />
                     {/if}
                 </span>
