@@ -17,6 +17,7 @@
   bind:checked={opts.enabled}
   helpContent="Provides information for how much royalty is owed and to whom, based on a sale price. Follows ERC-2981 standard."
   helpLink="https://docs.openzeppelin.com/contracts-cairo/api/token_common#ERC2981Component"
+  hasError={errors?.defaultRoyaltyFraction || errors?.feeDenominator}
 >
   <label class="labeled-input">
     <span class="flex justify-between pr-2">

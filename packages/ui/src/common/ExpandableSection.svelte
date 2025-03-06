@@ -14,17 +14,18 @@
     export let helpContent: string;
     export let helpLink: string;
     export let required = false;
+    export let hasError: boolean;
     
     // Keep track of expanded state separately from checkbox state
     let isExpanded = false;
     let wasRequired = required;
     
     function toggleExpanded() {
-        isExpanded = !isExpanded;
+        isExpanded = hasError || !isExpanded;
     }
 
     $: {
-        if (checked || value || (!wasRequired && required)) {
+        if (checked || value || hasError || (!wasRequired && required)) {
             isExpanded = true;
         }
         wasRequired = required;
