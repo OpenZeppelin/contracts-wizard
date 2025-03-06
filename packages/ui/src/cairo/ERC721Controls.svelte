@@ -87,7 +87,7 @@
   bind:checked={opts.votes}
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
   helpLink="https://docs.openzeppelin.com/contracts-cairo/governance#votes"
-  hasError={errors?.appName || errors?.appVersion}
+  error={errors?.appName || errors?.appVersion}
 >
   <label class="labeled-input">
     <span class="flex justify-between pr-2">

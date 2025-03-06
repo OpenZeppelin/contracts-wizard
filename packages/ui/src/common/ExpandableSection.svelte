@@ -1,5 +1,7 @@
 <!-- ExpandableSection.svelte -->
 <script lang="ts">
+    type T = $$Generic;
+
     import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
     import HelpTooltip from '../common/HelpTooltip.svelte';
 
@@ -9,19 +11,21 @@
     export let label: string;
     export let type: 'checkbox' | 'toggleradio' = 'checkbox';
     export let checked: boolean | undefined = undefined;
-    export let value: string | undefined = undefined;
-    export let defaultValue: string | undefined = undefined;
+    export let value: false | T | undefined = undefined;
+    export let defaultValue: T | undefined = undefined;
     export let helpContent: string;
-    export let helpLink: string;
+    export let helpLink: string | undefined = undefined;
     export let required = false;
-    export let hasError: boolean;
+    export let error: string | undefined = undefined;
+
+    $: hasError = error !== undefined;
     
     // Keep track of expanded state separately from checkbox state
     let isExpanded = false;
     let wasRequired = required;
     
     function toggleExpanded() {
-        isExpanded = hasError || !isExpanded;
+        isExpanded = !isExpanded || hasError;
     }
 
     $: {
