@@ -83,7 +83,7 @@
 
 <style>
 .expandable-content {
-    padding-left: 1.5rem;
+    padding-left: 0.5rem;
     margin-top: 0.5rem;
     border-left: 2px solid #e2e8f0;
 }
