@@ -120,7 +120,7 @@ function addEnumerable(c: ContractBuilder) {
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('alloy_primitives', 'Address');
   c.addUseClause('alloy_primitives', 'U256');
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
+  c.addUseClause('stylus_sdk', 'abi::Bytes');
 
   c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
     indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),

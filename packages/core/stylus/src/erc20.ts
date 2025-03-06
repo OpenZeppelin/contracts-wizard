@@ -131,7 +131,7 @@ function addFlashMint(c: ContractBuilder) {
   // the trait necessary to access Erc20FlashMint functions within custom functions of the child contract
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
 
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
+  c.addUseClause('stylus_sdk', 'abi::Bytes');
 
   c.addFunction(flashMintTrait, functions.max_flash_loan);
   c.addFunction(flashMintTrait, functions.flash_fee);
