@@ -2,6 +2,9 @@
 <script lang="ts">
     import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
     import HelpTooltip from '../common/HelpTooltip.svelte';
+
+    import ChevronRight from './icons/ChevronRight.svelte';
+    import ChevronDown from './icons/ChevronDown.svelte';
     
     export let label: string;
     export let type: 'checkbox' | 'toggleradio' = 'checkbox';
@@ -18,12 +21,28 @@
     function toggleExpanded() {
         isExpanded = !isExpanded;
     }
+
+    $: if (checked || value) {
+        isExpanded = true;
+    }
     </script>
     
     <section class="controls-section">
         <h1>
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label class="flex items-center tooltip-container pr-2">
+                <!-- Button controls expansion/collapse independently -->
+                <button
+                    on:click|preventDefault={toggleExpanded}
+                    class="px-1 bg-transparent border-0"
+                    aria-label={isExpanded ? "Collapse section" : "Expand section"}
+                >
+                    {#if isExpanded}
+                        <ChevronDown />
+                    {:else}
+                        <ChevronRight />
+                    {/if}
+                </button>
                 <span>{label}</span>
                 <span class="ml-1">
                     {#if type === 'checkbox'}
@@ -40,14 +59,6 @@
                         />
                     {/if}
                 </span>
-                <!-- Button controls expansion/collapse independently -->
-                <button
-                    on:click|preventDefault={toggleExpanded}
-                    class="mx-2 px-1"
-                    aria-label={isExpanded ? "Collapse section" : "Expand section"}
-                >
-                    {isExpanded ? '▲' : '▼'}
-                </button>
                 <HelpTooltip align="right" link={helpLink}>
                     {helpContent}
                 </HelpTooltip>

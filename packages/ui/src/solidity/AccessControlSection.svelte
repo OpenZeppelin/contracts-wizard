@@ -36,6 +36,7 @@
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
   helpLink="https://docs.openzeppelin.com/contracts/api/access"
+  disabled={required}
 >
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
