@@ -86,7 +86,7 @@ export class ContractBuilder implements Contract {
       identifier: toIdentifier(name, true),
       stringLiteral: escapeString(name),
     };
-    this.addUseClause('stylus_sdk', 'prelude::*')
+    this.addUseClause('stylus_sdk', 'prelude::*');
   }
 
   get implementedTraits(): ImplementedTrait[] {
