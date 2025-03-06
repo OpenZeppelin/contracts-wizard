@@ -50,7 +50,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   // Erc1155Supply reexports Erc1155 functionality
   const baseTrait = allOpts.supply ? erc1155SupplyTrait : erc1155Trait;
-  
+
   addBase(c, baseTrait);
 
   if (allOpts.supply) {
@@ -82,7 +82,7 @@ function addBase(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
   // Override IErc65 from Erc1155
   c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
   // need this to expose the `Erc1155::supports_interface` function (Erc1155Supply does not override this function)
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'Erc1155'); 
+  c.addUseClause('openzeppelin_stylus::token::erc1155', 'Erc1155');
   c.addUseClause('alloy_primitives', 'FixedBytes');
   c.addFunction(baseTrait, functions(baseTrait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
 
@@ -98,7 +98,7 @@ function addBase(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
 }
 
 // This adds supply-related parts without re-adding the contract structure,
-// as it was already added in `addBase`. 
+// as it was already added in `addBase`.
 function addSupply(c: ContractBuilder) {
   c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Supply');
   c.addUseClause('alloy_primitives', 'U256');
