@@ -1,22 +1,32 @@
-<!-- ExpandableSection.svelte -->
 <script lang="ts">
+    /**
+     * Parent component for sections that can be expanded/collapsed.
+     * Not intended to be used directly -- use ExpandableCheckbox and ExpandableToggleRadio instead.
+     */
+
     type T = $$Generic;
 
-    import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
-    import HelpTooltip from '../common/HelpTooltip.svelte';
+    import ToggleRadio from './inputs/ToggleRadio.svelte';
+    import HelpTooltip from './HelpTooltip.svelte';
 
     import ChevronRight from './icons/ChevronRight.svelte';
     import ChevronDown from './icons/ChevronDown.svelte';
     
     export let label: string;
-    export let type: 'checkbox' | 'toggleradio' = 'checkbox';
+    export let type: 'checkbox' | 'toggleradio';
+
+    // For use with 'checkbox' only
     export let checked: boolean | undefined = undefined;
+
+    // For use with 'toggleradio' only
     export let value: false | T | undefined = undefined;
     export let defaultValue: T | undefined = undefined;
+
     export let helpContent: string;
-    export let helpLink: string | undefined = undefined;
-    export let required = false;
-    export let error: string | undefined = undefined;
+    export let helpLink: string | undefined;
+
+    export let required: boolean;
+    export let error: string | undefined;
 
     $: hasError = error !== undefined;
     

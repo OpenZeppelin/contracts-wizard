@@ -6,7 +6,7 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
     kind: 'Stablecoin',
@@ -103,9 +103,8 @@
   </div>
 </section>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Limitations"
-  type="toggleradio"
   bind:value={opts.limitations}
   defaultValue="allowlist"
   helpContent="Restricts certain users from transferring tokens, either via allowing or blocking them."
@@ -127,11 +126,10 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Votes"
-  type="toggleradio"
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
@@ -153,7 +151,7 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

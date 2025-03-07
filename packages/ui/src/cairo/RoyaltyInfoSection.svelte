@@ -2,7 +2,7 @@
   import type { OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import type { RoyaltyInfoOptions } from '@openzeppelin/wizard-cairo/src';
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { royaltyInfoDefaults } from '@openzeppelin/wizard-cairo';
   import { error } from '../common/error-tooltip';
 
@@ -11,9 +11,8 @@
 
 </script>
 
-<ExpandableSection
+<ExpandableCheckbox
   label="Royalty Info"
-  type="checkbox"
   bind:checked={opts.enabled}
   helpContent="Provides information for how much royalty is owed and to whom, based on a sale price. Follows ERC-2981 standard."
   helpLink="https://docs.openzeppelin.com/contracts-cairo/api/token_common#ERC2981Component"
@@ -38,4 +37,4 @@
     </span>
     <input bind:value={opts.feeDenominator} use:error={errors?.feeDenominator} disabled={!opts.enabled}>
   </label>
-</ExpandableSection>
+</ExpandableCheckbox>

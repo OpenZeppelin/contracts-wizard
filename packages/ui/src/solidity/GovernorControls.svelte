@@ -6,7 +6,7 @@
 
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -201,9 +201,8 @@
   </div>
 </section>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Timelock"
-  type="toggleradio"
   bind:value={opts.timelock}
   defaultValue="openzeppelin"
   helpContent="Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions."
@@ -227,7 +226,7 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

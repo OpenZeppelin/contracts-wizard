@@ -7,7 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
@@ -93,9 +93,8 @@
   </div>
 </section>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Votes"
-  type="toggleradio"
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
@@ -117,7 +116,7 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

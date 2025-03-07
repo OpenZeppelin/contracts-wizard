@@ -7,7 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { error } from '../common/error-tooltip';
 
   export const opts: Required<KindedOptions['ERC20']> = {
@@ -79,9 +79,8 @@
   </div>
 </section>
 
-<ExpandableSection
+<ExpandableCheckbox
   label="Votes"
-  type="checkbox"
   bind:checked={opts.votes}
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
   helpLink="https://docs.openzeppelin.com/contracts-cairo/governance#votes"
@@ -106,7 +105,7 @@
     </span>
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
   </label>
-</ExpandableSection>
+</ExpandableCheckbox>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

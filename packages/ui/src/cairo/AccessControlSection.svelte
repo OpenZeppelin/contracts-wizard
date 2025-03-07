@@ -2,7 +2,7 @@
   import type { Access } from '@openzeppelin/wizard';
 
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let access: Access;
   export let required: boolean;
@@ -28,9 +28,8 @@
   }
 </script>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Access Control"
-  type="toggleradio"
   bind:value={access}
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
@@ -53,4 +52,4 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>

@@ -1,16 +1,14 @@
 <script lang="ts">
   import type { Upgradeable } from '@openzeppelin/wizard';
 
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import ExpandableSection from '../common/ExpandableSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let upgradeable: Upgradeable;
 </script>
 
-<ExpandableSection
+<ExpandableToggleRadio
   label="Upgradeability"
-  type="toggleradio"
   bind:value={upgradeable}
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
@@ -32,4 +30,4 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>
+</ExpandableToggleRadio>
