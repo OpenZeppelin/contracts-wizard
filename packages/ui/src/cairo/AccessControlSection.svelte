@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Access } from '@openzeppelin/wizard';
+  import type { Access } from '@openzeppelin/wizard-cairo';
 
   import HelpTooltip from '../common/HelpTooltip.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
