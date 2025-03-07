@@ -3,10 +3,9 @@
   import type { RoyaltyInfoOptions } from '@openzeppelin/wizard-cairo/src';
   import HelpTooltip from '../common/HelpTooltip.svelte';
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
-  import { royaltyInfoDefaults } from '@openzeppelin/wizard-cairo';
   import { error } from '../common/error-tooltip';
 
-  export let opts: RoyaltyInfoOptions = royaltyInfoDefaults;
+  export let opts: RoyaltyInfoOptions;
   export let errors: undefined | OptionsErrorMessages;
 
 </script>
