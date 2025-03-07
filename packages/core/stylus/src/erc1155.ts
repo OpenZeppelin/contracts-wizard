@@ -107,10 +107,10 @@ function addSupply(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
   c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Supply');
   c.addUseClause('alloy_primitives', 'U256');
 
-  const fns = functions(erc1155SupplyTrait);
-  c.addFunction(erc1155SupplyTrait, fns.total_supply);
-  c.addFunction(erc1155SupplyTrait, fns.total_supply_all);
-  c.addFunction(erc1155SupplyTrait, fns.exists);
+  const fns = functions(baseTrait);
+  c.addFunction(baseTrait, fns.total_supply);
+  c.addFunction(baseTrait, fns.total_supply_all);
+  c.addFunction(baseTrait, fns.exists);
 
   // if (pausable) {
   //   // Add pausable checks to appropriate functions
