@@ -54,7 +54,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   addBase(c, baseTrait);
 
   if (allOpts.supply) {
-    addSupply(c);
+    addSupply(c, baseTrait);
   }
 
   // c.addImplementedTrait(erc1155MetadataTrait);
@@ -99,7 +99,11 @@ function addBase(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
 
 // This adds supply-related parts without re-adding the contract structure,
 // as it was already added in `addBase`.
-function addSupply(c: ContractBuilder) {
+function addSupply(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
+  if (baseTrait !== erc1155SupplyTrait) {
+    throw new Error('Base trait must be of type `Erc1155Supply`');
+  }
+
   c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Supply');
   c.addUseClause('alloy_primitives', 'U256');
 
