@@ -33,16 +33,20 @@
     // Keep track of expanded state separately from checkbox state
     let isExpanded = false;
     let wasRequired = required;
+
+    $: isCheckboxSelected = !!(checked || value);
+    let wasCheckboxSelected = isCheckboxSelected;
     
     function toggleExpanded() {
         isExpanded = !isExpanded || hasError;
     }
 
     $: {
-        if (checked || value || hasError || (!wasRequired && required)) {
+        if (hasError || (!wasCheckboxSelected && isCheckboxSelected) || (!wasRequired && required)) {
             isExpanded = true;
         }
         wasRequired = required;
+        wasCheckboxSelected = isCheckboxSelected;
     }
 </script>
 
