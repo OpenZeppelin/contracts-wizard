@@ -10,7 +10,7 @@ export type { Access } from './set-access-control';
 export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';
 
-export { premintPattern } from './erc20';
+export { premintPattern, chainIdPattern } from './erc20';
 export { defaults as infoDefaults } from './set-info';
 
 export type { OptionsErrorMessages } from './error';
