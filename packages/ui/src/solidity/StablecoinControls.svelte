@@ -6,7 +6,7 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
     kind: 'Stablecoin',
@@ -27,25 +27,25 @@
 <section class="controls-section">
   <h1>Settings</h1>
 
-    <div class="grid grid-cols-[2fr,1fr] gap-2">
-      <label class="labeled-input">
-        <span>Name</span>
-        <input bind:value={opts.name}>
-      </label>
-
-      <label class="labeled-input">
-        <span>Symbol</span>
-        <input bind:value={opts.symbol}>
-      </label>
-    </div>
+  <div class="grid grid-cols-[2fr,1fr] gap-2">
+    <label class="labeled-input">
+      <span>Name</span>
+      <input bind:value={opts.name}>
+    </label>
 
     <label class="labeled-input">
-      <span class="flex justify-between pr-2">
-        Premint
-        <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
-      </span>
-      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+      <span>Symbol</span>
+      <input bind:value={opts.symbol}>
     </label>
+  </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Premint
+      <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+    </span>
+    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+  </label>
 </section>
 
 <section class="controls-section">
@@ -103,20 +103,13 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Limitations</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.limitations} defaultValue="allowlist" />
-      </span>
-      <HelpTooltip align="right">
-        Restricts certain users from transferring tokens, either via allowing or blocking them.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Limitations"
+  bind:value={opts.limitations}
+  defaultValue="allowlist"
+  helpContent="Restricts certain users from transferring tokens, either via allowing or blocking them."
+  helpLink=""
+>
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist">
@@ -133,22 +126,15 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Votes</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
-      </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes">
-        Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Votes"
+  bind:value={opts.votes}
+  defaultValue="blocknumber"
+  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+>
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
@@ -165,7 +151,7 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

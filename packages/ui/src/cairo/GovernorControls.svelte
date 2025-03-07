@@ -4,9 +4,10 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { governor, infoDefaults } from '@openzeppelin/wizard-cairo';
 
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+
 
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -19,6 +20,7 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
+    timelock: false, // set default to false
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -173,22 +175,13 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex justify-between items-center tooltip-container pr-2">
-      <span>
-        <span>Timelock</span>
-        <span class="ml-1">
-          <ToggleRadio bind:value={opts.timelock} defaultValue="openzeppelin" />
-        </span>
-      </span>
-      <HelpTooltip>
-        Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Timelock"
+  bind:value={opts.timelock}
+  defaultValue="openzeppelin"
+  helpContent="Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions."
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/api/governance#TimelockControllerComponent"
+>
   <div class="checkbox-group">
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin">
@@ -198,7 +191,7 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
 <section class="controls-section">
   <h1>

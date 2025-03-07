@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Access } from '@openzeppelin/wizard-stylus';
 
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let access: Access;
   export let required: boolean;
@@ -28,20 +28,13 @@
   }
 </script>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Access Control</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={access} defaultValue="ownable" disabled={required} />
-      </span>
-      <HelpTooltip align="right">
-        Restrict who can access the functions of a contract or when they can do it.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Access Control"
+  bind:value={access}
+  defaultValue="ownable"
+  helpContent="Restrict who can access the functions of a contract or when they can do it."
+  required={required}
+>
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable">
@@ -58,4 +51,4 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
