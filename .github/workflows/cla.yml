@@ -42,9 +42,9 @@ jobs:
           remote-organization-name: 'OpenZeppelin'
           remote-repository-name: 'cla-sigs'
           custom-notsigned-prcomment: >
-            Thank you for your contribution to OpenZeppelin Contractz Wizard.
+            Thank you for your contribution to OpenZeppelin Contracts Wizard.
             Before being able to integrate those changes, we would like you to
             sign our [Contributor License Agreement](https://github.com/OpenZeppelin/cla-assistant/blob/main/openzeppelin_2025_cla.md).
 
             You can sign the CLA by just posting a Pull Request Comment with the sentence below. Thanks.
-          custom-pr-sign-comment: 'I have read the CLA Document and I hereby sign the CLA.'
+          custom-pr-sign-comment: 'I have read the CLA Document and I hereby sign the CLA'
