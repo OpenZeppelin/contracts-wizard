@@ -18,7 +18,7 @@ Install dependencies with `yarn install`.
 - Run `yarn lint` to run the linter across the codebase (optionally `yarn lint --fix` will automatically fix fixable issues, like formatting issues).
 
 `packages/ui` is the interface built in Svelte. From the `packages/ui` directory, run `yarn dev` to spin up a local server to develop the UI.
-- By default, the local server runs on port 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
+- By default, the local server runs on port `8080`. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
 
 You'll need to supply your own environment variables if you want to enable Wizard AI Assistant (OPENAI_API_KEY) and/or logging (REDIS_URL, REDIS_TOKEN).
 
