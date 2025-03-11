@@ -53,38 +53,41 @@
 <section class="controls-section">
     <h1>
         <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label class="flex items-center tooltip-container pr-2">
-            <!-- Button controls expansion/collapse independently -->
-            <button
-                on:click|preventDefault={toggleExpanded}
-                class="px-1 bg-transparent border-0"
-                aria-label={isExpanded ? "Collapse section" : "Expand section"}
-            >
-                {#if isExpanded}
-                    <ChevronDown />
-                {:else}
-                    <ChevronRight />
-                {/if}
-            </button>
-            <span>{label}</span>
-            <span class="ml-1">
-                {#if type === 'checkbox'}
-                    <input
-                        type="checkbox"
-                        bind:checked={checked}
-                        disabled={required}
-                    >
-                {:else if type === 'toggleradio'}
-                    <ToggleRadio
-                        bind:value={value}
-                        {defaultValue}
-                        disabled={required}
-                    />
-                {/if}
-            </span>
-            <HelpTooltip align="right" link={helpLink}>
-                {helpContent}
-            </HelpTooltip>
+        <label class="items-center tooltip-container pr-2 grid grid-cols-[5fr,1fr]">
+            <div class="flex items-center">
+                <span class="mr-2">
+                    {#if type === 'checkbox'}
+                        <input
+                            type="checkbox"
+                            bind:checked={checked}
+                            disabled={required}
+                        >
+                    {:else if type === 'toggleradio'}
+                        <ToggleRadio
+                            bind:value={value}
+                            {defaultValue}
+                            disabled={required}
+                        />
+                    {/if}
+                </span>
+                <span>{label}</span>
+            </div>
+            <div class="flex items-center">
+                <button
+                    on:click|preventDefault={toggleExpanded}
+                    class="px-1 bg-transparent border-0"
+                    aria-label={isExpanded ? "Collapse section" : "Expand section"}
+                >
+                    {#if isExpanded}
+                        <ChevronDown />
+                    {:else}
+                        <ChevronRight />
+                    {/if}
+                </button>
+                <HelpTooltip align="right" link={helpLink}>
+                    {helpContent}
+                </HelpTooltip>
+            </div>
         </label>
     </h1>
     
