@@ -1,6 +1,6 @@
 # OpenZeppelin Contracts Wizard for Cairo
 
-[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-cairo?color=%23e55233)](https://www.npmjs.com/package/@openzeppelin/wizard-cairo)
+[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-cairo-alpha?color=%23e55233)](https://www.npmjs.com/package/@openzeppelin/wizard-cairo-alpha)
 
 Interactively build a contract out of components from OpenZeppelin Contracts for Cairo. Provide parameters and desired features for the kind of contract that you want, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
@@ -8,7 +8,7 @@ This package provides a programmatic API. For a web interface, see https://wizar
 
 ### Installation
 
-`npm install @openzeppelin/wizard-cairo`
+`npm install @openzeppelin/wizard-cairo-alpha`
 
 ### Contract types
 
@@ -105,10 +105,10 @@ Throws an error if `premint` has more than one decimal character or is more prec
 
 ### Examples
 
-Import the contract type(s) or function categories (for example, `erc20` or `utils`) that you want to use from the `@openzeppelin/wizard-cairo` package:
+Import the contract type(s) or function categories (for example, `erc20` or `utils`) that you want to use from the `@openzeppelin/wizard-cairo-alpha` package:
 
 ```js
-import { erc20 } from '@openzeppelin/wizard-cairo';
+import { erc20 } from '@openzeppelin/wizard-cairo-alpha';
 ```
 
 To generate the source code for an ERC20 contract with all of the default settings:

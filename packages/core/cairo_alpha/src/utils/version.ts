@@ -1,7 +1,7 @@
 /**
  * The actual latest version to use in links.
  */
-export const contractsVersion = '1.0.0';
+export const contractsVersion = '2.0.0-alpha';
 export const contractsVersionTag = `v${contractsVersion}`;
 
 /**
