@@ -39,6 +39,7 @@ onDOMContentLoaded(function () {
     setSearchParam(w, src.searchParams, 'data-lang', 'lang');
     setSearchParam(w, src.searchParams, 'data-tab', 'tab');
     setSearchParam(w, src.searchParams, 'version', 'version');
+    setSearchParam(w, src.searchParams, 'force-version-switch', 'force-version-switch');
 
     const sync = w.getAttribute('data-sync-url');
 

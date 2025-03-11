@@ -1,33 +1,54 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+
   export let left;
   export let right;
+  export let defaultPage = 'left';
 
-  let tab = left;
+  // For passing through to the page
+  export let initialTab;
+  export let initialOpts;
+
+  let tab = defaultPage === 'left' ? left : right;
 
   function switchTo(page) {
     tab = page;
   }
+
+  const dispatch = createEventDispatcher();
+
+  let contractTab;
+
+  $: {
+    const searchParams = [];
+    if (contractTab) {
+      searchParams.push(contractTab);
+    }
+    if (tab.version) {
+      searchParams.push(`version=${tab.version}`);
+    }
+    dispatch('tab-change', searchParams.join('&'));
+  };
 </script>
 
 <div class="container overflow-hidden">
   <div class="header flex flex-row justify-between overflow-hidden">
     <div class="button-container">
       <button class:selected={tab === left} on:click={() => switchTo(left)}>
-        {left.name}
+        {left.label}
       </button>
       <button class:selected={tab === right} on:click={() => switchTo(right)}>
-        {right.name}
+        {right.label}
       </button>
     </div>
   </div>
   <div class="page-container flex flex-col justify-between overflow-hidden">
-    <svelte:component this={tab.page} />
+    <svelte:component this={tab.page} initialTab={initialTab} initialOpts={initialOpts} bind:tab={contractTab}/>
   </div>
 </div>
 
 <style lang="postcss">
   .container {
-    background-color: var(--gray-1);
     min-width: 32rem;
   }
 

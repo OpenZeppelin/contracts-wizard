@@ -14,4 +14,4 @@ export const scarbVersion = '2.9.4';
 /**
  * Semantic version string representing of the minimum compatible version of Contracts to display in output.
  */
-export const compatibleContractsSemver = '^1.0.0';
+export const compatibleContractsSemver = '^2.0.0-alpha';
