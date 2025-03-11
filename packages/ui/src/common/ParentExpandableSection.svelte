@@ -92,7 +92,7 @@
     </h1>
     
     {#if isExpanded}
-        <div class="expandable-content">
+        <div>
             <slot />
         </div>
     {/if}
