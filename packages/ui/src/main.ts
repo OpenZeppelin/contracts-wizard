@@ -15,8 +15,14 @@ import { compatibleContractsSemver as cairoSemver } from '@openzeppelin/wizard-c
 import { compatibleContractsSemver as cairoAlphaSemver } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
-import { contractsVersion as cairoAuditedVersion, contractsVersionTag as cairoAuditedVersionTag } from '@openzeppelin/wizard-cairo';
-import { contractsVersion as cairoAlphaVersion, contractsVersionTag as cairoAlphaVersionTag } from '@openzeppelin/wizard-cairo-alpha';
+import {
+  contractsVersion as cairoAuditedVersion,
+  contractsVersionTag as cairoAuditedVersionTag,
+} from '@openzeppelin/wizard-cairo';
+import {
+  contractsVersion as cairoAlphaVersion,
+  contractsVersionTag as cairoAlphaVersionTag,
+} from '@openzeppelin/wizard-cairo-alpha';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -42,12 +48,9 @@ const initialOpts: InitialOptions = {
   premint: params.get('premint') ?? undefined,
 };
 
-const appTypes = ['solidity', 'cairo', 'cairo_alpha', 'stellar', 'stylus'] as const;
-type AppType = typeof appTypes[number];
-
 interface CompatibleSelection {
   compatible: true;
-  appType: AppType;
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus';
 }
 
 interface IncompatibleSelection {
@@ -64,7 +67,10 @@ interface IncompatibleSelection {
  * @param requestedVersion The requested version
  * @returns A compatible selection with the app type, or an incompatible selection with the compatible semver range
  */
-function evalutateSelection(lang: string | undefined, requestedVersion: string | undefined): CompatibleSelection | IncompatibleSelection {
+function evalutateSelection(
+  lang: string | undefined,
+  requestedVersion: string | undefined,
+): CompatibleSelection | IncompatibleSelection {
   switch (lang) {
     case 'cairo': {
       if (requestedVersion === undefined) {
@@ -101,13 +107,14 @@ function evalutateSelection(lang: string | undefined, requestedVersion: string |
       }
     }
   }
-};
+}
 
 let app;
 const selection = evalutateSelection(lang, requestedVersion);
 
 if (!selection.compatible) {
-  if (requestedVersion === undefined) { // Should never happen, since undefined should lead to a compatible selection
+  if (requestedVersion === undefined) {
+    // Should never happen, since undefined should lead to a compatible selection
     throw new Error('requestedVersion is undefined');
   }
 
