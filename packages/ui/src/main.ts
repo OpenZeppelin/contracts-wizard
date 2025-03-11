@@ -3,14 +3,18 @@ import './common/styles/global.css';
 import type {} from 'svelte';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
+import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
+import VersionSwitch from './common/VersionSwitch.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
 import { compatibleContractsSemver as compatibleSolidityContractsSemver } from '@openzeppelin/wizard';
 import { compatibleContractsSemver as compatibleCairoContractsSemver } from '@openzeppelin/wizard-cairo';
-import type { InitialOptions } from './common/initial-options.ts';
+import { contractsVersionTag as cairoAuditedVersionTag } from '@openzeppelin/wizard-cairo';
+import { contractsVersionTag as cairoAlphaVersionTag } from '@openzeppelin/wizard-cairo-alpha';
+import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
   const { height } = document.documentElement.getBoundingClientRect();
@@ -46,9 +50,12 @@ if (requestedVersion && !semver.satisfies(requestedVersion, compatibleVersionSem
 } else {
   switch (lang) {
     case 'cairo':
-      app = new CairoApp({
+      app = new VersionSwitch({
         target: document.body,
-        props: { initialTab, initialOpts },
+        props: {
+          left: { name: cairoAuditedVersionTag, page: CairoApp },
+          right: { name: cairoAlphaVersionTag, page: CairoAlphaApp },
+        },
       });
       break;
     case 'stellar':
