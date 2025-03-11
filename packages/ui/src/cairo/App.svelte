@@ -35,6 +35,10 @@
       dispatch('tab-change', tab);
     };
 
+    const NAV_BAR_OFFSET = 84;
+    const VERSION_SWITCH_OFFSET = 40;
+    const dynamicHeight = `calc(100vh-${NAV_BAR_OFFSET + VERSION_SWITCH_OFFSET}px)`;
+
     export let initialOpts: InitialOptions = {};
     let initialValuesSet = false;
 
@@ -159,7 +163,7 @@
   </div>
 
   <div class="flex flex-row grow">
-    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[{dynamicHeight}] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
@@ -182,7 +186,7 @@
         <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[{dynamicHeight}]">
       <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -cairo grow overflow-auto p-4">{@html highlightedCode}</code></pre>
     </div>
   </div>
