@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
+  export let isDefaultVersion = false;
   export let version;
   export let page;
 
@@ -17,7 +18,7 @@
     if (contractTab) {
       searchParams.push(contractTab);
     }
-    if (version) {
+    if (!isDefaultVersion) {
       searchParams.push(`version=${version}`);
     }
     dispatch('tab-change', searchParams.join('&'));

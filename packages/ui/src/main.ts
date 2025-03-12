@@ -120,6 +120,7 @@ if (!selection.compatible) {
       app = new VersionedApp({
         target: document.body,
         props: {
+          isDefaultVersion: true,
           version: 'stable',
           page: CairoApp,
           initialTab,
