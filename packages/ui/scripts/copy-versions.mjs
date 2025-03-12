@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { contractsVersionTag as cairoVersion } from '@openzeppelin/wizard-cairo';
@@ -10,6 +10,6 @@ const json = {
 };
 const content = `var contractsVersions = ${JSON.stringify(json, null, 2)};`;
 
-const outputPath = resolve('public/build/versions.js');
-
-writeFileSync(outputPath, content, 'utf8');
+const dir = 'public/build';
+mkdirSync(dir, { recursive: true });
+writeFileSync(resolve(dir, 'versions.js'), content, 'utf8');
