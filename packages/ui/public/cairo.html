@@ -54,9 +54,9 @@
     <div class="switch switch-cairo active with-version">
       <img src="/icons/cairo.svg" alt="cairo">
       Cairo
-      <select class="switch switch-cairo active version" id="version-select">
-        <option value="stable">v1.0.0</option>
-        <option value="alpha">v2.0.0-alpha</option>
+      <select class="switch switch-cairo active version" id="version-dropdown">
+        <option value="stable" label="v1.0.0" />
+        <option value="alpha" label="v2.0.0-alpha" />
       </select>
     </div>
     <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
@@ -72,25 +72,33 @@
   </footer>
 
   <script>
-    const versionSelect = document.getElementById('version-select');
+    const dropdown = document.getElementById('version-dropdown');
 
-    versionSelect.addEventListener('change', () => {
-      window.location = "cairo#version=" + versionSelect.value;
+    function resizeDropdown() {
+      const selectedOption = dropdown.children[dropdown.selectedIndex];
+      dropdown.style.width = selectedOption.label.length + 1 + 'ch';
+    }
+
+    dropdown.addEventListener('change', () => {
+      resizeDropdown();
+      window.location = "cairo#version=" + dropdown.value;
       window.location.reload();
     });
 
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     const version = urlParams.get('version');
     if (version) {
-      if (!versionSelect.querySelector(`option[value="${version}"]`)) {
-        // If version does not match dropdown options, use the default
+      if (!dropdown.querySelector(`option[value="${version}"]`)) {
+        // If version does not exist in dropdown options, use the default
         window.location = "cairo#version=stable";
         window.location.reload();
       } else {
         // Set the selected version in the dropdown
-        versionSelect.value = version;
+        dropdown.value = version;
       }
     }
+
+    resizeDropdown();
   </script>
 
 <!-- Set current year -->
