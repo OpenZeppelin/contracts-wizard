@@ -6,7 +6,7 @@ import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
-import VersionPassthrough from './common/VersionPassthrough.svelte';
+import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -15,8 +15,6 @@ import { compatibleContractsSemver as cairoSemver } from '@openzeppelin/wizard-c
 import { compatibleContractsSemver as cairoAlphaSemver } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
-import { contractsVersion as cairoAuditedVersion } from '@openzeppelin/wizard-cairo';
-import { contractsVersion as cairoAlphaVersion } from '@openzeppelin/wizard-cairo-alpha';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -68,9 +66,9 @@ function evalutateSelection(
     case 'cairo': {
       if (requestedVersion === undefined) {
         return { compatible: true, appType: 'cairo' };
-      } else if (semver.satisfies(requestedVersion, cairoAlphaSemver)) {
+      } else if (requestedVersion === 'alpha' || semver.satisfies(requestedVersion, cairoAlphaSemver)) {
         return { compatible: true, appType: 'cairo_alpha' };
-      } else if (semver.satisfies(requestedVersion, cairoSemver)) {
+      } else if (requestedVersion === 'stable' || semver.satisfies(requestedVersion, cairoSemver)) {
         return { compatible: true, appType: 'cairo' };
       } else {
         return { compatible: false, compatibleVersionsSemver: `${cairoAlphaSemver} || ${cairoSemver}` };
@@ -119,26 +117,22 @@ if (!selection.compatible) {
 } else {
   switch (selection.appType) {
     case 'cairo':
-      app = new VersionPassthrough({
+      app = new VersionedApp({
         target: document.body,
         props: {
-          versionedPage: {
-            version: cairoAuditedVersion,
-            page: CairoApp,
-          },
+          version: 'stable',
+          page: CairoApp,
           initialTab,
           initialOpts,
         },
       });
       break;
     case 'cairo_alpha':
-      app = new VersionPassthrough({
+      app = new VersionedApp({
         target: document.body,
         props: {
-          versionedPage: {
-            version: cairoAlphaVersion,
-            page: CairoAlphaApp,
-          },
+          version: 'alpha',
+          page: CairoAlphaApp,
           initialTab,
           initialOpts,
         },

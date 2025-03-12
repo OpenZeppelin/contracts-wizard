@@ -1,7 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let versionedPage;
+  export let version;
+  export let page;
 
   // For passing through to the page
   export let initialTab;
@@ -16,8 +17,8 @@
     if (contractTab) {
       searchParams.push(contractTab);
     }
-    if (versionedPage.version) {
-      searchParams.push(`version=${versionedPage.version}`);
+    if (version) {
+      searchParams.push(`version=${version}`);
     }
     dispatch('tab-change', searchParams.join('&'));
   };
@@ -25,6 +26,6 @@
 
 <div class="container overflow-hidden">
   <div class="page-container flex flex-col justify-between overflow-hidden">
-    <svelte:component this={versionedPage.page} initialTab={initialTab} initialOpts={initialOpts} bind:tab={contractTab}/>
+    <svelte:component this={page} initialTab={initialTab} initialOpts={initialOpts} bind:tab={contractTab}/>
   </div>
 </div>
