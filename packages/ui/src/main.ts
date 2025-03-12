@@ -6,7 +6,7 @@ import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
-import VersionSwitch from './common/VersionSwitch.svelte';
+import VersionPassthrough from './common/VersionPassthrough.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
@@ -15,14 +15,8 @@ import { compatibleContractsSemver as cairoSemver } from '@openzeppelin/wizard-c
 import { compatibleContractsSemver as cairoAlphaSemver } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
-import {
-  contractsVersion as cairoAuditedVersion,
-  contractsVersionTag as cairoAuditedVersionTag,
-} from '@openzeppelin/wizard-cairo';
-import {
-  contractsVersion as cairoAlphaVersion,
-  contractsVersionTag as cairoAlphaVersionTag,
-} from '@openzeppelin/wizard-cairo-alpha';
+import { contractsVersion as cairoAuditedVersion } from '@openzeppelin/wizard-cairo';
+import { contractsVersion as cairoAlphaVersion } from '@openzeppelin/wizard-cairo-alpha';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -40,7 +34,6 @@ const params = new URLSearchParams(window.location.search);
 const initialTab = params.get('tab') ?? undefined;
 const lang = params.get('lang') ?? undefined;
 const requestedVersion = params.get('version') ?? undefined;
-const forceVersionSwitch = Boolean(params.get('force-version-switch'));
 
 const initialOpts: InitialOptions = {
   name: params.get('name') ?? undefined,
@@ -126,25 +119,30 @@ if (!selection.compatible) {
 } else {
   switch (selection.appType) {
     case 'cairo':
-    case 'cairo_alpha':
-      if (forceVersionSwitch || requestedVersion === undefined) {
-        app = new VersionSwitch({
-          target: document.body,
-          props: {
-            left: { label: cairoAuditedVersionTag, version: cairoAuditedVersion, page: CairoApp },
-            right: { label: cairoAlphaVersionTag, version: cairoAlphaVersion, page: CairoAlphaApp },
-            defaultPage: selection.appType === 'cairo' ? 'left' : 'right',
-            initialTab,
-            initialOpts,
+      app = new VersionPassthrough({
+        target: document.body,
+        props: {
+          versionedPage: {
+            version: cairoAuditedVersion,
+            page: CairoApp,
           },
-        });
-      } else {
-        const page = selection.appType === 'cairo' ? CairoApp : CairoAlphaApp;
-        app = new page({
-          target: document.body,
-          props: { initialTab, initialOpts },
-        });
-      }
+          initialTab,
+          initialOpts,
+        },
+      });
+      break;
+    case 'cairo_alpha':
+      app = new VersionPassthrough({
+        target: document.body,
+        props: {
+          versionedPage: {
+            version: cairoAlphaVersion,
+            page: CairoAlphaApp,
+          },
+          initialTab,
+          initialOpts,
+        },
+      });
       break;
     case 'stellar':
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });

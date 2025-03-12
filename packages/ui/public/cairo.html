@@ -51,17 +51,47 @@
   </div>
   <div class="nav">
     <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
-    <a class="switch switch-cairo active" href="#"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
+    <div class="switch switch-cairo active with-version">
+      <img src="/icons/cairo.svg" alt="cairo">
+      Cairo
+      <select class="switch switch-cairo active version" id="version-select">
+        <option value="1.0.0">v1.0.0</option>
+        <option value="2.0.0-alpha">v2.0.0-alpha</option>
+      </select>
+    </div>
     <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
     <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
   </div>
+
   <div class="wizard-container">
-    <oz-wizard class="wizard" data-sync-url="fragment" data-lang="cairo" force-version-switch="true"></oz-wizard>
+    <oz-wizard class="wizard" data-sync-url="fragment" data-lang="cairo"></oz-wizard>
   </div>
 
   <footer>
     <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-<span id="copyright-date"></span> |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
   </footer>
+
+  <script>
+    const versionSelect = document.getElementById('version-select');
+
+    versionSelect.addEventListener('change', () => {
+      window.location = "cairo#version=" + versionSelect.value;
+      window.location.reload();
+    });
+
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const version = urlParams.get('version');
+    if (version) {
+      if (!versionSelect.querySelector(`option[value="${version}"]`)) {
+        // If version does not match dropdown options, use the default
+        window.location = "cairo#version=1.0.0";
+        window.location.reload();
+      } else {
+        // Set the selected version in the dropdown
+        versionSelect.value = version;
+      }
+    }
+  </script>
 
 <!-- Set current year -->
 <script>document.getElementById('copyright-date').innerHTML = new Date().getFullYear();</script>
