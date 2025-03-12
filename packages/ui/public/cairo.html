@@ -35,6 +35,7 @@
   <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/woff2" crossorigin>
   <link rel='stylesheet' href='/build/standalone.css'>
   <script async src='/build/embed.js'></script>
+  <script src="/build/versions.js"></script>
 </head>
 <body>
 
@@ -55,8 +56,8 @@
       <img src="/icons/cairo.svg" alt="cairo">
       Cairo
       <select class="switch switch-cairo active version" id="version-dropdown">
-        <option value="stable" label="v1.0.0" />
-        <option value="alpha" label="v2.0.0-alpha" />
+        <option value="stable" />
+        <option value="alpha" />
       </select>
     </div>
     <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
@@ -74,31 +75,46 @@
   <script>
     const dropdown = document.getElementById('version-dropdown');
 
+    function populateLabels() {
+      const options = dropdown.querySelectorAll('option');
+      options[0].label = contractsVersions.cairo;
+      options[1].label = contractsVersions.cairoAlpha;
+    }
+
     function resizeDropdown() {
       const selectedOption = dropdown.children[dropdown.selectedIndex];
       dropdown.style.width = selectedOption.label.length + 1 + 'ch';
     }
 
-    dropdown.addEventListener('change', () => {
+    function onchangeVersion() {
       resizeDropdown();
       window.location = "cairo#version=" + dropdown.value;
       window.location.reload();
-    });
+    }
 
-    const urlParams = new URLSearchParams(window.location.hash.substring(1));
-    const version = urlParams.get('version');
-    if (version) {
-      if (!dropdown.querySelector(`option[value="${version}"]`)) {
-        // If version does not exist in dropdown options, use the default
-        window.location = "cairo#version=stable";
-        window.location.reload();
-      } else {
-        // Set the selected version in the dropdown
-        dropdown.value = version;
+    function preselectFromParam() {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1));
+      const version = urlParams.get('version');
+      if (version) {
+        if (!dropdown.querySelector(`option[value="${version}"]`)) {
+          // If version does not exist in dropdown options, use the default
+          window.location = "cairo#version=stable";
+          window.location.reload();
+        } else {
+          // Set the selected version in the dropdown
+          dropdown.value = version;
+        }
       }
     }
 
-    resizeDropdown();
+    function onStartup() {
+      populateLabels();
+      dropdown.addEventListener('change', onchangeVersion);
+      preselectFromParam();
+      resizeDropdown();
+    }
+
+    onStartup();
   </script>
 
 <!-- Set current year -->
