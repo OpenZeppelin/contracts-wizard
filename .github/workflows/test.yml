@@ -26,6 +26,7 @@ jobs:
           - solidity
           - cairo
           - stellar
+          - stylus
 
     runs-on: ubuntu-latest
     steps:
