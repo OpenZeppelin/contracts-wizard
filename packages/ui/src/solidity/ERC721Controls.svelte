@@ -31,13 +31,7 @@
     wasIncremental = opts.incremental;
   }
 
-  let isVotesExpanded = false;
-
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
-
-  $: if (opts.votes !== false) {
-    isVotesExpanded = true;
-  }
 </script>
 
 <section class="controls-section">

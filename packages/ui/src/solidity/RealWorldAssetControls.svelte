@@ -8,9 +8,6 @@
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
-  let isVotesExpanded = false;
-  let isLimitationsExpanded = false;
-
   export let opts: Required<KindedOptions['RealWorldAsset']> = {
     kind: 'RealWorldAsset',
     ...realWorldAsset.defaults,
@@ -21,13 +18,6 @@
   };
 
   $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
-
-  $: if (opts.votes !== false) {
-    isVotesExpanded = true;
-  }
-  $: if (opts.limitations !== false) {
-    isLimitationsExpanded = true;
-  }
 </script>
 
 <section class="controls-section">

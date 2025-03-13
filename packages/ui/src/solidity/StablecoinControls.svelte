@@ -108,7 +108,6 @@
   bind:value={opts.limitations}
   defaultValue="allowlist"
   helpContent="Restricts certain users from transferring tokens, either via allowing or blocking them."
-  helpLink=""
 >
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>

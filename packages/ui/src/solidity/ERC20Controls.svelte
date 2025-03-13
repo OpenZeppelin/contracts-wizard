@@ -16,10 +16,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
-
-
 </script>
 
 <section class="controls-section">

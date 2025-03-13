@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Upgradeable } from '@openzeppelin/wizard';
 
-  import HelpTooltip from '../common/HelpTooltip.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+  import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
 </script>

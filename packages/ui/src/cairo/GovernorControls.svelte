@@ -4,10 +4,9 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import { governor, infoDefaults } from '@openzeppelin/wizard-cairo';
 
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
-
 
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -20,7 +19,6 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
-    timelock: false, // set default to false
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -180,7 +178,6 @@
   bind:value={opts.timelock}
   defaultValue="openzeppelin"
   helpContent="Add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/api/governance#TimelockControllerComponent"
 >
   <div class="checkbox-group">
     <label class:checked={opts.timelock === 'openzeppelin'}>
