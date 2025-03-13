@@ -91,9 +91,7 @@
         </label>
     </h1>
     
-    {#if isExpanded}
-        <div>
-            <slot />
-        </div>
-    {/if}
+    <div hidden={!isExpanded}>
+        <slot />
+    </div>
 </section>

@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
   import { superchainTooltipProps } from './superchain-tooltip';
 
@@ -172,20 +173,13 @@
   </div>
 </ExpandableToggleRadio>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Cross-Chain Bridging*</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.crossChainBridging} defaultValue="custom" />
-      </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable">
-        Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Cross-Chain Bridging*"
+  bind:value={opts.crossChainBridging}
+  defaultValue="custom"
+  helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
+  helpLink="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable"
+>
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
       <input type="radio" bind:group={opts.crossChainBridging} value="custom">
@@ -203,7 +197,7 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
