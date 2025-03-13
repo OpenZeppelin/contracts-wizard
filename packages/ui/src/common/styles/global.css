@@ -154,3 +154,7 @@ input.input-inline {
 .hljs.-stylus{
   background: linear-gradient(30deg, #181215, #360c1f);
 }
+
+.light-link {
+  color: white;
+}
