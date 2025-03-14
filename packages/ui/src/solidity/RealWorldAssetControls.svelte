@@ -1,14 +1,16 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
-  import { realWorldAsset, premintPattern, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import { realWorldAsset, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
+  import { error } from '../common/error-tooltip';
+  import { resizeToFit } from '../common/resize-to-fit';
   import { superchainTooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['RealWorldAsset']> = {
@@ -19,6 +21,8 @@
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
 
@@ -38,6 +42,11 @@
       superchainTooltip.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
+  }
+
+  let showChainId = false;
+  $: {
+    showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
   }
 </script>
 
@@ -67,8 +76,18 @@
         Premint
         <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
       </span>
-      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source}>
+      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint}>
     </label>
+
+    {#if showChainId}
+    <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm flex-1">
+        &nbsp;Chain ID:
+        <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
+      </label>
+      <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
+    </p>
+    {/if}
 </section>
 
 <section class="controls-section">

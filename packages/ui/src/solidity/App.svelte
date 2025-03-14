@@ -402,10 +402,10 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} />
+        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
-        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} />
+        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
