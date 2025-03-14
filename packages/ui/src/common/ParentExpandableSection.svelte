@@ -25,7 +25,14 @@
     export let helpContent: string;
     export let helpLink: string | undefined;
 
+    // Whether the section is disabled, and optionally the reason why
+    export let disabled: boolean;
+    export let disabledReason: string | undefined;
+
+    // Whether the section is required.
+    // Similar to `disabled`, but expands by default and does not show a reason.
     export let required: boolean;
+
     export let error: string | undefined;
 
     $: hasError = error !== undefined;
@@ -60,13 +67,13 @@
                         <input
                             type="checkbox"
                             bind:checked={checked}
-                            disabled={required}
+                            disabled={disabled || required}
                         >
                     {:else if type === 'toggleradio'}
                         <ToggleRadio
                             bind:value={value}
                             {defaultValue}
-                            disabled={required}
+                            disabled={disabled || required}
                         />
                     {/if}
                 </span>
@@ -91,6 +98,10 @@
         </label>
     </h1>
     
+    <div class="text-sm text-gray-500" hidden={!disabled || disabledReason === undefined}>
+        <span class="italic">{disabledReason}</span>
+    </div>
+
     <div hidden={!isExpanded}>
         <slot />
     </div>

@@ -34,9 +34,9 @@
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
   helpLink="https://docs.openzeppelin.com/openzeppelin/upgrades"
-  required={disabled}
+  disabled={disabled}
+  disabledReason="Upgradeability is not currently supported with Cross-Chain Bridging."
 >
-  <div class="text-sm text-gray-500" class:hidden={!disabled}>  <span class="italic">Upgradeability is not currently supported with Cross-Chain Bridging.</span></div>
   <div class="checkbox-group">
     <label class:checked={upgradeable === 'transparent'}>
       <input type="radio" bind:group={upgradeable} value="transparent" disabled={disabled}>

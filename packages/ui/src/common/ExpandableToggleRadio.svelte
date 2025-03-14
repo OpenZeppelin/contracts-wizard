@@ -10,10 +10,13 @@
     export let helpContent: string;
     export let helpLink: string | undefined = undefined;
 
+    export let disabled: boolean = false;
+    export let disabledReason: string | undefined = undefined;
+
     export let required: boolean = false;
 
 </script>
 
-<ParentExpandableSection type="toggleradio" {label} bind:value={value} {defaultValue} {helpContent} {helpLink} {required} error={undefined}>
+<ParentExpandableSection type="toggleradio" {label} bind:value={value} {defaultValue} {helpContent} {helpLink} {disabled} {disabledReason} {required} error={undefined}>
     <slot />
 </ParentExpandableSection>
