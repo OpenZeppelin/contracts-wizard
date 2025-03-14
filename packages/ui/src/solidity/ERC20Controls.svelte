@@ -51,35 +51,35 @@
 <section class="controls-section">
   <h1>Settings</h1>
 
-    <div class="grid grid-cols-[2fr,1fr] gap-2">
-      <label class="labeled-input">
-        <span>Name</span>
-        <input bind:value={opts.name}>
-      </label>
-
-      <label class="labeled-input">
-        <span>Symbol</span>
-        <input bind:value={opts.symbol}>
-      </label>
-    </div>
-
+  <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
-      <span class="flex justify-between pr-2">
-        Premint
-        <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
-      </span>
-      <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint}>
+      <span>Name</span>
+      <input bind:value={opts.name}>
     </label>
 
-    {#if showChainId}
-    <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
-      <label class="text-sm flex-1">
-        &nbsp;Chain ID:
-        <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
-      </label>
-      <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
-    </p>
-    {/if}
+    <label class="labeled-input">
+      <span>Symbol</span>
+      <input bind:value={opts.symbol}>
+    </label>
+  </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Premint
+      <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
+    </span>
+    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint}>
+  </label>
+
+  {#if showChainId}
+  <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+    <label class="text-sm flex-1">
+      &nbsp;Chain ID:
+      <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
+    </label>
+    <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
+  </p>
+  {/if}
 </section>
 
 <section class="controls-section">
