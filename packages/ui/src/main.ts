@@ -132,6 +132,7 @@ if (!selection.compatible) {
       app = new VersionedApp({
         target: document.body,
         props: {
+          isDefaultVersion: false,
           version: 'alpha',
           page: CairoAlphaApp,
           initialTab,
