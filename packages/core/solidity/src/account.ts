@@ -70,7 +70,7 @@ function getBaseName(opts: AccountOptions): string {
 
 function addBase(c: ContractBuilder, opts: AccountOptions): void {
   const baseName = getBaseName(opts);
-  const accountFolder = '@openzeppelin/community-contracts/account/';
+  const accountFolder = '@openzeppelin/community-contracts/contracts/account/';
   let path = accountFolder;
   if (opts.ERC7579) {
     path += 'extensions/';
@@ -98,7 +98,7 @@ function addSigners(c: ContractBuilder, opts: AccountOptions): void {
   if (opts.signer) {
     c.addParent({
       name: `Signer${opts.signer}`,
-      path: `@openzeppelin/community-contracts/utils/cryptography/Signer${opts.signer}.sol`,
+      path: `@openzeppelin/community-contracts/contracts/utils/cryptography/Signer${opts.signer}.sol`,
     });
     c.addParent({
       name: 'Initializable',
@@ -121,7 +121,7 @@ function addSignatureValidation(c: ContractBuilder, opts: AccountOptions): void 
     if (getBaseName(opts) !== 'AccountERC7579') {
       c.addImportOnly({
         name: 'AccountERC7579',
-        path: '@openzeppelin/community-contracts/account/extensions/AccountERC7579.sol',
+        path: '@openzeppelin/community-contracts/contracts/account/extensions/AccountERC7579.sol',
       });
     }
     c.addOverride({ name: 'AccountERC7579' }, functions._rawSignatureValidation);
