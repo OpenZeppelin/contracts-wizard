@@ -23,6 +23,12 @@ import {
   defaults as stablecoinDefaults,
   isAccessControlRequired as stablecoinIsAccessControlRequired,
 } from './stablecoin';
+import type { AccountOptions } from './account';
+import {
+  printAccount,
+  defaults as accountDefaults,
+  isAccessControlRequired as accountIsAccessControlRequired,
+} from './account';
 import type { GovernorOptions } from './governor';
 import {
   printGovernor,
@@ -59,6 +65,7 @@ export type ERC721 = WizardContractAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions>;
 export type RealWorldAsset = WizardContractAPI<StablecoinOptions>;
+export type Account = WizardContractAPI<AccountOptions>;
 export type Governor = WizardContractAPI<GovernorOptions>;
 export type Custom = WizardContractAPI<CustomOptions>;
 
@@ -81,6 +88,11 @@ export const stablecoin: Stablecoin = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
+};
+export const account: Account = {
+  print: printAccount,
+  defaults: accountDefaults,
+  isAccessControlRequired: accountIsAccessControlRequired,
 };
 export const realWorldAsset: RealWorldAsset = {
   print: printStablecoin,
