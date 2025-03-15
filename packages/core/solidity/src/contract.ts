@@ -95,7 +95,7 @@ export class ContractBuilder implements Contract {
     return [...this.parentMap.values()]
       .filter(p => !p.importOnly)
       .sort((a, b) => {
-        if (a.contract.name === 'Initializable' || a.contract.name === 'EIP712') {
+        if (a.contract.name === 'Initializable') {
           return -1;
         } else if (b.contract.name === 'Initializable') {
           return 1;
