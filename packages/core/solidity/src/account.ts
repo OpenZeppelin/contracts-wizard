@@ -10,6 +10,7 @@ export const defaults: Required<AccountOptions> = {
   name: 'MyAccount',
   accountBase: 'Account',
   signer: false,
+  ERC7821: false,
   ERC7579: false,
 } as const;
 
@@ -26,6 +27,7 @@ export interface AccountOptions extends CommonOptions {
   name: string;
   accountBase: AccountBaseOptions;
   signer?: SignerOptions;
+  ERC7821: boolean;
   ERC7579?: ERC7579Options;
 }
 
@@ -35,6 +37,7 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
     name: opts.name ?? defaults.name,
     accountBase: opts.accountBase ?? defaults.accountBase,
     signer: opts.signer ?? defaults.signer,
+    ERC7821: opts.ERC7821 ?? defaults.ERC7821,
     ERC7579: opts.ERC7579 ?? defaults.ERC7579,
   };
 }
@@ -89,8 +92,20 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   }
 
   // Extensions
+  addERC7821(c, opts);
   addERC7579(c, opts);
   addSigner(c, opts);
+}
+
+function addERC7821(c: ContractBuilder, opts: AccountOptions): void {
+  // ERC-7579 is a superset of ERC-7821
+  if (!opts.ERC7821 || !!opts.ERC7579) return;
+  c.addParent({
+    name: 'ERC7821',
+    path: '@openzeppelin/community-contracts/contracts/account/extensions/ERC7821.sol',
+  });
+  c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
+  c.addModifier('onlyEntryPointOrSelf', functions._erc7821AuthorizedExecutor);
 }
 
 function addERC7579(c: ContractBuilder, opts: AccountOptions): void {
@@ -231,6 +246,16 @@ const functions = {
         { name: 'userOpHash', type: 'bytes32' },
       ],
       returns: ['uint256'],
+    },
+    _erc7821AuthorizedExecutor: {
+      kind: 'internal' as const,
+      args: [
+        { name: 'caller', type: 'address' },
+        { name: 'mode', type: 'bytes32' },
+        { name: 'executionData', type: 'bytes calldata' },
+      ],
+      returns: ['bool'],
+      mutability: 'view' as const,
     },
   }),
 };

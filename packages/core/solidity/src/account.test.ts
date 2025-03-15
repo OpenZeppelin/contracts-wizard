@@ -16,6 +16,7 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
         buildAccount({
           name: 'MyAccount',
           accountBase: 'Account',
+          ERC7821: false,
           ERC7579: false,
           ...opts,
         }),
@@ -28,6 +29,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
   const fullOpts = {
     name: 'MyAccount',
     accountBase: 'Account' as const,
+    ERC7821: false as const,
     ERC7579: false as const,
     ...opts,
   };
@@ -55,6 +57,12 @@ for (const accountBase of [undefined, 'AccountCore', 'Account'] as const) {
       name: `Custom${title}`,
       accountBase,
       signer,
+    });
+
+    testAccount(`${title} with ERC7821 Execution`, {
+      accountBase,
+      signer,
+      ERC7821: true,
     });
 
     testAccount(`${title} with ERC7579`, {

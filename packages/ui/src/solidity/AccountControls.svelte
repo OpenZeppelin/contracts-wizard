@@ -65,6 +65,46 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
+    <label class:checked={opts.ERC7821}>
+      <input
+        type="checkbox"
+        checked={!!opts.ERC7821 || !!opts.ERC7579}
+        disabled={!!opts.ERC7579}
+        on:change={e => {
+          opts.ERC7821 = e.currentTarget?.checked;
+        }}
+      />
+      Batched Execution
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/account-abstraction#selecting_a_signer"
+        >Implement signature validation for the account.</HelpTooltip
+      >
+    </label>
+    <label class:checked={!!opts.ERC7579}>
+      <input
+        type="checkbox"
+        checked={!!opts.ERC7579}
+        on:change={e => {
+          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579';
+          else opts.ERC7579 = false;
+        }}
+      />
+      ERC-7579 Modules
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">Enable functionality through modules</HelpTooltip>
+    </label>
+    <label class:checked={opts.ERC7579 === 'AccountERC7579Hooked'} class="subcontrol">
+      <input
+        type="checkbox"
+        checked={opts.ERC7579 === 'AccountERC7579Hooked'}
+        on:change={e => {
+          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579Hooked';
+          else opts.ERC7579 = 'AccountERC7579';
+        }}
+      />
+      Hooks
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579#hooks"
+        >Hooks enable support for pre and post checks after execution.</HelpTooltip
+      >
+    </label>
     <label class:checked={opts.signer}>
       <input
         type="checkbox"
@@ -107,32 +147,6 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#RSA">
         RSA PKCS#1 v1.5 signature verification implementation according to RFC8017.
       </HelpTooltip>
-    </label>
-    <label class:checked={!!opts.ERC7579}>
-      <input
-        type="checkbox"
-        checked={!!opts.ERC7579}
-        on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579';
-          else opts.ERC7579 = false;
-        }}
-      />
-      ERC-7579 Modules
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">Enable functionality through modules</HelpTooltip>
-    </label>
-    <label class:checked={opts.ERC7579 === 'AccountERC7579Hooked'} class="subcontrol">
-      <input
-        type="checkbox"
-        checked={opts.ERC7579 === 'AccountERC7579Hooked'}
-        on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579Hooked';
-          else opts.ERC7579 = 'AccountERC7579';
-        }}
-      />
-      Hooks
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579#hooks"
-        >Hooks enable support for pre and post checks after execution.</HelpTooltip
-      >
     </label>
   </div>
 </section>
