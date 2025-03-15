@@ -93,10 +93,58 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
-    $: if (showDeployModal) postMessageToIframe('defender-deploy', { 
-      kind: 'oz-wizard-defender-deploy',
-      sources: getSolcSources(contract)
-    });;
+    $: hasErrors = errors[tab] !== undefined;
+    $: showDeployModal = !hasErrors && showDeployModal;
+
+    $: if (showDeployModal) {
+      let enforceDeterministicReason: string | undefined;
+      let groupNetworksBy: 'superchain' | undefined;
+
+      const isSuperchainERC20 = opts !== undefined &&
+        (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') &&
+        opts.crossChainBridging === 'superchain';
+      if (isSuperchainERC20) {
+        enforceDeterministicReason = 'SuperchainERC20 requires deploying your contract to the same address on every chain in the Superchain.';
+        groupNetworksBy = 'superchain';
+      }
+
+      postMessageToIframe('defender-deploy', {
+        kind: 'oz-wizard-defender-deploy',
+        sources: getSolcSources(contract),
+        enforceDeterministicReason,
+        groupNetworksBy,
+      });
+    }
+
+    $: showButtons = getButtonVisiblities(opts);
+
+    interface ButtonVisibilities {
+      openInRemix: boolean;
+      downloadHardhat: boolean;
+      downloadFoundry: boolean;
+    }
+
+    const getButtonVisiblities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+      if (opts?.kind === "Governor") {
+        return {
+          openInRemix: true,
+          downloadHardhat: false,
+          downloadFoundry: false,
+        }
+      } else if (opts?.kind === "Stablecoin" || opts?.kind === "RealWorldAsset" || (opts?.kind === "ERC20" && opts.crossChainBridging)) {
+        return {
+          openInRemix: false,
+          downloadHardhat: false,
+          downloadFoundry: false,
+        }
+      } else {
+        return {
+          openInRemix: true,
+          downloadHardhat: true,
+          downloadFoundry: true,
+        }
+      }
+    }
 
     const getSolcSources = (contract: Contract) => {
       const sources = getImports(contract);
@@ -222,6 +270,49 @@
       </OverflowMenu>
     </div>
 
+    {#if hasErrors}
+    <div class="action flex flex-row gap-2 shrink-0">
+      <Tooltip
+        let:trigger
+        theme="light-red border"
+        hideOnClick={false}
+        interactive
+      >
+        <button
+          use:trigger
+          class="action-button p-3 min-w-[40px]"
+          class:disabled={true}
+          title="Copy to Clipboard"
+        >
+          <CopyIcon />
+        </button>
+        <div slot="content">
+          <p>There are errors in the input options.</p>
+          <p>Fix them to continue.</p>
+        </div>
+      </Tooltip>
+      <Tooltip
+        let:trigger
+        theme="light-red border"
+        hideOnClick={false}
+        interactive
+      >
+        <button
+          use:trigger
+          class="action-button with-text"
+          class:disabled={true}
+          title="Download"
+        >
+          <DownloadIcon />
+          Download
+        </button>
+        <div slot="content">
+          <p>There are errors in the input options.</p>
+          <p>Fix them to continue.</p>
+        </div>
+      </Tooltip>
+    </div>
+    {:else}
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
@@ -231,7 +322,7 @@
         {/if}
       </button>
 
-      {#if opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+      {#if showButtons.openInRemix}
       <Tooltip
         let:trigger
         disabled={!(opts?.upgradeable === "transparent")}
@@ -275,7 +366,7 @@
           </div>
         </button>
 
-        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+        {#if showButtons.downloadHardhat}
         <button class="download-option" on:click={downloadHardhatHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -285,7 +376,7 @@
         </button>
         {/if}
 
-        {#if opts?.kind !== "Governor" && opts?.kind !== "Stablecoin" && opts?.kind !== "RealWorldAsset"}
+        {#if showButtons.downloadFoundry}
         <button class="download-option" on:click={downloadFoundryHandler}>
           <ZipIcon />
           <div class="download-option-content">
@@ -296,12 +387,13 @@
         {/if}
       </Dropdown>
     </div>
+    {/if}
   </div>
 
   <div class="flex flex-row grow">
-    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+    <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} />
+        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20}/>
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
@@ -310,10 +402,10 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} />
+        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
-        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} />
+        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
@@ -324,6 +416,7 @@
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      {#if !hasErrors}
       <div class="absolute p-px right-6 rounded-full top-4 z-10 {showDeployModal ? 'hide-deploy' : ''}">
         <button
           class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-2 bg-white border-white"
@@ -347,8 +440,9 @@
           Deploy with Defender
         </button>
       </div>
+      {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
-        <code class="hljs -solidity grow overflow-auto p-4">{@html highlightedCode}</code>
+        <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}">{@html highlightedCode}</code>
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
     </div>
@@ -418,6 +512,11 @@
     --blur: 0px;
   }
 }
+
+.no-select {
+  user-select: none;
+}
+
 .button-bg{
   animation: conic-effect 12s ease-in-out infinite;
   animation-delay: 4.2s;
