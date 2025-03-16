@@ -54,8 +54,8 @@
       <input type="radio" bind:group={opts.accountBase} value="Account" />
       ERC-7739 & Tokens
       <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#Account">
-        Opinionated extension of the AccountCore contract with ERC-7739 signature replayability protection and
-        additional features like ERC721Holder, ERC1155Holder for token support.
+        Opinionated extension of the AccountCore contract with ERC-7739 for readable signatures with replayability
+        protection and additional features like ERC721Holder, ERC1155Holder for token support.
       </HelpTooltip>
     </label>
   </div>

@@ -29,6 +29,12 @@ import {
   defaults as accountDefaults,
   isAccessControlRequired as accountIsAccessControlRequired,
 } from './account';
+import type { PaymasterOptions } from './paymaster';
+import {
+  printPaymaster,
+  defaults as paymasterDefaults,
+  isAccessControlRequired as paymasterIsAccessControlRequired,
+} from './paymaster';
 import type { GovernorOptions } from './governor';
 import {
   printGovernor,
@@ -66,6 +72,7 @@ export type ERC1155 = WizardContractAPI<ERC1155Options>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions>;
 export type RealWorldAsset = WizardContractAPI<StablecoinOptions>;
 export type Account = WizardContractAPI<AccountOptions>;
+export type Paymaster = WizardContractAPI<PaymasterOptions>;
 export type Governor = WizardContractAPI<GovernorOptions>;
 export type Custom = WizardContractAPI<CustomOptions>;
 
@@ -93,6 +100,11 @@ export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
   isAccessControlRequired: accountIsAccessControlRequired,
+};
+export const paymaster: Paymaster = {
+  print: printPaymaster,
+  defaults: paymasterDefaults,
+  isAccessControlRequired: paymasterIsAccessControlRequired,
 };
 export const realWorldAsset: RealWorldAsset = {
   print: printStablecoin,

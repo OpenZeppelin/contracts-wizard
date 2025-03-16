@@ -7,7 +7,8 @@ import { generateAlternatives } from './alternatives';
 const account = {
   name: ['MyAccount'],
   accountBase: ['Account', 'AccountCore'] as const,
-  signer: ['ECDSA', 'P256', 'RSA'] as const,
+  signer: ['ERC7702', 'ECDSA', 'P256', 'RSA'] as const,
+  ERC7821: [false, true] as const,
   ERC7579: [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const,
   access: accessOptions,
   upgradeable: upgradeableOptions,
