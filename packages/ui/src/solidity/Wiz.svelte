@@ -235,7 +235,7 @@
       </div>
     </div>
   </div>
-  <button class="z-50 absolute flex right-0 bottom-0 items-center justify-center border-0 shadow-xl bg-gray-50 h-16 w-16 p-4 rounded-full cursor-pointer hover:bg-white" on:click={() => {
+  <button class="z-50 absolute flex right-0 bottom-0 items-center justify-center border-0 shadow-xl bg-gray-50 h-16 w-40 p-4 rounded-full cursor-pointer hover:bg-white" on:click={() => {
     showing = !showing
   }}>
     {#if showing}
@@ -243,8 +243,8 @@
         <XIcon />
       </div>
     {:else}
-      <div class="animate-fade-in" title="AI Assistant">
-        <WizIcon />
+      <div class="animate-fade-in">
+        <WizIcon /> AI Assistant
       </div>
     {/if}
   </button>

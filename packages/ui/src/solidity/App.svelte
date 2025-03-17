@@ -335,10 +335,9 @@
           class="action-button"
           class:disabled={opts?.upgradeable === "transparent"}
           on:click={remixHandler}
-          title="Open in Remix"
         >
           <RemixIcon />
-          
+          Open in Remix
         </button>
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
@@ -437,7 +436,7 @@
             }
           }
         >
-          Deploy with Defender
+        <ArrowsLeft /> Deploy
         </button>
       </div>
       {/if}
