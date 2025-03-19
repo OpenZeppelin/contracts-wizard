@@ -2,7 +2,11 @@ name: Validate Cairo Test Project
 
 on:
   pull_request:
+    paths:
+      - 'packages/core/cairo/**'
   push:
+    paths:
+      - 'packages/core/cairo/**'
 
 jobs:
   validate-cairo:
