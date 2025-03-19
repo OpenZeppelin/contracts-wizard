@@ -7,18 +7,6 @@ on:
 jobs:
   validate-cairo:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        kind:
-          - ERC20
-          - ERC721
-          - ERC1155
-          - Account
-          - Governor
-          - Vesting
-          - Custom
-      max-parallel: 1
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,11 +32,21 @@ jobs:
         with:
           scarb-version: ${{ env.SCARB_VERSION }}
 
-      - name: Generate Test Project
-        working-directory: packages/core/cairo
-        run: yarn run update_scarb_project ${{ matrix.kind }}
-
-      - name: Compile Test Project
+      - name: Generate and compile test project
         working-directory: packages/core/cairo/test_project
-        run: scarb build
-      
+        run: |
+          declare -a all_kinds=("ERC20" "Account" "Governor" "Vesting" "Custom")
+          for kind in "${all_kinds[@]}"; do
+            scarb clean
+
+            echo "Generating test project for '$kind'..."
+            yarn run update_scarb_project $kind
+
+            echo "Compiling test project for '$kind'..."
+            scarb build
+
+            if [ $? -ne 0 ]; then
+              echo "Failed to test for '$kind!'"
+              exit 1
+            fi
+          done
