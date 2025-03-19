@@ -1,12 +1,24 @@
-name: Compile Cairo test project
+name: Validate Cairo Test Project
 
 on:
   pull_request:
   push:
 
 jobs:
-  setup:
+  validate-cairo:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        kind:
+          - ERC20
+          - ERC721
+          - ERC1155
+          - Account
+          - Governor
+          - Vesting
+          - Custom
+      max-parallel: 1
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,16 +39,16 @@ jobs:
           SCARB_VERSION=$(grep 'scarb-version = ' Scarb.toml | sed 's/scarb-version = "\(.*\)"/\1/')
           echo "SCARB_VERSION=$SCARB_VERSION" >> "$GITHUB_ENV"
       
-      - name: Install Scarb
+      - name: Setup Scarb
         uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: ${{ env.SCARB_VERSION }}
 
       - name: Generate Test Project
         working-directory: packages/core/cairo
-        run: yarn run update_scarb_project erc20
+        run: yarn run update_scarb_project ${{ matrix.kind }}
 
-      - name: Compile test project
+      - name: Compile Test Project
         working-directory: packages/core/cairo/test_project
         run: scarb build
       
