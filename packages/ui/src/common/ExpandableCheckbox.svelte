@@ -16,6 +16,6 @@
 
 </script>
 
-<ParentExpandableSection type="checkbox" {label} bind:checked={checked} {helpContent} {helpLink} {disabled} {disabledReason} {required} {error}>
+<ParentExpandableSection type="checkbox" {label} bind:checkboxChecked={checked} {helpContent} {helpLink} {disabled} {disabledReason} {required} {error}>
     <slot />
 </ParentExpandableSection>

@@ -72,13 +72,13 @@
   </label>
 
   {#if showChainId}
-  <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
-    <label class="text-sm flex-1">
-      &nbsp;Chain ID:
-      <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
-    </label>
-    <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
-  </p>
+    <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+      <label class="text-sm flex-1">
+        &nbsp;Chain ID:
+        <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
+      </label>
+      <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
+    </p>
   {/if}
 </section>
 

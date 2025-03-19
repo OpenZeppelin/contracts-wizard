@@ -17,6 +17,6 @@
 
 </script>
 
-<ParentExpandableSection type="toggleradio" {label} bind:value={value} {defaultValue} {helpContent} {helpLink} {disabled} {disabledReason} {required} error={undefined}>
+<ParentExpandableSection type="toggleradio" {label} bind:toggleRadioValue={value} toggleRadioDefaultValue={defaultValue} {helpContent} {helpLink} {disabled} {disabledReason} {required} error={undefined}>
     <slot />
 </ParentExpandableSection>

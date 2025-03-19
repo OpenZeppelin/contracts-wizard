@@ -15,12 +15,10 @@
     export let label: string;
     export let type: 'checkbox' | 'toggleradio';
 
-    // For use with 'checkbox' only
-    export let checked: boolean | undefined = undefined;
+    export let checkboxChecked: boolean | undefined = undefined;
 
-    // For use with 'toggleradio' only
-    export let value: false | T | undefined = undefined;
-    export let defaultValue: T | undefined = undefined;
+    export let toggleRadioValue: false | T | undefined = undefined;
+    export let toggleRadioDefaultValue: T | undefined = undefined;
 
     export let helpContent: string;
     export let helpLink: string | undefined;
@@ -41,7 +39,7 @@
     let isExpanded = false;
     let wasRequired = required;
 
-    $: isCheckboxSelected = !!(checked || value);
+    $: isCheckboxSelected = !!(checkboxChecked || toggleRadioValue);
     let wasCheckboxSelected = isCheckboxSelected;
     
     function toggleExpanded() {
@@ -66,13 +64,13 @@
                     {#if type === 'checkbox'}
                         <input
                             type="checkbox"
-                            bind:checked={checked}
+                            bind:checked={checkboxChecked}
                             disabled={disabled || required}
                         >
                     {:else if type === 'toggleradio'}
                         <ToggleRadio
-                            bind:value={value}
-                            {defaultValue}
+                            bind:value={toggleRadioValue}
+                            defaultValue={toggleRadioDefaultValue}
                             disabled={disabled || required}
                         />
                     {/if}
