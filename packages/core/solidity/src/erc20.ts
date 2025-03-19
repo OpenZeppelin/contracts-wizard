@@ -179,11 +179,21 @@ function addPremint(
       const decimalPlace = decimals.length - exponent;
       const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
       const units = integer + decimals + zeroes;
-      const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+      
+      // Add 18 decimals to the number (standard ERC20 decimals)
+      const fullAmount = units + '000000000000000000';
+      
+      // Check if the final number would be too large
+      if (fullAmount.length > 77) { // Solidity has a limit on number literals
+        throw new OptionsError({
+          premint: 'Amount too large. Please use a smaller number to avoid Solidity literal limits',
+        });
+      }
 
       c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
-      const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
+      // Generate the mint line with the full amount directly
+      const mintLine = `_mint(recipient, ${fullAmount});`;
 
       if (crossChainBridging) {
         if (premintChainId === '') {
