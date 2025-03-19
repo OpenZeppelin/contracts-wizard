@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
@@ -26,12 +26,12 @@ jobs:
         run: |
           SCARB_VERSION=$(grep 'scarb-version = ' Scarb.toml | sed 's/scarb-version = "\(.*\)"/\1/')
           echo "SCARB_VERSION=$SCARB_VERSION" >> "$GITHUB_ENV"
-
-      - uses: software-mansion/setup-scarb@v1
+      
+      - name: Install Scarb
+        uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: ${{ env.SCARB_VERSION }}
 
-      - uses: actions/checkout@v4
       - name: Generate Test Project
         working-directory: packages/core/cairo
         run: yarn run update_scarb_project erc20
