@@ -3,13 +3,31 @@ import path from 'path';
 
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
+import { Kind, parseKind } from '../kind';
+
+type Arguments = {
+  kind: Kind | undefined
+};
+
+export function resolveArguments(): Arguments {
+  const cliArgs = process.argv.slice(2);
+  switch (cliArgs.length) {
+    case 0:
+      return { kind: undefined };
+    case 1:
+      return { kind: parseKind(cliArgs[0]) };
+    default:
+      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`)
+  }
+}
 
 export async function updateScarbProject() {
+  const args = resolveArguments();
   const generatedSourcesPath = path.join('test_project', 'src');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const contractNames = await writeGeneratedSources(generatedSourcesPath, 'all', true);
+  const contractNames = await writeGeneratedSources(generatedSourcesPath, 'all', true, args.kind);
 
   // Generate lib.cairo file
   writeLibCairo(contractNames);
