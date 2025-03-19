@@ -39,14 +39,17 @@ jobs:
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
-            echo "Generating test project for '$kind'..."
+            echo "Generating '$kind' test project..."
             yarn run update_scarb_project $kind
 
-            echo "Compiling test project for '$kind'..."
+            echo "Compiling '$kind' test project..."
             scarb build
 
+            echo "✅ Compiled '$kind' test project!"
+            echo "---------------------------------"
+
             if [ $? -ne 0 ]; then
-              echo "Failed to test for '$kind!'"
+              echo "❌ Failed to test '$kind!'"
               exit 1
             fi
           done
