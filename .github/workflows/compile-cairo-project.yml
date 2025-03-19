@@ -35,7 +35,10 @@ jobs:
       - name: Generate and compile test project
         working-directory: packages/core/cairo/test_project
         run: |
-          declare -a all_kinds=("ERC20" "Account" "Governor" "Vesting" "Custom")
+          # Exit immediately if a command exits with a non-zero status
+          set -e 
+
+          declare -a all_kinds=("ERC20" "ERC1155" "Account" "Governor" "Vesting" "Custom")
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
@@ -47,9 +50,4 @@ jobs:
 
             echo "✅ Compiled '$kind' test project!"
             echo "---------------------------------"
-
-            if [ $? -ne 0 ]; then
-              echo "❌ Failed to test '$kind!'"
-              exit 1
-            fi
           done
