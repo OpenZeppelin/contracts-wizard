@@ -182,6 +182,7 @@ function addERC20Mixin(c: ContractBuilder) {
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
+  c.addUseClause('openzeppelin::token::erc20', 'DefaultConfig');
   c.addComponent(components.ERC20Component, [name, symbol], true);
 }
 
