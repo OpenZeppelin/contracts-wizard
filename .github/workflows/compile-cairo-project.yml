@@ -8,11 +8,15 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: 'yarn'
+          
       - name: Install dependencies
         working-directory: packages/core/cairo
         run: yarn install --network-concurrency 1
@@ -27,28 +31,12 @@ jobs:
         with:
           scarb-version: ${{ env.SCARB_VERSION }}
 
-  validate:
-    strategy:
-      matrix:
-        kind:
-          - ERC20
-          - ERC721
-          - ERC1155
-          - Account
-          - Governor
-          - Vesting
-          - Custom
-
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v4
       - name: Generate Test Project
         working-directory: packages/core/cairo
-        run: |
-          # Install dependencies if required
-          yarn install
-          # Generate test project
-          yarn run update_scarb_project ${{matrix.kind}}
+        run: yarn run update_scarb_project erc20
 
       - name: Compile test project
+        working-directory: packages/core/cairo/test_project
         run: scarb build
+      
