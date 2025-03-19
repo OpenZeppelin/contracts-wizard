@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.4 (XXXX-XX-XX)
+
+- Add `account` and `paymaster` contract types for ERC-4337.
+
 ## 0.5.3 (2025-03-13)
 
 - Add ERC20 Cross-Chain Bridging, SuperchainERC20. ([#436](https://github.com/OpenZeppelin/contracts-wizard/pull/436))

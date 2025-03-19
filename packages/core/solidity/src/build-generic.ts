@@ -11,6 +11,10 @@ import { buildStablecoin } from './stablecoin';
 import type { GovernorOptions } from './governor';
 import { buildGovernor } from './governor';
 import type { Contract } from './contract';
+import { buildAccount } from './account';
+import type { AccountOptions } from './account';
+import { buildPaymaster } from './paymaster';
+import type { PaymasterOptions } from './paymaster';
 
 export interface KindedOptions {
   ERC20: { kind: 'ERC20' } & ERC20Options;
@@ -18,6 +22,8 @@ export interface KindedOptions {
   ERC1155: { kind: 'ERC1155' } & ERC1155Options;
   Stablecoin: { kind: 'Stablecoin' } & StablecoinOptions;
   RealWorldAsset: { kind: 'RealWorldAsset' } & StablecoinOptions;
+  Account: { kind: 'Account' } & AccountOptions;
+  Paymaster: { kind: 'Paymaster' } & PaymasterOptions;
   Governor: { kind: 'Governor' } & GovernorOptions;
   Custom: { kind: 'Custom' } & CustomOptions;
 }
@@ -40,6 +46,12 @@ export function buildGeneric(opts: GenericOptions): Contract {
 
     case 'RealWorldAsset':
       return buildStablecoin(opts);
+
+    case 'Account':
+      return buildAccount(opts);
+
+    case 'Paymaster':
+      return buildPaymaster(opts);
 
     case 'Governor':
       return buildGovernor(opts);

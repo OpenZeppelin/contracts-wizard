@@ -39,6 +39,8 @@
     erc1155: 'ERC1155',
     stablecoin: 'Stablecoin (Experimental)',
     realworldasset: 'Real-World Asset (Experimental)',
+    account: 'Account (Experimental)',
+    paymaster: 'Paymaster (Experimental)',
     governor: 'Governor',
     custom: 'Custom',
   }
