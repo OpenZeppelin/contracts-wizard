@@ -26,6 +26,7 @@ jobs:
           - solidity
           - cairo
           - stellar
+          - stylus
 
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +39,7 @@ jobs:
         if: matrix.package == 'solidity'
         uses: foundry-rs/foundry-toolchain@v1
       - name: Install dependencies
-        run: yarn install --network-concurrency 1
+        run: yarn install
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/core/${{matrix.package}}

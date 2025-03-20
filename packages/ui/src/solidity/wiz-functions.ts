@@ -82,6 +82,12 @@ export const erc20Function = {
         description:
           "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
       },
+      crossChainBridging: {
+        type: 'string',
+        enum: ['false', 'custom', 'superchain'],
+        description:
+          'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
+      },
       ...commonOptions,
     },
     required: ['name', 'symbol'],
