@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
+
 ## 0.5.3 (2025-03-13)
 
 - Add ERC20 Cross-Chain Bridging, SuperchainERC20. ([#436](https://github.com/OpenZeppelin/contracts-wizard/pull/436))

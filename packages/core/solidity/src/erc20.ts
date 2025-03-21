@@ -163,6 +163,32 @@ export function isValidChainId(str: string): boolean {
   return chainIdPattern.test(str);
 }
 
+const UINT256_MAX = BigInt(2) ** BigInt(256) - BigInt(1);
+
+function toUint256(value: string, field: string): bigint {
+  const isValidNumber = /^\d+$/.test(value);
+  if (!isValidNumber) {
+    throw new OptionsError({
+      [field]: 'Not a valid number',
+    });
+  }
+  const numValue = BigInt(value);
+  if (numValue > UINT256_MAX) {
+    throw new OptionsError({
+      [field]: 'Value is greater than uint256 max value',
+    });
+  }
+  return numValue;
+}
+
+function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
+  if (exponent < 0) {
+    return base / BigInt(10) ** BigInt(-exponent);
+  } else {
+    return base * BigInt(10) ** BigInt(exponent);
+  }
+}
+
 function addPremint(
   c: ContractBuilder,
   amount: string,
@@ -180,6 +206,19 @@ function addPremint(
       const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
       const units = integer + decimals + zeroes;
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+
+      // Validate base units is within uint256 range
+      const validatedBaseUnits = toUint256(units, 'premint');
+
+      // Check for potential overflow assuming decimals() = 18
+      const assumedExp = decimalPlace <= 0 ? 18 : 18 - decimalPlace;
+      const calculatedValue = scaleByPowerOfTen(validatedBaseUnits, assumedExp);
+
+      if (calculatedValue > UINT256_MAX) {
+        throw new OptionsError({
+          premint: 'Amount would overflow uint256 after applying decimals',
+        });
+      }
 
       c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
