@@ -7,7 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   
   export let opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
@@ -106,20 +106,13 @@
   </div>
 </section>
 
-<section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Votes</span>
-      <span class="ml-1">
-        <ToggleRadio bind:value={opts.votes} defaultValue="blocknumber" />
-      </span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes">
-        Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.
-      </HelpTooltip>
-    </label>
-  </h1>
-
+<ExpandableToggleRadio
+  label="Votes"
+  bind:value={opts.votes}
+  defaultValue="blocknumber"
+  helpContent="Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes"
+>
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber">
@@ -136,7 +129,7 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
