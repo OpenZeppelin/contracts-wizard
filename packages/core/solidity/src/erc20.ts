@@ -172,18 +172,20 @@ function toUint256(value: string, field: string): bigint {
       [field]: 'Not a valid number',
     });
   }
-  try {
-    const numValue = BigInt(value);
-    if (numValue > UINT256_MAX) {
-      throw new OptionsError({
-        [field]: 'Value is greater than uint256 max value',
-      });
-    }
-    return numValue;
-  } catch (e) {
+  const numValue = BigInt(value);
+  if (numValue > UINT256_MAX) {
     throw new OptionsError({
       [field]: 'Value is greater than uint256 max value',
     });
+  }
+  return numValue;
+}
+
+function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
+  if (exponent < 0) {
+    return base / (BigInt(10) ** BigInt(-exponent));
+  } else {
+    return base * (BigInt(10) ** BigInt(exponent));
   }
 }
 
@@ -206,18 +208,13 @@ function addPremint(
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
 
       // Validate base units is within uint256 range
-      toUint256(units, 'premint');
+      const validatedBaseUnits = toUint256(units, 'premint');
 
       // Check for potential overflow assuming decimals() = 18
       const assumedExp = decimalPlace <= 0 ? 18 : (18 - decimalPlace);
-      try {
-        const calculatedValue = BigInt(units) * (BigInt(10) ** BigInt(assumedExp));
-        if (calculatedValue > UINT256_MAX) {
-          throw new OptionsError({
-            premint: 'Amount would overflow uint256 after applying decimals',
-          });
-        }
-      } catch {
+      const calculatedValue = scaleByPowerOfTen(validatedBaseUnits, assumedExp);
+
+      if (calculatedValue > UINT256_MAX) {
         throw new OptionsError({
           premint: 'Amount would overflow uint256 after applying decimals',
         });
