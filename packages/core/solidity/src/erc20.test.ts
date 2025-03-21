@@ -69,6 +69,35 @@ testERC20('erc20 premint of 0', {
   premint: '0',
 });
 
+function testPremint(scenario: string, premint: string, expectedError?: string) {
+  test(`erc20 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
+    if (expectedError) {
+      const error = t.throws(() =>
+        buildERC20({
+          name: 'MyToken',
+          symbol: 'MTK',
+          premint,
+        }),
+      );
+      t.is((error as OptionsError).messages.premint, expectedError);
+    } else {
+      const c = buildERC20({
+        name: 'MyToken',
+        symbol: 'MTK',
+        premint,
+      });
+      t.snapshot(printContract(c));
+    }
+  });
+}
+
+testPremint('max literal', '115792089237316195423570985008687907853269984665640564039457.584007913129639935'); // 2^256 - 1, shifted by 18 decimals
+testPremint('max literal + 1', '115792089237316195423570985008687907853269984665640564039457.584007913129639936', 'Value is greater than uint256 max value');
+testPremint('no arithmetic overflow', '115792089237316195423570985008687907853269984665640564039457'); // 2^256 - 1, truncated by 18 decimals
+testPremint('arithmetic overflow', '115792089237316195423570985008687907853269984665640564039458', 'Amount would overflow uint256 after applying decimals');
+testPremint('e notation', '1e59');
+testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
+
 testERC20('erc20 mintable', {
   mintable: true,
   access: 'ownable',
