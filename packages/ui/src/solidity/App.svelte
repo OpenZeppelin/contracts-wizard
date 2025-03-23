@@ -42,6 +42,10 @@
     export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
+      showCode = false;
+      setTimeout(() => {
+        showCode = true;
+      }, 0);
       dispatch('tab-change', tab);
     };
 
@@ -54,6 +58,8 @@
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
     let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
+
+    let showCode = true;
 
     $: functionCall && applyFunctionCall()
 
@@ -87,6 +93,10 @@
             throw e;
           }
         }
+        showCode = false;
+        setTimeout(() => {
+          showCode = true;
+        }, 0);
       }
     }
 
@@ -441,7 +451,9 @@
       </div>
       {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
         <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}">{@html highlightedCode}</code>
+        {/if}
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
     </div>
