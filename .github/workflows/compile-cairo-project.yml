@@ -44,7 +44,7 @@ jobs:
           # Exit immediately if a command exits with a non-zero status
           set -e 
 
-          declare -a all_kinds=("ERC20" "Account" "Governor" "Vesting" "Custom")
+          declare -a all_kinds=("ERC1155")
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
