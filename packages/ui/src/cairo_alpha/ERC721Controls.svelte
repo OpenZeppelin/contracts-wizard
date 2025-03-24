@@ -15,6 +15,7 @@
     kind: 'ERC721',
     ...erc721.defaults,
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
+    info: { ...infoDefaults }, // create new object since Info is nested
   };
   export let errors: undefined | OptionsErrorMessages;
 
