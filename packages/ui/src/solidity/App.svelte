@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import hljs from './highlightjs';
 
@@ -37,15 +37,18 @@
 
     const dispatch = createEventDispatcher();
 
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
+
     export let initialTab: string | undefined = 'ERC20';
 
     export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
-      showCode = false;
-      setTimeout(() => {
-        showCode = true;
-      }, 0);
+      allowRendering();
       dispatch('tab-change', tab);
     };
 
@@ -93,10 +96,7 @@
             throw e;
           }
         }
-        showCode = false;
-        setTimeout(() => {
-          showCode = true;
-        }, 0);
+        allowRendering();
       }
     }
 
