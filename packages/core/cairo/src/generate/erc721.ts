@@ -1,6 +1,6 @@
 import type { ERC721Options } from '../erc721';
 import { accessOptions } from '../set-access-control';
-import { infoOptions } from '../set-info';
+import { defaults as infoDefaults } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
 import { resolveRoyaltyOptionsSubset } from '../set-royalty-info';
@@ -28,7 +28,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     royaltyInfo,
     access: accessOptions,
     upgradeable: upgradeableOptions,
-    info: infoOptions,
+    info: [infoDefaults],
   };
 }
 
