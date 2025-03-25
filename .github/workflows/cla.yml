@@ -47,4 +47,4 @@ jobs:
             sign our [Contributor License Agreement](https://github.com/OpenZeppelin/cla-assistant/blob/main/openzeppelin_2025_cla.md).
 
             You can sign the CLA by just posting a Pull Request Comment with the sentence below. Thanks.
-          custom-pr-sign-comment: 'I have read the CLA Document and I hereby sign the CLA'
+          custom-pr-sign-comment: 'I confirm that I have read and hereby agree to the OpenZeppelin Contributor License Agreement'
