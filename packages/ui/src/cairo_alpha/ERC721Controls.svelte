@@ -17,6 +17,7 @@
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+  
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc721.isAccessControlRequired(opts);

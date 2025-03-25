@@ -53,4 +53,3 @@
     </label>
   </div>
 </ExpandableToggleRadio>
-
