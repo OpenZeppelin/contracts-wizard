@@ -42,7 +42,8 @@ export async function updateScarbProject() {
     subset: 'all', 
     uniqueName: true, 
     kind, 
-    royaltyInfo 
+    royaltyInfo,
+    logsEnabled: true
   });
 
   // Generate lib.cairo file
