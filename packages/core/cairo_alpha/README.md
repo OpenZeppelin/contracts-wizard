@@ -4,11 +4,15 @@
 
 Interactively build a contract out of components from OpenZeppelin Contracts for Cairo. Provide parameters and desired features for the kind of contract that you want, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
-This package provides a programmatic API. For a web interface, see https://wizard.openzeppelin.com/cairo
+This package provides a programmatic API. For a web interface, see https://wizard.openzeppelin.com/cairo#version=alpha
 
 ### Installation
 
 `npm install @openzeppelin/wizard-cairo-alpha`
+
+> NOTE
+> The `@openzeppelin/wizard-cairo-alpha` package is currently private and cannot be used as a dependency.
+> For a stable version, please use `@openzeppelin/wizard-cairo` instead.
 
 ### Contract types
 
