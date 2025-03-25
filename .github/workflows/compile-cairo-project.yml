@@ -46,8 +46,6 @@ jobs:
 
           declare -a all_kinds=("Custom ERC1155")
           declare -a all_royalty_info_options=("disabled enabled_default enabled_custom")
-          global_var proj_name = ""
-
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
