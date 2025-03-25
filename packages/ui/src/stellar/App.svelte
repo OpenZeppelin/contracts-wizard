@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import hljs from './highlightjs';
 
@@ -20,6 +20,13 @@
     import { InitialOptions } from '../common/initial-options';
 
     const dispatch = createEventDispatcher();
+    
+    let showCode = true;
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
 
     export let initialTab: string | undefined = 'Fungible';
 
@@ -27,6 +34,7 @@
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
+      allowRendering();
     };
 
     export let initialOpts: InitialOptions = {};
@@ -59,6 +67,7 @@
             throw e;
           }
         }
+        allowRendering();
       }
     }
 
@@ -133,7 +142,12 @@
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -stellar grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
+          <code class="hljs -stellar grow overflow-auto p-4">
+            {@html highlightedCode}
+          </code>
+        {/if}
     </div>
   </div>
 </div>
