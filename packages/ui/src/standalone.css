@@ -75,7 +75,6 @@ body {
   padding: 0.5rem 1rem;
   width: fit-content;
   margin: 0.5rem;
-  border-radius: 5rem;
   white-space: nowrap;
   transition: background-color ease-in-out .3s;
 }
@@ -100,6 +99,20 @@ body {
 }
 .nav .switch.switch-cairo.active img{
   filter: brightness(0) saturate(100%) invert(61%) sepia(90%) saturate(4391%) hue-rotate(331deg) brightness(98%) contrast(87%)
+}
+.nav .switch.switch-cairo.active.with-version {
+  padding: 0rem 1rem;
+  padding-right: 0rem;
+  cursor: default;
+}
+.nav .switch.switch-cairo.active.version {
+  background-color: #ffecec;
+  color: #EB5951;
+  border: none;
+  font-size: smaller;
+  font-weight: 400;
+  padding: 0.25rem 0rem;
+  cursor: pointer;
 }
 
 .nav .switch.switch-stylus.active {
