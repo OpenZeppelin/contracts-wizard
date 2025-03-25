@@ -39,21 +39,40 @@ jobs:
           scarb-version: ${{ env.SCARB_VERSION }}
 
       - name: Generate and compile test project
-        working-directory: packages/core/cairo/test_project
+        working-directory: packages/core/cairo_alpha/test_project
         run: |
           # Exit immediately if a command exits with a non-zero status
-          set -e 
+          set -e
 
-          declare -a all_kinds=("ERC1155")
+          declare -a all_kinds=("Custom ERC1155")
+          declare -a all_royalty_info_options=("disabled enabled_default enabled_custom")
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
-            echo "Generating '$kind' test project..."
-            yarn run update_scarb_project $kind
+            if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
+              for royalty_info_option in "${all_royalty_info_options[@]}"; do
+                local proj_name = "$kind (royalty info: $royalty_info_option) test project"
+                echo "Generating $proj_name..."
+                yarn run update_scarb_project $kind $royalty_info_option
 
-            echo "Compiling '$kind' test project..."
-            scarb build
+                echo "Compiling $proj_name..."
+                scarb build
 
-            echo "✅ Compiled '$kind' test project!"
-            echo "---------------------------------"
+                echo "✅ Compiled $proj_name!"
+                echo "---------------------------------"
+              done
+
+            else
+              local proj_name = "$kind test project"
+
+              echo "Generating $proj_name..."
+              yarn run update_scarb_project $kind
+
+              echo "Compiling $proj_name..."
+              scarb build
+
+              echo "✅ Compiled $proj_name!"
+              echo "---------------------------------"
+            fi
+            
           done
