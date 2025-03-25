@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.0. ([#491](https://github.com/OpenZeppelin/contracts-wizard/pull/491))
+  
 ## 1.0.0 (2025-02-25)
 
 - **Breaking changes**:
