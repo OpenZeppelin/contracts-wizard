@@ -39,7 +39,7 @@ jobs:
           scarb-version: ${{ env.SCARB_VERSION }}
 
       - name: Generate and compile test project
-        working-directory: packages/core/cairo_alpha/test_project
+        working-directory: packages/core/cairo/test_project
         run: |
           # Exit immediately if a command exits with a non-zero status
           set -e
