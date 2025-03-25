@@ -15,15 +15,15 @@ import { printContract } from '../print';
 import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
-import { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { RoyaltyInfoSubset } from '../set-royalty-info';
 
 export type Subset = 'all' | 'minimal-cover';
 
 export type KindSubset = 'all' | keyof KindedOptions;
 
-export function* generateOptions(params: { 
-  kind: KindSubset, 
-  royaltyInfo: RoyaltyInfoSubset 
+export function* generateOptions(params: {
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
 }): Generator<GenericOptions> {
   const { kind, royaltyInfo } = params;
   if (kind === 'all' || kind === 'ERC20') {
@@ -79,10 +79,10 @@ interface GeneratedSource extends GeneratedContract {
   source: string;
 }
 
-function generateContractSubset(params: { 
-  subset: Subset,
-  kind: KindSubset,
-  royaltyInfo: RoyaltyInfoSubset
+function generateContractSubset(params: {
+  subset: Subset;
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
 }): GeneratedContract[] {
   const { subset, kind, royaltyInfo } = params;
   const contracts = [];
@@ -132,10 +132,10 @@ function generateContractSubset(params: {
 }
 
 export function* generateSources(params: {
-  subset: Subset, 
-  uniqueName: boolean, 
-  kind: KindSubset,
-  royaltyInfo: RoyaltyInfoSubset,
+  subset: Subset;
+  uniqueName: boolean;
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
 }): Generator<GeneratedSource> {
   const { subset, uniqueName, kind, royaltyInfo } = params;
   let counter = 1;
@@ -149,12 +149,12 @@ export function* generateSources(params: {
 }
 
 export async function writeGeneratedSources(params: {
-  dir: string,
-  subset: Subset,
-  uniqueName: boolean,
-  kind: KindSubset,
-  royaltyInfo: RoyaltyInfoSubset,
-  logsEnabled: boolean,
+  dir: string;
+  subset: Subset;
+  uniqueName: boolean;
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
+  logsEnabled: boolean;
 }): Promise<string[]> {
   const { dir, subset, uniqueName, kind, royaltyInfo, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
@@ -173,17 +173,15 @@ export async function writeGeneratedSources(params: {
   return contractNames;
 }
 
-function resolveSourceLabel(params: { kind: KindSubset, royaltyInfo: RoyaltyInfoSubset }): string {
+function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfoSubset }): string {
   const { kind, royaltyInfo } = params;
   switch (kind) {
     case 'ERC721':
     case 'ERC1155':
-      return `${kind} (royaltyInfo: ${royaltyInfo})`
+      return `${kind} (royaltyInfo: ${royaltyInfo})`;
     case 'all':
       return 'All contract kinds';
     case 'ERC20':
-    case 'ERC721':
-    case 'ERC1155':
     case 'Account':
     case 'Vesting':
     case 'Governor':

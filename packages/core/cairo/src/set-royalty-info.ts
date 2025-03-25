@@ -40,9 +40,10 @@ export function resolveRoyaltyOptionsSubset(subset: RoyaltyInfoSubset): RoyaltyI
       return [enabledDefault];
     case 'enabled_custom':
       return [enabledCustom];
-    default:
+    default: {
       const _: never = subset;
       throw new Error('Unknown RoyaltyInfoSubset');
+    }
   }
 }
 

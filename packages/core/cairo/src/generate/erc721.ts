@@ -2,13 +2,14 @@ import type { ERC721Options } from '../erc721';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
-import { RoyaltyInfoSubset, resolveRoyaltyOptionsSubset } from '../set-royalty-info';
+import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import { resolveRoyaltyOptionsSubset } from '../set-royalty-info';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
 type GeneratorOptions = {
-  royaltyInfo: RoyaltyInfoSubset,
+  royaltyInfo: RoyaltyInfoSubset;
 };
 
 function prepareBlueprint(opts: GeneratorOptions) {

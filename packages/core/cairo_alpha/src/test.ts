@@ -4,10 +4,11 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import path from 'path';
 
-import { generateSources, writeGeneratedSources, KindSubset } from './generate/sources';
+import type { KindSubset } from './generate/sources';
+import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions } from './build-generic';
 import { custom, erc20, erc721, erc1155 } from './api';
-import { RoyaltyInfoSubset } from './set-royalty-info';
+import type { RoyaltyInfoSubset } from './set-royalty-info';
 
 interface Context {
   generatedSourcesPath: string;
@@ -43,22 +44,22 @@ test.serial('custom results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Custom' });
 });
 
-async function testGenerate(params: { 
-  ctx: ExecutionContext<Context>, 
-  kind: KindSubset, 
-  royaltyInfo?: RoyaltyInfoSubset 
+async function testGenerate(params: {
+  ctx: ExecutionContext<Context>;
+  kind: KindSubset;
+  royaltyInfo?: RoyaltyInfoSubset;
 }) {
   const { ctx, kind, royaltyInfo } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
-  await writeGeneratedSources({ 
+  await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
     uniqueName: true,
     kind,
     royaltyInfo: royaltyInfo || 'all',
-    logsEnabled: false
-   });
+    logsEnabled: false,
+  });
 
   ctx.pass();
 }
@@ -80,9 +81,10 @@ function isAccessControlRequired(opts: GenericOptions) {
       throw new Error('Not applicable for Governor');
     case 'Vesting':
       throw new Error('Not applicable for Vesting');
-    default:
+    default: {
       const _: never = kind;
       throw new Error(`No such kind: ${kind}`);
+    }
   }
 }
 
@@ -91,7 +93,7 @@ test('is access control required', async t => {
     subset: 'all',
     uniqueName: false,
     kind: 'all',
-    royaltyInfo: 'all'
+    royaltyInfo: 'all',
   });
   for (const contract of allSources) {
     const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;

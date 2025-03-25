@@ -36,7 +36,7 @@ export function parseKind(value: string | undefined): Kind {
   }
 }
 
-function isKind<T>(value: Kind | T): value is Kind {  
+function isKind<T>(value: Kind | T): value is Kind {
   switch (value) {
     case 'ERC20':
     case 'ERC721':

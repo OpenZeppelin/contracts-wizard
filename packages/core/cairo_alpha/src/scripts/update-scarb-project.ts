@@ -1,13 +1,14 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { KindSubset, writeGeneratedSources } from '../generate/sources';
+import type { KindSubset } from '../generate/sources';
+import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
-import { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { RoyaltyInfoSubset } from '../set-royalty-info';
 
 type Arguments = {
-  kind: KindSubset,
-  royaltyInfo: RoyaltyInfoSubset
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
 };
 
 export function resolveArguments(): Arguments {
@@ -16,17 +17,17 @@ export function resolveArguments(): Arguments {
     case 0:
       return { kind: 'all', royaltyInfo: 'all' };
     case 1:
-      return { 
-        kind: parseKindSubset(cliArgs[0]), 
-        royaltyInfo: 'all' 
+      return {
+        kind: parseKindSubset(cliArgs[0]),
+        royaltyInfo: 'all',
       };
     case 2:
-      return { 
-        kind: parseKindSubset(cliArgs[0]), 
-        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]) 
+      return {
+        kind: parseKindSubset(cliArgs[0]),
+        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]),
       };
     default:
-      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`)
+      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`);
   }
 }
 
@@ -36,13 +37,13 @@ export async function updateScarbProject() {
 
   // Generate the contracts source code
   const { kind, royaltyInfo } = resolveArguments();
-  const contractNames = await writeGeneratedSources({ 
-    dir: generatedSourcesPath, 
-    subset: 'all', 
-    uniqueName: true, 
-    kind, 
+  const contractNames = await writeGeneratedSources({
+    dir: generatedSourcesPath,
+    subset: 'all',
+    uniqueName: true,
+    kind,
     royaltyInfo,
-    logsEnabled: true
+    logsEnabled: true,
   });
 
   // Generate lib.cairo file
