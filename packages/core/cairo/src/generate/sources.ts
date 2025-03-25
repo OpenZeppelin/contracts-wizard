@@ -154,8 +154,9 @@ export async function writeGeneratedSources(params: {
   uniqueName: boolean,
   kind: KindSubset,
   royaltyInfo: RoyaltyInfoSubset,
+  logsEnabled: boolean,
 }): Promise<string[]> {
-  const { dir, subset, uniqueName, kind, royaltyInfo } = params;
+  const { dir, subset, uniqueName, kind, royaltyInfo, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
@@ -164,8 +165,10 @@ export async function writeGeneratedSources(params: {
     await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
     contractNames.push(name);
   }
-  const sourceLabel = resolveSourceLabel({ kind, royaltyInfo });
-  console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
+  if (logsEnabled) {
+    const sourceLabel = resolveSourceLabel({ kind, royaltyInfo });
+    console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
+  }
 
   return contractNames;
 }
