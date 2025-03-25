@@ -1,21 +1,30 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { writeGeneratedSources } from '../generate/sources';
+import { KindSubset, writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
-import { Kind, parseKind } from '../kind';
+import { RoyaltyInfoSubset } from '../set-royalty-info';
 
 type Arguments = {
-  kind: Kind | undefined
+  kind: KindSubset,
+  royaltyInfo: RoyaltyInfoSubset
 };
 
 export function resolveArguments(): Arguments {
   const cliArgs = process.argv.slice(2);
   switch (cliArgs.length) {
     case 0:
-      return { kind: undefined };
+      return { kind: 'all', royaltyInfo: 'all' };
     case 1:
-      return { kind: parseKind(cliArgs[0]) };
+      return { 
+        kind: parseKindSubset(cliArgs[0]), 
+        royaltyInfo: 'all' 
+      };
+    case 2:
+      return { 
+        kind: parseKindSubset(cliArgs[0]), 
+        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]) 
+      };
     default:
       throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`)
   }
@@ -27,7 +36,14 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const contractNames = await writeGeneratedSources(generatedSourcesPath, 'all', true, args.kind);
+  const { kind, royaltyInfo } = resolveArguments();
+  const contractNames = await writeGeneratedSources({ 
+    dir: generatedSourcesPath, 
+    subset: 'all', 
+    uniqueName: true, 
+    kind, 
+    royaltyInfo 
+  });
 
   // Generate lib.cairo file
   writeLibCairo(contractNames);
@@ -54,6 +70,50 @@ async function updateScarbToml() {
     .replace(/openzeppelin = "\d+\.\d+\.\d+"/, `openzeppelin = "${contractsVersion}"`);
 
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
+}
+
+function parseKindSubset(value: string | undefined): KindSubset {
+  if (value === undefined) {
+    throw new Error(`Failed to resolve contract kind subset from 'undefined'.`);
+  }
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'erc20':
+      return 'ERC20';
+    case 'erc721':
+      return 'ERC721';
+    case 'erc1155':
+      return 'ERC1155';
+    case 'account':
+      return 'Account';
+    case 'governor':
+      return 'Governor';
+    case 'vesting':
+      return 'Vesting';
+    case 'custom':
+      return 'Custom';
+    default:
+      throw new Error(`Failed to resolve contract kind subset from '${value}'.`);
+  }
+}
+
+function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
+  if (value === undefined) {
+    throw new Error(`Failed to resolve royalty info subset from 'undefined'.`);
+  }
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'disabled':
+      return 'disabled';
+    case 'enabled_default':
+      return 'enabled_default';
+    case 'enabled_custom':
+      return 'enabled_custom';
+    default:
+      throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
+  }
 }
 
 updateScarbProject();
