@@ -1,0 +1,78 @@
+name: Validate Cairo Alpha Test Project
+
+on:
+  pull_request:
+    paths:
+      - 'packages/core/cairo_alpha/**'
+  push:
+
+jobs:
+  validate-cairo:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: validate-cairo-alpha-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+          
+      - name: Install dependencies
+        working-directory: packages/core/cairo_alpha
+        run: yarn install --network-concurrency 1
+
+      - name: Extract Scarb version
+        working-directory: packages/core/cairo_alpha/test_project
+        run: |
+          SCARB_VERSION=$(grep 'scarb-version = ' Scarb.toml | sed 's/scarb-version = "\(.*\)"/\1/')
+          echo "SCARB_VERSION=$SCARB_VERSION" >> "$GITHUB_ENV"
+      
+      - name: Setup Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: ${{ env.SCARB_VERSION }}
+
+      - name: Generate and compile test project
+        working-directory: packages/core/cairo_alpha/test_project
+        run: |
+          # Exit immediately if a command exits with a non-zero status
+          set -e
+
+          declare -a all_kinds=("Custom ERC1155")
+          declare -a all_royalty_info_options=("disabled enabled_default enabled_custom")
+          for kind in "${all_kinds[@]}"; do
+            scarb clean
+
+            if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
+              for royalty_info_option in "${all_royalty_info_options[@]}"; do
+                local proj_name = "$kind (royalty info: $royalty_info_option) test project"
+                echo "Generating $proj_name..."
+                yarn run update_scarb_project $kind $royalty_info_option
+
+                echo "Compiling $proj_name..."
+                scarb build
+
+                echo "✅ Compiled $proj_name!"
+                echo "---------------------------------"
+              done
+
+            else
+              local proj_name = "$kind test project"
+
+              echo "Generating $proj_name..."
+              yarn run update_scarb_project $kind
+
+              echo "Compiling $proj_name..."
+              scarb build
+
+              echo "✅ Compiled $proj_name!"
+              echo "---------------------------------"
+            fi
+            
+          done
