@@ -48,6 +48,13 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
   }
 }
 
+export function setUpgradeableMultisig(c: ContractBuilder, upgradeable: Upgradeable): void {
+  const trait = setUpgradeableBase(c, upgradeable);
+  if (trait !== undefined) {
+    c.addFunctionCodeBefore(trait, functions.upgrade, 'self.multisig.assert_only_self()');
+  }
+}
+
 export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, type: Account): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {

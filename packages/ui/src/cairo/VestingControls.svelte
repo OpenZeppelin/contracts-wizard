@@ -20,6 +20,11 @@
   <h1>Settings</h1>
 
   <label class="labeled-input">
+    <span>Name</span>
+    <input bind:value={opts.name}>
+  </label>
+
+  <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Start date (UTC)
       <HelpTooltip>The timestamp marking the beginning of the vesting period.</HelpTooltip>
