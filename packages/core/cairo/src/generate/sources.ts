@@ -193,6 +193,7 @@ function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfo
     case 'Account':
     case 'Vesting':
     case 'Governor':
+    case 'Multisig':
     case 'Custom':
       return kind;
     default: {
