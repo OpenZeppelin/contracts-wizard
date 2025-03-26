@@ -1,7 +1,9 @@
 import test from 'ava';
+import type { OptionsError } from '.';
 import { erc20 } from '.';
 
-import { buildERC20, ERC20Options } from './erc20';
+import type { ERC20Options } from './erc20';
+import { buildERC20 } from './erc20';
 import { printContract } from './print';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
@@ -18,13 +20,18 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
 /**
  * Tests external API for equivalence with internal API
  */
- function testAPIEquivalence(title: string, opts?: ERC20Options) {
+function testAPIEquivalence(title: string, opts?: ERC20Options) {
   test(title, t => {
-    t.is(erc20.print(opts), printContract(buildERC20({
-      name: 'MyToken',
-      symbol: 'MTK',
-      ...opts,
-    })));
+    t.is(
+      erc20.print(opts),
+      printContract(
+        buildERC20({
+          name: 'MyToken',
+          symbol: 'MTK',
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -90,6 +97,126 @@ testERC20('erc20 votes + timestamp', {
 
 testERC20('erc20 flashmint', {
   flashmint: true,
+});
+
+testERC20('erc20 crossChainBridging custom', {
+  crossChainBridging: 'custom',
+});
+
+testERC20('erc20 crossChainBridging custom ownable', {
+  crossChainBridging: 'custom',
+  access: 'ownable',
+});
+
+testERC20('erc20 crossChainBridging custom ownable mintable burnable', {
+  crossChainBridging: 'custom',
+  access: 'ownable',
+  mintable: true,
+  burnable: true,
+});
+
+testERC20('erc20 crossChainBridging custom roles', {
+  crossChainBridging: 'custom',
+  access: 'roles',
+});
+
+testERC20('erc20 crossChainBridging custom managed', {
+  crossChainBridging: 'custom',
+  access: 'managed',
+});
+
+testERC20('erc20 crossChainBridging superchain', {
+  crossChainBridging: 'superchain',
+});
+
+testERC20('erc20 crossChainBridging superchain ownable', {
+  crossChainBridging: 'superchain',
+  access: 'ownable',
+});
+
+testERC20('erc20 crossChainBridging superchain roles', {
+  crossChainBridging: 'superchain',
+  access: 'roles',
+});
+
+testERC20('erc20 crossChainBridging superchain managed', {
+  crossChainBridging: 'superchain',
+  access: 'managed',
+});
+
+test('erc20 crossChainBridging custom, upgradeable not allowed', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'custom',
+      upgradeable: 'transparent',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.crossChainBridging,
+    'Upgradeability is not currently supported with Cross-Chain Bridging',
+  );
+});
+
+test('erc20 crossChainBridging superchain, upgradeable not allowed', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'superchain',
+      upgradeable: 'transparent',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.crossChainBridging,
+    'Upgradeability is not currently supported with Cross-Chain Bridging',
+  );
+});
+
+test('erc20 crossChainBridging superchain, premintChainId required', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      crossChainBridging: 'superchain',
+      premint: '2000',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.premintChainId,
+    'Chain ID is required when using Premint with Cross-Chain Bridging',
+  );
+});
+
+testERC20('erc20 premint ignores chainId when not crossChainBridging', {
+  premint: '2000',
+  premintChainId: '10',
+});
+
+testERC20('erc20 premint chainId crossChainBridging custom', {
+  premint: '2000',
+  premintChainId: '10',
+  crossChainBridging: 'custom',
+});
+
+testERC20('erc20 premint chainId crossChainBridging superchain', {
+  premint: '2000',
+  premintChainId: '10',
+  crossChainBridging: 'superchain',
+});
+
+testERC20('erc20 full crossChainBridging custom non-upgradeable', {
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  permit: true,
+  votes: true,
+  flashmint: true,
+  crossChainBridging: 'custom',
+  premintChainId: '10',
 });
 
 testERC20('erc20 full upgradeable transparent', {

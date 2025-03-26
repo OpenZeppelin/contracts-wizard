@@ -1,5 +1,6 @@
 import type { ContractBuilder, BaseFunction } from './contract';
-import { Access, requireAccessControl } from './set-access-control';
+import type { Access } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access, pausableFns: BaseFunction[]) {

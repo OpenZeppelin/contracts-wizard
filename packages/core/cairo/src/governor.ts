@@ -1,17 +1,18 @@
 import { contractDefaults as commonDefaults, withCommonDefaults } from './common-options';
 import type { CommonOptions } from './common-options';
-import { ContractBuilder, Contract } from "./contract";
-import { OptionsError } from "./error";
-import { printContract } from "./print";
-import { setInfo } from "./set-info";
-import { setUpgradeableGovernor } from "./set-upgradeable";
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import { OptionsError } from './error';
+import { printContract } from './print';
+import { setInfo } from './set-info';
+import { setUpgradeableGovernor } from './set-upgradeable';
 import { defineComponents } from './utils/define-components';
 import { durationToTimestamp } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
 import { toUint, isNaturalNumber } from './utils/convert-strings';
 export const clockModeOptions = ['timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
-export type ClockMode = typeof clockModeOptions[number];
+export type ClockMode = (typeof clockModeOptions)[number];
 
 const extensionPath = 'openzeppelin::governance::governor::extensions';
 const extensionExternalSection = 'Extensions (external)';
@@ -33,17 +34,17 @@ export const defaults: Required<GovernorOptions> = {
   upgradeable: commonDefaults.upgradeable,
   appName: 'OpenZeppelin Governor',
   appVersion: 'v1',
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export const quorumModeOptions = ['percent', 'absolute'] as const;
-export type QuorumMode = typeof quorumModeOptions[number];
+export type QuorumMode = (typeof quorumModeOptions)[number];
 
 export const votesOptions = ['erc20votes', 'erc721votes'] as const;
-export type VotesOptions = typeof votesOptions[number];
+export type VotesOptions = (typeof votesOptions)[number];
 
 export const timelockOptions = [false, 'openzeppelin'] as const;
-export type TimelockOptions = typeof timelockOptions[number];
+export type TimelockOptions = (typeof timelockOptions)[number];
 
 export function printGovernor(opts: GovernorOptions = defaults): string {
   return printContract(buildGovernor(opts));
@@ -105,7 +106,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   return c;
 }
 
-const components = defineComponents( {
+const components = defineComponents({
   GovernorComponent: {
     path: 'openzeppelin::governance::governor',
     substorage: {
@@ -116,11 +117,13 @@ const components = defineComponents( {
       name: 'GovernorEvent',
       type: 'GovernorComponent::Event',
     },
-    impls: [{
-      name: 'GovernorImpl',
-      value: 'GovernorComponent::GovernorImpl<ContractState>',
-      section: 'Governor Core',
-    }],
+    impls: [
+      {
+        name: 'GovernorImpl',
+        value: 'GovernorComponent::GovernorImpl<ContractState>',
+        section: 'Governor Core',
+      },
+    ],
   },
   GovernorSettingsComponent: {
     path: extensionPath,
@@ -132,16 +135,19 @@ const components = defineComponents( {
       name: 'GovernorSettingsEvent',
       type: 'GovernorSettingsComponent::Event',
     },
-    impls: [{
-      name: 'GovernorSettingsAdminImpl',
-      value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
-      section: extensionExternalSection,
-    }, {
-      name: 'GovernorSettingsImpl',
-      value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }],
+    impls: [
+      {
+        name: 'GovernorSettingsAdminImpl',
+        value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
+        section: extensionExternalSection,
+      },
+      {
+        name: 'GovernorSettingsImpl',
+        value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+    ],
   },
   GovernorVotesComponent: {
     path: extensionPath,
@@ -153,16 +159,19 @@ const components = defineComponents( {
       name: 'GovernorVotesEvent',
       type: 'GovernorVotesComponent::Event',
     },
-    impls: [{
-      name: 'VotesTokenImpl',
-      value: 'GovernorVotesComponent::VotesTokenImpl<ContractState>',
-      section: extensionExternalSection,
-    }, {
-      name: 'GovernorVotesImpl',
-      value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }],
+    impls: [
+      {
+        name: 'VotesTokenImpl',
+        value: 'GovernorVotesComponent::VotesTokenImpl<ContractState>',
+        section: extensionExternalSection,
+      },
+      {
+        name: 'GovernorVotesImpl',
+        value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+    ],
   },
   GovernorVotesQuorumFractionComponent: {
     path: extensionPath,
@@ -174,21 +183,25 @@ const components = defineComponents( {
       name: 'GovernorVotesEvent',
       type: 'GovernorVotesQuorumFractionComponent::Event',
     },
-    impls: [{
-      name: 'GovernorQuorumImpl',
-      value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }, {
-      name: 'GovernorVotesImpl',
-      value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }, {
-      name: 'QuorumFractionImpl',
-      value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
-      section: extensionExternalSection,
-    }],
+    impls: [
+      {
+        name: 'GovernorQuorumImpl',
+        value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+      {
+        name: 'GovernorVotesImpl',
+        value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+      {
+        name: 'QuorumFractionImpl',
+        value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
+        section: extensionExternalSection,
+      },
+    ],
   },
   GovernorCountingSimpleComponent: {
     path: extensionPath,
@@ -200,12 +213,14 @@ const components = defineComponents( {
       name: 'GovernorCountingSimpleEvent',
       type: 'GovernorCountingSimpleComponent::Event',
     },
-    impls: [{
-      name: 'GovernorCountingSimpleImpl',
-      value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }],
+    impls: [
+      {
+        name: 'GovernorCountingSimpleImpl',
+        value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+    ],
   },
   GovernorCoreExecutionComponent: {
     path: extensionPath,
@@ -217,12 +232,14 @@ const components = defineComponents( {
       name: 'GovernorCoreExecutionEvent',
       type: 'GovernorCoreExecutionComponent::Event',
     },
-    impls: [{
-      name: 'GovernorCoreExecutionImpl',
-      value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }],
+    impls: [
+      {
+        name: 'GovernorCoreExecutionImpl',
+        value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+    ],
   },
   GovernorTimelockExecutionComponent: {
     path: extensionPath,
@@ -234,16 +251,19 @@ const components = defineComponents( {
       name: 'GovernorTimelockExecutionEvent',
       type: 'GovernorTimelockExecutionComponent::Event',
     },
-    impls: [{
-      name: 'TimelockedImpl',
-      value: 'GovernorTimelockExecutionComponent::TimelockedImpl<ContractState>',
-      section: extensionExternalSection,
-    }, {
-      name: 'GovernorTimelockExecutionImpl',
-      value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
-      embed: false,
-      section: extensionInternalSection,
-    }],
+    impls: [
+      {
+        name: 'TimelockedImpl',
+        value: 'GovernorTimelockExecutionComponent::TimelockedImpl<ContractState>',
+        section: extensionExternalSection,
+      },
+      {
+        name: 'GovernorTimelockExecutionImpl',
+        value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
+        embed: false,
+        section: extensionInternalSection,
+      },
+    ],
   },
 });
 
@@ -251,7 +271,9 @@ function addBase(c: ContractBuilder, _: GovernorOptions) {
   c.addUseClause('starknet', 'ContractAddress');
   c.addUseClause('openzeppelin::governance::governor', 'DefaultConfig');
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
-  c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalTrait', { alias: 'GovernorInternalTrait' });
+  c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalTrait', {
+    alias: 'GovernorInternalTrait',
+  });
   c.addComponent(components.GovernorComponent, [], true);
 }
 
@@ -278,12 +300,14 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
   });
 
   if (allOpts.settings) {
-    c.addUseClause(`${extensionPath}::GovernorSettingsComponent`, 'InternalTrait', { alias: 'GovernorSettingsInternalTrait' });
-    c.addComponent(components.GovernorSettingsComponent, [
-      { lit: 'VOTING_DELAY' },
-      { lit: 'VOTING_PERIOD' },
-      { lit: 'PROPOSAL_THRESHOLD' },
-    ], true);
+    c.addUseClause(`${extensionPath}::GovernorSettingsComponent`, 'InternalTrait', {
+      alias: 'GovernorSettingsInternalTrait',
+    });
+    c.addComponent(
+      components.GovernorSettingsComponent,
+      [{ lit: 'VOTING_DELAY' }, { lit: 'VOTING_PERIOD' }, { lit: 'PROPOSAL_THRESHOLD' }],
+      true,
+    );
   } else {
     addSettingsLocalImpl(c, allOpts);
   }
@@ -292,7 +316,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
 function getVotingDelay(opts: Required<GovernorOptions>): number {
   try {
     if (opts.clockMode === 'timestamp') {
-       return durationToTimestamp(opts.delay);
+      return durationToTimestamp(opts.delay);
     } else {
       throw new Error('Invalid clock mode');
     }
@@ -310,7 +334,7 @@ function getVotingDelay(opts: Required<GovernorOptions>): number {
 function getVotingPeriod(opts: Required<GovernorOptions>): number {
   try {
     if (opts.clockMode === 'timestamp') {
-        return durationToTimestamp(opts.period);
+      return durationToTimestamp(opts.period);
     } else {
       throw new Error('Invalid clock mode');
     }
@@ -333,7 +357,10 @@ function validateDecimals(decimals: number) {
   }
 }
 
-function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): {value: string, comment?: string} {
+function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<GovernorOptions>): {
+  value: string;
+  comment?: string;
+} {
   if (!/^\d+$/.test(proposalThreshold)) {
     throw new OptionsError({
       proposalThreshold: 'Not a valid number',
@@ -343,9 +370,12 @@ function getProposalThreshold({ proposalThreshold, decimals, votes }: Required<G
   if (/^0+$/.test(proposalThreshold) || decimals === 0 || votes === 'erc721votes') {
     return { value: proposalThreshold };
   } else {
-    let value = `${BigInt(proposalThreshold)*BigInt(10)**BigInt(decimals)}`;
+    let value = `${BigInt(proposalThreshold) * BigInt(10) ** BigInt(decimals)}`;
     value = toUint(value, 'proposalThreshold', 'u256').toString();
-    return { value: `${value}`, comment: `${proposalThreshold} * pow!(10, ${decimals})` };
+    return {
+      value: `${value}`,
+      comment: `${proposalThreshold} * pow!(10, ${decimals})`,
+    };
   }
 }
 
@@ -361,30 +391,36 @@ function addSettingsLocalImpl(c: ContractBuilder, _: Required<GovernorOptions>) 
 
   c.addFunction(settingsTrait, {
     name: 'voting_delay',
-    args: [{
-      name: 'self',
-      type: '@GovernorComponent::ComponentState<ContractState>'
-    }],
+    args: [
+      {
+        name: 'self',
+        type: '@GovernorComponent::ComponentState<ContractState>',
+      },
+    ],
     returns: 'u64',
     code: ['VOTING_DELAY'],
   });
 
   c.addFunction(settingsTrait, {
     name: 'voting_period',
-    args: [{
-      name: 'self',
-      type: '@GovernorComponent::ComponentState<ContractState>'
-    }],
+    args: [
+      {
+        name: 'self',
+        type: '@GovernorComponent::ComponentState<ContractState>',
+      },
+    ],
     returns: 'u64',
     code: ['VOTING_PERIOD'],
   });
 
   c.addFunction(settingsTrait, {
     name: 'proposal_threshold',
-    args: [{
-      name: 'self',
-      type: '@GovernorComponent::ComponentState<ContractState>'
-    }],
+    args: [
+      {
+        name: 'self',
+        type: '@GovernorComponent::ComponentState<ContractState>',
+      },
+    ],
     returns: 'u256',
     code: ['PROPOSAL_THRESHOLD'],
   });
@@ -399,8 +435,7 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
     }
 
     addVotesQuorumFractionComponent(c, allOpts.quorumPercent);
-  }
-  else if (allOpts.quorumMode === 'absolute') {
+  } else if (allOpts.quorumMode === 'absolute') {
     if (!isNaturalNumber(allOpts.quorumAbsolute)) {
       throw new OptionsError({
         quorumAbsolute: 'Not a valid number',
@@ -412,7 +447,7 @@ function addQuorumAndVotes(c: ContractBuilder, allOpts: Required<GovernorOptions
     if (allOpts.decimals === 0 || allOpts.votes === 'erc721votes') {
       quorum = `${allOpts.quorumAbsolute}`;
     } else {
-      quorum = `${BigInt(allOpts.quorumAbsolute)*BigInt(10)**BigInt(allOpts.decimals)}`;
+      quorum = `${BigInt(allOpts.quorumAbsolute) * BigInt(10) ** BigInt(allOpts.decimals)}`;
       quorum = toUint(quorum, 'quorumAbsolute', 'u256').toString();
       comment = `${allOpts.quorumAbsolute} * pow!(10, ${allOpts.decimals})`;
     }
@@ -430,18 +465,21 @@ function addVotesQuorumFractionComponent(c: ContractBuilder, quorumNumerator: nu
     comment: `${quorumNumerator}%`,
     inlineComment: true,
   });
-  c.addUseClause(`${extensionPath}::GovernorVotesQuorumFractionComponent`, 'InternalTrait', { alias: 'GovernorVotesQuorumFractionInternalTrait' });
-  c.addComponent(components.GovernorVotesQuorumFractionComponent, [
-    { lit: 'votes_token' },
-    { lit: 'QUORUM_NUMERATOR' },
-  ], true);
+  c.addUseClause(`${extensionPath}::GovernorVotesQuorumFractionComponent`, 'InternalTrait', {
+    alias: 'GovernorVotesQuorumFractionInternalTrait',
+  });
+  c.addComponent(
+    components.GovernorVotesQuorumFractionComponent,
+    [{ lit: 'votes_token' }, { lit: 'QUORUM_NUMERATOR' }],
+    true,
+  );
 }
 
 function addVotesComponent(c: ContractBuilder, _: Required<GovernorOptions>) {
-  c.addUseClause(`${extensionPath}::GovernorVotesComponent`, 'InternalTrait', { alias: 'GovernorVotesInternalTrait' });
-  c.addComponent(components.GovernorVotesComponent, [
-    { lit: 'votes_token' },
-  ], true);
+  c.addUseClause(`${extensionPath}::GovernorVotesComponent`, 'InternalTrait', {
+    alias: 'GovernorVotesInternalTrait',
+  });
+  c.addComponent(components.GovernorVotesComponent, [{ lit: 'votes_token' }], true);
 }
 
 function addQuorumLocalImpl(c: ContractBuilder, quorum: string, comment: string) {
@@ -463,13 +501,16 @@ function addQuorumLocalImpl(c: ContractBuilder, quorum: string, comment: string)
 
   c.addFunction(quorumTrait, {
     name: 'quorum',
-    args: [{
-      name: 'self',
-      type: '@GovernorComponent::ComponentState<ContractState>'
-    }, {
-      name: 'timepoint',
-      type: 'u64',
-    }],
+    args: [
+      {
+        name: 'self',
+        type: '@GovernorComponent::ComponentState<ContractState>',
+      },
+      {
+        name: 'timepoint',
+        type: 'u64',
+      },
+    ],
     returns: 'u256',
     code: ['QUORUM'],
   });
@@ -483,10 +524,13 @@ function addExecution(c: ContractBuilder, { timelock }: Required<GovernorOptions
   if (timelock === false) {
     c.addComponent(components.GovernorCoreExecutionComponent, [], false);
   } else {
-    c.addConstructorArgument({ name: 'timelock_controller', type: 'ContractAddress' });
-    c.addUseClause(`${extensionPath}::GovernorTimelockExecutionComponent`, 'InternalTrait', { alias: 'GovernorTimelockExecutionInternalTrait' });
-    c.addComponent(components.GovernorTimelockExecutionComponent, [
-      { lit: 'timelock_controller' },
-    ], true);
+    c.addConstructorArgument({
+      name: 'timelock_controller',
+      type: 'ContractAddress',
+    });
+    c.addUseClause(`${extensionPath}::GovernorTimelockExecutionComponent`, 'InternalTrait', {
+      alias: 'GovernorTimelockExecutionInternalTrait',
+    });
+    c.addComponent(components.GovernorTimelockExecutionComponent, [{ lit: 'timelock_controller' }], true);
   }
 }

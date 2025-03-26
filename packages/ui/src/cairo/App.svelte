@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import hljs from './highlightjs';
 
@@ -28,12 +28,20 @@
 
     const dispatch = createEventDispatcher();
 
+    let showCode = true;
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
+
     export let initialTab: string | undefined = 'ERC20';
 
     export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
+      allowRendering();
     };
 
     export let initialOpts: InitialOptions = {};
@@ -75,6 +83,7 @@
             throw e;
           }
         }
+        allowRendering();
       }
     }
 
@@ -164,7 +173,7 @@
   </div>
 
   <div class="flex flex-row grow">
-    <div class="controls rounded-l-3xl w-64 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+    <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
@@ -191,7 +200,13 @@
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -cairo grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
+          <code class="hljs -cairo grow overflow-auto p-4">
+            {@html highlightedCode}
+          </code>
+        {/if}
+      </pre>
     </div>
   </div>
 </div>

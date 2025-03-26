@@ -35,6 +35,7 @@
   <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/woff2" crossorigin>
   <link rel='stylesheet' href='/build/standalone.css'>
   <script async src='/build/embed.js'></script>
+  <script src="/build/versions.js"></script>
 </head>
 <body>
 
@@ -51,16 +52,73 @@
   </div>
   <div class="nav">
     <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
-    <a class="switch switch-cairo active" href="#"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
+    <div class="switch switch-cairo active with-version">
+      <img src="/icons/cairo.svg" alt="cairo">
+      Cairo
+      <select class="switch switch-cairo active version" id="version-dropdown">
+        <option value="stable" />
+        <option value="alpha" />
+      </select>
+    </div>
+    <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
+    <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
   </div>
-  <div class="wizard-container">
 
+  <div class="wizard-container">
     <oz-wizard class="wizard" data-sync-url="fragment" data-lang="cairo"></oz-wizard>
   </div>
 
   <footer>
-    <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-2025 |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
+    <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-<span id="copyright-date"></span> |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
   </footer>
+
+  <script>
+    const dropdown = document.getElementById('version-dropdown');
+
+    function populateLabels() {
+      const options = dropdown.querySelectorAll('option');
+      options[0].label = contractsVersions.cairo;
+      options[1].label = contractsVersions.cairoAlpha;
+    }
+
+    function resizeDropdown() {
+      const selectedOption = dropdown.children[dropdown.selectedIndex];
+      dropdown.style.width = selectedOption.label.length + 1 + 'ch';
+    }
+
+    function onchangeVersion() {
+      resizeDropdown();
+      window.location = "cairo#version=" + dropdown.value;
+      window.location.reload();
+    }
+
+    function preselectFromParam() {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1));
+      const version = urlParams.get('version');
+      if (version) {
+        if (!dropdown.querySelector(`option[value="${version}"]`)) {
+          // If version does not exist in dropdown options, use the default
+          window.location = "cairo#version=stable";
+          window.location.reload();
+        } else {
+          // Set the selected version in the dropdown
+          dropdown.value = version;
+        }
+      }
+    }
+
+    function onStartup() {
+      populateLabels();
+      dropdown.addEventListener('change', onchangeVersion);
+      preselectFromParam();
+      resizeDropdown();
+    }
+
+    onStartup();
+  </script>
+
+<!-- Set current year -->
+<script>document.getElementById('copyright-date').innerHTML = new Date().getFullYear();</script>
 
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7795250.js"></script>

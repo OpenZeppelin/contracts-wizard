@@ -1,9 +1,22 @@
 # Changelog
 
+## 0.5.3 (2025-03-13)
+
+- Add ERC20 Cross-Chain Bridging, SuperchainERC20. ([#436](https://github.com/OpenZeppelin/contracts-wizard/pull/436))
+**Note:** Cross-Chain Bridging is experimental and may be subject to change.
+
+- **Potentially breaking changes**:
+  - Change order of constructor argument `recipient` when using `premint`.
+
+## 0.5.2 (2025-02-21)
+
+- Fix modifiers order to follow Solidity style guides. ([#450](https://github.com/OpenZeppelin/contracts-wizard/pull/450))
+- ERC721: Return tokenId on safeMint with incremental id. ([#455](https://github.com/OpenZeppelin/contracts-wizard/pull/455))
+
 ## 0.5.1 (2025-02-05)
 
 - **Potentially breaking changes**:
-  - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`.
+  - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`. ([#435](https://github.com/OpenZeppelin/contracts-wizard/pull/435))
 
 ## 0.5.0 (2025-01-23)
 

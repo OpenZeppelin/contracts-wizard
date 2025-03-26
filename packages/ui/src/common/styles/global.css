@@ -13,6 +13,14 @@ body {
   font-family: var(--sans-serif);
 }
 
+svg.vertical-align {
+  vertical-align: calc(-1 * var(--icon-adjust));
+}
+
+svg.keepcolor {
+  fill: currentColor;
+}
+
 svg.icon {
   vertical-align: calc(-1 * var(--icon-adjust));
   flex: 0 0 auto;
@@ -149,4 +157,8 @@ input.input-inline {
 
 .hljs.-stylus{
   background: linear-gradient(30deg, #181215, #360c1f);
+}
+
+.light-link {
+  color: white;
 }

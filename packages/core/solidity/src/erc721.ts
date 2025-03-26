@@ -1,13 +1,17 @@
-import { Contract, ContractBuilder } from './contract';
-import { Access, setAccessControl, requireAccessControl } from './set-access-control';
+import type { BaseFunction, Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { Access } from './set-access-control';
+import { setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
 import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
-import { ClockMode, clockModeDefault, setClockMode } from './set-clock-mode';
+import type { ClockMode } from './set-clock-mode';
+import { clockModeDefault, setClockMode } from './set-clock-mode';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -185,6 +189,8 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
   if (uriStorage) {
     c.addFunctionCode('_setTokenURI(tokenId, uri);', fn);
   }
+
+  if (incremental) c.addFunctionCode('return tokenId;', fn);
 }
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
@@ -192,7 +198,7 @@ function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
     name: 'EIP712',
     path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
   };
-  c.addParent(EIP712, [name, "1"]);
+  c.addParent(EIP712, [name, '1']);
 
   const ERC721Votes = {
     name: 'ERC721Votes',
@@ -219,9 +225,7 @@ const functions = defineFunctions({
 
   tokenURI: {
     kind: 'public' as const,
-    args: [
-      { name: 'tokenId', type: 'uint256' },
-    ],
+    args: [{ name: 'tokenId', type: 'uint256' }],
     returns: ['string memory'],
     mutability: 'view' as const,
   },
@@ -242,13 +246,12 @@ const functions = defineFunctions({
   },
 });
 
-function getMintFunction(incremental: boolean, uriStorage: boolean) {
-  const fn = {
+function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunction {
+  const fn: BaseFunction = {
     name: 'safeMint',
     kind: 'public' as const,
-    args: [
-      { name: 'to', type: 'address' },
-    ],
+    args: [{ name: 'to', type: 'address' }],
+    returns: incremental ? ['uint256'] : undefined,
   };
 
   if (!incremental) {

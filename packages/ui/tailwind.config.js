@@ -32,8 +32,7 @@ module.exports = {
         'fade-down': 'fade-down 0.5s ease-out',
         'spin-slow': 'spin 2s linear infinite',
       },
-
-    }
+    },
   },
-  plugins: []
+  plugins: [],
 };

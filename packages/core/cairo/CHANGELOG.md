@@ -4,6 +4,11 @@
 
 - Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
 
+## 1.0.0 (2025-02-25)
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v1.0.0. ([#458](https://github.com/OpenZeppelin/contracts-wizard/pull/458))
+
 ## 0.21.1 (2025-01-23)
 
 - Update to use TypeScript v5. ([#231](https://github.com/OpenZeppelin/contracts-wizard/pull/231))

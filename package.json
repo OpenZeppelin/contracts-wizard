@@ -2,7 +2,10 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "prepare": "wsrun -m prepare"
+    "prepare": "wsrun -m prepare",
+    "lint": "eslint",
+    "dev:ui": "yarn --cwd ./packages/ui dev",
+    "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {
     "packages": [
@@ -15,6 +18,14 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-unicorn": "^57.0.0",
+    "prettier": "^3.5.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1",
     "wsrun": "^5.2.4"
   }
 }

@@ -1,5 +1,7 @@
-import { Contract, ContractBuilder } from './contract';
-import { CommonOptions, withCommonDefaults, defaults as commonDefaults } from './common-options';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { CommonOptions } from './common-options';
+import { withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { setAccessControl } from './set-access-control';
@@ -52,4 +54,3 @@ export function buildCustom(opts: CustomOptions): Contract {
 
   return c;
 }
-

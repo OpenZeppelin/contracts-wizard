@@ -12,6 +12,30 @@ export function sanitizeKind(kind: unknown): Kind {
   return 'ERC20';
 }
 
+export function parseKind(value: string | undefined): Kind {
+  if (value === undefined) {
+    throw new Error(`Failed to resolve contract kind from 'undefined' value.`);
+  }
+  switch (value.toLowerCase()) {
+    case 'erc20':
+      return 'ERC20';
+    case 'erc721':
+      return 'ERC721';
+    case 'erc1155':
+      return 'ERC1155';
+    case 'account':
+      return 'Account';
+    case 'governor':
+      return 'Governor';
+    case 'vesting':
+      return 'Vesting';
+    case 'custom':
+      return 'Custom';
+    default:
+      throw new Error(`Failed to resolve contract kind from '${value}' value.`);
+  }
+}
+
 function isKind<T>(value: Kind | T): value is Kind {
   switch (value) {
     case 'ERC20':
@@ -31,4 +55,3 @@ function isKind<T>(value: Kind | T): value is Kind {
     }
   }
 }
-
