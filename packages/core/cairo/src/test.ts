@@ -16,19 +16,19 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result generated', async ctx => {
+test.serial('erc20 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC20' });
 });
 
-test.serial('erc721 result generated', async ctx => {
+test.serial('erc721 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC721', royaltyInfo: 'all' });
 });
 
-test.serial('erc1155 result generated', async ctx => {
+test.serial('erc1155 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC1155', royaltyInfo: 'all' });
 });
 
-test.serial('account result generated', async ctx => {
+test.serial('account results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Account' });
 });
 
@@ -40,11 +40,11 @@ test.serial('governor results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Governor' });
 });
 
-test.serial('custom results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'Custom' });
+test.serial('multisig results generated', async ctx => {
+  await testGenerate({ ctx, kind: 'Multisig' });
 });
 
-test.serial('custom result generated', async ctx => {
+test.serial('custom results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Custom' });
 });
 
@@ -80,11 +80,10 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     case 'Account':
-      throw new Error('Not applicable for accounts');
     case 'Governor':
-      throw new Error('Not applicable for Governor');
     case 'Vesting':
-      throw new Error('Not applicable for Vesting');
+    case 'Multisig':
+      throw new Error(`Not applicable for ${kind}`);
     default: {
       const _: never = kind;
       throw new Error(`No such kind: ${kind}`);
