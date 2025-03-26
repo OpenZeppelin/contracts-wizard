@@ -13,6 +13,7 @@ import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
+import { toUint256, UINT256_MAX } from './utils/convert-strings';
 
 export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -163,6 +164,14 @@ export function isValidChainId(str: string): boolean {
   return chainIdPattern.test(str);
 }
 
+function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
+  if (exponent < 0) {
+    return base / BigInt(10) ** BigInt(-exponent);
+  } else {
+    return base * BigInt(10) ** BigInt(exponent);
+  }
+}
+
 function addPremint(
   c: ContractBuilder,
   amount: string,
@@ -180,6 +189,9 @@ function addPremint(
       const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
       const units = integer + decimals + zeroes;
       const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+
+      const validatedBaseUnits = toUint256(units, 'premint');
+      checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
 
       c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
@@ -208,6 +220,24 @@ function addPremint(
   } else {
     throw new OptionsError({
       premint: 'Not a valid number',
+    });
+  }
+}
+
+/**
+ * Check for potential premint overflow assuming the user's contract has decimals() = 18
+ *
+ * @param baseUnits The base units of the token, before applying power of 10
+ * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `validatedBaseUnits`. Ignored if <= 0.
+ * @throws OptionsError if the calculated value would overflow uint256
+ */
+function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
+  const assumedExp = decimalPlace <= 0 ? 18 : 18 - decimalPlace;
+  const calculatedValue = scaleByPowerOfTen(baseUnits, assumedExp);
+
+  if (calculatedValue > UINT256_MAX) {
+    throw new OptionsError({
+      premint: 'Amount would overflow uint256 after applying decimals',
     });
   }
 }
