@@ -29,7 +29,7 @@ jobs:
           ALLOWLIST=$(cat allowlist.txt)
           echo "allowlist=$ALLOWLIST" >> $GITHUB_OUTPUT
       - name: "CLA Assistant"
-        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
+        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I confirm that I have read and hereby agree to the OpenZeppelin Contributor License Agreement') || github.event_name == 'pull_request_target'
         uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 #v2.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,4 +47,4 @@ jobs:
             sign our [Contributor License Agreement](https://github.com/OpenZeppelin/cla-assistant/blob/main/openzeppelin_2025_cla.md).
 
             You can sign the CLA by just posting a Pull Request Comment with the sentence below. Thanks.
-          custom-pr-sign-comment: 'I have read the CLA Document and I hereby sign the CLA'
+          custom-pr-sign-comment: 'I confirm that I have read and hereby agree to the OpenZeppelin Contributor License Agreement'
