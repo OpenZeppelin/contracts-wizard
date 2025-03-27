@@ -13,6 +13,8 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
 };
 
+export type RoyaltyInfoSubset = 'all' | 'disabled' | 'enabled_default' | 'enabled_custom';
+
 export const royaltyInfoOptions = {
   disabled: defaults,
   enabledDefault: {
@@ -26,6 +28,24 @@ export const royaltyInfoOptions = {
     feeDenominator: '100000',
   },
 };
+
+export function resolveRoyaltyOptionsSubset(subset: RoyaltyInfoSubset): RoyaltyInfoOptions[] {
+  const { disabled, enabledDefault, enabledCustom } = royaltyInfoOptions;
+  switch (subset) {
+    case 'all':
+      return [disabled, enabledDefault, enabledCustom];
+    case 'disabled':
+      return [disabled];
+    case 'enabled_default':
+      return [enabledDefault];
+    case 'enabled_custom':
+      return [enabledCustom];
+    default: {
+      const _: never = subset;
+      throw new Error('Unknown RoyaltyInfoSubset');
+    }
+  }
+}
 
 export type RoyaltyInfoOptions = {
   enabled: boolean;
