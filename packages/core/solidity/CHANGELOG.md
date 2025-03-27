@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.5.4 (XXXX-XX-XX)
+## Unreleased
 
+- Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
 - Add `account` and `paymaster` contract types for ERC-4337. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
 
 ### Potentially breaking changes

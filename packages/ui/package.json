@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "node scripts/copy-versions.mjs && rollup -c",
+    "dev": "node scripts/copy-versions.mjs && rollup -c -w",
     "start": "sirv public",
     "validate": "svelte-check"
   },

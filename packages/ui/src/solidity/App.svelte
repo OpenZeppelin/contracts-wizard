@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import hljs from './highlightjs';
 
@@ -39,11 +39,18 @@
 
     const dispatch = createEventDispatcher();
 
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
+
     export let initialTab: string | undefined = 'ERC20';
 
     export let tab: Kind = sanitizeKind(initialTab);
     $: {
       tab = sanitizeKind(tab);
+      allowRendering();
       dispatch('tab-change', tab);
     };
 
@@ -56,6 +63,8 @@
     let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
     let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
+
+    let showCode = true;
 
     $: functionCall && applyFunctionCall()
 
@@ -89,6 +98,7 @@
             throw e;
           }
         }
+        allowRendering();
       }
     }
 
@@ -345,10 +355,9 @@
           class="action-button"
           class:disabled={opts?.upgradeable === "transparent"}
           on:click={remixHandler}
-          title="Open in Remix"
         >
           <RemixIcon />
-          
+          Open in Remix
         </button>
         <div slot="content">
           Transparent upgradeable contracts are not supported on Remix.
@@ -453,12 +462,14 @@
             }
           }
         >
-          Deploy with Defender
+        <ArrowsLeft /> Deploy
         </button>
       </div>
       {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
         <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}">{@html highlightedCode}</code>
+        {/if}
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
     </div>
