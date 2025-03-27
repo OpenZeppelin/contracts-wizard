@@ -78,6 +78,10 @@ testStablecoin('stablecoin mintable with roles', {
   access: 'roles',
 });
 
+testStablecoin('stablecoin erc1363', {
+  erc1363: true,
+});
+
 testStablecoin('stablecoin permit', {
   permit: true,
 });
@@ -118,6 +122,7 @@ testStablecoin('stablecoin full', {
   burnable: true,
   mintable: true,
   pausable: true,
+  erc1363: true,
   permit: true,
   votes: true,
   flashmint: true,
@@ -142,6 +147,7 @@ testAPIEquivalence('stablecoin API full', {
   burnable: true,
   mintable: true,
   pausable: true,
+  erc1363: true,
   permit: true,
   votes: true,
   flashmint: true,
