@@ -16,19 +16,19 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result generated', async ctx => {
+test.serial('erc20 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC20' });
 });
 
-test.serial('erc721 result generated', async ctx => {
+test.serial('erc721 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC721', royaltyInfo: 'all' });
 });
 
-test.serial('erc1155 result generated', async ctx => {
+test.serial('erc1155 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC1155', royaltyInfo: 'all' });
 });
 
-test.serial('account result generated', async ctx => {
+test.serial('account results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Account' });
 });
 
@@ -41,10 +41,6 @@ test.serial('governor results generated', async ctx => {
 });
 
 test.serial('custom results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'Custom' });
-});
-
-test.serial('custom result generated', async ctx => {
   await testGenerate({ ctx, kind: 'Custom' });
 });
 
