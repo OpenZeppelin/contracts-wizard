@@ -119,6 +119,23 @@ function addERC7579(c: ContractBuilder, opts: AccountOptions): void {
     });
   }
   c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
+  if (opts.accountBase === 'Account') {
+    c.addImportOnly({
+      name: 'ERC7739',
+      path: '@openzeppelin/community-contracts/contracts/utils/cryptography/ERC7739.sol',
+    });
+    c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
+    c.setFunctionBody(
+      [
+        '// ERC-7739 can return the fn selector (success), 0xffffffff (invalid) or 0x77390001 (detection).',
+        '// If the return is 0xffffffff, we fallback to validation using ERC-7579 modules.',
+        'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
+        'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
+      ],
+      functions.isValidSignature,
+    );
+  }
 }
 
 function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
@@ -175,6 +192,15 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
 
 const functions = {
   ...defineFunctions({
+    isValidSignature: {
+      kind: 'public' as const,
+      mutability: 'view' as const,
+      args: [
+        { name: 'hash', type: 'bytes32' },
+        { name: 'signature', type: 'bytes calldata' },
+      ],
+      returns: ['bytes4'],
+    },
     _signableUserOpHash: {
       kind: 'internal' as const,
       args: [
@@ -182,7 +208,7 @@ const functions = {
         { name: 'userOpHash', type: 'bytes32' },
       ],
       returns: ['bytes32'],
-      mutability: 'view' as const,
+      mutability: 'pure' as const,
     },
     _validateUserOp: {
       kind: 'internal' as const,

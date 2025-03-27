@@ -567,15 +567,15 @@
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^5.10.0"
 
-"@openzeppelin/contracts-upgradeable@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.2.0.tgz#caf9a6eaf4f16d7f90f9b45a6db4e7b125f4b13b"
-  integrity sha512-mZIu9oa4tQTlGiOJHk6D3LdJlqFqF6oNOSn6S6UVJtzfs9UsY9/dhMEbAVTwElxUtJnjpf6yA062+oBp+eOyPg==
+"@openzeppelin/contracts-upgradeable@^5.3.0-rc.0":
+  version "5.3.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.3.0-rc.0.tgz#873763f1274d982b5df68f04acc6ce3087aeb3c4"
+  integrity sha512-O2MRC0f421Wgc+YcHj3SQheI0Khb05vpHs+PHKdvW3kFckJTT7B31D5NBm5JtuyXyBrz5+PaYf7Ko9goqbSlFQ==
 
-"@openzeppelin/contracts@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.2.0.tgz#bd020694218202b811b0ea3eec07277814c658da"
-  integrity sha512-bxjNie5z89W1Ea0NZLZluFh8PrFNn9DH8DQlujEok2yjsOlraUPKID5p1Wk3qdNbf6XkQ1Os2RvfiHrrXLHWKA==
+"@openzeppelin/contracts@^5.3.0-rc.0":
+  version "5.3.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.3.0-rc.0.tgz#7302245d2a8df0fc077fa37c64f562e011fb4dc9"
+  integrity sha512-SEkkTWf+Mamvc5d/i0bwL7gJcsgEFQ+go6CncVqx5UZ8Bpnp+QaGHVrKtmwUkeGMVkRfiqJKO3g7bkbF7mIC/w==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
