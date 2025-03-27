@@ -32,7 +32,6 @@ export function resolveArguments(): Arguments {
 }
 
 export async function updateScarbProject() {
-  const args = resolveArguments();
   const generatedSourcesPath = path.join('test_project', 'src');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
