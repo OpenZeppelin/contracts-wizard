@@ -22,7 +22,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
-    import { InitialOptions } from '../common/initial-options';
+    import type { InitialOptions } from '../common/initial-options';
     import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
