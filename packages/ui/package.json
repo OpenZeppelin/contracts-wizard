@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node scripts/copy-versions.mjs && rollup -c",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
-    "dev:api": "ENV=dev deno run --allow-all --env-file --watch --no-clear-screen api/development-server.ts",
+    "dev:api": "ENV=dev deno run --allow-all --env-file --watch --no-clear-screen scripts/development-server.ts",
     "start": "sirv public",
     "validate": "svelte-check"
   },
