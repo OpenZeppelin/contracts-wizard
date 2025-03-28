@@ -250,7 +250,7 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
+  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts} bind:currentCode={code}></Wiz>
   
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">

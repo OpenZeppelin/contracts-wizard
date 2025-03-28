@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "types": [
-      "svelte",
-      "deno"
+      "svelte"
     ],
     "noEmit": true,
     "lib": [
