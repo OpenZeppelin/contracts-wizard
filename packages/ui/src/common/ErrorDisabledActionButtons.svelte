@@ -16,7 +16,6 @@
       use:trigger
       class="action-button p-3 min-w-[40px]"
       class:disabled={true}
-      title="Copy to Clipboard"
     >
       <CopyIcon />
     </button>
@@ -35,7 +34,6 @@
       use:trigger
       class="action-button with-text"
       class:disabled={true}
-      title="Download"
     >
       <DownloadIcon />
       Download
