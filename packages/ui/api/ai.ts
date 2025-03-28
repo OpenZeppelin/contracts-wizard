@@ -36,7 +36,7 @@ export default async (req: Request): Promise<Response> => {
     ];
 
     const response = await openai.chat.completions.create({
-      model: getEnvironmentVariableOr('OPEN_AI_MODEL', 'gpt-4o-mini'),
+      model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
       messages,
       functions: [
         erc20Function,
