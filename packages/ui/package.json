@@ -17,8 +17,8 @@
     "@rollup/plugin-replace": "^6.0.0",
     "@rollup/plugin-typescript": "^12.0.0",
     "@types/file-saver": "^2.0.1",
-    "@types/resize-observer-browser": "^0.1.5",
     "@types/node": "^18.0.0",
+    "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.5.7",
     "autoprefixer": "^10.4.2",
     "path-browserify": "^1.0.1",
@@ -37,13 +37,14 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@tsconfig/svelte": "^5.0.4",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.0.0",
     "highlightjs-cairo": "^0.4.0",
     "highlightjs-solidity": "^2.0.0",
+    "semver": "^7.6.0",
     "sirv-cli": "^3.0.0",
     "tippy.js": "^6.3.1",
-    "util": "^0.12.4",
-    "semver": "^7.6.0"
+    "util": "^0.12.4"
   }
 }
