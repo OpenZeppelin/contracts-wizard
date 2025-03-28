@@ -1,4 +1,4 @@
-import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16';
+import { OpenAIStream } from 'https://esm.sh/ai@2.2.16';
 import {
   erc20Function,
   erc721Function,
@@ -11,8 +11,6 @@ import {
 import { getRedisInstance } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
-
-export const dynamic = 'force-dynamic';
 
 export default async (req: Request): Promise<Response> => {
   try {
