@@ -303,7 +303,7 @@
         >
           <button
             use:trigger
-            class="action-button"
+            class="action-button with-text"
             class:disabled={opts?.upgradeable === "transparent"}
             on:click={remixHandler}
           >
