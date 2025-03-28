@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "types": [
+      "svelte",
+      "deno"
+    ],
     "noEmit": true,
     "lib": [
       "dom",

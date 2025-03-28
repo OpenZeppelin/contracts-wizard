@@ -1,4 +1,3 @@
-/// <reference lib="deno.ns" />
 import { getEnvironmentVariableOr } from './utils/env.ts';
 import './utils/log.ts';
 

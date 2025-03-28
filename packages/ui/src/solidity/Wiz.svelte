@@ -9,7 +9,7 @@
   import MaximizeIcon from '../common/icons/MaximizeIcon.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-const apiHost = process.env.API_HOST
+  const apiHost = process.env.API_HOST
 
   export let functionCall: {
     name?: string,
