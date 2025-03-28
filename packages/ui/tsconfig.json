@@ -1,11 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": [
-      "svelte",
-      "deno"
-    ],
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "sourceMap": true,
     "noEmit": true,
+    "types": [
+      "svelte"
+    ],
     "lib": [
       "dom",
       "dom.iterable",
