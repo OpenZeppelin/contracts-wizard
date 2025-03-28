@@ -6,7 +6,7 @@
     "lint": "eslint",
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
-    "dev": "yarn dev:ui & yarn dev:api",
+    "dev": "concurrently --kill-others --names \"client,server\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
     "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {
