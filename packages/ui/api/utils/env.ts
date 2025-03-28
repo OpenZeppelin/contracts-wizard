@@ -17,3 +17,6 @@ export const getEnvironmentVariablesOrFail = <TEnvironmentVariableNames extends 
     {} as Record<TEnvironmentVariableNames, string>,
   );
 };
+
+export const getEnvironmentVariableOr = (environmentVariableName: string, fallbackValue: string) =>
+  Deno.env.get(environmentVariableName) || fallbackValue;
