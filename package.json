@@ -5,6 +5,8 @@
     "prepare": "wsrun -m prepare",
     "lint": "eslint",
     "dev:ui": "yarn --cwd ./packages/ui dev",
+    "dev:api": "yarn --cwd ./packages/ui dev:api",
+    "dev": "yarn dev:ui & yarn dev:api",
     "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {

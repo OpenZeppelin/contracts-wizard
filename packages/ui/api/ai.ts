@@ -9,28 +9,15 @@ import {
   governorFunction,
   customFunction,
 } from '../src/solidity/wiz-functions.ts';
-import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
+import { getRedisInstance } from './services/redis.ts';
+import { getOpenAiInstance } from './services/open-ai.ts';
 
 export default async (req: Request) => {
   try {
     const data = await req.json();
-    const apiKey = Deno.env.get('OPENAI_API_KEY');
 
-    const redisUrl = Deno.env.get('REDIS_URL');
-    const redisToken = Deno.env.get('REDIS_TOKEN');
-
-    if (!redisUrl || !redisToken) {
-      throw new Error('missing redis credentials');
-    }
-
-    const redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
-
-    const openai = new OpenAI({
-      apiKey: apiKey,
-    });
+    const redis = getRedisInstance();
+    const openai = getOpenAiInstance();
 
     const validatedMessages = data.messages.filter((message: { role: string; content: string }) => {
       return message.content.length < 500;

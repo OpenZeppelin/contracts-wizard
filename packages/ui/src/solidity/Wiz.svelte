@@ -9,6 +9,8 @@
   import MaximizeIcon from '../common/icons/MaximizeIcon.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
+const apiHost = process.env.API_HOST
+
   export let functionCall: {
     name?: string,
     opts?: any
@@ -56,6 +58,7 @@
     }, ...messages]
   }
 
+
   const submitChat = (message: Chat) => {
     inProgress = true
     addMessage(message)
@@ -63,7 +66,8 @@
 
     const chat = messages.slice(0, messages.length - 2).reverse()
 
-    fetch('/ai', {
+
+    fetch(`${apiHost}/ai`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -135,6 +139,13 @@
           content: result
         })
       }
+      inProgress = false
+    }).catch((error) => {
+      addMessage({
+        role: 'assistant',
+        content: 'Error calling API. See console for details.'
+      })
+      console.log(error)
       inProgress = false
     })
   }
