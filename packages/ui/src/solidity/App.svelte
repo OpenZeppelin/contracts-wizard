@@ -8,6 +8,8 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import StablecoinControls from './StablecoinControls.svelte';
     import RealWorldAssetControls from './RealWorldAssetControls.svelte';
+    import AccountControls from './AccountControls.svelte';
+    import PaymasterControls from './PaymasterControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
     import CustomControls from './CustomControls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -228,6 +230,8 @@
       erc1155: 'ERC1155',
       stablecoin: 'Stablecoin',
       realworldasset: 'RealWorldAsset',
+      account: 'Account',
+      paymaster: 'Paymaster',
       governor: 'Governor',
       custom: 'Custom',
     }
@@ -271,6 +275,12 @@
         </button>
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => tab = 'RealWorldAsset'}>
           Real-World Asset*
+        </button>
+        <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
+          Account*
+        </button>
+        <button class:selected={tab === 'Paymaster'} on:click={() => tab = 'Paymaster'}>
+          Paymaster*
         </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
@@ -376,6 +386,12 @@
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
         <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
+      </div>
+      <div class:hidden={tab !== 'Account'}>
+        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
+      </div>
+      <div class:hidden={tab !== 'Paymaster'}>
+        <PaymasterControls bind:opts={allOpts.Paymaster} errors={errors.Paymaster} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
