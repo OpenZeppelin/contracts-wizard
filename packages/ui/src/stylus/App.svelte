@@ -12,6 +12,7 @@
     import Dropdown from '../common/Dropdown.svelte';
     import OverflowMenu from '../common/OverflowMenu.svelte';
     import FileIcon from '../common/icons/FileIcon.svelte';
+    import ErrorActionButtons from '../common/ErrorActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-stylus';
@@ -82,6 +83,8 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'rust'}).value);
 
+    $: hasErrors = errors[tab] !== undefined;
+
     const language = 'stylus';
 
     let copied = false;
@@ -123,6 +126,9 @@
       </OverflowMenu>
     </div>
 
+    {#if hasErrors}
+      <ErrorActionButtons />
+    {:else}
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
@@ -147,6 +153,7 @@
         </button>
       </Dropdown>
     </div>
+    {/if}
   </div>
 
   <div class="flex flex-row grow">
@@ -199,15 +206,6 @@
     background-color: transparent;
   }
 
-  .action-button {
-    padding: 7px;
-    border-radius: 20px; 
-    transition: background-color ease-in-out .2s;
-  }
-  .with-text {
-    padding-right: var(--size-3);
-  }
-
   .tab button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
@@ -222,7 +220,11 @@
     order: unset;
   }
 
-  .action-button {
+  :global(.action-button) {
+    padding: 7px;
+    border-radius: 20px;
+    transition: background-color ease-in-out .2s;
+
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
@@ -237,8 +239,16 @@
     }
 
     :global(.icon) {
-      margin-right: 0 var(--size-1);
+      margin: 0 var(--size-1);
     }
+  }
+
+  :global(.action-button.disabled) {
+    color: var(--gray-4);
+  }
+
+  :global(.with-text) {
+    padding-right: var(--size-3);
   }
 
   .controls {

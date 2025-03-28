@@ -23,6 +23,7 @@
     import Tooltip from '../common/Tooltip.svelte';
     import Wiz from './Wiz.svelte';
     import DefenderDeployModal from './DefenderDeployModal.svelte';
+    import ErrorActionButtons from '../common/ErrorActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -281,121 +282,81 @@
     </div>
 
     {#if hasErrors}
-    <div class="action flex flex-row gap-2 shrink-0">
-      <Tooltip
-        let:trigger
-        theme="light-red border"
-        hideOnClick={false}
-        interactive
-      >
-        <button
-          use:trigger
-          class="action-button p-3 min-w-[40px]"
-          class:disabled={true}
-          title="Copy to Clipboard"
-        >
-          <CopyIcon />
-        </button>
-        <div slot="content">
-          <p>There are errors in the input options.</p>
-          <p>Fix them to continue.</p>
-        </div>
-      </Tooltip>
-      <Tooltip
-        let:trigger
-        theme="light-red border"
-        hideOnClick={false}
-        interactive
-      >
-        <button
-          use:trigger
-          class="action-button with-text"
-          class:disabled={true}
-          title="Download"
-        >
-          <DownloadIcon />
-          Download
-        </button>
-        <div slot="content">
-          <p>There are errors in the input options.</p>
-          <p>Fix them to continue.</p>
-        </div>
-      </Tooltip>
-    </div>
+      <ErrorActionButtons />
     {:else}
-    <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
-        {#if copied}
-          <CheckIcon />
-        {:else}
-          <CopyIcon />
-        {/if}
-      </button>
+      <div class="action flex flex-row gap-2 shrink-0">
+        <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
+          {#if copied}
+            <CheckIcon />
+          {:else}
+            <CopyIcon />
+          {/if}
+        </button>
 
-      {#if showButtons.openInRemix}
-      <Tooltip
-        let:trigger
-        disabled={!(opts?.upgradeable === "transparent")}
-        theme="light-red border"
-        hideOnClick={false}
-        interactive
-      >
-        <button
-          use:trigger
-          class="action-button"
-          class:disabled={opts?.upgradeable === "transparent"}
-          on:click={remixHandler}
+        {#if showButtons.openInRemix}
+        <Tooltip
+          let:trigger
+          disabled={!(opts?.upgradeable === "transparent")}
+          theme="light-red border"
+          hideOnClick={false}
+          interactive
         >
-          <RemixIcon />
-          Open in Remix
-        </button>
-        <div slot="content">
-          Transparent upgradeable contracts are not supported on Remix.
-          Try using Remix with UUPS upgradability or use Hardhat or Foundry with
-          <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
-          <br />
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-        </div>
-      </Tooltip>
-      {/if}
-
-      <Dropdown let:active>
-        <button class="action-button with-text" class:active slot="button">
-          <DownloadIcon />
-          Download
-        </button>
-
-        <button class="download-option" on:click={downloadNpmHandler}>
-          <FileIcon />
-          <div class="download-option-content">
-            <p>Single file</p>
-            <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
-            <p>Simple to receive updates.</p>
+          <button
+            use:trigger
+            class="action-button"
+            class:disabled={opts?.upgradeable === "transparent"}
+            on:click={remixHandler}
+          >
+            <RemixIcon />
+            Open in Remix
+          </button>
+          <div slot="content">
+            Transparent upgradeable contracts are not supported on Remix.
+            Try using Remix with UUPS upgradability or use Hardhat or Foundry with
+            <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
+            <br />
+            <!-- svelte-ignore a11y-invalid-attribute -->
+            <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
           </div>
-        </button>
-
-        {#if showButtons.downloadHardhat}
-        <button class="download-option" on:click={downloadHardhatHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Development Package (Hardhat)</p>
-            <p>Sample Hardhat project to get started with development and testing.</p>
-          </div>
-        </button>
+        </Tooltip>
         {/if}
 
-        {#if showButtons.downloadFoundry}
-        <button class="download-option" on:click={downloadFoundryHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Development Package (Foundry)</p>
-            <p>Sample Foundry project to get started with development and testing.</p>
-          </div>
-        </button>
-        {/if}
-      </Dropdown>
-    </div>
+        <Dropdown let:active>
+          <button class="action-button with-text" class:active slot="button">
+            <DownloadIcon />
+            Download
+          </button>
+
+          <button class="download-option" on:click={downloadNpmHandler}>
+            <FileIcon />
+            <div class="download-option-content">
+              <p>Single file</p>
+              <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+              <p>Simple to receive updates.</p>
+            </div>
+          </button>
+
+          {#if showButtons.downloadHardhat}
+          <button class="download-option" on:click={downloadHardhatHandler}>
+            <ZipIcon />
+            <div class="download-option-content">
+              <p>Development Package (Hardhat)</p>
+              <p>Sample Hardhat project to get started with development and testing.</p>
+            </div>
+          </button>
+          {/if}
+
+          {#if showButtons.downloadFoundry}
+          <button class="download-option" on:click={downloadFoundryHandler}>
+            <ZipIcon />
+            <div class="download-option-content">
+              <p>Development Package (Foundry)</p>
+              <p>Sample Foundry project to get started with development and testing.</p>
+            </div>
+          </button>
+          {/if}
+        </Dropdown>
+      </div>
     {/if}
   </div>
 
@@ -571,18 +532,9 @@
 
   .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-4);
-    border-radius: 20px; 
+    border-radius: 20px;
     cursor: pointer;
     transition: background-color ease-in-out .2s;
-  }
-  .action-button {
-    padding: 7px;
-    border-radius: 20px; 
-    transition: background-color ease-in-out .2s;
-  }
-
-  .with-text {
-    padding-right: var(--size-3);
   }
 
   .tab button{
@@ -608,7 +560,11 @@
     order: unset;
   }
 
-  .action-button {
+  :global(.action-button) {
+    padding: 7px;
+    border-radius: 20px;
+    transition: background-color ease-in-out .2s;
+
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
@@ -622,13 +578,17 @@
       background-color: var(--gray-2);
     }
 
-    &.disabled {
-      color: var(--gray-4);
-    }
-
     :global(.icon) {
       margin: 0 var(--size-1);
     }
+  }
+
+  :global(.action-button.disabled) {
+    color: var(--gray-4);
+  }
+
+  :global(.with-text) {
+    padding-right: var(--size-3);
   }
 
   .controls {
