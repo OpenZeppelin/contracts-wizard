@@ -164,9 +164,7 @@
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
-          <code class="hljs -stylus grow overflow-auto p-4">
-            {@html highlightedCode}
-          </code>
+          <code class="hljs -stylus grow overflow-auto p-4">{@html highlightedCode}</code>
         {/if}
       </pre>
     </div>
