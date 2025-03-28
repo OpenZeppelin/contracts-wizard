@@ -49,7 +49,7 @@ export default async (req: Request): Promise<Response> => {
     const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
     const response = await openai.chat.completions.create({
-      model: getEnvironmentVariableOr('OPEN_AI_MODEL', 'gpt-4-1106-preview'),
+      model: getEnvironmentVariableOr('OPEN_AI_MODEL', 'gpt-4o-mini'),
       messages: aiChatMessages,
       functions: [
         erc20Function,

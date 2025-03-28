@@ -1,5 +1,6 @@
-import { getEnvironmentVariableOr } from './utils/env.ts';
-import './utils/log.ts';
+import { getEnvironmentVariableOr } from '../api/utils/env.ts';
+import { dirname } from 'https://deno.land/std/path/mod.ts';
+import '../api/utils/log.ts';
 
 const developmentCors = new Response(undefined, {
   status: 200,
@@ -19,7 +20,7 @@ Deno.serve(
 
     try {
       // Dynamically import the route handler
-      const module = await import(`file://${Deno.cwd()}/api${calledEndpoint}.ts`);
+      const module = await import(`file://${dirname(Deno.cwd())}/ui/api${calledEndpoint}.ts`);
 
       if (module.default) {
         return module.default(request);
