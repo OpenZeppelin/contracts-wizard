@@ -23,7 +23,7 @@
     import Tooltip from '../common/Tooltip.svelte';
     import Wiz from './Wiz.svelte';
     import DefenderDeployModal from './DefenderDeployModal.svelte';
-    import ErrorActionButtons from '../common/ErrorActionButtons.svelte';
+    import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -282,7 +282,7 @@
     </div>
 
     {#if hasErrors}
-      <ErrorActionButtons />
+      <ErrorDisabledActionButtons />
     {:else}
       <div class="action flex flex-row gap-2 shrink-0">
         <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">

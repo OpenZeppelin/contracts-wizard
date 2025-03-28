@@ -15,7 +15,7 @@
     import Dropdown from '../common/Dropdown.svelte';
     import OverflowMenu from '../common/OverflowMenu.svelte';
     import FileIcon from '../common/icons/FileIcon.svelte';
-    import ErrorActionButtons from '../common/ErrorActionButtons.svelte';
+    import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
@@ -145,7 +145,7 @@
     </div>
 
     {#if hasErrors}
-      <ErrorActionButtons />
+      <ErrorDisabledActionButtons />
     {:else}
       <div class="action flex flex-row gap-2 shrink-0">
         <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
