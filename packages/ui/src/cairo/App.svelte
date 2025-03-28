@@ -15,6 +15,7 @@
     import Dropdown from '../common/Dropdown.svelte';
     import OverflowMenu from '../common/OverflowMenu.svelte';
     import FileIcon from '../common/icons/FileIcon.svelte';
+    import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
@@ -88,6 +89,8 @@
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
+    $: hasErrors = errors[tab] !== undefined;
+
     const language = 'cairo';
 
     let copied = false;
@@ -141,30 +144,34 @@
       </OverflowMenu>
     </div>
 
-    <div class="action flex flex-row gap-2 shrink-0">
-      <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
-        {#if copied}
-          <CheckIcon />
-        {:else}
-          <CopyIcon />
-        {/if}
-      </button>
-
-      <Dropdown let:active>
-        <button class="action-button with-text" class:active slot="button">
-          <DownloadIcon />
-          Download
+    {#if hasErrors}
+      <ErrorDisabledActionButtons />
+    {:else}
+      <div class="action flex flex-row gap-2 shrink-0">
+        <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
+          {#if copied}
+            <CheckIcon />
+          {:else}
+            <CopyIcon />
+          {/if}
         </button>
 
-        <button class="download-option" on:click={downloadCairoHandler}>
-          <FileIcon />
-          <div class="download-option-content">
-            <p>Single file</p>
-            <p>Requires a Scarb project with <code>openzeppelin</code> as a dependency.</p>
-          </div>
-        </button>
-      </Dropdown>
-    </div>
+        <Dropdown let:active>
+          <button class="action-button with-text" class:active slot="button">
+            <DownloadIcon />
+            Download
+          </button>
+
+          <button class="download-option" on:click={downloadCairoHandler}>
+            <FileIcon />
+            <div class="download-option-content">
+              <p>Single file</p>
+              <p>Requires a Scarb project with <code>openzeppelin</code> as a dependency.</p>
+            </div>
+          </button>
+        </Dropdown>
+      </div>
+    {/if}
   </div>
 
   <div class="flex flex-row grow">
@@ -227,15 +234,6 @@
     background-color: transparent;
   }
 
-  .action-button {
-    padding: 7px;
-    border-radius: 20px; 
-    transition: background-color ease-in-out .2s;
-  }
-  .with-text {
-    padding-right: var(--size-3);
-  }
-
   .tab button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
@@ -250,7 +248,11 @@
     order: unset;
   }
 
-  .action-button {
+  :global(.action-button) {
+    padding: 7px;
+    border-radius: 20px;
+    transition: background-color ease-in-out .2s;
+
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
@@ -265,8 +267,16 @@
     }
 
     :global(.icon) {
-      margin-right: 0 var(--size-1);
+      margin: 0 var(--size-1);
     }
+  }
+
+  :global(.action-button.disabled) {
+    color: var(--gray-4);
+  }
+
+  :global(.with-text) {
+    padding-right: var(--size-3);
   }
 
   .controls {
