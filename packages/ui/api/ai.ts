@@ -1,5 +1,4 @@
-import OpenAI from 'https://esm.sh/openai@4.11.0';
-import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16';
+import { OpenAIStream } from 'https://esm.sh/ai@2.2.16';
 import {
   erc20Function,
   erc721Function,
@@ -9,28 +8,16 @@ import {
   governorFunction,
   customFunction,
 } from '../src/solidity/wiz-functions.ts';
-import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
+import { getRedisInstance } from './services/redis.ts';
+import { getOpenAiInstance } from './services/open-ai.ts';
+import { getEnvironmentVariableOr } from './utils/env.ts';
 
-export default async (req: Request) => {
+export default async (req: Request): Promise<Response> => {
   try {
     const data = await req.json();
-    const apiKey = Deno.env.get('OPENAI_API_KEY');
 
-    const redisUrl = Deno.env.get('REDIS_URL');
-    const redisToken = Deno.env.get('REDIS_TOKEN');
-
-    if (!redisUrl || !redisToken) {
-      throw new Error('missing redis credentials');
-    }
-
-    const redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
-
-    const openai = new OpenAI({
-      apiKey: apiKey,
-    });
+    const redis = getRedisInstance();
+    const openai = getOpenAiInstance();
 
     const validatedMessages = data.messages.filter((message: { role: string; content: string }) => {
       return message.content.length < 500;
@@ -49,7 +36,7 @@ export default async (req: Request) => {
     ];
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-1106-preview',
+      model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
       messages,
       functions: [
         erc20Function,
@@ -87,7 +74,14 @@ export default async (req: Request) => {
         await redis.hset(`chat:${id}`, payload);
       },
     });
-    return new StreamingTextResponse(stream);
+
+    return new Response(stream, {
+      headers: new Headers({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Content-Type': 'text/html; charset=utf-8',
+      }),
+    });
   } catch (e) {
     console.error('Could not retrieve results:', e);
     return Response.json({
