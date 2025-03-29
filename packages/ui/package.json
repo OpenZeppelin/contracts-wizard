@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "concurrently": "^9.1.2",
-    "deno": "^2.2.6",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.0.0",
     "highlightjs-cairo": "^0.4.0",

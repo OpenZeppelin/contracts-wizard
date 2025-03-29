@@ -33,36 +33,6 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@deno/darwin-arm64@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/darwin-arm64/-/darwin-arm64-2.2.6.tgz#3311fdc03d52a29901a8ba0e19b458a9276a8f78"
-  integrity sha512-pkSo0QCl75YJJ3Q0MhLyIVv99/cAnMoKa8ptZS9oRubZ+TiQjuvTHfK0v0xsXKyzmJoNd47avztZdEZJ4jj1OQ==
-
-"@deno/darwin-x64@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/darwin-x64/-/darwin-x64-2.2.6.tgz#96dc12f27221bec2f5c094e15ff4552d13387172"
-  integrity sha512-MrGZ2WCLQAfHb3obLMZM44Lsf3tHML1wj5d20oZLKttnKlMhn+4S5/PHa/8m1Xh+sjydg0H26VPUv5bCALiVPA==
-
-"@deno/linux-arm64-glibc@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/linux-arm64-glibc/-/linux-arm64-glibc-2.2.6.tgz#e8c916b81f598e33e82c0e35e90f9d8b4dfb7009"
-  integrity sha512-c9WZhpxxKpDHxL93S06jcN22ZuRkCjeIPPKz5bS7024FCy8Ko8yHhN08VOD9xmJlqpa4xGT3WwCW6LXKf8XqbA==
-
-"@deno/linux-x64-glibc@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/linux-x64-glibc/-/linux-x64-glibc-2.2.6.tgz#08ba53b5655369a54497af8ae6250ba27553d69d"
-  integrity sha512-dTawn/yIiu0TDb87varTBPWwuZ9SFT2Tng/zkV1q3auuKVtF5hoAublZVKEpi/tMGoyEOnuCi/rWh/AEd4NV5g==
-
-"@deno/win32-arm64@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/win32-arm64/-/win32-arm64-2.2.6.tgz#7855786ea4b3e9c25b89426d9ff0337bbc1a678e"
-  integrity sha512-/VlLS3zpCtpBOqCBy1vihOt1pn/++KPFwV3AsRbpyU9tYztS8yyF7yIup+CYlhdHU+on9L5Fg8c8s1KDgqTiUQ==
-
-"@deno/win32-x64@2.2.6":
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/@deno/win32-x64/-/win32-x64-2.2.6.tgz#c4d7d4f495411165e034259fa3ab93ff8110116e"
-  integrity sha512-uXNA3xWT/4Wiw1ByUaKrO5FUP5QNB1jT/kXhFBfeiVnxXeXRFX+6HPYw64yEYBjE2ckJLrwEhUteX3sFGDRDTg==
-
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.4.1.tgz#d1145bf2c20132d6400495d6df4bf59362fd9d56"
@@ -2184,18 +2154,6 @@ define-data-property@^1.1.4:
     es-define-property "^1.0.0"
     es-errors "^1.3.0"
     gopd "^1.0.1"
-
-deno@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/deno/-/deno-2.2.6.tgz#d7c39a4cd432557cab57f1469fda45c7a98d4476"
-  integrity sha512-mrMLP9yDBhhiwjo+NulG/zNk34KOGk+/FxJl6Ov8zakHH2fZ4CcJdomb4NcIeeHrKHC9z0wDLBRT6BjxmGBuaA==
-  optionalDependencies:
-    "@deno/darwin-arm64" "2.2.6"
-    "@deno/darwin-x64" "2.2.6"
-    "@deno/linux-arm64-glibc" "2.2.6"
-    "@deno/linux-x64-glibc" "2.2.6"
-    "@deno/win32-arm64" "2.2.6"
-    "@deno/win32-x64" "2.2.6"
 
 depd@2.0.0:
   version "2.0.0"
