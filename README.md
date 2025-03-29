@@ -12,6 +12,8 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 Install dependencies with `yarn install`.
 
+If you want to run the local API server you need to install [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation)
+
 `packages/core` contains the code generation logic for each language under separately named subfolders. From each language's subfolder:
 
 - Run `yarn test` to run the tests.
