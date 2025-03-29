@@ -33,7 +33,7 @@
 
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
-    import { InitialOptions } from '../common/initial-options';
+    import type { InitialOptions } from '../common/initial-options';
     import { postMessageToIframe } from '../common/post-message';
 
     const dispatch = createEventDispatcher();
@@ -251,7 +251,7 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts}></Wiz>
+  <Wiz bind:functionCall={functionCall} bind:currentOpts={opts} bind:currentCode={code}></Wiz>
   
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">

@@ -12,18 +12,27 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 Install dependencies with `yarn install`.
 
+If you want to run the local API server you need to install [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation)
+
 `packages/core` contains the code generation logic for each language under separately named subfolders. From each language's subfolder:
+
 - Run `yarn test` to run the tests.
 - Run `yarn test:update-snapshots` to update AVA snapshots and run the tests.
 - Run `yarn lint` to run the linter across the codebase (optionally `yarn lint --fix` will automatically fix fixable issues, like formatting issues).
 
-`packages/ui` is the interface built in Svelte. From the `packages/ui` directory, run `yarn dev` to spin up a local server to develop the UI.
-- By default, the local server runs on port 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
+`packages/ui` is the interface built in Svelte. From the `packages/ui` directory, run `yarn dev` to spin up the client.
+The client communicate with a small API server that you can start with `yarn dev:api`.
+
+- By default, the local client server runs on port 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
+- Similarly, the local API server runs on port 3000. To use another port, set the environment variable `API_PORT`
 
 You'll need to supply your own environment variables if you want to enable Wizard AI Assistant (OPENAI_API_KEY) and/or logging (REDIS_URL, REDIS_TOKEN).
 
-You can run yarn commands directly into `core/{language}` folders with `yarn run:core`.
-For example, running `yarn run:core cairo test` from the root directory will run tests for Cairo.
+From **root folder**:
+
+- You can run yarn commands directly into `core/{language}` folders with `yarn run:core`.
+  For example, running `yarn run:core cairo test` from the root directory will run tests for Cairo.
+- You can also spin both the client and the API concurrently with `yarn dev`
 
 ## Embedding
 

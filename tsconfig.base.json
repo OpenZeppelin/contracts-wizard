@@ -6,7 +6,10 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "lib": ["es2019", "es2019.array"],
+    "lib": [
+      "es2019",
+      "es2019.array"
+    ],
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true
   },

@@ -1,10 +1,28 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "sourceMap": true,
     "noEmit": true,
-    "lib": ["dom", "dom.iterable", "es2019", "es2019.array"],
+    "types": [
+      "svelte"
+    ],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2019",
+      "es2019.array"
+    ],
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "../core/*/src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+  "include": [
+    "src/**/*",
+    "../core/*/src/**/*"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "public/*"
+  ]
 }

@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "denoland.vscode-deno",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+  ]
+}
