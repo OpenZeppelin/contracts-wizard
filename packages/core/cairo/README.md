@@ -40,10 +40,10 @@ function print(opts?: ERC1155Options): string
 function print(opts?: AccountOptions): string
 ```
 ```js
-function print(opts?: GovernorOptions): string
+function print(opts?: MultisigOptions): string
 ```
 ```js
-function print(opts?: MultisigOptions): string
+function print(opts?: GovernorOptions): string
 ```
 ```js
 function print(opts?: VestingOptions): string
@@ -67,10 +67,10 @@ const defaults: Required<ERC1155Options>
 const defaults: Required<AccountOptions>
 ```
 ```js
-const defaults: Required<GovernorOptions>
+const defaults: Required<MultisigOptions>
 ```
 ```js
-const defaults: Required<MultisigOptions>
+const defaults: Required<GovernorOptions>
 ```
 ```js
 const defaults: Required<VestingOptions>
