@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
+
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.0. ([#491](https://github.com/OpenZeppelin/contracts-wizard/pull/491))
   

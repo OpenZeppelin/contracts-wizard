@@ -21,6 +21,7 @@ The following contract types are supported:
 - `erc721`
 - `erc1155`
 - `account`
+- `multisig`
 - `governor`
 - `vesting`
 - `custom`
@@ -41,6 +42,9 @@ function print(opts?: ERC1155Options): string
 ```
 ```js
 function print(opts?: AccountOptions): string
+```
+```js
+function print(opts?: MultisigOptions): string
 ```
 ```js
 function print(opts?: GovernorOptions): string
@@ -65,6 +69,12 @@ const defaults: Required<ERC1155Options>
 ```
 ```js
 const defaults: Required<AccountOptions>
+```
+```js
+const defaults: Required<AccountOptions>
+```
+```js
+const defaults: Required<MultisigOptions>
 ```
 ```js
 const defaults: Required<GovernorOptions>
