@@ -21,7 +21,8 @@ import type { AccountOptions } from './account';
 import { printAccount, defaults as accountDefaults } from './account';
 import type { GovernorOptions } from './governor';
 import { printGovernor, defaults as governorDefaults } from './governor';
-import { printMultisig, defaults as multisigDefaults, MultisigOptions } from './multisig';
+import type { MultisigOptions } from './multisig';
+import { printMultisig, defaults as multisigDefaults } from './multisig';
 import type { CustomOptions } from './custom';
 import {
   printCustom,
@@ -93,7 +94,7 @@ export const account: Account = {
 };
 export const multisig: Multisig = {
   print: printMultisig,
-  defaults: multisigDefaults
+  defaults: multisigDefaults,
 };
 export const governor: Governor = {
   print: printGovernor,

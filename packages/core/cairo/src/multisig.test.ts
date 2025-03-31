@@ -1,6 +1,8 @@
 import test from 'ava';
-import { OptionsError, multisig } from '.';
-import { buildMultisig, MultisigOptions } from './multisig';
+import type { OptionsError } from '.';
+import { multisig } from '.';
+import type { MultisigOptions } from './multisig';
+import { buildMultisig } from './multisig';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 
@@ -8,7 +10,7 @@ const defaults: MultisigOptions = {
   name: 'MyMultisig',
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 };
 
 const CUSTOM_NAME = 'CustomMultisig';
@@ -22,7 +24,7 @@ function testMultisig(title: string, opts: Partial<MultisigOptions>) {
   test(title, t => {
     const c = buildMultisig({
       ...defaults,
-      ...opts
+      ...opts,
     });
     t.snapshot(printContract(c));
   });
@@ -30,10 +32,15 @@ function testMultisig(title: string, opts: Partial<MultisigOptions>) {
 
 function testAPIEquivalence(title: string, opts?: MultisigOptions) {
   test(title, t => {
-    t.is(multisig.print(opts), printContract(buildMultisig({
-      ...defaults,
-      ...opts
-    })));
+    t.is(
+      multisig.print(opts),
+      printContract(
+        buildMultisig({
+          ...defaults,
+          ...opts,
+        }),
+      ),
+    );
   });
 }
 
@@ -46,20 +53,20 @@ testMultisig('custom name', {
 });
 
 testMultisig('custom quorum', {
-  quorum: CUSTOM_QUORUM
+  quorum: CUSTOM_QUORUM,
 });
 
 testMultisig('all custom settings', {
   name: CUSTOM_NAME,
-  quorum: CUSTOM_QUORUM
+  quorum: CUSTOM_QUORUM,
 });
 
 testMultisig('upgradeable', {
-  upgradeable: true
+  upgradeable: true,
 });
 
 testMultisig('non-upgradeable', {
-  upgradeable: false
+  upgradeable: false,
 });
 
 //
@@ -68,43 +75,46 @@ testMultisig('non-upgradeable', {
 
 testAPIEquivalence('API custom name', {
   ...defaults,
-  name: CUSTOM_NAME
+  name: CUSTOM_NAME,
 });
 
 testAPIEquivalence('API custom quorum', {
   ...defaults,
-  quorum: CUSTOM_QUORUM
+  quorum: CUSTOM_QUORUM,
 });
 
 testAPIEquivalence('API all custom settings', {
   ...defaults,
   name: CUSTOM_NAME,
-  quorum: CUSTOM_QUORUM
+  quorum: CUSTOM_QUORUM,
 });
-
 
 testAPIEquivalence('API upgradeable', {
   ...defaults,
-  upgradeable: true
+  upgradeable: true,
 });
 
 testAPIEquivalence('API non-upgradeable', {
   ...defaults,
-  upgradeable: false
+  upgradeable: false,
 });
 
 test('quorum is 0', async t => {
-  const error = t.throws(() => buildMultisig({
-    ...defaults,
-    quorum: '0'
-  }));
+  const error = t.throws(() =>
+    buildMultisig({
+      ...defaults,
+      quorum: '0',
+    }),
+  );
   t.is((error as OptionsError).messages.quorum, 'Quorum cannot be 0');
 });
 
 test('negative quorum', async t => {
-  const error = t.throws(() => buildMultisig({
-    ...defaults,
-    quorum: '-1'
-  }));
+  const error = t.throws(() =>
+    buildMultisig({
+      ...defaults,
+      quorum: '-1',
+    }),
+  );
   t.is((error as OptionsError).messages.quorum, 'Not a valid number');
 });

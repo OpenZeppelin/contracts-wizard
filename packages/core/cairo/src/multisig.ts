@@ -1,5 +1,7 @@
-import { Contract, ContractBuilder } from './contract';
-import { CommonOptions, contractDefaults as commonDefaults } from './common-options';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
+import type { CommonOptions } from './common-options';
+import { contractDefaults as commonDefaults } from './common-options';
 import { setAccessControl } from './set-access-control';
 import { setUpgradeableMultisig } from './set-upgradeable';
 import { setInfo } from './set-info';
@@ -12,7 +14,7 @@ export const defaults: Required<MultisigOptions> = {
   name: 'MyMultisig',
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info
+  info: commonDefaults.info,
 } as const;
 
 export function printMultisig(opts: MultisigOptions = defaults): string {
@@ -29,7 +31,7 @@ function withDefaults(opts: MultisigOptions): Required<MultisigOptions> {
     name: opts.name ?? defaults.name,
     quorum: opts.quorum ?? defaults.quorum,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
-    info: opts.info ?? defaults.info
+    info: opts.info ?? defaults.info,
   };
 }
 
@@ -55,11 +57,11 @@ function addBase(c: ContractBuilder, opts: MultisigOptions) {
   c.addConstant({
     name: 'INITIAL_QUORUM',
     type: 'u32',
-    value: quorum.toString()
+    value: quorum.toString(),
   });
   c.addConstructorArgument({
     name: 'signers',
-    type: 'Span<ContractAddress>'
+    type: 'Span<ContractAddress>',
   });
   const initParams = [{ lit: 'INITIAL_QUORUM' }, { lit: 'signers' }];
   c.addComponent(components.MultisigComponent, initParams, true);
@@ -75,7 +77,7 @@ function getQuorum(opts: MultisigOptions): bigint {
   const quorum = toUint(quorumValue, 'quorum', 'u32');
   if (quorum === BigInt(0)) {
     throw new OptionsError({
-      quorum: 'Quorum cannot be 0'
+      quorum: 'Quorum cannot be 0',
     });
   }
   return quorum;
@@ -92,13 +94,16 @@ const components = defineComponents({
       name: 'MultisigEvent',
       type: 'MultisigComponent::Event',
     },
-    impls: [{
-      name: 'MultisigImpl',
-      value: 'MultisigComponent::MultisigImpl<ContractState>'
-    }, {
-      name: 'MultisigInternalImpl',
-      embed: false,
-      value: 'MultisigComponent::InternalImpl<ContractState>',
-    }],
-  }
+    impls: [
+      {
+        name: 'MultisigImpl',
+        value: 'MultisigComponent::MultisigImpl<ContractState>',
+      },
+      {
+        name: 'MultisigInternalImpl',
+        embed: false,
+        value: 'MultisigComponent::InternalImpl<ContractState>',
+      },
+    ],
+  },
 });

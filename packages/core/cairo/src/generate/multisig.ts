@@ -6,7 +6,7 @@ const blueprint = {
   name: ['MyMultisig'],
   quorum: ['1', '2', '42'],
   upgradeable: [true, false],
-  info: infoOptions
+  info: infoOptions,
 };
 
 export function* generateMultisigOptions(): Generator<Required<MultisigOptions>> {

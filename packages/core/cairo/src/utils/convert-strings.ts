@@ -2,7 +2,7 @@ import { OptionsError } from '../error';
 
 const NATURAL_NUMBER_PATTERN = /^(?!$)\d+$/;
 
-/** 
+/**
  * Checks if the input string is a natural number
  */
 export function isNaturalNumber(str: string): boolean {
