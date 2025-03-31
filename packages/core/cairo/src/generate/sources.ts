@@ -51,9 +51,9 @@ export function* generateOptions(params: {
     }
   }
 
-  if (kind === 'all' || kind === 'Custom') {
-    for (const kindOpts of generateCustomOptions()) {
-      yield { kind: 'Custom', ...kindOpts };
+  if (kind === 'all' || kind === 'Multisig') {
+    for (const kindOpts of generateMultisigOptions()) {
+      yield { kind: 'Multisig', ...kindOpts };
     }
   }
 
@@ -63,15 +63,15 @@ export function* generateOptions(params: {
     }
   }
 
-  if (kind === 'all' || kind === 'Multisig') {
-    for (const kindOpts of generateMultisigOptions()) {
-      yield { kind: 'Multisig', ...kindOpts };
-    }
-  }
-
   if (kind === 'all' || kind === 'Vesting') {
     for (const kindOpts of generateVestingOptions()) {
       yield { kind: 'Vesting', ...kindOpts };
+    }
+  }
+
+  if (kind === 'all' || kind === 'Custom') {
+    for (const kindOpts of generateCustomOptions()) {
+      yield { kind: 'Custom', ...kindOpts };
     }
   }
 }
@@ -117,12 +117,12 @@ function generateContractSubset(params: {
         switch (c.options.kind) {
           case 'Vesting':
             return isUpgradeable === false;
-          case 'Account':
           case 'ERC20':
           case 'ERC721':
           case 'ERC1155':
-          case 'Governor':
+          case 'Account':
           case 'Multisig':
+          case 'Governor':
           case 'Custom':
             return c.options.upgradeable === isUpgradeable;
           default: {
@@ -191,9 +191,9 @@ function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfo
       return 'All contract kinds';
     case 'ERC20':
     case 'Account':
-    case 'Vesting':
-    case 'Governor':
     case 'Multisig':
+    case 'Governor':
+    case 'Vesting':
     case 'Custom':
       return kind;
     default: {

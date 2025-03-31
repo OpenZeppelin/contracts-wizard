@@ -20,8 +20,8 @@ export interface KindedOptions {
   ERC721: { kind: 'ERC721' } & ERC721Options;
   ERC1155: { kind: 'ERC1155' } & ERC1155Options;
   Account: { kind: 'Account' } & AccountOptions;
-  Governor: { kind: 'Governor' } & GovernorOptions;
   Multisig: { kind: 'Multisig' } & MultisigOptions;
+  Governor: { kind: 'Governor' } & GovernorOptions;
   Vesting: { kind: 'Vesting' } & VestingOptions;
   Custom: { kind: 'Custom' } & CustomOptions;
 }
@@ -42,11 +42,11 @@ export function buildGeneric(opts: GenericOptions) {
     case 'Account':
       return buildAccount(opts);
 
-    case 'Governor':
-      return buildGovernor(opts);
-
     case 'Multisig':
       return buildMultisig(opts);
+
+    case 'Governor':
+      return buildGovernor(opts);
 
     case 'Vesting':
       return buildVesting(opts);

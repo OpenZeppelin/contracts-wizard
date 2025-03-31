@@ -67,8 +67,8 @@ export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Opti
 export type ERC721 = WizardContractAPI<ERC721Options> & AccessControlAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC1155Options>;
 export type Account = WizardAccountAPI<AccountOptions>;
-export type Governor = WizardContractAPI<GovernorOptions>;
 export type Multisig = WizardContractAPI<MultisigOptions>;
+export type Governor = WizardContractAPI<GovernorOptions>;
 export type Vesting = WizardContractAPI<VestingOptions>;
 export type Custom = WizardContractAPI<CustomOptions> & AccessControlAPI<CustomOptions>;
 
@@ -91,13 +91,13 @@ export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
 };
-export const governor: Governor = {
-  print: printGovernor,
-  defaults: governorDefaults,
-};
 export const multisig: Multisig = {
   print: printMultisig,
   defaults: multisigDefaults
+};
+export const governor: Governor = {
+  print: printGovernor,
+  defaults: governorDefaults,
 };
 export const vesting: Vesting = {
   print: printVesting,
