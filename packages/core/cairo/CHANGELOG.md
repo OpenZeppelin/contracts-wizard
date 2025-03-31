@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 (2025-03-27)
+## 1.1.0 (2025-04-01)
 
 - Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
 
