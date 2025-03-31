@@ -31,6 +31,10 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
             name: 'AccessControlCamelImpl',
             value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
           });
+          c.addImplToComponent(components.AccessControlComponent, {
+            name: 'AccessControlWithDelay',
+            value: 'AccessControlComponent::AccessControlWithDelay',
+          });
         } else {
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlMixinImpl',
