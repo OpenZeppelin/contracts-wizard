@@ -119,6 +119,14 @@
       </HelpTooltip>
     </label>
 
+    <label class:checked={opts.callback}>
+      <input type="checkbox" bind:checked={opts.callback}>
+      Callback
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC1363">
+        Supports code execution after transfers and approvals on recipient contracts in a single transaction.
+      </HelpTooltip>
+    </label>
+
     <label class:checked={opts.permit || opts.votes}>
       <input type="checkbox" bind:checked={opts.permit}>
       Permit
