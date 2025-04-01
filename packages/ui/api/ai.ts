@@ -11,33 +11,46 @@ import {
 import { getRedisInstance } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
+import type { Chat } from '../src/types.ts';
+
+type AiChatBodyRequest = {
+  messages: Chat[];
+  currentCode: string;
+  currentOpts: Record<string, Record<string, string | boolean>>;
+  chatId: string;
+};
+
+const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
+  const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
+    return message.content.length < 500;
+  });
+
+  return [
+    {
+      role: 'system',
+      content: `
+      You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
+      The current options are ${JSON.stringify(request.currentOpts)}.
+      The current contract code is ${request.currentCode}
+      Please be kind and concise. Keep responses to <100 words.
+    `.trim(),
+    },
+    ...validatedMessages,
+  ];
+};
 
 export default async (req: Request): Promise<Response> => {
   try {
-    const data = await req.json();
+    const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
     const redis = getRedisInstance();
     const openai = getOpenAiInstance();
 
-    const validatedMessages = data.messages.filter((message: { role: string; content: string }) => {
-      return message.content.length < 500;
-    });
-
-    const messages = [
-      {
-        role: 'system',
-        content: `
-        You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
-        The current options are ${JSON.stringify(data.currentOpts)}.
-        Please be kind and concise. Keep responses to <100 words.
-      `.trim(),
-      },
-      ...validatedMessages,
-    ];
+    const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
     const response = await openai.chat.completions.create({
       model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
-      messages,
+      messages: aiChatMessages,
       functions: [
         erc20Function,
         erc721Function,
@@ -53,13 +66,13 @@ export default async (req: Request): Promise<Response> => {
 
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
-        const id = data.chatId;
+        const id = aiChatBodyRequest.chatId;
         const updatedAt = Date.now();
         const payload = {
           id,
           updatedAt,
           messages: [
-            ...messages,
+            ...aiChatMessages,
             {
               content: completion,
               role: 'assistant',
