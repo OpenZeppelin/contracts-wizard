@@ -14,7 +14,7 @@ import { toUint, validateUint } from './utils/convert-strings';
 export type VestingSchedule = 'linear' | 'custom';
 
 export const defaults: Required<VestingOptions> = {
-  name: 'VestingWallet',
+  name: 'MyVesting',
   startDate: '',
   duration: '0 day',
   cliffDuration: '0 day',

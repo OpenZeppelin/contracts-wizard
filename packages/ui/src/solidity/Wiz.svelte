@@ -8,7 +8,7 @@
   import MinimizeIcon from '../common/icons/MinimizeIcon.svelte';
   import MaximizeIcon from '../common/icons/MaximizeIcon.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
-    import { Chat } from "../types";
+  import type { Chat } from '../../api/ai-assistant/types/assistant';
 
   const apiHost = process.env.API_HOST;
 

@@ -32,12 +32,16 @@ test.serial('account results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Account' });
 });
 
-test.serial('vesting results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'Vesting' });
+test.serial('multisig results generated', async ctx => {
+  await testGenerate({ ctx, kind: 'Multisig' });
 });
 
 test.serial('governor results generated', async ctx => {
   await testGenerate({ ctx, kind: 'Governor' });
+});
+
+test.serial('vesting results generated', async ctx => {
+  await testGenerate({ ctx, kind: 'Vesting' });
 });
 
 test.serial('custom results generated', async ctx => {
@@ -76,11 +80,10 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     case 'Account':
-      throw new Error('Not applicable for accounts');
+    case 'Multisig':
     case 'Governor':
-      throw new Error('Not applicable for Governor');
     case 'Vesting':
-      throw new Error('Not applicable for Vesting');
+      throw new Error(`Not applicable for ${kind}`);
     default: {
       const _: never = kind;
       throw new Error(`No such kind: ${kind}`);
@@ -100,6 +103,7 @@ test('is access control required', async t => {
 
     switch (contract.options.kind) {
       case 'Account':
+      case 'Multisig':
       case 'Governor':
       case 'Vesting':
         // These contracts have no access control option
