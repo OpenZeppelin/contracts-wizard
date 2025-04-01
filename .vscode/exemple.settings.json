@@ -6,5 +6,6 @@
     "packages/ui/scripts/development-server.ts"
   ],
   "deno.enable": true,
-  "deno.path": "/opt/homebrew/bin/deno" // Update this to your Deno path
+  "deno.path": "/opt/homebrew/bin/deno", // Update this to your Deno path
+  "deno.config": "packages/ui/deno.json"
 }
