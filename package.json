@@ -6,7 +6,7 @@
     "lint": "eslint",
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
-    "dev": "concurrently --kill-others-on-fail --names \"client,server\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
+    "dev": "concurrently --kill-others-on-fail --names \"ui,api\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
     "run:core": "node ./scripts/run-command.mjs"
   },
   "workspaces": {
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",

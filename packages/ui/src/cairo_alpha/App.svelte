@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import hljs from './highlightjs';
 
@@ -8,13 +8,16 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
+    import MultisigControls from './MultisigControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
+    import VestingControls from './VestingControls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
     import CheckIcon from '../common/icons/CheckIcon.svelte';
     import DownloadIcon from '../common/icons/DownloadIcon.svelte';
     import Dropdown from '../common/Dropdown.svelte';
     import OverflowMenu from '../common/OverflowMenu.svelte';
     import FileIcon from '../common/icons/FileIcon.svelte';
+    import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
     import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
     import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo-alpha';
@@ -23,9 +26,15 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import type { InitialOptions } from '../common/initial-options';
-    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
+
+    let showCode = true;
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
 
     export let initialTab: string | undefined = 'ERC20';
 
@@ -33,6 +42,7 @@
     $: {
       tab = sanitizeKind(tab);
       dispatch('tab-change', tab);
+      allowRendering();
     };
 
     export let initialOpts: InitialOptions = {};
@@ -55,10 +65,11 @@
             case 'ERC721':
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
+            case 'ERC1155':
             case 'Account':
+            case 'Multisig':
             case 'Governor':
             case 'Vesting':
-            case 'ERC1155':
             case 'Custom':
           }
           initialValuesSet = true;
@@ -74,10 +85,13 @@
           }
         }
       }
+      allowRendering();
     }
 
     $: code = printContract(contract);
     $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
+
+    $: hasErrors = errors[tab] !== undefined;
 
     const language = 'cairo';
 
@@ -120,6 +134,9 @@
         <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
           Account
         </button>
+        <button class:selected={tab === 'Multisig'} on:click={() => tab = 'Multisig'}>
+          Multisig
+        </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
@@ -132,6 +149,9 @@
       </OverflowMenu>
     </div>
 
+    {#if hasErrors}
+      <ErrorDisabledActionButtons />
+    {:else}
     <div class="action flex flex-row gap-2 shrink-0">
       <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
         {#if copied}
@@ -156,6 +176,7 @@
         </button>
       </Dropdown>
     </div>
+    {/if}
   </div>
 
   <div class="flex flex-row grow">
@@ -172,6 +193,9 @@
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
       </div>
+      <div class:hidden={tab !== 'Multisig'}>
+        <MultisigControls bind:opts={allOpts.Multisig} errors={errors.Multisig}/>
+      </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
       </div>
@@ -183,7 +207,11 @@
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
-      <pre class="flex flex-col grow basis-0 overflow-auto"><code class="hljs -cairo grow overflow-auto p-4">{@html highlightedCode}</code></pre>
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
+          <code class="hljs -cairo grow overflow-auto p-4">{@html highlightedCode}</code>
+        {/if}
+      </pre>
     </div>
   </div>
 </div>
@@ -214,15 +242,6 @@
     background-color: transparent;
   }
 
-  .action-button {
-    padding: 7px;
-    border-radius: 20px; 
-    transition: background-color ease-in-out .2s;
-  }
-  .with-text {
-    padding-right: var(--size-3);
-  }
-
   .tab button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
@@ -237,7 +256,11 @@
     order: unset;
   }
 
-  .action-button {
+  :global(.action-button) {
+    padding: 7px;
+    border-radius: 20px;
+    transition: background-color ease-in-out .2s;
+
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
     color: var(--gray-6);
@@ -252,8 +275,16 @@
     }
 
     :global(.icon) {
-      margin-right: 0 var(--size-1);
+      margin: 0 var(--size-1);
     }
+  }
+
+  :global(.action-button.disabled) {
+    color: var(--gray-4);
+  }
+
+  :global(.with-text) {
+    padding-right: var(--size-3);
   }
 
   .controls {

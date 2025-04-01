@@ -1,13 +1,13 @@
 import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
 import RedisMock from './dev-mocks/redis.ts';
 import { getEnvironmentVariableOr, getEnvironmentVariablesOrFail } from '../utils/env.ts';
-import type { Chat } from '../ai-assistant.ts/types/function-definition.ts';
+import type { Chat } from '../ai-assistant/types/assistant.ts';
 
 type RedisChat = {
   id: string;
   messages: Chat[];
   updatedAt: number;
-  createdAt: number;
+  createdAt?: number;
 };
 
 export const getRedisInstance = () => {
@@ -25,7 +25,7 @@ export const saveChatInRedisIfDoesNotExist = (chatId: string, chatMessages: Chat
   const redis = getRedisInstance();
 
   const updatedAt = Date.now();
-  const payload = {
+  const payload: RedisChat = {
     id: chatId,
     updatedAt,
     messages: [
@@ -39,7 +39,6 @@ export const saveChatInRedisIfDoesNotExist = (chatId: string, chatMessages: Chat
 
   const exists = await redis.exists(`chat:${chatId}`);
 
-  // @ts-expect-error redis types seem to require [key: string]
   if (!exists) payload.createdAt = updatedAt;
 
   await redis.hset(`chat:${chatId}`, payload);

@@ -9,13 +9,13 @@ import type { CustomOptions as SolidityCustomOptions } from '@openzeppelin/wizar
 
 // Solidity
 export interface SolidityKindedOptions {
-  ERC20: { kind: 'ERC20' } & SolidityERC20Options;
-  ERC721: { kind: 'ERC721' } & SolidityERC20Options & SolidityCommonOptions & SolidityERC721Options;
-  ERC1155: { kind: 'ERC1155' } & SolidityERC1155Options;
-  Stablecoin: { kind: 'Stablecoin' } & SolidityERC20Options & SolidityStablecoinOptions;
-  RealWorldAsset: { kind: 'RealWorldAsset' } & SolidityERC20Options & SolidityStablecoinOptions;
-  Governor: { kind: 'Governor' } & SolidityGovernorOptions;
-  Custom: { kind: 'Custom' } & SolidityCustomOptions;
+  ERC20: { kind: 'ERC20' } & SolidityCommonOptions & SolidityERC20Options;
+  ERC721: { kind: 'ERC721' } & SolidityCommonOptions & SolidityERC20Options & SolidityERC721Options;
+  ERC1155: { kind: 'ERC1155' } & SolidityCommonOptions & SolidityERC1155Options;
+  Stablecoin: { kind: 'Stablecoin' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;
+  RealWorldAsset: { kind: 'RealWorldAsset' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;
+  Governor: { kind: 'Governor' } & SolidityCommonOptions & SolidityGovernorOptions;
+  Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
 }
 
 export type {
@@ -31,7 +31,7 @@ export type {
 export type SupportedLanguage = 'solidity';
 
 export type AllLanguageContractOptions = {
-  [k in keyof SolidityKindedOptions]: Required<SolidityCommonOptions> & SolidityKindedOptions[k];
+  [k in keyof SolidityKindedOptions]: SolidityKindedOptions[k];
 };
 
 export type AllLanguageFunctionName = SolidityKindedOptions[keyof SolidityKindedOptions]['kind'];
