@@ -8,7 +8,9 @@
     import ERC1155Controls from './ERC1155Controls.svelte';
     import CustomControls from './CustomControls.svelte';
     import AccountControls from './AccountControls.svelte';
+    import MultisigControls from './MultisigControls.svelte';
     import GovernorControls from './GovernorControls.svelte';
+    import VestingControls from './VestingControls.svelte';
     import CopyIcon from '../common/icons/CopyIcon.svelte';
     import CheckIcon from '../common/icons/CheckIcon.svelte';
     import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -24,7 +26,6 @@
     import { saveAs } from 'file-saver';
     import { injectHyperlinks } from './inject-hyperlinks';
     import { InitialOptions } from '../common/initial-options';
-    import VestingControls from './VestingControls.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -64,10 +65,11 @@
             case 'ERC721':
               opts.symbol = initialOpts.symbol ?? opts.symbol;
               break;
+            case 'ERC1155':
             case 'Account':
+            case 'Multisig':
             case 'Governor':
             case 'Vesting':
-            case 'ERC1155':
             case 'Custom':
           }
           initialValuesSet = true;
@@ -132,6 +134,9 @@
         <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
           Account
         </button>
+        <button class:selected={tab === 'Multisig'} on:click={() => tab = 'Multisig'}>
+          Multisig
+        </button>
         <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
           Governor
         </button>
@@ -187,6 +192,9 @@
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
+      </div>
+      <div class:hidden={tab !== 'Multisig'}>
+        <MultisigControls bind:opts={allOpts.Multisig} errors={errors.Multisig}/>
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
