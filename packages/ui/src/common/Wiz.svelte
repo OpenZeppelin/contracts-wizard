@@ -1,23 +1,29 @@
 <script lang="ts">
-  import UserAvatar from '../common/icons/UserAvatar.svelte';
-  import WizAvatar from '../common/icons/WizAvatar.svelte';
-  import WizIcon from '../common/icons/WizIcon.svelte';
-  import XIcon from '../common/icons/XIcon.svelte';
-  import type { GenericOptions } from '@openzeppelin/wizard';
+  import UserAvatar from './icons/UserAvatar.svelte';
+  import WizAvatar from './icons/WizAvatar.svelte';
+  import WizIcon from './icons/WizIcon.svelte';
+  import XIcon from './icons/XIcon.svelte';
   import { nanoid } from 'nanoid';
-  import MinimizeIcon from '../common/icons/MinimizeIcon.svelte';
-  import MaximizeIcon from '../common/icons/MaximizeIcon.svelte';
-  import HelpTooltip from '../common/HelpTooltip.svelte';
-    import { Chat } from "../types";
+  import MinimizeIcon from './icons/MinimizeIcon.svelte';
+  import MaximizeIcon from './icons/MaximizeIcon.svelte';
+  import HelpTooltip from './HelpTooltip.svelte';
+  import type {
+    AiAssistantContractOptions,
+    AiAssistantLanguage,
+    AiChatBodyRequest,
+    AiFunctionCall,
+    AiFunctionCallResponse,
+    Chat,
+  } from '../../api/ai-assistant/types/assistant';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
 
   const apiHost = process.env.API_HOST;
 
-  export let functionCall: {
-    name?: string;
-    opts?: any;
-  };
-  export let currentOpts: Required<GenericOptions> | undefined;
-  export let currentCode: string | undefined;
+  export let currentOpts: AiAssistantContractOptions | undefined;
+  export let currentCode: string;
+  export let language: AiAssistantLanguage;
 
   const chatId = nanoid();
   let inProgress = false;
@@ -36,15 +42,7 @@
     },
   ];
 
-  const nameMap = {
-    erc20: 'ERC20',
-    erc721: 'ERC721',
-    erc1155: 'ERC1155',
-    stablecoin: 'Stablecoin (Experimental)',
-    realworldasset: 'Real-World Asset (Experimental)',
-    governor: 'Governor',
-    custom: 'Custom',
-  };
+  const experimentalContracts = ['Stablecoin', 'RealWorldAsset'];
 
   const sampleMessages = [
     'Make a token with supply of 10 million',
@@ -62,6 +60,21 @@
     ];
   };
 
+  const stringifyIfNumber = (functionCallValue: unknown) =>
+    typeof functionCallValue === 'number' ? functionCallValue.toString() : functionCallValue;
+
+  const buildOptionsFromArguments = (functionCallArguments: string) => {
+    const toCallArguments: AiFunctionCall['arguments'] = JSON.parse(functionCallArguments);
+
+    return Object.entries(toCallArguments).reduce(
+      (builtOptions, [functionCallKey, functionCallValue]) => ({
+        ...builtOptions,
+        [functionCallKey]: stringifyIfNumber(functionCallValue),
+      }),
+      {} as AiAssistantContractOptions,
+    );
+  };
+
   const submitChat = (message: Chat) => {
     inProgress = true;
     addMessage(message);
@@ -69,18 +82,20 @@
 
     const chat = messages.slice(0, messages.length - 2).reverse();
 
+    const aiAssistantRequest: AiChatBodyRequest = {
+      language,
+      currentOpts,
+      currentCode,
+      chatId,
+      messages: chat,
+    };
+
     fetch(`${apiHost}/ai`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        currentOpts,
-        currentCode,
-        chatId,
-        messages: chat,
-        stream: true,
-      }),
+      body: JSON.stringify(aiAssistantRequest),
     })
       .then(async response => {
         const reader = response.body?.getReader();
@@ -89,15 +104,14 @@
         if (reader) {
           while (true) {
             const { done, value } = await reader.read();
-            if (done) {
-              break;
-            }
+            if (done) break;
+
             // Massage and parse the chunk of data
             const chunk = decoder.decode(value);
             result += chunk;
 
             if (result.startsWith('{"function_call":')) {
-              currentMessage = 'Executing function...';
+              currentMessage = 'Building contract...';
             } else {
               currentMessage = result;
             }
@@ -107,45 +121,20 @@
         currentMessage = '';
         if (result.startsWith('{"function_call":')) {
           try {
-            const parsedResult = JSON.parse(result);
-            const name = parsedResult.function_call.name as keyof typeof nameMap;
+            const { function_call }: AiFunctionCallResponse = JSON.parse(result);
+
             addMessage({
               role: 'assistant',
-              content: 'Updated Wizard using ' + nameMap[name] + '.',
+              content:
+                'Updated Wizard using ' + function_call.name + experimentalContracts.includes(function_call.name)
+                  ? '(Experimental).'
+                  : '.',
             });
-            const opts = JSON.parse(parsedResult.function_call.arguments);
-            if (opts.access === 'false') {
-              opts.access = false;
-            }
-            if (opts.upgradeable === 'false') {
-              opts.upgradeable = false;
-            }
-            if (opts.timelock === 'false') {
-              opts.timelock = false;
-            }
-            if (opts.votes === 'false') {
-              opts.votes = false;
-            }
-            if (opts.limitations === 'false') {
-              opts.limitations = false;
-            }
-            if (opts.crossChainBridging === 'false') {
-              opts.crossChainBridging = false;
-            }
-            if (opts.proposalThreshold) {
-              opts.proposalThreshold = opts.proposalThreshold.toString();
-            }
-            if (opts.quorumAbsolute) {
-              opts.quorumAbsolute = opts.quorumAbsolute.toString();
-            }
-            if (opts.premint) {
-              opts.premint = opts.premint.toString();
-            }
 
-            functionCall = {
-              name: name,
-              opts: opts,
-            };
+            dispatch('function-call-response', {
+              name: function_call.name,
+              arguments: buildOptionsFromArguments(function_call.arguments),
+            });
           } catch (e) {
             addMessage({
               role: 'assistant',
