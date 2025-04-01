@@ -25,7 +25,7 @@
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
 
   // Show notice when SuperchainERC20 is enabled
-  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
   import { onMount } from 'svelte';
 
   let superchainLabel: HTMLElement;
