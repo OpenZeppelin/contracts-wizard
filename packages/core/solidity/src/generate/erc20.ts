@@ -13,7 +13,7 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   mintable: booleans,
-  erc1363: booleans,
+  callback: booleans,
   permit: booleans,
   votes: [...booleans, ...clockModeOptions] as const,
   flashmint: booleans,

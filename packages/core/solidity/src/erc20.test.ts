@@ -116,8 +116,8 @@ testERC20('erc20 mintable with roles', {
   access: 'roles',
 });
 
-testERC20('erc20 + erc1363', {
-  erc1363: true,
+testERC20('erc20 callback', {
+  callback: true,
 });
 
 testERC20('erc20 permit', {
@@ -253,7 +253,7 @@ testERC20('erc20 full crossChainBridging custom non-upgradeable', {
   burnable: true,
   mintable: true,
   pausable: true,
-  erc1363: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
@@ -267,7 +267,7 @@ testERC20('erc20 full upgradeable transparent', {
   burnable: true,
   mintable: true,
   pausable: true,
-  erc1363: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
@@ -280,7 +280,7 @@ testERC20('erc20 full upgradeable uups', {
   burnable: true,
   mintable: true,
   pausable: true,
-  erc1363: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
@@ -293,7 +293,7 @@ testERC20('erc20 full upgradeable uups managed', {
   burnable: true,
   mintable: true,
   pausable: true,
-  erc1363: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
@@ -312,7 +312,7 @@ testAPIEquivalence('erc20 API full upgradeable', {
   burnable: true,
   mintable: true,
   pausable: true,
-  erc1363: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
