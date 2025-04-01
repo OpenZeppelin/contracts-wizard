@@ -1,134 +1,151 @@
 <script lang="ts">
-  import { createEventDispatcher, tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
-  import hljs from './highlightjs';
+    import hljs from './highlightjs';
 
-  import ERC20Controls from './ERC20Controls.svelte';
-  import ERC721Controls from './ERC721Controls.svelte';
-  import ERC1155Controls from './ERC1155Controls.svelte';
-  import CustomControls from './CustomControls.svelte';
-  import AccountControls from './AccountControls.svelte';
-  import MultisigControls from './MultisigControls.svelte';
-  import GovernorControls from './GovernorControls.svelte';
-  import VestingControls from './VestingControls.svelte';
-  import CopyIcon from '../common/icons/CopyIcon.svelte';
-  import CheckIcon from '../common/icons/CheckIcon.svelte';
-  import DownloadIcon from '../common/icons/DownloadIcon.svelte';
-  import Dropdown from '../common/Dropdown.svelte';
-  import OverflowMenu from '../common/OverflowMenu.svelte';
-  import FileIcon from '../common/icons/FileIcon.svelte';
-  import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
+    import ERC20Controls from './ERC20Controls.svelte';
+    import ERC721Controls from './ERC721Controls.svelte';
+    import ERC1155Controls from './ERC1155Controls.svelte';
+    import CustomControls from './CustomControls.svelte';
+    import AccountControls from './AccountControls.svelte';
+    import MultisigControls from './MultisigControls.svelte';
+    import GovernorControls from './GovernorControls.svelte';
+    import VestingControls from './VestingControls.svelte';
+    import CopyIcon from '../common/icons/CopyIcon.svelte';
+    import CheckIcon from '../common/icons/CheckIcon.svelte';
+    import DownloadIcon from '../common/icons/DownloadIcon.svelte';
+    import Dropdown from '../common/Dropdown.svelte';
+    import OverflowMenu from '../common/OverflowMenu.svelte';
+    import FileIcon from '../common/icons/FileIcon.svelte';
+    import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
-  import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
-  import { postConfig } from '../common/post-config';
+    import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
+    import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
+    import { postConfig } from '../common/post-config';
 
-  import { saveAs } from 'file-saver';
-  import { injectHyperlinks } from './inject-hyperlinks';
-  import type { InitialOptions } from '../common/initial-options';
+    import { saveAs } from 'file-saver';
+    import { injectHyperlinks } from './inject-hyperlinks';
+    import type { InitialOptions } from '../common/initial-options';
 
-  const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
-  let showCode = true;
-  async function allowRendering() {
-    showCode = false;
-    await tick();
-    showCode = true;
-  }
+    let showCode = true;
+    async function allowRendering() {
+      showCode = false;
+      await tick();
+      showCode = true;
+    }
 
-  export let initialTab: string | undefined = 'ERC20';
+    export let initialTab: string | undefined = 'ERC20';
 
-  export let tab: Kind = sanitizeKind(initialTab);
-  $: {
-    tab = sanitizeKind(tab);
-    dispatch('tab-change', tab);
-    allowRendering();
-  }
-
-  export let initialOpts: InitialOptions = {};
-  let initialValuesSet = false;
-
-  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
-  let errors: { [k in Kind]?: OptionsErrorMessages } = {};
-
-  let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
-
-  $: opts = allOpts[tab];
-
-  $: {
-    if (opts) {
-      if (!initialValuesSet) {
-        opts.name = initialOpts.name ?? opts.name;
-        switch (opts.kind) {
-          case 'ERC20':
-            opts.premint = initialOpts.premint ?? opts.premint;
-          case 'ERC721':
-            opts.symbol = initialOpts.symbol ?? opts.symbol;
-            break;
-          case 'ERC1155':
-          case 'Account':
-          case 'Multisig':
-          case 'Governor':
-          case 'Vesting':
-          case 'Custom':
-        }
-        initialValuesSet = true;
-      }
-      try {
-        contract = buildGeneric(opts);
-        errors[tab] = undefined;
-      } catch (e: unknown) {
-        if (e instanceof OptionsError) {
-          errors[tab] = e.messages;
-        } else {
-          throw e;
-        }
-      }
+    export let tab: Kind = sanitizeKind(initialTab);
+    $: {
+      tab = sanitizeKind(tab);
+      dispatch('tab-change', tab);
       allowRendering();
+    };
+
+    export let initialOpts: InitialOptions = {};
+    let initialValuesSet = false;
+
+    let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
+    let errors: { [k in Kind]?: OptionsErrorMessages } = {};
+
+    let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
+
+    $: opts = allOpts[tab];
+
+    $: {
+      if (opts) {
+        if (!initialValuesSet) {
+          opts.name = initialOpts.name ?? opts.name;
+          switch (opts.kind) {
+            case 'ERC20':
+              opts.premint = initialOpts.premint ?? opts.premint;
+            case 'ERC721':
+              opts.symbol = initialOpts.symbol ?? opts.symbol;
+              break;
+            case 'ERC1155':
+            case 'Account':
+            case 'Multisig':
+            case 'Governor':
+            case 'Vesting':
+            case 'Custom':
+          }
+          initialValuesSet = true;
+        }
+        try {
+          contract = buildGeneric(opts);
+          errors[tab] = undefined;
+        } catch (e: unknown) {
+          if (e instanceof OptionsError) {
+            errors[tab] = e.messages;
+          } else {
+            throw e;
+          }
+        }
+        allowRendering();
+      }
     }
-  }
 
-  $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight(code, { language: 'cairo' }).value);
+    $: code = printContract(contract);
+    $: highlightedCode = injectHyperlinks(hljs.highlight(code, {language: 'cairo'}).value);
 
-  $: hasErrors = errors[tab] !== undefined;
+    $: hasErrors = errors[tab] !== undefined;
 
-  const language = 'cairo';
+    const language = 'cairo';
 
-  let copied = false;
-  const copyHandler = async () => {
-    await navigator.clipboard.writeText(code);
-    copied = true;
-    if (opts) {
-      await postConfig(opts, 'copy', language);
-    }
-    setTimeout(() => {
-      copied = false;
-    }, 1000);
-  };
+    let copied = false;
+    const copyHandler = async () => {
+      await navigator.clipboard.writeText(code);
+      copied = true;
+      if (opts) {
+        await postConfig(opts, 'copy', language);
+      }
+      setTimeout(() => {
+        copied = false;
+      }, 1000);
+    };
 
-  const downloadCairoHandler = async () => {
-    const blob = new Blob([code], { type: 'text/plain' });
-    if (opts) {
-      const name = 'name' in opts ? opts.name : 'MyContract';
-      saveAs(blob, name + '.cairo');
-      await postConfig(opts, 'download-file', language);
-    }
-  };
+    const downloadCairoHandler = async () => {
+      const blob = new Blob([code], { type: 'text/plain' });
+      if (opts) {
+        const name = ('name' in opts) ? opts.name : 'MyContract';
+        saveAs(blob, name + '.cairo');
+        await postConfig(opts, 'download-file', language);
+      }
+    };
+
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
-        <button class:selected={tab === 'ERC20'} on:click={() => (tab = 'ERC20')}> ERC20 </button>
-        <button class:selected={tab === 'ERC721'} on:click={() => (tab = 'ERC721')}> ERC721 </button>
-        <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}> ERC1155 </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
-        <button class:selected={tab === 'Multisig'} on:click={() => (tab = 'Multisig')}> Multisig </button>
-        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
-        <button class:selected={tab === 'Vesting'} on:click={() => (tab = 'Vesting')}> Vesting </button>
-        <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
+        <button class:selected={tab === 'ERC20'} on:click={() => tab = 'ERC20'}>
+          ERC20
+        </button>
+        <button class:selected={tab === 'ERC721'} on:click={() => tab = 'ERC721'}>
+          ERC721
+        </button>
+        <button class:selected={tab === 'ERC1155'} on:click={() => tab = 'ERC1155'}>
+          ERC1155
+        </button>
+        <button class:selected={tab === 'Account'} on:click={() => tab = 'Account'}>
+          Account
+        </button>
+        <button class:selected={tab === 'Multisig'} on:click={() => tab = 'Multisig'}>
+          Multisig
+        </button>
+        <button class:selected={tab === 'Governor'} on:click={() => tab = 'Governor'}>
+          Governor
+        </button>
+        <button class:selected={tab === 'Vesting'} on:click={() => tab = 'Vesting'}>
+          Vesting
+        </button>
+        <button class:selected={tab === 'Custom'} on:click={() => tab = 'Custom'}>
+          Custom
+        </button>
       </OverflowMenu>
     </div>
 
@@ -168,25 +185,25 @@
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
+        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721}/>
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155} />
+        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155}/>
       </div>
       <div class:hidden={tab !== 'Account'}>
-        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type} />
+        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type}/>
       </div>
       <div class:hidden={tab !== 'Multisig'}>
-        <MultisigControls bind:opts={allOpts.Multisig} errors={errors.Multisig} />
+        <MultisigControls bind:opts={allOpts.Multisig} errors={errors.Multisig}/>
       </div>
       <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor}/>
       </div>
       <div class:hidden={tab !== 'Vesting'}>
-        <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting} />
+        <VestingControls bind:opts={allOpts.Vesting} errors={errors.Vesting}/>
       </div>
       <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom} />
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom}/>
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
@@ -213,22 +230,19 @@
     color: var(--gray-5);
   }
 
-  .tab button,
-  :global(.overflow-btn) {
+  .tab button, :global(.overflow-btn) {
     padding: var(--size-2) var(--size-3);
     border-radius: 20px;
     cursor: pointer;
-    transition: background-color ease-in-out 0.2s;
+    transition: background-color ease-in-out .2s;
   }
 
-  .tab button,
-  :global(.overflow-btn) {
+  .tab button, :global(.overflow-btn) {
     border: 0;
     background-color: transparent;
   }
 
-  .tab button:hover,
-  :global(.overflow-btn):hover {
+  .tab button:hover, :global(.overflow-btn):hover {
     background-color: var(--gray-2);
   }
 
@@ -245,7 +259,7 @@
   :global(.action-button) {
     padding: 7px;
     border-radius: 20px;
-    transition: background-color ease-in-out 0.2s;
+    transition: background-color ease-in-out .2s;
 
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
@@ -256,8 +270,7 @@
       background-color: var(--gray-2);
     }
 
-    &:active,
-    &.active {
+    &:active, &.active {
       background-color: var(--gray-2);
     }
 
@@ -279,6 +292,7 @@
     padding: var(--size-4);
   }
 
+
   .controls-footer {
     display: flex;
     flex-direction: row;
@@ -294,7 +308,7 @@
 
     :global(.icon) {
       margin-right: 0.2em;
-      opacity: 0.8;
+      opacity: .8;
     }
 
     a {
@@ -321,7 +335,7 @@
     }
 
     &:hover,
-    &:focus {
+    &:focus, {
       background-color: var(--gray-1);
       border: 1px solid var(--gray-3);
     }
@@ -346,4 +360,5 @@
       color: var(--gray-5);
     }
   }
+
 </style>

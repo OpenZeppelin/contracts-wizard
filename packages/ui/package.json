@@ -37,7 +37,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "concurrently": "^9.1.2",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.0.0",
     "highlightjs-cairo": "^0.4.0",
