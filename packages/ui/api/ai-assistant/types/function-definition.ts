@@ -1,42 +1,43 @@
 import type { AllLanguageContractOptions } from './languages.ts';
 
-type AiFunctionType = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array';
+type AiFunctionCallPrimaryType<TType> = TType extends string
+  ? 'string'
+  : TType extends number
+    ? 'number'
+    : TType extends boolean
+      ? 'boolean'
+      : TType extends unknown[]
+        ? 'array'
+        : TType extends object
+          ? 'object'
+          : never;
 
-type AiFunctionCallPrimaryType = {
-  type?: AiFunctionType;
-  enum?: string[] | number[] | boolean[];
+type AiFunctionType<TType> = {
+  type?: AiFunctionCallPrimaryType<TType>;
+  enum?: TType[];
+  description: string;
 };
 
-type AiFunctionCallOneOfType = {
-  anyOf?: AiFunctionCallType[];
+type AiFunctionCallOneOfType<TType> = {
+  anyOf?: Omit<AiFunctionCallType<TType>, 'description'>[];
+  description: string;
 };
 
-export type AiFunctionCallType = (AiFunctionCallPrimaryType | AiFunctionCallOneOfType) & { description?: string };
+export type AiFunctionCallType<TType> = AiFunctionType<TType> | AiFunctionCallOneOfType<TType>;
 
-type NestedProperty<
-  TContract extends Partial<AllLanguageContractOptions[keyof AllLanguageContractOptions]>,
-  TNestedKey extends keyof TContract,
-  TOmit extends keyof TContract,
-> = AiFunctionPropertyDefinition<TContract, TOmit> & {
-  properties: {
-    [K in keyof TContract[TNestedKey]]: AiFunctionCallType;
-  };
-};
+type AiFunctionProperties<TProperties extends object> = Required<{
+  [K in keyof TProperties]: TProperties[K] extends object
+    ? AiFunctionPropertyDefinition<TProperties[K]>
+    : AiFunctionCallType<TProperties[K]>;
+}>;
 
 export type AiFunctionPropertyDefinition<
   TContract extends Partial<AllLanguageContractOptions[keyof AllLanguageContractOptions]>,
   TOmit extends keyof TContract = 'kind',
-> = AiFunctionCallType & {
-  properties?: Required<
-    Omit<
-      {
-        [K in keyof TContract]: TContract[K] extends object
-          ? NestedProperty<TContract, K, TOmit>
-          : AiFunctionPropertyDefinition<TContract, TOmit>;
-      },
-      'kind' | TOmit
-    >
-  >;
+> = {
+  type: 'object';
+  description?: string;
+  properties: Omit<AiFunctionProperties<Required<TContract>>, 'kind' | TOmit>;
 };
 
 export type AiFunctionDefinition<

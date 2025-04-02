@@ -9,7 +9,7 @@ export const erc20Function = {
     properties: {
       ...addFunctionProperties(['name', 'symbol', 'burnable', 'pausable', 'mintable', 'access', 'upgradeable', 'info']),
       premint: {
-        type: 'number',
+        type: 'string',
         description: 'The number of tokens to premint for the deployer.',
       },
       permit: {
@@ -42,7 +42,7 @@ export const erc20Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'ERC20', 'premintChainId'>;
+} as const satisfies AiFunctionDefinition<'ERC20', 'premintChainId' | 'callback'>;
 
 export const erc721Function = {
   name: 'ERC721',
@@ -79,7 +79,7 @@ export const erc721Function = {
   },
 } as const satisfies AiFunctionDefinition<
   'ERC721',
-  'premintChainId' | 'premint' | 'permit' | 'flashmint' | 'crossChainBridging'
+  'premintChainId' | 'premint' | 'permit' | 'flashmint' | 'crossChainBridging' | 'callback'
 >;
 
 export const erc1155Function = {
@@ -130,7 +130,7 @@ export const stablecoinFunction = {
           'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
       },
       upgradeable: {
-        type: 'boolean',
+        type: 'string',
         enum: [false],
         description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
@@ -138,14 +138,14 @@ export const stablecoinFunction = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'Stablecoin', 'premintChainId'>;
+} as const satisfies AiFunctionDefinition<'Stablecoin', 'premintChainId' | 'callback'>;
 
 export const realWorldAssetFunction = {
   name: 'RealWorldAsset',
   description:
     'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: stablecoinFunction.parameters,
-} as const satisfies AiFunctionDefinition<'RealWorldAsset', 'premintChainId'>;
+} as const satisfies AiFunctionDefinition<'RealWorldAsset', 'premintChainId' | 'callback'>;
 
 export const governorFunction = {
   name: 'Governor',
@@ -167,7 +167,7 @@ export const governorFunction = {
         description: 'The number of seconds assumed for a block, default is 12',
       },
       proposalThreshold: {
-        type: 'number',
+        type: 'string',
         description: 'Minimum number of votes an account must have to create a proposal, default is 0.',
       },
       decimals: {
@@ -185,7 +185,7 @@ export const governorFunction = {
         description: 'The percent required, in cases of quorumMode equals percent',
       },
       quorumAbsolute: {
-        type: 'number',
+        type: 'string',
         description: 'The absolute quorum required, in cases of quorumMode equals absolute',
       },
       votes: {

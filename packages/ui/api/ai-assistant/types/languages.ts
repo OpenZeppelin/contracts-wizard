@@ -1,13 +1,22 @@
 // Solidity
-import type { CommonOptions as SolidityCommonOptions } from '@openzeppelin/wizard/src/common-options';
 import type { ERC20Options as SolidityERC20Options } from '@openzeppelin/wizard/src/erc20';
 import type { ERC721Options as SolidityERC721Options } from '@openzeppelin/wizard/src/erc721';
 import type { ERC1155Options as SolidityERC1155Options } from '@openzeppelin/wizard/src/erc1155';
 import type { StablecoinOptions as SolidityStablecoinOptions } from '@openzeppelin/wizard/src/stablecoin';
 import type { GovernorOptions as SolidityGovernorOptions } from '@openzeppelin/wizard/src/governor';
 import type { CustomOptions as SolidityCustomOptions } from '@openzeppelin/wizard/src/custom';
+import type { Access as SolidityAccesss } from '@openzeppelin/wizard/src/set-access-control';
+import type { Upgradeable as SolidityUpgradeable } from '@openzeppelin/wizard/src/set-upgradeable';
+import type { Info as SolidityInfo } from '@openzeppelin/wizard/src/set-info';
 
 // Solidity
+
+interface SolidityCommonOptions {
+  access?: SolidityAccesss;
+  upgradeable?: SolidityUpgradeable;
+  info?: SolidityInfo;
+}
+
 export interface SolidityKindedOptions {
   ERC20: { kind: 'ERC20' } & SolidityCommonOptions & SolidityERC20Options;
   ERC721: { kind: 'ERC721' } & SolidityCommonOptions & SolidityERC20Options & SolidityERC721Options;

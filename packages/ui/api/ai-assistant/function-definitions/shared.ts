@@ -1,17 +1,21 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import type { SolidityCommonOptions } from '../types/languages.ts';
+import type { SolidityCommonOptions, AllLanguageContractOptions } from '../types/languages.ts';
 
 export const commonFunctionDescription = {
   access: {
-    type: 'string',
-    enum: ['false', 'ownable', 'roles', 'managed'],
+    anyOf: [
+      { type: 'boolean', enum: [false] },
+      { type: 'string', enum: ['ownable', 'roles', 'managed'] },
+    ],
     description:
       'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
   },
 
   upgradeable: {
-    type: 'string',
-    enum: ['false', 'transparent', 'uups'],
+    anyOf: [
+      { type: 'boolean', enum: [false] },
+      { type: 'string', enum: ['transparent', 'uups'] },
+    ],
     description:
       'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
   },
@@ -53,7 +57,7 @@ const sharedFunctionDescription = {
     type: 'boolean',
     description: 'Whether privileged accounts will be able to create more supply or emit more tokens',
   },
-};
+} as const;
 
 type SharedFunctionDescription = typeof commonFunctionDescription & typeof sharedFunctionDescription;
 
