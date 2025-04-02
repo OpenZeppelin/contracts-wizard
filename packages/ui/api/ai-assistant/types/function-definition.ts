@@ -1,5 +1,15 @@
 import type { AllLanguageContractOptions } from './languages.ts';
 
+type IsPrimitiveUnion<T, U = T> = [T] extends [never]
+  ? false // Edge case for `never`
+  : [T] extends [boolean]
+    ? false
+    : T extends U
+      ? [U] extends [T]
+        ? false
+        : true
+      : false;
+
 type AiFunctionCallPrimaryType<TType> = TType extends string
   ? 'string'
   : TType extends number
@@ -18,17 +28,21 @@ type AiFunctionType<TType> = {
   description: string;
 };
 
-type AiFunctionCallOneOfType<TType> = {
-  anyOf?: Omit<AiFunctionCallType<TType>, 'description'>[];
-  description: string;
-};
+type AiFunctionCallOneOfType<TType> =
+  | Required<AiFunctionType<TType>>
+  | {
+      anyOf?: Omit<AiFunctionCallType<TType>, 'description'>[];
+      description: string;
+    };
 
 export type AiFunctionCallType<TType> = AiFunctionType<TType> | AiFunctionCallOneOfType<TType>;
 
 type AiFunctionProperties<TProperties extends object> = Required<{
   [K in keyof TProperties]: TProperties[K] extends object
     ? AiFunctionPropertyDefinition<TProperties[K]>
-    : AiFunctionCallType<TProperties[K]>;
+    : IsPrimitiveUnion<TProperties[K]> extends true
+      ? AiFunctionCallOneOfType<TProperties[K]>
+      : AiFunctionType<TProperties[K]>;
 }>;
 
 export type AiFunctionPropertyDefinition<
