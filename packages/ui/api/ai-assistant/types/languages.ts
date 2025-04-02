@@ -19,7 +19,7 @@ interface SolidityCommonOptions {
 
 export interface SolidityKindedOptions {
   ERC20: { kind: 'ERC20' } & SolidityCommonOptions & SolidityERC20Options;
-  ERC721: { kind: 'ERC721' } & SolidityCommonOptions & SolidityERC20Options & SolidityERC721Options;
+  ERC721: { kind: 'ERC721' } & SolidityCommonOptions & SolidityERC721Options;
   ERC1155: { kind: 'ERC1155' } & SolidityCommonOptions & SolidityERC1155Options;
   Stablecoin: { kind: 'Stablecoin' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;
   RealWorldAsset: { kind: 'RealWorldAsset' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;

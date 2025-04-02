@@ -38,11 +38,20 @@ export const erc20Function = {
         description:
           'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
       },
+      premintChainId: {
+        type: 'string',
+        description: 'The chain ID of the network on which to premint tokens.',
+      },
+      callback: {
+        type: 'boolean',
+        description:
+          'Whether to includes supports for code execution after transfers and approvals on recipient contracts in a single transaction.',
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'ERC20', 'premintChainId' | 'callback'>;
+} as const satisfies AiFunctionDefinition<'ERC20'>;
 
 export const erc721Function = {
   name: 'ERC721',
@@ -77,10 +86,7 @@ export const erc721Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<
-  'ERC721',
-  'premintChainId' | 'premint' | 'permit' | 'flashmint' | 'crossChainBridging' | 'callback'
->;
+} as const satisfies AiFunctionDefinition<'ERC721'>;
 
 export const erc1155Function = {
   name: 'ERC1155',
@@ -138,14 +144,14 @@ export const stablecoinFunction = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'Stablecoin', 'premintChainId' | 'callback'>;
+} as const satisfies AiFunctionDefinition<'Stablecoin'>;
 
 export const realWorldAssetFunction = {
   name: 'RealWorldAsset',
   description:
     'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: stablecoinFunction.parameters,
-} as const satisfies AiFunctionDefinition<'RealWorldAsset', 'premintChainId' | 'callback'>;
+} as const satisfies AiFunctionDefinition<'RealWorldAsset'>;
 
 export const governorFunction = {
   name: 'Governor',
