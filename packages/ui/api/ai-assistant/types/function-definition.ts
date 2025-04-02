@@ -31,7 +31,7 @@ type AiFunctionType<TType> = {
 type AiFunctionCallOneOfType<TType> =
   | Required<AiFunctionType<TType>>
   | {
-      anyOf?: Omit<AiFunctionCallType<TType>, 'description'>[];
+      anyOf: Omit<AiFunctionCallType<TType>, 'description'>[];
       description: string;
     };
 

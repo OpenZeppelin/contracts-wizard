@@ -9,8 +9,6 @@ import type { Access as SolidityAccesss } from '@openzeppelin/wizard/src/set-acc
 import type { Upgradeable as SolidityUpgradeable } from '@openzeppelin/wizard/src/set-upgradeable';
 import type { Info as SolidityInfo } from '@openzeppelin/wizard/src/set-info';
 
-// Solidity
-
 interface SolidityCommonOptions {
   access?: SolidityAccesss;
   upgradeable?: SolidityUpgradeable;
@@ -27,17 +25,43 @@ export interface SolidityKindedOptions {
   Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
 }
 
-export type {
-  SolidityCommonOptions,
-  SolidityCustomOptions,
-  SolidityERC20Options,
-  SolidityERC721Options,
-  SolidityERC1155Options,
-  SolidityStablecoinOptions,
-  SolidityGovernorOptions,
-};
+export type { SolidityCommonOptions };
 
-export type SupportedLanguage = 'solidity';
+// Cairo
+import type { ERC20Options as CairoERC20Options } from '@openzeppelin/wizard-cairo/src/erc20';
+import type { ERC721Options as CairoERC721Options } from '@openzeppelin/wizard-cairo/src/erc721';
+import type { ERC1155Options as CairoERC1155Options } from '@openzeppelin/wizard-cairo/src/erc1155';
+import type { AccountOptions as CairoAccountOptions } from '@openzeppelin/wizard-cairo/src/account';
+import type { MultisigOptions as CairoMultisigOptions } from '@openzeppelin/wizard-cairo/src/multisig';
+import type { GovernorOptions as CairoGovernorOptions } from '@openzeppelin/wizard-cairo/src/governor';
+import type { VestingOptions as CairoVestingOptions } from '@openzeppelin/wizard-cairo/src/vesting';
+import type { CustomOptions as CairoCustomOptions } from '@openzeppelin/wizard-cairo/src/custom';
+import type { Access as CairoAccesss } from '@openzeppelin/wizard-cairo/src/set-access-control';
+import type { Upgradeable as CairoUpgradeable } from '@openzeppelin/wizard-cairo/src/set-upgradeable';
+import type { Info as CairoInfo } from '@openzeppelin/wizard-cairo/src/set-info';
+
+interface CairoCommonOptions {
+  access?: CairoAccesss;
+  upgradeable?: CairoUpgradeable;
+  info?: CairoInfo;
+}
+
+export interface CairoKindedOptions {
+  ERC20: { kind: 'ERC20' } & CairoCommonOptions & CairoERC20Options;
+  ERC721: { kind: 'ERC721' } & CairoCommonOptions & CairoERC721Options;
+  ERC1155: { kind: 'ERC1155' } & CairoCommonOptions & CairoERC1155Options;
+  Account: { kind: 'Account' } & CairoCommonOptions & CairoAccountOptions;
+  Multisig: { kind: 'Multisig' } & CairoCommonOptions & CairoMultisigOptions;
+  Governor: { kind: 'Governor' } & CairoCommonOptions & CairoGovernorOptions;
+  Vesting: { kind: 'Vesting' } & CairoCommonOptions & CairoVestingOptions;
+  Custom: { kind: 'Custom' } & CairoCommonOptions & CairoCustomOptions;
+}
+
+export type { CairoCommonOptions };
+
+// All
+
+export type SupportedLanguage = 'solidity' | 'cairo';
 
 export type AllLanguageContractOptions = {
   [k in keyof SolidityKindedOptions]: SolidityKindedOptions[k];
