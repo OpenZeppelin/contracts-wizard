@@ -1,5 +1,5 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import type { SolidityCommonOptions, AllLanguageContractOptions } from '../types/languages.ts';
+import type { SolidityCommonOptions } from '../types/languages.ts';
 
 export const commonFunctionDescription = {
   access: {
