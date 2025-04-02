@@ -126,9 +126,9 @@
             addMessage({
               role: 'assistant',
               content:
-                'Updated Wizard using ' + function_call.name + experimentalContracts.includes(function_call.name)
-                  ? '(Experimental).'
-                  : '.',
+                `Updated Wizard using ${function_call.name}${(experimentalContracts.includes(function_call.name)
+                  ? ' (Experimental).'
+                  : '.')}`,
             });
 
             dispatch('function-call-response', {
