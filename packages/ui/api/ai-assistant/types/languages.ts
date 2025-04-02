@@ -27,15 +27,7 @@ export interface SolidityKindedOptions {
   Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
 }
 
-export type {
-  SolidityCommonOptions,
-  SolidityCustomOptions,
-  SolidityERC20Options,
-  SolidityERC721Options,
-  SolidityERC1155Options,
-  SolidityStablecoinOptions,
-  SolidityGovernorOptions,
-};
+export type { SolidityCommonOptions };
 
 export type SupportedLanguage = 'solidity';
 
