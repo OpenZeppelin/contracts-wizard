@@ -35,7 +35,7 @@
   import type { InitialOptions } from '../common/initial-options';
   import { postMessageToIframe } from '../common/post-message';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
-    import ErrorDisabledActionButtons from "../common/ErrorDisabledActionButtons.svelte";
+  import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -227,15 +227,16 @@
     }
   };
 
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall>) => {
-    if (aiFunctionCall.name) {
-      tab = sanitizeKind(aiFunctionCall.name);
+  const mergeAiAssistanceOptions = (aiFunctionCall: AiFunctionCall) =>
+    Object.keys(allOpts).reduce((acc, currentKey) => {
+      if (aiFunctionCall.name === currentKey)
+        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+      else return acc;
+    }, allOpts);
 
-      allOpts[tab] = {
-        ...allOpts[tab],
-        ...aiFunctionCall.arguments,
-      };
-    }
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(aiFunctionCall);
   };
 </script>
 
@@ -271,31 +272,33 @@
         </button>
 
         {#if showButtons.openInRemix}
-        <Tooltip
-          let:trigger
-          disabled={!(opts?.upgradeable === "transparent")}
-          theme="light-red border"
-          hideOnClick={false}
-          interactive
-        >
-          <button
-            use:trigger
-            class="action-button with-text"
-            class:disabled={opts?.upgradeable === "transparent"}
-            on:click={remixHandler}
+          <Tooltip
+            let:trigger
+            disabled={!(opts?.upgradeable === 'transparent')}
+            theme="light-red border"
+            hideOnClick={false}
+            interactive
           >
-            <RemixIcon />
-            Open in Remix
-          </button>
-          <div slot="content">
-            Transparent upgradeable contracts are not supported on Remix.
-            Try using Remix with UUPS upgradability or use Hardhat or Foundry with
-            <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer">OpenZeppelin Upgrades</a>.
-            <br />
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-          </div>
-        </Tooltip>
+            <button
+              use:trigger
+              class="action-button with-text"
+              class:disabled={opts?.upgradeable === 'transparent'}
+              on:click={remixHandler}
+            >
+              <RemixIcon />
+              Open in Remix
+            </button>
+            <div slot="content">
+              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
+              use Hardhat or Foundry with
+              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
+                >OpenZeppelin Upgrades</a
+              >.
+              <br />
+              <!-- svelte-ignore a11y-invalid-attribute -->
+              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+            </div>
+          </Tooltip>
         {/if}
 
         <Dropdown let:active>
@@ -314,23 +317,23 @@
           </button>
 
           {#if showButtons.downloadHardhat}
-          <button class="download-option" on:click={downloadHardhatHandler}>
-            <ZipIcon />
-            <div class="download-option-content">
-              <p>Development Package (Hardhat)</p>
-              <p>Sample Hardhat project to get started with development and testing.</p>
-            </div>
-          </button>
+            <button class="download-option" on:click={downloadHardhatHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Hardhat)</p>
+                <p>Sample Hardhat project to get started with development and testing.</p>
+              </div>
+            </button>
           {/if}
 
           {#if showButtons.downloadFoundry}
-          <button class="download-option" on:click={downloadFoundryHandler}>
-            <ZipIcon />
-            <div class="download-option-content">
-              <p>Development Package (Foundry)</p>
-              <p>Sample Foundry project to get started with development and testing.</p>
-            </div>
-          </button>
+            <button class="download-option" on:click={downloadFoundryHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Foundry)</p>
+                <p>Sample Foundry project to get started with development and testing.</p>
+              </div>
+            </button>
           {/if}
         </Dropdown>
       </div>
@@ -388,7 +391,9 @@
       {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
-          <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}">{@html highlightedCode}</code>
+          <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
+            >{@html highlightedCode}</code
+          >
         {/if}
       </pre>
       <DefenderDeployModal isOpen={showDeployModal} />
@@ -544,7 +549,7 @@
   :global(.action-button) {
     padding: 7px;
     border-radius: 20px;
-    transition: background-color ease-in-out .2s;
+    transition: background-color ease-in-out 0.2s;
 
     background-color: var(--gray-1);
     border: 1px solid var(--gray-3);
