@@ -11,7 +11,7 @@ import type { Info as SolidityInfo } from '@openzeppelin/wizard/src/set-info';
 
 // Solidity
 
-interface SolidityCommonOptions {
+export interface SolidityCommonOptions {
   access?: SolidityAccesss;
   upgradeable?: SolidityUpgradeable;
   info?: SolidityInfo;
@@ -27,14 +27,14 @@ export interface SolidityKindedOptions {
   Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
 }
 
-export type { SolidityCommonOptions };
-
-//Add new supported language here
+// After importing and building KindedOptions add supported language here
 export type LanguagesContractsOptions = {
   solidity: SolidityKindedOptions;
 };
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['cairo'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
+
+//
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
