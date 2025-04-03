@@ -35,7 +35,7 @@
   import { postMessageToIframe } from '../common/post-message';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
-  import { createWiz } from '../common/Wiz.svelte';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -229,24 +229,17 @@
     }
   };
 
-  const mergeAiAssistanceOptions = (aiFunctionCall: AiFunctionCall) =>
-    Object.keys(allOpts).reduce((acc, currentKey) => {
-      if (aiFunctionCall.name === currentKey)
-        return { ...acc, [currentKey]: { ...acc[currentKey as Kind], ...aiFunctionCall.arguments } };
-      else return acc;
-    }, allOpts);
-
   const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall>) => {
     tab = sanitizeKind(aiFunctionCall.name);
-    allOpts = mergeAiAssistanceOptions(aiFunctionCall);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <WizSolidity
+    language="solidity"
     bind:currentOpts={opts}
     bind:currentCode={code}
-    language="solidity"
     on:function-call-response={applyFunctionCall}
   ></WizSolidity>
 

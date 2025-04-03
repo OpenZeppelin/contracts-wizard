@@ -2,6 +2,18 @@
   import { SvelteComponentTyped } from 'svelte';
   import Wiz from './Wiz.svelte';
 
+  export const mergeAiAssistanceOptions = <
+    TOption extends Record<keyof AiFunctionCall['arguments'], AiFunctionCall['arguments']>,
+  >(
+    previousOptions: TOption,
+    aiFunctionCall: AiFunctionCall,
+  ) =>
+    Object.keys(previousOptions).reduce((acc, currentKey) => {
+      if (aiFunctionCall.name === currentKey)
+        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+      else return acc;
+    }, previousOptions);
+
   export function createWiz<TLanguage extends AiAssistantLanguage>() {
     return Wiz as unknown as typeof SvelteComponentTyped<
       {
@@ -32,6 +44,7 @@
     Chat,
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
+  import type { LanguageContractsNames, SupportedLanguage } from '../../api/ai-assistant/types/languages';
 
   const apiHost = process.env.API_HOST;
 
@@ -59,13 +72,14 @@
     },
   ];
 
-  const experimentalContracts = ['Stablecoin', 'RealWorldAsset'];
-
-  const sampleMessages = [
-    'Make a token with supply of 10 million',
-    'What does mintable do?',
-    'Make a contract for a DAO',
-  ];
+  const displayMessage: {
+    [K in SupportedLanguage]: { experimentalContracts: LanguageContractsNames<K>[]; sampleMessages: string[] };
+  } = {
+    solidity: {
+      experimentalContracts: ['Stablecoin', 'RealWorldAsset'],
+      sampleMessages: ['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO'],
+    },
+  };
 
   const addMessage = (message: Chat) => {
     messages = [
@@ -143,7 +157,7 @@
             addMessage({
               role: 'assistant',
               content: `Updated Wizard using ${function_call.name}${
-                experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
+                displayMessage[language].experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
               }`,
             });
 
@@ -206,7 +220,7 @@
         />
         {#if input.length === 0 && messages.length < 3}
           <div class="absolute left-4 right-4 bottom-4 overflow-x-auto h-14 p-2 flex items-center gap-2">
-            {#each sampleMessages as message}
+            {#each displayMessage[language].sampleMessages as message}
               <button
                 class="rounded-md border-0 p-2 h-full text-xs flex-none bg-gray-100 shadow-sm flex items-center cursor-pointer text-center hover:bg-gray-200"
                 on:click={() => {
