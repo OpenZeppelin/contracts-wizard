@@ -1,5 +1,65 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
-import { addFunctionProperties } from './shared.ts';
+import type { AiFunctionDefinition, AiFunctionPropertyDefinition } from '../types/function-definition.ts';
+import { addFunctionPropertiesFrom } from './shared.ts';
+import type { SolidityCommonOptions } from '../types/languages.ts';
+
+const commonFunctionDescription = {
+  access: {
+    anyOf: [
+      { type: 'boolean', enum: [false] },
+      { type: 'string', enum: ['ownable', 'roles', 'managed'] },
+    ],
+    description:
+      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
+  },
+
+  upgradeable: {
+    anyOf: [
+      { type: 'boolean', enum: [false] },
+      { type: 'string', enum: ['transparent', 'uups'] },
+    ],
+    description:
+      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
+  },
+
+  info: {
+    type: 'object',
+    description: 'Metadata about the contract and author',
+    properties: {
+      securityContact: {
+        type: 'string',
+        description:
+          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
+      },
+      license: {
+        type: 'string',
+        description: 'The license used by the contract, default is "MIT"',
+      },
+    },
+  },
+} as const satisfies AiFunctionPropertyDefinition<SolidityCommonOptions>['properties'];
+
+const sharedFunctionDescription = {
+  ...commonFunctionDescription,
+  name: { type: 'string', description: 'The name of the contract' },
+
+  symbol: { type: 'string', description: 'The short symbol for the token' },
+
+  burnable: {
+    type: 'boolean',
+    description: 'Whether token holders will be able to destroy their tokens',
+  },
+
+  pausable: {
+    type: 'boolean',
+    description:
+      'Whether privileged accounts will be able to pause the functionality marked as whenNotPaused. Useful for emergency response.',
+  },
+
+  mintable: {
+    type: 'boolean',
+    description: 'Whether privileged accounts will be able to create more supply or emit more tokens',
+  },
+} as const;
 
 export const erc20Function = {
   name: 'ERC20',
@@ -7,7 +67,16 @@ export const erc20Function = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionProperties(['name', 'symbol', 'burnable', 'pausable', 'mintable', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+        'name',
+        'symbol',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'upgradeable',
+        'info',
+      ]),
       premint: {
         type: 'string',
         description: 'The number of tokens to premint for the deployer.',
@@ -51,7 +120,7 @@ export const erc20Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'ERC20'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'ERC20'>;
 
 export const erc721Function = {
   name: 'ERC721',
@@ -59,7 +128,16 @@ export const erc721Function = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionProperties(['name', 'symbol', 'burnable', 'pausable', 'mintable', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+        'name',
+        'symbol',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'upgradeable',
+        'info',
+      ]),
       baseUri: { type: 'string', description: 'A base uri for the token' },
       enumerable: {
         type: 'boolean',
@@ -86,7 +164,7 @@ export const erc721Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'ERC721'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'ERC721'>;
 
 export const erc1155Function = {
   name: 'ERC1155',
@@ -94,7 +172,15 @@ export const erc1155Function = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionProperties(['name', 'burnable', 'pausable', 'mintable', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+        'name',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'upgradeable',
+        'info',
+      ]),
       uri: {
         type: 'string',
         description:
@@ -112,7 +198,7 @@ export const erc1155Function = {
     required: ['name', 'uri'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'ERC1155'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'ERC1155'>;
 
 export const stablecoinFunction = {
   name: 'Stablecoin',
@@ -144,14 +230,14 @@ export const stablecoinFunction = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'Stablecoin'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'Stablecoin'>;
 
 export const realWorldAssetFunction = {
   name: 'RealWorldAsset',
   description:
     'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: stablecoinFunction.parameters,
-} as const satisfies AiFunctionDefinition<'RealWorldAsset'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
 export const governorFunction = {
   name: 'Governor',
@@ -159,7 +245,7 @@ export const governorFunction = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionProperties(['name', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'access', 'upgradeable', 'info']),
       delay: {
         type: 'string',
         description: 'The delay since proposal is created until voting starts, default is "1 day"',
@@ -224,15 +310,21 @@ export const governorFunction = {
     required: ['name', 'delay', 'period'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'Governor'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'Governor'>;
 
 export const customFunction = {
   name: 'Custom',
   description: 'Make a custom smart contract',
   parameters: {
     type: 'object',
-    properties: addFunctionProperties(['name', 'pausable', 'access', 'upgradeable', 'info']),
+    properties: addFunctionPropertiesFrom(sharedFunctionDescription, [
+      'name',
+      'pausable',
+      'access',
+      'upgradeable',
+      'info',
+    ]),
     required: ['name'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'Custom'>;
+} as const satisfies AiFunctionDefinition<'solidity', 'Custom'>;

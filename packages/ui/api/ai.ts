@@ -5,10 +5,10 @@ import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
 import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
 import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
-import type { AiFunctionDefinition } from './ai-assistant/types/function-definition.ts';
+import type { SimpleAiFunctionDefinition } from './ai-assistant/types/function-definition.ts';
 
-const getFunctionsContext = (language: SupportedLanguage) => {
-  const functionPerLanguages: Record<SupportedLanguage, Record<string, AiFunctionDefinition>> = {
+const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(language: TLanguage) => {
+  const functionPerLanguages: Record<SupportedLanguage, Record<string, SimpleAiFunctionDefinition>> = {
     solidity: solidityFunctions,
   };
 

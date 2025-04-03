@@ -1,3 +1,19 @@
+<script context="module" lang="ts">
+  import { SvelteComponentTyped } from 'svelte';
+  import Wiz from './Wiz.svelte';
+
+  export function createWiz<TLanguage extends AiAssistantLanguage>() {
+    return Wiz as unknown as typeof SvelteComponentTyped<
+      {
+        language: TLanguage;
+        currentOpts?: AiAssistantContractsOptions<TLanguage>;
+        currentCode: string;
+      },
+      { 'function-call-response': CustomEvent<AiFunctionCall> }
+    >;
+  }
+</script>
+
 <script lang="ts">
   import UserAvatar from './icons/UserAvatar.svelte';
   import WizAvatar from './icons/WizAvatar.svelte';
@@ -8,7 +24,7 @@
   import MaximizeIcon from './icons/MaximizeIcon.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
   import type {
-    AiAssistantContractOptions,
+    AiAssistantContractsOptions,
     AiAssistantLanguage,
     AiChatBodyRequest,
     AiFunctionCall,
@@ -17,13 +33,14 @@
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
-
   const apiHost = process.env.API_HOST;
 
-  export let currentOpts: AiAssistantContractOptions | undefined;
-  export let currentCode: string;
+  // If adding more props make sure to also update createWiz at the top
   export let language: AiAssistantLanguage;
+  export let currentOpts: AiAssistantContractsOptions | undefined;
+  export let currentCode: string;
+
+  const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
 
   const chatId = nanoid();
   let inProgress = false;
@@ -71,7 +88,7 @@
         ...builtOptions,
         [functionCallKey]: stringifyIfNumber(functionCallValue),
       }),
-      {} as AiAssistantContractOptions,
+      {} as AiAssistantContractsOptions,
     );
   };
 
@@ -125,10 +142,9 @@
 
             addMessage({
               role: 'assistant',
-              content:
-                `Updated Wizard using ${function_call.name}${(experimentalContracts.includes(function_call.name)
-                  ? ' (Experimental).'
-                  : '.')}`,
+              content: `Updated Wizard using ${function_call.name}${
+                experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
+              }`,
             });
 
             dispatch('function-call-response', {
