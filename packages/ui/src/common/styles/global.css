@@ -1,10 +1,10 @@
-@import "highlight.js/styles/atom-one-dark.css";
+@import 'highlight.js/styles/atom-one-dark.css';
 
 @tailwind utilities;
 
-@import "./reset.css";
-@import "./vars.css";
-@import "./tippy.css";
+@import './reset.css';
+@import './vars.css';
+@import './tippy.css';
 
 /* General */
 
@@ -29,7 +29,10 @@ svg.icon {
   fill: currentColor;
 }
 
-input:not([type]), input[type="text"], input[type="number"], input[type="datetime-local"] {
+input:not([type]),
+input[type='text'],
+input[type='number'],
+input[type='datetime-local'] {
   border: 1px solid var(--gray-3);
   padding: var(--size-2) var(--size-3);
   border-radius: 6px;
@@ -37,13 +40,13 @@ input:not([type]), input[type="text"], input[type="number"], input[type="datetim
 
 /* Hide up and down arrows in numeric input fields */
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -120,15 +123,15 @@ input[type="number"] {
 .tooltip-container,
 .checkbox-group > *,
 .labeled-input {
-  --tooltip-opacity: .15;
+  --tooltip-opacity: 0.15;
 
   &:hover {
-    --tooltip-opacity: .5;
+    --tooltip-opacity: 0.5;
   }
 }
 
 input.input-inline {
-  padding: .25em;
+  padding: 0.25em;
   height: 1.5em;
   width: 2em;
   max-width: 100%;
@@ -144,18 +147,18 @@ input.input-inline {
 }
 
 .glimmery {
-  background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212))
+  background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212));
 }
 
-.hljs.-solidity{
+.hljs.-solidity {
   background: linear-gradient(30deg, #151a24, #2b323e);
 }
 
-.hljs.-cairo{
+.hljs.-cairo {
   background: linear-gradient(30deg, #191717, #2a0f0f);
 }
 
-.hljs.-stylus{
+.hljs.-stylus {
   background: linear-gradient(30deg, #181215, #360c1f);
 }
 

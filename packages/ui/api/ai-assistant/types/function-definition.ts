@@ -59,20 +59,12 @@ type PrimitiveKey<T> = T extends boolean
       ? 'number'
       : never;
 
-// Given a union U, compute the distinct primitive names.
 type DistinctPrimitiveTypes<U> = U extends unknown ? PrimitiveKey<U> : never;
 
-// Extract the members of U corresponding to a given primitive name K.
 type MembersOf<U, K extends string> = Extract<
   U,
   K extends 'boolean' ? boolean : K extends 'string' ? string : K extends 'number' ? number : never
 >;
-
-// --- The final type ---
-// For a union U, build an array (tuple) with one entry per distinct primitive type.
-// Each entry is an object with:
-//   - a "type" property: the primitive type name, and
-//   - an "enum" property: a tuple of the union members that match that primitive.
 type AnyOf<U> = UnionToTuple<
   {
     [K in DistinctPrimitiveTypes<U>]: {

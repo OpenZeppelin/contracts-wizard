@@ -33,18 +33,16 @@
   bind:value={access}
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
-  required={required}
+  {required}
 >
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
-      <input type="radio" bind:group={access} value="ownable">
+      <input type="radio" bind:group={access} value="ownable" />
       Ownable
-      <HelpTooltip>
-        Simple mechanism with a single account authorized for all privileged actions.
-      </HelpTooltip>
+      <HelpTooltip>Simple mechanism with a single account authorized for all privileged actions.</HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles">
+      <input type="radio" bind:group={access} value="roles" />
       Roles
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/access-control#role-based-access-control">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
