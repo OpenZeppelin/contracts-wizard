@@ -41,20 +41,23 @@ import type { Upgradeable as CairoUpgradeable } from '@openzeppelin/wizard-cairo
 import type { Info as CairoInfo } from '@openzeppelin/wizard-cairo/src/set-info';
 
 export interface CairoCommonOptions {
-  access?: CairoAccesss;
-  upgradeable?: CairoUpgradeable;
-  info?: CairoInfo;
+  upgradeable: CairoUpgradeable;
+  info: CairoInfo;
 }
 
+export type CairoCommonContractOptions = CairoCommonOptions & {
+  access: CairoAccesss;
+};
+
 export interface CairoKindedOptions {
-  ERC20: { kind: 'ERC20' } & CairoCommonOptions & CairoERC20Options;
-  ERC721: { kind: 'ERC721' } & CairoCommonOptions & CairoERC721Options;
-  ERC1155: { kind: 'ERC1155' } & CairoCommonOptions & CairoERC1155Options;
+  ERC20: { kind: 'ERC20' } & CairoCommonContractOptions & CairoERC20Options;
+  ERC721: { kind: 'ERC721' } & CairoCommonContractOptions & CairoERC721Options;
+  ERC1155: { kind: 'ERC1155' } & CairoCommonContractOptions & CairoERC1155Options;
   Account: { kind: 'Account' } & CairoCommonOptions & CairoAccountOptions;
   Multisig: { kind: 'Multisig' } & CairoCommonOptions & CairoMultisigOptions;
   Governor: { kind: 'Governor' } & CairoCommonOptions & CairoGovernorOptions;
-  Vesting: { kind: 'Vesting' } & CairoCommonOptions & CairoVestingOptions;
-  Custom: { kind: 'Custom' } & CairoCommonOptions & CairoCustomOptions;
+  Vesting: { kind: 'Vesting' } & CairoVestingOptions;
+  Custom: { kind: 'Custom' } & CairoCommonContractOptions & CairoCustomOptions;
 }
 
 // After importing and building KindedOptions add supported language here
