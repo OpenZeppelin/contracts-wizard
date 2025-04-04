@@ -1,25 +1,37 @@
-import type { AllLanguageContractOptions, AllLanguageFunctionName, SupportedLanguage } from './languages.ts';
+import type {
+  LanguageContractsOptions,
+  LanguageContractsNames,
+  SupportedLanguage,
+  AllLanguageContractsNames,
+  AllLanguagesContractsOptions,
+} from './languages.ts';
 
 export type Chat = {
   role: 'user' | 'assistant' | 'system';
   content: string;
 };
 
-export type AiAssistantContractOptions = Partial<AllLanguageContractOptions[keyof AllLanguageContractOptions]>;
-export type AiAssistantFunctionName = AllLanguageFunctionName;
+export type AiAssistantContractsOptions<TLanguage extends SupportedLanguage = never> = [TLanguage] extends [never]
+  ? Partial<AllLanguagesContractsOptions>
+  : Required<LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]>;
+
+export type AiAssistantFunctionName<TLanguage extends SupportedLanguage = never> = [TLanguage] extends [never]
+  ? AllLanguageContractsNames
+  : LanguageContractsNames<TLanguage>;
+
 export type AiAssistantLanguage = SupportedLanguage;
 
 export type AiChatBodyRequest = {
   messages: Chat[];
   language: AiAssistantLanguage;
   currentCode: string;
-  currentOpts?: AiAssistantContractOptions;
+  currentOpts?: AiAssistantContractsOptions;
   chatId: string;
 };
 
-export type AiFunctionCall = {
-  name: AiAssistantFunctionName;
-  arguments: AiAssistantContractOptions;
+export type AiFunctionCall<TLanguage extends SupportedLanguage = never> = {
+  name: AiAssistantFunctionName<TLanguage>;
+  arguments: AiAssistantContractsOptions<TLanguage>;
 };
 
 export type AiFunctionCallResponse = {

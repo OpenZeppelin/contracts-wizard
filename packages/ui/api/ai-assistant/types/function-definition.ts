@@ -1,4 +1,4 @@
-import type { AllLanguageContractOptions } from './languages.ts';
+import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
 
 type IsPrimitiveUnion<T, U = T> = [T] extends [never]
   ? false // Edge case for `never`
@@ -46,7 +46,7 @@ type AiFunctionProperties<TProperties extends object> = Required<{
 }>;
 
 export type AiFunctionPropertyDefinition<
-  TContract extends Partial<AllLanguageContractOptions[keyof AllLanguageContractOptions]>,
+  TContract extends Partial<AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]>,
   TOmit extends keyof TContract = 'kind',
 > = {
   type: 'object';
@@ -55,12 +55,29 @@ export type AiFunctionPropertyDefinition<
 };
 
 export type AiFunctionDefinition<
-  TContractName extends keyof AllLanguageContractOptions = keyof AllLanguageContractOptions,
-  TOmit extends keyof AllLanguageContractOptions[TContractName] = 'kind',
+  TLanguage extends SupportedLanguage = SupportedLanguage,
+  TContractName extends keyof LanguageContractsOptions<TLanguage> = keyof LanguageContractsOptions<TLanguage>,
+  TOmit extends keyof Required<LanguageContractsOptions<TLanguage>[TContractName]> = 'kind' extends keyof Required<
+    LanguageContractsOptions<TLanguage>[TContractName]
+  >
+    ? 'kind'
+    : never,
 > = {
   name: TContractName;
   description: string;
-  parameters: AiFunctionPropertyDefinition<AllLanguageContractOptions[TContractName], TOmit> & {
+  parameters: AiFunctionPropertyDefinition<Required<LanguageContractsOptions<TLanguage>[TContractName]>, TOmit> & {
+    required?: (keyof LanguageContractsOptions<TLanguage>[TContractName])[];
+    additionalProperties: false;
+  };
+};
+
+export type SimpleAiFunctionDefinition = {
+  name: string;
+  description: string;
+  parameters: {
+    type: 'object';
+    description?: string;
+    properties: Record<string, unknown>;
     required?: string[];
     additionalProperties: false;
   };

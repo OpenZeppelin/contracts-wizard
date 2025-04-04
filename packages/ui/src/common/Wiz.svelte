@@ -1,3 +1,35 @@
+<script context="module" lang="ts">
+  import { SvelteComponentTyped } from 'svelte';
+  import Wiz from './Wiz.svelte';
+
+  export const mergeAiAssistanceOptions = <
+    TLanguage extends AiAssistantLanguage,
+    TOption extends Partial<Record<AiAssistantFunctionName, AiFunctionCall<TLanguage>['arguments']>>,
+  >(
+    previousOptions: TOption,
+    aiFunctionCall: AiFunctionCall<TLanguage>,
+  ): TOption =>
+    Object.keys(previousOptions).reduce((acc, currentKey) => {
+      if (aiFunctionCall.name === currentKey)
+        //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
+        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+      else return acc;
+    }, previousOptions);
+
+  export function createWiz<TLanguage extends AiAssistantLanguage>() {
+    return Wiz as unknown as typeof SvelteComponentTyped<
+      {
+        language: TLanguage;
+        currentOpts?: AiAssistantContractsOptions<TLanguage>;
+        currentCode: string;
+        experimentalContracts: AiAssistantFunctionName<TLanguage>[];
+        sampleMessages?: string[];
+      },
+      { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }
+    >;
+  }
+</script>
+
 <script lang="ts">
   import UserAvatar from './icons/UserAvatar.svelte';
   import WizAvatar from './icons/WizAvatar.svelte';
@@ -8,7 +40,8 @@
   import MaximizeIcon from './icons/MaximizeIcon.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
   import type {
-    AiAssistantContractOptions,
+    AiAssistantContractsOptions,
+    AiAssistantFunctionName,
     AiAssistantLanguage,
     AiChatBodyRequest,
     AiFunctionCall,
@@ -17,13 +50,16 @@
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
-
   const apiHost = process.env.API_HOST;
 
-  export let currentOpts: AiAssistantContractOptions | undefined;
-  export let currentCode: string;
+  // If adding more props make sure to also update createWiz at the top
   export let language: AiAssistantLanguage;
+  export let currentOpts: AiAssistantContractsOptions | undefined;
+  export let currentCode: string;
+  export let experimentalContracts: AiAssistantFunctionName[] = [];
+  export let sampleMessages: string[] = [];
+
+  const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
 
   const chatId = nanoid();
   let inProgress = false;
@@ -40,14 +76,6 @@
       role: 'assistant',
       content: 'Wiz here 👋. Feel free to ask any questions you have about smart contract development.',
     },
-  ];
-
-  const experimentalContracts = ['Stablecoin', 'RealWorldAsset'];
-
-  const sampleMessages = [
-    'Make a token with supply of 10 million',
-    'What does mintable do?',
-    'Make a contract for a DAO',
   ];
 
   const addMessage = (message: Chat) => {
@@ -71,7 +99,7 @@
         ...builtOptions,
         [functionCallKey]: stringifyIfNumber(functionCallValue),
       }),
-      {} as AiAssistantContractOptions,
+      {} as AiAssistantContractsOptions,
     );
   };
 
@@ -125,10 +153,9 @@
 
             addMessage({
               role: 'assistant',
-              content:
-                `Updated Wizard using ${function_call.name}${(experimentalContracts.includes(function_call.name)
-                  ? ' (Experimental).'
-                  : '.')}`,
+              content: `Updated Wizard using ${function_call.name}${
+                experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
+              }`,
             });
 
             dispatch('function-call-response', {

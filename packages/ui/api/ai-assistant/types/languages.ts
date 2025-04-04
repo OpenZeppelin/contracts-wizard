@@ -9,7 +9,9 @@ import type { Access as SolidityAccesss } from '@openzeppelin/wizard/src/set-acc
 import type { Upgradeable as SolidityUpgradeable } from '@openzeppelin/wizard/src/set-upgradeable';
 import type { Info as SolidityInfo } from '@openzeppelin/wizard/src/set-info';
 
-interface SolidityCommonOptions {
+// Solidity
+
+export interface SolidityCommonOptions {
   access?: SolidityAccesss;
   upgradeable?: SolidityUpgradeable;
   info?: SolidityInfo;
@@ -25,8 +27,6 @@ export interface SolidityKindedOptions {
   Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
 }
 
-export type { SolidityCommonOptions };
-
 // Cairo
 import type { ERC20Options as CairoERC20Options } from '@openzeppelin/wizard-cairo/src/erc20';
 import type { ERC721Options as CairoERC721Options } from '@openzeppelin/wizard-cairo/src/erc721';
@@ -40,7 +40,7 @@ import type { Access as CairoAccesss } from '@openzeppelin/wizard-cairo/src/set-
 import type { Upgradeable as CairoUpgradeable } from '@openzeppelin/wizard-cairo/src/set-upgradeable';
 import type { Info as CairoInfo } from '@openzeppelin/wizard-cairo/src/set-info';
 
-interface CairoCommonOptions {
+export interface CairoCommonOptions {
   access?: CairoAccesss;
   upgradeable?: CairoUpgradeable;
   info?: CairoInfo;
@@ -57,14 +57,24 @@ export interface CairoKindedOptions {
   Custom: { kind: 'Custom' } & CairoCommonOptions & CairoCustomOptions;
 }
 
-export type { CairoCommonOptions };
-
-// All
-
-export type SupportedLanguage = 'solidity' | 'cairo';
-
-export type AllLanguageContractOptions = {
-  [k in keyof SolidityKindedOptions]: SolidityKindedOptions[k];
+// After importing and building KindedOptions add supported language here
+export type LanguagesContractsOptions = {
+  solidity: SolidityKindedOptions;
+  cairo: CairoKindedOptions;
 };
 
-export type AllLanguageFunctionName = SolidityKindedOptions[keyof SolidityKindedOptions]['kind'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['cairo'];
+//
+
+export type SupportedLanguage = keyof LanguagesContractsOptions;
+
+// Utils
+export type LanguageContractsOptions<TLanguage extends SupportedLanguage> = LanguagesContractsOptions[TLanguage];
+
+export type AllLanguageContractsNames = AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]['kind'];
+
+type ExtractKind<T> = T extends { kind: infer K } ? K : never;
+
+export type LanguageContractsNames<TLanguage extends SupportedLanguage> = ExtractKind<
+  LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]
+>;

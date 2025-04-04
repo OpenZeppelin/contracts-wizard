@@ -21,7 +21,6 @@
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
-  import Wiz from '../common/Wiz.svelte';
   import DefenderDeployModal from './DefenderDeployModal.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
@@ -36,8 +35,11 @@
   import { postMessageToIframe } from '../common/post-message';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
 
   const dispatch = createEventDispatcher();
+
+  const WizSolidity = createWiz<'solidity'>();
 
   async function allowRendering() {
     showCode = false;
@@ -227,22 +229,21 @@
     }
   };
 
-  const mergeAiAssistanceOptions = (aiFunctionCall: AiFunctionCall) =>
-    Object.keys(allOpts).reduce((acc, currentKey) => {
-      if (aiFunctionCall.name === currentKey)
-        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
-      else return acc;
-    }, allOpts);
-
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall>) => {
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'solidity'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
-    allOpts = mergeAiAssistanceOptions(aiFunctionCall);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <Wiz bind:currentOpts={opts} bind:currentCode={code} language="solidity" on:function-call-response={applyFunctionCall}
-  ></Wiz>
+  <WizSolidity
+    language="solidity"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset']}
+    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
+  ></WizSolidity>
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
