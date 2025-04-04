@@ -38,36 +38,13 @@ const commonFunctionDescription = {
   },
 } as const satisfies AiFunctionPropertyDefinition<SolidityCommonOptions>['properties'];
 
-const sharedFunctionDescription = {
-  ...commonFunctionDescription,
-  name: { type: 'string', description: 'The name of the contract' },
-
-  symbol: { type: 'string', description: 'The short symbol for the token' },
-
-  burnable: {
-    type: 'boolean',
-    description: 'Whether token holders will be able to destroy their tokens',
-  },
-
-  pausable: {
-    type: 'boolean',
-    description:
-      'Whether privileged accounts will be able to pause the functionality marked as whenNotPaused. Useful for emergency response.',
-  },
-
-  mintable: {
-    type: 'boolean',
-    description: 'Whether privileged accounts will be able to create more supply or emit more tokens',
-  },
-} as const;
-
 export const erc20Function = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard',
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+      ...addFunctionPropertiesFrom(commonFunctionDescription, [
         'name',
         'symbol',
         'burnable',
@@ -128,7 +105,7 @@ export const erc721Function = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+      ...addFunctionPropertiesFrom(commonFunctionDescription, [
         'name',
         'symbol',
         'burnable',
@@ -172,7 +149,7 @@ export const erc1155Function = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, [
+      ...addFunctionPropertiesFrom(commonFunctionDescription, [
         'name',
         'burnable',
         'pausable',
@@ -245,7 +222,7 @@ export const governorFunction = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'access', 'upgradeable', 'info']),
       delay: {
         type: 'string',
         description: 'The delay since proposal is created until voting starts, default is "1 day"',
@@ -317,7 +294,7 @@ export const customFunction = {
   description: 'Make a custom smart contract',
   parameters: {
     type: 'object',
-    properties: addFunctionPropertiesFrom(sharedFunctionDescription, [
+    properties: addFunctionPropertiesFrom(commonFunctionDescription, [
       'name',
       'pausable',
       'access',

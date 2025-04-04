@@ -229,7 +229,7 @@
     }
   };
 
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall>) => {
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'solidity'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };

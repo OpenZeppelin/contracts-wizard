@@ -3,13 +3,15 @@
   import Wiz from './Wiz.svelte';
 
   export const mergeAiAssistanceOptions = <
-    TOption extends Record<keyof AiFunctionCall['arguments'], AiFunctionCall['arguments']>,
+    TLanguage extends AiAssistantLanguage,
+    TOption extends Partial<Record<AiAssistantFunctionName, AiFunctionCall<TLanguage>['arguments']>>,
   >(
     previousOptions: TOption,
-    aiFunctionCall: AiFunctionCall,
-  ) =>
+    aiFunctionCall: AiFunctionCall<TLanguage>,
+  ): TOption =>
     Object.keys(previousOptions).reduce((acc, currentKey) => {
       if (aiFunctionCall.name === currentKey)
+        //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
         return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
       else return acc;
     }, previousOptions);
@@ -21,7 +23,7 @@
         currentOpts?: AiAssistantContractsOptions<TLanguage>;
         currentCode: string;
       },
-      { 'function-call-response': CustomEvent<AiFunctionCall> }
+      { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }
     >;
   }
 </script>
@@ -37,6 +39,7 @@
   import HelpTooltip from './HelpTooltip.svelte';
   import type {
     AiAssistantContractsOptions,
+    AiAssistantFunctionName,
     AiAssistantLanguage,
     AiChatBodyRequest,
     AiFunctionCall,
@@ -44,7 +47,13 @@
     Chat,
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
-  import type { LanguageContractsNames, SupportedLanguage } from '../../api/ai-assistant/types/languages';
+  import type {
+    AllLanguageContractsNames,
+    LanguageContractsNames,
+    LanguageContractsOptions,
+    SupportedLanguage,
+  } from '../../api/ai-assistant/types/languages';
+  import AccessControlSection from '../solidity/AccessControlSection.svelte';
 
   const apiHost = process.env.API_HOST;
 
