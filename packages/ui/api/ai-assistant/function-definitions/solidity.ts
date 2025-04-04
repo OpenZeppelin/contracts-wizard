@@ -5,8 +5,8 @@ import type { SolidityCommonOptions } from '../types/languages.ts';
 const commonFunctionDescription = {
   access: {
     anyOf: [
-      { type: 'boolean', enum: [false] },
       { type: 'string', enum: ['ownable', 'roles', 'managed'] },
+      { type: 'boolean', enum: [false] },
     ],
     description:
       'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
@@ -14,8 +14,8 @@ const commonFunctionDescription = {
 
   upgradeable: {
     anyOf: [
-      { type: 'boolean', enum: [false] },
       { type: 'string', enum: ['transparent', 'uups'] },
+      { type: 'boolean', enum: [false] },
     ],
     description:
       'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
@@ -78,8 +78,8 @@ export const erc20Function = {
       },
       crossChainBridging: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['custom', 'superchain'] },
+          { type: 'boolean', enum: [false] },
         ],
         description:
           'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
@@ -192,16 +192,11 @@ export const stablecoinFunction = {
       },
       limitations: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
+          { type: 'boolean', enum: [false] },
         ],
         description:
           'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
-      },
-      upgradeable: {
-        type: 'string',
-        enum: [false],
-        description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
     },
     required: ['name', 'symbol'],
@@ -270,8 +265,8 @@ export const governorFunction = {
       },
       timelock: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['openzeppelin', 'compound'] },
+          { type: 'boolean', enum: [false] },
         ],
         description: 'The type of timelock to use',
       },

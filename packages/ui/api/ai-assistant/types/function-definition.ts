@@ -10,6 +10,29 @@ type IsPrimitiveUnion<T, U = T> = [T] extends [never]
         : true
       : false;
 
+type AllRequiredKeys<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? never : K;
+}[keyof T];
+
+type Permutation<T extends string | number | symbol, U extends string | number | symbol = T> = [T] extends [never]
+  ? []
+  : {
+      [K in T]: [K, ...Permutation<Exclude<U, K>>];
+    }[T];
+
+type ExactRequiredKeys<T> = Permutation<AllRequiredKeys<T>>;
+
+type UnionToIntersection<U> = (U extends unknown ? (x: U) => unknown : never) extends (x: infer I) => unknown
+  ? I
+  : never;
+
+// Get the last member of a union
+type LastOf<U> =
+  UnionToIntersection<U extends unknown ? (x: U) => void : never> extends (x: infer L) => void ? L : never;
+
+// Convert a union to a tuple (order is not guaranteed)
+type UnionToTuple<U, L = LastOf<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L];
+
 type AiFunctionCallPrimaryType<TType> = TType extends string
   ? 'string'
   : TType extends number
@@ -24,20 +47,51 @@ type AiFunctionCallPrimaryType<TType> = TType extends string
 
 type AiFunctionType<TType> = {
   type?: AiFunctionCallPrimaryType<TType>;
-  enum?: TType[];
+  enum?: UnionToTuple<TType>;
   description: string;
 };
+
+type PrimitiveKey<T> = T extends boolean
+  ? 'boolean'
+  : T extends string
+    ? 'string'
+    : T extends number
+      ? 'number'
+      : never;
+
+// Given a union U, compute the distinct primitive names.
+type DistinctPrimitiveTypes<U> = U extends unknown ? PrimitiveKey<U> : never;
+
+// Extract the members of U corresponding to a given primitive name K.
+type MembersOf<U, K extends string> = Extract<
+  U,
+  K extends 'boolean' ? boolean : K extends 'string' ? string : K extends 'number' ? number : never
+>;
+
+// --- The final type ---
+// For a union U, build an array (tuple) with one entry per distinct primitive type.
+// Each entry is an object with:
+//   - a "type" property: the primitive type name, and
+//   - an "enum" property: a tuple of the union members that match that primitive.
+type AnyOf<U> = UnionToTuple<
+  {
+    [K in DistinctPrimitiveTypes<U>]: {
+      type: K;
+      enum: UnionToTuple<MembersOf<U, K>>;
+    };
+  }[DistinctPrimitiveTypes<U>]
+>;
 
 type AiFunctionCallOneOfType<TType> =
   | Required<AiFunctionType<TType>>
   | {
-      anyOf: Omit<AiFunctionCallType<TType>, 'description'>[];
+      anyOf: AnyOf<TType>;
       description: string;
     };
 
 export type AiFunctionCallType<TType> = AiFunctionType<TType> | AiFunctionCallOneOfType<TType>;
 
-type AiFunctionProperties<TProperties extends object> = Required<{
+export type AiFunctionProperties<TProperties extends object> = Required<{
   [K in keyof TProperties]: TProperties[K] extends object
     ? AiFunctionPropertyDefinition<TProperties[K]>
     : IsPrimitiveUnion<TProperties[K]> extends true
@@ -66,7 +120,7 @@ export type AiFunctionDefinition<
   name: TContractName;
   description: string;
   parameters: AiFunctionPropertyDefinition<Required<LanguageContractsOptions<TLanguage>[TContractName]>, TOmit> & {
-    required?: (keyof LanguageContractsOptions<TLanguage>[TContractName])[];
+    required?: ExactRequiredKeys<Omit<LanguageContractsOptions<TLanguage>[TContractName], 'kind' | TOmit>>;
     additionalProperties: false;
   };
 };
