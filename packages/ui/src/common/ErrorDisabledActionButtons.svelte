@@ -6,17 +6,8 @@
 
 <!-- Fake Copy and Download buttons for display when there are errors in the input options -->
 <div class="action flex flex-row gap-2 shrink-0">
-  <Tooltip
-    let:trigger
-    theme="light-red border"
-    hideOnClick={false}
-    interactive
-  >
-    <button
-      use:trigger
-      class="action-button p-3 min-w-[40px]"
-      class:disabled={true}
-    >
+  <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+    <button use:trigger class="action-button p-3 min-w-[40px]" class:disabled={true}>
       <CopyIcon />
     </button>
     <div slot="content">
@@ -24,17 +15,8 @@
       <p>Fix them to continue.</p>
     </div>
   </Tooltip>
-  <Tooltip
-    let:trigger
-    theme="light-red border"
-    hideOnClick={false}
-    interactive
-  >
-    <button
-      use:trigger
-      class="action-button with-text"
-      class:disabled={true}
-    >
+  <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+    <button use:trigger class="action-button with-text" class:disabled={true}>
       <DownloadIcon />
       Download
     </button>

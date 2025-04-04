@@ -50,7 +50,8 @@
 
 <section class="controls-section">
   <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong> <span class="italic">Some of the following features are not audited and are subject to change</span>
+    <strong>* Experimental:</strong>
+    <span class="italic">Some of the following features are not audited and are subject to change</span>
   </div>
 </section>
 
@@ -60,12 +61,12 @@
   <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name}>
+      <input bind:value={opts.name} />
     </label>
 
     <label class="labeled-input">
       <span>Symbol</span>
-      <input bind:value={opts.symbol}>
+      <input bind:value={opts.symbol} />
     </label>
   </div>
 
@@ -74,14 +75,22 @@
       Premint
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint}>
+    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint} />
   </label>
 
   {#if showChainId}
     <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
       <label class="text-sm flex-1">
         &nbsp;Chain ID:
-        <input type="number" bind:value={opts.premintChainId} placeholder={''} pattern={chainIdPattern.source} class="input-inline" use:resizeToFit use:error={errors?.premintChainId}>
+        <input
+          type="number"
+          bind:value={opts.premintChainId}
+          placeholder={''}
+          pattern={chainIdPattern.source}
+          class="input-inline"
+          use:resizeToFit
+          use:error={errors?.premintChainId}
+        />
       </label>
       <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
     </p>
@@ -93,15 +102,13 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
-      <HelpTooltip>
-        Privileged accounts will be able to create more supply.
-      </HelpTooltip>
+      <HelpTooltip>Privileged accounts will be able to create more supply.</HelpTooltip>
     </label>
 
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Burnable">
         Token holders will be able to destroy their tokens.
@@ -109,16 +116,16 @@
     </label>
 
     <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
-        Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
+        emergency response.
       </HelpTooltip>
     </label>
 
     <label class:checked={opts.callback}>
-      <input type="checkbox" bind:checked={opts.callback}>
+      <input type="checkbox" bind:checked={opts.callback} />
       Callback
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC1363">
         Supports code execution after transfers and approvals on recipient contracts in a single transaction.
@@ -126,7 +133,7 @@
     </label>
 
     <label class:checked={opts.permit || opts.votes}>
-      <input type="checkbox" bind:checked={opts.permit}>
+      <input type="checkbox" bind:checked={opts.permit} />
       Permit
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
@@ -134,15 +141,16 @@
     </label>
 
     <label class:checked={opts.flashmint}>
-      <input type="checkbox" bind:checked={opts.flashmint}>
+      <input type="checkbox" bind:checked={opts.flashmint} />
       Flash Minting
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20FlashMint">
-        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
+        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same
+        transaction.
       </HelpTooltip>
     </label>
 
     <label class:checked={opts.custodian}>
-      <input type="checkbox" bind:checked={opts.custodian}>
+      <input type="checkbox" bind:checked={opts.custodian} />
       Custodian*
       <HelpTooltip>
         Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
@@ -159,18 +167,14 @@
 >
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
-      <input type="radio" bind:group={opts.limitations} value="allowlist">
+      <input type="radio" bind:group={opts.limitations} value="allowlist" />
       Allowlist*
-      <HelpTooltip>
-        Allows a list of addresses to transfer tokens.
-      </HelpTooltip>
+      <HelpTooltip>Allows a list of addresses to transfer tokens.</HelpTooltip>
     </label>
     <label class:checked={opts.limitations === 'blocklist'}>
-      <input type="radio" bind:group={opts.limitations} value="blocklist">
+      <input type="radio" bind:group={opts.limitations} value="blocklist" />
       Blocklist*
-      <HelpTooltip>
-        Blocks a list of addresses from transferring tokens.
-      </HelpTooltip>
+      <HelpTooltip>Blocks a list of addresses from transferring tokens.</HelpTooltip>
     </label>
   </div>
 </ExpandableToggleRadio>
@@ -184,14 +188,14 @@
 >
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
-      <input type="radio" bind:group={opts.votes} value="blocknumber">
+      <input type="radio" bind:group={opts.votes} value="blocknumber" />
       Block Number
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
         Uses voting durations expressed as block numbers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.votes === 'timestamp'}>
-      <input type="radio" bind:group={opts.votes} value="timestamp">
+      <input type="radio" bind:group={opts.votes} value="timestamp" />
       Timestamp
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
@@ -209,18 +213,17 @@
 >
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="custom">
+      <input type="radio" bind:group={opts.crossChainBridging} value="custom" />
       Custom*
-      <HelpTooltip>
-        Uses custom bridge contract(s) as authorized token bridge(s).
-      </HelpTooltip>
+      <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
     <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="superchain">
+      <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
       SuperchainERC20* &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on chains in the Superchain.
+        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
+        chains in the Superchain.
       </HelpTooltip>
     </label>
   </div>

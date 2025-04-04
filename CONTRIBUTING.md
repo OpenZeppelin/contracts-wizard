@@ -40,6 +40,13 @@ From the root directory:
 
 If linting errors or warnings occur, run `yarn lint --fix` to attempt to auto-fix issues.  If there are remaining issues that cannot be auto-fixed, manually address them and re-run the command to ensure it passes.
 
+### Running formater
+From the root directory:
+- ```yarn format:{check|write}```
+
+If formatting errors or warnings occurs when running `yarn format:check`, run `yarn format:write` to attempt to auto-fix issues.
+It is recommended to use automatic formatter in your code editor or run this command before making your merge request as formatting error will fail CI.
+
 ### Running the UI
 From the `packages/ui` directory:
 - Run `yarn dev` to start a local server for the UI.
