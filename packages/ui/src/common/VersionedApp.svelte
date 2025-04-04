@@ -22,11 +22,11 @@
       searchParams.push(`version=${version}`);
     }
     dispatch('tab-change', searchParams.join('&'));
-  };
+  }
 </script>
 
 <div class="container overflow-hidden">
   <div class="page-container flex flex-col justify-between overflow-hidden">
-    <svelte:component this={page} initialTab={initialTab} initialOpts={initialOpts} bind:tab={contractTab}/>
+    <svelte:component this={page} {initialTab} {initialOpts} bind:tab={contractTab} />
   </div>
 </div>

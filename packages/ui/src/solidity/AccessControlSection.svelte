@@ -34,25 +34,25 @@
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
   helpLink="https://docs.openzeppelin.com/contracts/api/access"
-  required={required}
+  {required}
 >
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
-      <input type="radio" bind:group={access} value="ownable">
+      <input type="radio" bind:group={access} value="ownable" />
       Ownable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#Ownable">
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles">
+      <input type="radio" bind:group={access} value="roles" />
       Roles
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessControl">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'managed'}>
-      <input type="radio" bind:group={access} value="managed">
+      <input type="radio" bind:group={access} value="managed" />
       Managed
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/access#AccessManaged">
         Enables a central contract to define a policy that allows certain callers to access certain functions.

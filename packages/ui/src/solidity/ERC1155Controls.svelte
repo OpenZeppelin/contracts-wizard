@@ -22,14 +22,16 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name}>
+    <input bind:value={opts.name} />
   </label>
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       URI
-      <HelpTooltip>Location of the metadata. Clients will replace any instance of {"{id}"} in this string with the tokenId.</HelpTooltip>
+      <HelpTooltip
+        >Location of the metadata. Clients will replace any instance of {'{id}'} in this string with the tokenId.</HelpTooltip
+      >
     </span>
-    <input bind:value={opts.uri} placeholder="https://...">
+    <input bind:value={opts.uri} placeholder="https://..." />
   </label>
 </section>
 
@@ -38,39 +40,36 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
-      <HelpTooltip>
-        Privileged accounts will be able to create more supply.
-      </HelpTooltip>
+      <HelpTooltip>Privileged accounts will be able to create more supply.</HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.supply}>
-      <input type="checkbox" bind:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply} />
       Supply Tracking
-      <HelpTooltip>
-        Keeps track of total supply of tokens.
-      </HelpTooltip>
+      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
-        Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
+        emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.updatableUri}>
-      <input type="checkbox" bind:checked={opts.updatableUri}>
+      <input type="checkbox" bind:checked={opts.updatableUri} />
       Updatable URI
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155-_setURI-string-">
-        Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {"{id}"} in the URI with the tokenId.
+        Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {'{id}'}
+        in the URI with the tokenId.
       </HelpTooltip>
     </label>
   </div>
