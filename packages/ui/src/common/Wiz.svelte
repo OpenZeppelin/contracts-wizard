@@ -22,6 +22,8 @@
         language: TLanguage;
         currentOpts?: AiAssistantContractsOptions<TLanguage>;
         currentCode: string;
+        experimentalContracts: AiAssistantFunctionName<TLanguage>[];
+        sampleMessages?: string[];
       },
       { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }
     >;
@@ -47,13 +49,6 @@
     Chat,
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
-  import type {
-    AllLanguageContractsNames,
-    LanguageContractsNames,
-    LanguageContractsOptions,
-    SupportedLanguage,
-  } from '../../api/ai-assistant/types/languages';
-  import AccessControlSection from '../solidity/AccessControlSection.svelte';
 
   const apiHost = process.env.API_HOST;
 
@@ -61,6 +56,8 @@
   export let language: AiAssistantLanguage;
   export let currentOpts: AiAssistantContractsOptions | undefined;
   export let currentCode: string;
+  export let experimentalContracts: AiAssistantFunctionName[] = [];
+  export let sampleMessages: string[] = [];
 
   const dispatch = createEventDispatcher<{ 'function-call-response': AiFunctionCall }>();
 
@@ -80,15 +77,6 @@
       content: 'Wiz here 👋. Feel free to ask any questions you have about smart contract development.',
     },
   ];
-
-  const displayMessage: {
-    [K in SupportedLanguage]: { experimentalContracts: LanguageContractsNames<K>[]; sampleMessages: string[] };
-  } = {
-    solidity: {
-      experimentalContracts: ['Stablecoin', 'RealWorldAsset'],
-      sampleMessages: ['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO'],
-    },
-  };
 
   const addMessage = (message: Chat) => {
     messages = [
@@ -166,7 +154,7 @@
             addMessage({
               role: 'assistant',
               content: `Updated Wizard using ${function_call.name}${
-                displayMessage[language].experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
+                experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
               }`,
             });
 
@@ -229,7 +217,7 @@
         />
         {#if input.length === 0 && messages.length < 3}
           <div class="absolute left-4 right-4 bottom-4 overflow-x-auto h-14 p-2 flex items-center gap-2">
-            {#each displayMessage[language].sampleMessages as message}
+            {#each sampleMessages as message}
               <button
                 class="rounded-md border-0 p-2 h-full text-xs flex-none bg-gray-100 shadow-sm flex items-center cursor-pointer text-center hover:bg-gray-200"
                 on:click={() => {
