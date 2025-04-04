@@ -27,7 +27,7 @@
   $: requireAccessControl = realWorldAsset.isAccessControlRequired(opts);
 
   // Show notice when SuperchainERC20 is enabled
-  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
   import { onMount } from 'svelte';
 
   let superchainLabel: HTMLElement;
@@ -116,6 +116,14 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>.
         Useful for emergency response.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.callback}>
+      <input type="checkbox" bind:checked={opts.callback}>
+      Callback
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC1363">
+        Supports code execution after transfers and approvals on recipient contracts in a single transaction.
       </HelpTooltip>
     </label>
 

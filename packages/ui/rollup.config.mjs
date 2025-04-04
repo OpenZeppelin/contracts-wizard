@@ -125,9 +125,10 @@ export default [
 
       replace({
         preventAssignment: true,
-        include: '../../**/node_modules/**/*',
+        include: ['../../**/node_modules/**/*', '**/main.js'],
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
+        'process.env.API_HOST': JSON.stringify(production ? '' : `http://localhost:${process.env.API_PORT || 3000}`),
       }),
 
       json(),
