@@ -1,0 +1,22 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "watch": {
+    "exclude": [
+      "node_modules",
+      "dist"
+    ]
+  },
+  "imports": {
+    "@openzeppelin/wizard": "./packages/wizard-solidity",
+    "@openzeppelin/wizard-cairo": "./packages/wizard-cairo",
+    "@openzeppelin/wizard-cairo-alpha": "./packages/wizard-cairo_alpha",
+    "@openzeppelin/wizard-stellar": "./packages/wizard-stellar",
+    "@openzeppelin/wizard-stylus": "./packages/wizard-stylus"
+  },
+  "tasks": {
+    "dev": "deno run --allow-all --env-file --watch --no-clear-screen scripts/development-server.ts"
+  }
+}

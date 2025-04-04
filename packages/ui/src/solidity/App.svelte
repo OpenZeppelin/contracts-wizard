@@ -21,9 +21,7 @@
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
-  import Wiz from './Wiz.svelte';
   import DefenderDeployModal from './DefenderDeployModal.svelte';
-  import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -35,8 +33,13 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import { postMessageToIframe } from '../common/post-message';
+  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
 
   const dispatch = createEventDispatcher();
+
+  const WizSolidity = createWiz<'solidity'>();
 
   async function allowRendering() {
     showCode = false;
@@ -64,8 +67,6 @@
   let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
 
   let showCode = true;
-
-  $: functionCall && applyFunctionCall();
 
   $: opts = allOpts[tab];
 
@@ -228,36 +229,21 @@
     }
   };
 
-  const nameMap = {
-    erc20: 'ERC20',
-    erc721: 'ERC721',
-    erc1155: 'ERC1155',
-    stablecoin: 'Stablecoin',
-    realworldasset: 'RealWorldAsset',
-    governor: 'Governor',
-    custom: 'Custom',
-  };
-
-  let functionCall: {
-    name?: string;
-    opts?: any;
-  } = {};
-
-  const applyFunctionCall = () => {
-    if (functionCall.name) {
-      const name = functionCall.name as keyof typeof nameMap;
-      tab = sanitizeKind(nameMap[name]);
-
-      allOpts[tab] = {
-        ...allOpts[tab],
-        ...functionCall.opts,
-      };
-    }
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'solidity'>>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <Wiz bind:functionCall bind:currentOpts={opts} bind:currentCode={code}></Wiz>
+  <WizSolidity
+    language="solidity"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset']}
+    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
+  ></WizSolidity>
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
