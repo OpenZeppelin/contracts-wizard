@@ -22,7 +22,7 @@
         language: TLanguage;
         currentOpts?: AiAssistantContractsOptions<TLanguage>;
         currentCode: string;
-        experimentalContracts: AiAssistantFunctionName<TLanguage>[];
+        experimentalContracts?: AiAssistantFunctionName<TLanguage>[];
         sampleMessages?: string[];
       },
       { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }
