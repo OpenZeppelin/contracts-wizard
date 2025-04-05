@@ -258,7 +258,7 @@ export const governorFunction = {
         description: 'The type of voting to use',
       },
       clockMode: {
-        type: 'string',
+        type: 'boolean',
         enum: ['blocknumber', 'timestamp'],
         description:
           'The clock mode used by the voting token. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.',

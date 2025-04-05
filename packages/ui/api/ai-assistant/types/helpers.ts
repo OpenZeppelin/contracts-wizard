@@ -1,3 +1,5 @@
+import type { Object } from 'https://deno.land/x/ts_toolbelt_unofficial@1.1.0/mod.ts';
+
 export type IsPrimitiveUnion<T, U = T> = [T] extends [never]
   ? false // Edge case for `never`
   : [T] extends [boolean]
@@ -8,19 +10,9 @@ export type IsPrimitiveUnion<T, U = T> = [T] extends [never]
         : true
       : false;
 
-export type AllRequiredKeys<T> = {
-  [K in keyof T]-?: undefined extends T[K] ? never : K;
-}[keyof T];
+type Permutation<T, K = T> = [T] extends [never] ? [] : K extends K ? [K, ...Permutation<Exclude<T, K>>] : never;
 
-export type Permutation<T extends string | number | symbol, U extends string | number | symbol = T> = [T] extends [
-  never,
-]
-  ? []
-  : {
-      [K in T]: [K, ...Permutation<Exclude<U, K>>];
-    }[T];
-
-export type ExactRequiredKeys<T> = Permutation<AllRequiredKeys<T>>;
+export type ExactRequiredKeys<T extends object> = Permutation<Object.RequiredKeys<T>>;
 
 export type UnionToIntersection<U> = (U extends unknown ? (x: U) => unknown : never) extends (x: infer I) => unknown
   ? I
