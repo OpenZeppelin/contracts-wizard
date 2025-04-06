@@ -14,7 +14,7 @@ type RequiredKeys<T, K = keyof T> = K extends keyof T ? (T extends Required<Pick
 
 export type ExactRequiredKeys<T extends object> = Permutation<RequiredKeys<T>>;
 
-export type AiFunctionCallPrimaryType<TType> = TType extends string
+export type StringifyPrimaryType<TType> = TType extends string
   ? 'string'
   : TType extends number
     ? 'number'
@@ -44,8 +44,8 @@ type Wrap<T> = { __wrapped: T };
 type WrappedTypeFor<K extends string, U> = Wrap<TypeFor<K, U>>;
 
 export type TypeGroup<U> = {
-  [K in AiFunctionCallPrimaryType<U>]: WrappedTypeFor<K, U>;
-}[AiFunctionCallPrimaryType<U>];
+  [K in StringifyPrimaryType<U>]: WrappedTypeFor<K, U>;
+}[StringifyPrimaryType<U>];
 
 export type AiFunctionCallAnyOf<U> =
   Permutation<TypeGroup<U>> extends infer P
