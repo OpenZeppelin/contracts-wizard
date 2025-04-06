@@ -1,43 +1,22 @@
-import type { ExactRequiredKeys, IsPrimitiveUnion, UnionToTuple } from './helpers.ts';
+import type {
+  AiFunctionCallAnyOf,
+  AiFunctionCallPrimaryType,
+  ExactRequiredKeys,
+  IsPrimitiveUnion,
+  Permutation,
+} from './helpers.ts';
 import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
-
-type AiFunctionCallPrimaryType<TType> = TType extends string
-  ? 'string'
-  : TType extends number
-    ? 'number'
-    : TType extends boolean
-      ? 'boolean'
-      : TType extends unknown[]
-        ? 'array'
-        : TType extends object
-          ? 'object'
-          : never;
 
 type AiFunctionType<TType> = {
   type?: AiFunctionCallPrimaryType<TType>;
-  enum?: UnionToTuple<TType>;
+  enum?: Permutation<TType>;
   description: string;
 };
-
-type DistinctPrimitiveTypes<U> = U extends unknown ? AiFunctionCallPrimaryType<U> : never;
-
-type MembersOf<U, K extends string> = Extract<
-  U,
-  K extends 'boolean' ? boolean : K extends 'string' ? string : K extends 'number' ? number : never
->;
-type AnyOf<U> = UnionToTuple<
-  {
-    [K in DistinctPrimitiveTypes<U>]: {
-      type: K;
-      enum: UnionToTuple<MembersOf<U, K>>;
-    };
-  }[DistinctPrimitiveTypes<U>]
->;
 
 type AiFunctionCallOneOfType<TType> =
   | Required<AiFunctionType<TType>>
   | {
-      anyOf: AnyOf<TType>;
+      anyOf: AiFunctionCallAnyOf<TType>;
       description: string;
     };
 
