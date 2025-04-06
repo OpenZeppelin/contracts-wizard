@@ -162,6 +162,11 @@ export const stablecoinFunction = {
         description:
           'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
       },
+      upgradeable: {
+        type: 'boolean',
+        enum: [false],
+        description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
