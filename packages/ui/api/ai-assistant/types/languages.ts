@@ -1,13 +1,15 @@
 import type { IsObject, UnknownIfHasAnAnyAttribute } from './helpers.ts';
 import type { SolidityKindedOptions } from './solidity.ts';
+import type { StellarKindedOptions } from './stellar.ts';
 
 export type LanguagesContractsOptions = IsObject<
   UnknownIfHasAnAnyAttribute<{
     solidity: SolidityKindedOptions;
+    stellar: StellarKindedOptions;
   }>
 >;
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['stellar'];
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
