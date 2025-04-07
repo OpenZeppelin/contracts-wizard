@@ -24,7 +24,7 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name}>
+    <input bind:value={opts.name} />
   </label>
 
   <label class="labeled-input">
@@ -34,7 +34,7 @@
         The minimal number of confirmations required to approve a transaction.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.quorum} placeholder='' use:error={errors?.quorum}>
+    <input bind:value={opts.quorum} placeholder="" use:error={errors?.quorum} />
   </label>
 </section>
 

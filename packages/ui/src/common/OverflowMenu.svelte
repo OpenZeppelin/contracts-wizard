@@ -1,3 +1,9 @@
+<!--
+  Make it immutable because otherwise afterUpdate gets triggered on every
+  resize unnecessarily.
+-->
+<svelte:options immutable={true} />
+
 <script lang="ts">
   import { onMount, afterUpdate } from 'svelte';
 
@@ -10,13 +16,10 @@
 
   const getItems = () =>
     Array.from(container.children).filter(
-      (c): c is HTMLElement => c instanceof HTMLElement && c !== button && !('tippyRoot' in c.dataset)
+      (c): c is HTMLElement => c instanceof HTMLElement && c !== button && !('tippyRoot' in c.dataset),
     );
 
-  const getMenuItems = () =>
-    Array.from(menu.children).filter(
-      (c): c is HTMLElement => c instanceof HTMLElement
-    );
+  const getMenuItems = () => Array.from(menu.children).filter((c): c is HTMLElement => c instanceof HTMLElement);
 
   const update = () => {
     button.style.order = '-1';
@@ -64,12 +67,6 @@
 
   afterUpdate(update);
 </script>
-
-<!--
-  Make it immutable because otherwise afterUpdate gets triggered on every
-  resize unnecessarily.
--->
-<svelte:options immutable={true} />
 
 <div class="flex overflow-hidden gap-2" bind:this={container}>
   <slot overflow={false}></slot>

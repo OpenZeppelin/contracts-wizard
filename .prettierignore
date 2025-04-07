@@ -1,0 +1,15 @@
+*.json
+*.md
+*.map
+*.snap
+*.lock
+*.png
+*.sol
+*.toml
+*tgz
+*.tsbuildinfo
+**/.*
+**/LICENSE
+**/NOTICE
+build/
+public/
