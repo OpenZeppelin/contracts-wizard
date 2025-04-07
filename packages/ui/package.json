@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/copy-versions.mjs && rollup -c",
+    "type:check:api": "deno check ./scripts/development-server.ts ",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
     "dev:api": "ENV=dev deno task dev",
     "start": "sirv public",
