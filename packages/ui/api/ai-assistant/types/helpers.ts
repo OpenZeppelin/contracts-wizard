@@ -55,16 +55,15 @@ export type AiFunctionCallAnyOf<U> =
     : never;
 
 type IsAny<T> = 0 extends 1 & T ? true : false;
-
 type HasDeepAny<T> =
   IsAny<T> extends true
     ? true
     : T extends object
       ? {
-          [K in keyof T]: HasDeepAny<T[K]>;
-        }[keyof T] extends true
-        ? true
-        : false
+          [K in keyof T]-?: HasDeepAny<T[K]>;
+        } extends Record<string | number | symbol, false>
+        ? false
+        : true
       : false;
 
 export type UnknownIfHasAnAnyAttribute<T> = HasDeepAny<T> extends true ? unknown : T;
@@ -74,10 +73,3 @@ export type IsObject<T extends object> = T;
 export type ReplaceKeys<TOrigin, TReplace extends Partial<Record<keyof TOrigin, unknown>>> = {
   [K in keyof TOrigin]: K extends keyof TReplace ? TReplace[K] : TOrigin[K];
 };
-
-export type SafeNoAnyReplacedKeys<
-  TOrigin extends object,
-  TReplace extends Partial<Record<keyof TOrigin, unknown>>,
-> = UnknownIfHasAnAnyAttribute<{
-  [K in keyof TOrigin]: K extends keyof TReplace ? TReplace[K] : TOrigin[K];
-}>;
