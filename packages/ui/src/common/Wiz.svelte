@@ -4,7 +4,9 @@
 
   export const mergeAiAssistanceOptions = <
     TLanguage extends AiAssistantLanguage,
-    TOption extends Partial<Record<AiAssistantFunctionName, AiFunctionCall<TLanguage>['arguments']>>,
+    TOption extends Partial<
+      Record<AiAssistantFunctionName, Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>>
+    >,
   >(
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
@@ -20,7 +22,7 @@
     return Wiz as unknown as typeof SvelteComponentTyped<
       {
         language: TLanguage;
-        currentOpts?: AiAssistantContractsOptions<TLanguage>;
+        currentOpts?: Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>;
         currentCode: string;
         experimentalContracts?: AiAssistantFunctionName<TLanguage>[];
         sampleMessages?: string[];
@@ -49,6 +51,11 @@
     Chat,
   } from '../../api/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
+  import type {
+    AllLanguageContractsNames,
+    AllLanguagesContractsOptions,
+    LanguageContractsNames,
+  } from '../../api/ai-assistant/types/languages';
 
   const apiHost = process.env.API_HOST;
 
