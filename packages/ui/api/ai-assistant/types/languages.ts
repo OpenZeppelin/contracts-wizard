@@ -1,13 +1,15 @@
+import type { CairoKindedOptions } from './cairo.ts';
 import type { IsObject, UnknownIfHasAnAnyAttribute } from './helpers.ts';
 import type { SolidityKindedOptions } from './solidity.ts';
 
 export type LanguagesContractsOptions = IsObject<
   UnknownIfHasAnAnyAttribute<{
     solidity: SolidityKindedOptions;
+    cairo: CairoKindedOptions;
   }>
 >;
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['cairo'];
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
