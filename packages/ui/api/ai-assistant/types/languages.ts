@@ -1,10 +1,14 @@
 // Solidity
 import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
 export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
-import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
 // Cairo
+import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
 export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../core/cairo/dist/common-options';
 export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../core/cairo/dist/set-royalty-info';
+// Cairo-alpha
+import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../core/cairo_alpha/dist';
+export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../core/cairo_alpha/dist/common-options';
+export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -13,9 +17,12 @@ export type LanguagesContractsOptions = {
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   };
   cairo: CairoKindedOptions;
+  'cairo-alpha': CairoAlphaKindedOptions;
 };
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['cairo'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
+  LanguagesContractsOptions['cairo'] &
+  LanguagesContractsOptions['cairo-alpha'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
