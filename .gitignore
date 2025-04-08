@@ -4,4 +4,6 @@ node_modules
 
 .env
 .env.local
-.vscode/
+.vscode/settings.json
+
+*deno.lock

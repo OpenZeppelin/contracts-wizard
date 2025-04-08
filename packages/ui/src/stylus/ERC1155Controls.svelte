@@ -25,7 +25,7 @@
   <div class="grid gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name} use:error={errors?.name}>
+      <input bind:value={opts.name} use:error={errors?.name} />
     </label>
   </div>
 </section>
@@ -35,19 +35,15 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip>
-        Token holders will be able to destroy their tokens.
-      </HelpTooltip>
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
     <label class:checked={opts.supply}>
-      <input type="checkbox" bind:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply} />
       Supply Tracking
-      <HelpTooltip>
-        Keeps track of total supply of tokens.
-      </HelpTooltip>
+      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
     </label>
 
     <!-- TODO: uncomment once Pausable is supported -->

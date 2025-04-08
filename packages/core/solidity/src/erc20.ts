@@ -26,6 +26,7 @@ export interface ERC20Options extends CommonOptions {
   premint?: string;
   premintChainId?: string;
   mintable?: boolean;
+  callback?: boolean;
   permit?: boolean;
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
@@ -44,6 +45,7 @@ export const defaults: Required<ERC20Options> = {
   premint: '0',
   premintChainId: '',
   mintable: false,
+  callback: false,
   permit: true,
   votes: false,
   flashmint: false,
@@ -62,6 +64,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     premint: opts.premint || defaults.premint,
     premintChainId: opts.premintChainId || defaults.premintChainId,
     mintable: opts.mintable ?? defaults.mintable,
+    callback: opts.callback ?? defaults.callback,
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
@@ -104,6 +107,10 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   if (allOpts.mintable) {
     addMintable(c, access);
+  }
+
+  if (allOpts.callback) {
+    addCallback(c);
   }
 
   // Note: Votes requires Permit
@@ -245,6 +252,15 @@ function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) 
 function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, functions.mint, access, 'MINTER', 'minter');
   c.addFunctionCode('_mint(to, amount);', functions.mint);
+}
+
+function addCallback(c: ContractBuilder) {
+  const ERC1363 = {
+    name: 'ERC1363',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol',
+  };
+  c.addParent(ERC1363);
+  c.addOverride(ERC1363, supportsInterface);
 }
 
 function addPermit(c: ContractBuilder, name: string) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import tippy, { Instance as TippyInstance } from 'tippy.js';
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
 
   import { onMount } from 'svelte';
 
@@ -10,7 +10,9 @@
   let content: HTMLElement;
   let instance: TippyInstance | undefined;
 
-  const trigger = (node: Element) => { target = node; };
+  const trigger = (node: Element) => {
+    target = node;
+  };
 
   onMount(() => {
     if (target) {

@@ -17,7 +17,7 @@
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
     info: { ...infoDefaults }, // create new object since Info is nested
   };
-  
+
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
@@ -29,11 +29,11 @@
   <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name} use:error={errors?.name}>
+      <input bind:value={opts.name} use:error={errors?.name} />
     </label>
     <label class="labeled-input">
       <span>Symbol</span>
-      <input bind:value={opts.symbol} use:error={errors?.symbol}>
+      <input bind:value={opts.symbol} use:error={errors?.symbol} />
     </label>
   </div>
   <label class="labeled-input">
@@ -41,7 +41,7 @@
       Base URI
       <HelpTooltip>Will be concatenated with token IDs to generate the token URIs.</HelpTooltip>
     </span>
-    <input bind:value={opts.baseUri} placeholder="https://...">
+    <input bind:value={opts.baseUri} placeholder="https://..." />
   </label>
 </section>
 
@@ -50,32 +50,32 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/erc721">
         Privileged accounts will be able to emit new tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip>
-        Token holders will be able to destroy their tokens.
-      </HelpTooltip>
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
-        Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked with <code
+          >self.pausable.assert_not_paused()</code
+        >. Useful for emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable}>
+      <input type="checkbox" bind:checked={opts.enumerable} />
       Enumerable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc721#ERC721EnumerableComponent">
-        Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token ids and all tokens owned by an address.
+        Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token
+        ids and all tokens owned by an address.
       </HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
@@ -96,7 +96,7 @@
         Name for domain separator. Prevents two applications from producing the same hash.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
+    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes} />
   </label>
 
   <label class="labeled-input">
@@ -106,11 +106,11 @@
         Version for domain separator. Prevents two versions of the same application from producing the same hash.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
+    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes} />
   </label>
 </ExpandableCheckbox>
 
-<RoyaltyInfoSection bind:opts={opts.royaltyInfo} errors={errors} />
+<RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

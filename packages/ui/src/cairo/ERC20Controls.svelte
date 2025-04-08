@@ -28,12 +28,12 @@
   <div class="grid grid-cols-[2fr,1fr] gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name} use:error={errors?.name}>
+      <input bind:value={opts.name} use:error={errors?.name} />
     </label>
 
     <label class="labeled-input">
       <span>Symbol</span>
-      <input bind:value={opts.symbol} use:error={errors?.symbol}>
+      <input bind:value={opts.symbol} use:error={errors?.symbol} />
     </label>
   </div>
 
@@ -42,7 +42,7 @@
       Premint
       <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
     </span>
-    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source}>
+    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source} />
   </label>
 </section>
 
@@ -51,7 +51,7 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
         Privileged accounts will be able to create more supply.
@@ -59,19 +59,18 @@
     </label>
 
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip>
-        Token holders will be able to destroy their tokens.
-      </HelpTooltip>
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
     <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
-        Privileged accounts will be able to pause the functionality marked with <code>self.pausable.assert_not_paused()</code>.
-        Useful for emergency response.
+        Privileged accounts will be able to pause the functionality marked with <code
+          >self.pausable.assert_not_paused()</code
+        >. Useful for emergency response.
       </HelpTooltip>
     </label>
 
@@ -93,7 +92,7 @@
         Name for domain separator. Prevents two applications from producing the same hash.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes}>
+    <input bind:value={opts.appName} use:error={errors?.appName} disabled={!opts.votes} />
   </label>
 
   <label class="labeled-input">
@@ -103,7 +102,7 @@
         Version for domain separator. Prevents two versions of the same application from producing the same hash.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes}>
+    <input bind:value={opts.appVersion} use:error={errors?.appVersion} disabled={!opts.votes} />
   </label>
 </ExpandableCheckbox>
 

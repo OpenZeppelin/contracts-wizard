@@ -27,4 +27,4 @@
   }
 </script>
 
-<input type="checkbox" bind:checked {disabled}>
+<input type="checkbox" bind:checked {disabled} />

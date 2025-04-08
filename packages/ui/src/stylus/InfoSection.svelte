@@ -18,4 +18,3 @@
     <input bind:value={info.license} placeholder={infoDefaults.license} />
   </label>
 </section>
-

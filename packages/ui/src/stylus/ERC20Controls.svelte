@@ -25,7 +25,7 @@
   <div class="grid gap-2">
     <label class="labeled-input">
       <span>Name</span>
-      <input bind:value={opts.name} use:error={errors?.name}>
+      <input bind:value={opts.name} use:error={errors?.name} />
     </label>
   </div>
 </section>
@@ -35,11 +35,9 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip>
-        Token holders will be able to destroy their tokens.
-      </HelpTooltip>
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
     <!-- TODO: uncomment once Pausable is supported -->
@@ -53,7 +51,7 @@
     </label> -->
 
     <label class:checked={opts.permit}>
-      <input type="checkbox" bind:checked={opts.permit}>
+      <input type="checkbox" bind:checked={opts.permit} />
       Permit
       <HelpTooltip>
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
@@ -61,10 +59,11 @@
     </label>
 
     <label class:checked={opts.flashmint}>
-      <input type="checkbox" bind:checked={opts.flashmint}>
+      <input type="checkbox" bind:checked={opts.flashmint} />
       Flash Minting
       <HelpTooltip>
-        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same transaction.
+        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same
+        transaction.
       </HelpTooltip>
     </label>
   </div>
