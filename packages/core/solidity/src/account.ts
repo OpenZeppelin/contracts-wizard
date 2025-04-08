@@ -9,21 +9,25 @@ import { addSigner, signerFunctions, type SignerOptions } from './signer';
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
   name: 'MyAccount',
-  accountBase: 'Account',
+  ERC1271: 'ERC7739',
+  ERC721Holder: true,
+  ERC1155Holder: true,
   signer: false,
   ERC7821: false,
   ERC7579: false,
 } as const;
 
-export const accountBaseOptions = ['AccountCore', 'Account'] as const;
-export type AccountBaseOptions = (typeof accountBaseOptions)[number];
+export const ERC1271Options = [false, 'ERC1271', 'ERC7739'] as const;
+export type ERC1271Options = (typeof ERC1271Options)[number];
 
 export const ERC7579Options = [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const;
 export type ERC7579Options = (typeof ERC7579Options)[number];
 
 export interface AccountOptions extends CommonOptions {
   name: string;
-  accountBase: AccountBaseOptions;
+  ERC1271?: ERC1271Options;
+  ERC721Holder?: boolean;
+  ERC1155Holder?: boolean;
   signer?: SignerOptions;
   ERC7821: boolean;
   ERC7579?: ERC7579Options;
@@ -33,7 +37,9 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   return {
     ...withCommonDefaults(opts),
     name: opts.name ?? defaults.name,
-    accountBase: opts.accountBase ?? defaults.accountBase,
+    ERC1271: opts.ERC1271 ?? defaults.ERC1271,
+    ERC721Holder: opts.ERC721Holder ?? defaults.ERC721Holder,
+    ERC1155Holder: opts.ERC1155Holder ?? defaults.ERC1155Holder,
     signer: opts.signer ?? defaults.signer,
     ERC7821: opts.ERC7821 ?? defaults.ERC7821,
     ERC7579: opts.ERC7579 ?? defaults.ERC7579,
@@ -53,12 +59,11 @@ export function buildAccount(opts: AccountOptions): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
-  addEIP712(c, allOpts);
   addParents(c, allOpts);
   overrideRawSignatureValidation(c, allOpts);
   setInfo(c, allOpts.info);
 
-  if (allOpts.accountBase !== 'Account' || !!opts.ERC7579) {
+  if (!!opts.ERC7579) {
     c.addImportOnly({
       name: 'PackedUserOperation',
       path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
@@ -70,29 +75,61 @@ export function buildAccount(opts: AccountOptions): Contract {
 
 function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Base
-  const baseName = opts.accountBase;
   c.addParent({
-    name: baseName,
-    path: `@openzeppelin/community-contracts/contracts/account/${baseName}.sol`,
+    name: 'Account',
+    path: `@openzeppelin/community-contracts/contracts/account/Account.sol`,
   });
-  const _validateUserOpOverrideFrom = opts.ERC7579 ? 'AccountCore' : baseName;
-  if (_validateUserOpOverrideFrom === 'AccountCore' && baseName !== 'AccountCore') {
-    c.addImportOnly({
-      name: 'AccountCore',
-      path: '@openzeppelin/community-contracts/contracts/account/AccountCore.sol',
-    });
-  }
-  c.addOverride({ name: _validateUserOpOverrideFrom }, functions._validateUserOp);
+  c.addOverride({ name: 'Account' }, functions._validateUserOp);
 
-  if (opts.accountBase !== 'Account') {
-    c.addOverride({ name: opts.accountBase }, functions._signableUserOpHash);
-    c.setFunctionBody(['// Hash can be overriden', 'return userOpHash;'], functions._signableUserOpHash);
-  }
+  if (opts.ERC1271 === 'ERC7739') addEIP712(c, opts);
 
   // Extensions
-  addERC7821(c, opts);
   addERC7579(c, opts);
+  addERC1271(c, opts);
   addSigner(c, opts.signer ?? false);
+  addERC7821(c, opts);
+  addERC721Holder(c, opts);
+  addERC1155Holder(c, opts);
+}
+
+function addERC1271(c: ContractBuilder, opts: AccountOptions) {
+  switch (opts.ERC1271) {
+    case 'ERC7739':
+      c.addParent({
+        name: 'ERC7739',
+        path: '@openzeppelin/community-contracts/contracts/utils/cryptography/ERC7739.sol',
+      });
+      break;
+    case 'ERC1271':
+      c.addParent({
+        name: 'IERC1271',
+        path: '@openzeppelin/contracts/interfaces/IERC1271.sol',
+      });
+      c.addOverride({ name: 'IERC1271' }, functions.isValidSignature);
+      if (!opts.ERC7579 && !opts.signer) {
+        c.setFunctionBody(
+          ['return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff)'],
+          functions.isValidSignature,
+        );
+      }
+      break;
+  }
+}
+
+function addERC721Holder(c: ContractBuilder, opts: AccountOptions): void {
+  if (!opts.ERC721Holder) return;
+  c.addParent({
+    name: 'ERC721Holder',
+    path: '@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol',
+  });
+}
+
+function addERC1155Holder(c: ContractBuilder, opts: AccountOptions): void {
+  if (!opts.ERC1155Holder) return;
+  c.addParent({
+    name: 'ERC1155Holder',
+    path: '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol',
+  });
 }
 
 function addERC7821(c: ContractBuilder, opts: AccountOptions): void {
@@ -103,7 +140,10 @@ function addERC7821(c: ContractBuilder, opts: AccountOptions): void {
     path: '@openzeppelin/community-contracts/contracts/account/extensions/ERC7821.sol',
   });
   c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
-  c.addModifier('onlyEntryPointOrSelf', functions._erc7821AuthorizedExecutor);
+  c.setFunctionBody(
+    ['return caller == address(entryPoint()) || super._erc7821AuthorizedExecutor(caller, mode, executionData);'],
+    functions._erc7821AuthorizedExecutor,
+  );
 }
 
 function addERC7579(c: ContractBuilder, opts: AccountOptions): void {
@@ -115,78 +155,64 @@ function addERC7579(c: ContractBuilder, opts: AccountOptions): void {
   if (opts.ERC7579 !== 'AccountERC7579') {
     c.addImportOnly({
       name: 'AccountERC7579',
-      path: '@openzeppelin/community-contracts/contracts/account/extensions/AccountERC7579.sol',
+      path: `@openzeppelin/community-contracts/contracts/account/extensions/AccountERC7579.sol`,
     });
   }
-  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
   c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
-  if (opts.accountBase === 'Account') {
-    c.addImportOnly({
-      name: 'ERC7739',
-      path: '@openzeppelin/community-contracts/contracts/utils/cryptography/ERC7739.sol',
-    });
-    c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
-    c.setFunctionBody(
-      [
-        '// ERC-7739 can return the fn selector (success), 0xffffffff (invalid) or 0x77390001 (detection).',
-        '// If the return is 0xffffffff, we fallback to validation using ERC-7579 modules.',
-        'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-        'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
-      ],
-      functions.isValidSignature,
-    );
-  }
+  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+
+  if (opts.ERC1271 !== 'ERC7739') return;
+  c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
+  c.setFunctionBody(
+    [
+      '// ERC-7739 can return the fn selector (success), 0xffffffff (invalid) or 0x77390001 (detection).',
+      '// If the return is 0xffffffff, we fallback to validation using ERC-7579 modules.',
+      'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
+      'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
+    ],
+    functions.isValidSignature,
+  );
 }
 
 function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
-  // EIP712 is only required for the Account and AccountERC7579 (both use EIP-712 as part of ERC-7739)
-  if (opts.accountBase === 'Account' || opts.ERC7579) {
-    c.addParent(
-      {
-        name: 'EIP712',
-        path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
-      },
-      [opts.name, '1'],
-    );
-  }
+  if (opts.ERC1271 != 'ERC7739') return;
+  c.addParent(
+    {
+      name: 'EIP712',
+      path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+    },
+    [opts.name, '1'],
+  );
 }
 
 function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions): void {
-  if (opts.signer) {
-    if (opts.ERC7579) {
-      // Overriding `_rawSignatureValidation` will always come from the AbstractSigner and AccountERC7579
-      c.addImportOnly({
-        name: 'AbstractSigner',
-        path: '@openzeppelin/community-contracts/contracts/utils/cryptography/AbstractSigner.sol',
-      });
-      c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
-      // If using `AccountERC7579Hooked`, the base contract won't be imported
-      if (opts.ERC7579 === 'AccountERC7579Hooked') {
-        c.addImportOnly({
-          name: 'AccountERC7579',
-          path: '@openzeppelin/community-contracts/contracts/account/extensions/AccountERC7579.sol',
-        });
-      }
-      c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
-      c.addFunctionCode(
-        '// Force signer validation first, and fallback to ERC-7579',
-        signerFunctions._rawSignatureValidation,
-      );
-      c.addFunctionCode(
-        `// return Signer${opts.signer}._rawSignatureValidation(hash, signature) || AccountERC7579._rawSignatureValidation(hash, signature);`,
-        signerFunctions._rawSignatureValidation,
-      );
-    } else {
-      // Signer implements _rawSignatureValidation alone
-    }
-  } else {
-    if (opts.ERC7579) {
-      // AccountERC7579 implements _rawSignatureValidation alone
-    } else {
-      // Custom validation logic
-      c.addOverride({ name: opts.accountBase }, signerFunctions._rawSignatureValidation);
-      c.setFunctionBody(['// Custom validation logic', 'return false;'], signerFunctions._rawSignatureValidation);
-    }
+  if (opts.signer && !opts.ERC7579) return; // Signer implements _rawSignatureValidation alone
+  if (!opts.signer && opts.ERC7579) return; // AccountERC7579 implements _rawSignatureValidation alone
+
+  // If no signer or ERC-7579 is used, we need to override the _rawSignatureValidation function
+  // to provide a custom validation logic
+  if (!opts.signer && !opts.ERC7579) {
+    // Custom validation logic
+    c.addOverride({ name: 'Account' }, signerFunctions._rawSignatureValidation);
+    c.setFunctionBody(['// Custom validation logic', 'return false;'], signerFunctions._rawSignatureValidation);
+  }
+
+  // Dissambiguate between Signer and AccountERC7579
+  if (opts.signer && opts.ERC7579) {
+    c.addImportOnly({
+      name: 'AbstractSigner',
+      path: '@openzeppelin/community-contracts/contracts/utils/cryptography/AbstractSigner.sol',
+    });
+    c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
+    c.addFunctionCode(
+      '// Force signer validation first, and fallback to ERC-7579',
+      signerFunctions._rawSignatureValidation,
+    );
+    c.addFunctionCode(
+      `// return Signer${opts.signer}._rawSignatureValidation(hash, signature) || AccountERC7579._rawSignatureValidation(hash, signature);`,
+      signerFunctions._rawSignatureValidation,
+    );
   }
 }
 
@@ -200,15 +226,6 @@ const functions = {
         { name: 'signature', type: 'bytes calldata' },
       ],
       returns: ['bytes4'],
-    },
-    _signableUserOpHash: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'userOp', type: 'PackedUserOperation calldata' },
-        { name: 'userOpHash', type: 'bytes32' },
-      ],
-      returns: ['bytes32'],
-      mutability: 'pure' as const,
     },
     _validateUserOp: {
       kind: 'internal' as const,

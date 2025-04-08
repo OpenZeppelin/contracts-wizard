@@ -11,6 +11,14 @@
     ...account.defaults,
   };
 
+  let wasERC7579 = false;
+  $: {
+    if (!wasERC7579 && !!opts.ERC7579) {
+      opts.ERC1271 = 'ERC7739';
+    }
+    wasERC7579 = !!opts.ERC7579;
+  }
+
   export let errors: undefined | OptionsErrorMessages;
 </script>
 
@@ -31,40 +39,65 @@
 </section>
 
 <section class="controls-section">
-  <h1>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="flex items-center tooltip-container pr-2">
-      <span>Base</span>
-      <HelpTooltip align="right" link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721accountBase">
-        Select an opinionated base contract to start with.
-      </HelpTooltip>
-    </label>
-  </h1>
-
-  <div class="checkbox-group">
-    <label class:checked={opts.accountBase === 'AccountCore'}>
-      <input type="radio" bind:group={opts.accountBase} value="AccountCore" />
-      Core
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#AccountCore">
-        Minimal logic to process user operations following ERC-4337. Requires an implementation of an AbstractSigner to
-        validate signatures.
-      </HelpTooltip>
-    </label>
-    <label class:checked={opts.accountBase === 'Account'}>
-      <input type="radio" bind:group={opts.accountBase} value="Account" />
-      ERC-7739 & Tokens
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#Account">
-        Opinionated extension of the AccountCore contract with ERC-7739 for readable signatures with replayability
-        protection and additional features like ERC721Holder, ERC1155Holder for token support.
-      </HelpTooltip>
-    </label>
-  </div>
-</section>
-
-<section class="controls-section">
   <h1>Features</h1>
 
   <div class="checkbox-group">
+    <label class:checked={!!opts.ERC1271}>
+      <input
+        type="checkbox"
+        checked={!!opts.ERC1271 || !!opts.ERC7579}
+        disabled={!!opts.ERC7579}
+        on:change={e => {
+          if (e.currentTarget?.checked) opts.ERC1271 = 'ERC7739';
+          else opts.ERC1271 = false;
+        }}
+      />
+      ERC-1271 Signatures
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/interfaces#IERC1271">
+        Validate signatures for the account using the standard `isValidSignature` method defined in ERC-1271.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.ERC1271 === 'ERC7739'} class="subcontrol">
+      <input
+        type="checkbox"
+        checked={opts.ERC1271 === 'ERC7739'}
+        on:change={e => {
+          if (e.currentTarget?.checked) opts.ERC1271 = 'ERC7739';
+          else opts.ERC1271 = 'ERC1271';
+        }}
+      />
+      ERC-7739
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/utils#ERC7739"
+        >Only validates signatures that are linked to the Account's domain separator to avoid replaying the same
+        signature across different accounts controled by the same owner.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.ERC721Holder}>
+      <input
+        type="checkbox"
+        checked={!!opts.ERC721Holder}
+        on:change={e => {
+          opts.ERC721Holder = e.currentTarget?.checked;
+        }}
+      />
+      ERC-721 Holder
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Holder">
+        Implement native support for receiving ERC-721 tokens.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.ERC1155Holder}>
+      <input
+        type="checkbox"
+        checked={!!opts.ERC1155Holder}
+        on:change={e => {
+          opts.ERC1155Holder = e.currentTarget?.checked;
+        }}
+      />
+      ERC-1155 Holder
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Holder">
+        Implement native support for receiving ERC-1155 tokens.
+      </HelpTooltip>
+    </label>
     <label class:checked={opts.ERC7821}>
       <input
         type="checkbox"
