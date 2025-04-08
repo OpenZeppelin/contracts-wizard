@@ -4,7 +4,7 @@ import { addFunctionPropertiesFrom } from './shared.ts';
 
 export const erc20Function = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard',
+  description: 'Make a fungible token per the ERC-20 standard.',
   parameters: {
     type: 'object',
     properties: {
@@ -37,7 +37,7 @@ export const erc20Function = {
 
 export const erc721Function = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard',
+  description: 'Make a non-fungible token per the ERC-721 standard.',
   parameters: {
     type: 'object',
     properties: {
@@ -54,7 +54,7 @@ export const erc721Function = {
         'appName',
         'appVersion',
       ]),
-      baseUri: { type: 'string', description: 'A base uri for the token' },
+      baseUri: { type: 'string', description: 'A base uri for the non-fungible token.' },
       enumerable: {
         type: 'boolean',
         description:
@@ -73,7 +73,7 @@ export const erc721Function = {
 
 export const erc1155Function = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard',
+  description: 'Make a non-fungible token per the ERC-1155 standard.',
   parameters: {
     type: 'object',
     properties: {
@@ -94,7 +94,7 @@ export const erc1155Function = {
       },
       updatableUri: {
         type: 'boolean',
-        description: 'Whether privileged accounts will be able to set a new URI for all token types',
+        description: 'Whether privileged accounts will be able to set a new URI for all token types.',
       },
     },
     required: ['name', 'baseUri'],
@@ -104,7 +104,7 @@ export const erc1155Function = {
 
 export const governorFunction = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO',
+  description: 'Make a contract to implement governance, such as for a DAO.',
   parameters: {
     type: 'object',
     properties: {
@@ -117,11 +117,13 @@ export const governorFunction = {
       ]),
       delay: {
         type: 'string',
-        description: 'The delay since proposal is created until voting starts, default is "1 day"',
+        description:
+          'The delay since proposal is created until voting starts, in readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/, default is "1 day".',
       },
       period: {
         type: 'string',
-        description: 'The length of period during which people can cast their vote, default is "1 week"',
+        description:
+          'The length of period during which people can cast their vote, in readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/, default is "1 week".',
       },
       proposalThreshold: {
         type: 'string',
@@ -130,25 +132,25 @@ export const governorFunction = {
       decimals: {
         type: 'number',
         description:
-          'The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes)',
+          'The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes).',
       },
       quorumMode: {
         type: 'string',
         enum: ['percent', 'absolute'],
-        description: 'The type of quorum mode to use',
+        description: 'The type of quorum mode to use, either by percentage or absolute value.',
       },
       quorumPercent: {
         type: 'number',
-        description: 'The percent required, in cases of quorumMode equals percent',
+        description: 'The percent required, in cases of quorumMode equals percent.',
       },
       quorumAbsolute: {
         type: 'string',
-        description: 'The absolute quorum required, in cases of quorumMode equals absolute',
+        description: 'The absolute quorum required, in cases of quorumMode equals absolute.',
       },
       votes: {
         type: 'string',
         enum: ['erc20votes', 'erc721votes'],
-        description: 'The type of voting to use',
+        description: 'The type of voting to use, either erc20votes or erc721votes.',
       },
       clockMode: {
         type: 'string',
@@ -161,11 +163,12 @@ export const governorFunction = {
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['openzeppelin'] },
         ],
-        description: 'The type of timelock to use',
+        description:
+          'Whether to add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions. If "openzeppelin", Module compatible with OpenZeppelin\'s TimelockController.',
       },
       settings: {
         type: 'boolean',
-        description: 'Allow governance to update voting settings (delay, period, proposal threshold)',
+        description: 'Whether to allow governance to update voting settings (delay, period, proposal threshold).',
       },
     },
     required: ['name', 'delay', 'period'],
@@ -195,9 +198,14 @@ export const vestingFunction = {
         description:
           'The duration of the cliff period. Must be less than or equal to the total duration. In readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/',
       },
-      schedule: { type: 'string', enum: ['linear', 'custom'], description: '' },
+      schedule: {
+        type: 'string',
+        enum: ['linear', 'custom'],
+        description:
+          'A vesting schedule implementation, tokens can either be vested gradually following a linear curve or with custom vesting schedule that requires the implementation of the VestingSchedule trait.',
+      },
     },
-    required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate', 'info'],
+    required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate'],
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Vesting'>;
@@ -210,7 +218,12 @@ export const accountFunction = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
-      type: { type: 'string', enum: ['stark', 'eth'], description: 'Type of account that ' },
+      type: {
+        type: 'string',
+        enum: ['stark', 'eth'],
+        description:
+          'Type of signature used for signature checking by the Account contract, Starknet account uses the STARK curve, Ethereum-flavored account uses the Secp256k1 curve.',
+      },
       declare: {
         type: 'boolean',
         description: 'Whether to enable the account to declare other contract classes.',
@@ -235,7 +248,10 @@ export const multisigFunction = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
-      quorum: { type: 'string', description: 'The minimal number of confirmations required to approve a transaction.' },
+      quorum: {
+        type: 'string',
+        description: 'The minimal number of confirmations required by the Multisig to approve a transaction.',
+      },
     },
     required: ['name', 'quorum'],
     additionalProperties: false,

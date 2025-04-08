@@ -1,7 +1,7 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import type { CairoCommonContractOptions, CairoCommonOptions, CairoRoyaltyInfoOptions } from '../types/cairo.ts';
+import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../types/languages.ts';
 
-const commonFunctionDescription = {
+const commonContractFunctionDescription = {
   upgradeable: {
     type: 'boolean',
     description:
@@ -18,10 +18,7 @@ const commonFunctionDescription = {
       },
     },
   },
-} as const satisfies AiFunctionPropertyDefinition<CairoCommonOptions>['properties'];
 
-const commonContractFunctionDescription = {
-  ...commonFunctionDescription,
   access: {
     anyOf: [
       { type: 'boolean', enum: [false] },
@@ -34,16 +31,19 @@ const commonContractFunctionDescription = {
 
 export const cairoSharedFunctionDefinition = {
   ...commonContractFunctionDescription,
+
   appName: {
     type: 'string',
     description:
       'Required when votes is enabled, for hashing and signing typed structured data. Name for domain separator implementing SNIP12Metadata trait. Prevents two applications from producing the same hash.',
   },
+
   appVersion: {
     type: 'string',
     description:
       'Required when votes is enabled, for hashing and signing typed structured data. Version for domain separator implementing SNIP12Metadata trait. Prevents two versions of the same application from producing the same hash.',
   },
+
   royaltyInfo: {
     type: 'object',
     description:
@@ -51,15 +51,19 @@ export const cairoSharedFunctionDefinition = {
     properties: {
       enabled: {
         type: 'boolean',
-        description: 'Whether to enable royalty feature for the current contract',
+        description: 'Whether to enable royalty feature for the contract',
       },
       defaultRoyaltyFraction: {
         type: 'string',
+        description:
+          "The royalty fraction that will be default for all tokens. It will be used for a token if there's no custom royalty fraction set for it.",
+      },
+      feeDenominator: {
+        type: 'string',
         description: "The denominator used to interpret a token's fee and to calculate the result fee fraction.",
       },
-      feeDenominator: { type: 'string', description: '' },
     },
   },
 } as const satisfies AiFunctionPropertyDefinition<
-  CairoRoyaltyInfoOptions & { appName: string; appVersion: string }
+  { royaltyInfo: CairoRoyaltyInfoOptions } & { appName: string; appVersion: string }
 >['properties'];

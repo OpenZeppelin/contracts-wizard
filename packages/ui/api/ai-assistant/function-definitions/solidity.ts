@@ -29,7 +29,7 @@ export const erc20Function = {
       },
       votes: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
+          { type: 'boolean', enum: [false, true] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description:
@@ -42,8 +42,8 @@ export const erc20Function = {
       },
       crossChainBridging: {
         anyOf: [
-          { type: 'string', enum: ['custom', 'superchain'] },
           { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['custom', 'superchain'] },
         ],
         description:
           'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
@@ -156,8 +156,8 @@ export const stablecoinFunction = {
       },
       limitations: {
         anyOf: [
-          { type: 'string', enum: ['allowlist', 'blocklist'] },
           { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
         description:
           'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',

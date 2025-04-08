@@ -34,9 +34,13 @@ type MembersOf<U, K extends string> = K extends 'boolean'
       ? Extract<U, number>
       : never;
 
+type BooleanEnum = [false] | [true] | [false, true] | [true, false];
+
+type EnumFor<K extends string, U> = K extends 'boolean' ? BooleanEnum : Permutation<MembersOf<U, K>>;
+
 type TypeFor<K extends string, U> = {
   type: K;
-  enum: Permutation<MembersOf<U, K>>;
+  enum: EnumFor<K, U>;
 };
 
 type Wrap<T> = { __wrapped: T };
@@ -53,23 +57,3 @@ export type AiFunctionCallAnyOf<U> =
       ? { [I in keyof P]: P[I] extends Wrap<infer X> ? X : never }
       : never
     : never;
-
-type IsAny<T> = 0 extends 1 & T ? true : false;
-type HasDeepAny<T> =
-  IsAny<T> extends true
-    ? true
-    : T extends object
-      ? {
-          [K in keyof T]-?: HasDeepAny<T[K]>;
-        } extends Record<string | number | symbol, false>
-        ? false
-        : true
-      : false;
-
-export type UnknownIfHasAnAnyAttribute<T> = HasDeepAny<T> extends true ? unknown : T;
-
-export type IsObject<T extends object> = T;
-
-export type ReplaceKeys<TOrigin, TReplace extends Partial<Record<keyof TOrigin, unknown>>> = {
-  [K in keyof TOrigin]: K extends keyof TReplace ? TReplace[K] : TOrigin[K];
-};
