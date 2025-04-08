@@ -11,6 +11,6 @@
   },
   "importMap": "./import_map.json",
   "tasks": {
-    "dev": "deno run --allow-all --env-file --watch --no-clear-screen ../scripts/development-server.ts"
+    "dev": "deno run --allow-all --env-file --watch --no-clear-screen scripts/development-server.ts"
   }
 }

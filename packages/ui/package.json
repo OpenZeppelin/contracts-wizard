@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node scripts/copy-versions.mjs && rollup -c",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
-    "dev:api": "ENV=dev deno task --config deno.json dev",
+    "dev:api": "ENV=dev deno task dev",
     "start": "sirv public",
     "validate": "svelte-check"
   },
