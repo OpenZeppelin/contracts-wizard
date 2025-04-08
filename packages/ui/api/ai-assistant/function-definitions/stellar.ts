@@ -1,6 +1,6 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
-import { commonFunctionDescription } from './stellar-shared.ts';
+import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 
 export const fungibleFunction = {
   name: 'Fungible',
@@ -8,7 +8,7 @@ export const fungibleFunction = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(commonFunctionDescription, [
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
         'name',
         'symbol',
         'burnable',

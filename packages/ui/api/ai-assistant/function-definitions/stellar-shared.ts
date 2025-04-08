@@ -1,14 +1,14 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import type { StellarCommonContractOptions, StellarCommonOptions } from '../types/stellar.ts';
+import type { StellarCommonContractOptions } from '../types/languages.ts';
 
-export const commonFunctionDescription = {
+export const stellarCommonFunctionDescription = {
   access: {
     anyOf: [
       { type: 'string', enum: ['ownable'] },
       { type: 'boolean', enum: [false] },
     ],
     description:
-      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
+      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions.',
   },
 
   info: {
@@ -21,4 +21,4 @@ export const commonFunctionDescription = {
       },
     },
   },
-} as const satisfies AiFunctionPropertyDefinition<StellarCommonOptions & StellarCommonContractOptions>['properties'];
+} as const satisfies AiFunctionPropertyDefinition<StellarCommonContractOptions>['properties'];

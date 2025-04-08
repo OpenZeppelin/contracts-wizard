@@ -9,14 +9,9 @@
       "dist"
     ]
   },
-  "imports": {
-    "@openzeppelin/wizard": "./packages/wizard-solidity",
-    "@openzeppelin/wizard-cairo": "./packages/wizard-cairo",
-    "@openzeppelin/wizard-cairo-alpha": "./packages/wizard-cairo_alpha",
-    "@openzeppelin/wizard-stellar": "./packages/wizard-stellar",
-    "@openzeppelin/wizard-stylus": "./packages/wizard-stylus"
-  },
+  "importMap": "./import_map.json",
   "tasks": {
-    "dev": "deno run --allow-all --env-file --watch --no-clear-screen scripts/development-server.ts"
+    "dev": "deno run --allow-all --env-file --watch --no-clear-screen scripts/deno/development-server.ts ",
+    "type:check": "deno check ./api --unstable-sloppy-imports"
   }
 }

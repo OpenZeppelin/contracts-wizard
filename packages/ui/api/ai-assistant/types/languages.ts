@@ -1,15 +1,19 @@
-import type { IsObject, UnknownIfHasAnAnyAttribute } from './helpers.ts';
-import type { SolidityKindedOptions } from './solidity.ts';
-import type { StellarKindedOptions } from './stellar.ts';
+import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
+export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
+export type { CommonContractOptions as StellarCommonContractOptions } from '../../../../core/stellar/dist/common-options';
 
-export type LanguagesContractsOptions = IsObject<
-  UnknownIfHasAnAnyAttribute<{
-    solidity: SolidityKindedOptions;
-    stellar: StellarKindedOptions;
-  }>
->;
+// Add supported language here
+export type LanguagesContractsOptions = {
+  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset'> & {
+    Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
+    RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+  };
+  stellar: StellarKindedOptions;
+};
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['stellar'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
+//
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
