@@ -1,5 +1,8 @@
 import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
 export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+// Stylus
+import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
+export type { CommonContractOptions as StylusCommonContractOptions } from '../../../../core/stylus/dist/common-options';
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -7,9 +10,10 @@ export type LanguagesContractsOptions = {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   };
+  stylus: StylusKindedOptions;
 };
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['stylus'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
