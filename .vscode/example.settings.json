@@ -3,7 +3,6 @@
   "editor.formatOnSave": true,
   "deno.enable": true,
   "deno.enablePaths": [
-    "packages/ui/scripts/development-server.ts",
-    "packages/ui/scripts/log.ts"
+    "packages/ui/scripts/deno/"
   ]
 }

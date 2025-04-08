@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 /// <reference lib="dom" />
 import './log.ts';
-import { getEnvironmentVariableOr } from '../api/utils/env.ts';
+import { getEnvironmentVariableOr } from '../../api/utils/env.ts';
 import { dirname } from 'https://deno.land/std/path/mod.ts';
 
 const developmentCors = new Response(undefined, {
