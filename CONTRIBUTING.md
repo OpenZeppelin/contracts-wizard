@@ -19,6 +19,8 @@ If you want to run the local API server for the AI Assistant, you also need to i
 Note that using the shell installation method is recommended (the `upgrade` command, which allows you to install a specific Deno version, is not always available when installing Deno with other installers).  
 To install the version of Deno that matches the Netlify deploy environment, run `deno upgrade --version 1.46.3`.
 
+When adding dependencies for the Deno app add the dependency as a dev dependency using yarn, map the dependency to the Deno equivalent in deno.json "imports" mapping and import it like a typescript dependency in the app.
+
 ### Installing dependencies
 From the root directory:
 - ```yarn install```
