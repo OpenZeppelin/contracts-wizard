@@ -1,9 +1,4 @@
-import type {
-  AllLanguagesContractsOptions,
-  LanguageContractsOptions,
-  SupportedLanguage,
-  AllLanguageContractsNames,
-} from './languages.ts';
+import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
 
 type IsPrimitiveUnion<T, U = T> = [T] extends [never]
   ? false // Edge case for `never`
