@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
 import RedisMock from './dev-mocks/redis.ts';
 import { getEnvironmentVariableOr, getEnvironmentVariablesOrFail } from '../utils/env.ts';
 import type { Chat } from '../ai-assistant/types/assistant.ts';

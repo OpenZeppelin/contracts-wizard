@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import OpenAI from 'https://esm.sh/openai@4.11.0';
 import { getEnvironmentVariablesOrFail } from '../utils/env.ts';
 
 export const getOpenAiInstance = () => {

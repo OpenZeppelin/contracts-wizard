@@ -1,5 +1,5 @@
 import type { KindedOptions as SolidityKindedOptions } from '@openzeppelin/wizard';
-export type { CommonOptions as SolidityCommonOptions } from '@openzeppelin/wizard/src/common-options';
+export type { CommonOptions as SolidityCommonOptions } from '@openzeppelin/wizard/src/common-options.ts';
 
 // Add supported language here
 export type LanguagesContractsOptions = {

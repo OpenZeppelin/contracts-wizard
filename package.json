@@ -6,7 +6,6 @@
     "lint": "eslint",
     "format:write": "prettier --write \"**/*\"",
     "format:check": "prettier --check \"**/*\"",
-    "type:check:api": "yarn --cwd ./packages/ui type:check:api",
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
     "dev": "concurrently --kill-others-on-fail --names \"ui,api\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",

@@ -1,11 +1,11 @@
-import { OpenAIStream } from 'ai';
+import { OpenAIStream } from 'https://esm.sh/ai@2.2.16';
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
-import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
-import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
-import type { SimpleAiFunctionDefinition } from './ai-assistant/types/function-definition.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
+import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
+import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
+import type { SimpleAiFunctionDefinition } from './ai-assistant/types/function-definition.ts';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(language: TLanguage) => {
   const functionPerLanguages: Record<SupportedLanguage, Record<string, SimpleAiFunctionDefinition>> = {

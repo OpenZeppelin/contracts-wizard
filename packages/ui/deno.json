@@ -11,7 +11,6 @@
   },
   "importMap": "./import_map.json",
   "tasks": {
-    "dev": "deno run --allow-all --env-file --watch --no-clear-screen --unstable-sloppy-imports ../scripts/development-server.ts",
-    "type:check": "deno check ./api --unstable-sloppy-imports"
+    "dev": "deno run --allow-all --env-file --watch --no-clear-screen ../scripts/development-server.ts"
   }
 }
