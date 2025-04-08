@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@openzeppelin/wizard": "../core/solidity/dist/",
+    "@openzeppelin/wizard/src/common-options": "../core/solidity/dist/common-options"
+  }
+}

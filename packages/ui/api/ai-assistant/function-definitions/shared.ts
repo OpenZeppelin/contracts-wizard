@@ -1,3 +1,5 @@
+import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
+
 const sharedFunctionDescription = {
   name: { type: 'string', description: 'The name of the contract' },
 
@@ -18,12 +20,19 @@ const sharedFunctionDescription = {
     type: 'boolean',
     description: 'Whether privileged accounts will be able to create more supply or emit more tokens',
   },
-} as const;
+} as const satisfies AiFunctionPropertyDefinition<{
+  name: string;
+  symbol: string;
+  burnable: boolean;
+  pausable: boolean;
+  mintable: boolean;
+}>['properties'];
 
 export const addFunctionPropertiesFrom = <
-  TCommonOptions extends Record<string, unknown>,
-  TCommonOptionName extends keyof (typeof sharedFunctionDescription &
-    TCommonOptions) = keyof (typeof sharedFunctionDescription & TCommonOptions),
+  TContract,
+  TCommonOptions extends Record<string, unknown> = Record<string, unknown>,
+  TCommonOptionName extends keyof (typeof sharedFunctionDescription & TCommonOptions) &
+    keyof TContract = keyof (typeof sharedFunctionDescription & TCommonOptions) & keyof TContract,
 >(
   commonOptions: TCommonOptions,
   commonOptionNames: TCommonOptionName[],
