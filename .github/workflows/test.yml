@@ -21,6 +21,23 @@ jobs:
       - name: Run linter
         run: yarn lint
 
+  deno-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: '1.46.3'
+      - name: Install Yarn
+        run: |
+          curl -o- -L https://yarnpkg.com/install.sh | bash
+          echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+      - name: Install dependencies with Yarn
+        run: yarn install
+      - name: Deno check API
+        run: yarn type:check:api
+
   build:
     strategy:
       matrix:

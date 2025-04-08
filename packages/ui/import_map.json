@@ -1,5 +1,8 @@
 {
   "imports": {
+    "@upstash/redis": "https://esm.sh/@upstash/redis@1.25.2",
+    "ai": "https://esm.sh/ai@2.2.16",
+    "openai": "https://esm.sh/openai@4.11.1",
     "@openzeppelin/wizard": "../core/solidity/dist/",
     "@openzeppelin/wizard/src/common-options": "../core/solidity/dist/common-options"
   }

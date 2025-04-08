@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/copy-versions.mjs && rollup -c",
+    "type:check:api": "deno task --config deno.json type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
     "dev:api": "ENV=dev deno task dev",
     "start": "sirv public",
@@ -20,7 +21,10 @@
     "@types/node": "^18.0.0",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.5.7",
+    "@upstash/redis": "1.25.2",
+    "ai": "2.2.16",
     "autoprefixer": "^10.4.2",
+    "openai": "4.11.1",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
     "postcss-load-config": "^6.0.0",
