@@ -4,8 +4,8 @@ import type {
   ExactRequiredKeys,
   IsPrimitiveUnion,
   Permutation,
-} from './helpers.ts';
-import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
+} from './helpers';
+import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages';
 
 type AiFunctionType<TType> = {
   type?: StringifyPrimaryType<TType>;

@@ -32,7 +32,7 @@ export interface ERC20Options extends CommonOptions {
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
    */
-  votes?: boolean | ClockMode;
+  votes?: false | ClockMode;
   flashmint?: boolean;
   crossChainBridging?: CrossChainBridging;
 }

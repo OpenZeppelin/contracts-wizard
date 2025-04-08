@@ -4,7 +4,7 @@ import type {
   SupportedLanguage,
   AllLanguageContractsNames,
   AllLanguagesContractsOptions,
-} from './languages.ts';
+} from './languages';
 
 export type Chat = {
   role: 'user' | 'assistant' | 'system';
