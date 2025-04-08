@@ -2,10 +2,7 @@
   import { SvelteComponentTyped } from 'svelte';
   import Wiz from './Wiz.svelte';
 
-  export const mergeAiAssistanceOptions = <
-    TLanguage extends AiAssistantLanguage,
-    TOption extends Partial<Record<AiAssistantFunctionName, AiFunctionCall<TLanguage>['arguments']>>,
-  >(
+  export const mergeAiAssistanceOptions = <TLanguage extends AiAssistantLanguage, TOption extends object>(
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
   ): TOption =>
@@ -20,9 +17,9 @@
     return Wiz as unknown as typeof SvelteComponentTyped<
       {
         language: TLanguage;
-        currentOpts?: AiAssistantContractsOptions<TLanguage>;
+        currentOpts?: Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>;
         currentCode: string;
-        experimentalContracts: AiAssistantFunctionName<TLanguage>[];
+        experimentalContracts?: AiAssistantFunctionName<TLanguage>[];
         sampleMessages?: string[];
       },
       { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }
