@@ -26,8 +26,12 @@
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
 
   const dispatch = createEventDispatcher();
+
+  const WizCairo = createWiz<'cairo'>();
 
   let showCode = true;
   async function allowRendering() {
@@ -115,9 +119,21 @@
       await postConfig(opts, 'download-file', language);
     }
   };
+
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'cairo'>>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+  };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
+  <WizCairo
+    language="cairo"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
+  />
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
