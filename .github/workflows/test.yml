@@ -34,7 +34,7 @@ jobs:
           curl -o- -L https://yarnpkg.com/install.sh | bash
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
       - name: Install dependencies with Yarn
-        run: yarn cache clean & yarn install
+        run: yarn install
       - name: Deno check API
         run: yarn type:check:api
 
