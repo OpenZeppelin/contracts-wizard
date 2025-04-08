@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "build": "node scripts/copy-versions.mjs && rollup -c",
-    "type:check:api": "deno task type:check",
+    "type:check:api": "deno task --config api/deno.jsonc type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
-    "dev:api": "ENV=dev deno task dev",
+    "dev:api": "ENV=dev deno task --config api/deno.jsonc dev",
     "start": "sirv public",
     "validate": "svelte-check"
   },
