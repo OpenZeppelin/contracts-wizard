@@ -1,7 +1,8 @@
 import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
 export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
-export type { CommonContractOptions as StellarCommonContractOptions } from '../../../../core/stellar/dist/common-options';
+import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -9,7 +10,9 @@ export type LanguagesContractsOptions = {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   };
-  stellar: StellarKindedOptions;
+  stellar: Omit<StellarKindedOptions, 'Fungible'> & {
+    Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
+  };
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];

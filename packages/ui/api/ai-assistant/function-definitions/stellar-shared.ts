@@ -3,12 +3,10 @@ import type { StellarCommonContractOptions } from '../types/languages.ts';
 
 export const stellarCommonFunctionDescription = {
   access: {
-    anyOf: [
-      { type: 'string', enum: ['ownable'] },
-      { type: 'boolean', enum: [false] },
-    ],
-    description:
-      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions.',
+    type: 'boolean',
+    enum: [false],
+    description: 'The type of access control to provision, currently not supported',
+    // 'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions.',
   },
 
   info: {
