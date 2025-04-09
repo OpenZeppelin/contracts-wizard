@@ -33,8 +33,8 @@ jobs:
         run: |
           curl -o- -L https://yarnpkg.com/install.sh | bash
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
-      - name: Install dependencies with Yarn
-        run: yarn install
+      - name: Install dependencies and build wizard packages
+        run: yarn install --frozen-lockfile
       - name: Deno check API
         run: yarn type:check:api
 
