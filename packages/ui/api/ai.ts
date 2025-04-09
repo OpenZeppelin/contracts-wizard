@@ -1,11 +1,11 @@
 import { OpenAIStream } from 'ai';
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
-import * as stellarFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
 import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
-import type { LanguageContractsNames, SupportedLanguage } from './ai-assistant/types/languages.ts';
+import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
 import type {
   AllContractsAIFunctionDefinitions,
   SimpleAiFunctionDefinition,

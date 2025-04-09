@@ -2,7 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 
-export const fungibleFunction = {
+export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
   description: 'Make a fungible token per the ERC-20 standard',
   parameters: {
