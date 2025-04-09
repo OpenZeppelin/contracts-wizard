@@ -1,5 +1,5 @@
-import type { KindedOptions as SolidityKindedOptions } from '@openzeppelin/wizard';
-export type { CommonOptions as SolidityCommonOptions } from '@openzeppelin/wizard/src/common-options.ts';
+import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
+export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -18,7 +18,7 @@ export type LanguageContractsOptions<TLanguage extends SupportedLanguage> = Lang
 
 export type AllLanguageContractsNames = AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]['kind'];
 
-type ExtractKind<T> = T extends { kind: infer K } ? K : never;
+type ExtractKind<T> = T extends { kind: infer K } ? (K extends string ? K : never) : never;
 
 export type LanguageContractsNames<TLanguage extends SupportedLanguage> = ExtractKind<
   LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]

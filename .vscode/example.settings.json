@@ -1,10 +1,8 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "deno.enablePaths": [
-    "packages/ui/api",
-    "packages/ui/scripts/development-server.ts"
-  ],
   "deno.enable": true,
-  "deno.path": "/opt/homebrew/bin/deno" // Update this to your Deno path	
+  "deno.enablePaths": [
+    "packages/ui/scripts/deno/"
+  ]
 }
