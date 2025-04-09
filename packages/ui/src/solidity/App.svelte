@@ -9,7 +9,6 @@
   import StablecoinControls from './StablecoinControls.svelte';
   import RealWorldAssetControls from './RealWorldAssetControls.svelte';
   import AccountControls from './AccountControls.svelte';
-  import PaymasterControls from './PaymasterControls.svelte';
   import GovernorControls from './GovernorControls.svelte';
   import CustomControls from './CustomControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -86,7 +85,6 @@
           case 'Stablecoin':
           case 'RealWorldAsset':
           case 'Account':
-          case 'Paymaster':
           case 'Governor':
           case 'Custom':
         }
@@ -245,7 +243,7 @@
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account', 'Paymaster']}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
     sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
   ></WizSolidity>
 
@@ -260,7 +258,6 @@
           Real-World Asset*
         </button>
         <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
-        <button class:selected={tab === 'Paymaster'} on:click={() => (tab = 'Paymaster')}> Paymaster* </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
@@ -366,9 +363,6 @@
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
-      </div>
-      <div class:hidden={tab !== 'Paymaster'}>
-        <PaymasterControls bind:opts={allOpts.Paymaster} errors={errors.Paymaster} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />

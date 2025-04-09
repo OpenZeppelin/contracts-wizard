@@ -7,7 +7,6 @@ import { generateERC721Options } from './erc721';
 import { generateERC1155Options } from './erc1155';
 import { generateStablecoinOptions } from './stablecoin';
 import { generateAccountOptions } from './account';
-import { generatePaymasterOptions } from './paymaster';
 import { generateGovernorOptions } from './governor';
 import { generateCustomOptions } from './custom';
 import type { GenericOptions, KindedOptions } from '../build-generic';
@@ -55,12 +54,6 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Account') {
     for (const kindOpts of generateAccountOptions()) {
       yield { kind: 'Account', ...kindOpts };
-    }
-  }
-
-  if (!kind || kind === 'Paymaster') {
-    for (const kindOpts of generatePaymasterOptions()) {
-      yield { kind: 'Paymaster', ...kindOpts };
     }
   }
 

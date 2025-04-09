@@ -19,11 +19,10 @@ The following contract types are supported:
 - `stablecoin`
 - `realWorldAsset`
 - `account`
-- `paymaster`
 - `governor`
 - `custom`
 
-Note that `stablecoin`, `realWorldAsset`, `account` and `paymaster` are experimental and may be subject to change.
+Note that `stablecoin`, `realWorldAsset`, and `account` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 
@@ -44,9 +43,6 @@ function print(opts?: StablecoinOptions): string
 ```
 ```js
 function print(opts?: AccountOptions): string
-```
-```js
-function print(opts?: PaymasterOptions): string
 ```
 ```js
 function print(opts?: GovernorOptions): string
@@ -73,9 +69,6 @@ const defaults: Required<StablecoinOptions>
 const defaults: Required<AccountOptions>
 ```
 ```js
-const defaults: Required<PaymasterOptions>
-```
-```js
 const defaults: Required<GovernorOptions>
 ```
 ```js
@@ -98,9 +91,6 @@ function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<AccountOptions>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<PaymasterOptions>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
