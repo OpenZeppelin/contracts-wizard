@@ -4,8 +4,7 @@ import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../typ
 const commonContractFunctionDescription = {
   upgradeable: {
     type: 'boolean',
-    description:
-      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
+    description: 'Whether the smart contract is upgradeable.',
   },
 
   info: {
