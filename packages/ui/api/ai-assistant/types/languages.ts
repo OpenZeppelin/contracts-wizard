@@ -17,12 +17,12 @@ export type LanguagesContractsOptions = {
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   };
   cairo: CairoKindedOptions;
-  'cairo-alpha': CairoAlphaKindedOptions;
+  cairoAlpha: CairoAlphaKindedOptions;
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
-  LanguagesContractsOptions['cairo-alpha'];
+  LanguagesContractsOptions['cairoAlpha'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
@@ -31,7 +31,7 @@ export type LanguageContractsOptions<TLanguage extends SupportedLanguage> = Lang
 
 export type AllLanguageContractsNames = AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]['kind'];
 
-type ExtractKind<T> = T extends { kind: infer K } ? K : never;
+type ExtractKind<T> = T extends { kind: infer K } ? (K extends string ? K : never) : never;
 
 export type LanguageContractsNames<TLanguage extends SupportedLanguage> = ExtractKind<
   LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]

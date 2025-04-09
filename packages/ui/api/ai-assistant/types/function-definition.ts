@@ -5,7 +5,12 @@ import type {
   IsPrimitiveUnion,
   Permutation,
 } from './helpers.ts';
-import type { AllLanguagesContractsOptions, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
+import type {
+  AllLanguagesContractsOptions,
+  LanguageContractsNames,
+  LanguageContractsOptions,
+  SupportedLanguage,
+} from './languages.ts';
 
 type AiFunctionType<TType> = {
   type?: StringifyPrimaryType<TType>;
@@ -65,5 +70,11 @@ export type SimpleAiFunctionDefinition = {
     properties: Record<string, unknown>;
     required?: string[];
     additionalProperties: false;
+  };
+};
+
+export type AllContractsAIFunctionDefinitions = {
+  [L in SupportedLanguage]: {
+    [K in LanguageContractsNames<L> as `${L}${K}AIFunctionDefinition`]: { name: K } & SimpleAiFunctionDefinition;
   };
 };

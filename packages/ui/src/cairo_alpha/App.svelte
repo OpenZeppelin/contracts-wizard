@@ -37,7 +37,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const WizCairoAlpha = createWiz<'cairo-alpha'>();
+  const WizCairoAlpha = createWiz<'cairoAlpha'>();
 
   let showCode = true;
   async function allowRendering() {
@@ -126,7 +126,7 @@
     }
   };
 
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'cairo-alpha'>>) => {
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'cairoAlpha'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
@@ -134,7 +134,7 @@
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <WizCairoAlpha
-    language="cairo-alpha"
+    language="cairoAlpha"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}

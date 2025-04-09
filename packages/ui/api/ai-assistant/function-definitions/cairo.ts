@@ -2,7 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoSharedFunctionDefinition } from './cairo-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 
-export const erc20Function = {
+export const cairoERC20AIFunctionDefinition = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard.',
   parameters: {
@@ -35,7 +35,7 @@ export const erc20Function = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC20'>;
 
-export const erc721Function = {
+export const cairoERC721AIFunctionDefinition = {
   name: 'ERC721',
   description: 'Make a non-fungible token per the ERC-721 standard.',
   parameters: {
@@ -71,7 +71,7 @@ export const erc721Function = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC721'>;
 
-export const erc1155Function = {
+export const cairoERC1155AIFunctionDefinition = {
   name: 'ERC1155',
   description: 'Make a non-fungible token per the ERC-1155 standard.',
   parameters: {
@@ -102,7 +102,7 @@ export const erc1155Function = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC1155'>;
 
-export const governorFunction = {
+export const cairoGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO.',
   parameters: {
@@ -176,7 +176,7 @@ export const governorFunction = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Governor'>;
 
-export const vestingFunction = {
+export const cairoVestingAIFunctionDefinition = {
   name: 'Vesting',
   description:
     'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
@@ -210,7 +210,7 @@ export const vestingFunction = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Vesting'>;
 
-export const accountFunction = {
+export const cairoAccountAIFunctionDefinition = {
   name: 'Account',
   description:
     'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
@@ -241,7 +241,7 @@ export const accountFunction = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Account'>;
 
-export const multisigFunction = {
+export const cairoMultisigAIFunctionDefinition = {
   name: 'Multisig',
   description: 'Make a custom smart contract',
   parameters: {
@@ -258,7 +258,7 @@ export const multisigFunction = {
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Multisig'>;
 
-export const customFunction = {
+export const cairoCustomAIFunctionDefinition = {
   name: 'Custom',
   description: 'Make a custom smart contract',
   parameters: {

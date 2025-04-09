@@ -2,7 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoAlphaSharedFunctionDefinition } from './cairo-alpha-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 
-export const erc20Function = {
+export const cairoAlphaERC20AIFunctionDefinition = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard.',
   parameters: {
@@ -33,9 +33,9 @@ export const erc20Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'ERC20'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC20'>;
 
-export const erc721Function = {
+export const cairoAlphaERC721AIFunctionDefinition = {
   name: 'ERC721',
   description: 'Make a non-fungible token per the ERC-721 standard.',
   parameters: {
@@ -69,9 +69,9 @@ export const erc721Function = {
     required: ['name', 'symbol'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'ERC721'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC721'>;
 
-export const erc1155Function = {
+export const cairoAlphaERC1155AIFunctionDefinition = {
   name: 'ERC1155',
   description: 'Make a non-fungible token per the ERC-1155 standard.',
   parameters: {
@@ -100,9 +100,9 @@ export const erc1155Function = {
     required: ['name', 'baseUri'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'ERC1155'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC1155'>;
 
-export const governorFunction = {
+export const cairoAlphaGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO.',
   parameters: {
@@ -174,9 +174,9 @@ export const governorFunction = {
     required: ['name', 'delay', 'period'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'Governor'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'Governor'>;
 
-export const vestingFunction = {
+export const cairoAlphaVestingAIFunctionDefinition = {
   name: 'Vesting',
   description:
     'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
@@ -208,9 +208,9 @@ export const vestingFunction = {
     required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'Vesting'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'Vesting'>;
 
-export const accountFunction = {
+export const cairoAlphaAccountAIFunctionDefinition = {
   name: 'Account',
   description:
     'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
@@ -239,9 +239,9 @@ export const accountFunction = {
     required: ['name', 'type'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'Account'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'Account'>;
 
-export const multisigFunction = {
+export const cairoAlphaMultisigAIFunctionDefinition = {
   name: 'Multisig',
   description: 'Make a custom smart contract',
   parameters: {
@@ -256,9 +256,9 @@ export const multisigFunction = {
     required: ['name', 'quorum'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'Multisig'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'Multisig'>;
 
-export const customFunction = {
+export const cairoAlphaCustomAIFunctionDefinition = {
   name: 'Custom',
   description: 'Make a custom smart contract',
   parameters: {
@@ -275,4 +275,4 @@ export const customFunction = {
     required: ['name'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'cairo-alpha', 'Custom'>;
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'Custom'>;
