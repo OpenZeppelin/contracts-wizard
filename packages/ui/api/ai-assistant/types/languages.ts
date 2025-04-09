@@ -3,9 +3,10 @@ export type { CommonOptions as SolidityCommonOptions } from '../../../../core/so
 
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset'> & {
+  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account'> & {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable'> & { upgradeable?: false };
   };
 };
 
