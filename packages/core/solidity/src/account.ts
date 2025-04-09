@@ -50,7 +50,7 @@ export function printAccount(opts: AccountOptions = defaults): string {
   return printContract(buildAccount(opts));
 }
 
-export function isAccessControlRequired(opts: Partial<AccountOptions>): boolean {
+export function isAccessControlRequired(_opts: Partial<AccountOptions>): boolean {
   return false;
 }
 
@@ -63,7 +63,7 @@ export function buildAccount(opts: AccountOptions): Contract {
   overrideRawSignatureValidation(c, allOpts);
   setInfo(c, allOpts.info);
 
-  if (!!opts.ERC7579) {
+  if (opts.ERC7579) {
     c.addImportOnly({
       name: 'PackedUserOperation',
       path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
