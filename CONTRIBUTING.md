@@ -14,12 +14,10 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 The following prerequisites are required to build the project locally:
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
-
-If you want to run the local API server for the AI Assistant, you also need to install [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation).
-Note that using the shell installation method is recommended (the `upgrade` command, which allows you to install a specific Deno version, is not always available when installing Deno with other installers).  
-To install the version of Deno that matches the Netlify deploy environment, run `deno upgrade --version 1.46.3`.
-
-When adding dependencies for the Deno app add the dependency as a dev dependency using yarn, map the dependency to the Deno equivalent url in import_map.json and import it like a typescript dependency in the app.
+- [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation) to run a local API server for the AI Assistant
+  - Note that using the shell installation method is recommended (the `upgrade` command, which allows you to install a specific Deno version, is not always available when installing Deno with other installers).  
+  - To install the version of Deno that matches the Netlify deploy environment, run `deno upgrade --version 1.46.3`.
+  - When adding dependencies for the Deno app add the dependency as a dev dependency using yarn, map the dependency to the Deno equivalent url in import_map.json and import it like a typescript dependency in the app.
 
 ### Installing dependencies
 From the root directory:
