@@ -132,7 +132,7 @@ export const cairoGovernorAIFunctionDefinition = {
       decimals: {
         type: 'number',
         description:
-          'The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes).',
+          'The number of decimals to use for the contract, unless otherwise specified default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes).',
       },
       quorumMode: {
         type: 'string',
@@ -150,13 +150,14 @@ export const cairoGovernorAIFunctionDefinition = {
       votes: {
         type: 'string',
         enum: ['erc20votes', 'erc721votes'],
-        description: 'The type of voting to use, either erc20votes or erc721votes.',
+        description:
+          'The type of voting to use. Either erc20votes, meaning voting power with a votes-enabled ERC20 token. Either erc721votes, meaning voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.',
       },
       clockMode: {
         type: 'string',
         enum: ['timestamp'],
         description:
-          'The clock mode used by the voting token. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.',
+          'The clock mode used by the voting token. For now, only timestamp mode where the token uses voting durations expressed as timestamps is supported. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.',
       },
       timelock: {
         anyOf: [
