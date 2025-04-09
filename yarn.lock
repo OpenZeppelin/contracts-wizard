@@ -1115,10 +1115,10 @@
     "@typescript-eslint/types" "8.29.1"
     eslint-visitor-keys "^4.2.0"
 
-"@upstash/redis@1.25.2":
-  version "1.25.2"
-  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.25.2.tgz#c400caced6e05a4931823c4eb57eda6b73963db3"
-  integrity sha512-iI3jgvmDIbe4Px0PskB8lrn1NXz7ZQyGpW9Ehmonk6SEFqhqssqIB04VmlNh8zZUXwzy6G9DaIa5gIUM6B7DwA==
+"@upstash/redis@1.34.7":
+  version "1.34.7"
+  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.34.7.tgz#7cf4909bc94bf1ad91d9ee81ff93dc8126cda56c"
+  integrity sha512-EJ/g+ttDL3MFS8WNDLj/Buybo3FpPw2IAFl4X8lxh8/l7YTq6kTqT6FKkq8eYRdN6lGlVw+W6qnmym734m39Tg==
   dependencies:
     crypto-js "^4.2.0"
 
