@@ -2,7 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 
-export const erc20Function = {
+export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard',
   parameters: {
@@ -63,7 +63,7 @@ export const erc20Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC20'>;
 
-export const erc721Function = {
+export const solidityERC721AIFunctionDefinition = {
   name: 'ERC721',
   description: 'Make a non-fungible token per the ERC-721 standard',
   parameters: {
@@ -107,7 +107,7 @@ export const erc721Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC721'>;
 
-export const erc1155Function = {
+export const solidityERC1155AIFunctionDefinition = {
   name: 'ERC1155',
   description: 'Make a non-fungible token per the ERC-1155 standard',
   parameters: {
@@ -141,14 +141,14 @@ export const erc1155Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC1155'>;
 
-export const stablecoinFunction = {
+export const solidityStablecoinAIFunctionDefinition = {
   name: 'Stablecoin',
   description:
     'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: {
     type: 'object',
     properties: {
-      ...erc20Function.parameters.properties,
+      ...solidityERC20AIFunctionDefinition.parameters.properties,
       custodian: {
         type: 'boolean',
         description:
@@ -173,14 +173,14 @@ export const stablecoinFunction = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Stablecoin'>;
 
-export const realWorldAssetFunction = {
+export const solidityRealWorldAssetAIFunctionDefinition = {
   name: 'RealWorldAsset',
   description:
     'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
-  parameters: stablecoinFunction.parameters,
+  parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
-export const governorFunction = {
+export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO',
   parameters: {
@@ -253,7 +253,7 @@ export const governorFunction = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Governor'>;
 
-export const customFunction = {
+export const solidityCustomAIFunctionDefinition = {
   name: 'Custom',
   description: 'Make a custom smart contract',
   parameters: {
