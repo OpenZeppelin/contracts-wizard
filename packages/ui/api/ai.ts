@@ -5,11 +5,17 @@ import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
 import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
-import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
+import type { LanguageContractsNames, SupportedLanguage } from './ai-assistant/types/languages.ts';
 import type { SimpleAiFunctionDefinition } from './ai-assistant/types/function-definition.ts';
 
-const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(language: TLanguage) => {
-  const functionPerLanguages: Record<SupportedLanguage, Record<string, SimpleAiFunctionDefinition>> = {
+const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
+  language: TLanguage,
+): SimpleAiFunctionDefinition[] => {
+  const functionPerLanguages: {
+    [L in SupportedLanguage]: {
+      [K in LanguageContractsNames<L> as `${L}${K}AIFunctionDefinition`]: { name: K } & SimpleAiFunctionDefinition;
+    };
+  } = {
     solidity: solidityFunctions,
     stylus: stylusFunctions,
   };

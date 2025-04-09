@@ -2,7 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stylusCommonFunctionDescription } from './stylus-shared.ts';
 
-export const erc20Function = {
+export const stylusERC20AIFunctionDefinition = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard',
   parameters: {
@@ -25,7 +25,7 @@ export const erc20Function = {
   },
 } as const satisfies AiFunctionDefinition<'stylus', 'ERC20'>;
 
-export const erc721Function = {
+export const stylusERC721AIFunctionDefinition = {
   name: 'ERC721',
   description: 'Make a non-fungible token per the ERC-721 standard',
   parameters: {
@@ -43,7 +43,7 @@ export const erc721Function = {
   },
 } as const satisfies AiFunctionDefinition<'stylus', 'ERC721'>;
 
-export const erc1155Function = {
+export const stylusERC1155AIFunctionDefinition = {
   name: 'ERC1155',
   description: 'Make a non-fungible token per the ERC-1155 standard',
   parameters: {

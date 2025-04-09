@@ -22,7 +22,7 @@ export type LanguageContractsOptions<TLanguage extends SupportedLanguage> = Lang
 
 export type AllLanguageContractsNames = AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]['kind'];
 
-type ExtractKind<T> = T extends { kind: infer K } ? K : never;
+type ExtractKind<T> = T extends { kind: infer K } ? (K extends string ? K : never) : never;
 
 export type LanguageContractsNames<TLanguage extends SupportedLanguage> = ExtractKind<
   LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]
