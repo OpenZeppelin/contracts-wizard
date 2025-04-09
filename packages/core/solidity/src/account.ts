@@ -106,9 +106,11 @@ function addERC1271(c: ContractBuilder, opts: AccountOptions) {
         path: '@openzeppelin/contracts/interfaces/IERC1271.sol',
       });
       c.addOverride({ name: 'IERC1271' }, functions.isValidSignature);
-      if (!opts.ERC7579 && !opts.signer) {
+      if (!opts.ERC7579) {
         c.setFunctionBody(
-          ['return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff)'],
+          [
+            'return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff);',
+          ],
           functions.isValidSignature,
         );
       }
