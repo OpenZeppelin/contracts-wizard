@@ -6,7 +6,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { custom, erc1155, stablecoin, erc20, erc721, governor } from './api';
+import { custom, erc1155, stablecoin, erc20, erc721, governor, account } from './api';
 
 interface Context {
   generatedSourcesPath: string;
@@ -66,6 +66,8 @@ function isAccessControlRequired(opts: GenericOptions) {
       return stablecoin.isAccessControlRequired(opts);
     case 'RealWorldAsset':
       return stablecoin.isAccessControlRequired(opts);
+    case 'Account':
+      return account.isAccessControlRequired(opts);
     case 'Governor':
       return governor.isAccessControlRequired(opts);
     case 'Custom':
