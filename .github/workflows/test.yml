@@ -29,10 +29,10 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: '1.46.3'
-      - name: Install Yarn
-        run: |
-          curl -o- -L https://yarnpkg.com/install.sh | bash
-          echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
       - name: Install dependencies and build wizard packages
         run: yarn install --frozen-lockfile
       - name: Deno check API
