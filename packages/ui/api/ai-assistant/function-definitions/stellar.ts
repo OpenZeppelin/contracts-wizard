@@ -4,7 +4,7 @@ import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
-  description: 'Make a fungible token per the ERC-20 standard',
+  description: 'Fungible Token Standard, compatible with SEP-41, similar to ERC-20',
   parameters: {
     type: 'object',
     properties: {
