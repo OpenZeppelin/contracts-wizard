@@ -10,7 +10,7 @@
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['ERC20']> = {
+  export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
     ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0

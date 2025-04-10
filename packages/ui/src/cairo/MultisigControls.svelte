@@ -10,7 +10,7 @@
 
   const defaults = multisig.defaults;
 
-  export const opts: Required<KindedOptions['Multisig']> = {
+  export let opts: Required<KindedOptions['Multisig']> = {
     kind: 'Multisig',
     ...defaults,
     info: { ...infoDefaults }, // create new object since Info is nested

@@ -11,7 +11,7 @@
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['ERC721']> = {
+  export let opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
     ...erc721.defaults,
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
