@@ -6,7 +6,7 @@
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['Account']> = {
+  export let opts: Required<KindedOptions['Account']> = {
     kind: 'Account',
     ...account.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
