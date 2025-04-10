@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@axelar-network/axelar-gmp-sdk-solidity@^5.10.0":
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.10.0.tgz#9679b0634e4db6eb345aac800df6dd3a38d2e242"
-  integrity sha512-s8SImALvYB+5AeiT3tbfWNBI2Mhqw1x91i/zM3DNpVUCnAR2HKtsB9T84KnUn/OJjOVgb4h0lv7q9smeYniRPw==
+"@axelar-network/axelar-gmp-sdk-solidity@^6.0.6":
+  version "6.0.6"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-6.0.6.tgz#6559394df9b551978ca8843a9cdf3dc89eacdcd4"
+  integrity sha512-XIcDlr1HoYSqcxuvvusILmiqerh2bL9NJLwU4lFBAJK5E/st/q3Em9ropBBZML9iuUZ+hDsch8Ev9rMO+ulaSQ==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.22.13":
   version "7.26.2"
@@ -3076,7 +3076,7 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-hardhat@^2.1.1:
+hardhat@^2.22.11:
   version "2.22.19"
   resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.22.19.tgz#92eb6f59e75b0dded841fecf16260a5e3f6eb4eb"
   integrity sha512-jptJR5o6MCgNbhd7eKa3mrteR+Ggq1exmE5RUL5ydQEVKcZm0sss5laa86yZ0ixIavIvF4zzS7TdGDuyopj0sQ==
