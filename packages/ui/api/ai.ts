@@ -1,5 +1,7 @@
 import { OpenAIStream } from 'ai';
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
+import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
@@ -16,6 +18,8 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
 ): SimpleAiFunctionDefinition[] => {
   const functionPerLanguages: AllContractsAIFunctionDefinitions = {
     solidity: solidityFunctions,
+    cairo: cairoFunctions,
+    cairoAlpha: cairoAlphaFunctions,
     stylus: stylusFunctions,
   };
 

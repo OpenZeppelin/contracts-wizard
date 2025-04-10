@@ -2,16 +2,24 @@
   import { SvelteComponentTyped } from 'svelte';
   import Wiz from './Wiz.svelte';
 
-  export const mergeAiAssistanceOptions = <TLanguage extends AiAssistantLanguage, TOption extends object>(
+  export const mergeAiAssistanceOptions = <
+    TLanguage extends AiAssistantLanguage,
+    TOption extends Partial<
+      Record<AiAssistantFunctionName, Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>>
+    >,
+  >(
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
   ): TOption =>
-    Object.keys(previousOptions).reduce((acc, currentKey) => {
-      if (aiFunctionCall.name === currentKey)
-        //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
-        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
-      else return acc;
-    }, previousOptions);
+    Object.keys(previousOptions).reduce(
+      (acc, currentKey) => {
+        if (aiFunctionCall.name === currentKey)
+          //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
+          return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+        else return acc;
+      },
+      { ...previousOptions },
+    );
 
   export function createWiz<TLanguage extends AiAssistantLanguage>() {
     return Wiz as unknown as typeof SvelteComponentTyped<

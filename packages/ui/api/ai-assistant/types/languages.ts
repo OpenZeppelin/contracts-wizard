@@ -1,6 +1,14 @@
 // Solidity
 import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
 export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+// Cairo
+import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
+export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../core/cairo/dist/common-options';
+export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../core/cairo/dist/set-royalty-info';
+// Cairo-alpha
+import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../core/cairo_alpha/dist';
+export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../core/cairo_alpha/dist/common-options';
+export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
 // Stylus
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
@@ -12,6 +20,8 @@ export type LanguagesContractsOptions = {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   };
+  cairo: CairoKindedOptions;
+  cairoAlpha: CairoAlphaKindedOptions;
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
     ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;
     ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
@@ -19,7 +29,11 @@ export type LanguagesContractsOptions = {
   };
 };
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] & LanguagesContractsOptions['stylus'];
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
+  LanguagesContractsOptions['cairo'] &
+  LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['stylus'];
+
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
