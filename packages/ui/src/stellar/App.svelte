@@ -25,6 +25,10 @@
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+
+  const WizStellar = createWiz<'stellar'>();
 
   const dispatch = createEventDispatcher();
 
@@ -105,9 +109,22 @@
       await postConfig(opts, 'download-file', language);
     }
   };
+
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'stellar'>>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+  };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
+  <WizStellar
+    language="stellar"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    sampleMessages={['Make a fungible token with supply of 10', 'What does mintable do?']}
+  ></WizStellar>
+
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
