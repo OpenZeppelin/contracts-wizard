@@ -29,7 +29,7 @@ export interface AccountOptions extends CommonOptions {
   ERC721Holder?: boolean;
   ERC1155Holder?: boolean;
   signer?: SignerOptions;
-  ERC7821: boolean;
+  ERC7821?: boolean;
   ERC7579?: ERC7579Options;
 }
 
