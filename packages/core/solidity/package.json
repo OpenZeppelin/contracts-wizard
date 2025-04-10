@@ -29,7 +29,7 @@
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
     "ava": "^6.0.0",
-    "hardhat": "^2.1.1",
+    "hardhat": "^2.22.11",
     "jszip": "^3.6.0",
     "rimraf": "^5.0.0",
     "semver": "^7.6.0",
