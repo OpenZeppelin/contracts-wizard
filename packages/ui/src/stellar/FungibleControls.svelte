@@ -7,7 +7,7 @@
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
-  export const opts: Required<KindedOptions['Fungible']> = {
+  export let opts: Required<KindedOptions['Fungible']> = {
     kind: 'Fungible',
     ...fungible.defaults,
     premint: '', // default to empty premint in UI instead of 0

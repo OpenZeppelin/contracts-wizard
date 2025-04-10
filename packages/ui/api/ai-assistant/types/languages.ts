@@ -9,6 +9,10 @@ export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../
 import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../core/cairo_alpha/dist';
 export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../core/cairo_alpha/dist/common-options';
 export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
+//Stellar
+import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
+import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -18,11 +22,15 @@ export type LanguagesContractsOptions = {
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
+  stellar: Omit<StellarKindedOptions, 'Fungible'> & {
+    Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
+  };
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
-  LanguagesContractsOptions['cairoAlpha'];
+  LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['stellar'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
