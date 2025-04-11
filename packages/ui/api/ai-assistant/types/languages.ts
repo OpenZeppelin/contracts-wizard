@@ -13,6 +13,10 @@ export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../.
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
 import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
 export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
+// Stylus
+import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
+import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
+export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -25,12 +29,18 @@ export type LanguagesContractsOptions = {
   stellar: Omit<StellarKindedOptions, 'Fungible'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
   };
+  stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
+    ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;
+    ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
+    ERC1155: StylusKindedOptions['ERC1155'] & StylusCommonContractOptions;
+  };
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
-  LanguagesContractsOptions['stellar'];
+  LanguagesContractsOptions['stellar'] &
+  LanguagesContractsOptions['stylus'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;

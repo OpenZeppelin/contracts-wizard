@@ -3,6 +3,7 @@ import * as solidityFunctions from './ai-assistant/function-definitions/solidity
 import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
 import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
+import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
@@ -21,6 +22,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     cairo: cairoFunctions,
     cairoAlpha: cairoAlphaFunctions,
     stellar: stellarFunctions,
+    stylus: stylusFunctions,
   };
 
   return Object.values(functionPerLanguages[language] ?? {});
