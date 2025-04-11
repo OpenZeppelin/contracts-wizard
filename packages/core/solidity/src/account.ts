@@ -167,8 +167,8 @@ function addERC7579(c: ContractBuilder, opts: AccountOptions): void {
   c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
   c.setFunctionBody(
     [
-      '// ERC-7739 can return the fn selector (success), 0xffffffff (invalid) or 0x77390001 (detection).',
-      '// If the return is 0xffffffff, we fallback to validation using ERC-7579 modules.',
+      '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
+      '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
       'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
       'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
     ],
@@ -207,12 +207,13 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
-    c.addFunctionCode(
-      '// Force signer validation first, and fallback to ERC-7579',
-      signerFunctions._rawSignatureValidation,
-    );
-    c.addFunctionCode(
-      `// return Signer${opts.signer}._rawSignatureValidation(hash, signature) || AccountERC7579._rawSignatureValidation(hash, signature);`,
+    c.setFunctionComments(
+      [
+        `// IMPORTANT: Make sure Signer${opts.signer} is most derived than AccountERC7579`,
+        `// in the inheritance chain (i.e. contract ... is AccountERC7579, ..., Signer${opts.signer})`,
+        '// to ensure the correct order of function resolution.',
+        '// AccountERC7579 returns false for `_rawSignatureValidation`',
+      ],
       signerFunctions._rawSignatureValidation,
     );
   }
