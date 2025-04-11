@@ -180,6 +180,68 @@ export const solidityRealWorldAssetAIFunctionDefinition = {
   parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
+export const solidityAccountAIFunctionDefinition = {
+  name: 'Account',
+  description:
+    'Make an account contract that follows the ERC-4337 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'info']),
+      ERC1271: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ERC1271', 'ERC7739'] },
+        ],
+        description:
+          'Whether to implement the ERC-1271 standard for validating signatures. This is useful for the account to verify signatures.',
+      },
+      ERC721Holder: {
+        type: 'boolean',
+        description:
+          'Whether to implement the `onERC721Received` function to allow the account to receive ERC721 tokens.',
+      },
+      ERC1155Holder: {
+        type: 'boolean',
+        description:
+          'Whether to implement the `onERC1155Received` function to allow the account to receive ERC1155 tokens.',
+      },
+      signer: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA'] },
+        ],
+        description: 'Defines the signature verification algorithm used by the account to verify user operations.',
+      },
+      ERC7821: {
+        type: 'boolean',
+        description:
+          'Whether to a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
+      },
+      ERC7579: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
+        ],
+        description:
+          'Whether to implement the ERC-7579 compatibility to enable functionality on the account with modules.',
+      },
+      upgradeable: {
+        type: 'boolean',
+        enum: [false],
+        description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
+      },
+      access: {
+        type: 'boolean',
+        enum: [false, 'managed', 'ownable', 'roles'],
+        description: 'Access control is not available for an account contract. It always authorizes itself.',
+      },
+    },
+    required: ['name'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'solidity', 'Account'>;
+
 export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO',
