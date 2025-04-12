@@ -53,7 +53,7 @@
         }}
       />
       ERC-1271 Signatures
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/interfaces#IERC1271">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/interfaces#IERC1271">
         Validate signatures for the account using the standard <code>isValidSignature</code> method defined in ERC-1271.
       </HelpTooltip>
     </label>
@@ -81,7 +81,7 @@
         }}
       />
       ERC-721 Holder
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Holder">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Holder">
         Implement native support for receiving ERC-721 tokens.
       </HelpTooltip>
     </label>
@@ -94,7 +94,7 @@
         }}
       />
       ERC-1155 Holder
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Holder">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155Holder">
         Implement native support for receiving ERC-1155 tokens.
       </HelpTooltip>
     </label>
@@ -163,21 +163,21 @@
     <label class:checked={opts.signer === 'ECDSA'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#ECDSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#ECDSA">
         ECDSA validation for an EOA account.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'P256'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#P256">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#P256">
         Signature validation for the secp256r1 curve. A NIST standard curve.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'RSA'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#RSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#RSA">
         RSA PKCS#1 v1.5 signature verification implementation according to RFC8017.
       </HelpTooltip>
     </label>
