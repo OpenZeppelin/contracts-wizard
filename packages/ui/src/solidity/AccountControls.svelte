@@ -2,6 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { account } from '@openzeppelin/wizard';
 
   import InfoSection from './InfoSection.svelte';
@@ -68,7 +69,7 @@
           else opts.signatureValidation = 'ERC1271';
         }}
       />
-      Cross Account Protection
+      Account Bound
       <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
         multiple smart accounts owned by the same EOA. This preserves the readability of signed contents while ensuring
@@ -148,21 +149,17 @@
         state changes, implement security checks, or add any custom behavior around executions and module management.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer}>
-      <input
-        type="checkbox"
-        checked={!!opts.signer}
-        on:change={e => {
-          if (e.currentTarget?.checked) opts.signer = 'ECDSA';
-          else opts.signer = false;
-        }}
-      />
-      Signer
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer">
-        Defines the base signature validation mechanism for the account. This implementation will be used by ERC-1271's
-        isValidSignature to verify signatures on behalf of the account.
-      </HelpTooltip>
-    </label>
+  </div>
+</section>
+
+<ExpandableToggleRadio
+  label="Signer"
+  bind:value={opts.signer}
+  defaultValue="ECDSA"
+  helpContent="Defines the base signature validation mechanism for the account. This implementation will be used by ERC-1271's isValidSignature to verify signatures on behalf of the account."
+  helpLink="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
+>
+  <div class="checkbox-group">
     <label class:checked={opts.signer === 'ECDSA'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
@@ -196,6 +193,6 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableToggleRadio>
 
 <InfoSection bind:info={opts.info} />
