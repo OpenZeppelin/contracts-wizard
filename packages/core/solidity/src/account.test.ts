@@ -15,11 +15,11 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
       printContract(
         buildAccount({
           name: 'MyAccount',
-          ERC1271: 'ERC7739',
+          signatureValidation: 'ERC7739',
           ERC721Holder: true,
           ERC1155Holder: true,
-          ERC7821: false,
-          ERC7579: false,
+          batchedExecution: false,
+          ERC7579Modules: false,
           ...opts,
         }),
       ),
@@ -63,13 +63,13 @@ for (const signer of [undefined, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
 
   testAccount(`${title} with ERC1271`, {
     name: `Custom${title}ERC1271`,
-    ERC1271: 'ERC1271',
+    signatureValidation: 'ERC1271',
     signer,
   });
 
   testAccount(`${title} with ERC7739`, {
     name: `Custom${title}ERC7739`,
-    ERC1271: 'ERC7739',
+    signatureValidation: 'ERC7739',
     signer,
   });
 
@@ -94,16 +94,16 @@ for (const signer of [undefined, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
 
   testAccount(`${title} with ERC7821 Execution`, {
     signer,
-    ERC7821: true,
+    batchedExecution: true,
   });
 
   testAccount(`${title} with ERC7579`, {
     signer,
-    ERC7579: 'AccountERC7579',
+    ERC7579Modules: 'AccountERC7579',
   });
 
   testAccount(`${title} with ERC7579 hooks`, {
     signer,
-    ERC7579: 'AccountERC7579Hooked',
+    ERC7579Modules: 'AccountERC7579Hooked',
   });
 }
