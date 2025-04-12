@@ -11,12 +11,12 @@
     ...account.defaults,
   };
 
-  let wasERC7579 = false;
+  let wasERC7579Modules = false;
   $: {
-    if (!wasERC7579 && !!opts.ERC7579) {
-      opts.ERC1271 = 'ERC7739';
+    if (!wasERC7579Modules && !!opts.ERC7579Modules) {
+      opts.signatureValidation = 'ERC7739';
     }
-    wasERC7579 = !!opts.ERC7579;
+    wasERC7579Modules = !!opts.ERC7579Modules;
   }
 
   export let errors: undefined | OptionsErrorMessages;
@@ -42,14 +42,14 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={!!opts.ERC1271}>
+    <label class:checked={!!opts.signatureValidation}>
       <input
         type="checkbox"
-        checked={!!opts.ERC1271 || !!opts.ERC7579}
-        disabled={!!opts.ERC7579}
+        checked={!!opts.signatureValidation || !!opts.ERC7579Modules}
+        disabled={!!opts.ERC7579Modules}
         on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC1271 = 'ERC7739';
-          else opts.ERC1271 = false;
+          if (e.currentTarget?.checked) opts.signatureValidation = 'ERC7739';
+          else opts.signatureValidation = false;
         }}
       />
       Signature Validation
@@ -59,13 +59,13 @@
         making them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.ERC1271 === 'ERC7739'} class="subcontrol">
+    <label class:checked={opts.signatureValidation === 'ERC7739'} class="subcontrol">
       <input
         type="checkbox"
-        checked={opts.ERC1271 === 'ERC7739'}
+        checked={opts.signatureValidation === 'ERC7739'}
         on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC1271 = 'ERC7739';
-          else opts.ERC1271 = 'ERC1271';
+          if (e.currentTarget?.checked) opts.signatureValidation = 'ERC7739';
+          else opts.signatureValidation = 'ERC1271';
         }}
       />
       Cross Account Protection
@@ -101,13 +101,13 @@
         Implement native support for receiving ERC-1155 tokens.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.ERC7821}>
+    <label class:checked={opts.batchedExecution}>
       <input
         type="checkbox"
-        checked={!!opts.ERC7821 || !!opts.ERC7579}
-        disabled={!!opts.ERC7579}
+        checked={!!opts.batchedExecution || !!opts.ERC7579Modules}
+        disabled={!!opts.ERC7579Modules}
         on:change={e => {
-          opts.ERC7821 = e.currentTarget?.checked;
+          opts.batchedExecution = e.currentTarget?.checked;
         }}
       />
       Batched Execution
@@ -117,13 +117,13 @@
         customizable error handling.
       </HelpTooltip>
     </label>
-    <label class:checked={!!opts.ERC7579}>
+    <label class:checked={!!opts.ERC7579Modules}>
       <input
         type="checkbox"
-        checked={!!opts.ERC7579}
+        checked={!!opts.ERC7579Modules}
         on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579';
-          else opts.ERC7579 = false;
+          if (e.currentTarget?.checked) opts.ERC7579Modules = 'AccountERC7579';
+          else opts.ERC7579Modules = false;
         }}
       />
       Modules
@@ -133,13 +133,13 @@
         additional features. Hooks are not supported by default.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.ERC7579 === 'AccountERC7579Hooked'} class="subcontrol">
+    <label class:checked={opts.ERC7579Modules === 'AccountERC7579Hooked'} class="subcontrol">
       <input
         type="checkbox"
-        checked={opts.ERC7579 === 'AccountERC7579Hooked'}
+        checked={opts.ERC7579Modules === 'AccountERC7579Hooked'}
         on:change={e => {
-          if (e.currentTarget?.checked) opts.ERC7579 = 'AccountERC7579Hooked';
-          else opts.ERC7579 = 'AccountERC7579';
+          if (e.currentTarget?.checked) opts.ERC7579Modules = 'AccountERC7579Hooked';
+          else opts.ERC7579Modules = 'AccountERC7579';
         }}
       />
       Hooks

@@ -6,7 +6,7 @@ import path from 'path';
 
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import type { GenericOptions, KindedOptions } from './build-generic';
-import { custom, erc1155, stablecoin, erc20, erc721, governor, account } from './api';
+import { custom, erc1155, stablecoin, erc20, erc721, governor } from './api';
 
 interface Context {
   generatedSourcesPath: string;
