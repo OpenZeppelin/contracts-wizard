@@ -158,9 +158,7 @@
         }}
       />
       Signer
-      <HelpTooltip
-        link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
-      >
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer">
         Defines the base signature validation mechanism for the account. This implementation will be used by ERC-1271's
         isValidSignature to verify signatures on behalf of the account.
       </HelpTooltip>
