@@ -122,7 +122,7 @@
         }}
       />
       ERC-7579 Modules
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">Enable functionality through modules</HelpTooltip>
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">Enable functionality through modules.</HelpTooltip>
     </label>
     <label class:checked={opts.ERC7579 === 'AccountERC7579Hooked'} class="subcontrol">
       <input
