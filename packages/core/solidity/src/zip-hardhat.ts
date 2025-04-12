@@ -6,8 +6,6 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
-type SupportedGenericOptions = Exclude<GenericOptions, { kind: 'Account' }>;
-
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
@@ -54,7 +52,7 @@ cache
 artifacts
 `;
 
-const test = (c: Contract, opts?: SupportedGenericOptions) => {
+const test = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getImports(c), getTestCase(c)));
 
   function getTestCase(c: Contract) {
@@ -183,7 +181,7 @@ function getHardhatPlugins(c: Contract) {
   return plugins;
 }
 
-export async function zipHardhat(c: Contract, opts?: SupportedGenericOptions) {
+export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
   const { default: packageJson } = c.upgradeable

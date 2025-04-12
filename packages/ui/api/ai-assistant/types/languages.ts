@@ -6,7 +6,7 @@ export type LanguagesContractsOptions = {
   solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account'> & {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
-    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
+    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable'> & { upgradeable?: false };
   };
 };
 

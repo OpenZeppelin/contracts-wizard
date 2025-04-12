@@ -104,19 +104,15 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.contract.path);
     return [
       ...findCover(
-        contracts.filter(c => isUpgradeable(c.options)),
+        contracts.filter(c => c.options.upgradeable),
         getParents,
       ),
       ...findCover(
-        contracts.filter(c => !isUpgradeable(c.options)),
+        contracts.filter(c => !c.options.upgradeable),
         getParents,
       ),
     ];
   }
-}
-
-function isUpgradeable(options: GenericOptions): boolean {
-  return options.kind !== 'Account' && options.upgradeable !== false;
 }
 
 export function* generateSources(subset: Subset, kind?: Kind): Generator<GeneratedSource> {

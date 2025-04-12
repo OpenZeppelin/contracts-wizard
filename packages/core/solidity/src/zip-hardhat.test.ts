@@ -18,8 +18,6 @@ import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 
-type SupportedGenericOptions = Exclude<GenericOptions, { kind: 'Account' }>;
-
 interface Context {
   tempFolder: string;
 }
@@ -35,7 +33,7 @@ test.afterEach.always(async t => {
 });
 
 test.serial('erc20 full', async t => {
-  const opts: SupportedGenericOptions = {
+  const opts: GenericOptions = {
     kind: 'ERC20',
     name: 'My Token',
     symbol: 'MTK',
@@ -53,7 +51,7 @@ test.serial('erc20 full', async t => {
 });
 
 test.serial('erc721 upgradeable', async t => {
-  const opts: SupportedGenericOptions = {
+  const opts: GenericOptions = {
     kind: 'ERC721',
     name: 'My Token',
     symbol: 'MTK',
@@ -64,7 +62,7 @@ test.serial('erc721 upgradeable', async t => {
 });
 
 test.serial('erc1155 basic', async t => {
-  const opts: SupportedGenericOptions = {
+  const opts: GenericOptions = {
     kind: 'ERC1155',
     name: 'My Token',
     uri: 'https://myuri/{id}',
@@ -74,13 +72,13 @@ test.serial('erc1155 basic', async t => {
 });
 
 test.serial('custom basic', async t => {
-  const opts: SupportedGenericOptions = { kind: 'Custom', name: 'My Contract' };
+  const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
 });
 
 test.serial('custom upgradeable', async t => {
-  const opts: SupportedGenericOptions = {
+  const opts: GenericOptions = {
     kind: 'Custom',
     name: 'My Contract',
     upgradeable: 'transparent',
@@ -89,7 +87,7 @@ test.serial('custom upgradeable', async t => {
   await runTest(c, t, opts);
 });
 
-async function runTest(c: Contract, t: ExecutionContext<Context>, opts: SupportedGenericOptions) {
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
   assertLayout(zip, c, t);
