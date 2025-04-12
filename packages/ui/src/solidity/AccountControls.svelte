@@ -56,8 +56,8 @@
       Signature Validation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/interfaces#IERC1271">
         Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
-        (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic,
-        making them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
+        (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic, making
+        them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signatureValidation === 'ERC7739'} class="subcontrol">
