@@ -233,7 +233,7 @@ export const solidityAccountAIFunctionDefinition = {
       },
       access: {
         type: 'boolean',
-        enum: [false, 'managed', 'ownable', 'roles'],
+        enum: [false],
         description: 'Access control is not available for an account contract. It always authorizes itself.',
       },
     },
