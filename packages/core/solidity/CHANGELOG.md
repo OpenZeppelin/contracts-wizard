@@ -1,13 +1,16 @@
 # Changelog
 
-## 0.5.4 (2025-04-01)
+## Unreleased
 
-- Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
-- Add `callback` in ERC20 features. ([#500](https://github.com/OpenZeppelin/contracts-wizard/pull/500))
 - Add `account` contract types for ERC-4337. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
 
 - **Potentially breaking changes**:
   - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
+
+## 0.5.4 (2025-04-01)
+
+- Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
+- Add `callback` in ERC20 features. ([#500](https://github.com/OpenZeppelin/contracts-wizard/pull/500))
 
 ## 0.5.3 (2025-03-13)
 
