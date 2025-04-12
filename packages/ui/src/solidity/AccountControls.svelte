@@ -54,7 +54,7 @@
       />
       ERC-1271 Signatures
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/interfaces#IERC1271">
-        Validate signatures for the account using the standard `isValidSignature` method defined in ERC-1271.
+        Validate signatures for the account using the standard <code>isValidSignature</code> method defined in ERC-1271.
       </HelpTooltip>
     </label>
     <label class:checked={opts.ERC1271 === 'ERC7739'} class="subcontrol">
