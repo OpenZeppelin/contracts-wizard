@@ -2,12 +2,11 @@ import { ContractBuilder } from './contract';
 import type { Contract } from './contract';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
-import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
-import { setInfo } from './set-info';
+import type { Info } from './set-info';
+import { setInfo, defaults as infoDefaults } from './set-info';
 import { addSigner, signerFunctions, type SignerOptions } from './signer';
 
 export const defaults: Required<AccountOptions> = {
-  ...commonDefaults,
   name: 'MyAccount',
   signatureValidation: 'ERC7739',
   ERC721Holder: true,
@@ -15,6 +14,7 @@ export const defaults: Required<AccountOptions> = {
   signer: false,
   batchedExecution: false,
   ERC7579Modules: false,
+  info: infoDefaults,
 } as const;
 
 export const SignatureValidationOptions = [false, 'ERC1271', 'ERC7739'] as const;
@@ -23,7 +23,7 @@ export type SignatureValidationOptions = (typeof SignatureValidationOptions)[num
 export const ERC7579ModulesOptions = [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const;
 export type ERC7579ModulesOptions = (typeof ERC7579ModulesOptions)[number];
 
-export interface AccountOptions extends CommonOptions {
+export interface AccountOptions {
   name: string;
   signatureValidation?: SignatureValidationOptions;
   ERC721Holder?: boolean;
@@ -31,11 +31,11 @@ export interface AccountOptions extends CommonOptions {
   signer?: SignerOptions;
   batchedExecution?: boolean;
   ERC7579Modules?: ERC7579ModulesOptions;
+  info?: Info;
 }
 
 function withDefaults(opts: AccountOptions): Required<AccountOptions> {
   return {
-    ...withCommonDefaults(opts),
     name: opts.name ?? defaults.name,
     signatureValidation: opts.signatureValidation ?? defaults.signatureValidation,
     ERC721Holder: opts.ERC721Holder ?? defaults.ERC721Holder,
@@ -43,6 +43,7 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
     signer: opts.signer ?? defaults.signer,
     batchedExecution: opts.batchedExecution ?? defaults.batchedExecution,
     ERC7579Modules: opts.ERC7579Modules ?? defaults.ERC7579Modules,
+    info: opts.info ?? {},
   };
 }
 

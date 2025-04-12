@@ -7,11 +7,13 @@ import contracts from '../openzeppelin-contracts';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
+type SupportedGenericOptions = Exclude<GenericOptions, { kind: 'Account' }>;
+
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
 }
 
-const test = (c: Contract, opts?: GenericOptions) => {
+const test = (c: Contract, opts?: SupportedGenericOptions) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)));
 
   function getImports(c: Contract) {
@@ -102,7 +104,7 @@ function getAddressArgs(c: Contract): string[] {
   return args;
 }
 
-const script = (c: Contract, opts?: GenericOptions) => {
+const script = (c: Contract, opts?: SupportedGenericOptions) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getScript(c)));
 
   function getImports(c: Contract) {
@@ -291,7 +293,7 @@ forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 See [Solidity scripting guide](https://book.getfoundry.sh/guides/scripting-with-solidity) for more information.
 `;
 
-export async function zipFoundry(c: Contract, opts?: GenericOptions) {
+export async function zipFoundry(c: Contract, opts?: SupportedGenericOptions) {
   const zip = new JSZip();
 
   zip.file(`src/${c.name}.sol`, printContract(c));
