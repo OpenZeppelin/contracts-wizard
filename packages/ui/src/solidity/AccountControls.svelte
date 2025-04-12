@@ -148,7 +148,7 @@
         }}
       />
       Signer
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/account-abstraction#selecting_a_signer"
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
         >Implement signature validation for the account.</HelpTooltip
       >
     </label>
