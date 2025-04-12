@@ -108,7 +108,7 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#ERC7821"
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/account#ERC7821"
         >Implements a minimal batch executor following ERC-7821.</HelpTooltip
       >
     </label>
