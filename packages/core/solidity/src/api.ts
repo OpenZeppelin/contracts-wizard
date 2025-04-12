@@ -23,6 +23,8 @@ import {
   defaults as stablecoinDefaults,
   isAccessControlRequired as stablecoinIsAccessControlRequired,
 } from './stablecoin';
+import type { AccountOptions } from './account';
+import { printAccount, defaults as accountDefaults } from './account';
 import type { GovernorOptions } from './governor';
 import {
   printGovernor,
@@ -46,7 +48,9 @@ export interface WizardContractAPI<Options extends CommonOptions> {
    * The default options that are used for `print`.
    */
   defaults: Required<Options>;
+}
 
+export interface AccessControlAPI<Options extends CommonOptions> {
   /**
    * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
    * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
@@ -54,13 +58,14 @@ export interface WizardContractAPI<Options extends CommonOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type ERC20 = WizardContractAPI<ERC20Options>;
-export type ERC721 = WizardContractAPI<ERC721Options>;
-export type ERC1155 = WizardContractAPI<ERC1155Options>;
-export type Stablecoin = WizardContractAPI<StablecoinOptions>;
-export type RealWorldAsset = WizardContractAPI<StablecoinOptions>;
-export type Governor = WizardContractAPI<GovernorOptions>;
-export type Custom = WizardContractAPI<CustomOptions>;
+export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
+export type ERC721 = WizardContractAPI<ERC721Options> & AccessControlAPI<ERC721Options>;
+export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC1155Options>;
+export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
+export type RealWorldAsset = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
+export type Account = WizardContractAPI<AccountOptions>;
+export type Governor = WizardContractAPI<GovernorOptions> & AccessControlAPI<GovernorOptions>;
+export type Custom = WizardContractAPI<CustomOptions> & AccessControlAPI<CustomOptions>;
 
 export const erc20: ERC20 = {
   print: printERC20,
@@ -81,6 +86,10 @@ export const stablecoin: Stablecoin = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
+};
+export const account: Account = {
+  print: printAccount,
+  defaults: accountDefaults,
 };
 export const realWorldAsset: RealWorldAsset = {
   print: printStablecoin,
