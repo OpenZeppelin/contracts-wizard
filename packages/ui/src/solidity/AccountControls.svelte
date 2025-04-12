@@ -55,7 +55,7 @@
       />
       Signature Validation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/interfaces#IERC1271">
-        Enables smart contracts to validate signatures through a standard `isValidSignature` method. Unlike EOAs
+        Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
         (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic,
         making them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
       </HelpTooltip>
@@ -130,7 +130,7 @@
       Modules
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">
         Enables a modular architecture where account functionality can be extended through external contracts (modules).
-        Supports validators for signature verification, executors for transaction handling, fallback handlers for
+        Supports validators for signature verification, executors for transaction handling, and fallback handlers for
         additional features. Hooks are not supported by default.
       </HelpTooltip>
     </label>
@@ -156,11 +156,11 @@
   label="Signer"
   bind:value={opts.signer}
   defaultValue="ECDSA"
-  helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's isValidSignature to verify signatures on behalf of the account."
+  helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's <code>isValidSignature</code> to verify signatures on behalf of the account."
   helpLink="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
 >
   <div class="checkbox-group">
-    <label class:checked={opts.signer === 'ECDSA'} class="subcontrol">
+    <label class:checked={opts.signer === 'ECDSA'}>
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#ECDSA">
@@ -168,7 +168,7 @@
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer === 'ERC7702'} class="subcontrol">
+    <label class:checked={opts.signer === 'ERC7702'}>
       <input type="radio" bind:group={opts.signer} value="ERC7702" />
       EOA Delegation
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7702">
@@ -176,7 +176,7 @@
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer === 'P256'} class="subcontrol">
+    <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#P256">
@@ -184,7 +184,7 @@
         hardware that use this standardized curve, such as Apple's Passkeys or certain HSMs.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer === 'RSA'} class="subcontrol">
+    <label class:checked={opts.signer === 'RSA'}>
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#RSA">
