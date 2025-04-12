@@ -188,7 +188,7 @@ export const solidityAccountAIFunctionDefinition = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'info']),
-      ERC1271: {
+      signatureValidation: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ERC1271', 'ERC7739'] },
@@ -213,12 +213,12 @@ export const solidityAccountAIFunctionDefinition = {
         ],
         description: 'Defines the signature verification algorithm used by the account to verify user operations.',
       },
-      ERC7821: {
+      batchedExecution: {
         type: 'boolean',
         description:
           'Whether to a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
       },
-      ERC7579: {
+      ERC7579Modules: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
