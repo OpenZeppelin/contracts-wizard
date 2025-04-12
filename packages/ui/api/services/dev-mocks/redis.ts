@@ -1,5 +1,5 @@
 // deno-lint-ignore-file require-await
-import type { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
+import type { Redis } from '@upstash/redis';
 
 export default class RedisMock implements Pick<Redis, 'exists' | 'hset'> {
   private store: Record<

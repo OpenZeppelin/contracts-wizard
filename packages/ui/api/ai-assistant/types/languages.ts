@@ -1,49 +1,55 @@
 // Solidity
-import type { ERC20Options as SolidityERC20Options } from '@openzeppelin/wizard/src/erc20';
-import type { ERC721Options as SolidityERC721Options } from '@openzeppelin/wizard/src/erc721';
-import type { ERC1155Options as SolidityERC1155Options } from '@openzeppelin/wizard/src/erc1155';
-import type { StablecoinOptions as SolidityStablecoinOptions } from '@openzeppelin/wizard/src/stablecoin';
-import type { GovernorOptions as SolidityGovernorOptions } from '@openzeppelin/wizard/src/governor';
-import type { CustomOptions as SolidityCustomOptions } from '@openzeppelin/wizard/src/custom';
-import type { Access as SolidityAccesss } from '@openzeppelin/wizard/src/set-access-control';
-import type { Upgradeable as SolidityUpgradeable } from '@openzeppelin/wizard/src/set-upgradeable';
-import type { Info as SolidityInfo } from '@openzeppelin/wizard/src/set-info';
+import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
+export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+// Cairo
+import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
+export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../core/cairo/dist/common-options';
+export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../core/cairo/dist/set-royalty-info';
+// Cairo-alpha
+import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../core/cairo_alpha/dist';
+export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../core/cairo_alpha/dist/common-options';
+export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
+//Stellar
+import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
+import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
+// Stylus
+import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
+import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
+export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
 
-// Solidity
-
-export interface SolidityCommonOptions {
-  access?: SolidityAccesss;
-  upgradeable?: SolidityUpgradeable;
-  info?: SolidityInfo;
-}
-
-export interface SolidityKindedOptions {
-  ERC20: { kind: 'ERC20' } & SolidityCommonOptions & SolidityERC20Options;
-  ERC721: { kind: 'ERC721' } & SolidityCommonOptions & SolidityERC721Options;
-  ERC1155: { kind: 'ERC1155' } & SolidityCommonOptions & SolidityERC1155Options;
-  Stablecoin: { kind: 'Stablecoin' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;
-  RealWorldAsset: { kind: 'RealWorldAsset' } & SolidityCommonOptions & SolidityERC20Options & SolidityStablecoinOptions;
-  Governor: { kind: 'Governor' } & SolidityCommonOptions & SolidityGovernorOptions;
-  Custom: { kind: 'Custom' } & SolidityCommonOptions & SolidityCustomOptions;
-}
-
-// After importing and building KindedOptions add supported language here
+// Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: SolidityKindedOptions;
+  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset'> & {
+    Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
+    RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+  };
+  cairo: CairoKindedOptions;
+  cairoAlpha: CairoAlphaKindedOptions;
+  stellar: Omit<StellarKindedOptions, 'Fungible'> & {
+    Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
+  };
+  stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
+    ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;
+    ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
+    ERC1155: StylusKindedOptions['ERC1155'] & StylusCommonContractOptions;
+  };
 };
 
-export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'];
-
+export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
+  LanguagesContractsOptions['cairo'] &
+  LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['stellar'] &
+  LanguagesContractsOptions['stylus'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
-// Utils
 export type LanguageContractsOptions<TLanguage extends SupportedLanguage> = LanguagesContractsOptions[TLanguage];
 
 export type AllLanguageContractsNames = AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]['kind'];
 
-type ExtractKind<T> = T extends { kind: infer K } ? K : never;
+type ExtractKind<T> = T extends { kind: infer K } ? (K extends string ? K : never) : never;
 
 export type LanguageContractsNames<TLanguage extends SupportedLanguage> = ExtractKind<
   LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]

@@ -4,25 +4,30 @@
 
   export const mergeAiAssistanceOptions = <
     TLanguage extends AiAssistantLanguage,
-    TOption extends Partial<Record<AiAssistantFunctionName, AiFunctionCall<TLanguage>['arguments']>>,
+    TOption extends Partial<
+      Record<AiAssistantFunctionName, Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>>
+    >,
   >(
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
   ): TOption =>
-    Object.keys(previousOptions).reduce((acc, currentKey) => {
-      if (aiFunctionCall.name === currentKey)
-        //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
-        return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
-      else return acc;
-    }, previousOptions);
+    Object.keys(previousOptions).reduce(
+      (acc, currentKey) => {
+        if (aiFunctionCall.name === currentKey)
+          //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
+          return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+        else return acc;
+      },
+      { ...previousOptions },
+    );
 
   export function createWiz<TLanguage extends AiAssistantLanguage>() {
     return Wiz as unknown as typeof SvelteComponentTyped<
       {
         language: TLanguage;
-        currentOpts?: AiAssistantContractsOptions<TLanguage>;
+        currentOpts?: Record<keyof AiAssistantContractsOptions<TLanguage>, unknown>;
         currentCode: string;
-        experimentalContracts: AiAssistantFunctionName<TLanguage>[];
+        experimentalContracts?: AiAssistantFunctionName<TLanguage>[];
         sampleMessages?: string[];
       },
       { 'function-call-response': CustomEvent<AiFunctionCall<TLanguage>> }

@@ -1,48 +1,33 @@
 import type {
+  AiFunctionCallAnyOf,
+  StringifyPrimaryType,
+  ExactRequiredKeys,
+  IsPrimitiveUnion,
+  Permutation,
+} from './helpers.ts';
+import type {
   AllLanguagesContractsOptions,
+  LanguageContractsNames,
   LanguageContractsOptions,
   SupportedLanguage,
-  AllLanguageContractsNames,
 } from './languages.ts';
 
-type IsPrimitiveUnion<T, U = T> = [T] extends [never]
-  ? false // Edge case for `never`
-  : [T] extends [boolean]
-    ? false
-    : T extends U
-      ? [U] extends [T]
-        ? false
-        : true
-      : false;
-
-type AiFunctionCallPrimaryType<TType> = TType extends string
-  ? 'string'
-  : TType extends number
-    ? 'number'
-    : TType extends boolean
-      ? 'boolean'
-      : TType extends unknown[]
-        ? 'array'
-        : TType extends object
-          ? 'object'
-          : never;
-
 type AiFunctionType<TType> = {
-  type?: AiFunctionCallPrimaryType<TType>;
-  enum?: TType[];
+  type?: StringifyPrimaryType<TType>;
+  enum?: Permutation<TType>;
   description: string;
 };
 
 type AiFunctionCallOneOfType<TType> =
   | Required<AiFunctionType<TType>>
   | {
-      anyOf: Omit<AiFunctionCallType<TType>, 'description'>[];
+      anyOf: AiFunctionCallAnyOf<TType>;
       description: string;
     };
 
 export type AiFunctionCallType<TType> = AiFunctionType<TType> | AiFunctionCallOneOfType<TType>;
 
-type AiFunctionProperties<TProperties extends object> = Required<{
+export type AiFunctionProperties<TProperties extends object> = Required<{
   [K in keyof TProperties]: TProperties[K] extends object
     ? AiFunctionPropertyDefinition<TProperties[K]>
     : IsPrimitiveUnion<TProperties[K]> extends true
@@ -71,7 +56,7 @@ export type AiFunctionDefinition<
   name: TContractName;
   description: string;
   parameters: AiFunctionPropertyDefinition<Required<LanguageContractsOptions<TLanguage>[TContractName]>, TOmit> & {
-    required?: (keyof LanguageContractsOptions<TLanguage>[TContractName])[];
+    required?: ExactRequiredKeys<Omit<LanguageContractsOptions<TLanguage>[TContractName], 'kind' | TOmit>>;
     additionalProperties: false;
   };
 };
@@ -85,5 +70,11 @@ export type SimpleAiFunctionDefinition = {
     properties: Record<string, unknown>;
     required?: string[];
     additionalProperties: false;
+  };
+};
+
+export type AllContractsAIFunctionDefinitions = {
+  [L in SupportedLanguage]: {
+    [K in LanguageContractsNames<L> as `${L}${K}AIFunctionDefinition`]: { name: K } & SimpleAiFunctionDefinition;
   };
 };

@@ -1,44 +1,8 @@
-import type { AiFunctionDefinition, AiFunctionPropertyDefinition } from '../types/function-definition.ts';
+import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
-import type { SolidityCommonOptions } from '../types/languages.ts';
+import { commonFunctionDescription } from './solidity-shared.ts';
 
-const commonFunctionDescription = {
-  access: {
-    anyOf: [
-      { type: 'boolean', enum: [false] },
-      { type: 'string', enum: ['ownable', 'roles', 'managed'] },
-    ],
-    description:
-      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
-  },
-
-  upgradeable: {
-    anyOf: [
-      { type: 'boolean', enum: [false] },
-      { type: 'string', enum: ['transparent', 'uups'] },
-    ],
-    description:
-      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
-  },
-
-  info: {
-    type: 'object',
-    description: 'Metadata about the contract and author',
-    properties: {
-      securityContact: {
-        type: 'string',
-        description:
-          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
-      },
-      license: {
-        type: 'string',
-        description: 'The license used by the contract, default is "MIT"',
-      },
-    },
-  },
-} as const satisfies AiFunctionPropertyDefinition<SolidityCommonOptions>['properties'];
-
-export const erc20Function = {
+export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
   description: 'Make a fungible token per the ERC-20 standard',
   parameters: {
@@ -65,7 +29,7 @@ export const erc20Function = {
       },
       votes: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
+          { type: 'boolean', enum: [false, true] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description:
@@ -99,7 +63,7 @@ export const erc20Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC20'>;
 
-export const erc721Function = {
+export const solidityERC721AIFunctionDefinition = {
   name: 'ERC721',
   description: 'Make a non-fungible token per the ERC-721 standard',
   parameters: {
@@ -135,7 +99,7 @@ export const erc721Function = {
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description:
-          'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
+          'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
       },
     },
     required: ['name', 'symbol'],
@@ -143,7 +107,7 @@ export const erc721Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC721'>;
 
-export const erc1155Function = {
+export const solidityERC1155AIFunctionDefinition = {
   name: 'ERC1155',
   description: 'Make a non-fungible token per the ERC-1155 standard',
   parameters: {
@@ -177,14 +141,14 @@ export const erc1155Function = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC1155'>;
 
-export const stablecoinFunction = {
+export const solidityStablecoinAIFunctionDefinition = {
   name: 'Stablecoin',
   description:
     'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
   parameters: {
     type: 'object',
     properties: {
-      ...erc20Function.parameters.properties,
+      ...solidityERC20AIFunctionDefinition.parameters.properties,
       custodian: {
         type: 'boolean',
         description:
@@ -199,7 +163,7 @@ export const stablecoinFunction = {
           'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
       },
       upgradeable: {
-        type: 'string',
+        type: 'boolean',
         enum: [false],
         description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
@@ -209,14 +173,14 @@ export const stablecoinFunction = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Stablecoin'>;
 
-export const realWorldAssetFunction = {
+export const solidityRealWorldAssetAIFunctionDefinition = {
   name: 'RealWorldAsset',
   description:
     'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
-  parameters: stablecoinFunction.parameters,
+  parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
-export const governorFunction = {
+export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO',
   parameters: {
@@ -270,8 +234,8 @@ export const governorFunction = {
       },
       timelock: {
         anyOf: [
-          { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['openzeppelin', 'compound'] },
+          { type: 'boolean', enum: [false] },
         ],
         description: 'The type of timelock to use',
       },
@@ -289,7 +253,7 @@ export const governorFunction = {
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Governor'>;
 
-export const customFunction = {
+export const solidityCustomAIFunctionDefinition = {
   name: 'Custom',
   description: 'Make a custom smart contract',
   parameters: {

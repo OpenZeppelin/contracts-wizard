@@ -21,6 +21,23 @@ jobs:
       - name: Run linter
         run: yarn lint
 
+  deno-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: '1.46.3'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      - name: Install dependencies and build wizard packages
+        run: yarn install --frozen-lockfile
+      - name: Deno check API
+        run: yarn type:check:api
+
   build:
     strategy:
       matrix:
