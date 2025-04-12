@@ -84,7 +84,7 @@
           opts.ERC721Holder = e.currentTarget?.checked;
         }}
       />
-      ERC-721 Holder
+      ERC721 Holder
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Holder">
         Implement native support for receiving ERC-721 tokens.
       </HelpTooltip>
@@ -97,7 +97,7 @@
           opts.ERC1155Holder = e.currentTarget?.checked;
         }}
       />
-      ERC-1155 Holder
+      ERC1155 Holder
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155Holder">
         Implement native support for receiving ERC-1155 tokens.
       </HelpTooltip>
