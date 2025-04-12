@@ -67,7 +67,7 @@
         }}
       />
       ERC-7739
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/utils#ERC7739"
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739"
         >Only validates signatures that are linked to the Account's domain separator to avoid replaying the same
         signature across different accounts controlled by the same owner.
       </HelpTooltip>
