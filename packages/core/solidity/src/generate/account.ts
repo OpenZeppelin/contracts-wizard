@@ -1,7 +1,5 @@
 import type { AccountOptions } from '../account';
-import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
-import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
 const account = {
@@ -12,8 +10,8 @@ const account = {
   signer: ['ERC7702', 'ECDSA', 'P256', 'RSA'] as const,
   ERC7821: [false, true] as const,
   ERC7579: [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const,
-  access: accessOptions,
-  upgradeable: upgradeableOptions,
+  access: [false] as const,
+  upgradeable: [false] as const,
   info: infoOptions,
 };
 

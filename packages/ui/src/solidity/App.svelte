@@ -150,6 +150,7 @@
     } else if (
       opts?.kind === 'Stablecoin' ||
       opts?.kind === 'RealWorldAsset' ||
+      opts?.kind === 'Account' ||
       (opts?.kind === 'ERC20' && opts.crossChainBridging)
     ) {
       return {

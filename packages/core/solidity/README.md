@@ -90,15 +90,15 @@ function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
 function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean
 ```
 ```js
-function isAccessControlRequired(opts: Partial<AccountOptions>): boolean
-```
-```js
 function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
 ```
-Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
+Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
+
+> Note that contracts such as `account`, have its own way of handling permissions and do not support the `access` option.
+Thus, that type does not include `isAccessControlRequired`.
 
 ### Examples
 

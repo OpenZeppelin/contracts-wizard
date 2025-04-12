@@ -52,9 +52,11 @@
           else opts.ERC1271 = false;
         }}
       />
-      ERC-1271 Signatures
+      Signature Validation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/interfaces#IERC1271">
-        Validate signatures for the account using the standard <code>isValidSignature</code> method defined in ERC-1271.
+        Enables smart contracts to validate signatures through a standard `isValidSignature` method. Unlike EOAs
+        (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic,
+        making them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
       </HelpTooltip>
     </label>
     <label class:checked={opts.ERC1271 === 'ERC7739'} class="subcontrol">
@@ -66,10 +68,11 @@
           else opts.ERC1271 = 'ERC1271';
         }}
       />
-      ERC-7739
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739"
-        >Only validates signatures that are linked to the Account's domain separator to avoid replaying the same
-        signature across different accounts controlled by the same owner.
+      Cross Account Protection
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739">
+        Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
+        multiple smart accounts owned by the same EOA. This preserves the readability of signed contents while ensuring
+        each signature is uniquely bound to a specific account and chain.
       </HelpTooltip>
     </label>
     <label class:checked={opts.ERC721Holder}>
@@ -108,9 +111,11 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/account#ERC7821"
-        >Implements a minimal batch executor following ERC-7821.</HelpTooltip
-      >
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/account#ERC7821">
+        Enables atomic execution of multiple transactions in a single operation, reducing total transaction costs and
+        latency. Supports different execution modes including single calls, batch calls, and delegatecalls with
+        customizable error handling.
+      </HelpTooltip>
     </label>
     <label class:checked={!!opts.ERC7579}>
       <input
@@ -121,8 +126,12 @@
           else opts.ERC7579 = false;
         }}
       />
-      ERC-7579 Modules
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">Enable functionality through modules.</HelpTooltip>
+      Modules
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">
+        Enables a modular architecture where account functionality can be extended through external contracts (modules).
+        Supports validators for signature verification, executors for transaction handling, fallback handlers for
+        additional features. Hooks are not supported by default.
+      </HelpTooltip>
     </label>
     <label class:checked={opts.ERC7579 === 'AccountERC7579Hooked'} class="subcontrol">
       <input
@@ -134,9 +143,10 @@
         }}
       />
       Hooks
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579#hooks"
-        >Hooks enable support for pre and post checks after execution.</HelpTooltip
-      >
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579#hooks">
+        Enables custom logic to be executed before and after account operations. Hooks can validate transactions, track
+        state changes, implement security checks, or add any custom behavior around executions and module management.
+      </HelpTooltip>
     </label>
     <label class:checked={opts.signer}>
       <input
@@ -148,37 +158,43 @@
         }}
       />
       Signer
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
-        >Implement signature validation for the account.</HelpTooltip
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
       >
-    </label>
-    <label class:checked={opts.signer === 'ERC7702'} class="subcontrol">
-      <input type="radio" bind:group={opts.signer} value="ERC7702" />
-      EIP-7702
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7702">
-        ECDSA validation for the account address where is deployed. EOAs can delegate execution to them to validate
-        their own native signatures.
+        Defines the base signature validation mechanism for the account. This implementation will be used by ERC-1271's
+        isValidSignature to verify signatures on behalf of the account.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'ECDSA'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#ECDSA">
-        ECDSA validation for an EOA account.
+        Standard Ethereum signature validation using secp256k1. Validates signatures against a specified owner address,
+        making it suitable for accounts controlled by EOAs.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.signer === 'ERC7702'} class="subcontrol">
+      <input type="radio" bind:group={opts.signer} value="ERC7702" />
+      EOA Delegation
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7702">
+        Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
+        rights to the account while maintaining their native signature verification.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'P256'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#P256">
-        Signature validation for the secp256r1 curve. A NIST standard curve.
+        Signature validation using the NIST P-256 curve (secp256r1). Useful for integrating with external systems and
+        hardware that use this standardized curve, such as Apple's Passkeys or certain HSMs.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'RSA'} class="subcontrol">
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#RSA">
-        RSA PKCS#1 v1.5 signature verification implementation according to RFC8017.
+        RSA PKCS#1 v1.5 signature validation following RFC8017. Enables integration with traditional PKI systems and
+        hardware security modules that use RSA keys.
       </HelpTooltip>
     </label>
   </div>

@@ -50,10 +50,6 @@ export function printAccount(opts: AccountOptions = defaults): string {
   return printContract(buildAccount(opts));
 }
 
-export function isAccessControlRequired(_opts: Partial<AccountOptions>): boolean {
-  return false;
-}
-
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
 

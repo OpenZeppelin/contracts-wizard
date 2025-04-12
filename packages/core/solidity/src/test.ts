@@ -67,7 +67,7 @@ function isAccessControlRequired(opts: GenericOptions) {
     case 'RealWorldAsset':
       return stablecoin.isAccessControlRequired(opts);
     case 'Account':
-      return account.isAccessControlRequired(opts);
+      throw new Error(`Not applicable for ${opts.kind}`);
     case 'Governor':
       return governor.isAccessControlRequired(opts);
     case 'Custom':
