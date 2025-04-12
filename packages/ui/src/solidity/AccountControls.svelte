@@ -156,7 +156,7 @@
   label="Signer"
   bind:value={opts.signer}
   defaultValue="ECDSA"
-  helpContent="Defines the base signature validation mechanism for the account. This implementation will be used by ERC-1271's isValidSignature to verify signatures on behalf of the account."
+  helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's isValidSignature to verify signatures on behalf of the account."
   helpLink="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
 >
   <div class="checkbox-group">
