@@ -42,7 +42,7 @@ From the root directory:
 
 If linting errors or warnings occur, run `yarn lint --fix` to attempt to auto-fix issues.  If there are remaining issues that cannot be auto-fixed, manually address them and re-run the command to ensure it passes.
 
-### Running formater
+### Running formatter
 From the root directory:
 - ```yarn format:{check|write}```
 
