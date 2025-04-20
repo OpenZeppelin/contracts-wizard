@@ -1,4 +1,4 @@
-import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './contract';
+import type { BaseFunction, BaseTraitImplBlock, ContractBuilder } from './contract';
 
 export const accessOptions = [false, 'ownable'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
@@ -37,7 +37,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
  */
 export function requireAccessControl(
   c: ContractBuilder,
-  trait: BaseImplementedTrait,
+  trait: BaseTraitImplBlock,
   fn: BaseFunction,
   access: Access,
   caller?: string,
@@ -54,14 +54,13 @@ export function requireAccessControl(
       if (caller) {
         c.addUseClause('soroban_sdk', 'panic_with_error');
         c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
-        c.addFunctionCodeBefore(trait, fn, [
-          getOwner,
-          'if owner != caller {',
-          `    panic_with_error!(e, ${c.name}Error::Unauthorized)`,
-          '}',
-        ]);
+        c.addFunctionCodeBefore(
+          fn,
+          [getOwner, 'if owner != caller {', `    panic_with_error!(e, ${c.name}Error::Unauthorized)`, '}'],
+          trait,
+        );
       } else {
-        c.addFunctionCodeBefore(trait, fn, [getOwner, 'owner.require_auth();']);
+        c.addFunctionCodeBefore(fn, [getOwner, 'owner.require_auth();'], trait);
       }
       break;
     }

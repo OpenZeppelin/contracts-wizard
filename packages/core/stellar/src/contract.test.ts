@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import type { BaseFunction, BaseImplementedTrait } from './contract';
+import type { BaseFunction, BaseTraitImplBlock } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
 
@@ -23,39 +23,39 @@ test('contract with constructor code with semicolon', t => {
 
 test('contract with function code before', t => {
   const Foo = new ContractBuilder('Foo');
-  const trait: BaseImplementedTrait = {
-    name: 'External',
-    for: 'ExternalTrait',
+  const trait: BaseTraitImplBlock = {
+    traitName: 'External',
+    structName: 'ExternalTrait',
     tags: ['othertag', 'contractimpl'],
   };
-  Foo.addImplementedTrait(trait);
+  Foo.addTraitImplBlock(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
     code: ['someFunction()'],
   };
-  Foo.addFunction(trait, fn);
-  Foo.addFunctionTag(trait, fn, 'functiontag');
-  Foo.addFunctionCodeBefore(trait, fn, ['before()']);
+  Foo.addTraitFunction(trait, fn);
+  Foo.addFunctionTag(fn, 'functiontag', trait);
+  Foo.addFunctionCodeBefore(fn, ['before()'], trait);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with function code before with semicolons', t => {
   const Foo = new ContractBuilder('Foo');
-  const trait: BaseImplementedTrait = {
-    name: 'External',
-    for: 'ExternalTrait',
+  const trait: BaseTraitImplBlock = {
+    traitName: 'External',
+    structName: 'ExternalTrait',
     tags: ['othertag', 'contractimpl'],
   };
-  Foo.addImplementedTrait(trait);
+  Foo.addTraitImplBlock(trait);
   const fn: BaseFunction = {
     name: 'someFunction',
     args: [],
     code: ['someFunction();'],
   };
-  Foo.addFunction(trait, fn);
-  Foo.addFunctionTag(trait, fn, 'functiontag');
-  Foo.addFunctionCodeBefore(trait, fn, ['before();']);
+  Foo.addTraitFunction(trait, fn);
+  Foo.addFunctionTag(fn, 'functiontag', trait);
+  Foo.addFunctionCodeBefore(fn, ['before();'], trait);
   t.snapshot(printContract(Foo));
 });
 

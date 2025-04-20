@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -151,28 +151,25 @@ function printImplementedTraits(contract: Contract): Lines[] {
     if (a.tags.length !== b.tags.length) {
       return a.tags.length - b.tags.length;
     }
-    return a.name.localeCompare(b.name);
+    return a.traitName.localeCompare(b.traitName);
   });
 
   // group by section
-  const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
-      // default to no section
-      const section = current.section ?? DEFAULT_SECTION;
-      (result[section] = result[section] || []).push(current);
-      return result;
-    },
-    {},
-  );
+  const grouped = sortedTraits.reduce((result: { [section: string]: TraitImplBlock[] }, current: TraitImplBlock) => {
+    // default to no section
+    const section = current.section ?? DEFAULT_SECTION;
+    (result[section] = result[section] || []).push(current);
+    return result;
+  }, {});
 
   const sections = Object.entries(grouped)
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]));
+    .map(([section, impls]) => printImplementedTraitsSection(section, impls as TraitImplBlock[]));
 
   return spaceBetween(...sections);
 }
 
-function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]): Lines[] {
+function printImplementedTraitsSection(section: string, impls: TraitImplBlock[]): Lines[] {
   const lines = [];
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
@@ -189,10 +186,10 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
   return lines;
 }
 
-function printImplementedTrait(trait: ImplementedTrait): Lines[] {
+function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} for ${trait.for} {`);
+  implLines.push(`impl ${trait.traitName} for ${trait.structName} {`);
   const fns = trait.functions.map(fn => printFunction(fn));
   implLines.push(spaceBetween(...fns));
   implLines.push('}');

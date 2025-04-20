@@ -6,7 +6,8 @@ export interface Contract {
   useClauses: UseClause[];
   constructorCode: string[];
   constructorArgs: Argument[];
-  implementedTraits: ImplementedTrait[];
+  implementedTraits: TraitImplBlock[];
+  freeFunctions: ContractFunction[];
   variables: Variable[];
   errors: Error[];
   ownable: boolean;
@@ -26,10 +27,11 @@ export interface UseClause {
   alias?: string;
 }
 
-export interface BaseImplementedTrait {
-  name: string;
-  for: string;
+export interface BaseTraitImplBlock {
+  traitName: string;
+  structName: string;
   tags: string[];
+  assocType?: string;
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -38,9 +40,8 @@ export interface BaseImplementedTrait {
   priority?: number;
 }
 
-export interface ImplementedTrait extends BaseImplementedTrait {
+export interface TraitImplBlock extends BaseTraitImplBlock {
   functions: ContractFunction[];
-  section?: string;
 }
 
 export interface BaseFunction {
@@ -74,7 +75,8 @@ export class ContractBuilder implements Contract {
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
 
-  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
+  private implementedTraitsMap: Map<string, TraitImplBlock> = new Map();
+  private freeFunctionsMap: Map<string, ContractFunction> = new Map();
   private variablesMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
@@ -83,8 +85,12 @@ export class ContractBuilder implements Contract {
     this.name = toIdentifier(name, true);
   }
 
-  get implementedTraits(): ImplementedTrait[] {
+  get implementedTraits(): TraitImplBlock[] {
     return [...this.implementedTraitsMap.values()];
+  }
+
+  get freeFunctions(): ContractFunction[] {
+    return [...this.freeFunctionsMap.values()];
   }
 
   get variables(): Variable[] {
@@ -129,16 +135,17 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addImplementedTrait(baseTrait: BaseImplementedTrait): ImplementedTrait {
-    const key = baseTrait.name;
+  addTraitImplBlock(baseTrait: BaseTraitImplBlock): TraitImplBlock {
+    const key = baseTrait.traitName;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = {
-        name: baseTrait.name,
-        for: baseTrait.for,
+      const t: TraitImplBlock = {
+        traitName: baseTrait.traitName,
+        structName: baseTrait.structName,
         tags: [...baseTrait.tags],
+        assocType: baseTrait.assocType,
         functions: [],
         section: baseTrait.section,
         priority: baseTrait.priority,
@@ -148,8 +155,25 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
-    const t = this.addImplementedTrait(baseTrait);
+  // used for adding a function to the `impl Contract` block
+  addFreeFunction(fn: BaseFunction): ContractFunction {
+    const signature = this.getFunctionSignature(fn);
+    const existingFn = this.freeFunctionsMap.get(signature);
+    if (existingFn !== undefined) {
+      return existingFn;
+    } else {
+      const contractFn: ContractFunction = {
+        ...fn,
+        codeBefore: [],
+      };
+      this.freeFunctionsMap.set(signature, contractFn);
+      return contractFn;
+    }
+  }
+
+  // used for adding a function to a trait implementation block
+  addTraitFunction(baseTrait: BaseTraitImplBlock, fn: BaseFunction): ContractFunction {
+    const t = this.addTraitImplBlock(baseTrait);
 
     const signature = this.getFunctionSignature(fn);
 
@@ -174,15 +198,25 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: BaseTraitImplBlock): void {
+    let existingFn: ContractFunction;
+    if (baseTrait === undefined) {
+      existingFn = this.addFreeFunction(fn);
+    } else {
+      this.addTraitImplBlock(baseTrait);
+      existingFn = this.addTraitFunction(baseTrait, fn);
+    }
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionTag(baseTrait: BaseImplementedTrait, fn: BaseFunction, tag: string): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  addFunctionTag(fn: BaseFunction, tag: string, baseTrait?: BaseTraitImplBlock): void {
+    let existingFn: ContractFunction;
+    if (baseTrait === undefined) {
+      existingFn = this.addFreeFunction(fn);
+    } else {
+      this.addTraitImplBlock(baseTrait);
+      existingFn = this.addTraitFunction(baseTrait, fn);
+    }
     existingFn.tag = tag;
   }
 

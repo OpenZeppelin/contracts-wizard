@@ -93,25 +93,25 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addUseClause('soroban_sdk', 'Symbol');
 
   const fungibleTokenTrait = {
-    name: 'FungibleToken',
-    for: c.name,
+    traitName: 'FungibleToken',
+    structName: c.name,
     tags: ['contractimpl'],
   };
 
-  c.addFunction(fungibleTokenTrait, functions.total_supply);
-  c.addFunction(fungibleTokenTrait, functions.balance);
-  c.addFunction(fungibleTokenTrait, functions.allowance);
-  c.addFunction(fungibleTokenTrait, functions.transfer);
-  c.addFunction(fungibleTokenTrait, functions.transfer_from);
-  c.addFunction(fungibleTokenTrait, functions.approve);
-  c.addFunction(fungibleTokenTrait, functions.decimals);
-  c.addFunction(fungibleTokenTrait, functions.name);
-  c.addFunction(fungibleTokenTrait, functions.symbol);
+  c.addTraitFunction(fungibleTokenTrait, functions.total_supply);
+  c.addTraitFunction(fungibleTokenTrait, functions.balance);
+  c.addTraitFunction(fungibleTokenTrait, functions.allowance);
+  c.addTraitFunction(fungibleTokenTrait, functions.transfer);
+  c.addTraitFunction(fungibleTokenTrait, functions.transfer_from);
+  c.addTraitFunction(fungibleTokenTrait, functions.approve);
+  c.addTraitFunction(fungibleTokenTrait, functions.decimals);
+  c.addTraitFunction(fungibleTokenTrait, functions.name);
+  c.addTraitFunction(fungibleTokenTrait, functions.symbol);
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer, 'when_not_paused');
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, 'when_not_paused');
+    c.addFunctionTag(functions.transfer, 'when_not_paused', fungibleTokenTrait);
+    c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
 }
 
@@ -120,19 +120,19 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
-    name: 'FungibleBurnable',
-    for: c.name,
+    traitName: 'FungibleBurnable',
+    structName: c.name,
     tags: ['contractimpl'],
     section: 'Extensions',
   };
 
-  c.addFunction(fungibleBurnableTrait, functions.burn);
-  c.addFunction(fungibleBurnableTrait, functions.burn_from);
+  c.addTraitFunction(fungibleBurnableTrait, functions.burn);
+  c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
 
   if (pausable) {
     c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn, 'when_not_paused');
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, 'when_not_paused');
+    c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
+    c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
   }
 }
 
@@ -202,18 +202,18 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
   c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
 
   const fungibleMintableTrait = {
-    name: 'FungibleMintable',
-    for: c.name,
+    traitName: 'FungibleMintable',
+    structName: c.name,
     tags: ['contractimpl'],
     section: 'Extensions',
   };
 
-  c.addFunction(fungibleMintableTrait, functions.mint);
+  c.addTraitFunction(fungibleMintableTrait, functions.mint);
 
   requireAccessControl(c, fungibleMintableTrait, functions.mint, access);
 
   if (pausable) {
-    c.addFunctionTag(fungibleMintableTrait, functions.mint, 'when_not_paused');
+    c.addFunctionTag(functions.mint, 'when_not_paused', fungibleMintableTrait);
   }
 }
 

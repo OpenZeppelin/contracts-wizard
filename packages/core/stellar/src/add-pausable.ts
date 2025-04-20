@@ -9,15 +9,15 @@ export function addPausable(c: ContractBuilder, access: Access) {
   c.addUseClause('openzeppelin_pausable', 'Pausable');
 
   const pausableTrait = {
-    name: 'Pausable',
-    for: c.name,
+    traitName: 'Pausable',
+    structName: c.name,
     tags: ['contractimpl'],
     section: 'Utils',
   };
 
-  c.addFunction(pausableTrait, functions.paused);
-  c.addFunction(pausableTrait, functions.pause);
-  c.addFunction(pausableTrait, functions.unpause);
+  c.addTraitFunction(pausableTrait, functions.paused);
+  c.addTraitFunction(pausableTrait, functions.pause);
+  c.addTraitFunction(pausableTrait, functions.unpause);
 
   requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
   requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
