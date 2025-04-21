@@ -15,6 +15,7 @@ export function sanitizeKind(kind: unknown): Kind {
 function isKind<T>(value: Kind | T): value is Kind {
   switch (value) {
     case 'Fungible':
+    case 'NonFungible':
       return true;
 
     default: {

@@ -24,6 +24,7 @@ export function printContract(contract: Contract): string {
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
+        printFreeFunctions(contract),
         printImplementedTraits(contract),
       ),
     ),
@@ -194,6 +195,17 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   implLines.push(spaceBetween(...fns));
   implLines.push('}');
   return implLines;
+}
+
+function printFreeFunctions(contract: Contract): Lines[] {
+  if (contract.freeFunctions.length === 0) {
+    return [];
+  }
+
+  const fnLines = contract.freeFunctions.map(fn => printFunction(fn));
+  const implBlock = ['#[contractimpl]', `impl ${contract.name} {`, ...spaceBetween(fnLines), '}'];
+
+  return implBlock;
 }
 
 function printFunction(fn: ContractFunction): Lines[] {

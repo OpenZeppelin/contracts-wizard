@@ -83,8 +83,8 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   );
 
   // Set token functions
-  c.addUseClause('openzeppelin_fungible_token', 'self', { alias: 'fungible' });
-  c.addUseClause('openzeppelin_fungible_token', 'FungibleToken');
+  c.addUseClause('stellar_fungible', 'self', { alias: 'fungible' });
+  c.addUseClause('stellar_fungible', 'FungibleToken');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
@@ -109,14 +109,14 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addTraitFunction(fungibleTokenTrait, functions.symbol);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
+    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
     c.addFunctionTag(functions.transfer, 'when_not_paused', fungibleTokenTrait);
     c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('openzeppelin_fungible_token', 'burnable::FungibleBurnable');
+  c.addUseClause('stellar_fungible', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
@@ -130,7 +130,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
+    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
     c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
     c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
   }
@@ -149,7 +149,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     // TODO: handle signed int?
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
 
-    c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+    c.addUseClause('stellar_fungible', 'mintable::FungibleMintable');
     c.addUseClause('soroban_sdk', 'Address');
 
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
@@ -199,7 +199,7 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-  c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+  c.addUseClause('stellar_fungible', 'mintable::FungibleMintable');
 
   const fungibleMintableTrait = {
     traitName: 'FungibleMintable',
