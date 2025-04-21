@@ -18,10 +18,11 @@ The following contract types are supported:
 - `erc1155`
 - `stablecoin`
 - `realWorldAsset`
+- `account`
 - `governor`
 - `custom`
 
-Note that `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
+Note that `stablecoin`, `realWorldAsset`, and `account` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 
@@ -39,6 +40,9 @@ function print(opts?: ERC1155Options): string
 ```
 ```js
 function print(opts?: StablecoinOptions): string
+```
+```js
+function print(opts?: AccountOptions): string
 ```
 ```js
 function print(opts?: GovernorOptions): string
@@ -60,6 +64,9 @@ const defaults: Required<ERC1155Options>
 ```
 ```js
 const defaults: Required<StablecoinOptions>
+```
+```js
+const defaults: Required<AccountOptions>
 ```
 ```js
 const defaults: Required<GovernorOptions>
@@ -88,7 +95,10 @@ function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
 ```js
 function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
 ```
-Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`. 
+Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
+
+> Note that contracts such as `account`, have its own way of handling permissions and do not support the `access` option.
+Thus, that type does not include `isAccessControlRequired`.
 
 ### Examples
 
