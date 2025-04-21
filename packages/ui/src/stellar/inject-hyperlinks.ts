@@ -21,7 +21,8 @@ export function injectHyperlinks(code: string) {
 }
 
 const importSourceMappings: { [key: string]: string } = {
-  openzeppelin_fungible_token: 'token/fungible/src',
+  openzeppelin_fungible_token: 'tokens/fungible/src',
+  openzeppelin_fungible_token_utils: 'tokens/non-fungible/src',
   openzeppelin_pausable: 'utils/pausable/src',
   openzeppelin_pausable_macros: 'utils/pausable-macros/src',
 } as const;
