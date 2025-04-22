@@ -13,6 +13,7 @@ const blueprint = {
   enumerable: booleans,
   consecutive: booleans,
   sequential: booleans,
+  mintable: booleans,
   premint: ['1'],
   access: accessOptions,
   info: infoOptions,

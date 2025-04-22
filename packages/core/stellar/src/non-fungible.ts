@@ -75,15 +75,19 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     addBurnable(c, allOpts.pausable);
   }
 
+  // remove sequential from enumerable and add the logic to the `mintable` section
   if (allOpts.enumerable) {
     addEnumerable(c, allOpts.burnable, allOpts.sequential, allOpts.pausable);
   }
 
+  // remove sequential from consecutive and add the logic to the `mintable` section
   if (allOpts.consecutive) {
     addConsecutive(c, allOpts.burnable, allOpts.pausable);
   }
 
-  addMintable(c, allOpts.pausable, allOpts.sequential);
+  if (allOpts.mintable) {
+    addMintable(c, allOpts.pausable, allOpts.sequential);
+  }
 
   setAccessControl(c, allOpts.access);
   setInfo(c, allOpts.info);

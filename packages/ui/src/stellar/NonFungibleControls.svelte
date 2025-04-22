@@ -19,7 +19,7 @@
   // Handler functions for checkbox changes
   function handleConsecutiveChange(value: boolean) {
     if (value) {
-      opts.minting = false;
+      opts.mintable = false;
       opts.enumerable = false;
     }
     opts.consecutive = value;
@@ -97,6 +97,6 @@
   </div>
 </section>
 
-<MintableSection bind:minting={opts.minting} bind:mintingMode={opts.mintingMode} consecutive={opts.consecutive} />
+<MintableSection bind:mintable={opts.mintable} bind:sequential={opts.sequential} consecutive={opts.consecutive} />
 
 <InfoSection bind:info={opts.info} />

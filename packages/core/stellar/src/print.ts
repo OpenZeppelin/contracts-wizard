@@ -24,7 +24,6 @@ export function printContract(contract: Contract): string {
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
-        printFreeFunctions(contract),
         printImplementedTraits(contract),
       ),
     ),
@@ -197,17 +196,6 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   return implLines;
 }
 
-function printFreeFunctions(contract: Contract): Lines[] {
-  if (contract.freeFunctions.length === 0) {
-    return [];
-  }
-
-  const fnLines = contract.freeFunctions.map(fn => printFunction(fn));
-  const implBlock = ['#[contractimpl]', `impl ${contract.name} {`, ...spaceBetween(fnLines), '}'];
-
-  return implBlock;
-}
-
 function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
@@ -229,12 +217,30 @@ function printFunction(fn: ContractFunction): Lines[] {
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
-  const implLines = [];
-  implLines.push('#[contractimpl]');
-  implLines.push(`impl ${contract.name} {`);
-  implLines.push(printConstructor(contract));
-  implLines.push('}');
-  return implLines;
+  const constructorLines = printConstructor(contract);
+  const freeFunctionLines = contract.freeFunctions.map(fn => printFunction(fn));
+
+  if (constructorLines.length === 0 && freeFunctionLines.length === 0) {
+    return [];
+  }
+
+  const implBlock: Lines[] = ['#[contractimpl]', `impl ${contract.name} {`];
+
+  if (constructorLines.length > 0) {
+    implBlock.push(constructorLines);
+  }
+
+  if (constructorLines.length > 0 && freeFunctionLines.length > 0) {
+    // Add line break between constructor and first free function
+    implBlock.push('');
+  }
+
+  if (freeFunctionLines.length > 0) {
+    implBlock.push(spaceBetween(...freeFunctionLines));
+  }
+
+  implBlock.push('}');
+  return implBlock;
 }
 
 function printConstructor(contract: Contract): Lines[] {
