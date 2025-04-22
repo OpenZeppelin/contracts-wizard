@@ -194,6 +194,15 @@ export class ContractBuilder implements Contract {
     return contractFn;
   }
 
+  overrideAssocType(traitName: string, newAssocType: string): void {
+    const trait = this.implementedTraitsMap.get(traitName);
+    if (trait) {
+      trait.assocType = newAssocType;
+    } else {
+      throw new Error(`Trait '${traitName}' does not exist and cannot be overridden.`);
+    }
+  }
+
   private getFunctionSignature(fn: BaseFunction): string {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }

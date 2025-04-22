@@ -114,6 +114,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
     traitName: 'NonFungibleToken',
     structName: c.name,
     tags: ['contractimpl'],
+    assocType: 'type ContractType = Base;'
   };
 
   // all the below may be eliminated by introducing `defaultimpl` macro at `tags` above,
@@ -145,6 +146,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
     traitName: 'NonFungibleBurnable',
     structName: c.name,
     tags: ['contractimpl'],
+    assocType: 'type ContractType = Base;',
     section: 'Extensions',
   };
 
@@ -159,7 +161,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 }
 
 function addEnumerable(c: ContractBuilder) {
-  c.addUseClause('stellar_non_fungible', 'enumerable::NonFungibleEnumerable');
+  c.addUseClause('stellar_non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
   c.addUseClause('stellar_default_impl_macro', 'default_impl');
 
   const nonFungibleEnumerableTrait = {
@@ -169,6 +171,8 @@ function addEnumerable(c: ContractBuilder) {
     section: 'Extensions',
   };
   c.addTraitImplBlock(nonFungibleEnumerableTrait);
+
+  c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;')
 
   // Below is not required due to `defaultimpl` macro. If we require to customize the functions,
   // then we should:
@@ -183,7 +187,7 @@ function addEnumerable(c: ContractBuilder) {
 }
 
 function addConsecutive(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('stellar_non_fungible', 'consecutive::NonFungibleConsecutive');
+  c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
 
   const nonFungibleConsecutiveTrait = {
     traitName: 'NonFungibleConsecutive',
@@ -193,6 +197,8 @@ function addConsecutive(c: ContractBuilder, pausable: boolean) {
   };
 
   c.addTraitImplBlock(nonFungibleConsecutiveTrait);
+
+  c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;')
 
   c.addFreeFunction(consecutiveFunctions.batch_mint);
   if (pausable) {
