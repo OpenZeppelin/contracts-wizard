@@ -20,6 +20,7 @@ export const defaults: Required<NonFungibleOptions> = {
   consecutive: false,
   pausable: false,
   premint: '0',
+  mintable: false,
   sequential: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
   info: commonDefaults.info,
@@ -37,6 +38,7 @@ export interface NonFungibleOptions extends CommonContractOptions {
   consecutive?: boolean;
   pausable?: boolean;
   premint?: string;
+  mintable?: boolean;
   sequential?: boolean;
 }
 
@@ -48,6 +50,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
     pausable: opts.pausable ?? defaults.pausable,
+    mintable: opts.mintable ?? defaults.mintable,
     premint: opts.premint || defaults.premint,
     sequential: opts.sequential ?? defaults.sequential,
   };
