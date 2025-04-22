@@ -190,9 +190,16 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.traitName} for ${trait.structName} {`);
+
+  if (trait.assocType !== undefined && trait.assocType.trim().length > 0) {
+    implLines.push(TAB + trait.assocType);
+    implLines.push('');
+  }
+
   const fns = trait.functions.map(fn => printFunction(fn));
   implLines.push(spaceBetween(...fns));
   implLines.push('}');
+
   return implLines;
 }
 

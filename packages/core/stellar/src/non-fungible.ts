@@ -71,17 +71,17 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c,allOpts.pausable);
+    addBurnable(c, allOpts.pausable);
   }
 
   // remove sequential from enumerable and add the logic to the `mintable` section
   if (allOpts.enumerable) {
-    addEnumerable(c);
+    addEnumerable(c, allOpts.burnable);
   }
 
   // remove sequential from consecutive and add the logic to the `mintable` section
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.pausable);
+    addConsecutive(c, allOpts.pausable, allOpts.burnable);
   }
 
   if (allOpts.mintable) {
@@ -114,7 +114,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
     traitName: 'NonFungibleToken',
     structName: c.name,
     tags: ['contractimpl'],
-    assocType: 'type ContractType = Base;'
+    assocType: 'type ContractType = Base;',
   };
 
   // all the below may be eliminated by introducing `defaultimpl` macro at `tags` above,
@@ -160,7 +160,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   }
 }
 
-function addEnumerable(c: ContractBuilder) {
+function addEnumerable(c: ContractBuilder, burnable: boolean) {
   c.addUseClause('stellar_non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
   c.addUseClause('stellar_default_impl_macro', 'default_impl');
 
@@ -172,7 +172,11 @@ function addEnumerable(c: ContractBuilder) {
   };
   c.addTraitImplBlock(nonFungibleEnumerableTrait);
 
-  c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;')
+  c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;');
+
+  if (burnable) {
+    c.overrideAssocType('NonFungibleBurnable', 'type ContractType = Enumerable;');
+  }
 
   // Below is not required due to `defaultimpl` macro. If we require to customize the functions,
   // then we should:
@@ -186,7 +190,7 @@ function addEnumerable(c: ContractBuilder) {
   */
 }
 
-function addConsecutive(c: ContractBuilder, pausable: boolean) {
+function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean) {
   c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
 
   const nonFungibleConsecutiveTrait = {
@@ -198,7 +202,11 @@ function addConsecutive(c: ContractBuilder, pausable: boolean) {
 
   c.addTraitImplBlock(nonFungibleConsecutiveTrait);
 
-  c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;')
+  c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;');
+
+  if (burnable) {
+    c.overrideAssocType('NonFungibleBurnable', 'type ContractType = Consecutive;');
+  }
 
   c.addFreeFunction(consecutiveFunctions.batch_mint);
   if (pausable) {
@@ -386,7 +394,7 @@ const enumerableFunctions = defineFunctions({
   sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
     code: ['non_fungible::enumerable::Enumerable::sequential_mint(e, &account);'],
-  }
+  },
 });
 
 const consecutiveFunctions = defineFunctions({
