@@ -132,7 +132,7 @@
     });
   }
 
-  $: showButtons = getButtonVisiblities(opts);
+  $: showButtons = getButtonVisibilities(opts);
 
   interface ButtonVisibilities {
     openInRemix: boolean;
@@ -140,7 +140,7 @@
     downloadFoundry: boolean;
   }
 
-  const getButtonVisiblities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     if (opts?.kind === 'Governor') {
       return {
         openInRemix: true,
