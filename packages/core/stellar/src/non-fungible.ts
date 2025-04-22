@@ -1,7 +1,6 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
-import type { Access } from './set-access-control';
-import { requireAccessControl, setAccessControl } from './set-access-control';
+import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
@@ -72,21 +71,21 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
+    addBurnable(c,allOpts.pausable);
   }
 
   // remove sequential from enumerable and add the logic to the `mintable` section
   if (allOpts.enumerable) {
-    addEnumerable(c, allOpts.burnable, allOpts.sequential, allOpts.pausable);
+    addEnumerable(c);
   }
 
   // remove sequential from consecutive and add the logic to the `mintable` section
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.burnable, allOpts.pausable);
+    addConsecutive(c, allOpts.pausable);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.pausable, allOpts.sequential);
+    addMintable(c, allOpts.enumerable, allOpts.pausable, allOpts.sequential);
   }
 
   setAccessControl(c, allOpts.access);
@@ -119,22 +118,22 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 
   // all the below may be eliminated by introducing `defaultimpl` macro at `tags` above,
   // but we lose the customization for `pausable`, and so on...
-  c.addTraitFunction(nonFungibleTokenTrait, functions.owner_of);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.transfer);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.transfer_from);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.balance);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.approve);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.approve_for_all);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.get_approved);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.is_approved_for_all);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.name);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.symbol);
-  c.addTraitFunction(nonFungibleTokenTrait, functions.token_uri);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.owner_of);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.transfer);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.transfer_from);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.balance);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.approve);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.approve_for_all);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.get_approved);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.is_approved_for_all);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.name);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.symbol);
+  c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.token_uri);
 
   if (pausable) {
     c.addUseClause('stellar_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(functions.transfer, 'when_not_paused', nonFungibleTokenTrait);
-    c.addFunctionTag(functions.transfer_from, 'when_not_paused', nonFungibleTokenTrait);
+    c.addFunctionTag(baseFunctions.transfer, 'when_not_paused', nonFungibleTokenTrait);
+    c.addFunctionTag(baseFunctions.transfer_from, 'when_not_paused', nonFungibleTokenTrait);
   }
 }
 
@@ -149,17 +148,17 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
     section: 'Extensions',
   };
 
-  c.addTraitFunction(nonFungibleBurnableTrait, functions.burn);
-  c.addTraitFunction(nonFungibleBurnableTrait, functions.burn_from);
+  c.addTraitFunction(nonFungibleBurnableTrait, burnableFunctions.burn);
+  c.addTraitFunction(nonFungibleBurnableTrait, burnableFunctions.burn_from);
 
   if (pausable) {
     c.addUseClause('stellar_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(functions.burn, 'when_not_paused', nonFungibleBurnableTrait);
-    c.addFunctionTag(functions.burn_from, 'when_not_paused', nonFungibleBurnableTrait);
+    c.addFunctionTag(burnableFunctions.burn, 'when_not_paused', nonFungibleBurnableTrait);
+    c.addFunctionTag(burnableFunctions.burn_from, 'when_not_paused', nonFungibleBurnableTrait);
   }
 }
 
-function addEnumerable(c: ContractBuilder, burnable: boolean, sequential: boolean, pausable: boolean) {
+function addEnumerable(c: ContractBuilder) {
   c.addUseClause('stellar_non_fungible', 'enumerable::NonFungibleEnumerable');
   c.addUseClause('stellar_default_impl_macro', 'default_impl');
 
@@ -181,33 +180,9 @@ function addEnumerable(c: ContractBuilder, burnable: boolean, sequential: boolea
   c.addFunction(nonFungibleEnumerableTrait, functions.get_owner_token_id);
   c.addFunction(nonFungibleEnumerableTrait, functions.get_token_id);
   */
-
-  if (burnable) {
-    c.addFreeFunction(functions.enumerable_burn);
-    c.addFreeFunction(functions.enumerable_burn_from);
-
-    if (pausable) {
-      c.addFunctionTag(functions.enumerable_burn, 'when_not_paused');
-      c.addFunctionTag(functions.enumerable_burn_from, 'when_not_paused');
-    }
-  }
-
-  if (sequential) {
-    c.addFreeFunction(functions.enumerable_sequential_mint);
-
-    if (pausable) {
-      c.addFunctionTag(functions.enumerable_sequential_mint, 'when_not_paused');
-    }
-  } else {
-    c.addFreeFunction(functions.enumerable_non_sequential_mint);
-
-    if (pausable) {
-      c.addFunctionTag(functions.enumerable_non_sequential_mint, 'when_not_paused');
-    }
-  }
 }
 
-function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean) {
+function addConsecutive(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('stellar_non_fungible', 'consecutive::NonFungibleConsecutive');
 
   const nonFungibleConsecutiveTrait = {
@@ -217,18 +192,14 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
     section: 'Extensions',
   };
 
-  // no methods exist for Consecutive Trait, so we only implement the trait for type safety.
   c.addTraitImplBlock(nonFungibleConsecutiveTrait);
 
-  if (burnable) {
-    c.addFreeFunction(functions.consecutive_burn);
-    c.addFreeFunction(functions.consecutive_burn_from);
-
-    if (pausable) {
-      c.addFunctionTag(functions.consecutive_burn, 'when_not_paused');
-      c.addFunctionTag(functions.consecutive_burn_from, 'when_not_paused');
-    }
+  c.addFreeFunction(consecutiveFunctions.batch_mint);
+  if (pausable) {
+    c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
   }
+
+  c.addFreeFunction(consecutiveFunctions.set_owner_for);
 }
 
 export const premintPattern = /^(\d*\.?\d*)$/;
@@ -249,27 +220,41 @@ function addPremint(c: ContractBuilder, amount: string) {
   }
 }
 
-// TODO: since `mint` is not related to a trait, `addFunctionTag` is not compatible with it
-// we may get around this by merging the required `when_not_paused` tag into the `mint` function variants
-// and storing the merged string in a variable, then using that variable in the `addConstructorCode` call
-// but this is not ideal.
-function addMintable(c: ContractBuilder, pausable: boolean, sequential: boolean) {
-  if (sequential) {
-    c.addUseClause('stellar_non_fungible', 'Base::sequential_mint');
-    c.addFreeFunction(functions.sequential_mint);
-    if (pausable) {
-      c.addFunctionTag(functions.sequential_mint, 'when_not_paused');
+function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
+  if (!enumerable) {
+    if (sequential) {
+      c.addUseClause('stellar_non_fungible', 'Base::sequential_mint');
+      c.addFreeFunction(baseFunctions.sequential_mint);
+      if (pausable) {
+        c.addFunctionTag(baseFunctions.sequential_mint, 'when_not_paused');
+      }
+    } else {
+      c.addUseClause('stellar_non_fungible', 'Base::mint');
+      c.addFreeFunction(baseFunctions.mint);
+      if (pausable) {
+        c.addFunctionTag(baseFunctions.mint, 'when_not_paused');
+      }
     }
-  } else {
-    c.addUseClause('stellar_non_fungible', 'Base::mint');
-    c.addFreeFunction(functions.mint);
-    if (pausable) {
-      c.addFunctionTag(functions.mint, 'when_not_paused');
+  }
+
+  if (enumerable) {
+    if (sequential) {
+      c.addFreeFunction(enumerableFunctions.sequential_mint);
+
+      if (pausable) {
+        c.addFunctionTag(enumerableFunctions.sequential_mint, 'when_not_paused');
+      }
+    } else {
+      c.addFreeFunction(enumerableFunctions.non_sequential_mint);
+
+      if (pausable) {
+        c.addFunctionTag(enumerableFunctions.non_sequential_mint, 'when_not_paused');
+      }
     }
   }
 }
 
-const functions = defineFunctions({
+const baseFunctions = defineFunctions({
   // NonFungible Trait
   balance: {
     args: [getSelfArg(), { name: 'owner', type: 'Address' }],
@@ -354,13 +339,12 @@ const functions = defineFunctions({
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
     code: ['Self::Base::sequential_mint(e, &account);'],
   },
+});
 
-  /* Extensions */
-
-  // Burnable Trait
+const burnableFunctions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::Base::burn(e, &from, token_id)'],
+    code: ['non_fungible::ContractType::burn(e, &from, token_id)'],
   },
   burn_from: {
     args: [
@@ -369,10 +353,11 @@ const functions = defineFunctions({
       { name: 'from', type: 'Address' },
       { name: 'token_id', type: 'u32' },
     ],
-    code: ['non_fungible::Base::burn_from(e, &spender, &from, token_id)'],
+    code: ['non_fungible::ContractType::burn_from(e, &spender, &from, token_id)'],
   },
+});
 
-  // Enumerable Trait
+const enumerableFunctions = defineFunctions({
   total_supply: {
     args: [getSelfArg()],
     returns: 'u32',
@@ -388,46 +373,21 @@ const functions = defineFunctions({
     returns: 'u32',
     code: ['non_fungible::enumerable::Enumerable::get_token_id(e, index)'],
   },
-  enumerable_non_sequential_mint: {
+  non_sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
     code: ['non_fungible::enumerable::Enumerable::non_sequential_mint(e, &account, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
   },
-  enumerable_sequential_mint: {
+  sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
     code: ['non_fungible::enumerable::Enumerable::sequential_mint(e, &account);'],
-  },
-  enumerable_burn: {
-    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::enumerable::Enumerable::burn(e, &from, token_id)'],
-  },
-  enumerable_burn_from: {
-    args: [
-      getSelfArg(),
-      { name: 'spender', type: 'Address' },
-      { name: 'from', type: 'Address' },
-      { name: 'token_id', type: 'u32' },
-    ],
-    code: ['non_fungible::enumerable::Enumerable::burn_from(e, &spender, &from, token_id)'],
-  },
+  }
+});
 
-  // Consecutive Trait
+const consecutiveFunctions = defineFunctions({
   batch_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
     code: ['non_fungible::consecutive::Consecutive::batch_mint(e, &account, amount);'],
-  },
-  consecutive_burn: {
-    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::consecutive::Consecutive::burn(e, &from, token_id)'],
-  },
-  consecutive_burn_from: {
-    args: [
-      getSelfArg(),
-      { name: 'spender', type: 'Address' },
-      { name: 'from', type: 'Address' },
-      { name: 'token_id', type: 'u32' },
-    ],
-    code: ['non_fungible::consecutive::Consecutive::burn_from(e, &spender, &from, token_id)'],
   },
   set_owner_for: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
