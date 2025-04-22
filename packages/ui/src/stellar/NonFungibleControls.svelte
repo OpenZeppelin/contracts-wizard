@@ -16,8 +16,20 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: if (opts.consecutive) {
-    opts.minting = false;
+  // Handler functions for checkbox changes
+  function handleConsecutiveChange(value: boolean) {
+    if (value) {
+      opts.minting = false;
+      opts.enumerable = false;
+    }
+    opts.consecutive = value;
+  }
+
+  function handleEnumerableChange(value: boolean) {
+    if (value) {
+      opts.consecutive = false;
+    }
+    opts.enumerable = value;
   }
 </script>
 
@@ -56,15 +68,25 @@
     </label>
 
     <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable} />
+      <input
+        type="checkbox"
+        checked={opts.enumerable}
+        on:change={e => handleEnumerableChange(e.currentTarget.checked)}
+      />
       Enumerable
-      <HelpTooltip>Enable on-chain enumeration of tokens.</HelpTooltip>
+      <HelpTooltip>Enable on-chain enumeration of tokens. Cannot be used with Consecutive extensions.</HelpTooltip>
     </label>
 
     <label class:checked={opts.consecutive}>
-      <input type="checkbox" bind:checked={opts.consecutive} />
+      <input
+        type="checkbox"
+        checked={opts.consecutive}
+        on:change={e => handleConsecutiveChange(e.currentTarget.checked)}
+      />
       Consecutive
-      <HelpTooltip>Use consecutive token IDs instead of unique UUIDs.</HelpTooltip>
+      <HelpTooltip
+        >Use consecutive token IDs instead of unique UUIDs. Incompatible with Enumerable extension.</HelpTooltip
+      >
     </label>
 
     <label class:checked={opts.pausable}>
