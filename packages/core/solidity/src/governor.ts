@@ -308,6 +308,7 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
         : `return ${opts.quorumAbsolute}e${opts.decimals};`;
 
     c.setFunctionBody([returnStatement], functions.quorum, 'pure');
+    c.addOverride({ name: 'Governor' }, functions.quorum);
   }
 }
 
