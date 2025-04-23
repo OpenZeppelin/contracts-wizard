@@ -50,7 +50,7 @@ test('account API assert defaults', async t => {
   t.is(account.print(account.defaults), account.print());
 });
 
-for (const signer of [undefined, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
+for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
   let title = 'Account';
   if (signer) {
     title += ` with Signer${signer}`;
@@ -100,6 +100,18 @@ for (const signer of [undefined, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
   testAccount(`${title} with ERC7579`, {
     signer,
     ERC7579Modules: 'AccountERC7579',
+  });
+
+  testAccount(`${title} with ERC7579 with ERC1271`, {
+    signer,
+    ERC7579Modules: 'AccountERC7579',
+    signatureValidation: 'ERC1271',
+  });
+
+  testAccount(`${title} with ERC7579 with ERC7739`, {
+    signer,
+    ERC7579Modules: 'AccountERC7579',
+    signatureValidation: 'ERC7739',
   });
 
   testAccount(`${title} with ERC7579 hooks`, {
