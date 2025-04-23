@@ -83,8 +83,8 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   if (opts.signatureValidation === 'ERC7739') addEIP712(c, opts);
 
   // Extensions
-  addERC7579Modules(c, opts);
   addSignatureValidation(c, opts);
+  addERC7579Modules(c, opts);
   addSigner(c, opts.signer ?? false);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
