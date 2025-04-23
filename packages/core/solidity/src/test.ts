@@ -66,6 +66,8 @@ function isAccessControlRequired(opts: GenericOptions) {
       return stablecoin.isAccessControlRequired(opts);
     case 'RealWorldAsset':
       return stablecoin.isAccessControlRequired(opts);
+    case 'Account':
+      throw new Error(`Not applicable for ${opts.kind}`);
     case 'Governor':
       return governor.isAccessControlRequired(opts);
     case 'Custom':
@@ -79,11 +81,17 @@ test('is access control required', async t => {
   for (const contract of generateSources('all')) {
     const regexOwnable = /import.*Ownable(Upgradeable)?.sol.*/gm;
 
-    if (!contract.options.access) {
-      if (isAccessControlRequired(contract.options)) {
-        t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
-      } else {
-        t.notRegex(contract.source, regexOwnable, JSON.stringify(contract.options));
+    switch (contract.options.kind) {
+      case 'Account':
+        break;
+      default: {
+        if (!contract.options.access) {
+          if (isAccessControlRequired(contract.options)) {
+            t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
+          } else {
+            t.notRegex(contract.source, regexOwnable, JSON.stringify(contract.options));
+          }
+        }
       }
     }
   }
