@@ -12,7 +12,7 @@ export const defaults: Required<AccountOptions> = {
   signatureValidation: 'ERC7739',
   ERC721Holder: true,
   ERC1155Holder: true,
-  signer: false,
+  signer: 'ECDSA',
   batchedExecution: false,
   ERC7579Modules: false,
 } as const;

@@ -72,8 +72,8 @@
       Account Bound
       <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
-        multiple smart accounts owned by the same EOA. This preserves the readability of signed contents while ensuring
-        each signature is uniquely bound to a specific account and chain.
+        multiple smart accounts owned by the same private key. This preserves the readability of signed contents while
+        ensuring each signature is uniquely bound to a specific account and chain.
       </HelpTooltip>
     </label>
     <label class:checked={opts.ERC721Holder}>
@@ -143,9 +143,9 @@
           else opts.ERC7579Modules = 'AccountERC7579';
         }}
       />
-      Hooks
+      Hooked
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579#hooks">
-        Enables custom logic to be executed before and after account operations. Hooks can validate transactions, track
+        Enables custom logic to be executed before and after account operations. A hook can validate transactions, track
         state changes, implement security checks, or add any custom behavior around executions and module management.
       </HelpTooltip>
     </label>
