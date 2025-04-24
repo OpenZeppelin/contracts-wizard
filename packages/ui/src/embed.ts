@@ -11,6 +11,8 @@ const iframes = new WeakMap<MessageEventSource, HTMLIFrameElement>();
 let unsupportedVersion: boolean = false;
 const unsupportedVersionFrameHeight = 'auto';
 
+const iframeHeightdiff = '22vh';
+
 window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source) {
     if (e.data.kind === 'oz-wizard-unsupported-version') {
@@ -22,7 +24,7 @@ window.addEventListener('message', function (e: MessageEvent<Message>) {
     } else if (e.data.kind === 'oz-wizard-resize') {
       const iframe = iframes.get(e.source);
       if (iframe) {
-        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : 'calc(100vh - 100px)';
+        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : `calc(100vh - ${iframeHeightdiff})`;
       }
     }
   }
@@ -60,7 +62,7 @@ onDOMContentLoaded(function () {
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = 'calc(100vh - 100px)';
+    iframe.style.height = `calc(100vh - ${iframeHeightdiff} )`;
     iframe.allow = 'clipboard-write';
 
     w.appendChild(iframe);
@@ -96,4 +98,4 @@ function onDOMContentLoaded(callback: () => void) {
   }
 }
 
-export {};
+export { };
