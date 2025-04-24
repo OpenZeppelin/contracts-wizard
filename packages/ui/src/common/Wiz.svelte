@@ -326,7 +326,7 @@
     </button>
   {:else}
     <button
-      class="text-sm z-20 absolute flex right-0 bottom-1 items-center justify-center border-0 shadow-xl bg-gray-50 h-10 w-32 p-4 rounded-full cursor-pointer hover:bg-white"
+      class="text-sm z-20 absolute flex right-0 bottom-7 items-center justify-center border-0 shadow-xl bg-gray-50 h-10 w-32 p-4 rounded-full cursor-pointer hover:bg-white"
       on:click={() => {
         showing = true;
       }}
