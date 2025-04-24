@@ -98,4 +98,4 @@ function onDOMContentLoaded(callback: () => void) {
   }
 }
 
-export { };
+export {};
