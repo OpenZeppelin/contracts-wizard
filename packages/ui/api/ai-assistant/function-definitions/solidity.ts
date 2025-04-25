@@ -209,7 +209,7 @@ export const solidityAccountAIFunctionDefinition = {
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA'] },
+          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
         ],
         description: 'Defines the signature verification algorithm used by the account to verify user operations.',
       },
