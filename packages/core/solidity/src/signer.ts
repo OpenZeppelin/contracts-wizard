@@ -19,13 +19,28 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   });
   const fn = signerFunctions[`initialize${signer}`];
   c.addModifier('initializer', fn);
-  c.addFunctionCode(
-    `_setSigner(${fn.args
-      .map(({ name }) => name)
-      .join(', ')
-      .trimEnd()});`,
-    fn,
-  );
+
+  switch (signer) {
+    case 'Multisig':
+      c.addFunctionCode(`_addSigners(${fn.args?.[0]?.name})`, fn);
+      c.addFunctionCode(`_setThreshold(${fn.args?.[1]?.name})`, fn);
+      break;
+    case 'MultisigWeighted':
+      c.addFunctionCode(`_addSigners(${fn.args?.[0]?.name})`, fn);
+      c.addFunctionCode(`_setSignerWeights(${fn.args?.[0]?.name}, ${fn.args?.[1]?.name})`, fn);
+      c.addFunctionCode(`_setThreshold(${fn.args?.[2]?.name})`, fn);
+      break;
+    case 'ECDSA':
+    case 'P256':
+    case 'RSA':
+      c.addFunctionCode(
+        `_setSigner(${fn.args
+          .map(({ name }) => name)
+          .join(', ')
+          .trimEnd()});`,
+        fn,
+      );
+  }
 }
 
 const parents = {
@@ -86,8 +101,8 @@ export const signerFunctions = {
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
-        { name: 'threshold', type: 'uint256[] memory' },
-        { name: 'weights', type: 'uint256' },
+        { name: 'weights', type: 'uint256[] memory' },
+        { name: 'threshold', type: 'uint256' },
       ],
     },
     _rawSignatureValidation: {
