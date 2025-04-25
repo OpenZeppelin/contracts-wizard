@@ -570,7 +570,7 @@
 
 "@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
   version "0.0.1"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#65ecb86256fd1d2fc0b6cb169fc316e8462b89b3"
+  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#fb8a5e6a73ece95a1bde520c32a878e0d1935e26"
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^6.0.6"
     "@zk-email/contracts" "^6.3.2"
