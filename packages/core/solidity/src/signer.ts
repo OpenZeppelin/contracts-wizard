@@ -1,7 +1,7 @@
 import type { ContractBuilder } from './contract';
 import { defineFunctions } from './utils/define-functions';
 
-export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const;
+export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
@@ -45,6 +45,14 @@ const parents = {
     name: 'SignerRSA',
     path: '@openzeppelin/community-contracts/contracts/utils/cryptography/SignerRSA.sol',
   },
+  Multisig: {
+    name: 'MultiSignerERC7913',
+    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/MultiSignerERC7913.sol',
+  },
+  MultisigWeighted: {
+    name: 'MultiSignerERC7913Weighted',
+    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/MultiSignerERC7913Weighted.sol',
+  },
 };
 
 export const signerFunctions = {
@@ -65,6 +73,21 @@ export const signerFunctions = {
       args: [
         { name: 'e', type: 'bytes memory' },
         { name: 'n', type: 'bytes memory' },
+      ],
+    },
+    initializeMultisig: {
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'threshold', type: 'uint256' },
+      ],
+    },
+    initializeMultisigWeighted: {
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'threshold', type: 'uint256[] memory' },
+        { name: 'weights', type: 'uint256' },
       ],
     },
     _rawSignatureValidation: {

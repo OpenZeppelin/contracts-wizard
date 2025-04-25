@@ -176,6 +176,29 @@
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.signer === 'Multisig'}>
+      <input type="radio" bind:group={opts.signer} value="Multisig" />
+      Multisig
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig-account#multisignererc7913">
+        Implementation of ERC-7913 multisignature validation that requires a minimum number of signatures (threshold) to
+        approve operations. Each signer is encoded as `verifier || key` and must be ordered by their keccak256 hash to
+        prevent duplicates. The contract maintains a set of authorized signers and validates that the number of valid
+        signatures meets the threshold requirement.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.signer === 'MultisigWeighted'}>
+      <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
+      Multisig
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig-account#multisignererc7913weighted"
+      >
+        Extension of ERC-7913 multisignature validation that supports weighted signatures. Each signer can be assigned a
+        different weight, enabling flexible governance schemes where some signers have more influence than others. The
+        contract maintains a set of authorized signers and validates that the total weight of valid signatures meets the
+        threshold requirement. Signers are encoded as `verifier || key` and must be ordered by their keccak256 hash to
+        prevent duplicates.
+      </HelpTooltip>
+    </label>
     <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
