@@ -1,6 +1,7 @@
 {
   "name": "root",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "wsrun -m prepare",
     "lint": "eslint",
@@ -10,7 +11,9 @@
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
     "dev": "concurrently --kill-others-on-fail --names \"UI,API\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
-    "run:core": "node ./scripts/run-command.mjs"
+    "run:core": "node ./scripts/run-command.mjs",
+    "version": "bash scripts/release/version.sh",
+    "publish": "bash scripts/release/publish.sh"
   },
   "workspaces": {
     "packages": [
@@ -33,6 +36,8 @@
     "prettier-plugin-svelte": "^3.3.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.29.0",
-    "wsrun": "^5.2.4"
+    "wsrun": "^5.2.4",
+    "@changesets/cli": "^2.29.2",
+    "@changesets/changelog-github": "^0.5.1"
   }
 }

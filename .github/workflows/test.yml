@@ -10,12 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --network-concurrency 1
+      - name: Set up environment
+        uses: ./.github/actions/setup
       - name: Check formatting
         run: yarn format:check
       - name: Run linter
@@ -29,12 +25,8 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: '1.46.3'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: 'yarn'
-      - name: Install dependencies and build wizard packages
-        run: yarn install --frozen-lockfile
+      - name: Set up environment
+        uses: ./.github/actions/setup
       - name: Deno check API
         run: yarn type:check:api
 
@@ -50,15 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: 'yarn'
+      - name: Set up environment
+        uses: ./.github/actions/setup
       - name: Install Foundry
         if: matrix.package == 'solidity'
         uses: foundry-rs/foundry-toolchain@v1
-      - name: Install dependencies
-        run: yarn install
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/core/${{matrix.package}}
