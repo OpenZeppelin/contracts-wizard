@@ -188,7 +188,7 @@
     </label>
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
-      Multisig
+      Multisig Weighted
       <HelpTooltip
         link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig-account#multisignererc7913weighted"
       >
