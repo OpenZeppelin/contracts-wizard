@@ -86,6 +86,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
   addSigner(c, opts.signer ?? false);
+  addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
   addERC1155Holder(c, opts);
@@ -175,6 +176,23 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   );
 }
 
+function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
+  switch (opts.signer) {
+    case 'MultisigWeighted':
+      c.addFunctionCode(
+        `_setSignerWeights(${functions.setSignerWeights.args.map(({ name }) => name).join(', ')});`,
+        functions.setSignerWeights,
+      );
+    // eslint-disable-next-line no-fallthrough
+    case 'Multisig':
+      c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]?.name});`, functions.addSigners);
+      c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]?.name});`, functions.removeSigners);
+      c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]?.name});`, functions.setThreshold);
+      break;
+    default:
+  }
+}
+
 function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
   if (opts.signatureValidation != 'ERC7739') return;
   c.addParent(
@@ -246,6 +264,25 @@ const functions = {
       ],
       returns: ['bool'],
       mutability: 'view' as const,
+    },
+    addSigners: {
+      kind: 'public' as const,
+      args: [{ name: 'signers', type: 'bytes[] memory' }],
+    },
+    removeSigners: {
+      kind: 'public' as const,
+      args: [{ name: 'signers', type: 'bytes[] memory' }],
+    },
+    setThreshold: {
+      kind: 'public' as const,
+      args: [{ name: 'threshold', type: 'uint256' }],
+    },
+    setSignerWeights: {
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'weights', type: 'uint256[] memory' },
+      ],
     },
   }),
 };
