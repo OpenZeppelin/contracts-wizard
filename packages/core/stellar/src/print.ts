@@ -189,16 +189,29 @@ function printImplementedTraitsSection(section: string, impls: TraitImplBlock[])
 function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.traitName} for ${trait.structName} {`);
 
-  if (trait.assocType !== undefined && trait.assocType.trim().length > 0) {
-    implLines.push(TAB + trait.assocType);
-    implLines.push('');
+  const head = `impl ${trait.traitName} for ${trait.structName}`;
+
+  const assocTypeLines =
+    trait.assocType !== undefined && trait.assocType.trim().length > 0 ? [TAB + trait.assocType.trim(), ''] : [];
+
+  const functionLines = trait.functions.map(fn => printFunction(fn));
+
+  const hasBodyContent = assocTypeLines.length > 0 || functionLines.length > 0;
+
+  if (!hasBodyContent) {
+    // Empty impl
+    implLines.push(`${head} {}`);
+  } else {
+    implLines.push(`${head} {`);
+    if (assocTypeLines.length > 0) {
+      implLines.push(...assocTypeLines);
+    }
+    if (functionLines.length > 0) {
+      implLines.push(spaceBetween(...functionLines));
+    }
+    implLines.push('}');
   }
-
-  const fns = trait.functions.map(fn => printFunction(fn));
-  implLines.push(spaceBetween(...fns));
-  implLines.push('}');
 
   return implLines;
 }
