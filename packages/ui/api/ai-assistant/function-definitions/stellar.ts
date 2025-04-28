@@ -47,6 +47,18 @@ export const stellarNonFungibleAIFunctionDefinition = {
         type: 'string',
         description: 'The number of tokens to premint for the deployer.',
       },
+      enumerable: {
+        type: 'boolean',
+        description: 'Whether the NFTs are enumerable (can be iterated over).',
+      },
+      consecutive: {
+        type: 'boolean',
+        description: 'To batch mint NFTs instead of minting them individually (sequential minting is mandatory).',
+      },
+      sequential: {
+        type: 'boolean',
+        description: 'Whether the IDs of the minted NFTs will be sequential.',
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
