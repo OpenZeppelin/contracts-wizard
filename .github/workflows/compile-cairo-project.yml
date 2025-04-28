@@ -6,7 +6,7 @@ on:
       - 'packages/core/cairo/**'
   push:
     paths:
-      - 'packages/core/cairo_alpha/**'
+      - 'packages/core/cairo/**'
 
 jobs:
   validate-cairo:
