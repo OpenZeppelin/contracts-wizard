@@ -27,7 +27,6 @@ export const stellarFungibleAIFunctionDefinition = {
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
 
-// TODO: fix the errors below
 export const stellarNonFungibleAIFunctionDefinition = {
   name: 'NonFungible',
   description: 'Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721',
