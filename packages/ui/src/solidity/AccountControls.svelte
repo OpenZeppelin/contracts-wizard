@@ -176,6 +176,25 @@
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.signer === 'Multisig'}>
+      <input type="radio" bind:group={opts.signer} value="Multisig" />
+      Multisig*
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig-account#multisignererc7913">
+        ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
+        maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
+        requirement.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.signer === 'MultisigWeighted'}>
+      <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
+      Multisig Weighted*
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig-account#multisignererc7913weighted"
+      >
+        Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
+        flexible governance. The total weight of valid signatures must meet the threshold requirement.
+      </HelpTooltip>
+    </label>
     <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256

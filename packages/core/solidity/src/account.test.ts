@@ -50,7 +50,7 @@ test('account API assert defaults', async t => {
   t.is(account.print(account.defaults), account.print());
 });
 
-for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA'] as const) {
+for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
   let title = 'Account';
   if (signer) {
     title += ` with Signer${signer}`;

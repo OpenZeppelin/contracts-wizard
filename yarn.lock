@@ -7,11 +7,6 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@axelar-network/axelar-gmp-sdk-solidity@^6.0.6":
-  version "6.0.6"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-6.0.6.tgz#6559394df9b551978ca8843a9cdf3dc89eacdcd4"
-  integrity sha512-XIcDlr1HoYSqcxuvvusILmiqerh2bL9NJLwU4lFBAJK5E/st/q3Em9ropBBZML9iuUZ+hDsch8Ev9rMO+ulaSQ==
-
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4":
   version "7.26.2"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.26.2.tgz#4b5fab97d33338eff916235055f0ebc21e573a85"
@@ -570,9 +565,7 @@
 
 "@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
   version "0.0.1"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#30ed769d7b65723ebe1194398f2b644b6679fb98"
-  dependencies:
-    "@axelar-network/axelar-gmp-sdk-solidity" "^6.0.6"
+  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#de17c8ee4b0329867f7219fbc401707be9518ff1"
 
 "@openzeppelin/contracts-upgradeable@^5.3.0":
   version "5.3.0"
