@@ -185,9 +185,9 @@ function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
       );
     // eslint-disable-next-line no-fallthrough
     case 'Multisig':
-      c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]?.name});`, functions.addSigners);
-      c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]?.name});`, functions.removeSigners);
-      c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]?.name});`, functions.setThreshold);
+      c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]!.name});`, functions.addSigners);
+      c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]!.name});`, functions.removeSigners);
+      c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]!.name});`, functions.setThreshold);
       break;
     default:
   }

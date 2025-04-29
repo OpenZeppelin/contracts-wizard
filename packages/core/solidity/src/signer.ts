@@ -20,15 +20,17 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   const fn = signerFunctions[`initialize${signer}`];
   c.addModifier('initializer', fn);
 
+  const args = fn.args;
+
   switch (signer) {
     case 'Multisig':
-      c.addFunctionCode(`_addSigners(${fn.args?.[0]?.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${fn.args?.[1]?.name});`, fn);
+      c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
+      c.addFunctionCode(`_setThreshold(${args[1]!.name});`, fn);
       break;
     case 'MultisigWeighted':
-      c.addFunctionCode(`_addSigners(${fn.args?.[0]?.name});`, fn);
-      c.addFunctionCode(`_setSignerWeights(${fn.args?.[0]?.name}, ${fn.args?.[1]?.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${fn.args?.[2]?.name});`, fn);
+      c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
+      c.addFunctionCode(`_setSignerWeights(${args[0]!.name}, ${args[1]!.name});`, fn);
+      c.addFunctionCode(`_setThreshold(${args[2]!.name});`, fn);
       break;
     case 'ECDSA':
     case 'P256':
