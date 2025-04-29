@@ -565,7 +565,7 @@
 
 "@openzeppelin/community-contracts@https://github.com/OpenZeppelin/openzeppelin-community-contracts":
   version "0.0.1"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#2b156fb232f07c6bf304f3988b9b256c75003043"
+  resolved "https://github.com/OpenZeppelin/openzeppelin-community-contracts#de17c8ee4b0329867f7219fbc401707be9518ff1"
 
 "@openzeppelin/contracts-upgradeable@^5.3.0":
   version "5.3.0"
