@@ -207,25 +207,22 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: BaseTraitImplBlock): void {
-    let existingFn: ContractFunction;
+  private getOrCreateFunction(fn: BaseFunction, baseTrait?: BaseTraitImplBlock): ContractFunction {
     if (baseTrait === undefined) {
-      existingFn = this.addFreeFunction(fn);
+      return this.addFreeFunction(fn);
     } else {
       this.addTraitImplBlock(baseTrait);
-      existingFn = this.addTraitFunction(baseTrait, fn);
+      return this.addTraitFunction(baseTrait, fn);
     }
+  }
+
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: BaseTraitImplBlock): void {
+    const existingFn = this.getOrCreateFunction(fn, baseTrait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
   addFunctionTag(fn: BaseFunction, tag: string, baseTrait?: BaseTraitImplBlock): void {
-    let existingFn: ContractFunction;
-    if (baseTrait === undefined) {
-      existingFn = this.addFreeFunction(fn);
-    } else {
-      this.addTraitImplBlock(baseTrait);
-      existingFn = this.addTraitFunction(baseTrait, fn);
-    }
+    const existingFn = this.getOrCreateFunction(fn, baseTrait);
     existingFn.tag = tag;
   }
 
