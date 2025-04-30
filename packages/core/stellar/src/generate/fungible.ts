@@ -10,6 +10,7 @@ const blueprint = {
   symbol: ['MTK'],
   burnable: booleans,
   pausable: booleans,
+  upgradeable: booleans,
   mintable: booleans,
   premint: ['1'],
   access: accessOptions,

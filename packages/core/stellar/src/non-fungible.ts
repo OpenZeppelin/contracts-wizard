@@ -2,6 +2,7 @@ import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
 import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
+import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -18,6 +19,7 @@ export const defaults: Required<NonFungibleOptions> = {
   enumerable: false,
   consecutive: false,
   pausable: false,
+  upgradeable: false,
   premint: '0',
   mintable: false,
   sequential: false,
@@ -36,6 +38,7 @@ export interface NonFungibleOptions extends CommonContractOptions {
   enumerable?: boolean;
   consecutive?: boolean;
   pausable?: boolean;
+  upgradeable?: boolean;
   premint?: string;
   mintable?: boolean;
   sequential?: boolean;
@@ -49,6 +52,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
     pausable: opts.pausable ?? defaults.pausable,
+    upgradeable: opts.upgradeable ?? defaults.upgradeable,
     mintable: opts.mintable ?? defaults.mintable,
     premint: opts.premint || defaults.premint,
     sequential: opts.sequential ?? defaults.sequential,
@@ -68,6 +72,10 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
+  }
+
+  if (allOpts.upgradeable) {
+    addUpgradeable(c);
   }
 
   if (allOpts.burnable) {

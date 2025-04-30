@@ -21,6 +21,10 @@ export const stellarFungibleAIFunctionDefinition = {
         type: 'string',
         description: 'The number of tokens to premint for the deployer.',
       },
+      upgradeable: {
+        type: 'boolean',
+        description: 'Whether the contract can be upgraded.',
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
@@ -57,6 +61,10 @@ export const stellarNonFungibleAIFunctionDefinition = {
       sequential: {
         type: 'boolean',
         description: 'Whether the IDs of the minted NFTs will be sequential.',
+      },
+      upgradeable: {
+        type: 'boolean',
+        description: 'Whether the contract can be upgraded.',
       },
     },
     required: ['name', 'symbol'],

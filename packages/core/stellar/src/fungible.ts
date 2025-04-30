@@ -3,6 +3,7 @@ import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
+import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -17,6 +18,7 @@ export const defaults: Required<FungibleOptions> = {
   symbol: 'MTK',
   burnable: false,
   pausable: false,
+  upgradeable: false,
   premint: '0',
   mintable: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
@@ -32,6 +34,7 @@ export interface FungibleOptions extends CommonContractOptions {
   symbol: string;
   burnable?: boolean;
   pausable?: boolean;
+  upgradeable?: boolean;
   premint?: string;
   mintable?: boolean;
 }
@@ -42,6 +45,7 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
+    upgradeable: opts.upgradeable ?? defaults.upgradeable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
   };
@@ -60,6 +64,10 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
+  }
+
+  if (allOpts.upgradeable) {
+    addUpgradeable(c);
   }
 
   if (allOpts.burnable) {
