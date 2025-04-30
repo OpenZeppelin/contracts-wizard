@@ -1,4 +1,4 @@
-name: changeset
+name: Changeset
 
 on:
   pull_request:

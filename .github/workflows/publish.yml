@@ -1,0 +1,39 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  publish:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # To get all tags
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Create Version Packages PR or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          title: Version Packages
+          commit: Version Packages
+          version: npm run version
+          publish: npm run publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Check if changesets found
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        run: |
+          echo "Changesets found. Merge Version Packages PR before publishing."
+          exit 1
+      - name: Check if publish was successful
+        if: steps.changesets.outputs.published == 'false'
+        run: |
+          echo "Publish failed. Check the logs for more details."
+          exit 1

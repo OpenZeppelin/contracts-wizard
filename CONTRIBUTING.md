@@ -70,5 +70,5 @@ Then from the `packages/ui` directory:
 As a contributor, we ask that you fork this repository, work on your own fork and then submit pull requests. The pull requests will be reviewed and eventually merged into the main repo. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo/) for how this works.
 
 ### Adding Changesets
-If your PR modifies code generation logic under `packages/core`, you will need to add changesets for the relevant packages to summarize the changes. The PR's `changeset` GitHub check will give an error if this condition is not satisfied.
+If your PR modifies code generation logic under `packages/core`, you will need to add changesets for the relevant packages to summarize the changes. The PR's `Changeset` GitHub check will give an error if this condition is not satisfied.
 - To add a changeset: from the root directory, run `yarn changeset`
