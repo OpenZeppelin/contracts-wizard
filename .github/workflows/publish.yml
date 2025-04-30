@@ -27,12 +27,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Check if changesets found
+      - name: Check whether additional changesets found
         if: steps.changesets.outputs.hasChangesets == 'true'
         run: |
           echo "Changesets found. Merge Version Packages PR before publishing."
           exit 1
-      - name: Check if publish was successful
+      - name: Check whether publish was successful
         if: steps.changesets.outputs.published == 'false'
         run: |
           echo "Publish failed. Check the logs for more details."
