@@ -156,7 +156,7 @@
   bind:value={opts.signer}
   defaultValue="ECDSA"
   helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's <code>isValidSignature</code> to verify signatures on behalf of the account."
-  helpLink="https://docs.openzeppelin.com/community-contracts/account-abstraction#selecting_a_signer"
+  helpLink="https://docs.openzeppelin.com/community-contracts/accounts#selecting_a_signer"
 >
   <div class="checkbox-group">
     <label class:checked={opts.signer === 'ECDSA'}>
@@ -187,9 +187,7 @@
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
       Multisig Weighted*
-      <HelpTooltip
-        link="https://docs.openzeppelin.com/community-contracts/multisig#multisignererc7913weighted"
-      >
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig#multisignererc7913weighted">
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
       </HelpTooltip>
