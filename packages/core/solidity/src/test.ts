@@ -30,6 +30,10 @@ test.serial('stablecoin result compiles', async t => {
   await testCompile(t, 'Stablecoin');
 });
 
+test.serial('account result compiles', async t => {
+  await testCompile(t, 'Account');
+});
+
 test.serial('governor result compiles', async t => {
   await testCompile(t, 'Governor');
 });

@@ -4,7 +4,7 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
-import { addSigner, signerFunctions, type SignerOptions } from './signer';
+import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -233,6 +233,10 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
       ],
       signerFunctions._rawSignatureValidation,
     );
+    // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
+    if (opts.signer === 'MultisigWeighted') {
+      c.addImportOnly(signers.Multisig);
+    }
   }
 }
 

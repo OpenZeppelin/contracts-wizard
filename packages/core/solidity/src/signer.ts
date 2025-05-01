@@ -6,9 +6,13 @@ export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   if (!signer) return;
-  const parent = parents[signer];
+  const parent = signers[signer];
+  const name = parent.name;
   c.addParent(parent);
-  c.addOverride({ name: parent.name }, signerFunctions._rawSignatureValidation);
+  c.addOverride(
+    { name: name === signers.MultisigWeighted.name ? signers.Multisig.name : name },
+    signerFunctions._rawSignatureValidation,
+  );
 
   // ERC-7702 doesn't require initialization
   if (signer === 'ERC7702') return;
@@ -45,7 +49,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   }
 }
 
-const parents = {
+export const signers = {
   ERC7702: {
     name: 'SignerERC7702',
     path: '@openzeppelin/community-contracts/utils/cryptography/SignerERC7702.sol',
