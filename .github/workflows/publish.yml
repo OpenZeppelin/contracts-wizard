@@ -3,36 +3,40 @@ name: Publish Packages
 on:
   workflow_dispatch:
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: version-or-publish-${{ github.ref }}
 
 jobs:
   publish:
     name: Publish Packages
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     environment: publish
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # To get all tags
+          ref: ${{ github.ref }}
       - name: Set up environment
         uses: ./.github/actions/setup
-      - name: Create Version Packages PR or Publish
+      - name: Create Prepare Release PR or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          title: Version Packages
-          commit: Version Packages
+          title: Prepare Release
+          commit: Prepare Release
           version: npm run version
           publish: npm run publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Check whether additional changesets found
+      - name: Check changesets status
         if: steps.changesets.outputs.hasChangesets == 'true'
         run: |
-          echo "Changesets found. Merge Version Packages PR before publishing."
+          echo "Changesets found. Merge Prepare Release PR before publishing."
           exit 1
-      - name: Check whether publish was successful
+      - name: Check publish status
         if: steps.changesets.outputs.published == 'false'
         run: |
           echo "Publish failed. Check the logs for more details."
