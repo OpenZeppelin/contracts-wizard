@@ -54,7 +54,7 @@
         }}
       />
       Signature Validation
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/interfaces#IERC1271">
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#signature_validation">
         Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
         (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic, making
         them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
@@ -70,7 +70,7 @@
         }}
       />
       Account Bound
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/utils#ERC7739">
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#erc_7739_signatures">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
         multiple smart accounts owned by the same private key. This preserves the readability of signed contents while
         ensuring each signature is uniquely bound to a specific account and chain.
@@ -112,10 +112,9 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/api/account#ERC7821">
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#batched_execution">
         Enables atomic execution of multiple transactions in a single operation, reducing total transaction costs and
-        latency. Supports different execution modes including single calls, batch calls, and delegatecalls with
-        customizable error handling.
+        latency.
       </HelpTooltip>
     </label>
     <label class:checked={!!opts.ERC7579Modules}>
@@ -129,9 +128,9 @@
       />
       Modules
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">
-        Enables a modular architecture where account functionality can be extended through external contracts (modules).
-        Supports validators for signature verification, executors for transaction handling, and fallback handlers for
-        additional features. Hooks are not supported by default.
+        Enables a modular architecture where account functionality can be extended through external contracts (modules)
+        and enhances batched execution. Supports validators for signature verification, executors for transaction
+        handling, and fallback handlers for additional features. Hooks are not supported by default.
       </HelpTooltip>
     </label>
     <label class:checked={opts.ERC7579Modules === 'AccountERC7579Hooked'} class="subcontrol">
@@ -171,7 +170,7 @@
     <label class:checked={opts.signer === 'ERC7702'}>
       <input type="radio" bind:group={opts.signer} value="ERC7702" />
       EOA Delegation
-      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7702">
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
@@ -179,7 +178,7 @@
     <label class:checked={opts.signer === 'Multisig'}>
       <input type="radio" bind:group={opts.signer} value="Multisig" />
       Multisig*
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig-account#multisignererc7913">
+      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig">
         ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
         maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
         requirement.
@@ -189,7 +188,7 @@
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
       Multisig Weighted*
       <HelpTooltip
-        link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig-account#multisignererc7913weighted"
+        link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig#multisignererc7913weighted"
       >
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
