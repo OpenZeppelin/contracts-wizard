@@ -188,7 +188,7 @@
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
       Multisig Weighted*
       <HelpTooltip
-        link="https://docs.openzeppelin.com/community-contracts/0.0.1/multisig#multisignererc7913weighted"
+        link="https://docs.openzeppelin.com/community-contracts/multisig#multisignererc7913weighted"
       >
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
