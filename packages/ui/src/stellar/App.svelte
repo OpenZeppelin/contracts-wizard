@@ -68,7 +68,6 @@
             opts.premint = initialOpts.premint ?? opts.premint;
             break;
           case 'NonFungible':
-            opts.premint = initialOpts.premint ?? opts.premint;
             break;
         }
         initialValuesSet = true;

@@ -46,10 +46,6 @@ export const stellarNonFungibleAIFunctionDefinition = {
         'access',
         'info',
       ]),
-      premint: {
-        type: 'string',
-        description: 'The number of tokens to premint for the deployer.',
-      },
       enumerable: {
         type: 'boolean',
         description: 'Whether the NFTs are enumerable (can be iterated over).',
