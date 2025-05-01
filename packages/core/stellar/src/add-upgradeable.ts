@@ -1,8 +1,17 @@
 import { getSelfArg } from './common-options';
+import type { Access } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import type { ContractBuilder } from './contract';
 import { defineFunctions } from './utils/define-functions';
 
-export function addUpgradeable(c: ContractBuilder) {
+export function addUpgradeable(c: ContractBuilder, access: Access) {
+  const functions = defineFunctions({
+    _require_auth: {
+      args: [getSelfArg(), { name: 'operator', type: '&Address' }],
+      code: ['operator.require_auth();'],
+    },
+  });
+
   c.addUseClause('stellar_upgradeable', 'UpgradeableInternal');
   c.addUseClause('stellar_upgradeable_macros', 'Upgradeable');
 
@@ -15,19 +24,5 @@ export function addUpgradeable(c: ContractBuilder) {
 
   c.addTraitFunction(upgradeableTrait, functions._require_auth);
 
-  c.addConstructorArgument({ name: 'owner', type: 'Address' });
-  c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
+  requireAccessControl(c, upgradeableTrait, functions._require_auth, access, 'operator');
 }
-
-const functions = defineFunctions({
-  _require_auth: {
-    args: [getSelfArg(), { name: 'operator', type: '&Address' }],
-    code: [
-      `operator.require_auth();
-       let owner = e.storage().instance().get::<_, Address>(&OWNER).unwrap();
-       if *operator != owner {
-          panic_with_error!(e, ExampleContractError::Unauthorized)
-       }`,
-    ],
-  },
-});

@@ -20,7 +20,6 @@ export const defaults: Required<NonFungibleOptions> = {
   consecutive: false,
   pausable: false,
   upgradeable: false,
-  premint: '0',
   mintable: false,
   sequential: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
@@ -39,7 +38,6 @@ export interface NonFungibleOptions extends CommonContractOptions {
   consecutive?: boolean;
   pausable?: boolean;
   upgradeable?: boolean;
-  premint?: string;
   mintable?: boolean;
   sequential?: boolean;
 }
@@ -54,7 +52,6 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     pausable: opts.pausable ?? defaults.pausable,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     mintable: opts.mintable ?? defaults.mintable,
-    premint: opts.premint || defaults.premint,
     sequential: opts.sequential ?? defaults.sequential,
   };
 }
@@ -66,16 +63,12 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
 
-  if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
-  }
-
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
   }
 
   if (allOpts.upgradeable) {
-    addUpgradeable(c);
+    addUpgradeable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
@@ -222,24 +215,6 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
   }
 
   c.addFreeFunction(consecutiveFunctions.set_owner_for);
-}
-
-export const premintPattern = /^(\d*\.?\d*)$/;
-
-function addPremint(c: ContractBuilder, amount: string) {
-  if (amount !== undefined && amount !== '0') {
-    if (!premintPattern.test(amount)) {
-      throw new OptionsError({
-        premint: 'Not a valid number',
-      });
-    }
-
-    // TODO: handle signed int?
-    const premintAbsolute = toUint(amount, 'premint', 'u32');
-
-    c.addConstructorArgument({ name: 'recipient', type: 'Address' });
-    c.addConstructorCode(`non_fungible::Base::mint(e, &recipient, ${premintAbsolute});`);
-  }
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {

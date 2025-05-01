@@ -47,14 +47,6 @@
       <input bind:value={opts.symbol} use:error={errors?.symbol} />
     </label>
   </div>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Premint
-      <HelpTooltip>Generate initial NFTs with given IDs for the owner.</HelpTooltip>
-    </span>
-    <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" />
-  </label>
 </section>
 
 <section class="controls-section">

@@ -19,6 +19,10 @@
     mintable = false;
   }
 
+  $: if (!mintable) {
+    sequential = false;
+  }
+
   $: previousConsecutive = consecutive;
 </script>
 
@@ -30,19 +34,6 @@
   disabled={consecutive}
 >
   <div class="checkbox-group">
-    <label class:checked={sequential}>
-      <input
-        type="radio"
-        name="minting-mode"
-        value="sequential"
-        checked={sequential && !consecutive}
-        on:change={() => handleSequentialChange(true)}
-        disabled={consecutive}
-      />
-      Sequential
-      <HelpTooltip>Tokens will be minted with sequential IDs.</HelpTooltip>
-    </label>
-
     <label class:checked={!sequential && mintable}>
       <input
         type="radio"
@@ -50,10 +41,23 @@
         value="non_sequential"
         checked={!sequential && mintable && !consecutive}
         on:change={() => handleSequentialChange(false)}
-        disabled={consecutive}
+        disabled={consecutive || !mintable}
       />
       Non-Sequential
       <HelpTooltip>Tokens can be minted with arbitrary IDs.</HelpTooltip>
+    </label>
+
+    <label class:checked={sequential}>
+      <input
+        type="radio"
+        name="minting-mode"
+        value="sequential"
+        checked={sequential && !consecutive}
+        on:change={() => handleSequentialChange(true)}
+        disabled={consecutive || !mintable}
+      />
+      Sequential
+      <HelpTooltip>Tokens will be minted with sequential IDs.</HelpTooltip>
     </label>
   </div>
 </ExpandableToggleRadio>

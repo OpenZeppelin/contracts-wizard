@@ -67,7 +67,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
   }
 
   if (allOpts.upgradeable) {
-    addUpgradeable(c);
+    addUpgradeable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {

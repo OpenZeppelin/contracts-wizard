@@ -56,7 +56,7 @@ export function requireAccessControl(
         c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
         c.addFunctionCodeBefore(
           fn,
-          [getOwner, 'if owner != caller {', `    panic_with_error!(e, ${c.name}Error::Unauthorized)`, '}'],
+          [getOwner, `if owner != ${caller} {`, `    panic_with_error!(e, ${c.name}Error::Unauthorized)`, '}'],
           trait,
         );
       } else {

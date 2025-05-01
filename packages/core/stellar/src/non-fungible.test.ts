@@ -50,14 +50,6 @@ testNonFungible('non-fungible burnable pausable', {
   pausable: true,
 });
 
-testNonFungible('non-fungible preminted', {
-  premint: '1000',
-});
-
-testNonFungible('non-fungible premint of 0', {
-  premint: '0',
-});
-
 testNonFungible('non-fungible mintable', {
   mintable: true,
 });
@@ -75,7 +67,6 @@ testNonFungible('non-fungible sequential', {
 });
 
 testNonFungible('non-fungible full', {
-  premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
@@ -87,7 +78,6 @@ testNonFungible('non-fungible full', {
 
 testNonFungible('non-fungible full - complex name', {
   name: 'Custom  $ Token',
-  premint: '2000',
   access: 'ownable',
   burnable: true,
   mintable: true,
@@ -104,7 +94,6 @@ testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK
 testAPIEquivalence('non-fungible API full', {
   name: 'CustomToken',
   symbol: 'CTK',
-  premint: '2000',
   burnable: true,
   mintable: true,
   pausable: true,

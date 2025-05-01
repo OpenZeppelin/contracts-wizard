@@ -15,7 +15,6 @@ const blueprint = {
   consecutive: booleans,
   sequential: booleans,
   mintable: booleans,
-  premint: ['1'],
   access: accessOptions,
   info: infoOptions,
 };
