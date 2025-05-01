@@ -65,7 +65,7 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
   const type = mode === 'allowlist';
   const ERC20Limitation = {
     name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
-    path: `@openzeppelin/community-contracts/contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+    path: `@openzeppelin/community-contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
   };
 
   c.addParent(ERC20Limitation);
@@ -86,7 +86,7 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
 function addCustodian(c: ContractBuilder, access: Access) {
   const ERC20Custodian = {
     name: 'ERC20Custodian',
-    path: '@openzeppelin/community-contracts/contracts/token/ERC20/extensions/ERC20Custodian.sol',
+    path: '@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol',
   };
 
   c.addParent(ERC20Custodian);
