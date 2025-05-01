@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { task } = require('hardhat/config');
 const { HardhatError } = require('hardhat/internal/core/errors');
 const { ERRORS } = require('hardhat/internal/core/errors-list');
@@ -5,6 +6,7 @@ const {
   TASK_COMPILE_SOLIDITY_CHECK_ERRORS,
   TASK_COMPILE_SOLIDITY_LOG_COMPILATION_ERRORS,
   TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS,
+  TASK_COMPILE_GET_REMAPPINGS,
 } = require('hardhat/builtin-tasks/task-names');
 const SOLIDITY_VERSION = require('./src/solidity-version.json');
 
@@ -36,6 +38,21 @@ task(TASK_COMPILE_SOLIDITY_MERGE_COMPILATION_JOBS, async ({ compilationJobs }, _
   const mergedChunks = await Promise.all(chunks.map(cj => runSuper({ compilationJobs: cj })));
   return mergedChunks.flat();
 });
+
+task(TASK_COMPILE_GET_REMAPPINGS).setAction((_, __, runSuper) =>
+  runSuper().then(remappings =>
+    Object.assign(
+      remappings,
+      Object.fromEntries(
+        fs
+          .readFileSync('remappings.txt', 'utf-8')
+          .split('\n')
+          .filter(Boolean)
+          .map(line => line.trim().split('=')),
+      ),
+    ),
+  ),
+);
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
