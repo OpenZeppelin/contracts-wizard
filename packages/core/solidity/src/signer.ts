@@ -6,9 +6,13 @@ export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   if (!signer) return;
-  const parent = parents[signer];
+  const parent = signers[signer];
+  const name = parent.name;
   c.addParent(parent);
-  c.addOverride({ name: parent.name }, signerFunctions._rawSignatureValidation);
+  c.addOverride(
+    { name: name === signers.MultisigWeighted.name ? signers.Multisig.name : name },
+    signerFunctions._rawSignatureValidation,
+  );
 
   // ERC-7702 doesn't require initialization
   if (signer === 'ERC7702') return;
@@ -45,30 +49,30 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   }
 }
 
-const parents = {
+export const signers = {
   ERC7702: {
     name: 'SignerERC7702',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/SignerERC7702.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/SignerERC7702.sol',
   },
   ECDSA: {
     name: 'SignerECDSA',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/SignerECDSA.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/SignerECDSA.sol',
   },
   P256: {
     name: 'SignerP256',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/SignerP256.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/SignerP256.sol',
   },
   RSA: {
     name: 'SignerRSA',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/SignerRSA.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/SignerRSA.sol',
   },
   Multisig: {
     name: 'MultiSignerERC7913',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/MultiSignerERC7913.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913.sol',
   },
   MultisigWeighted: {
     name: 'MultiSignerERC7913Weighted',
-    path: '@openzeppelin/community-contracts/contracts/utils/cryptography/MultiSignerERC7913Weighted.sol',
+    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913Weighted.sol',
   },
 };
 
