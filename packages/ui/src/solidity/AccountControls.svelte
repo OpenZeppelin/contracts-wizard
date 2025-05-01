@@ -128,7 +128,7 @@
       />
       Modules
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7579">
-        Enables a modular architecture where account functionality can be extended through external contracts (modules)
+        Enables a modular architecture where account functionality can be extended through installation and uninstallation of external contracts (modules)
         and enhances batched execution. Supports validators for signature verification, executors for transaction
         handling, and fallback handlers for additional features. Hooks are not supported by default.
       </HelpTooltip>
