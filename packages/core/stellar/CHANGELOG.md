@@ -1,9 +1,5 @@
 # Changelog
 
-## 0.2.0 (2025-04-28)
-
-- Add NonFungible extension and minor refactorings to Fungible (crate renamings, etc.). ([#531](https://github.com/OpenZeppelin/contracts-wizard/pull/531))
-
 ## 0.1.1 (2025-03-03)
 
 - Add a default no_std to all contracts. ([#471](https://github.com/OpenZeppelin/contracts-wizard/pull/471))
