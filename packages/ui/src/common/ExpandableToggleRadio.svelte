@@ -14,6 +14,8 @@
   export let disabledReason: string | undefined = undefined;
 
   export let required: boolean = false;
+
+  export let error: string | undefined = undefined;
 </script>
 
 <ParentExpandableSection
@@ -26,7 +28,7 @@
   {disabled}
   {disabledReason}
   {required}
-  error={undefined}
+  {error}
 >
   <slot />
 </ParentExpandableSection>

@@ -9,20 +9,31 @@
   export let errors: undefined | { mintable?: string; sequential?: string };
 
   let previousConsecutive = consecutive;
-  function handleSequentialChange(value: boolean) {
-    sequential = value;
-    if (!mintable) {
-      mintable = true;
+
+  let mode: false | 'non_sequential' | 'sequential' = false;
+
+  $: {
+    switch (mode) {
+      case 'sequential':
+        sequential = true;
+        mintable = true;
+        break;
+      case 'non_sequential':
+        sequential = false;
+        mintable = true;
+        break;
+      case false:
+        sequential = false;
+        mintable = false;
+        break;
+      default:
+        const _: never = mode;
+        break;
     }
   }
 
-  $: if (consecutive !== previousConsecutive && consecutive) {
-    sequential = false;
-    mintable = false;
-  }
-
-  $: if (!mintable) {
-    sequential = false;
+  $: if (!previousConsecutive && consecutive) {
+    mode = false;
   }
 
   $: previousConsecutive = consecutive;
@@ -30,30 +41,31 @@
 
 <ExpandableToggleRadio
   label="Minting"
-  bind:value={mintable}
-  defaultValue={true}
+  bind:value={mode}
+  defaultValue={'non_sequential'}
   helpContent="Configure minting mode for NFTs."
   disabled={consecutive}
+  error={errors?.mintable || errors?.sequential}
 >
   <div class="checkbox-group">
-    <label class:checked={!sequential && mintable} use:error={errors?.mintable}>
+    <label class:checked={mode === 'non_sequential'} use:error={errors?.mintable}>
       <input
         type="radio"
         name="minting-mode"
         value="non_sequential"
-        bind:group={mintable}
+        bind:group={mode}
         disabled={consecutive || !mintable}
       />
       Non-Sequential
       <HelpTooltip>Tokens can be minted with arbitrary IDs.</HelpTooltip>
     </label>
 
-    <label class:checked={sequential} use:error={errors?.sequential}>
+    <label class:checked={mode === 'sequential'} use:error={errors?.sequential}>
       <input
         type="radio"
         name="minting-mode"
         value="sequential"
-        bind:group={sequential}
+        bind:group={mode}
         disabled={consecutive || !mintable}
       />
       Sequential
