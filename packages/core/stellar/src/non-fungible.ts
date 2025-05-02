@@ -234,7 +234,6 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
     c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
   }
 
-  c.addFreeFunction(consecutiveFunctions.set_owner_for);
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
@@ -361,7 +360,7 @@ const baseFunctions = defineFunctions({
 const burnableFunctions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::ContractType::burn(e, &from, token_id)'],
+    code: ['ContractType::burn(e, &from, token_id)'],
   },
   burn_from: {
     args: [
@@ -370,7 +369,7 @@ const burnableFunctions = defineFunctions({
       { name: 'from', type: 'Address' },
       { name: 'token_id', type: 'u32' },
     ],
-    code: ['non_fungible::ContractType::burn_from(e, &spender, &from, token_id)'],
+    code: ['ContractType::burn_from(e, &spender, &from, token_id)'],
   },
 });
 
@@ -383,20 +382,20 @@ const enumerableFunctions = defineFunctions({
   get_owner_token_id: {
     args: [getSelfArg(), { name: 'owner', type: 'Address' }, { name: 'index', type: 'u32' }],
     returns: 'u32',
-    code: ['non_fungible::enumerable::Enumerable::get_owner_token_id(e, &owner, index)'],
+    code: ['Enumerable::get_owner_token_id(e, &owner, index)'],
   },
   get_token_id: {
     args: [getSelfArg(), { name: 'index', type: 'u32' }],
     returns: 'u32',
-    code: ['non_fungible::enumerable::Enumerable::get_token_id(e, index)'],
+    code: ['Enumerable::get_token_id(e, index)'],
   },
   non_sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::enumerable::Enumerable::non_sequential_mint(e, &account, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
+    code: ['Enumerable::non_sequential_mint(e, &account, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
   },
   sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['non_fungible::enumerable::Enumerable::sequential_mint(e, &account);'],
+    code: ['Enumerable::sequential_mint(e, &account);'],
   },
 });
 
@@ -404,7 +403,7 @@ const consecutiveFunctions = defineFunctions({
   batch_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
-    code: ['non_fungible::consecutive::Consecutive::batch_mint(e, &account, amount);'],
+    code: ['Consecutive::batch_mint(e, &account, amount);'],
   },
   set_owner_for: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
