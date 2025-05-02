@@ -102,7 +102,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.pausable, allOpts.burnable);
+    addConsecutive(c, allOpts.burnable, allOpts.pausable);
   }
 
   if (allOpts.mintable) {

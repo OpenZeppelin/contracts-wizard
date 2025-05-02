@@ -112,6 +112,22 @@ testNonFungible('non-fungible consecutive', {
   consecutive: true,
 });
 
+testNonFungible('non-fungible consecutive burnable', {
+  consecutive: true,
+  burnable: true,
+});
+
+testNonFungible('non-fungible consecutive pausable', {
+  consecutive: true,
+  pausable: true,
+});
+
+testNonFungible('non-fungible consecutive burnable pausable', {
+  consecutive: true,
+  burnable: true,
+  pausable: true,
+});
+
 testNonFungible('non-fungible sequential', {
   sequential: true,
 });
