@@ -18,7 +18,7 @@
     "@rollup/plugin-replace": "^6.0.0",
     "@rollup/plugin-typescript": "^12.0.0",
     "@types/file-saver": "^2.0.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.5.7",
     "@upstash/redis": "1.25.2",
