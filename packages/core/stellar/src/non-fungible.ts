@@ -204,10 +204,11 @@ function addEnumerable(c: ContractBuilder, burnable: boolean) {
   // 1. get rid of the `defaultimpl` macro form `tags` above,
   // 2. get rid of `c.addImplementedTrait(nonFungibleEnumerableTrait);` line,
   // 3. uncomment the section below:
+  // 4. uncomment `get_owner_token_id` and `get_token_id` from `enumerableFunctions` definition
   /*
-  c.addFunction(nonFungibleEnumerableTrait, functions.total_supply);
-  c.addFunction(nonFungibleEnumerableTrait, functions.get_owner_token_id);
-  c.addFunction(nonFungibleEnumerableTrait, functions.get_token_id);
+  c.addFunction(nonFungibleEnumerableTrait, enumerableFunctions.total_supply);
+  c.addFunction(nonFungibleEnumerableTrait, enumerableFunctions.get_owner_token_id);
+  c.addFunction(nonFungibleEnumerableTrait, enumerableFunctions.get_token_id);
   */
 }
 
@@ -233,7 +234,6 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
   if (pausable) {
     c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
   }
-
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
@@ -379,6 +379,8 @@ const enumerableFunctions = defineFunctions({
     returns: 'u32',
     code: ['non_fungible::enumerable::Enumerable::total_supply(e)'],
   },
+  // These are not currently used, see addEnumerable() above
+  /*
   get_owner_token_id: {
     args: [getSelfArg(), { name: 'owner', type: 'Address' }, { name: 'index', type: 'u32' }],
     returns: 'u32',
@@ -389,6 +391,7 @@ const enumerableFunctions = defineFunctions({
     returns: 'u32',
     code: ['Enumerable::get_token_id(e, index)'],
   },
+  */
   non_sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
     code: ['Enumerable::non_sequential_mint(e, &account, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
@@ -404,9 +407,5 @@ const consecutiveFunctions = defineFunctions({
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
     code: ['Consecutive::batch_mint(e, &account, amount);'],
-  },
-  set_owner_for: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['non_fungible::consecutive::Consecutive::set_owner_for(e, &to, token_id);'],
   },
 });
