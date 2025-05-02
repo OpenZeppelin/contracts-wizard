@@ -4,7 +4,7 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
-import { addSigner, signerFunctions, type SignerOptions } from './signer';
+import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -76,7 +76,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Base
   c.addParent({
     name: 'Account',
-    path: `@openzeppelin/community-contracts/contracts/account/Account.sol`,
+    path: `@openzeppelin/community-contracts/account/Account.sol`,
   });
   c.addOverride({ name: 'Account' }, functions._validateUserOp);
 
@@ -86,6 +86,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
   addSigner(c, opts.signer ?? false);
+  addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
   addERC1155Holder(c, opts);
@@ -96,7 +97,7 @@ function addSignatureValidation(c: ContractBuilder, opts: AccountOptions) {
     case 'ERC7739':
       c.addParent({
         name: 'ERC7739',
-        path: '@openzeppelin/community-contracts/contracts/utils/cryptography/ERC7739.sol',
+        path: '@openzeppelin/community-contracts/utils/cryptography/ERC7739.sol',
       });
       break;
     case 'ERC1271':
@@ -138,7 +139,7 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.batchedExecution || !!opts.ERC7579Modules) return;
   c.addParent({
     name: 'ERC7821',
-    path: '@openzeppelin/community-contracts/contracts/account/extensions/ERC7821.sol',
+    path: '@openzeppelin/community-contracts/account/extensions/ERC7821.sol',
   });
   c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
   c.setFunctionBody(
@@ -151,12 +152,12 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
   c.addParent({
     name: opts.ERC7579Modules,
-    path: `@openzeppelin/community-contracts/contracts/account/extensions/${opts.ERC7579Modules}.sol`,
+    path: `@openzeppelin/community-contracts/account/extensions/${opts.ERC7579Modules}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
       name: 'AccountERC7579',
-      path: `@openzeppelin/community-contracts/contracts/account/extensions/AccountERC7579.sol`,
+      path: `@openzeppelin/community-contracts/account/extensions/AccountERC7579.sol`,
     });
   }
   c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
@@ -173,6 +174,23 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
     ],
     functions.isValidSignature,
   );
+}
+
+function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
+  switch (opts.signer) {
+    case 'MultisigWeighted':
+      c.addFunctionCode(
+        `_setSignerWeights(${functions.setSignerWeights.args.map(({ name }) => name).join(', ')});`,
+        functions.setSignerWeights,
+      );
+    // eslint-disable-next-line no-fallthrough
+    case 'Multisig':
+      c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]!.name});`, functions.addSigners);
+      c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]!.name});`, functions.removeSigners);
+      c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]!.name});`, functions.setThreshold);
+      break;
+    default:
+  }
 }
 
 function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
@@ -202,7 +220,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   if (opts.signer && opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'AbstractSigner',
-      path: '@openzeppelin/community-contracts/contracts/utils/cryptography/AbstractSigner.sol',
+      path: '@openzeppelin/community-contracts/utils/cryptography/AbstractSigner.sol',
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
@@ -215,6 +233,10 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
       ],
       signerFunctions._rawSignatureValidation,
     );
+    // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
+    if (opts.signer === 'MultisigWeighted') {
+      c.addImportOnly(signers.Multisig);
+    }
   }
 }
 
@@ -246,6 +268,25 @@ const functions = {
       ],
       returns: ['bool'],
       mutability: 'view' as const,
+    },
+    addSigners: {
+      kind: 'public' as const,
+      args: [{ name: 'signers', type: 'bytes[] memory' }],
+    },
+    removeSigners: {
+      kind: 'public' as const,
+      args: [{ name: 'signers', type: 'bytes[] memory' }],
+    },
+    setThreshold: {
+      kind: 'public' as const,
+      args: [{ name: 'threshold', type: 'uint256' }],
+    },
+    setSignerWeights: {
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'weights', type: 'uint256[] memory' },
+      ],
     },
   }),
 };
