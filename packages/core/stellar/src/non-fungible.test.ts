@@ -132,6 +132,10 @@ testNonFungible('non-fungible sequential', {
   sequential: true,
 });
 
+testNonFungible('non-fungible upgradeable', {
+  upgradeable: true,
+});
+
 // Revised test with valid combinations
 testNonFungible('non-fungible with compatible options', {
   access: 'ownable',
@@ -139,6 +143,7 @@ testNonFungible('non-fungible with compatible options', {
   mintable: true,
   pausable: true,
   enumerable: true,
+  upgradeable: true,
 });
 
 testNonFungible('non-fungible - complex name', {
@@ -159,6 +164,7 @@ testAPIEquivalence('non-fungible API full', {
   mintable: true,
   pausable: true,
   enumerable: true,
+  upgradeable: true,
 });
 
 test('non-fungible API assert defaults', async t => {
