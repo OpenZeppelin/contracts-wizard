@@ -31,7 +31,13 @@ export function printContract(contract: Contract): string {
 }
 
 function printContractStruct(contract: Contract): Lines[] {
-  return ['#[contract]', `pub struct ${contract.name};`];
+  const lines = [];
+  if (contract.derives.length > 0) {
+    lines.push(`#[derive(${contract.derives.sort().join(', ')})]`);
+  }
+  lines.push('#[contract]');
+  lines.push(`pub struct ${contract.name};`);
+  return lines;
 }
 
 function printContractErrors(contract: Contract): Lines[] {

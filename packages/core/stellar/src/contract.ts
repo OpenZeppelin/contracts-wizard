@@ -11,6 +11,7 @@ export interface Contract {
   variables: Variable[];
   errors: Error[];
   ownable: boolean;
+  derives: string[];
 }
 
 export interface Error {
@@ -80,6 +81,7 @@ export class ContractBuilder implements Contract {
   private variablesMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
+  private derivesSet: Set<string> = new Set();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -103,6 +105,10 @@ export class ContractBuilder implements Contract {
 
   get errors(): Error[] {
     return [...this.errorsMap.values()];
+  }
+
+  get derives(): string[] {
+    return [...this.derivesSet];
   }
 
   addError(name: string, num: number): boolean {
@@ -237,5 +243,9 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string): void {
     this.constructorCode.push(code);
+  }
+
+  addDerives(derive: string): void {
+    this.derivesSet.add(derive);
   }
 }

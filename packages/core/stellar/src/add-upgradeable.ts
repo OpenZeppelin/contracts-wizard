@@ -15,6 +15,8 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
   c.addUseClause('stellar_upgradeable', 'UpgradeableInternal');
   c.addUseClause('stellar_upgradeable_macros', 'Upgradeable');
 
+  c.addDerives('Upgradeable');
+
   const upgradeableTrait = {
     traitName: 'UpgradeableInternal',
     structName: c.name,
