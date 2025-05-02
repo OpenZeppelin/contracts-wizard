@@ -3,6 +3,7 @@ import test from 'ava';
 import type { NonFungibleOptions } from './non-fungible';
 import { buildNonFungible } from './non-fungible';
 import { printContract } from './print';
+import { OptionsError } from './error';
 
 import { nonFungible } from '.';
 
@@ -35,6 +36,55 @@ function testAPIEquivalence(title: string, opts?: NonFungibleOptions) {
   });
 }
 
+// Error validation tests
+test('throws error when enumerable and consecutive are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        enumerable: true,
+        consecutive: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.enumerable, 'Enumerable cannot be used with Consecutive extension');
+  t.is(error?.messages.consecutive, 'Consecutive cannot be used with Enumerable extension');
+});
+
+test('throws error when consecutive and mintable are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        consecutive: true,
+        mintable: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.consecutive, 'Consecutive cannot be used with Mintable extension');
+  t.is(error?.messages.mintable, 'Mintable cannot be used with Consecutive extension');
+});
+
+test('throws error when consecutive and sequential are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        consecutive: true,
+        sequential: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.consecutive, 'Consecutive cannot be used with Sequential minting');
+  t.is(error?.messages.sequential, 'Sequential minting cannot be used with Consecutive extension');
+});
+
 testNonFungible('basic non-fungible', {});
 
 testNonFungible('non-fungible burnable', {
@@ -66,25 +116,20 @@ testNonFungible('non-fungible sequential', {
   sequential: true,
 });
 
-testNonFungible('non-fungible full', {
+// Revised test with valid combinations
+testNonFungible('non-fungible with compatible options', {
   access: 'ownable',
   burnable: true,
   mintable: true,
   pausable: true,
   enumerable: true,
-  consecutive: true,
-  sequential: true,
 });
 
-testNonFungible('non-fungible full - complex name', {
+testNonFungible('non-fungible - complex name', {
   name: 'Custom  $ Token',
   access: 'ownable',
   burnable: true,
-  mintable: true,
   pausable: true,
-  enumerable: true,
-  consecutive: true,
-  sequential: true,
 });
 
 testAPIEquivalence('non-fungible API default');
@@ -98,8 +143,6 @@ testAPIEquivalence('non-fungible API full', {
   mintable: true,
   pausable: true,
   enumerable: true,
-  consecutive: true,
-  sequential: true,
 });
 
 test('non-fungible API assert defaults', async t => {

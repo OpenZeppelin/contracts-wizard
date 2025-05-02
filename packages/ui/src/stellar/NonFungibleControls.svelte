@@ -59,22 +59,14 @@
       <HelpTooltip>Token holders will be able to destroy their NFTs.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.enumerable}>
-      <input
-        type="checkbox"
-        checked={opts.enumerable}
-        on:change={e => handleEnumerableChange(e.currentTarget.checked)}
-      />
+    <label class:checked={opts.enumerable} use:error={errors?.enumerable}>
+      <input type="checkbox" bind:checked={opts.enumerable} />
       Enumerable
       <HelpTooltip>Enable on-chain enumeration of tokens. Cannot be used with Consecutive extensions.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.consecutive}>
-      <input
-        type="checkbox"
-        checked={opts.consecutive}
-        on:change={e => handleConsecutiveChange(e.currentTarget.checked)}
-      />
+    <label class:checked={opts.consecutive} use:error={errors?.consecutive}>
+      <input type="checkbox" bind:checked={opts.consecutive} />
       Consecutive
       <HelpTooltip
         >Use consecutive token IDs instead of unique UUIDs. Incompatible with Enumerable extension.</HelpTooltip
@@ -94,6 +86,14 @@
   </div>
 </section>
 
-<MintableSection bind:mintable={opts.mintable} bind:sequential={opts.sequential} consecutive={opts.consecutive} />
+<MintableSection
+  bind:mintable={opts.mintable}
+  bind:sequential={opts.sequential}
+  consecutive={opts.consecutive}
+  errors={{
+    mintable: errors?.mintable,
+    sequential: errors?.sequential,
+  }}
+/>
 
 <InfoSection bind:info={opts.info} />

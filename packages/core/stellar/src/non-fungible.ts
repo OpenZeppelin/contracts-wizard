@@ -7,10 +7,11 @@ import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { setInfo } from './set-info';
+import type { OptionsErrorMessages } from './error';
 import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { toByteArray, toUint } from './utils/convert-strings';
+import { toByteArray } from './utils/convert-strings';
 
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
@@ -61,6 +62,27 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
 
   const allOpts = withDefaults(opts);
 
+  const errors: OptionsErrorMessages = {};
+
+  if (allOpts.enumerable && allOpts.consecutive) {
+    errors.enumerable = 'Enumerable cannot be used with Consecutive extension';
+    errors.consecutive = 'Consecutive cannot be used with Enumerable extension';
+  }
+
+  if (allOpts.consecutive && allOpts.mintable) {
+    errors.consecutive = 'Consecutive cannot be used with Mintable extension';
+    errors.mintable = 'Mintable cannot be used with Consecutive extension';
+  }
+
+  if (allOpts.consecutive && allOpts.sequential) {
+    errors.consecutive = 'Consecutive cannot be used with Sequential minting';
+    errors.sequential = 'Sequential minting cannot be used with Consecutive extension';
+  }
+
+  if (Object.keys(errors).length > 0) {
+    throw new OptionsError(errors);
+  }
+
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
 
   if (allOpts.pausable) {
@@ -75,12 +97,10 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     addBurnable(c, allOpts.pausable);
   }
 
-  // remove sequential from enumerable and add the logic to the `mintable` section
   if (allOpts.enumerable) {
     addEnumerable(c, allOpts.burnable);
   }
 
-  // remove sequential from consecutive and add the logic to the `mintable` section
   if (allOpts.consecutive) {
     addConsecutive(c, allOpts.pausable, allOpts.burnable);
   }
