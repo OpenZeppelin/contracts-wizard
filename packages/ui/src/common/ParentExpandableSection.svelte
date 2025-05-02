@@ -86,7 +86,7 @@
           {/if}
         </button>
         <HelpTooltip align="right" link={helpLink}>
-          {helpContent}
+          {@html helpContent}
         </HelpTooltip>
       </div>
     </label>

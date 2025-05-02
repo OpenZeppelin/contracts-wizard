@@ -58,7 +58,7 @@ interface IncompatibleSelection {
  * @param requestedVersion The requested version
  * @returns A compatible selection with the app type, or an incompatible selection with the compatible semver range
  */
-function evalutateSelection(
+function evaluateSelection(
   lang: string | undefined,
   requestedVersion: string | undefined,
 ): CompatibleSelection | IncompatibleSelection {
@@ -101,7 +101,7 @@ function evalutateSelection(
 }
 
 let app;
-const selection = evalutateSelection(lang, requestedVersion);
+const selection = evaluateSelection(lang, requestedVersion);
 
 if (!selection.compatible) {
   if (requestedVersion === undefined) {

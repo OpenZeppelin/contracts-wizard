@@ -180,6 +180,74 @@ export const solidityRealWorldAssetAIFunctionDefinition = {
   parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
+export const solidityAccountAIFunctionDefinition = {
+  name: 'Account',
+  description:
+    'Make an account contract that follows the ERC-4337 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'info']),
+      signatureValidation: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ERC1271', 'ERC7739'] },
+        ],
+        description:
+          'Whether to implement the ERC-1271 standard for validating signatures. This is useful for the account to verify signatures.',
+      },
+      ERC721Holder: {
+        type: 'boolean',
+        description:
+          'Whether to implement the `onERC721Received` function to allow the account to receive ERC721 tokens.',
+      },
+      ERC1155Holder: {
+        type: 'boolean',
+        description:
+          'Whether to implement the `onERC1155Received` function to allow the account to receive ERC1155 tokens.',
+      },
+      signer: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
+        ],
+        description: `Defines the signature verification algorithm used by the account to verify user operations. Options:
+        - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
+        - ERC7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
+        - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
+        - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
+        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
+        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`,
+      },
+      batchedExecution: {
+        type: 'boolean',
+        description:
+          'Whether to a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
+      },
+      ERC7579Modules: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
+        ],
+        description:
+          'Whether to implement the ERC-7579 compatibility to enable functionality on the account with modules.',
+      },
+      upgradeable: {
+        type: 'boolean',
+        enum: [false],
+        description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
+      },
+      access: {
+        type: 'boolean',
+        enum: [false],
+        description: 'Access control is not available for an account contract. It always authorizes itself.',
+      },
+    },
+    required: ['name'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'solidity', 'Account'>;
+
 export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
   description: 'Make a contract to implement governance, such as for a DAO',

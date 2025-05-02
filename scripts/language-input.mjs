@@ -3,7 +3,7 @@ import { join } from 'path';
 
 const coreSubfolderPath = './packages/core';
 
-function getSupportedLanguageInCoreSubfolder() {
+export function getSupportedLanguageInCoreSubfolder() {
   return readdirSync(coreSubfolderPath).filter(subfolder => {
     const subfolderPath = join(coreSubfolderPath, subfolder);
     return statSync(subfolderPath).isDirectory();
