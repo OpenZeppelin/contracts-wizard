@@ -37,7 +37,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
  */
 export function requireAccessControl(
   c: ContractBuilder,
-  trait: BaseTraitImplBlock,
+  trait: BaseTraitImplBlock | undefined,
   fn: BaseFunction,
   access: Access,
   caller?: string,

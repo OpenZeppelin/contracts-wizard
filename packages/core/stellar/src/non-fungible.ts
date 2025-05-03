@@ -235,7 +235,7 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
     c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
   }
 
-  requireAccessControl(c, nonFungibleConsecutiveTrait, consecutiveFunctions.batch_mint, access);
+  requireAccessControl(c, undefined, consecutiveFunctions.batch_mint, access);
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
