@@ -1,6 +1,6 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { Access, requireAccessControl, setAccessControl } from './set-access-control';
+import { type Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
