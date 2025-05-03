@@ -9,5 +9,5 @@ runs:
         cache: yarn
 
     - name: Install dependencies
-      run: yarn --frozen-lockfile --prefer-offline
+      run: yarn --frozen-lockfile --prefer-offline --network-concurrency 1
       shell: bash
