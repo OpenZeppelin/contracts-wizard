@@ -1,6 +1,6 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { setAccessControl } from './set-access-control';
+import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
@@ -102,7 +102,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.burnable, allOpts.pausable);
+    addConsecutive(c, allOpts.burnable, allOpts.pausable, allOpts.access);
   }
 
   if (allOpts.mintable) {
@@ -212,7 +212,7 @@ function addEnumerable(c: ContractBuilder, burnable: boolean) {
   */
 }
 
-function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean) {
+function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean, access: Access) {
   c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
 
   const nonFungibleConsecutiveTrait = {
@@ -234,6 +234,8 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
   if (pausable) {
     c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
   }
+
+  requireAccessControl(c, nonFungibleConsecutiveTrait, consecutiveFunctions.batch_mint, access);
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
