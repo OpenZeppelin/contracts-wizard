@@ -1,13 +1,13 @@
 import { supportsInterface } from './common-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
-import type { Contract } from './contract';
+import type { Contract, ImportContract } from './contract';
 import { ContractBuilder } from './contract';
 import { OptionsError } from './error';
 import { setAccessControl } from './set-access-control';
 import { printContract } from './print';
 import { setInfo } from './set-info';
-import { setUpgradeable } from './set-upgradeable';
+import { setUpgradeableGovernor } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks, durationToTimestamp } from './utils/duration';
 import { clockModeDefault, type ClockMode } from './set-clock-mode';
@@ -99,21 +99,19 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addTimelock(c, allOpts);
 
   setAccessControl(c, allOpts.access);
-  setUpgradeable(c, allOpts.upgradeable, allOpts.access);
+  setUpgradeableGovernor(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
   return c;
 }
 
+const Governor: ImportContract = {
+  name: 'Governor',
+  path: '@openzeppelin/contracts/governance/Governor.sol',
+};
+
 function addBase(c: ContractBuilder, { name }: GovernorOptions) {
-  const Governor = {
-    name: 'Governor',
-    path: '@openzeppelin/contracts/governance/Governor.sol',
-  };
   c.addParent(Governor, [name]);
-  c.addOverride(Governor, functions.votingDelay);
-  c.addOverride(Governor, functions.votingPeriod);
-  c.addOverride(Governor, functions.quorum);
   c.addOverride(Governor, functions.state);
   c.addOverride(Governor, functions.propose);
   c.addOverride(Governor, functions.proposalNeedsQueuing);
@@ -221,6 +219,7 @@ function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>
   } else {
     c.setFunctionBody([`return ${delayBlocks.value}; // ${delayBlocks.note}`], functions.votingDelay);
   }
+  c.addOverride(Governor, functions.votingDelay);
 
   const periodBlocks = getVotingPeriod(opts);
   if ('lit' in periodBlocks) {
@@ -228,6 +227,7 @@ function setVotingParameters(c: ContractBuilder, opts: Required<GovernorOptions>
   } else {
     c.setFunctionBody([`return ${periodBlocks.value}; // ${periodBlocks.note}`], functions.votingPeriod);
   }
+  c.addOverride(Governor, functions.votingPeriod);
 }
 
 function setProposalThreshold(c: ContractBuilder, opts: Required<GovernorOptions>) {
@@ -308,6 +308,7 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
         : `return ${opts.quorumAbsolute}e${opts.decimals};`;
 
     c.setFunctionBody([returnStatement], functions.quorum, 'pure');
+    c.addOverride(Governor, functions.quorum);
   }
 }
 
