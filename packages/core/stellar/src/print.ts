@@ -223,7 +223,7 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
-  const head = `${fn.pub ? 'pub ' : ''}fn ${fn.name}`;
+  const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
   const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
@@ -239,7 +239,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
@@ -271,12 +271,13 @@ function printContractFunctions(contract: Contract): Lines[] {
 
 function printConstructor(contract: Contract): Lines[] {
   if (contract.constructorCode.length > 0) {
-    const head = 'pub fn __constructor';
+    const head = 'fn __constructor';
     const args = [getSelfArg(), ...contract.constructorArgs];
 
     const body = spaceBetween(withSemicolons(contract.constructorCode));
 
     const constructor = printFunction2(
+      true,
       head,
       args.map(a => printArgument(a)),
       undefined,
@@ -293,6 +294,7 @@ function printConstructor(contract: Contract): Lines[] {
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
+  pub: boolean,
   kindedName: string,
   args: string[],
   tag: string | undefined,
@@ -306,7 +308,13 @@ function printFunction2(
     fn.push(`#[${tag}]`);
   }
 
-  let accum = `${kindedName}(`;
+  let accum = '';
+
+  if (pub) {
+    accum += 'pub ';
+  }
+
+  accum += `${kindedName}(`;
 
   if (args.length > 0) {
     const formattedArgs = args.join(', ');
