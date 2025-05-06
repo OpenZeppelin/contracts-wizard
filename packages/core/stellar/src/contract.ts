@@ -46,6 +46,7 @@ export interface TraitImplBlock extends BaseTraitImplBlock {
 }
 
 export interface BaseFunction {
+  pub: boolean;
   name: string;
   args: Argument[];
   code: string[];
@@ -170,6 +171,7 @@ export class ContractBuilder implements Contract {
     } else {
       const contractFn: ContractFunction = {
         ...fn,
+        pub: true,
         codeBefore: [],
       };
       this.freeFunctionsMap.set(signature, contractFn);

@@ -102,11 +102,11 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.burnable, allOpts.pausable, allOpts.access);
+    addConsecutive(c, allOpts.burnable, allOpts.access);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.enumerable, allOpts.pausable, allOpts.sequential);
+    addMintable(c, allOpts.enumerable, allOpts.sequential, allOpts.access);
   }
 
   setAccessControl(c, allOpts.access);
@@ -118,18 +118,17 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   // Set metadata
   c.addConstructorCode(
-    `non_fungible::metadata::set_metadata(e, String::from_str(e, "www.mytoken.com"), String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`,
+    `Base::set_metadata(e, String::from_str(e, "www.mytoken.com"), String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`,
   );
 
   // Set token functions
-  c.addUseClause('stellar_non_fungible', 'self', { alias: 'non_fungible' });
+  c.addUseClause('stellar_non_fungible', 'Base');
   c.addUseClause('stellar_non_fungible', 'NonFungibleToken');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
   c.addUseClause('soroban_sdk', 'String');
   c.addUseClause('soroban_sdk', 'Env');
-  c.addUseClause('soroban_sdk', 'Symbol');
 
   const nonFungibleTokenTrait = {
     traitName: 'NonFungibleToken',
@@ -167,7 +166,6 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
     traitName: 'NonFungibleBurnable',
     structName: c.name,
     tags: ['contractimpl'],
-    assocType: 'type ContractType = Base;',
     section: 'Extensions',
   };
 
@@ -183,7 +181,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 
 function addEnumerable(c: ContractBuilder, burnable: boolean) {
   c.addUseClause('stellar_non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
-  c.addUseClause('stellar_default_impl_macro', 'default_impl');
+  //c.addUseClause('stellar_default_impl_macro', 'default_impl');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
@@ -212,8 +210,9 @@ function addEnumerable(c: ContractBuilder, burnable: boolean) {
   */
 }
 
-function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean, access: Access) {
+function addConsecutive(c: ContractBuilder, burnable: boolean, access: Access) {
   c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
+  c.addUseClause('stellar_non_fungible', 'ContractOverrides');
 
   const nonFungibleConsecutiveTrait = {
     traitName: 'NonFungibleConsecutive',
@@ -226,48 +225,31 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, pausable: boolean
 
   c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;');
 
-  if (burnable) {
-    c.overrideAssocType('NonFungibleBurnable', 'type ContractType = Consecutive;');
-  }
-
   c.addFreeFunction(consecutiveFunctions.batch_mint);
-  if (pausable) {
-    c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
-  }
 
   requireAccessControl(c, undefined, consecutiveFunctions.batch_mint, access);
 }
 
-function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean) {
+function addMintable(c: ContractBuilder, enumerable: boolean, sequential: boolean, access: Access) {
   if (!enumerable) {
     if (sequential) {
       c.addUseClause('stellar_non_fungible', 'Base::sequential_mint');
       c.addFreeFunction(baseFunctions.sequential_mint);
-      if (pausable) {
-        c.addFunctionTag(baseFunctions.sequential_mint, 'when_not_paused');
-      }
+      requireAccessControl(c, undefined, baseFunctions.sequential_mint, access);
     } else {
       c.addUseClause('stellar_non_fungible', 'Base::mint');
       c.addFreeFunction(baseFunctions.mint);
-      if (pausable) {
-        c.addFunctionTag(baseFunctions.mint, 'when_not_paused');
-      }
+      requireAccessControl(c, undefined, baseFunctions.mint, access);
     }
   }
 
   if (enumerable) {
     if (sequential) {
       c.addFreeFunction(enumerableFunctions.sequential_mint);
-
-      if (pausable) {
-        c.addFunctionTag(enumerableFunctions.sequential_mint, 'when_not_paused');
-      }
+      requireAccessControl(c, undefined, enumerableFunctions.sequential_mint, access);
     } else {
       c.addFreeFunction(enumerableFunctions.non_sequential_mint);
-
-      if (pausable) {
-        c.addFunctionTag(enumerableFunctions.non_sequential_mint, 'when_not_paused');
-      }
+      requireAccessControl(c, undefined, enumerableFunctions.non_sequential_mint, access);
     }
   }
 }
@@ -301,7 +283,7 @@ const baseFunctions = defineFunctions({
       { name: 'to', type: 'Address' },
       { name: 'token_id', type: 'u32' },
     ],
-    code: ['Self::ContractType::transfer_from(e, &spender, &from, &to, token_id'],
+    code: ['Self::ContractType::transfer_from(e, &spender, &from, &to, token_id);'],
   },
   approve: {
     args: [
@@ -343,7 +325,7 @@ const baseFunctions = defineFunctions({
     code: ['Self::ContractType::symbol(e)'],
   },
   token_uri: {
-    args: [getSelfArg()],
+    args: [getSelfArg(), { name: 'token_id', type: 'u32' }],
     returns: 'String',
     code: ['Self::ContractType::token_uri(e, token_id)'],
   },
@@ -351,18 +333,18 @@ const baseFunctions = defineFunctions({
   // Mint
   mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['Self::Base::mint(e, &account, token_id);'],
+    code: ['Base::mint(e, &to, token_id);'],
   },
   sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['Self::Base::sequential_mint(e, &account);'],
+    code: ['Base::sequential_mint(e, &to);'],
   },
 });
 
 const burnableFunctions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['ContractType::burn(e, &from, token_id)'],
+    code: ['Self::ContractType::burn(e, &from, token_id)'],
   },
   burn_from: {
     args: [
@@ -371,7 +353,7 @@ const burnableFunctions = defineFunctions({
       { name: 'from', type: 'Address' },
       { name: 'token_id', type: 'u32' },
     ],
-    code: ['ContractType::burn_from(e, &spender, &from, token_id)'],
+    code: ['Self::ContractType::burn_from(e, &spender, &from, token_id)'],
   },
 });
 
@@ -396,11 +378,11 @@ const enumerableFunctions = defineFunctions({
   */
   non_sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['Enumerable::non_sequential_mint(e, &account, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
+    code: ['Enumerable::non_sequential_mint(e, &to, token_id);'], // TODO: unify `mint` name in Stellar-Contracts across extensions
   },
   sequential_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['Enumerable::sequential_mint(e, &account);'],
+    code: ['Enumerable::sequential_mint(e, &to);'],
   },
 });
 
@@ -408,6 +390,6 @@ const consecutiveFunctions = defineFunctions({
   batch_mint: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
-    code: ['Consecutive::batch_mint(e, &account, amount);'],
+    code: ['Consecutive::batch_mint(e, &to, amount);'],
   },
 });

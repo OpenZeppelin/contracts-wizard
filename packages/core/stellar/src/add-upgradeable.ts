@@ -26,5 +26,5 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
 
   c.addTraitFunction(upgradeableTrait, functions._require_auth);
 
-  requireAccessControl(c, upgradeableTrait, functions._require_auth, access, 'operator');
+  requireAccessControl(c, upgradeableTrait, functions._require_auth, access, '*operator');
 }

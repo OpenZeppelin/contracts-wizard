@@ -223,7 +223,7 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
 }
 
 function printFunction(fn: ContractFunction): Lines[] {
-  const head = `fn ${fn.name}`;
+  const head = `${fn.pub ? 'pub ' : ''}fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
 
   const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
