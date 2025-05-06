@@ -294,7 +294,7 @@ function printConstructor(contract: Contract): Lines[] {
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
-  pub: boolean,
+  pub: boolean | undefined,
   kindedName: string,
   args: string[],
   tag: string | undefined,

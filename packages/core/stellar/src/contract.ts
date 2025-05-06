@@ -46,10 +46,10 @@ export interface TraitImplBlock extends BaseTraitImplBlock {
 }
 
 export interface BaseFunction {
-  pub: boolean;
   name: string;
   args: Argument[];
   code: string[];
+  pub?: boolean;
   returns?: string;
 }
 
