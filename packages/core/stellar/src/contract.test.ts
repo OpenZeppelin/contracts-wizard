@@ -30,6 +30,7 @@ test('contract with function code before', t => {
   };
   Foo.addTraitImplBlock(trait);
   const fn: BaseFunction = {
+    pub: false,
     name: 'someFunction',
     args: [],
     code: ['someFunction()'],
@@ -49,6 +50,7 @@ test('contract with function code before with semicolons', t => {
   };
   Foo.addTraitImplBlock(trait);
   const fn: BaseFunction = {
+    pub: false,
     name: 'someFunction',
     args: [],
     code: ['someFunction();'],
