@@ -102,11 +102,11 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.consecutive) {
-    addConsecutive(c, allOpts.burnable, allOpts.access);
+    addConsecutive(c, allOpts.pausable, allOpts.access);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.enumerable, allOpts.sequential, allOpts.access);
+    addMintable(c, allOpts.enumerable, allOpts.pausable, allOpts.sequential, allOpts.access);
   }
 
   setAccessControl(c, allOpts.access);
@@ -210,7 +210,7 @@ function addEnumerable(c: ContractBuilder, burnable: boolean) {
   */
 }
 
-function addConsecutive(c: ContractBuilder, burnable: boolean, access: Access) {
+function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access) {
   c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
   c.addUseClause('stellar_non_fungible', 'ContractOverrides');
 
@@ -226,20 +226,29 @@ function addConsecutive(c: ContractBuilder, burnable: boolean, access: Access) {
   c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;');
 
   c.addFreeFunction(consecutiveFunctions.batch_mint);
+  if (pausable) {
+    c.addFunctionTag(consecutiveFunctions.batch_mint, 'when_not_paused');
+  }
 
   requireAccessControl(c, undefined, consecutiveFunctions.batch_mint, access);
 }
 
-function addMintable(c: ContractBuilder, enumerable: boolean, sequential: boolean, access: Access) {
+function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean, access: Access) {
   if (!enumerable) {
     if (sequential) {
       c.addUseClause('stellar_non_fungible', 'Base::sequential_mint');
       c.addFreeFunction(baseFunctions.sequential_mint);
       requireAccessControl(c, undefined, baseFunctions.sequential_mint, access);
+      if (pausable) {
+        c.addFunctionTag(baseFunctions.sequential_mint, 'when_not_paused');
+      }
     } else {
       c.addUseClause('stellar_non_fungible', 'Base::mint');
       c.addFreeFunction(baseFunctions.mint);
       requireAccessControl(c, undefined, baseFunctions.mint, access);
+      if (pausable) {
+        c.addFunctionTag(baseFunctions.mint, 'when_not_paused');
+      }
     }
   }
 
@@ -247,9 +256,15 @@ function addMintable(c: ContractBuilder, enumerable: boolean, sequential: boolea
     if (sequential) {
       c.addFreeFunction(enumerableFunctions.sequential_mint);
       requireAccessControl(c, undefined, enumerableFunctions.sequential_mint, access);
+      if (pausable) {
+        c.addFunctionTag(enumerableFunctions.sequential_mint, 'when_not_paused');
+      }
     } else {
       c.addFreeFunction(enumerableFunctions.non_sequential_mint);
       requireAccessControl(c, undefined, enumerableFunctions.non_sequential_mint, access);
+      if (pausable) {
+        c.addFunctionTag(enumerableFunctions.non_sequential_mint, 'when_not_paused');
+      }
     }
   }
 }
