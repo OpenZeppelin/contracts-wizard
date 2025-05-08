@@ -22,12 +22,13 @@ jobs:
         uses: ./.github/actions/setup
       - name: Create Prepare Release PR or Publish
         id: changesets
-        uses: changesets/action@06245a4e0a36c064a573d4150030f5ec548e4fcc #v1.4.10
+        uses: changesets/action@746c25e23caa47dceb6a48ee85b4cbc5a9f5f293 # v1.5.0
         with:
           title: Prepare Release
           commit: Prepare Release
           version: npm run version
           publish: npm run publish
+          commitMode: github-api
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
