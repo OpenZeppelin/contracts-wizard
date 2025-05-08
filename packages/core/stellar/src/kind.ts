@@ -4,7 +4,7 @@ export type Kind = GenericOptions['kind'];
 
 export function sanitizeKind(kind: unknown): Kind {
   if (typeof kind === 'string') {
-    const sanitized = kind.replace(/^(ERC|.)/i, c => c.toUpperCase());
+    const sanitized = kind.replace(/^(ERC|.)/i, c => c.toUpperCase()).replace(/^(NonFungible)$/i, 'NonFungible');
     if (isKind(sanitized)) {
       return sanitized;
     }
@@ -15,6 +15,7 @@ export function sanitizeKind(kind: unknown): Kind {
 function isKind<T>(value: Kind | T): value is Kind {
   switch (value) {
     case 'Fungible':
+    case 'NonFungible':
       return true;
 
     default: {

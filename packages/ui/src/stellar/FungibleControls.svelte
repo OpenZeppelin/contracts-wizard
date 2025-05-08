@@ -65,6 +65,11 @@
         emergency response.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.upgradeable}>
+      <input type="checkbox" bind:checked={opts.upgradeable} />
+      Upgradeable
+      <HelpTooltip>Allows the contract to be upgraded by the owner.</HelpTooltip>
+    </label>
   </div>
 </section>
 

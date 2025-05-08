@@ -5,6 +5,8 @@ on:
     paths:
       - 'packages/core/cairo_alpha/**'
   push:
+    paths:
+      - 'packages/core/cairo_alpha/**'
 
 jobs:
   validate-cairo-alpha:
@@ -22,7 +24,7 @@ jobs:
         with:
           node-version: 20.x
           cache: 'yarn'
-          
+
       - name: Install dependencies
         working-directory: packages/core/cairo_alpha
         run: yarn install --network-concurrency 1
@@ -32,7 +34,7 @@ jobs:
         run: |
           SCARB_VERSION=$(grep 'scarb-version = ' Scarb.toml | sed 's/scarb-version = "\(.*\)"/\1/')
           echo "SCARB_VERSION=$SCARB_VERSION" >> "$GITHUB_ENV"
-      
+
       - name: Setup Scarb
         uses: software-mansion/setup-scarb@f6ad35129872f897bdea556c09e11af8fb3293c0 #v1.5.1
         with:
@@ -74,5 +76,5 @@ jobs:
               echo "✅ Compiled $proj_name!"
               echo "---------------------------------"
             fi
-            
+
           done

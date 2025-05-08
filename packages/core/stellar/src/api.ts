@@ -1,6 +1,8 @@
 import type { CommonContractOptions } from './common-options';
 import type { FungibleOptions } from './fungible';
+import type { NonFungibleOptions } from './non-fungible';
 import { printFungible, defaults as fungibledefaults } from './fungible';
+import { printNonFungible, defaults as nonFungibledefaults } from './non-fungible';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
@@ -23,8 +25,14 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
 }
 
 export type Fungible = WizardContractAPI<FungibleOptions>; // TODO add AccessControlAPI<FungibleOptions> when access control is implemented, if useful
+export type NonFungible = WizardContractAPI<NonFungibleOptions>;
 
 export const fungible: Fungible = {
   print: printFungible,
   defaults: fungibledefaults,
+};
+
+export const nonFungible: NonFungible = {
+  print: printNonFungible,
+  defaults: nonFungibledefaults,
 };

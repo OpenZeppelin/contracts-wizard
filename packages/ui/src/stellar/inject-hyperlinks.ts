@@ -21,7 +21,10 @@ export function injectHyperlinks(code: string) {
 }
 
 const importSourceMappings: { [key: string]: string } = {
-  openzeppelin_fungible_token: 'token/fungible/src',
-  openzeppelin_pausable: 'utils/pausable/src',
-  openzeppelin_pausable_macros: 'utils/pausable-macros/src',
+  stellar_fungible: 'tokens/fungible/src',
+  stellar_non_fungible: 'tokens/non-fungible/src',
+  stellar_pausable: 'utils/pausable/src',
+  stellar_pausable_macros: 'utils/pausable-macros/src',
+  stellar_upgradeable: 'utils/upgradeable/src',
+  stellar_upgradeable_macros: 'utils/upgradeable-macros/src',
 } as const;

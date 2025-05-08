@@ -1,4 +1,4 @@
-import type { FungibleOptions } from '../fungible';
+import type { NonFungibleOptions } from '../non-fungible';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
@@ -11,12 +11,14 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   upgradeable: booleans,
+  enumerable: booleans,
+  consecutive: booleans,
+  sequential: booleans,
   mintable: booleans,
-  premint: ['1'],
   access: accessOptions,
   info: infoOptions,
 };
 
-export function* generateFungibleOptions(): Generator<Required<FungibleOptions>> {
+export function* generateNonFungibleOptions(): Generator<Required<NonFungibleOptions>> {
   yield* generateAlternatives(blueprint);
 }

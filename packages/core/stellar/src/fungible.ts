@@ -3,6 +3,7 @@ import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
+import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -17,6 +18,7 @@ export const defaults: Required<FungibleOptions> = {
   symbol: 'MTK',
   burnable: false,
   pausable: false,
+  upgradeable: false,
   premint: '0',
   mintable: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
@@ -32,6 +34,7 @@ export interface FungibleOptions extends CommonContractOptions {
   symbol: string;
   burnable?: boolean;
   pausable?: boolean;
+  upgradeable?: boolean;
   premint?: string;
   mintable?: boolean;
 }
@@ -42,6 +45,7 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
+    upgradeable: opts.upgradeable ?? defaults.upgradeable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
   };
@@ -60,6 +64,10 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
+  }
+
+  if (allOpts.upgradeable) {
+    addUpgradeable(c, allOpts.access);
   }
 
   if (allOpts.burnable) {
@@ -83,8 +91,8 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   );
 
   // Set token functions
-  c.addUseClause('openzeppelin_fungible_token', 'self', { alias: 'fungible' });
-  c.addUseClause('openzeppelin_fungible_token', 'FungibleToken');
+  c.addUseClause('stellar_fungible', 'self', { alias: 'fungible' });
+  c.addUseClause('stellar_fungible', 'FungibleToken');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
@@ -93,46 +101,46 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addUseClause('soroban_sdk', 'Symbol');
 
   const fungibleTokenTrait = {
-    name: 'FungibleToken',
-    for: c.name,
+    traitName: 'FungibleToken',
+    structName: c.name,
     tags: ['contractimpl'],
   };
 
-  c.addFunction(fungibleTokenTrait, functions.total_supply);
-  c.addFunction(fungibleTokenTrait, functions.balance);
-  c.addFunction(fungibleTokenTrait, functions.allowance);
-  c.addFunction(fungibleTokenTrait, functions.transfer);
-  c.addFunction(fungibleTokenTrait, functions.transfer_from);
-  c.addFunction(fungibleTokenTrait, functions.approve);
-  c.addFunction(fungibleTokenTrait, functions.decimals);
-  c.addFunction(fungibleTokenTrait, functions.name);
-  c.addFunction(fungibleTokenTrait, functions.symbol);
+  c.addTraitFunction(fungibleTokenTrait, functions.total_supply);
+  c.addTraitFunction(fungibleTokenTrait, functions.balance);
+  c.addTraitFunction(fungibleTokenTrait, functions.allowance);
+  c.addTraitFunction(fungibleTokenTrait, functions.transfer);
+  c.addTraitFunction(fungibleTokenTrait, functions.transfer_from);
+  c.addTraitFunction(fungibleTokenTrait, functions.approve);
+  c.addTraitFunction(fungibleTokenTrait, functions.decimals);
+  c.addTraitFunction(fungibleTokenTrait, functions.name);
+  c.addTraitFunction(fungibleTokenTrait, functions.symbol);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer, 'when_not_paused');
-    c.addFunctionTag(fungibleTokenTrait, functions.transfer_from, 'when_not_paused');
+    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
+    c.addFunctionTag(functions.transfer, 'when_not_paused', fungibleTokenTrait);
+    c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('openzeppelin_fungible_token', 'burnable::FungibleBurnable');
+  c.addUseClause('stellar_fungible', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
-    name: 'FungibleBurnable',
-    for: c.name,
+    traitName: 'FungibleBurnable',
+    structName: c.name,
     tags: ['contractimpl'],
     section: 'Extensions',
   };
 
-  c.addFunction(fungibleBurnableTrait, functions.burn);
-  c.addFunction(fungibleBurnableTrait, functions.burn_from);
+  c.addTraitFunction(fungibleBurnableTrait, functions.burn);
+  c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
 
   if (pausable) {
-    c.addUseClause('openzeppelin_pausable_macros', 'when_not_paused');
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn, 'when_not_paused');
-    c.addFunctionTag(fungibleBurnableTrait, functions.burn_from, 'when_not_paused');
+    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
+    c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
+    c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
   }
 }
 
@@ -149,7 +157,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     // TODO: handle signed int?
     const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
 
-    c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+    c.addUseClause('stellar_fungible', 'mintable::FungibleMintable');
     c.addUseClause('soroban_sdk', 'Address');
 
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
@@ -199,21 +207,21 @@ export function getInitialSupply(premint: string, decimals: number): string {
 }
 
 function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-  c.addUseClause('openzeppelin_fungible_token', 'mintable::FungibleMintable');
+  c.addUseClause('stellar_fungible', 'mintable::FungibleMintable');
 
   const fungibleMintableTrait = {
-    name: 'FungibleMintable',
-    for: c.name,
+    traitName: 'FungibleMintable',
+    structName: c.name,
     tags: ['contractimpl'],
     section: 'Extensions',
   };
 
-  c.addFunction(fungibleMintableTrait, functions.mint);
+  c.addTraitFunction(fungibleMintableTrait, functions.mint);
 
   requireAccessControl(c, fungibleMintableTrait, functions.mint, access);
 
   if (pausable) {
-    c.addFunctionTag(fungibleMintableTrait, functions.mint, 'when_not_paused');
+    c.addFunctionTag(functions.mint, 'when_not_paused', fungibleMintableTrait);
   }
 }
 

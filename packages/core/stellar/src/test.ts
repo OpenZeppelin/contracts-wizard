@@ -17,6 +17,10 @@ test.serial('fungible result generated', async t => {
   await testGenerate(t, 'Fungible');
 });
 
+test.serial('non-fungible result generated', async t => {
+  await testGenerate(t, 'NonFungible');
+});
+
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-stellar');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });

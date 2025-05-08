@@ -4,6 +4,7 @@
   import hljs from './highlightjs';
 
   import FungibleControls from './FungibleControls.svelte';
+  import NonFungibleControls from './NonFungibleControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -65,6 +66,9 @@
         switch (opts.kind) {
           case 'Fungible':
             opts.premint = initialOpts.premint ?? opts.premint;
+            break;
+          case 'NonFungible':
+            break;
         }
         initialValuesSet = true;
       }
@@ -129,6 +133,7 @@
     <div class="tab overflow-hidden">
       <OverflowMenu>
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
+        <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
       </OverflowMenu>
     </div>
 
@@ -166,6 +171,9 @@
     <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
       <div class:hidden={tab !== 'Fungible'}>
         <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
+      </div>
+      <div class:hidden={tab !== 'NonFungible'}>
+        <NonFungibleControls bind:opts={allOpts.NonFungible} errors={errors.NonFungible} />
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
