@@ -109,22 +109,13 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   return c;
 }
-// Helper function to format string literals with the `unicode` keyword if they contain non-ASCII characters.
-// Also escapes double quotes in the string.
-function sanitize(str: string): string {
-  const escaped = str.replace(/"/g, '\\"'); // Escape double quotes
-  return /[^\x00-\x7F]/.test(escaped)
-    ? `unicode"${escaped}"`
-    : `"${escaped}"`;
-}
 
 function addBase(c: ContractBuilder, name: string, symbol: string) {
   const ERC20 = {
     name: 'ERC20',
     path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
   };
-  // Use sanitize to wrap name and symbol appropriately
-  c.addParent(ERC20, [sanitize(name), sanitize(symbol)]);
+  c.addParent(ERC20, [name, symbol]);
 
   c.addOverride(ERC20, functions._update);
   c.addOverride(ERC20, functions._approve); // allows override from stablecoin
@@ -178,8 +169,7 @@ function addPermit(c: ContractBuilder, name: string) {
     name: 'ERC20Permit',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol',
   };
-  // Format the name so that it includes the `unicode` keyword if necessary
-  c.addParent(ERC20Permit, [sanitize(name)]);  
+  c.addParent(ERC20Permit, [name]);
   c.addOverride(ERC20Permit, functions.nonces);
 }
 

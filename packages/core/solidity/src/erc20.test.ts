@@ -36,6 +36,8 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
 
 testERC20('basic erc20', {});
 
+testERC20('erc20 name is unicodeSafe', { name: 'MyTokeć' });
+
 testERC20('erc20 burnable', {
   burnable: true,
 });
