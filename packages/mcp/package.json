@@ -20,6 +20,10 @@
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.1",
+    "@openzeppelin/wizard": "^0.5.4"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
