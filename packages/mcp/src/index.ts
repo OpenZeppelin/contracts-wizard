@@ -12,17 +12,17 @@ const server = new McpServer({
 
 // Add an addition tool
 server.tool(
-  'generateERC20',
+  'Generate_ERC20_smart_contract_template',
   {
     name: z.string(),
     symbol: z.string(),
-    burnable: z.boolean(),
-    pausable: z.boolean(),
-    premint: z.string(),
-    premintChainId: z.string(),
-    mintable: z.boolean(),
-    callback: z.boolean(),
-    permit: z.boolean(),
+    burnable: z.boolean().optional(),
+    pausable: z.boolean().optional(),
+    premint: z.string().optional(),
+    premintChainId: z.string().optional(),
+    mintable: z.boolean().optional(),
+    callback: z.boolean().optional(),
+    permit: z.boolean().optional(),
     // votes: z.boolean().or(z.enum(['blocknumber', 'timestamp'])),
     // flashmint: z.boolean(),
     // crossChainBridging: z.literal(false).or(z.enum(['custom', 'superchain'])),
