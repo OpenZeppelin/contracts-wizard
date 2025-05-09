@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "node scripts/copy-versions.mjs && rollup -c",
+    "type:check:api": "deno task --config deno.json type:check",
+    "dev": "node scripts/copy-versions.mjs && rollup -c -w",
+    "dev:api": "ENV=dev deno task dev",
     "start": "sirv public",
     "validate": "svelte-check"
   },
@@ -16,10 +18,13 @@
     "@rollup/plugin-replace": "^6.0.0",
     "@rollup/plugin-typescript": "^12.0.0",
     "@types/file-saver": "^2.0.1",
+    "@types/node": "^20.0.0",
     "@types/resize-observer-browser": "^0.1.5",
-    "@types/node": "^18.0.0",
     "@types/semver": "^7.5.7",
+    "@upstash/redis": "1.25.2",
+    "ai": "2.2.16",
     "autoprefixer": "^10.4.2",
+    "openai": "4.11.1",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
     "postcss-load-config": "^6.0.0",
@@ -40,9 +45,9 @@
     "highlight.js": "^11.0.0",
     "highlightjs-cairo": "^0.4.0",
     "highlightjs-solidity": "^2.0.0",
+    "semver": "^7.6.0",
     "sirv-cli": "^3.0.0",
     "tippy.js": "^6.3.1",
-    "util": "^0.12.4",
-    "semver": "^7.6.0"
+    "util": "^0.12.4"
   }
 }

@@ -1,93 +1,79 @@
-import OpenAI from 'https://esm.sh/openai@4.11.0';
-import { OpenAIStream, StreamingTextResponse } from 'https://esm.sh/ai@2.2.16';
-import {
-  erc20Function,
-  erc721Function,
-  erc1155Function,
-  stablecoinFunction,
-  realWorldAssetFunction,
-  governorFunction,
-  customFunction,
-} from '../src/solidity/wiz-functions.ts';
-import { Redis } from 'https://esm.sh/@upstash/redis@1.25.1';
+import { OpenAIStream } from 'ai';
+import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
+import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
+import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
+import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
+import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
+import { getOpenAiInstance } from './services/open-ai.ts';
+import { getEnvironmentVariableOr } from './utils/env.ts';
+import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
+import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
+import type {
+  AllContractsAIFunctionDefinitions,
+  SimpleAiFunctionDefinition,
+} from './ai-assistant/types/function-definition.ts';
 
-export default async (req: Request) => {
+const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
+  language: TLanguage,
+): SimpleAiFunctionDefinition[] => {
+  const functionPerLanguages: AllContractsAIFunctionDefinitions = {
+    solidity: solidityFunctions,
+    cairo: cairoFunctions,
+    cairoAlpha: cairoAlphaFunctions,
+    stellar: stellarFunctions,
+    stylus: stylusFunctions,
+  };
+
+  return Object.values(functionPerLanguages[language] ?? {});
+};
+
+const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
+  const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
+    return message.content.length < 500;
+  });
+
+  return [
+    {
+      role: 'system',
+      content: `
+      You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
+      The current options are ${JSON.stringify(request.currentOpts)}.
+      The current contract code is ${request.currentCode}, written in ${request.language}
+      Please be kind and concise. Keep responses to <100 words.
+    `.trim(),
+    },
+    ...validatedMessages,
+  ];
+};
+
+export default async (req: Request): Promise<Response> => {
   try {
-    const data = await req.json();
-    const apiKey = Deno.env.get('OPENAI_API_KEY');
+    const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
-    const redisUrl = Deno.env.get('REDIS_URL');
-    const redisToken = Deno.env.get('REDIS_TOKEN');
+    const openai = getOpenAiInstance();
 
-    if (!redisUrl || !redisToken) {
-      throw new Error('missing redis credentials');
-    }
-
-    const redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
-
-    const openai = new OpenAI({
-      apiKey: apiKey,
-    });
-
-    const validatedMessages = data.messages.filter((message: { role: string; content: string }) => {
-      return message.content.length < 500;
-    });
-
-    const messages = [
-      {
-        role: 'system',
-        content: `
-        You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
-        The current options are ${JSON.stringify(data.currentOpts)}.
-        Please be kind and concise. Keep responses to <100 words.
-      `.trim(),
-      },
-      ...validatedMessages,
-    ];
+    const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-1106-preview',
-      messages,
-      functions: [
-        erc20Function,
-        erc721Function,
-        erc1155Function,
-        stablecoinFunction,
-        realWorldAssetFunction,
-        governorFunction,
-        customFunction,
-      ],
+      model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
+      messages: aiChatMessages,
+      functions: getFunctionsContext(aiChatBodyRequest.language),
       temperature: 0.7,
       stream: true,
     });
 
     const stream = OpenAIStream(response, {
-      async onCompletion(completion) {
-        const id = data.chatId;
-        const updatedAt = Date.now();
-        const payload = {
-          id,
-          updatedAt,
-          messages: [
-            ...messages,
-            {
-              content: completion,
-              role: 'assistant',
-            },
-          ],
-        };
-        const exists = await redis.exists(`chat:${id}`);
-        if (!exists) {
-          // @ts-expect-error redis types seem to require [key: string]
-          payload.createdAt = updatedAt;
-        }
-        await redis.hset(`chat:${id}`, payload);
-      },
+      onCompletion: saveChatInRedisIfDoesNotExist(aiChatBodyRequest.chatId, aiChatMessages),
     });
-    return new StreamingTextResponse(stream);
+
+    return new Response(stream, {
+      headers: new Headers({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Content-Type': 'text/html; charset=utf-8',
+      }),
+    });
   } catch (e) {
     console.error('Could not retrieve results:', e);
     return Response.json({

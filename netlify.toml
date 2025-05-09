@@ -4,8 +4,8 @@ publish = "packages/ui/public"
 
 edge_functions = "packages/ui/api"
 
-[build.environment]
-  YARN_FLAGS = "--network-concurrency 1"
+[functions]
+  deno_import_map = "packages/ui/import_map.json"
 
 [[edge_functions]]
   path = "/ai"

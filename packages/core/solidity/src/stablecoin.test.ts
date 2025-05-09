@@ -78,6 +78,10 @@ testStablecoin('stablecoin mintable with roles', {
   access: 'roles',
 });
 
+testStablecoin('stablecoin callback', {
+  callback: true,
+});
+
 testStablecoin('stablecoin permit', {
   permit: true,
 });
@@ -110,6 +114,24 @@ testStablecoin('stablecoin flashmint', {
   flashmint: true,
 });
 
+testStablecoin('stablecoin full', {
+  name: 'MyStablecoin',
+  symbol: 'MST',
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  callback: true,
+  permit: true,
+  votes: true,
+  flashmint: true,
+  crossChainBridging: 'custom',
+  premintChainId: '10',
+  limitations: 'allowlist',
+  custodian: true,
+});
+
 testAPIEquivalence('stablecoin API default');
 
 testAPIEquivalence('stablecoin API basic', {
@@ -125,9 +147,12 @@ testAPIEquivalence('stablecoin API full', {
   burnable: true,
   mintable: true,
   pausable: true,
+  callback: true,
   permit: true,
   votes: true,
   flashmint: true,
+  crossChainBridging: 'custom',
+  premintChainId: '10',
   limitations: 'allowlist',
   custodian: true,
 });

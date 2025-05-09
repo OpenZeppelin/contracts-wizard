@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.4 (2025-04-01)
+
+- Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
+- Add `callback` in ERC20 features. ([#500](https://github.com/OpenZeppelin/contracts-wizard/pull/500))
+
+## 0.5.3 (2025-03-13)
+
+- Add ERC20 Cross-Chain Bridging, SuperchainERC20. ([#436](https://github.com/OpenZeppelin/contracts-wizard/pull/436))
+  **Note:** Cross-Chain Bridging is experimental and may be subject to change.
+
+- **Potentially breaking changes**:
+  - Change order of constructor argument `recipient` when using `premint`.
+
 ## 0.5.2 (2025-02-21)
 
 - Fix modifiers order to follow Solidity style guides. ([#450](https://github.com/OpenZeppelin/contracts-wizard/pull/450))
@@ -8,7 +21,7 @@
 ## 0.5.1 (2025-02-05)
 
 - **Potentially breaking changes**:
-  - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`.
+  - Add constructor argument `recipient` when using `premint` in `erc20`, `stablecoin`, and `realWorldAsset`. ([#435](https://github.com/OpenZeppelin/contracts-wizard/pull/435))
 
 ## 0.5.0 (2025-01-23)
 
@@ -25,11 +38,12 @@
 ## 0.4.5 (2024-11-18)
 
 - Add `stablecoin` and `realWorldAsset` contract types. ([#404](https://github.com/OpenZeppelin/contracts-wizard/pull/404))
-**Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
+  **Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 ## 0.4.4 (2024-10-23)
 
 ### Potentially breaking changes
+
 - Update pragma versions to 0.8.22. ([#401](https://github.com/OpenZeppelin/contracts-wizard/pull/401))
 
 ## 0.4.3 (2024-04-08)
@@ -47,6 +61,7 @@
 ## 0.4.0 (2023-10-05)
 
 ### Breaking changes
+
 - Update to OpenZeppelin Contracts 5.0. ([#284](https://github.com/OpenZeppelin/contracts-wizard/pull/284))
 - Require constructor or initializer arguments for initial owner or role assignments if using access control.
 - Use token-specific pausable extensions.

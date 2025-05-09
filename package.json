@@ -1,11 +1,19 @@
 {
   "name": "root",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "wsrun -m prepare",
     "lint": "eslint",
+    "format:write": "prettier --write \"**/*\"",
+    "format:check": "prettier --check \"**/*\"",
+    "type:check:api": "yarn --cwd ./packages/ui type:check:api",
     "dev:ui": "yarn --cwd ./packages/ui dev",
-    "run:core": "node ./scripts/run-command.mjs"
+    "dev:api": "yarn --cwd ./packages/ui dev:api",
+    "dev": "concurrently --kill-others-on-fail --names \"UI,API\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
+    "run:core": "node ./scripts/run-command.mjs",
+    "version": "bash scripts/release/version.sh",
+    "publish": "bash scripts/release/publish.sh"
   },
   "workspaces": {
     "packages": [
@@ -19,13 +27,17 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.21.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-unicorn": "^57.0.0",
-    "prettier": "^3.5.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-unicorn": "^59.0.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-svelte": "^3.3.3",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.24.1",
-    "wsrun": "^5.2.4"
+    "typescript-eslint": "^8.29.0",
+    "wsrun": "^5.2.4",
+    "@changesets/cli": "^2.29.2",
+    "@changesets/changelog-github": "^0.5.1"
   }
 }
