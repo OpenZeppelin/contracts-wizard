@@ -34,6 +34,10 @@ function testAPIEquivalence(title: string, opts?: CustomOptions) {
 
 testCustom('custom', {});
 
+testCustom('custom name is unicode safe', {
+  name: 'ćontract',
+});
+
 testCustom('pausable', {
   pausable: true,
 });

@@ -16,6 +16,7 @@ import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
+import { stringifyUnicodeSafe } from './utils/sanitize';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -148,7 +149,7 @@ export function printValue(value: Value): string {
       throw new Error(`Number not representable (${value})`);
     }
   } else {
-    return JSON.stringify(value);
+    return stringifyUnicodeSafe(value);
   }
 }
 
