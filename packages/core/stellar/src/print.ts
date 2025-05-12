@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -31,7 +31,13 @@ export function printContract(contract: Contract): string {
 }
 
 function printContractStruct(contract: Contract): Lines[] {
-  return ['#[contract]', `pub struct ${contract.name};`];
+  const lines = [];
+  if (contract.derives.length > 0) {
+    lines.push(`#[derive(${contract.derives.sort().join(', ')})]`);
+  }
+  lines.push('#[contract]');
+  lines.push(`pub struct ${contract.name};`);
+  return lines;
 }
 
 function printContractErrors(contract: Contract): Lines[] {
@@ -151,28 +157,25 @@ function printImplementedTraits(contract: Contract): Lines[] {
     if (a.tags.length !== b.tags.length) {
       return a.tags.length - b.tags.length;
     }
-    return a.name.localeCompare(b.name);
+    return a.traitName.localeCompare(b.traitName);
   });
 
   // group by section
-  const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
-      // default to no section
-      const section = current.section ?? DEFAULT_SECTION;
-      (result[section] = result[section] || []).push(current);
-      return result;
-    },
-    {},
-  );
+  const grouped = sortedTraits.reduce((result: { [section: string]: TraitImplBlock[] }, current: TraitImplBlock) => {
+    // default to no section
+    const section = current.section ?? DEFAULT_SECTION;
+    (result[section] = result[section] || []).push(current);
+    return result;
+  }, {});
 
   const sections = Object.entries(grouped)
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([section, impls]) => printImplementedTraitsSection(section, impls as ImplementedTrait[]));
+    .map(([section, impls]) => printImplementedTraitsSection(section, impls as TraitImplBlock[]));
 
   return spaceBetween(...sections);
 }
 
-function printImplementedTraitsSection(section: string, impls: ImplementedTrait[]): Lines[] {
+function printImplementedTraitsSection(section: string, impls: TraitImplBlock[]): Lines[] {
   const lines = [];
   const isDefaultSection = section === DEFAULT_SECTION;
   if (!isDefaultSection) {
@@ -189,13 +192,33 @@ function printImplementedTraitsSection(section: string, impls: ImplementedTrait[
   return lines;
 }
 
-function printImplementedTrait(trait: ImplementedTrait): Lines[] {
+function printImplementedTrait(trait: TraitImplBlock): Lines[] {
   const implLines = [];
   implLines.push(...trait.tags.map(t => `#[${t}]`));
-  implLines.push(`impl ${trait.name} for ${trait.for} {`);
-  const fns = trait.functions.map(fn => printFunction(fn));
-  implLines.push(spaceBetween(...fns));
-  implLines.push('}');
+
+  const head = `impl ${trait.traitName} for ${trait.structName}`;
+
+  const assocTypeLines =
+    trait.assocType !== undefined && trait.assocType.trim().length > 0 ? [TAB + trait.assocType.trim(), ''] : [];
+
+  const functionLines = trait.functions.map(fn => printFunction(fn));
+
+  const hasBodyContent = assocTypeLines.length > 0 || functionLines.length > 0;
+
+  if (!hasBodyContent) {
+    // Empty impl
+    implLines.push(`${head} {}`);
+  } else {
+    implLines.push(`${head} {`);
+    if (assocTypeLines.length > 0) {
+      implLines.push(...assocTypeLines);
+    }
+    if (functionLines.length > 0) {
+      implLines.push(spaceBetween(...functionLines));
+    }
+    implLines.push('}');
+  }
+
   return implLines;
 }
 
@@ -216,26 +239,45 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tag, fn.returns, undefined, codeLines);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
-  const implLines = [];
-  implLines.push('#[contractimpl]');
-  implLines.push(`impl ${contract.name} {`);
-  implLines.push(printConstructor(contract));
-  implLines.push('}');
-  return implLines;
+  const constructorLines = printConstructor(contract);
+  const freeFunctionLines = contract.freeFunctions.map(fn => printFunction(fn));
+
+  if (constructorLines.length === 0 && freeFunctionLines.length === 0) {
+    return [];
+  }
+
+  const implBlock: Lines[] = ['#[contractimpl]', `impl ${contract.name} {`];
+
+  if (constructorLines.length > 0) {
+    implBlock.push(constructorLines);
+  }
+
+  if (constructorLines.length > 0 && freeFunctionLines.length > 0) {
+    // Add line break between constructor and first free function
+    implBlock.push('');
+  }
+
+  if (freeFunctionLines.length > 0) {
+    implBlock.push(spaceBetween(...freeFunctionLines));
+  }
+
+  implBlock.push('}');
+  return implBlock;
 }
 
 function printConstructor(contract: Contract): Lines[] {
   if (contract.constructorCode.length > 0) {
-    const head = 'pub fn __constructor';
+    const head = 'fn __constructor';
     const args = [getSelfArg(), ...contract.constructorArgs];
 
     const body = spaceBetween(withSemicolons(contract.constructorCode));
 
     const constructor = printFunction2(
+      true,
       head,
       args.map(a => printArgument(a)),
       undefined,
@@ -252,6 +294,7 @@ function printConstructor(contract: Contract): Lines[] {
 // generic for functions and constructors
 // kindedName = 'fn foo'
 function printFunction2(
+  pub: boolean | undefined,
   kindedName: string,
   args: string[],
   tag: string | undefined,
@@ -265,7 +308,13 @@ function printFunction2(
     fn.push(`#[${tag}]`);
   }
 
-  let accum = `${kindedName}(`;
+  let accum = '';
+
+  if (pub) {
+    accum += 'pub ';
+  }
+
+  accum += `${kindedName}(`;
 
   if (args.length > 0) {
     const formattedArgs = args.join(', ');
