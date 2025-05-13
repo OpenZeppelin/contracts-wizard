@@ -4,15 +4,12 @@
 ## 0.5.5 (2025-05-13)
 
 - Add `account` contract types for ERC-4337. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486), [#523](https://github.com/OpenZeppelin/contracts-wizard/pull/523), [#527](https://github.com/OpenZeppelin/contracts-wizard/pull/527))
-
-  - **Potentially breaking changes**:
-    - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
-
 - Use unicode syntax for strings with non-ASCII characters ([#476](https://github.com/OpenZeppelin/contracts-wizard/pull/476))
 - Remove redundant overrides in Governor. ([#522](https://github.com/OpenZeppelin/contracts-wizard/pull/522))
 - Simplify Community Contracts imports. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
-  - **Potentially breaking changes**:
-    - Changes import path format for `@openzeppelin/community-contracts`
+- **Potentially breaking changes**:
+    - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
+    - Changes import path format for `@openzeppelin/community-contracts`. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
 
 ## 0.5.4 (2025-04-01)
 
