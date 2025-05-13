@@ -81,12 +81,21 @@ export const signerFunctions = {
     initializeECDSA: {
       kind: 'public' as const,
       args: [{ name: 'signer', type: 'address' }],
+      comments: [
+        '/// @dev Initializes the contract with an ECDSA signer',
+        '/// @param signer The address of the ECDSA signer',
+      ],
     },
     initializeP256: {
       kind: 'public' as const,
       args: [
         { name: 'qx', type: 'bytes32' },
         { name: 'qy', type: 'bytes32' },
+      ],
+      comments: [
+        '/// @dev Initializes the contract with a P-256 signer',
+        '/// @param qx The x-coordinate of the public key',
+        '/// @param qy The y-coordinate of the public key',
       ],
     },
     initializeRSA: {
@@ -95,12 +104,22 @@ export const signerFunctions = {
         { name: 'e', type: 'bytes memory' },
         { name: 'n', type: 'bytes memory' },
       ],
+      comments: [
+        '/// @dev Initializes the contract with an RSA signer',
+        '/// @param e The RSA public exponent',
+        '/// @param n The RSA modulus',
+      ],
     },
     initializeMultisig: {
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
         { name: 'threshold', type: 'uint256' },
+      ],
+      comments: [
+        '/// @dev Initializes the contract with a multisig configuration',
+        '/// @param signers Array of signer data',
+        '/// @param threshold The minimum number of required signatures',
       ],
     },
     initializeMultisigWeighted: {
@@ -109,6 +128,12 @@ export const signerFunctions = {
         { name: 'signers', type: 'bytes[] memory' },
         { name: 'weights', type: 'uint256[] memory' },
         { name: 'threshold', type: 'uint256' },
+      ],
+      comments: [
+        '/// @dev Initializes the contract with a weighted multisig configuration',
+        '/// @param signers Array of signer data',
+        '/// @param weights Array of weights for each signer',
+        '/// @param threshold The minimum total weight required for valid signatures',
       ],
     },
     _rawSignatureValidation: {
@@ -119,6 +144,12 @@ export const signerFunctions = {
       ],
       returns: ['bool'],
       mutability: 'view' as const,
+      comments: [
+        '/// @dev Performs raw signature validation',
+        '/// @param hash The hash to validate the signature for',
+        '/// @param signature The signature to validate',
+        '/// @return True if the signature is valid, false otherwise',
+      ],
     },
   }),
 };

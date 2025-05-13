@@ -221,6 +221,13 @@ const functions = defineFunctions({
       { name: 'auth', type: 'address' },
     ],
     returns: ['address'],
+    comments: [
+      '/// @dev Updates the owner of the token and handles the transfer logic',
+      '/// @param to The address that will receive the token',
+      '/// @param tokenId The ID of the token being transferred',
+      '/// @param auth The address that is authorized to perform the transfer',
+      '/// @return The address of the previous owner',
+    ],
   },
 
   tokenURI: {
@@ -228,6 +235,11 @@ const functions = defineFunctions({
     args: [{ name: 'tokenId', type: 'uint256' }],
     returns: ['string memory'],
     mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token',
+      '/// @param tokenId The ID of the token to get the URI for',
+      '/// @return The URI of the token',
+    ],
   },
 
   _baseURI: {
@@ -235,6 +247,7 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
+    comments: ['/// @dev Base URI for computing {tokenURI}', '/// @return The base URI string'],
   },
 
   _increaseBalance: {
@@ -243,10 +256,21 @@ const functions = defineFunctions({
       { name: 'account', type: 'address' },
       { name: 'value', type: 'uint128' },
     ],
+    comments: [
+      '/// @dev Increases the balance of `account` by `value`',
+      '/// @param account The address to increase the balance for',
+      '/// @param value The amount to increase the balance by',
+    ],
   },
 });
 
 function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunction {
+  /**
+   * @dev Creates a mint function configuration based on the specified options
+   * @param incremental Whether to use incremental token IDs
+   * @param uriStorage Whether to include URI storage functionality
+   * @return The configured mint function
+   */
   const fn: BaseFunction = {
     name: 'safeMint',
     kind: 'public' as const,

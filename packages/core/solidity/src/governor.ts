@@ -403,36 +403,59 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: [
+      '/// @dev Returns the delay before voting on a proposal may take place',
+      '/// @return The delay in number of blocks',
+    ],
   },
   votingPeriod: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: [
+      '/// @dev Returns the duration of voting on a proposal',
+      '/// @return The voting period in number of blocks',
+    ],
   },
   proposalThreshold: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: [
+      '/// @dev Returns the minimum number of votes required for a proposal to be created',
+      '/// @return The minimum number of votes required',
+    ],
   },
   proposalNeedsQueuing: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['bool'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Checks if a proposal needs to be queued before execution',
+      '/// @param proposalId The ID of the proposal to check',
+      '/// @return True if the proposal needs queuing, false otherwise',
+    ],
   },
   quorum: {
     args: [{ name: 'blockNumber', type: 'uint256' }],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Returns the quorum required for a proposal to pass at a specific block number',
+      '/// @param blockNumber The block number to check the quorum for',
+      '/// @return The required quorum at the specified block',
+    ],
   },
   quorumDenominator: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
+    comments: ['/// @dev Returns the denominator used to calculate the quorum', '/// @return The quorum denominator'],
   },
   propose: {
     args: [
@@ -443,6 +466,14 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'public',
+    comments: [
+      '/// @dev Creates a new proposal',
+      '/// @param targets The addresses of the contracts to call',
+      '/// @param values The amounts of ETH to send with each call',
+      '/// @param calldatas The calldata to send with each call',
+      '/// @param description A description of the proposal',
+      '/// @return The ID of the created proposal',
+    ],
   },
   _propose: {
     args: [
@@ -454,6 +485,15 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
+    comments: [
+      '/// @dev Internal function to create a new proposal',
+      '/// @param targets The addresses of the contracts to call',
+      '/// @param values The amounts of ETH to send with each call',
+      '/// @param calldatas The calldata to send with each call',
+      '/// @param description A description of the proposal',
+      '/// @param proposer The address of the proposer',
+      '/// @return The ID of the created proposal',
+    ],
   },
   _queueOperations: {
     args: [
@@ -465,6 +505,15 @@ const functions = defineFunctions({
     ],
     kind: 'internal',
     returns: ['uint48'],
+    comments: [
+      '/// @dev Internal function to queue operations for a proposal',
+      '/// @param proposalId The ID of the proposal',
+      '/// @param targets The addresses of the contracts to call',
+      '/// @param values The amounts of ETH to send with each call',
+      '/// @param calldatas The calldata to send with each call',
+      '/// @param descriptionHash The hash of the proposal description',
+      '/// @return The timestamp when the operations will be executable',
+    ],
   },
   _executeOperations: {
     args: [
@@ -475,6 +524,14 @@ const functions = defineFunctions({
       { name: 'descriptionHash', type: 'bytes32' },
     ],
     kind: 'internal',
+    comments: [
+      '/// @dev Internal function to execute operations for a proposal',
+      '/// @param proposalId The ID of the proposal',
+      '/// @param targets The addresses of the contracts to call',
+      '/// @param values The amounts of ETH to send with each call',
+      '/// @param calldatas The calldata to send with each call',
+      '/// @param descriptionHash The hash of the proposal description',
+    ],
   },
   _cancel: {
     args: [
@@ -485,17 +542,34 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
+    comments: [
+      '/// @dev Internal function to cancel a proposal',
+      '/// @param targets The addresses of the contracts to call',
+      '/// @param values The amounts of ETH to send with each call',
+      '/// @param calldatas The calldata to send with each call',
+      '/// @param descriptionHash The hash of the proposal description',
+      '/// @return The ID of the cancelled proposal',
+    ],
   },
   state: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['ProposalState'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Returns the current state of a proposal',
+      '/// @param proposalId The ID of the proposal to check',
+      '/// @return The current state of the proposal',
+    ],
   },
   _executor: {
     args: [],
     returns: ['address'],
     kind: 'internal',
     mutability: 'view',
+    comments: [
+      '/// @dev Returns the address that will execute the proposal',
+      '/// @return The address of the executor',
+    ],
   },
 });

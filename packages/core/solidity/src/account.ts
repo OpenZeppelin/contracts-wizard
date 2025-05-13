@@ -250,6 +250,12 @@ const functions = {
         { name: 'signature', type: 'bytes calldata' },
       ],
       returns: ['bytes4'],
+      comments: [
+        '/// @dev Validates a signature for a given hash',
+        '/// @param hash The hash to validate the signature for',
+        '/// @param signature The signature to validate',
+        '/// @return The magic value if the signature is valid, 0 otherwise',
+      ],
     },
     _validateUserOp: {
       kind: 'internal' as const,
@@ -258,6 +264,12 @@ const functions = {
         { name: 'userOpHash', type: 'bytes32' },
       ],
       returns: ['uint256'],
+      comments: [
+        '/// @dev Validates a user operation',
+        '/// @param userOp The user operation to validate',
+        '/// @param userOpHash The hash of the user operation',
+        '/// @return The validation data',
+      ],
     },
     _erc7821AuthorizedExecutor: {
       kind: 'internal' as const,
@@ -268,24 +280,39 @@ const functions = {
       ],
       returns: ['bool'],
       mutability: 'view' as const,
+      comments: [
+        '/// @dev Checks if a caller is authorized to execute a specific operation',
+        '/// @param caller The address of the caller',
+        '/// @param mode The mode of operation',
+        '/// @param executionData The data for the execution',
+        '/// @return True if the caller is authorized, false otherwise',
+      ],
     },
     addSigners: {
       kind: 'public' as const,
       args: [{ name: 'signers', type: 'bytes[] memory' }],
+      comments: ['/// @dev Adds new signers to the account', '/// @param signers Array of signer data to add'],
     },
     removeSigners: {
       kind: 'public' as const,
       args: [{ name: 'signers', type: 'bytes[] memory' }],
+      comments: ['/// @dev Removes signers from the account', '/// @param signers Array of signer data to remove'],
     },
     setThreshold: {
       kind: 'public' as const,
       args: [{ name: 'threshold', type: 'uint256' }],
+      comments: ['/// @dev Sets the threshold for required signatures', '/// @param threshold The new threshold value'],
     },
     setSignerWeights: {
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
         { name: 'weights', type: 'uint256[] memory' },
+      ],
+      comments: [
+        '/// @dev Sets the weights for signers',
+        '/// @param signers Array of signer data',
+        '/// @param weights Array of weights corresponding to each signer',
       ],
     },
   }),

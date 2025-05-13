@@ -46,5 +46,9 @@ const functions = defineFunctions({
   _authorizeUpgrade: {
     args: [{ name: 'newImplementation', type: 'address' }],
     kind: 'internal',
+    comments: [
+      '/// @dev Authorizes the upgrade to a new implementation',
+      '/// @param newImplementation The address of the new implementation',
+    ],
   },
 });

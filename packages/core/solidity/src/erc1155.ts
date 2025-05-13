@@ -149,11 +149,23 @@ const functions = defineFunctions({
       { name: 'ids', type: 'uint256[] memory' },
       { name: 'values', type: 'uint256[] memory' },
     ],
+    comments: [
+      '/// @dev Updates the balances of `from` and `to` for multiple token IDs',
+      '/// @param from The address of the sender',
+      '/// @param to The address of the recipient',
+      '/// @param ids Array of token IDs to transfer',
+      '/// @param values Array of amounts to transfer for each token ID',
+    ],
   },
 
   setURI: {
     kind: 'public' as const,
     args: [{ name: 'newuri', type: 'string memory' }],
+    comments: [
+      '/// @dev Sets a new URI for all token types',
+      '/// @param newuri The new URI to set',
+      '/// @notice This function can only be called by the contract owner',
+    ],
   },
 
   mint: {
@@ -164,6 +176,13 @@ const functions = defineFunctions({
       { name: 'amount', type: 'uint256' },
       { name: 'data', type: 'bytes memory' },
     ],
+    comments: [
+      '/// @dev Creates `amount` tokens of token type `id` and assigns them to `account`',
+      '/// @param account The address that will receive the tokens',
+      '/// @param id The token type ID to mint',
+      '/// @param amount The amount of tokens to mint',
+      '/// @param data Additional data with no specified format',
+    ],
   },
 
   mintBatch: {
@@ -173,6 +192,13 @@ const functions = defineFunctions({
       { name: 'ids', type: 'uint256[] memory' },
       { name: 'amounts', type: 'uint256[] memory' },
       { name: 'data', type: 'bytes memory' },
+    ],
+    comments: [
+      '/// @dev Creates `amounts` tokens of token types `ids` and assigns them to `to`',
+      '/// @param to The address that will receive the tokens',
+      '/// @param ids Array of token type IDs to mint',
+      '/// @param amounts Array of amounts to mint for each token type',
+      '/// @param data Additional data with no specified format',
     ],
   },
 });

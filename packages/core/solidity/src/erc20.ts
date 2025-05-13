@@ -420,6 +420,12 @@ export const functions = defineFunctions({
       { name: 'to', type: 'address' },
       { name: 'value', type: 'uint256' },
     ],
+    comments: [
+      '/// @dev Updates the balances of `from` and `to`',
+      '/// @param from The address of the sender',
+      '/// @param to The address of the recipient',
+      '/// @param value The amount of tokens to transfer',
+    ],
   },
 
   _approve: {
@@ -430,6 +436,13 @@ export const functions = defineFunctions({
       { name: 'value', type: 'uint256' },
       { name: 'emitEvent', type: 'bool' },
     ],
+    comments: [
+      "/// @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens",
+      '/// @param owner The address of the token owner',
+      '/// @param spender The address of the spender',
+      '/// @param value The amount of tokens to approve',
+      '/// @param emitEvent Whether to emit the Approval event',
+    ],
   },
 
   mint: {
@@ -438,21 +451,35 @@ export const functions = defineFunctions({
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],
+    comments: [
+      '/// @dev Creates `amount` new tokens for `to`',
+      '/// @param to The address that will receive the minted tokens',
+      '/// @param amount The amount of tokens to mint',
+    ],
   },
 
   pause: {
     kind: 'public' as const,
     args: [],
+    comments: [
+      '/// @dev Pauses all token transfers',
+      '/// @notice This function can only be called by the contract owner',
+    ],
   },
 
   unpause: {
     kind: 'public' as const,
     args: [],
+    comments: [
+      '/// @dev Unpauses all token transfers',
+      '/// @notice This function can only be called by the contract owner',
+    ],
   },
 
   snapshot: {
     kind: 'public' as const,
     args: [],
+    comments: ['/// @dev Creates a new snapshot and returns its id', '/// @return The id of the new snapshot'],
   },
 
   nonces: {
@@ -460,10 +487,20 @@ export const functions = defineFunctions({
     args: [{ name: 'owner', type: 'address' }],
     returns: ['uint256'],
     mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the current nonce for `owner`',
+      '/// @param owner The address to get the nonce for',
+      '/// @return The current nonce of the owner',
+    ],
   },
 
   _checkTokenBridge: {
     kind: 'internal' as const,
     args: [{ name: 'caller', type: 'address' }],
+    comments: [
+      '/// @dev Checks if the caller is a valid token bridge',
+      '/// @param caller The address to check',
+      '/// @notice This function is used for cross-chain token transfers',
+    ],
   },
 });

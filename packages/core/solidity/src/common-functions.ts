@@ -6,4 +6,9 @@ export const supportsInterface: BaseFunction = {
   args: [{ name: 'interfaceId', type: 'bytes4' }],
   returns: ['bool'],
   mutability: 'view',
+  comments: [
+    '/// @dev Checks if the contract implements a specific interface',
+    '/// @param interfaceId The interface identifier to check',
+    '/// @return True if the contract implements the interface, false otherwise',
+  ],
 };
