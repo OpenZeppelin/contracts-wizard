@@ -224,15 +224,6 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
-    c.setFunctionComments(
-      [
-        `// IMPORTANT: Make sure Signer${opts.signer} is most derived than AccountERC7579`,
-        `// in the inheritance chain (i.e. contract ... is AccountERC7579, ..., Signer${opts.signer})`,
-        '// to ensure the correct order of function resolution.',
-        '// AccountERC7579 returns false for `_rawSignatureValidation`',
-      ],
-      signerFunctions._rawSignatureValidation,
-    );
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
       c.addImportOnly(signers.Multisig);

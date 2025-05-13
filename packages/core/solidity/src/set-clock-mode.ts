@@ -34,7 +34,6 @@ export function setClockMode(c: ContractBuilder, parent: ReferencedContract, vot
     c.addOverride(parent, functions.clock);
     c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
 
-    c.setFunctionComments(['// solhint-disable-next-line func-name-mixedcase'], functions.CLOCK_MODE);
     c.addOverride(parent, functions.CLOCK_MODE);
     c.setFunctionBody(['return "mode=timestamp";'], functions.CLOCK_MODE);
   }
