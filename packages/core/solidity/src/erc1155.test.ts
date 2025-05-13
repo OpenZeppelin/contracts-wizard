@@ -36,6 +36,8 @@ function testAPIEquivalence(title: string, opts?: ERC1155Options) {
 
 testERC1155('basic', {});
 
+testERC1155('name is unicodeSafe', { name: 'MyTokeć' });
+
 testERC1155('basic + roles', {
   access: 'roles',
 });
