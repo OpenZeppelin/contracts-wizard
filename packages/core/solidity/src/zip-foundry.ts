@@ -202,18 +202,18 @@ then
   mv README.md README-oz.md
 
   # Initialize sample Foundry project
-  forge init --force --no-commit --quiet
+  forge init --force --quiet
 
 ${
   c.upgradeable
     ? `\
   # Install OpenZeppelin Contracts and Upgrades
-  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --no-commit --quiet
-  forge install OpenZeppelin/openzeppelin-foundry-upgrades --no-commit --quiet\
+  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
+  forge install OpenZeppelin/openzeppelin-foundry-upgrades --quiet\
 `
     : `\
   # Install OpenZeppelin Contracts
-  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --no-commit --quiet\
+  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
 }
 

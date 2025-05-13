@@ -20,14 +20,16 @@ export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 
 
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset'> & {
+  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account'> & {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
-  stellar: Omit<StellarKindedOptions, 'Fungible'> & {
+  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
+    NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
   };
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
     ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;

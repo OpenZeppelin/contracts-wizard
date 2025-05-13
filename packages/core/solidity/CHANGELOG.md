@@ -1,5 +1,16 @@
 # Changelog
 
+
+## 0.5.5 (2025-05-13)
+
+- Add `account` contract types for ERC-4337. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486), [#523](https://github.com/OpenZeppelin/contracts-wizard/pull/523), [#527](https://github.com/OpenZeppelin/contracts-wizard/pull/527))
+- Use unicode syntax for strings with non-ASCII characters ([#476](https://github.com/OpenZeppelin/contracts-wizard/pull/476))
+- Remove redundant overrides in Governor. ([#522](https://github.com/OpenZeppelin/contracts-wizard/pull/522))
+- Simplify Community Contracts imports. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
+- **Potentially breaking changes**:
+    - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
+    - Changes import path format for `@openzeppelin/community-contracts`. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
+
 ## 0.5.4 (2025-04-01)
 
 - Add validation for ERC20 premint field. ([#488](https://github.com/OpenZeppelin/contracts-wizard/pull/488))
@@ -8,7 +19,7 @@
 ## 0.5.3 (2025-03-13)
 
 - Add ERC20 Cross-Chain Bridging, SuperchainERC20. ([#436](https://github.com/OpenZeppelin/contracts-wizard/pull/436))
-**Note:** Cross-Chain Bridging is experimental and may be subject to change.
+  **Note:** Cross-Chain Bridging is experimental and may be subject to change.
 
 - **Potentially breaking changes**:
   - Change order of constructor argument `recipient` when using `premint`.
@@ -38,11 +49,12 @@
 ## 0.4.5 (2024-11-18)
 
 - Add `stablecoin` and `realWorldAsset` contract types. ([#404](https://github.com/OpenZeppelin/contracts-wizard/pull/404))
-**Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
+  **Note:** `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 ## 0.4.4 (2024-10-23)
 
 ### Potentially breaking changes
+
 - Update pragma versions to 0.8.22. ([#401](https://github.com/OpenZeppelin/contracts-wizard/pull/401))
 
 ## 0.4.3 (2024-04-08)
@@ -60,6 +72,7 @@
 ## 0.4.0 (2023-10-05)
 
 ### Breaking changes
+
 - Update to OpenZeppelin Contracts 5.0. ([#284](https://github.com/OpenZeppelin/contracts-wizard/pull/284))
 - Require constructor or initializer arguments for initial owner or role assignments if using access control.
 - Use token-specific pausable extensions.

@@ -42,4 +42,5 @@
     ${!showIframe ? 'invisible' : ''} 
     ${!loaded ? 'hidden' : ''}`}
   on:load={handleLoad}
+  referrerpolicy="origin"
 />

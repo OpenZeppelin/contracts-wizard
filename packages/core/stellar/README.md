@@ -12,6 +12,7 @@ This package provides a programmatic API. For a web interface, see https://wizar
 
 The following contract types are supported:
 - `fungible`
+- `nonFungible`
 
 Each contract type has functions/constants as defined below.
 

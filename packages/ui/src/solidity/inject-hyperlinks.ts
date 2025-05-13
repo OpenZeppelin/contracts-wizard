@@ -4,8 +4,7 @@ export function injectHyperlinks(code: string) {
   // We are modifying HTML, so use HTML escaped chars. The pattern excludes paths that include /../ in the URL.
   const contractsRegex =
     /&quot;(@openzeppelin\/)(contracts-upgradeable\/|contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
-  const communityContractsRegex =
-    /&quot;(@openzeppelin\/)(community-contracts\/contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const communityContractsRegex = /&quot;(@openzeppelin\/)(community-contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
   return code
     .replace(

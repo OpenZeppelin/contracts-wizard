@@ -36,6 +36,8 @@ function testAPIEquivalence(title: string, opts?: ERC721Options) {
 
 testERC721('basic', {});
 
+testERC721('name is unicodeSafe', { name: 'MyTokeć' });
+
 testERC721('base uri', {
   baseUri: 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/',
 });
