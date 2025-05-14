@@ -7,10 +7,13 @@ export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
 
 export type Upgradeable = (typeof upgradeableOptions)[number];
 
-
-function setupUpgradeableCommon(c: ContractBuilder, upgradeable: Upgradeable) {
+function setUpgradeableBase(
+  c: ContractBuilder,
+  upgradeable: Upgradeable,
+  restrictAuthorizeUpgradeWhenUUPS: () => void,
+) {
   if (upgradeable === false) {
-    return false;
+    return;
   }
 
   c.upgradeable = true;
@@ -20,68 +23,39 @@ function setupUpgradeableCommon(c: ContractBuilder, upgradeable: Upgradeable) {
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
 
-  return true;
-}
+  switch (upgradeable) {
+    case 'transparent':
+      break;
 
+    case 'uups': {
+      restrictAuthorizeUpgradeWhenUUPS();
+      const UUPSUpgradeable = {
+        name: 'UUPSUpgradeable',
+        path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
+      };
+      c.addParent(UUPSUpgradeable);
+      c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);
+      c.setFunctionBody([], functions._authorizeUpgrade);
+      break;
+    }
 
-function setupUUPS(c: ContractBuilder, applyAccessControl: () => void) {
-  const UUPSUpgradeable = {
-    name: 'UUPSUpgradeable',
-    path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
-  };
-  c.addParent(UUPSUpgradeable);
-  c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);
-  
-  
-  applyAccessControl();
-  
-  c.setFunctionBody([], functions._authorizeUpgrade);
+    default: {
+      const _: never = upgradeable;
+      throw new Error('Unknown value for `upgradeable`');
+    }
+  }
 }
 
 export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
-  if (!setupUpgradeableCommon(c, upgradeable)) {
-    return;
-  }
-
-  switch (upgradeable) {
-    case 'transparent':
-      break;
-
-    case 'uups': {
-      setupUUPS(c, () => {
-        requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
-      });
-      break;
-    }
-
-    default: {
-      const _: never = upgradeable as Exclude<Upgradeable, boolean | 'transparent' | 'uups'>;
-      throw new Error('Unknown value for `upgradeable`');
-    }
-  }
+  setUpgradeableBase(c, upgradeable, () => {
+    requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
+  });
 }
 
 export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable) {
-  if (!setupUpgradeableCommon(c, upgradeable)) {
-    return;
-  }
-
-  switch (upgradeable) {
-    case 'transparent':
-      break;
-
-    case 'uups': {
-      setupUUPS(c, () => {
-        c.addModifier('onlyGovernance', functions._authorizeUpgrade);
-      });
-      break;
-    }
-
-    default: {
-      const _: never = upgradeable as Exclude<Upgradeable, boolean | 'transparent' | 'uups'>;
-      throw new Error('Unknown value for `upgradeable`');
-    }
-  }
+  setUpgradeableBase(c, upgradeable, () => {
+    c.addModifier('onlyGovernance', functions._authorizeUpgrade);
+  });
 }
 
 const functions = defineFunctions({
