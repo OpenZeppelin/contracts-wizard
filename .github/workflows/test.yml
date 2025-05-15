@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
       - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
-        uses: denoland/setup-deno@909cc5acb0fdd60627fb858598759246509fa755 #v2.0.2
+        uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
         with:
           deno-version: '1.46.3'
       - name: Set up environment
