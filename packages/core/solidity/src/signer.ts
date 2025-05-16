@@ -87,21 +87,30 @@ export const signerFunctions = {
     },
     initializeP256: {
       kind: 'public' as const,
-      args: [{ name: 'signer', type: 'address' }],
+      args: [
+        { name: 'qx', type: 'bytes32' },
+        { name: 'qy', type: 'bytes32' },
+      ],
       comments: [
         '/// @dev Initializes the contract with a P256 signer. This function should be called during contract deployment to set up the signing mechanism.',
       ],
     },
     initializeRSA: {
       kind: 'public' as const,
-      args: [{ name: 'signer', type: 'address' }],
+      args: [
+        { name: 'e', type: 'bytes memory' },
+        { name: 'n', type: 'bytes memory' },
+      ],
       comments: [
         '/// @dev Initializes the contract with an RSA signer. This function should be called during contract deployment to set up the signing mechanism.',
       ],
     },
     initializeMultisig: {
       kind: 'public' as const,
-      args: [{ name: 'signers', type: 'address[] memory' }],
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'threshold', type: 'uint256' },
+      ],
       comments: [
         '/// @dev Initializes the contract with multiple signers. This function should be called during contract deployment to set up the multisig mechanism.',
       ],
@@ -109,8 +118,9 @@ export const signerFunctions = {
     initializeMultisigWeighted: {
       kind: 'public' as const,
       args: [
-        { name: 'signers', type: 'address[] memory' },
+        { name: 'signers', type: 'bytes[] memory' },
         { name: 'weights', type: 'uint256[] memory' },
+        { name: 'threshold', type: 'uint256' },
       ],
       comments: [
         '/// @dev Initializes the contract with weighted signers. This function should be called during contract deployment to set up the weighted multisig mechanism.',
@@ -119,9 +129,8 @@ export const signerFunctions = {
     _rawSignatureValidation: {
       kind: 'internal' as const,
       args: [
-        { name: 'signer', type: 'address' },
         { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes memory' },
+        { name: 'signature', type: 'calldata' },
       ],
       returns: ['bool'],
       mutability: 'view' as const,
