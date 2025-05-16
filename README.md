@@ -10,9 +10,19 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 [![](./screenshot.png)](https://wizard.openzeppelin.com/)
 
-## Contributing
+## Usage
 
-See our [contributing guidelines](CONTRIBUTING.md).
+Use the Contracts Wizard at https://wizard.openzeppelin.com/
+
+## TypeScript API
+
+You can use the programmatic TypeScript API to generate contracts from your own applications.
+
+View the API documentation for each smart contract language:
+- [Solidity](packages/core/solidity/README.md)
+- [Cairo](packages/core/cairo/README.md)
+- [Stellar](packages/core/stellar/README.md)
+- [Stylus](packages/core/stylus/README.md)
 
 ## Embedding
 
@@ -28,11 +38,20 @@ Optionally focus on specific tab with the `data-tab` attribute as in `<oz-wizard
 
 For languages other than Solidity, use the `data-lang` attribute, for example: `<oz-wizard data-lang="cairo"></oz-wizard>`.
 
-## API
+## Contributing
 
-The following describes how to use the Contracts Wizard programmatic API in your own applications.
+We welcome contributions from the community! Here's how you can get involved:
 
-- [Contracts Wizard API for Solidity](packages/core/solidity/README.md)
-- [Contracts Wizard API for Cairo](packages/core/cairo/README.md)
-- [Contracts Wizard API for Stellar](packages/core/stellar/README.md)
-- [Contracts Wizard API for Stylus](packages/core/stylus/README.md)
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+If you are looking for a good place to start, find a good first issue [here](https://github.com/openzeppelin/contracts-wizard/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22), or [open an issue](https://github.com/OpenZeppelin/contracts-wizard/issues/new) for a bug report or feature request.
+
+You can find more details in our [Contributing](CONTRIBUTING.md) guide.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
