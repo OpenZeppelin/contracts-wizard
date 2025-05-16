@@ -82,73 +82,51 @@ export const signerFunctions = {
       kind: 'public' as const,
       args: [{ name: 'signer', type: 'address' }],
       comments: [
-        '/// @dev Initializes the contract with an ECDSA signer',
-        '/// @param signer The address of the ECDSA signer',
+        '/// @dev Initializes the contract with an ECDSA signer. This function should be called during contract deployment to set up the signing mechanism.',
       ],
     },
     initializeP256: {
       kind: 'public' as const,
-      args: [
-        { name: 'qx', type: 'bytes32' },
-        { name: 'qy', type: 'bytes32' },
-      ],
+      args: [{ name: 'signer', type: 'address' }],
       comments: [
-        '/// @dev Initializes the contract with a P-256 signer',
-        '/// @param qx The x-coordinate of the public key',
-        '/// @param qy The y-coordinate of the public key',
+        '/// @dev Initializes the contract with a P256 signer. This function should be called during contract deployment to set up the signing mechanism.',
       ],
     },
     initializeRSA: {
       kind: 'public' as const,
-      args: [
-        { name: 'e', type: 'bytes memory' },
-        { name: 'n', type: 'bytes memory' },
-      ],
+      args: [{ name: 'signer', type: 'address' }],
       comments: [
-        '/// @dev Initializes the contract with an RSA signer',
-        '/// @param e The RSA public exponent',
-        '/// @param n The RSA modulus',
+        '/// @dev Initializes the contract with an RSA signer. This function should be called during contract deployment to set up the signing mechanism.',
       ],
     },
     initializeMultisig: {
       kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'threshold', type: 'uint256' },
-      ],
+      args: [{ name: 'signers', type: 'address[] memory' }],
       comments: [
-        '/// @dev Initializes the contract with a multisig configuration',
-        '/// @param signers Array of signer data',
-        '/// @param threshold The minimum number of required signatures',
+        '/// @dev Initializes the contract with multiple signers. This function should be called during contract deployment to set up the multisig mechanism.',
       ],
     },
     initializeMultisigWeighted: {
       kind: 'public' as const,
       args: [
-        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'signers', type: 'address[] memory' },
         { name: 'weights', type: 'uint256[] memory' },
-        { name: 'threshold', type: 'uint256' },
       ],
       comments: [
-        '/// @dev Initializes the contract with a weighted multisig configuration',
-        '/// @param signers Array of signer data',
-        '/// @param weights Array of weights for each signer',
-        '/// @param threshold The minimum total weight required for valid signatures',
+        '/// @dev Initializes the contract with weighted signers. This function should be called during contract deployment to set up the weighted multisig mechanism.',
       ],
     },
     _rawSignatureValidation: {
       kind: 'internal' as const,
       args: [
+        { name: 'signer', type: 'address' },
         { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
+        { name: 'signature', type: 'bytes memory' },
       ],
       returns: ['bool'],
       mutability: 'view' as const,
       comments: [
-        '/// @dev Performs raw signature validation',
-        '/// @param hash The hash to validate the signature for',
-        '/// @param signature The signature to validate',
-        '/// @return True if the signature is valid, false otherwise',
+        '/// @dev Validates a raw signature against a hash. This is an internal function that should be called from a public function with proper access control.',
       ],
     },
   }),

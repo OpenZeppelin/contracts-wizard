@@ -216,17 +216,13 @@ const functions = defineFunctions({
   _update: {
     kind: 'internal' as const,
     args: [
+      { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
       { name: 'auth', type: 'address' },
     ],
-    returns: ['address'],
     comments: [
-      '/// @dev Updates the owner of the token and handles the transfer logic',
-      '/// @param to The address that will receive the token',
-      '/// @param tokenId The ID of the token being transferred',
-      '/// @param auth The address that is authorized to perform the transfer',
-      '/// @return The address of the previous owner',
+      '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
     ],
   },
 
@@ -236,9 +232,7 @@ const functions = defineFunctions({
     returns: ['string memory'],
     mutability: 'view' as const,
     comments: [
-      '/// @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token',
-      '/// @param tokenId The ID of the token to get the URI for',
-      '/// @return The URI of the token',
+      '/// @dev Returns the Uniform Resource Identifier (URI) for the specified token. This is used to store metadata for each token.',
     ],
   },
 
@@ -246,8 +240,10 @@ const functions = defineFunctions({
     kind: 'internal' as const,
     args: [],
     returns: ['string memory'],
-    mutability: 'pure' as const,
-    comments: ['/// @dev Base URI for computing {tokenURI}', '/// @return The base URI string'],
+    mutability: 'view' as const,
+    comments: [
+      '/// @dev Base URI for computing tokenURI. If set, the resulting URI for each token will be the concatenation of the baseURI and the tokenId.',
+    ],
   },
 
   _increaseBalance: {
@@ -257,9 +253,7 @@ const functions = defineFunctions({
       { name: 'value', type: 'uint128' },
     ],
     comments: [
-      '/// @dev Increases the balance of `account` by `value`',
-      '/// @param account The address to increase the balance for',
-      '/// @param value The amount to increase the balance by',
+      '/// @dev Increases the balance of an account. This is used internally to track token ownership and should not be called directly.',
     ],
   },
 });

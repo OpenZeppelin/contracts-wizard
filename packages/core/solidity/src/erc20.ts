@@ -411,10 +411,7 @@ export const functions = defineFunctions({
       { name: 'value', type: 'uint256' },
     ],
     comments: [
-      '/// @dev Updates the balances of `from` and `to`',
-      '/// @param from The address of the sender',
-      '/// @param to The address of the recipient',
-      '/// @param value The amount of tokens to transfer',
+      '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
     ],
   },
 
@@ -424,14 +421,89 @@ export const functions = defineFunctions({
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
       { name: 'value', type: 'uint256' },
-      { name: 'emitEvent', type: 'bool' },
     ],
     comments: [
-      "/// @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens",
-      '/// @param owner The address of the token owner',
-      '/// @param spender The address of the spender',
-      '/// @param value The amount of tokens to approve',
-      '/// @param emitEvent Whether to emit the Approval event',
+      '/// @dev Sets the allowance for a spender to spend tokens on behalf of an owner. This is an internal function that should be called from a public function with proper access control.',
+    ],
+  },
+
+  _mint: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'account', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    comments: [
+      '/// @dev Creates new tokens and assigns them to the specified account. This is an internal function that should be called from a public function with proper access control.',
+    ],
+  },
+
+  _burn: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'account', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    comments: [
+      '/// @dev Destroys tokens from the specified account. This is an internal function that should be called from a public function with proper access control.',
+    ],
+  },
+
+  _spendAllowance: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    comments: [
+      '/// @dev Decreases the allowance of a spender by the specified amount. This is called during token transfers to update allowances.',
+    ],
+  },
+
+  pause: {
+    kind: 'public' as const,
+    args: [],
+    comments: [
+      '/// @dev Pauses all token transfers.',
+      '/// Consider implementing access control to restrict who can pause.',
+    ],
+  },
+
+  unpause: {
+    kind: 'public' as const,
+    args: [],
+    comments: [
+      '/// @dev Unpauses all token transfers.',
+      '/// Consider implementing access control to restrict who can unpause.',
+    ],
+  },
+
+  snapshot: {
+    kind: 'public' as const,
+    args: [],
+    comments: [
+      '/// @dev Creates a new snapshot and returns its id.',
+      '/// Consider implementing access control to restrict who can create snapshots.',
+    ],
+  },
+
+  nonces: {
+    kind: 'public' as const,
+    args: [{ name: 'owner', type: 'address' }],
+    returns: ['uint256'],
+    mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the current nonce for an owner.',
+      '/// Used for permit signatures to prevent replay attacks.',
+    ],
+  },
+
+  _checkTokenBridge: {
+    kind: 'internal' as const,
+    args: [{ name: 'caller', type: 'address' }],
+    comments: [
+      '/// @dev Validates if the caller is an authorized token bridge. This is used for cross-chain token transfers to ensure only trusted bridges can move tokens.',
     ],
   },
 
@@ -442,55 +514,7 @@ export const functions = defineFunctions({
       { name: 'amount', type: 'uint256' },
     ],
     comments: [
-      '/// @dev Creates `amount` new tokens for `to`',
-      '/// @param to The address that will receive the minted tokens',
-      '/// @param amount The amount of tokens to mint',
-    ],
-  },
-
-  pause: {
-    kind: 'public' as const,
-    args: [],
-    comments: [
-      '/// @dev Pauses all token transfers',
-      '/// @notice This function can only be called by the contract owner',
-    ],
-  },
-
-  unpause: {
-    kind: 'public' as const,
-    args: [],
-    comments: [
-      '/// @dev Unpauses all token transfers',
-      '/// @notice This function can only be called by the contract owner',
-    ],
-  },
-
-  snapshot: {
-    kind: 'public' as const,
-    args: [],
-    comments: ['/// @dev Creates a new snapshot and returns its id', '/// @return The id of the new snapshot'],
-  },
-
-  nonces: {
-    kind: 'public' as const,
-    args: [{ name: 'owner', type: 'address' }],
-    returns: ['uint256'],
-    mutability: 'view' as const,
-    comments: [
-      '/// @dev Returns the current nonce for `owner`',
-      '/// @param owner The address to get the nonce for',
-      '/// @return The current nonce of the owner',
-    ],
-  },
-
-  _checkTokenBridge: {
-    kind: 'internal' as const,
-    args: [{ name: 'caller', type: 'address' }],
-    comments: [
-      '/// @dev Checks if the caller is a valid token bridge',
-      '/// @param caller The address to check',
-      '/// @notice This function is used for cross-chain token transfers',
+      '/// @dev Creates new tokens and assigns them to the specified account. This function should be called with proper access control to restrict who can mint tokens.',
     ],
   },
 });

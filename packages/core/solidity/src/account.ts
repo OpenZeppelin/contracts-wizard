@@ -224,7 +224,15 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
-    // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
+    c.setFunctionComments(
+      [
+        `// IMPORTANT: Make sure Signer${opts.signer} is most derived than AccountERC7579`,
+        `// in the inheritance chain (i.e. contract ... is AccountERC7579, ..., Signer${opts.signer})`,
+        '// to ensure the correct order of function resolution.',
+        '// AccountERC7579 returns false for `_rawSignatureValidation`',
+      ],
+      signerFunctions._rawSignatureValidation,
+    );
     if (opts.signer === 'MultisigWeighted') {
       c.addImportOnly(signers.Multisig);
     }
@@ -242,10 +250,8 @@ const functions = {
       ],
       returns: ['bytes4'],
       comments: [
-        '/// @dev Validates a signature for a given hash',
-        '/// @param hash The hash to validate the signature for',
-        '/// @param signature The signature to validate',
-        '/// @return The magic value if the signature is valid, 0 otherwise',
+        '/// @dev Validates a signature for a given hash.',
+        '/// Must return the correct magic value for valid signatures.',
       ],
     },
     _validateUserOp: {
@@ -256,10 +262,8 @@ const functions = {
       ],
       returns: ['uint256'],
       comments: [
-        '/// @dev Validates a user operation',
-        '/// @param userOp The user operation to validate',
-        '/// @param userOpHash The hash of the user operation',
-        '/// @return The validation data',
+        '/// @dev Validates a user operation during account abstraction.',
+        '/// Consider implementing additional validation logic for security.',
       ],
     },
     _erc7821AuthorizedExecutor: {
@@ -272,27 +276,33 @@ const functions = {
       returns: ['bool'],
       mutability: 'view' as const,
       comments: [
-        '/// @dev Checks if a caller is authorized to execute a specific operation',
-        '/// @param caller The address of the caller',
-        '/// @param mode The mode of operation',
-        '/// @param executionData The data for the execution',
-        '/// @return True if the caller is authorized, false otherwise',
+        '/// @dev Checks if a caller is authorized to execute a specific operation.',
+        '/// Implements the ERC-7821 standard for authorized execution.',
       ],
     },
     addSigners: {
       kind: 'public' as const,
       args: [{ name: 'signers', type: 'bytes[] memory' }],
-      comments: ['/// @dev Adds new signers to the account', '/// @param signers Array of signer data to add'],
+      comments: [
+        '/// @dev Adds new signers to the account.',
+        '/// Consider implementing access control to restrict who can add signers.',
+      ],
     },
     removeSigners: {
       kind: 'public' as const,
       args: [{ name: 'signers', type: 'bytes[] memory' }],
-      comments: ['/// @dev Removes signers from the account', '/// @param signers Array of signer data to remove'],
+      comments: [
+        '/// @dev Removes signers from the account.',
+        '/// Consider implementing access control to restrict who can remove signers.',
+      ],
     },
     setThreshold: {
       kind: 'public' as const,
       args: [{ name: 'threshold', type: 'uint256' }],
-      comments: ['/// @dev Sets the threshold for required signatures', '/// @param threshold The new threshold value'],
+      comments: [
+        '/// @dev Sets the threshold for required signatures.',
+        '/// Consider implementing validation to ensure the threshold is reasonable.',
+      ],
     },
     setSignerWeights: {
       kind: 'public' as const,
@@ -301,9 +311,8 @@ const functions = {
         { name: 'weights', type: 'uint256[] memory' },
       ],
       comments: [
-        '/// @dev Sets the weights for signers',
-        '/// @param signers Array of signer data',
-        '/// @param weights Array of weights corresponding to each signer',
+        '/// @dev Sets the weights for signers.',
+        '/// Consider implementing validation to ensure weights are reasonable.',
       ],
     },
   }),

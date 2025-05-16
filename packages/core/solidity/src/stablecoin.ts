@@ -138,47 +138,31 @@ const functions = {
       args: [{ name: 'user', type: 'address' }],
       returns: ['bool'],
       mutability: 'view' as const,
-      comments: [
-        '/// @dev Checks if a user is a custodian',
-        '/// @param user The address to check',
-        '/// @return True if the user is a custodian, false otherwise',
-      ],
+      comments: ['/// @dev Determines if an address has custodian privileges. Custodians can perform special operations on behalf of users.'],
     },
 
     allowUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: [
-        '/// @dev Allows a user to interact with the contract',
-        '/// @param user The address of the user to allow',
-      ],
+      comments: ['/// @dev Grants permission for a user to interact with the contract. This is part of the allowlist mechanism for controlled access.'],
     },
 
     disallowUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: [
-        '/// @dev Disallows a user from interacting with the contract',
-        '/// @param user The address of the user to disallow',
-      ],
+      comments: ['/// @dev Revokes a user\'s permission to interact with the contract. This is part of the allowlist mechanism for controlled access.'],
     },
 
     blockUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: [
-        '/// @dev Blocks a user from interacting with the contract',
-        '/// @param user The address of the user to block',
-      ],
+      comments: ['/// @dev Blocks a user from interacting with the contract. This is part of the blocklist mechanism for controlled access.'],
     },
 
     unblockUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: [
-        '/// @dev Unblocks a user, allowing them to interact with the contract again',
-        '/// @param user The address of the user to unblock',
-      ],
+      comments: ['/// @dev Removes a user from the blocklist, restoring their ability to interact with the contract.'],
     },
   }),
 };

@@ -403,60 +403,64 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
-    comments: [
-      '/// @dev Returns the delay before voting on a proposal may take place',
-      '/// @return The delay in number of blocks',
-    ],
+    comments: ['/// @dev Delay between proposal creation and voting start.', '/// Used to prevent flash loan attacks.'],
   },
+
   votingPeriod: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
     comments: [
-      '/// @dev Returns the duration of voting on a proposal',
-      '/// @return The voting period in number of blocks',
+      '/// @dev Duration of the voting period.',
+      '/// Consider the time needed for users to make informed decisions.',
     ],
   },
+
   proposalThreshold: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
     comments: [
-      '/// @dev Returns the minimum number of votes required for a proposal to be created',
-      '/// @return The minimum number of votes required',
+      '/// @dev Minimum number of votes required to create a proposal.',
+      '/// Used to prevent spam proposals.',
     ],
   },
+
   proposalNeedsQueuing: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['bool'],
     kind: 'public',
     mutability: 'view',
     comments: [
-      '/// @dev Checks if a proposal needs to be queued before execution',
-      '/// @param proposalId The ID of the proposal to check',
-      '/// @return True if the proposal needs queuing, false otherwise',
+      '/// @dev Checks if a proposal needs to be queued before execution.',
+      '/// Used for proposals that modify critical parameters.',
     ],
   },
+
   quorum: {
     args: [{ name: 'blockNumber', type: 'uint256' }],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
     comments: [
-      '/// @dev Returns the quorum required for a proposal to pass at a specific block number',
-      '/// @param blockNumber The block number to check the quorum for',
-      '/// @return The required quorum at the specified block',
+      '/// @dev Returns the quorum required at a specific timepoint.',
+      '/// Consider implementing a dynamic quorum mechanism.',
     ],
   },
+
   quorumDenominator: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
-    comments: ['/// @dev Returns the denominator used to calculate the quorum', '/// @return The quorum denominator'],
+    comments: [
+      '/// @dev Denominator used to express quorum as a fraction of total token supply.',
+      '/// Used to calculate the minimum number of votes required.',
+    ],
   },
+
   propose: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -466,15 +470,9 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'public',
-    comments: [
-      '/// @dev Creates a new proposal',
-      '/// @param targets The addresses of the contracts to call',
-      '/// @param values The amounts of ETH to send with each call',
-      '/// @param calldatas The calldata to send with each call',
-      '/// @param description A description of the proposal',
-      '/// @return The ID of the created proposal',
-    ],
+    comments: ['/// @dev Creates a new proposal.', '/// Consider implementing validation for proposal parameters.'],
   },
+
   _propose: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -486,15 +484,11 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'internal',
     comments: [
-      '/// @dev Internal function to create a new proposal',
-      '/// @param targets The addresses of the contracts to call',
-      '/// @param values The amounts of ETH to send with each call',
-      '/// @param calldatas The calldata to send with each call',
-      '/// @param description A description of the proposal',
-      '/// @param proposer The address of the proposer',
-      '/// @return The ID of the created proposal',
+      '/// @dev Internal function to create a proposal.',
+      '/// Consider implementing additional validation logic.',
     ],
   },
+
   _queueOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
@@ -504,17 +498,9 @@ const functions = defineFunctions({
       { name: 'descriptionHash', type: 'bytes32' },
     ],
     kind: 'internal',
-    returns: ['uint48'],
-    comments: [
-      '/// @dev Internal function to queue operations for a proposal',
-      '/// @param proposalId The ID of the proposal',
-      '/// @param targets The addresses of the contracts to call',
-      '/// @param values The amounts of ETH to send with each call',
-      '/// @param calldatas The calldata to send with each call',
-      '/// @param descriptionHash The hash of the proposal description',
-      '/// @return The timestamp when the operations will be executable',
-    ],
+    comments: ['/// @dev Queues a proposal for execution.', '/// Consider implementing a timelock mechanism.'],
   },
+
   _executeOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
@@ -524,15 +510,9 @@ const functions = defineFunctions({
       { name: 'descriptionHash', type: 'bytes32' },
     ],
     kind: 'internal',
-    comments: [
-      '/// @dev Internal function to execute operations for a proposal',
-      '/// @param proposalId The ID of the proposal',
-      '/// @param targets The addresses of the contracts to call',
-      '/// @param values The amounts of ETH to send with each call',
-      '/// @param calldatas The calldata to send with each call',
-      '/// @param descriptionHash The hash of the proposal description',
-    ],
+    comments: ['/// @dev Executes a queued proposal.', '/// Consider implementing additional security checks.'],
   },
+
   _cancel: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -542,34 +522,25 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
-    comments: [
-      '/// @dev Internal function to cancel a proposal',
-      '/// @param targets The addresses of the contracts to call',
-      '/// @param values The amounts of ETH to send with each call',
-      '/// @param calldatas The calldata to send with each call',
-      '/// @param descriptionHash The hash of the proposal description',
-      '/// @return The ID of the cancelled proposal',
-    ],
+    comments: ['/// @dev Cancels a proposal.', '/// Consider implementing access control for cancellation.'],
   },
+
   state: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['ProposalState'],
     kind: 'public',
     mutability: 'view',
-    comments: [
-      '/// @dev Returns the current state of a proposal',
-      '/// @param proposalId The ID of the proposal to check',
-      '/// @return The current state of the proposal',
-    ],
+    comments: ['/// @dev Returns the current state of a proposal.', '/// Used to track the proposal lifecycle.'],
   },
+
   _executor: {
     args: [],
     returns: ['address'],
     kind: 'internal',
     mutability: 'view',
     comments: [
-      '/// @dev Returns the address that will execute the proposal',
-      '/// @return The address of the executor',
+      '/// @dev Returns the address that can execute a proposal.',
+      '/// Consider implementing a custom executor mechanism.',
     ],
   },
 });

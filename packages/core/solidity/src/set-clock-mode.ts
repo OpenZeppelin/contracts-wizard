@@ -11,7 +11,10 @@ const functions = defineFunctions({
     args: [],
     returns: ['uint48'],
     mutability: 'view' as const,
-    comments: ['/// @dev Returns the current timestamp as a uint48', '/// @return The current timestamp'],
+    comments: [
+      '/// @dev Returns the current timestamp as a uint48.',
+      '/// Used for time-based operations in the contract.',
+    ],
   },
 
   CLOCK_MODE: {
@@ -19,7 +22,10 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
-    comments: ['/// @dev Returns the clock mode as a string', '/// @return The clock mode string'],
+    comments: [
+      '/// @dev Returns the clock mode as a string.',
+      '/// Indicates whether the contract uses block numbers or timestamps.',
+    ],
   },
 });
 
