@@ -403,37 +403,64 @@ const functions = defineFunctions({
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: ['/// @dev Delay between proposal creation and voting start.', '/// Used to prevent flash loan attacks.'],
   },
+
   votingPeriod: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: [
+      '/// @dev Duration of the voting period.',
+      '/// Consider the time needed for users to make informed decisions.',
+    ],
   },
+
   proposalThreshold: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'pure',
+    comments: [
+      '/// @dev Minimum number of votes required to create a proposal.',
+      '/// Used to prevent spam proposals.',
+    ],
   },
+
   proposalNeedsQueuing: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['bool'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Checks if a proposal needs to be queued before execution.',
+      '/// Used for proposals that modify critical parameters.',
+    ],
   },
+
   quorum: {
     args: [{ name: 'blockNumber', type: 'uint256' }],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Returns the quorum required at a specific timepoint.',
+      '/// Consider implementing a dynamic quorum mechanism.',
+    ],
   },
+
   quorumDenominator: {
     args: [],
     returns: ['uint256'],
     kind: 'public',
     mutability: 'view',
+    comments: [
+      '/// @dev Denominator used to express quorum as a fraction of total token supply.',
+      '/// Used to calculate the minimum number of votes required.',
+    ],
   },
+
   propose: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -443,7 +470,9 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'public',
+    comments: ['/// @dev Creates a new proposal.', '/// Consider implementing validation for proposal parameters.'],
   },
+
   _propose: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -454,7 +483,12 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
+    comments: [
+      '/// @dev Internal function to create a proposal.',
+      '/// Consider implementing additional validation logic.',
+    ],
   },
+
   _queueOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
@@ -464,8 +498,9 @@ const functions = defineFunctions({
       { name: 'descriptionHash', type: 'bytes32' },
     ],
     kind: 'internal',
-    returns: ['uint48'],
+    comments: ['/// @dev Queues a proposal for execution.', '/// Consider implementing a timelock mechanism.'],
   },
+
   _executeOperations: {
     args: [
       { name: 'proposalId', type: 'uint256' },
@@ -475,7 +510,9 @@ const functions = defineFunctions({
       { name: 'descriptionHash', type: 'bytes32' },
     ],
     kind: 'internal',
+    comments: ['/// @dev Executes a queued proposal.', '/// Consider implementing additional security checks.'],
   },
+
   _cancel: {
     args: [
       { name: 'targets', type: 'address[] memory' },
@@ -485,17 +522,25 @@ const functions = defineFunctions({
     ],
     returns: ['uint256'],
     kind: 'internal',
+    comments: ['/// @dev Cancels a proposal.', '/// Consider implementing access control for cancellation.'],
   },
+
   state: {
     args: [{ name: 'proposalId', type: 'uint256' }],
     returns: ['ProposalState'],
     kind: 'public',
     mutability: 'view',
+    comments: ['/// @dev Returns the current state of a proposal.', '/// Used to track the proposal lifecycle.'],
   },
+
   _executor: {
     args: [],
     returns: ['address'],
     kind: 'internal',
     mutability: 'view',
+    comments: [
+      '/// @dev Returns the address that can execute a proposal.',
+      '/// Consider implementing a custom executor mechanism.',
+    ],
   },
 });

@@ -41,6 +41,7 @@ export interface BaseFunction {
   returns?: string[];
   kind: FunctionKind;
   mutability?: FunctionMutability;
+  comments?: string[];
 }
 
 export interface ContractFunction extends BaseFunction {

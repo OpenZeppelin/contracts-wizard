@@ -216,11 +216,14 @@ const functions = defineFunctions({
   _update: {
     kind: 'internal' as const,
     args: [
+      { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
       { name: 'auth', type: 'address' },
     ],
-    returns: ['address'],
+    comments: [
+      '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
+    ],
   },
 
   tokenURI: {
@@ -228,13 +231,19 @@ const functions = defineFunctions({
     args: [{ name: 'tokenId', type: 'uint256' }],
     returns: ['string memory'],
     mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the Uniform Resource Identifier (URI) for the specified token. This is used to store metadata for each token.',
+    ],
   },
 
   _baseURI: {
     kind: 'internal' as const,
     args: [],
     returns: ['string memory'],
-    mutability: 'pure' as const,
+    mutability: 'view' as const,
+    comments: [
+      '/// @dev Base URI for computing tokenURI. If set, the resulting URI for each token will be the concatenation of the baseURI and the tokenId.',
+    ],
   },
 
   _increaseBalance: {
@@ -243,10 +252,19 @@ const functions = defineFunctions({
       { name: 'account', type: 'address' },
       { name: 'value', type: 'uint128' },
     ],
+    comments: [
+      '/// @dev Increases the balance of an account. This is used internally to track token ownership and should not be called directly.',
+    ],
   },
 });
 
 function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunction {
+  /**
+   * @dev Creates a mint function configuration based on the specified options
+   * @param incremental Whether to use incremental token IDs
+   * @param uriStorage Whether to include URI storage functionality
+   * @return The configured mint function
+   */
   const fn: BaseFunction = {
     name: 'safeMint',
     kind: 'public' as const,
