@@ -87,10 +87,14 @@ input[type='number'] {
   display: flex;
   flex-direction: column;
 
-  & > * {
+  & > *:not(.checkbox-group) {
     display: flex;
     align-items: center;
     padding: var(--size-2);
+  }
+
+  & > .checkbox-group {
+    margin-left: 1rem;
   }
 
   input {

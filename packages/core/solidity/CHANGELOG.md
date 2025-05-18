@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+
+- Add `erc7579` contract types for ERC-7579 modules.
 
 ## 0.5.5 (2025-05-13)
 
