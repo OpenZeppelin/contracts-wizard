@@ -49,7 +49,7 @@
     </label>
     <label class:checked={opts.validator?.signature} class="subcontrol">
       <input
-        type="checkbox"
+        type="radio"
         checked={opts.validator?.signature}
         on:change={e => {
           if (e.currentTarget?.checked) {
@@ -64,7 +64,7 @@
     </label>
     <label class:checked={opts.validator?.multisig} class="subcontrol">
       <input
-        type="checkbox"
+        type="radio"
         checked={opts.validator?.multisig}
         on:change={e => {
           if (e.currentTarget?.checked) {
@@ -85,6 +85,7 @@
           on:change={e => {
             if (e.currentTarget?.checked) {
               opts.validator ??= {};
+              opts.validator.signature = false;
               opts.validator.multisig ??= {
                 weighted: true,
               };
@@ -103,6 +104,7 @@
           on:change={e => {
             if (e.currentTarget?.checked) {
               opts.validator ??= {};
+              opts.validator.signature = false;
               opts.validator.multisig ??= {
                 confirmation: true,
               };

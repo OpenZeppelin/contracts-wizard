@@ -3,6 +3,7 @@ import type { Contract } from './contract';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { defineFunctions } from './utils/define-functions';
+import { requireAccessControl, setAccessControl } from './set-access-control';
 
 export const defaults: Required<ERC7579Options> = {
   ...commonDefaults,
@@ -56,73 +57,60 @@ export function buildERC7579(opts: ERC7579Options): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
-  // Base parent
-  c.addOverride(
-    {
-      name: 'IERC7579Module',
-    },
-    functions.isModuleType,
-  );
-
-  overrideIsModuleType(c, allOpts);
   addParents(c, allOpts);
+  overrideIsModuleType(c, allOpts);
   overrideValidation(c, allOpts);
-  // addAccess(c, allOpts); TODO
-  // addOnInstall(c, allOpts); TODO
+  addInstallFns(c, allOpts);
 
   return c;
 }
 
-type IsModuleTypeImplementation = 'ERC7579Executor' | 'ERC7579Validator' | 'IERC7579Hook' | 'Fallback';
-
 function overrideIsModuleType(c: ContractBuilder, opts: ERC7579Options): void {
-  const implementedIn: IsModuleTypeImplementation[] = ['ERC7579Executor', 'ERC7579Validator'] as const;
-  const types: IsModuleTypeImplementation[] = [];
   const fn = functions.isModuleType;
 
   if (opts.executor) {
-    types.push('ERC7579Executor');
     c.addOverride({ name: 'ERC7579Executor' }, fn);
   }
 
   if (opts.validator) {
-    types.push('ERC7579Validator');
     c.addOverride({ name: 'ERC7579Validator' }, fn);
   }
 
   if (opts.hook) {
-    types.push('IERC7579Hook');
     c.addOverride({ name: 'IERC7579Hook' }, fn);
   }
 
   if (opts.fallback) {
-    types.push('Fallback');
+    c.addOverride({ name: 'IERC7579Module' }, fn);
   }
 
-  const implementedOverrides = types.filter(type => implementedIn.includes(type));
-  const unimplementedOverrides = types.filter(type => !implementedIn.includes(type));
+  const implementedIn = ['ERC7579Executor', 'ERC7579Validator'];
+  const contractFn = c.functions.find(f => f.name === 'isModuleType')!;
+  const allOverrides = Array.from(contractFn?.override.values() ?? []).map(v => v.name);
+  const implementedOverrides = allOverrides.filter(type => implementedIn.includes(type));
+  const unimplementedOverrides = allOverrides.filter(type => !implementedIn.includes(type));
 
-  if (implementedOverrides.length === 0 && unimplementedOverrides.length === 1) {
-    const importedType =
-      unimplementedOverrides[0]! === 'IERC7579Hook' ? 'MODULE_TYPE_VALIDATOR' : 'MODULE_TYPE_FALLBACK';
+  if (!implementedOverrides.length && !unimplementedOverrides.length) {
+    c.setFunctionBody(['return false;'], fn);
+  } else if (!implementedOverrides.length && unimplementedOverrides.length === 1) {
+    const importedType = unimplementedOverrides[0]! === 'IERC7579Hook' ? 'MODULE_TYPE_HOOK' : 'MODULE_TYPE_FALLBACK';
     c.setFunctionBody([`return ${fn.args[0]!.name} == ${importedType};`], fn);
-  } else if (
-    implementedOverrides.length >= 2 || // 1 = n/a, 2 = defaults to super
-    unimplementedOverrides.length > 0 // Require manual comparison
-  ) {
+  } else if (implementedOverrides.length == 1 && !unimplementedOverrides.length) {
+    c.setFunctionBody([`return ${implementedOverrides[0]!}.isModuleType(${fn.args[0]!.name})`], fn);
+  } else {
     const body: string[] = [];
     for (const type of implementedOverrides) {
       body.push(`bool is${type} = ${type}.isModuleType(${fn.args[0]!.name})`);
     }
     for (const type of unimplementedOverrides) {
-      const importedType = type === 'IERC7579Hook' ? 'MODULE_TYPE_VALIDATOR' : 'MODULE_TYPE_FALLBACK';
+      const importedType = type === 'IERC7579Hook' ? 'MODULE_TYPE_HOOK' : 'MODULE_TYPE_FALLBACK';
       c.addImportOnly({
         name: importedType,
         path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
       });
       body.push(`bool is${type} = ${fn.args[0]!.name} == ${importedType};`);
     }
-    body.push(`return ${types.map(type => `is${type}`).join(' || ')};`);
+    body.push(`return ${allOverrides.map(type => `is${type}`).join(' || ')};`);
     c.setFunctionBody(body, fn);
   }
 }
@@ -195,10 +183,15 @@ function addParents(c: ContractBuilder, opts: ERC7579Options): void {
 }
 
 function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
+  if (opts.access) setAccessControl(c, opts.access);
   if (opts.executor) {
-    const delayed = !opts.executor.delayed; // Delayed ensures single execution per operation.
+    const delayed = opts.executor.delayed; // Delayed ensures single execution per operation.
     const fn = delayed ? functions._validateSchedule : functions._validateExecution;
     c.addOverride(c, fn);
+    c.setFunctionComments(
+      ['/// @dev Data is encoded as `[uint16(executionCalldatalLength), executionCalldata, signature]`'],
+      fn,
+    );
     if (opts.validator) {
       c.addParent(
         {
@@ -208,18 +201,46 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
         [opts.name, '1'],
       );
       c.addVariable(
-        `bytes32 public constant EXECUTION_TYPEHASH = "Execute(address account,bytes32 salt,${delayed ? 'uint256 nonce,' : ''}bytes32 mode,bytes executionCalldata)"`,
+        `bytes32 public constant EXECUTION_TYPEHASH = "Execute(address account,bytes32 salt,${!delayed ? 'uint256 nonce,' : ''}bytes32 mode,bytes executionCalldata)"`,
       );
-      c.setFunctionBody(
-        [
-          `uint16 executionCalldataLength = uint16(uint256(bytes32(${fn.args[3]!.name}[0:2]))); // First 2 bytes are the length`,
-          `bytes calldata executionCalldata = ${fn.args[3]!.name}[2:2 + executionCalldataLength]; // Next bytes are the calldata`,
-          `bytes32 typeHash = _hashTypedDataV4(keccak256(abi.encode(EXECUTION_TYPEHASH, ${fn.args[0]!.name}, ${fn.args[1]!.name},${delayed ? ` _useNonce(${fn.args[0]!.name}),` : ''} ${fn.args[2]!.name}, executionCalldata)));`,
-          `require(_rawERC7579Validation(${fn.args[0]!.name}, typeHash, ${fn.args[3]!.name}[2 + executionCalldataLength:])); // Remaining bytes are the signature`,
-          `return executionCalldata;`,
-        ],
-        fn,
-      );
+      const body = [
+        `uint16 executionCalldataLength = uint16(uint256(bytes32(${fn.args[3]!.name}[0:2]))); // First 2 bytes are the length`,
+        `bytes calldata executionCalldata = ${fn.args[3]!.name}[2:2 + executionCalldataLength]; // Next bytes are the calldata`,
+        `bytes32 typeHash = _hashTypedDataV4(keccak256(abi.encode(EXECUTION_TYPEHASH, ${fn.args[0]!.name}, ${fn.args[1]!.name},${!delayed ? ` _useNonce(${fn.args[0]!.name}),` : ''} ${fn.args[2]!.name}, executionCalldata)));`,
+      ];
+      const conditions = [
+        `_rawERC7579Validation(${fn.args[0]!.name}, typeHash, ${fn.args[3]!.name}[2 + executionCalldataLength:])`,
+      ];
+      switch (opts.access) {
+        case 'ownable':
+          conditions.unshift('msg.sender == owner()');
+          break;
+        case 'roles': {
+          const roleOwner = 'executor';
+          const roleId = 'EXECUTOR_ROLE';
+          c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+          c.addConstructorArgument({ type: 'address', name: roleOwner });
+          c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+          conditions.unshift(`hasRole(${roleId}, msg.sender)`);
+          break;
+        }
+        case 'managed':
+          c.addImportOnly({
+            name: 'AuthorityUtils',
+            path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+          });
+          body.push(
+            `(bool immediate, ) = AuthorityUtils.canCallWithDelay(authority(), msg.sender, address(this), bytes4(msg.data[0:4]));`,
+          );
+          conditions.unshift('immediate');
+          break;
+        default:
+      }
+      body.push(`require(${conditions.join(' || ')});`);
+      if (!delayed) body.push(`return executionCalldata;`);
+      c.setFunctionBody(body, fn);
+    } else if (opts.access) {
+      requireAccessControl(c, fn, opts.access, 'EXECUTOR', 'executor');
     } else {
       c.setFunctionBody(
         [
@@ -229,6 +250,119 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
         fn,
       );
     }
+  }
+  if (opts.validator) {
+    const isValidFn = functions.isValidSignatureWithSender;
+    const fnSuper = `super.${isValidFn.name}(${isValidFn.args.map(a => a.name).join(', ')})`;
+    c.addOverride(c, isValidFn);
+
+    if (!opts.validator.multisig && opts.validator.signature) {
+      c.setFunctionBody(['return false;'], functions._rawERC7579Validation);
+    }
+
+    switch (opts.access) {
+      case 'ownable':
+        c.setFunctionBody([`return owner() == ${isValidFn.args[0]!.name} || ${fnSuper};`], isValidFn);
+        break;
+      case 'roles': {
+        const roleOwner = 'erc1271ValidSender';
+        const roleId = 'ERC1271_VALID_SENDER_ROLE';
+        c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+        c.addConstructorArgument({ type: 'address', name: roleOwner });
+        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
+        c.setFunctionBody([`return hasRole(${roleId}, ${isValidFn.args[0]!.name}) || ${fnSuper};`], isValidFn);
+        break;
+      }
+      case 'managed':
+        c.addImportOnly({
+          name: 'AuthorityUtils',
+          path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+        });
+        c.setFunctionBody(
+          [
+            `(bool immediate, ) = AuthorityUtils.canCallWithDelay(authority(), ${isValidFn.args[0]!.name}, address(this), bytes4(msg.data[0:4]));`,
+            `return immediate || ${fnSuper};`,
+          ],
+          isValidFn,
+        );
+        break;
+      default:
+    }
+  }
+}
+
+function addInstallFns(c: ContractBuilder, opts: ERC7579Options): void {
+  if (opts.validator?.signature) {
+    c.addOverride({ name: 'ERC7579Signature' }, functions.onInstall);
+    c.addOverride({ name: 'ERC7579Signature' }, functions.onUninstall);
+  }
+
+  if (opts.validator?.multisig) {
+    const name = opts.validator.multisig.weighted ? 'ERC7579MultisigWeighted' : 'ERC7579Multisig';
+    c.addOverride({ name }, functions.onInstall);
+    c.addOverride({ name }, functions.onUninstall);
+  }
+
+  if (opts.executor?.delayed) {
+    c.addOverride({ name: 'ERC7579DelayedExecutor' }, functions.onInstall);
+    c.addOverride({ name: 'ERC7579DelayedExecutor' }, functions.onUninstall);
+  }
+
+  const onInstallFn = c.functions.find(f => f.name === 'onInstall');
+  const allOnInstallOverrides = Array.from(onInstallFn?.override.values() ?? []).map(c => c.name);
+  buildOnInstallFn(c, allOnInstallOverrides);
+
+  const onUninstallFn = c.functions.find(f => f.name === 'onUninstall');
+  const allOnUninstallOverrides = Array.from(onUninstallFn?.override.values() ?? []).map(c => c.name);
+  buildOnUninstallFn(c, allOnUninstallOverrides);
+}
+
+function buildOnInstallFn(c: ContractBuilder, overrides: string[]) {
+  const fn = functions.onInstall;
+  if (!overrides.length) {
+    c.setFunctionBody(['// Use `data` to initialize'], fn);
+  }
+  // overrides.length == 1 will use super by default
+  else if (overrides.length >= 2) {
+    const body: string[] = [];
+    let lengthOffset = '0';
+    let comment = '/// @dev Data is encoded as `[';
+
+    for (const [i, name] of overrides.entries()) {
+      const argsName = `args${name}`;
+      const lengthName = `${argsName}Length`;
+      const argsOffset = !i ? '2' : `${lengthOffset} + 2`;
+      const restOffset = `${argsOffset} + ${lengthName}`;
+      comment += `uint16(${lengthName}), ${argsName}`;
+      body.push(
+        `uint16 ${lengthName} = uint16(uint256(bytes32(${fn.args[0]!.name}[${lengthOffset}:${argsOffset}]))); // First 2 bytes are the length`,
+        `bytes calldata ${argsName} = ${fn.args[0]!.name}[${argsOffset}:${restOffset}]; // Next bytes are the args`,
+        `${name}.onInstall(${argsName});`,
+      );
+      if (i != overrides.length - 1) {
+        body.push('');
+        comment += ', ';
+      }
+      lengthOffset = restOffset;
+    }
+    c.setFunctionComments([`${comment}]`], fn);
+    c.setFunctionBody(body, fn);
+  }
+}
+
+function buildOnUninstallFn(c: ContractBuilder, overrides: string[]) {
+  const fn = functions.onUninstall;
+  if (!overrides.length) {
+    c.setFunctionBody(['// Use `data` to deinitialize'], fn);
+  }
+  // overrides.length == 1 will use super by default
+  else if (overrides.length >= 2) {
+    c.addImportOnly({ name: 'Calldata', path: '@openzeppelin/contracts/utils/Calldata.sol' });
+    const body: string[] = [];
+    for (const name of overrides) {
+      body.push(`${name}.onUninstall(Calldata.emptyBytes());`);
+    }
+    c.setFunctionBody(body, fn);
   }
 }
 
@@ -255,11 +389,39 @@ const functions = {
         { name: 'data', type: 'bytes calldata' },
       ],
     },
+    isValidSignatureWithSender: {
+      kind: 'public' as const,
+      mutability: 'view',
+      args: [
+        { name: 'sender', type: 'address' },
+        { name: 'hash', type: 'bytes32' },
+        { name: 'signature', type: 'bytes calldata' },
+      ],
+      returns: ['bytes4'],
+    },
+    _rawERC7579Validation: {
+      kind: 'internal' as const,
+      mutability: 'view',
+      args: [
+        { name: 'account', type: 'address' },
+        { name: 'hash', type: 'bytes32' },
+        { name: 'signature', type: 'bytes calldata' },
+      ],
+      returns: ['bool'],
+    },
     isModuleType: {
       kind: 'public' as const,
       mutability: 'pure',
       args: [{ name: 'moduleTypeId', type: 'uint256' }],
       returns: ['bool'],
+    },
+    onInstall: {
+      kind: 'public' as const,
+      args: [{ name: 'data', type: 'bytes calldata' }],
+    },
+    onUninstall: {
+      kind: 'public' as const,
+      args: [{ name: 'data', type: 'bytes calldata' }],
     },
   }),
 };
