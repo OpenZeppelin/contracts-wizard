@@ -5,8 +5,22 @@ import { generateAlternatives } from './alternatives';
 
 const erc7579 = {
   name: ['MyERC7579'],
-  type: [false, 'Validator', 'Executor', 'DelayedExecutor', 'FallbackHandler', 'Hook'] as const,
-  multisig: [false, 'ERC7579Multisig', 'ERC7579MultisigConfirmation', 'ERC7579MultisigWeighted'] as const,
+  validator: [
+    {
+      signature: false,
+      multisig: {
+        weighted: false,
+        confirmation: false,
+      },
+    },
+  ] as const,
+  executor: [
+    {
+      delayed: false,
+    },
+  ] as const,
+  hook: [false] as const,
+  fallback: [false] as const,
   access: accessOptions,
   upgradeable: [false] as const,
   info: infoOptions,

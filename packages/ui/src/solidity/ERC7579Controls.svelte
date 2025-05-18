@@ -4,7 +4,6 @@
   import { erc7579 } from '@openzeppelin/wizard';
   import InfoSection from './InfoSection.svelte';
   import AccessControlSection from './AccessControlSection.svelte';
-  import type { ERC7579ValidatorType } from '@openzeppelin/wizard/src/erc7579';
 
   export let opts: Required<KindedOptions['ERC7579']> = {
     kind: 'ERC7579',
@@ -48,6 +47,21 @@
         Handle signature verification and user operation validation.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.validator?.signature} class="subcontrol">
+      <input
+        type="checkbox"
+        checked={opts.validator?.signature}
+        on:change={e => {
+          if (e.currentTarget?.checked) {
+            opts.validator ??= {};
+            opts.validator.signature = {};
+            opts.validator.multisig = undefined;
+          } else opts.validator.signature = undefined;
+        }}
+      />
+      Signature
+      <HelpTooltip link="#">TODO</HelpTooltip>
+    </label>
     <label class:checked={opts.validator?.multisig} class="subcontrol">
       <input
         type="checkbox"
@@ -55,14 +69,13 @@
         on:change={e => {
           if (e.currentTarget?.checked) {
             opts.validator ??= {};
-            opts.validator.multisig = true;
+            opts.validator.multisig = {};
+            opts.validator.signature = undefined;
           } else opts.validator.multisig = undefined;
         }}
       />
       Multisig
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#ERC7579Executor">
-        Execute operations on behalf of the account.
-      </HelpTooltip>
+      <HelpTooltip link="#">TODO</HelpTooltip>
     </label>
     <div class="checkbox-group">
       <label class:checked={opts.validator?.multisig?.weighted} class="subcontrol">
@@ -81,9 +94,7 @@
           }}
         />
         Weighted
-        <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#ERC7579DelayedExecutor">
-          Schedules operations for the account and adds a delay before executing an account operation.
-        </HelpTooltip>
+        <HelpTooltip link="#">TODO</HelpTooltip>
       </label>
       <label class:checked={opts.validator?.multisig?.weighted} class="subcontrol">
         <input
@@ -101,31 +112,32 @@
           }}
         />
         Confirmation
-        <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#ERC7579DelayedExecutor">
-          Schedules operations for the account and adds a delay before executing an account operation.
-        </HelpTooltip>
+        <HelpTooltip link="#">TODO</HelpTooltip>
       </label>
     </div>
     <label class:checked={opts.executor}>
       <input
         type="checkbox"
-        on:change={e => {
-          opts.executor = e.currentTarget?.checked;
-        }}
         checked={opts.executor}
+        on:change={e => {
+          if (e.currentTarget?.checked) opts.executor ??= {};
+          else opts.executor = undefined;
+        }}
       />
       Executor
       <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/0.0.1/api/account#ERC7579Executor">
         Execute operations on behalf of the account.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.executor === 'delayed'} class="subcontrol">
+    <label class:checked={opts.executor?.delayed} class="subcontrol">
       <input
         type="checkbox"
-        checked={opts.executor === 'delayed'}
+        checked={opts.executor?.delayed}
         on:change={e => {
-          if (e.currentTarget?.checked) opts.executor = 'delayed';
-          else opts.executor = true;
+          if (e.currentTarget?.checked) {
+            opts.executor ??= {};
+            opts.executor.delayed = {};
+          } else opts.executor.delayed = false;
         }}
       />
       Delayed
@@ -162,6 +174,6 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} required={false} disabled={!opts.executor} />
+<AccessControlSection bind:access={opts.access} required={false} disabled={!opts.executor && !opts.validator} />
 
 <InfoSection bind:info={opts.info} />
