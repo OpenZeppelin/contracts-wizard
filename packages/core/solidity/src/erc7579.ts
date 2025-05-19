@@ -204,7 +204,7 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
         `bytes32 public constant EXECUTION_TYPEHASH = "Execute(address account,bytes32 salt,${!delayed ? 'uint256 nonce,' : ''}bytes32 mode,bytes executionCalldata)"`,
       );
       const body = [
-        `uint16 executionCalldataLength = uint16(uint256(bytes32(${fn.args[3]!.name}[0:2]))); // First 2 bytes are the length`,
+        `uint16 executionCalldataLength = uint16(bytes2(${fn.args[3]!.name}[0:2])); // First 2 bytes are the length`,
         `bytes calldata executionCalldata = ${fn.args[3]!.name}[2:2 + executionCalldataLength]; // Next bytes are the calldata`,
         `bytes32 typeHash = _hashTypedDataV4(keccak256(abi.encode(EXECUTION_TYPEHASH, ${fn.args[0]!.name}, ${fn.args[1]!.name},${!delayed ? ` _useNonce(${fn.args[0]!.name}),` : ''} ${fn.args[2]!.name}, executionCalldata)));`,
       ];
@@ -335,7 +335,7 @@ function buildOnInstallFn(c: ContractBuilder, overrides: string[]) {
       const restOffset = `${argsOffset} + ${lengthName}`;
       comment += `uint16(${lengthName}), ${argsName}`;
       body.push(
-        `uint16 ${lengthName} = uint16(uint256(bytes32(${fn.args[0]!.name}[${lengthOffset}:${argsOffset}]))); // First 2 bytes are the length`,
+        `uint16 ${lengthName} = uint16(bytes2(${fn.args[0]!.name}[${lengthOffset}:${argsOffset}])); // First 2 bytes are the length`,
         `bytes calldata ${argsName} = ${fn.args[0]!.name}[${argsOffset}:${restOffset}]; // Next bytes are the args`,
         `${name}.onInstall(${argsName});`,
       );
