@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateFungibleOptions } from './fungible';
+import { generateNonFungibleOptions } from './non-fungible';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
@@ -15,6 +16,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Fungible') {
     for (const kindOpts of generateFungibleOptions()) {
       yield { kind: 'Fungible', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'NonFungible') {
+    for (const kindOpts of generateNonFungibleOptions()) {
+      yield { kind: 'NonFungible', ...kindOpts };
     }
   }
 }

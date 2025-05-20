@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'packages/ui/**'
 
 concurrency: version-or-publish-${{ github.ref }}
 
@@ -22,7 +24,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/actions/setup
       - name: Create Prepare Release PR
-        uses: changesets/action@746c25e23caa47dceb6a48ee85b4cbc5a9f5f293 # v1.5.0
+        uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
           title: Prepare Release
           commit: Prepare Release

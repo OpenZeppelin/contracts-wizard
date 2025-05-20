@@ -216,7 +216,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     c.setFunctionBody(['// Custom validation logic', 'return false;'], signerFunctions._rawSignatureValidation);
   }
 
-  // Dissambiguate between Signer and AccountERC7579
+  // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'AbstractSigner',
