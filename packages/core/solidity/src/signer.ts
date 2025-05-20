@@ -130,7 +130,7 @@ export const signerFunctions = {
       kind: 'internal' as const,
       args: [
         { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'calldata' },
+        { name: 'signature', type: 'bytes calldata' },
       ],
       returns: ['bool'],
       mutability: 'view' as const,
