@@ -183,11 +183,15 @@ function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
         `_setSignerWeights(${functions.setSignerWeights.args.map(({ name }) => name).join(', ')});`,
         functions.setSignerWeights,
       );
+      c.addModifier('onlyEntryPointOrSelf', functions.setSignerWeights);
     // eslint-disable-next-line no-fallthrough
     case 'Multisig':
       c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]!.name});`, functions.addSigners);
+      c.addModifier('onlyEntryPointOrSelf', functions.addSigners);
       c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]!.name});`, functions.removeSigners);
+      c.addModifier('onlyEntryPointOrSelf', functions.removeSigners);
       c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]!.name});`, functions.setThreshold);
+      c.addModifier('onlyEntryPointOrSelf', functions.setThreshold);
       break;
     default:
   }
