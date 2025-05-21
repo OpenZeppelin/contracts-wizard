@@ -2,7 +2,7 @@ import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mc
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { KindedOptions } from '@openzeppelin/wizard';
-import { erc20 } from '@openzeppelin/wizard';
+import { erc20, OptionsError } from '@openzeppelin/wizard';
 
 // Create an MCP server
 const server = new McpServer({
@@ -23,15 +23,15 @@ server.tool(
     mintable: z.boolean().optional(),
     callback: z.boolean().optional(),
     permit: z.boolean().optional(),
-    // votes: z.boolean().or(z.enum(['blocknumber', 'timestamp'])),
-    // flashmint: z.boolean(),
-    // crossChainBridging: z.literal(false).or(z.enum(['custom', 'superchain'])),
-    // access: z.literal(false).or(z.enum(['ownable', 'roles', 'managed'])),
-    // upgradeable: z.literal(false).or(z.enum(['transparent', 'uups'])),
-    // info: z.object({
-    //   securityContact: z.string().optional(),
-    //   license: z.string().optional(),
-    // }),
+    votes: z.literal('blocknumber').or(z.literal('timestamp')).optional(),
+    flashmint: z.boolean().optional(),
+    crossChainBridging: z.literal('custom').or(z.literal('superchain')).optional(),
+    access: z.literal('ownable').or(z.literal('roles')).or(z.literal('managed')).optional(),
+    upgradeable: z.literal('transparent').or(z.literal('uups')).optional(),
+    info: z.object({
+      securityContact: z.string().optional(),
+      license: z.string().optional(),
+    }),
   },
   async ({
     name,
@@ -43,12 +43,12 @@ server.tool(
     mintable,
     callback,
     permit,
-    // votes,
-    // flashmint,
-    // crossChainBridging,
-    // access,
-    // upgradeable,
-    // info,
+    votes,
+    flashmint,
+    crossChainBridging,
+    access,
+    upgradeable,
+    info,
   }) => {
     const opts: KindedOptions['ERC20'] = {
       kind: 'ERC20',
@@ -61,23 +61,35 @@ server.tool(
       mintable,
       callback,
       permit,
-      // votes,
-      // flashmint,
-      // crossChainBridging,
-      // access,
-      // upgradeable,
-      // info,
+      votes,
+      flashmint,
+      crossChainBridging,
+      access,
+      upgradeable,
+      info,
     };
     return {
       content: [
         {
           type: 'text',
-          text: erc20.print(opts),
+          text: printERC20WithErrorHandling(opts),
         },
       ],
     };
   },
 );
+
+function printERC20WithErrorHandling(opts: KindedOptions['ERC20']): string {
+  try {
+    return erc20.print(opts);
+  } catch (e) {
+    if (e instanceof OptionsError) {
+      return `${e.message}\n\n${JSON.stringify(e.messages, null, 2)}`;
+    } else {
+      return `Unexpected error: ${e}`;
+    }
+  }
+}
 
 // Add a dynamic greeting resource
 server.resource('greeting', new ResourceTemplate('greeting://{name}', { list: undefined }), async (uri, { name }) => ({
