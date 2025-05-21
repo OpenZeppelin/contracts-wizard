@@ -497,6 +497,7 @@ const functions = defineFunctions({
       { name: 'calldatas', type: 'bytes[] memory' },
       { name: 'descriptionHash', type: 'bytes32' },
     ],
+    returns: ['uint48'],
     kind: 'internal',
     comments: ['/// @dev Queues a proposal for execution.', '/// Consider implementing a timelock mechanism.'],
   },

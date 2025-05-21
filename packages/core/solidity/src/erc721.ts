@@ -230,7 +230,7 @@ const functions = defineFunctions({
     kind: 'public' as const,
     args: [{ name: 'tokenId', type: 'uint256' }],
     returns: ['string memory'],
-    mutability: 'pure' as const,
+    mutability: 'view',
     comments: [
       '/// @dev Returns the Uniform Resource Identifier (URI) for the specified token. This is used to store metadata for each token.',
     ],
@@ -240,7 +240,7 @@ const functions = defineFunctions({
     kind: 'internal' as const,
     args: [],
     returns: ['string memory'],
-    mutability: 'pure' as const,
+    mutability: 'view',
     comments: [
       '/// @dev Base URI for computing tokenURI. If set, the resulting URI for each token will be the concatenation of the baseURI and the tokenId.',
     ],

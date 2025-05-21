@@ -44,7 +44,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 
 const functions = defineFunctions({
   _authorizeUpgrade: {
-    kind: 'internal' as const,
+    kind: 'internal',
     args: [{ name: 'newImplementation', type: 'address' }],
     comments: [
       '/// @dev Authorizes the upgrade to a new implementation. This function should be overridden to implement access control for upgrades.',
