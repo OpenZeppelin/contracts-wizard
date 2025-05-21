@@ -1,18 +1,27 @@
-import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { erc20, OptionsError } from '@openzeppelin/wizard';
 
 // Create an MCP server
-const server = new McpServer({
-  name: 'OpenZeppelin Contracts Wizard',
-  version: '0.0.1',
-});
+const server = new McpServer(
+  {
+    name: 'OpenZeppelin Contracts Wizard',
+    version: '0.0.1',
+  },
+  {
+    instructions: `\
+Whenever the user asks to modify a contract that is using OpenZeppelin Contracts, use these tools to determine the recommended patterns.
+Toggle the options in the tool to determine how different features affect the code, and apply the same types of changes to the user's contract.
+`,
+  },
+);
 
 // Add an addition tool
 server.tool(
-  'Generate_ERC20_smart_contract_template',
+  'solidityGenerateERC20',
+  'Generate an ERC20 smart contract for Solidity',
   {
     name: z.string(),
     symbol: z.string(),
@@ -28,10 +37,12 @@ server.tool(
     crossChainBridging: z.literal('custom').or(z.literal('superchain')).optional(),
     access: z.literal('ownable').or(z.literal('roles')).or(z.literal('managed')).optional(),
     upgradeable: z.literal('transparent').or(z.literal('uups')).optional(),
-    info: z.object({
-      securityContact: z.string().optional(),
-      license: z.string().optional(),
-    }),
+    info: z
+      .object({
+        securityContact: z.string().optional(),
+        license: z.string().optional(),
+      })
+      .optional(),
   },
   async ({
     name,
@@ -90,16 +101,6 @@ function printERC20WithErrorHandling(opts: KindedOptions['ERC20']): string {
     }
   }
 }
-
-// Add a dynamic greeting resource
-server.resource('greeting', new ResourceTemplate('greeting://{name}', { list: undefined }), async (uri, { name }) => ({
-  contents: [
-    {
-      uri: uri.href,
-      text: `Hello, ${name}!`,
-    },
-  ],
-}));
 
 // Start receiving messages on stdin and sending messages on stdout
 const transport = new StdioServerTransport();
