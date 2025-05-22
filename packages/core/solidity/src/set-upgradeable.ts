@@ -60,7 +60,10 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
 
 const functions = defineFunctions({
   _authorizeUpgrade: {
-    args: [{ name: 'newImplementation', type: 'address' }],
     kind: 'internal',
+    args: [{ name: 'newImplementation', type: 'address' }],
+    comments: [
+      '/// @dev Authorizes the upgrade to a new implementation. This function should be overridden to implement access control for upgrades.',
+    ],
   },
 });
