@@ -68,7 +68,7 @@ export function registerSolidityERC20(server: McpServer) {
         content: [
           {
             type: 'text',
-            text: safePrintERC20(opts),
+            text: safePrint(opts),
           },
         ],
       };
@@ -76,7 +76,7 @@ export function registerSolidityERC20(server: McpServer) {
   );
 }
 
-function safePrintERC20(opts: KindedOptions['ERC20']): string {
+function safePrint(opts: KindedOptions['ERC20']): string {
   try {
     return erc20.print(opts);
   } catch (e) {

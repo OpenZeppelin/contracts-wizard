@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { registerSolidityERC20 } from './solidity';
+import { registerSolidityERC20 } from './solidity/erc20';
+import { registerSolidityERC721 } from './solidity/erc721';
 
 // Create an MCP server
 const server = new McpServer(
@@ -17,6 +18,7 @@ Toggle the options in the tool to determine how different features affect the co
 );
 
 registerSolidityERC20(server);
+registerSolidityERC721(server);
 
 // Start receiving messages on stdin and sending messages on stdout
 const transport = new StdioServerTransport();
