@@ -438,26 +438,14 @@ export const functions = defineFunctions({
     ],
   },
 
-  _burn: {
-    kind: 'internal' as const,
+  mint: {
+    kind: 'public' as const,
     args: [
-      { name: 'account', type: 'address' },
-      { name: 'value', type: 'uint256' },
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
     ],
     comments: [
-      '/// @dev Destroys tokens from the specified account. This is an internal function that should be called from a public function with proper access control.',
-    ],
-  },
-
-  _spendAllowance: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-    ],
-    comments: [
-      '/// @dev Decreases the allowance of a spender by the specified amount. This is called during token transfers to update allowances.',
+      '/// @dev Creates new tokens and assigns them to the specified account. This function should be called with proper access control to restrict who can mint tokens.',
     ],
   },
 
@@ -504,17 +492,6 @@ export const functions = defineFunctions({
     args: [{ name: 'caller', type: 'address' }],
     comments: [
       '/// @dev Validates if the caller is an authorized token bridge. This is used for cross-chain token transfers to ensure only trusted bridges can move tokens.',
-    ],
-  },
-
-  mint: {
-    kind: 'public' as const,
-    args: [
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-    comments: [
-      '/// @dev Creates new tokens and assigns them to the specified account. This function should be called with proper access control to restrict who can mint tokens.',
     ],
   },
 });
