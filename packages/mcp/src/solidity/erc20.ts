@@ -1,7 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import type { KindedOptions } from '@openzeppelin/wizard';
-import { erc20, OptionsError } from '@openzeppelin/wizard';
+import { erc20 } from '@openzeppelin/wizard';
+import { safePrint } from './helpers.js';
 
 export function registerSolidityERC20(server: McpServer) {
   server.tool(
@@ -68,22 +69,10 @@ export function registerSolidityERC20(server: McpServer) {
         content: [
           {
             type: 'text',
-            text: safePrint(opts),
+            text: safePrint(() => erc20.print(opts)),
           },
         ],
       };
     },
   );
-}
-
-function safePrint(opts: KindedOptions['ERC20']): string {
-  try {
-    return erc20.print(opts);
-  } catch (e) {
-    if (e instanceof OptionsError) {
-      return `${e.message}\n\n${JSON.stringify(e.messages, null, 2)}`;
-    } else {
-      return `Unexpected error: ${e}`;
-    }
-  }
 }
