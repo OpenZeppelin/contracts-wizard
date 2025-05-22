@@ -216,7 +216,6 @@ const functions = defineFunctions({
   _update: {
     kind: 'internal' as const,
     args: [
-      { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'tokenId', type: 'uint256' },
       { name: 'auth', type: 'address' },
