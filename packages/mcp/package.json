@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-mcp",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.1",
   "private": true,
   "description": "MCP Server for OpenZeppelin Contracts Wizard",
   "license": "AGPL-3.0-only",
@@ -18,7 +18,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.1",
