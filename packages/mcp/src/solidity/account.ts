@@ -7,7 +7,7 @@ import { safePrint } from './helpers.js';
 export function registerSolidityAccount(server: McpServer) {
   server.tool(
     'solidityGenerateAccount',
-    'Generate an Account smart contract for Solidity',
+    'Generate an Account smart contract for Solidity. Experimental: Some features are not audited and are subject to change.',
     {
       name: z.string(),
       signatureValidation: z.literal(false).or(z.literal('ERC1271')).or(z.literal('ERC7739')).optional(),
