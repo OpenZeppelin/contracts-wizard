@@ -14,7 +14,7 @@ export const stablecoinSchema = {
 export function registerSolidityStablecoin(server: McpServer) {
   server.tool(
     'solidityGenerateStablecoin',
-    'Generate a Stablecoin smart contract for Solidity. Experimental: Some features are not audited and are subject to change.',
+    'Generate a Stablecoin smart contract for Solidity (Experimental: Some features are not audited and are subject to change)',
     stablecoinSchema,
     async ({
       name,

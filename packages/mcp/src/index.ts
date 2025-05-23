@@ -2,6 +2,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { registerSolidityERC20 } from './solidity/erc20';
 import { registerSolidityERC721 } from './solidity/erc721';
+import { registerSolidityAccount } from './solidity/account';
+import { registerSolidityCustom } from './solidity/custom';
+import { registerSolidityERC1155 } from './solidity/erc1155';
+import { registerSolidityGovernor } from './solidity/governor';
+import { registerSolidityRWA } from './solidity/rwa';
+import { registerSolidityStablecoin } from './solidity/stablecoin';
 
 // Create an MCP server
 const server = new McpServer(
@@ -19,6 +25,12 @@ Toggle the options in the tool to determine how different features affect the co
 
 registerSolidityERC20(server);
 registerSolidityERC721(server);
+registerSolidityERC1155(server);
+registerSolidityStablecoin(server);
+registerSolidityAccount(server);
+registerSolidityGovernor(server);
+registerSolidityCustom(server);
+registerSolidityRWA(server);
 
 // Start receiving messages on stdin and sending messages on stdout
 const transport = new StdioServerTransport();

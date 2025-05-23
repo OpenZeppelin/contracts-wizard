@@ -30,7 +30,7 @@ export const erc20Schema = {
 export function registerSolidityERC20(server: McpServer) {
   server.tool(
     'solidityGenerateERC20',
-    'Generate an ERC20 smart contract for Solidity.',
+    'Generate an ERC20 smart contract for Solidity',
     erc20Schema,
     async ({
       name,

@@ -7,7 +7,7 @@ import { safePrint } from './helpers.js';
 export function registerSolidityCustom(server: McpServer) {
   server.tool(
     'solidityGenerateCustom',
-    'Generate a Custom smart contract for Solidity.',
+    'Generate a Custom smart contract for Solidity',
     {
       name: z.string(),
       access: z.literal('ownable').or(z.literal('roles')).or(z.literal('managed')).optional(),

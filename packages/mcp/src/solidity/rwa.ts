@@ -9,7 +9,7 @@ const rwaSchema = stablecoinSchema;
 export function registerSolidityRWA(server: McpServer) {
   server.tool(
     'solidityGenerateRealWorldAsset',
-    'Generate a Real World Asset smart contract for Solidity. Experimental: Some features are not audited and are subject to change.',
+    'Generate a Real World Asset smart contract for Solidity (Experimental: Some features are not audited and are subject to change)',
     rwaSchema,
     async ({
       name,

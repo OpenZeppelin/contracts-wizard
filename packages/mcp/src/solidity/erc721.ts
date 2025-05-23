@@ -7,7 +7,7 @@ import { safePrint } from './helpers.js';
 export function registerSolidityERC721(server: McpServer) {
   server.tool(
     'solidityGenerateERC721',
-    'Generate an ERC721 smart contract for Solidity.',
+    'Generate an ERC721 smart contract for Solidity',
     {
       name: z.string(),
       symbol: z.string(),

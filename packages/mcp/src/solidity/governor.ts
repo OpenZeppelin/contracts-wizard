@@ -7,7 +7,7 @@ import { safePrint } from './helpers.js';
 export function registerSolidityGovernor(server: McpServer) {
   server.tool(
     'solidityGenerateGovernor',
-    'Generate a Governor smart contract for Solidity.',
+    'Generate a Governor smart contract for Solidity',
     {
       name: z.string(),
       delay: z.string(),
