@@ -6,7 +6,7 @@ import { erc1155Schema } from './common/schemas.js';
 
 export function registerSolidityERC1155(server: McpServer) {
   server.tool(
-    'solidityGenerateERC1155',
+    'solidity-generate-erc1155',
     'Generate an ERC1155 smart contract for Solidity',
     erc1155Schema,
     async ({

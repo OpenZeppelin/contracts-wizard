@@ -6,7 +6,7 @@ import { customSchema } from './common/schemas.js';
 
 export function registerSolidityCustom(server: McpServer) {
   server.tool(
-    'solidityGenerateCustom',
+    'solidity-generate-custom',
     'Generate a Custom smart contract for Solidity',
     customSchema,
     async ({

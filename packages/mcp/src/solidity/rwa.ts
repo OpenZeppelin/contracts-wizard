@@ -6,7 +6,7 @@ import { rwaSchema } from './common/schemas.js';
 
 export function registerSolidityRWA(server: McpServer) {
   server.tool(
-    'solidityGenerateRealWorldAsset',
+    'solidity-generate-real-world-asset',
     'Generate a Real World Asset smart contract for Solidity (Experimental: Some features are not audited and are subject to change)',
     rwaSchema,
     async ({
