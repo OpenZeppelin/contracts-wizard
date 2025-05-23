@@ -1,15 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
-import { safePrint } from './helpers.js';
-import { erc20Schema } from './erc20.js';
-
-export const stablecoinSchema = {
-  ...erc20Schema,
-  limitations: z.literal(false).or(z.literal('allowlist')).or(z.literal('blocklist')).optional(),
-  custodian: z.boolean().optional(),
-}
+import { safePrint } from './common/helpers.js';
+import { stablecoinSchema } from './common/schemas.js';
 
 export function registerSolidityStablecoin(server: McpServer) {
   server.tool(

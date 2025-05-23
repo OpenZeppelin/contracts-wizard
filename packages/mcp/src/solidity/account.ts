@@ -1,28 +1,14 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
-import { safePrint } from './helpers.js';
+import { safePrint } from './common/helpers.js';
+import { accountSchema } from './common/schemas.js';
 
 export function registerSolidityAccount(server: McpServer) {
   server.tool(
     'solidityGenerateAccount',
     'Generate an Account smart contract for Solidity (Experimental: Some features are not audited and are subject to change)',
-    {
-      name: z.string(),
-      signatureValidation: z.literal(false).or(z.literal('ERC1271')).or(z.literal('ERC7739')).optional(),
-      ERC721Holder: z.boolean().optional(),
-      ERC1155Holder: z.boolean().optional(),
-      signer: z.literal(false).or(z.literal('ERC7702')).or(z.literal('ECDSA')).or(z.literal('P256')).or(z.literal('RSA')).or(z.literal('Multisig')).or(z.literal('MultisigWeighted')).optional(),
-      batchedExecution: z.boolean().optional(),
-      ERC7579Modules: z.literal(false).or(z.literal('AccountERC7579')).or(z.literal('AccountERC7579Hooked')).optional(),
-      info: z
-        .object({
-          securityContact: z.string().optional(),
-          license: z.string().optional(),
-        })
-        .optional(),
-    },
+    accountSchema,
     async ({
       name,
       signatureValidation,
