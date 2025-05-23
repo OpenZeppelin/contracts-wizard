@@ -67,6 +67,7 @@ export function buildERC7579(opts: ERC7579Options): Contract {
 
 function overrideIsModuleType(c: ContractBuilder, opts: ERC7579Options): void {
   const fn = functions.isModuleType;
+  c.addOverride({ name: 'IERC7579Module' }, fn);
 
   if (opts.executor) {
     c.addOverride({ name: 'ERC7579Executor' }, fn);
@@ -81,7 +82,7 @@ function overrideIsModuleType(c: ContractBuilder, opts: ERC7579Options): void {
   }
 
   if (opts.fallback) {
-    c.addOverride({ name: 'IERC7579Module' }, fn);
+    // c.addOverride({ name: 'IERC7579Module' }, fn);
   }
 
   const implementedIn = ['ERC7579Executor', 'ERC7579Validator'];
@@ -100,7 +101,7 @@ function overrideIsModuleType(c: ContractBuilder, opts: ERC7579Options): void {
   } else {
     const body: string[] = [];
     for (const type of implementedOverrides) {
-      body.push(`bool is${type} = ${type}.isModuleType(${fn.args[0]!.name})`);
+      body.push(`bool is${type} = ${type}.isModuleType(${fn.args[0]!.name});`);
     }
     for (const type of unimplementedOverrides) {
       const importedType = type === 'IERC7579Hook' ? 'MODULE_TYPE_HOOK' : 'MODULE_TYPE_FALLBACK';
@@ -200,8 +201,12 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
         },
         [opts.name, '1'],
       );
+      c.addParent({
+        name: 'Nonces',
+        path: '@openzeppelin/contracts/utils/Nonces.sol',
+      });
       c.addVariable(
-        `bytes32 public constant EXECUTION_TYPEHASH = "Execute(address account,bytes32 salt,${!delayed ? 'uint256 nonce,' : ''}bytes32 mode,bytes executionCalldata)"`,
+        `bytes32 public constant EXECUTION_TYPEHASH = keccak256("Execute(address account,bytes32 salt,${!delayed ? 'uint256 nonce,' : ''}bytes32 mode,bytes executionCalldata)");`,
       );
       const body = [
         `uint16 executionCalldataLength = uint16(bytes2(${fn.args[3]!.name}[0:2])); // First 2 bytes are the length`,
@@ -262,7 +267,11 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
 
     switch (opts.access) {
       case 'ownable':
-        c.setFunctionBody([`return owner() == ${isValidFn.args[0]!.name} || ${fnSuper};`], isValidFn);
+        c.addImportOnly({ name: 'IERC1271', path: '@openzeppelin/contracts/interfaces/IERC1271.sol' });
+        c.setFunctionBody(
+          [`return owner() == ${isValidFn.args[0]!.name} ? IERC1271.isValidSignature.selector : ${fnSuper};`],
+          isValidFn,
+        );
         break;
       case 'roles': {
         const roleOwner = 'erc1271ValidSender';
@@ -370,7 +379,6 @@ const functions = {
   ...defineFunctions({
     _validateExecution: {
       kind: 'internal' as const,
-      mutability: 'view',
       args: [
         { name: 'account', type: 'address' },
         { name: 'salt', type: 'bytes32' },
