@@ -47,7 +47,7 @@ test.serial('erc20 full', async t => {
     flashmint: true,
   };
   const c = buildERC20(opts);
-  await runTest(c, t, opts);
+  await runIgnitionTest(c, t, opts);
 });
 
 test.serial('erc721 upgradeable', async t => {
@@ -58,7 +58,7 @@ test.serial('erc721 upgradeable', async t => {
     upgradeable: 'uups',
   };
   const c = buildERC721(opts);
-  await runTest(c, t, opts);
+  await runDeployScriptTest(c, t, opts);
 });
 
 test.serial('erc1155 basic', async t => {
@@ -68,13 +68,13 @@ test.serial('erc1155 basic', async t => {
     uri: 'https://myuri/{id}',
   };
   const c = buildERC1155(opts);
-  await runTest(c, t, opts);
+  await runIgnitionTest(c, t, opts);
 });
 
 test.serial('custom basic', async t => {
   const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
-  await runTest(c, t, opts);
+  await runIgnitionTest(c, t, opts);
 });
 
 test.serial('custom upgradeable', async t => {
@@ -84,18 +84,26 @@ test.serial('custom upgradeable', async t => {
     upgradeable: 'transparent',
   };
   const c = buildCustom(opts);
-  await runTest(c, t, opts);
+  await runDeployScriptTest(c, t, opts);
 });
 
-async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
+async function runDeployScriptTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
-  assertLayout(zip, c, t);
-  await extractAndRunPackage(zip, c, t);
-  await assertContents(zip, c, t);
+  assertDeployScriptLayout(zip, c, t);
+  await extractAndRunDeployScriptPackage(zip, c, t);
+  await assertDeployScriptContents(zip, c, t);
 }
 
-function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
+  const zip = await zipHardhat(c, opts);
+
+  assertIgnitionLayout(zip, c, t);
+  await extractAndRunIgnitionPackage(zip, c, t);
+  await assertIgnitionContents(zip, c, t);
+}
+
+function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const sorted = Object.values(zip.files)
     .map(f => f.name)
     .sort();
@@ -115,7 +123,28 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   ]);
 }
 
-async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+  const sorted = Object.values(zip.files)
+    .map(f => f.name)
+    .sort();
+  t.deepEqual(sorted, [
+    '.gitignore',
+    'README.md',
+    'contracts/',
+    `contracts/${c.name}.sol`,
+    'hardhat.config.ts',
+    'ignition/',
+    'ignition/modules/',
+    `ignition/modules/${c.name}.ts`,
+    'package-lock.json',
+    'package.json',
+    'test/',
+    'test/test.ts',
+    'tsconfig.json',
+  ]);
+}
+
+async function extractAndRunDeployScriptPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
   const tempFolder = t.context.tempFolder;
@@ -144,12 +173,53 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   }
 }
 
-async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+async function extractAndRunIgnitionPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+  const files = Object.values(zip.files);
+
+  const tempFolder = t.context.tempFolder;
+
+  const items = Object.values(files);
+  for (const item of items) {
+    if (item.dir) {
+      await fs.mkdir(path.join(tempFolder, item.name));
+    } else {
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+    }
+  }
+
+  let command = `cd "${tempFolder}" && npm install && npm test`;
+  if (c.constructorArgs === undefined) {
+    // only test deploying the contract if there are no constructor args needed
+    command += ` && npx hardhat ignition deploy ignition/modules/${c.name}.ts`;
+  }
+
+  const exec = util.promisify(child.exec);
+  const result = await exec(command);
+
+  t.regex(result.stdout, /1 passing/);
+  if (c.constructorArgs === undefined) {
+    t.regex(result.stdout, /deployed to/);
+  }
+}
+
+async function assertDeployScriptContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
     await getItemString(zip, 'hardhat.config.ts'),
     await getItemString(zip, 'package.json'),
     await getItemString(zip, 'scripts/deploy.ts'),
+    await getItemString(zip, 'test/test.ts'),
+  ];
+
+  t.snapshot(contentComparison);
+}
+
+async function assertIgnitionContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+  const contentComparison = [
+    await getItemString(zip, `contracts/${c.name}.sol`),
+    await getItemString(zip, 'hardhat.config.ts'),
+    await getItemString(zip, 'package.json'),
+    await getItemString(zip, `ignition/modules/${c.name}.ts`),
     await getItemString(zip, 'test/test.ts'),
   ];
 
