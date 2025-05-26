@@ -7,6 +7,7 @@ import type {
   ContractFunction,
   ImplementedTrait,
   UseClause,
+  DocumentationTag,
 } from './contract';
 
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -29,6 +30,7 @@ export function printContract(contract: Contract): string {
       ],
       printSuperVariables(contract),
       [
+        ...printDocumentationTags(contract.documentationTags),
         `${contractAttribute}`,
         `mod ${contract.name} {`,
         spaceBetween(
@@ -426,4 +428,8 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentationTags(tags: DocumentationTag[]): string[] {
+  return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
