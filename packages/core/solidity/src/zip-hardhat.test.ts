@@ -144,63 +144,39 @@ function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Conte
   ]);
 }
 
-async function extractAndRunDeployScriptPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const files = Object.values(zip.files);
+function extractAndRun(makeCommand: (c: Contract) => string | null) {
+  return async (zip: JSZip, c: Contract, t: ExecutionContext<Context>) => {
+    const files = Object.values(zip.files);
 
-  const tempFolder = t.context.tempFolder;
+    const tempFolder = t.context.tempFolder;
 
-  const items = Object.values(files);
-  for (const item of items) {
-    if (item.dir) {
-      await fs.mkdir(path.join(tempFolder, item.name));
-    } else {
-      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+    const items = Object.values(files);
+    for (const item of items) {
+      if (item.dir) {
+        await fs.mkdir(path.join(tempFolder, item.name));
+      } else {
+        await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+      }
     }
-  }
 
-  let command = `cd "${tempFolder}" && npm install && npm test`;
-  if (c.constructorArgs === undefined) {
-    // only test deploying the contract if there are no constructor args needed
-    command += ' && npx hardhat run scripts/deploy.ts';
-  }
+    let command = `cd "${tempFolder}" && npm install && npm test`;
+    if (c.constructorArgs === undefined) {
+      // only test deploying the contract if there are no constructor args needed
+      command += ` && ${makeCommand(c)}`;
+    }
 
-  const exec = util.promisify(child.exec);
-  const result = await exec(command);
+    const exec = util.promisify(child.exec);
+    const result = await exec(command);
 
-  t.regex(result.stdout, /1 passing/);
-  if (c.constructorArgs === undefined) {
-    t.regex(result.stdout, /deployed to/);
-  }
+    t.regex(result.stdout, /1 passing/);
+    if (c.constructorArgs === undefined) {
+      t.regex(result.stdout, /deployed to/);
+    }
+  };
 }
 
-async function extractAndRunIgnitionPackage(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const files = Object.values(zip.files);
-
-  const tempFolder = t.context.tempFolder;
-
-  const items = Object.values(files);
-  for (const item of items) {
-    if (item.dir) {
-      await fs.mkdir(path.join(tempFolder, item.name));
-    } else {
-      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
-    }
-  }
-
-  let command = `cd "${tempFolder}" && npm install && npm test`;
-  if (c.constructorArgs === undefined) {
-    // only test deploying the contract if there are no constructor args needed
-    command += ` && npx hardhat ignition deploy ignition/modules/${c.name}.ts`;
-  }
-
-  const exec = util.promisify(child.exec);
-  const result = await exec(command);
-
-  t.regex(result.stdout, /1 passing/);
-  if (c.constructorArgs === undefined) {
-    t.regex(result.stdout, /deployed to/);
-  }
-}
+const extractAndRunDeployScriptPackage = extractAndRun(() => 'npx hardhat run scripts/deploy.ts');
+const extractAndRunIgnitionPackage = extractAndRun(c => `npx hardhat ignition deploy ignition/modules/${c.name}.ts`);
 
 async function assertDeployScriptContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
