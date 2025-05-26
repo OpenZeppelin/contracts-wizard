@@ -1,10 +1,9 @@
 {
-  "name": "@openzeppelin/wizard-mcp",
+  "name": "@ericglau/wizard-mcp",
   "version": "0.0.1-alpha.1",
-  "private": true,
   "description": "MCP Server for OpenZeppelin Contracts Wizard",
   "license": "AGPL-3.0-only",
-  "repository": "https://github.com/OpenZeppelin/contracts-wizard",
+  "repository": "https://github.com/ericglau/contracts-wizard",
   "main": "dist/index.js",
   "ts:main": "src/index.ts",
   "files": [
