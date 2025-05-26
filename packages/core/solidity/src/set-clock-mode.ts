@@ -22,10 +22,6 @@ const functions = defineFunctions({
     args: [],
     returns: ['string memory'],
     mutability: 'pure' as const,
-    comments: [
-      '/// @dev Returns the clock mode as a string.',
-      '/// Indicates whether the contract uses block numbers or timestamps.',
-    ],
   },
 });
 

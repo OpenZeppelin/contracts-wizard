@@ -134,9 +134,6 @@ export const signerFunctions = {
       ],
       returns: ['bool'],
       mutability: 'view' as const,
-      comments: [
-        '/// @dev Validates a raw signature against a hash. This is an internal function that should be called from a public function with proper access control.',
-      ],
     },
   }),
 };

@@ -220,6 +220,7 @@ const functions = defineFunctions({
       { name: 'tokenId', type: 'uint256' },
       { name: 'auth', type: 'address' },
     ],
+    returns: ['address'],
     comments: [
       '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
     ],

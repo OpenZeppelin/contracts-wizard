@@ -400,16 +400,6 @@ function addSuperchainERC20(c: ContractBuilder) {
     functions._checkTokenBridge,
     'pure',
   );
-  c.setFunctionComments(
-    [
-      '/**',
-      ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
-      ' *',
-      ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
-      ' */',
-    ],
-    functions._checkTokenBridge,
-  );
 }
 
 export const functions = defineFunctions({
@@ -431,6 +421,7 @@ export const functions = defineFunctions({
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
       { name: 'value', type: 'uint256' },
+      { name: 'emitEvent', type: 'bool' },
     ],
     comments: [
       '/// @dev Sets the allowance for a spender to spend tokens on behalf of an owner. This is an internal function that should be called from a public function with proper access control.',
