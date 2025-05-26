@@ -7,7 +7,7 @@ import { erc721Schema } from './common/schemas.js';
 export function registerSolidityERC721(server: McpServer) {
   server.tool(
     'solidity-generate-erc721',
-    'Generate an ERC721 smart contract for Solidity',
+    'Generates an ERC721 smart contract for Solidity, and returns the source code. Does not write to disk.',
     erc721Schema,
     async ({
       name,

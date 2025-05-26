@@ -7,7 +7,7 @@ import { governorSchema } from './common/schemas.js';
 export function registerSolidityGovernor(server: McpServer) {
   server.tool(
     'solidity-generate-governor',
-    'Generate a Governor smart contract for Solidity',
+    'Generates a Governor smart contract for Solidity, and returns the source code. Does not write to disk.',
     governorSchema,
     async ({
       name,

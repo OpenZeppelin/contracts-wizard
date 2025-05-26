@@ -7,7 +7,7 @@ import { stablecoinSchema } from './common/schemas.js';
 export function registerSolidityStablecoin(server: McpServer) {
   server.tool(
     'solidity-generate-stablecoin',
-    'Generate a Stablecoin smart contract for Solidity (Experimental)',
+    '(Experimental) Generates a Stablecoin smart contract for Solidity, and returns the source code. Does not write to disk.',
     stablecoinSchema,
     async ({
       name,

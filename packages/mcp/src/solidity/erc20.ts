@@ -7,7 +7,7 @@ import { erc20Schema } from './common/schemas.js';
 export function registerSolidityERC20(server: McpServer) {
   server.tool(
     'solidity-generate-erc20',
-    'Generate an ERC20 smart contract for Solidity',
+    'Generates an ERC20 smart contract for Solidity, and returns the source code. Does not write to disk.',
     erc20Schema,
     async ({
       name,
