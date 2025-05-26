@@ -7,7 +7,6 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
-  import ToggleRadio from '../common/inputs/ToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
