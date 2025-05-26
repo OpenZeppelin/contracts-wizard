@@ -13,11 +13,11 @@ Provides the following tools:
 - `solidity-generate-erc20`: Generate an ERC20 smart contract for Solidity
 - `solidity-generate-erc721`: Generate an ERC721 smart contract for Solidity
 - `solidity-generate-erc1155`: Generate an ERC1155 smart contract for Solidity
-- `solidity-generate-stablecoin`: Generate a stablecoin smart contract for Solidity (Experimental)
-- `solidity-generate-account`: Generate an account smart contract for Solidity (Experimental)
+- `solidity-generate-stablecoin`: (Experimental) Generate a stablecoin smart contract for Solidity
+- `solidity-generate-account`: (Experimental) Generate an account smart contract for Solidity
 - `solidity-generate-custom`: Generate a custom smart contract for Solidity
 - `solidity-generate-governor`: Generate a governor smart contract for Solidity
-- `solidity-generate-rwa`: Generate a real-world asset smart contract for Solidity (Experimental)
+- `solidity-generate-rwa`: (Experimental) Generate a real-world asset smart contract for Solidity
 
 ## Installation
 
