@@ -1,9 +1,11 @@
 # Path Owners
 * @ericglau @CoveMB
-/packages/core/solidity @contracts
-/packages/ui/src/solidity @contracts
+/packages/core/solidity @OpenZeppelin/contracts
+/packages/ui/src/solidity @OpenZeppelin/contracts
 /packages/core/cairo @ericnordelo @immrsd
+/packages/core/cairo_alpha @ericnordelo @immrsd
 /packages/ui/src/cairo @ericnordelo @immrsd
+/packages/ui/src/cairo_alpha @ericnordelo @immrsd
 /packages/core/stylus @0xNeshi @bidzyyys @qalisander
 /packages/ui/src/stylus @0xNeshi @bidzyyys @qalisander
 /packages/core/stellar @ozgunozerk @brozorec
