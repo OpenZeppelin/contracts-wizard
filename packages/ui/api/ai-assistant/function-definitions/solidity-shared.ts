@@ -17,7 +17,7 @@ export const commonFunctionDescription = {
       { type: 'boolean', enum: [false] },
     ],
     description:
-      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract.Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
+      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
   },
 
   info: {
@@ -27,7 +27,7 @@ export const commonFunctionDescription = {
       securityContact: {
         type: 'string',
         description:
-          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
+          'Email where people can contact you to report security issues. Will only be visible if contract source code is verified.',
       },
       license: {
         type: 'string',

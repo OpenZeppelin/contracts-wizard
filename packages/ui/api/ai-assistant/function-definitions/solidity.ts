@@ -55,7 +55,7 @@ export const solidityERC20AIFunctionDefinition = {
       callback: {
         type: 'boolean',
         description:
-          'Whether to includes supports for code execution after transfers and approvals on recipient contracts in a single transaction.',
+          'Whether to include support for code execution after transfers and approvals on recipient contracts in a single transaction.',
       },
     },
     required: ['name', 'symbol'],
@@ -125,7 +125,7 @@ export const solidityERC1155AIFunctionDefinition = {
       uri: {
         type: 'string',
         description:
-          'The Location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
+          'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
       },
       supply: {
         type: 'boolean',
@@ -222,7 +222,7 @@ export const solidityAccountAIFunctionDefinition = {
       batchedExecution: {
         type: 'boolean',
         description:
-          'Whether to a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
+          'Whether to implement a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
       },
       ERC7579Modules: {
         anyOf: [
