@@ -229,7 +229,7 @@ const functions = defineFunctions({
     kind: 'public' as const,
     args: [{ name: 'tokenId', type: 'uint256' }],
     returns: ['string memory'],
-    mutability: 'view',
+    mutability: 'view' as const,
     comments: [
       '/// @dev Returns the Uniform Resource Identifier (URI) for the specified token. This is used to store metadata for each token.',
     ],
@@ -239,7 +239,7 @@ const functions = defineFunctions({
     kind: 'internal' as const,
     args: [],
     returns: ['string memory'],
-    mutability: 'view',
+    mutability: 'pure' as const,
     comments: [
       '/// @dev Base URI for computing tokenURI. If set, the resulting URI for each token will be the concatenation of the baseURI and the tokenId.',
     ],
@@ -257,13 +257,13 @@ const functions = defineFunctions({
   },
 });
 
+/**
+ * @dev Creates a mint function configuration based on the specified options
+ * @param incremental Whether to use incremental token IDs
+ * @param uriStorage Whether to include URI storage functionality
+ * @return The configured mint function
+ */
 function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunction {
-  /**
-   * @dev Creates a mint function configuration based on the specified options
-   * @param incremental Whether to use incremental token IDs
-   * @param uriStorage Whether to include URI storage functionality
-   * @return The configured mint function
-   */
   const fn: BaseFunction = {
     name: 'safeMint',
     kind: 'public' as const,
