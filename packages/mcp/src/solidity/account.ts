@@ -7,7 +7,7 @@ import { accountSchema } from './common/schemas.js';
 export function registerSolidityAccount(server: McpServer) {
   server.tool(
     'solidity-generate-account',
-    'Generate an Account smart contract for Solidity (Experimental: Some features are not audited and are subject to change)',
+    'Generate an Account smart contract for Solidity (Experimental)',
     accountSchema,
     async ({
       name,
