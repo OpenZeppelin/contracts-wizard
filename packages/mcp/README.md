@@ -1,132 +1,55 @@
-# OpenZeppelin Contracts Wizard for Solidity
+# OpenZeppelin Contracts Wizard MCP Server
 
-[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard?color=%234e5de4)](https://www.npmjs.com/package/@openzeppelin/wizard)
+A Model Context Protocol (MCP) server that allows AI agents to generate smart contracts using the OpenZeppelin Contracts Wizard.
 
-Interactively build a contract out of components from OpenZeppelin Contracts. Provide parameters and desired features for the kind of contract that you want, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
+> [!WARNING]
+> AI agents determine when and how to use the MCP server and therefore may produce inaccurate results. You should always review any information produced by the AI agent to ensure that any results are accurate and suit your purposes.
 
-This package provides a programmatic API. For a web interface, see https://wizard.openzeppelin.com
+## Features
 
-### Installation
+### Solidity
 
-`npm install @openzeppelin/wizard`
+Provides the following tools:
+- `solidity-generate-erc20`: Generate an ERC20 smart contract for Solidity
+- `solidity-generate-erc721`: Generate an ERC721 smart contract for Solidity
+- `solidity-generate-erc1155`: Generate an ERC1155 smart contract for Solidity
+- `solidity-generate-stablecoin`: Generate a stablecoin smart contract for Solidity (Experimental)
+- `solidity-generate-account`: Generate an account smart contract for Solidity (Experimental)
+- `solidity-generate-custom`: Generate a custom smart contract for Solidity
+- `solidity-generate-governor`: Generate a governor smart contract for Solidity
+- `solidity-generate-rwa`: Generate a real-world asset smart contract for Solidity (Experimental)
 
-### Contract types
+## Installation
 
-The following contract types are supported:
-- `erc20`
-- `erc721`
-- `erc1155`
-- `stablecoin`
-- `realWorldAsset`
-- `account`
-- `governor`
-- `custom`
+### MCP Configuration
 
-Note that `stablecoin`, `realWorldAsset`, and `account` are experimental and may be subject to change.
-
-Each contract type has functions/constants as defined below.
-
-### Functions
-
-#### `print`
-```js
-function print(opts?: ERC20Options): string
+Add the following to your MCP configuration file:
 ```
-```js
-function print(opts?: ERC721Options): string
-```
-```js
-function print(opts?: ERC1155Options): string
-```
-```js
-function print(opts?: StablecoinOptions): string
-```
-```js
-function print(opts?: AccountOptions): string
-```
-```js
-function print(opts?: GovernorOptions): string
-```
-```js
-function print(opts?: CustomOptions): string
-```
-Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
-
-#### `defaults`
-```js
-const defaults: Required<ERC20Options>
-```
-```js
-const defaults: Required<ERC721Options>
-```
-```js
-const defaults: Required<ERC1155Options>
-```
-```js
-const defaults: Required<StablecoinOptions>
-```
-```js
-const defaults: Required<AccountOptions>
-```
-```js
-const defaults: Required<GovernorOptions>
-```
-```js
-const defaults: Required<CustomOptions>
-```
-The default options that are used for [`print`](#print).
-
-#### `isAccessControlRequired`
-```js
-function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
-```
-Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
-
-> Note that contracts such as `account`, have its own way of handling permissions and do not support the `access` option.
-Thus, that type does not include `isAccessControlRequired`.
-
-### Examples
-
-Import the contract type(s) that you want to use from the `@openzeppelin/wizard` package:
-
-```js
-import { erc20 } from '@openzeppelin/wizard';
+{
+  "mcpServers": {
+    "OpenZeppelin Contracts Wizard": {
+      "command": "npx",
+      "args": [
+        "@ericglau/wizard-mcp"
+      ]
+    }
+  }
+}
 ```
 
-To generate the source code for an ERC20 contract with all of the default settings:
-```js
-const contract = erc20.print();
-```
+### Windsurf
 
-To generate the source code for an ERC20 contract with a custom name and symbol, along with some custom settings:
-```js
-const contract = erc20.print({
-  name: 'ExampleToken',
-  symbol: 'ETK',
-  burnable: true,
-  premint: '1000000',
-});
-```
+1. Go to Settings > Windsurf Settings > Cascade > Manage Plugins > View raw config.
+2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
+3. Click Refresh on the Manage Plugins page.
+4. See the MCP Server in the list.
 
-To generate the source code for an ERC20 contract with all of the defaults but is upgradeable using the UUPS proxy pattern:
-```js
-const contract = erc20.print({
-  ...erc20.defaults,
-  upgradeable: 'uups',
-});
-```
+### Cursor
+
+1. Go to Settings > Cursor Settings > MCP > Add new global MCP server.
+2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
+3. See the MCP Server in the list.
+
+## Usage
+
+In your IDE's Write or Agent mode, ask the AI agent to write or modify smart contracts for your use case. When the AI agent determines it is appropriate to do so, it will use the MCP server to generate the contracts or determine best practices for your use case.
