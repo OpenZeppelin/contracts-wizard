@@ -144,7 +144,7 @@ function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Conte
   ]);
 }
 
-function extractAndRun(makeCommand: (c: Contract) => string | null) {
+function extractAndRun(makeDeployCommand: (c: Contract) => string | null) {
   return async (zip: JSZip, c: Contract, t: ExecutionContext<Context>) => {
     const files = Object.values(zip.files);
 
@@ -162,7 +162,7 @@ function extractAndRun(makeCommand: (c: Contract) => string | null) {
     let command = `cd "${tempFolder}" && npm install && npm test`;
     if (c.constructorArgs === undefined) {
       // only test deploying the contract if there are no constructor args needed
-      command += ` && ${makeCommand(c)}`;
+      command += ` && ${makeDeployCommand(c)}`;
     }
 
     const exec = util.promisify(child.exec);
