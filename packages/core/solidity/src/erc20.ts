@@ -400,16 +400,6 @@ function addSuperchainERC20(c: ContractBuilder) {
     functions._checkTokenBridge,
     'pure',
   );
-  c.setFunctionComments(
-    [
-      '/**',
-      ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
-      ' *',
-      ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
-      ' */',
-    ],
-    functions._checkTokenBridge,
-  );
 }
 
 export const functions = defineFunctions({
@@ -419,6 +409,9 @@ export const functions = defineFunctions({
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
       { name: 'value', type: 'uint256' },
+    ],
+    comments: [
+      '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
     ],
   },
 
@@ -430,6 +423,9 @@ export const functions = defineFunctions({
       { name: 'value', type: 'uint256' },
       { name: 'emitEvent', type: 'bool' },
     ],
+    comments: [
+      '/// @dev Sets the allowance for a spender to spend tokens on behalf of an owner. This is an internal function that should be called from a public function with proper access control.',
+    ],
   },
 
   mint: {
@@ -438,21 +434,36 @@ export const functions = defineFunctions({
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'uint256' },
     ],
+    comments: [
+      '/// @dev Creates new tokens and assigns them to the specified account. This function should be called with proper access control to restrict who can mint tokens.',
+    ],
   },
 
   pause: {
     kind: 'public' as const,
     args: [],
+    comments: [
+      '/// @dev Pauses all token transfers.',
+      '/// Consider implementing access control to restrict who can pause.',
+    ],
   },
 
   unpause: {
     kind: 'public' as const,
     args: [],
+    comments: [
+      '/// @dev Unpauses all token transfers.',
+      '/// Consider implementing access control to restrict who can unpause.',
+    ],
   },
 
   snapshot: {
     kind: 'public' as const,
     args: [],
+    comments: [
+      '/// @dev Creates a new snapshot and returns its id.',
+      '/// Consider implementing access control to restrict who can create snapshots.',
+    ],
   },
 
   nonces: {
@@ -460,10 +471,17 @@ export const functions = defineFunctions({
     args: [{ name: 'owner', type: 'address' }],
     returns: ['uint256'],
     mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the current nonce for an owner.',
+      '/// Used for permit signatures to prevent replay attacks.',
+    ],
   },
 
   _checkTokenBridge: {
     kind: 'internal' as const,
     args: [{ name: 'caller', type: 'address' }],
+    comments: [
+      '/// @dev Validates if the caller is an authorized token bridge. This is used for cross-chain token transfers to ensure only trusted bridges can move tokens.',
+    ],
   },
 });

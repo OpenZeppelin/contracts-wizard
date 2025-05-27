@@ -149,11 +149,17 @@ const functions = defineFunctions({
       { name: 'ids', type: 'uint256[] memory' },
       { name: 'values', type: 'uint256[] memory' },
     ],
+    comments: [
+      '/// @dev Hook that is called during any token transfer. This includes minting and burning. Override this function to add custom logic for token transfers.',
+    ],
   },
 
   setURI: {
     kind: 'public' as const,
     args: [{ name: 'newuri', type: 'string memory' }],
+    comments: [
+      '/// @dev Sets a new URI for all token types. This function can only be called by the contract owner and should be used to update the metadata location.',
+    ],
   },
 
   mint: {
@@ -164,6 +170,9 @@ const functions = defineFunctions({
       { name: 'amount', type: 'uint256' },
       { name: 'data', type: 'bytes memory' },
     ],
+    comments: [
+      '/// @dev Creates new tokens and assigns them to the specified account. This function should be called with proper access control to restrict who can mint tokens.',
+    ],
   },
 
   mintBatch: {
@@ -173,6 +182,9 @@ const functions = defineFunctions({
       { name: 'ids', type: 'uint256[] memory' },
       { name: 'amounts', type: 'uint256[] memory' },
       { name: 'data', type: 'bytes memory' },
+    ],
+    comments: [
+      '/// @dev Creates multiple token types in a single transaction. This is more gas efficient than calling mint multiple times.',
     ],
   },
 });

@@ -11,6 +11,10 @@ const functions = defineFunctions({
     args: [],
     returns: ['uint48'],
     mutability: 'view' as const,
+    comments: [
+      '/// @dev Returns the current timestamp as a uint48.',
+      '/// Used for time-based operations in the contract.',
+    ],
   },
 
   CLOCK_MODE: {
@@ -25,7 +29,6 @@ export function setClockMode(c: ContractBuilder, parent: ReferencedContract, vot
   if (votes === 'timestamp') {
     c.addOverride(parent, functions.clock);
     c.setFunctionBody(['return uint48(block.timestamp);'], functions.clock);
-
     c.setFunctionComments(['// solhint-disable-next-line func-name-mixedcase'], functions.CLOCK_MODE);
     c.addOverride(parent, functions.CLOCK_MODE);
     c.setFunctionBody(['return "mode=timestamp";'], functions.CLOCK_MODE);
