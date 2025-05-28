@@ -28,6 +28,7 @@
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -39,6 +40,24 @@
     await tick();
     showCode = true;
   }
+
+  interface ButtonVisibilities {
+    downloadScaffold: boolean;
+  }
+
+  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    return {
+      downloadScaffold: opts?.kind === 'Fungible' || opts?.kind === 'NonFungible' ? true : false,
+    };
+  };
+
+  $: showButtons = getButtonVisibilities(opts);
+
+  const downloadScaffoldHandler = async () => {
+    if (opts) {
+      await postConfig(opts, 'download-scaffold', language);
+    }
+  };
 
   export let initialTab: string | undefined = 'Fungible';
 
@@ -162,6 +181,16 @@
               <p>Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</p>
             </div>
           </button>
+
+          {#if showButtons.downloadScaffold}
+            <button class="download-option" on:click={downloadScaffoldHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Scaffold)</p>
+                <p>Sample Scaffold project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
         </Dropdown>
       </div>
     {/if}
