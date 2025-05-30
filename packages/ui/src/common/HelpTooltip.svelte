@@ -2,7 +2,6 @@
   import Tooltip from './Tooltip.svelte';
 
   export let link: string | undefined = undefined;
-  export let align: 'right' | undefined = undefined;
   export let placement: 'top' | 'bottom' | 'left' | 'right' = 'right';
 </script>
 
@@ -10,7 +9,6 @@
   <svg
     use:trigger
     class="tooltip"
-    class:ml-auto={align === 'right'}
     style="width: 1rem; height: 1rem;"
     viewBox="0 0 24 24"
   >
