@@ -53,7 +53,14 @@
 
   $: showButtons = getButtonVisibilities(opts);
 
+  const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
+
   const downloadScaffoldHandler = async () => {
+    const { zipScaffold } = await zipScaffoldModule;
+    if (!opts) throw new Error('No options provided for scaffold generation');
+    const zip = await zipScaffold(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    saveAs(blob, 'project.zip');
     if (opts) {
       await postConfig(opts, 'download-scaffold', language);
     }
