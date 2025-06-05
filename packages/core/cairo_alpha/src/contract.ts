@@ -2,6 +2,7 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
+  documentationTags: DocumentationTag[];
   name: string;
   account: boolean;
   useClauses: UseClause[];
@@ -97,11 +98,18 @@ export interface Argument {
   type?: string;
 }
 
+export interface DocumentationTag {
+  key: string;
+  value: string;
+}
+
 export class ContractBuilder implements Contract {
   readonly name: string;
   readonly account: boolean;
   license = 'MIT';
   upgradeable = false;
+
+  readonly documentationTags: DocumentationTag[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -297,5 +305,11 @@ export class ContractBuilder implements Contract {
 
   addInterfaceFlag(flag: string): void {
     this.interfaceFlagsSet.add(flag);
+  }
+
+  addDocumentationTag(key: string, value: string) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid documentation key: ${key}`);
+    this.documentationTags.push({ key, value });
   }
 }
