@@ -8,6 +8,7 @@ type Name = {
 export interface Contract {
   license: string;
   name: Name;
+  documentationTags: DocumentationTag[];
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
@@ -70,9 +71,16 @@ export interface Argument {
   type?: string;
 }
 
+export interface DocumentationTag {
+  key: string;
+  value: string;
+}
+
 export class ContractBuilder implements Contract {
   readonly name: Name;
   license = 'MIT';
+
+  readonly documentationTags: DocumentationTag[] = [];
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
@@ -198,5 +206,11 @@ export class ContractBuilder implements Contract {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.attribute = attribute;
+  }
+
+  addDocumentationTag(key: string, value: string) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid documentation key: ${key}`);
+    this.documentationTags.push({ key, value });
   }
 }
