@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, DocumentationTag } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -20,6 +20,7 @@ export function printContract(contract: Contract): string {
       [`#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`, `extern crate alloc;`],
       spaceBetween(
         printUseClauses(contract),
+        printDocumentationTags(contract.documentationTags),
         printConstants(contract),
         printStorage(contract.name.identifier, sortedGroups),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
@@ -283,4 +284,8 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentationTags(tags: DocumentationTag[]): string[] {
+  return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }

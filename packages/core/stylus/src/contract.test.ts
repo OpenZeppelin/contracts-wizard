@@ -3,6 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseImplementedTrait } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { TAG_SECURITY_CONTACT } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -75,5 +76,11 @@ test('contract with sorted traits', t => {
     { name: 'B', storage: { name: 'b', type: 'B' }, modulePath: 'mod_b' },
     { name: 'funcB', args: [], code: [] },
   );
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with info', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentationTag(TAG_SECURITY_CONTACT, 'security@example.com');
   t.snapshot(printContract(Foo));
 });
