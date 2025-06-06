@@ -50,7 +50,7 @@ fn initial_state() {
 
 function contractCargo(opts: GenericOptions, scaffoldContractName: string) {
   return `[package]
-name = "${scaffoldContractName}_contract"
+name = "${scaffoldContractName.replace(/_/, '-')}-contract"
 edition.workspace = true
 license.workspace = true
 repository = "https://github.com/OpenZeppelin/stellar-contracts"
