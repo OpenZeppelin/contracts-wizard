@@ -5,6 +5,7 @@ import { printContract, removeCreateLevelAttributes } from './print';
 import { contractsVersionTag } from './utils/version';
 
 const dependencies = {
+  base: ['stellar-default-impl-macro'],
   fungible: ['stellar-fungible'],
   nonFungible: ['stellar-non-fungible'],
   pausable: ['stellar-pausable', 'stellar-pausable-macros'],
@@ -17,7 +18,7 @@ const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: (keyof 
   }, '');
 
 const getDependenciesToAdd = (opts: GenericOptions): (keyof typeof dependencies)[] => {
-  const dependenciesToAdd: (keyof typeof dependencies)[] = [];
+  const dependenciesToAdd: (keyof typeof dependencies)[] = ['base'];
 
   if (opts.kind === 'Fungible') dependenciesToAdd.push('fungible');
   if (opts.kind === 'NonFungible') dependenciesToAdd.push('nonFungible');
