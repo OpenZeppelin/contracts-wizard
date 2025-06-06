@@ -9,7 +9,14 @@ declare global {
   }
 }
 
-export type Action = 'copy' | 'remix' | 'download-file' | 'download-hardhat' | 'download-foundry' | 'defender';
+export type Action =
+  | 'copy'
+  | 'remix'
+  | 'download-file'
+  | 'download-hardhat'
+  | 'download-foundry'
+  | 'download-scaffold'
+  | 'defender';
 export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar';
 
 export async function postConfig(
