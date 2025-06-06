@@ -3,6 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseImplementedTrait, Component } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { TAG_SECURITY_CONTACT } from './set-info';
 
 const FOO_COMPONENT: Component = {
   name: 'FooComponent',
@@ -104,5 +105,11 @@ test('contract with sorted use clauses', t => {
   Foo.addUseClause('another::library', 'AnotherLibrary');
   Foo.addUseClause('another::library', 'Foo', { alias: 'Custom2' });
   Foo.addUseClause('another::library', 'Foo', { alias: 'Custom1' });
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with info', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentationTag(TAG_SECURITY_CONTACT, 'security@example.com');
   t.snapshot(printContract(Foo));
 });
