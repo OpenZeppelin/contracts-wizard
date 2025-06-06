@@ -318,7 +318,7 @@ stellar scaffold watch --build-clients
 ## Deploying the contract and run the Scaffold UI app
 
 \`\`\`
-npm dev
+npm run dev
 \`\`\`
 `;
 };
