@@ -301,7 +301,7 @@ This project demonstrates a basic Scaffold use case. It comes with a contract ge
 \`\`\`
 bash setup.sh
 \`\`\`
-${hasTodosToResolve(c) ? '\n## Resolve any TODOs \n\nSearch for any TODO comments in the project and resolve them (search for TODO with your code editor)\n' : ''}
+${hasTodosToResolve(c) ? '\n## Resolve any TODOs \n\nSearch for any TODO comments in the project and resolve them (search for TODO with your code editor).\n' : ''}
 
 ## Testing the contract
 
