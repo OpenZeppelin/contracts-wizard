@@ -18,10 +18,10 @@ export function printContract(contract: Contract): string {
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
         `#![no_std]`,
       ],
-      printDocumentationTags(contract.documentationTags),
       spaceBetween(
         printUseClauses(contract),
         printVariables(contract),
+        printDocumentationTags(contract.documentationTags),
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
@@ -355,6 +355,6 @@ function printArgument(arg: Argument): string {
   }
 }
 
-function printDocumentationTags(tags: DocumentationTag[]): string[] {
+function printDocumentationTags(tags: DocumentationTag[] = []): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
