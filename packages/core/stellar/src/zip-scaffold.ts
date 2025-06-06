@@ -31,7 +31,7 @@ const test = (c: Contract, opts: GenericOptions) => `#![cfg(test)]
 
 extern crate std;
 
-use soroban_sdk::{ ${opts.upgradeable ? 'testutils::Address as _, Address, ' : ''}Env, String };
+use soroban_sdk::{ ${getAddressArgs(c).length ? 'testutils::Address as _, Address, ' : ''}Env, String };
 
 use crate::contract::{ ${c.name}, ${c.name}Client };
 
@@ -39,7 +39,7 @@ use crate::contract::{ ${c.name}, ${c.name}Client };
 fn initial_state() {
     let env = Env::default();
 
-    let contract_addr = env.register(${c.name}, (${opts.upgradeable ? 'Address::generate(&env),' : ''}));
+    let contract_addr = env.register(${c.name}, (${getAddressArgs(c).map(() => 'Address::generate(&env),')}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
@@ -53,7 +53,6 @@ function contractCargo(opts: GenericOptions, scaffoldContractName: string) {
 name = "${scaffoldContractName}_contract"
 edition.workspace = true
 license.workspace = true
-repository = "https://github.com/OpenZeppelin/stellar-contracts"
 publish = false
 version.workspace = true
 
@@ -259,8 +258,6 @@ if ! [ -f "environments.toml" ]
 then
   echo "🏗️ Building Scaffold project"
 
-  mv README.md WIZARD-README.md
-
   scaffold
   
   setup_environment
@@ -340,7 +337,7 @@ export async function zipScaffold(c: Contract, opts: GenericOptions) {
   zip.file(`contracts/${scaffoldContractName}/src/lib.rs`, createLib);
   zip.file(`contracts/${scaffoldContractName}/Cargo.toml`, contractCargo(opts, scaffoldContractName));
   zip.file('setup.sh', setupSh(c, opts, scaffoldContractName));
-  zip.file('README.md', readme(c));
+  zip.file('README-WIZARD.md', readme(c));
 
   return zip;
 }
