@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause, DocumentationTag } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -21,6 +21,7 @@ export function printContract(contract: Contract): string {
       spaceBetween(
         printUseClauses(contract),
         printVariables(contract),
+        printDocumentationTags(contract.documentationTags),
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
@@ -352,4 +353,8 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentationTags(tags: DocumentationTag[]): string[] {
+  return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
