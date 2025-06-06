@@ -50,7 +50,7 @@ fn initial_state() {
 
 function contractCargo(opts: GenericOptions, scaffoldContractName: string) {
   return `[package]
-name = "${scaffoldContractName}_contract"
+name = "${scaffoldContractName.replace(/_/, '-')}-contract"
 edition.workspace = true
 license.workspace = true
 publish = false
@@ -289,7 +289,7 @@ This project demonstrates a basic Scaffold use case. It comes with a contract ge
 
 - See [Git installation guide](https://github.com/git-guides/install-git).
 - See [Rust installation guide](https://www.rust-lang.org/tools/install).
-- See [Scaffold Cli installation guide](https://github.com/AhaLabs/scaffold-stellar?tab=readme-ov-file#quick-start).
+- See [Scaffold CLI installation guide](https://github.com/AhaLabs/scaffold-stellar?tab=readme-ov-file#quick-start).
 - See [Docker installation guide](https://docs.docker.com/engine/install/).
 - See [Node installation guide](https://nodejs.org/en/download).
 
@@ -298,7 +298,7 @@ This project demonstrates a basic Scaffold use case. It comes with a contract ge
 \`\`\`
 bash setup.sh
 \`\`\`
-${hasTodosToResolve(c) ? '\n## Resolve any TODOs \n\nSearch for any TODO comments in the project and resolve them (search for TODO with your code editor)\n' : ''}
+${hasTodosToResolve(c) ? '\n## Resolve any TODOs \n\nSearch for any TODO comments in the project and resolve them (search for TODO with your code editor).\n' : ''}
 
 ## Testing the contract
 
