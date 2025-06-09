@@ -202,5 +202,6 @@ export const governorSchema = {
 
 export const customSchema = {
   name: z.string().describe('The name of the custom contract'),
+  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
   ...commonSchema,
 }

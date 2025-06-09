@@ -1,13 +1,13 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
-import { governor } from '@openzeppelin/wizard';
+import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import { governor } from '@openzeppelin/wizard-cairo';
 import { safePrint } from './common/print.js';
 import { governorSchema } from './common/schemas.js';
 
-export function registerSolidityGovernor(server: McpServer) {
+export function registerCairoGovernor(server: McpServer) {
   server.tool(
-    'solidity-generate-governor',
-    'Generates a Governor smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'cairo-generate-governor',
+    'Generates a Governor smart contract for Cairo, and returns the source code. Does not write to disk.',
     governorSchema,
     async ({
       name,
@@ -16,16 +16,15 @@ export function registerSolidityGovernor(server: McpServer) {
       votes,
       clockMode,
       timelock,
-      blockTime,
       decimals,
       proposalThreshold,
       quorumMode,
       quorumPercent,
       quorumAbsolute,
-      storage,
       settings,
-      access,
       upgradeable,
+      appName,
+      appVersion,
       info,
     }) => {
       const opts: KindedOptions['Governor'] = {
@@ -36,16 +35,15 @@ export function registerSolidityGovernor(server: McpServer) {
         votes,
         clockMode,
         timelock,
-        blockTime,
         decimals,
         proposalThreshold,
         quorumMode,
         quorumPercent,
         quorumAbsolute,
-        storage,
         settings,
-        access,
         upgradeable,
+        appName,
+        appVersion,
         info,
       };
       return {

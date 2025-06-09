@@ -1,13 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerSolidityERC20 } from './solidity/erc20';
-import { registerSolidityERC721 } from './solidity/erc721';
-import { registerSolidityAccount } from './solidity/account';
-import { registerSolidityCustom } from './solidity/custom';
-import { registerSolidityERC1155 } from './solidity/erc1155';
-import { registerSolidityGovernor } from './solidity/governor';
-import { registerSolidityRWA } from './solidity/rwa';
-import { registerSolidityStablecoin } from './solidity/stablecoin';
-import { registerCairoERC20 } from './cairo/erc20';
+import { registerSolidityTools } from './solidity/common/register.js';
+import { registerCairoTools } from './cairo/common/register.js';
 
 export function createServer() {
   const server = new McpServer(
@@ -23,16 +16,8 @@ export function createServer() {
     },
   );
 
-  registerSolidityERC20(server);
-  registerSolidityERC721(server);
-  registerSolidityERC1155(server);
-  registerSolidityStablecoin(server);
-  registerSolidityAccount(server);
-  registerSolidityGovernor(server);
-  registerSolidityCustom(server);
-  registerSolidityRWA(server);
-
-  registerCairoERC20(server);
+  registerSolidityTools(server);
+  registerCairoTools(server);
 
   return server;
 }
