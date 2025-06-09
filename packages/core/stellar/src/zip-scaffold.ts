@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
-import { contractsVersionTag } from './utils/version';
+import { compatibleSorobanVersionTest, contractsVersionTag } from './utils/version';
 
 const dependencies = {
   base: ['stellar-default-impl-macro'],
@@ -10,6 +10,7 @@ const dependencies = {
   nonFungible: ['stellar-non-fungible'],
   pausable: ['stellar-pausable', 'stellar-pausable-macros'],
   upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
+  soroban: ['soroban-sdk'],
 } as const;
 
 const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: (keyof typeof dependencies)[]) =>
@@ -28,7 +29,7 @@ const getDependenciesToAdd = (opts: GenericOptions): (keyof typeof dependencies)
   return dependenciesToAdd;
 };
 
-const test = (c: Contract, opts: GenericOptions) => `#![cfg(test)]
+const test = (c: Contract) => `#![cfg(test)]
 
 extern crate std;
 
@@ -42,12 +43,12 @@ fn initial_state() {
 
     let contract_addr = env.register(${c.name}, (${getAddressArgs(c)
       .map(() => 'Address::generate(&env)')
-      .join(',')}));
+      .join(',')}${getAddressArgs(c).length === 1 ? ',' : ''}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
 }
-    
+
 // Add more tests bellow
 `;
 
@@ -64,10 +65,9 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-soroban-sdk = { workspace = true }
-${addDependenciesWith('{ workspace = true }', getDependenciesToAdd(opts))}
+${addDependenciesWith('{ workspace = true }', [...getDependenciesToAdd(opts), 'soroban'])}
 [dev-dependencies]
-soroban-sdk = { workspace = true, features = ["testutils"] }
+${addDependenciesWith('{ workspace = true, features = ["testutils"] }', ['soroban'])}
 `;
 }
 
@@ -165,11 +165,13 @@ setup_environment() {
   cp Cargo.toml Cargo.toml.bak
 
   cat <<EOF > deps.tmp
-${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, getDependenciesToAdd(opts))}EOF
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, getDependenciesToAdd(opts))}${addDependenciesWith(`{ version = "${compatibleSorobanVersionTest}" }`, ['soroban'])}
+EOF
 
   awk '
     BEGIN {
       inserted = 0
+      deps = ""
       while ((getline line < "deps.tmp") > 0) {
         deps = deps line "\\n"
       }
@@ -185,7 +187,7 @@ ${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contract
       next
     }
     /^\\[/ { in_deps = 0 }
-    in_deps && /^[[:space:]]*stellar-/ { next }
+    in_deps { next }
     { print }
   ' Cargo.toml.bak > Cargo.toml
 
@@ -336,7 +338,7 @@ export async function zipScaffold(c: Contract, opts: GenericOptions) {
   const scaffoldContractName = contractOptionsToScaffoldContractName(opts?.kind || 'contract');
 
   zip.file(`contracts/${scaffoldContractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
-  zip.file(`contracts/${scaffoldContractName}/src/test.rs`, test(c, opts));
+  zip.file(`contracts/${scaffoldContractName}/src/test.rs`, test(c));
   zip.file(`contracts/${scaffoldContractName}/src/lib.rs`, createLib);
   zip.file(`contracts/${scaffoldContractName}/Cargo.toml`, contractCargo(opts, scaffoldContractName));
   zip.file('setup.sh', setupSh(c, opts, scaffoldContractName));

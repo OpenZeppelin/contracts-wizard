@@ -53,6 +53,11 @@ jobs:
 
       # ----------------------------
       # Stellar setup
+
+      - name: Set up Stellar CLI
+        if: matrix.package == 'stellar'
+        uses: stellar/stellar-cli@v22.5.0
+
       - name: Start Docker
         if: matrix.package == 'stellar'
         run: |
