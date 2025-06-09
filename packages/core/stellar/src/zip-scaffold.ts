@@ -40,7 +40,9 @@ use crate::contract::{ ${c.name}, ${c.name}Client };
 fn initial_state() {
     let env = Env::default();
 
-    let contract_addr = env.register(${c.name}, (${getAddressArgs(c).map(() => 'Address::generate(&env),')}));
+    let contract_addr = env.register(${c.name}, (${getAddressArgs(c)
+      .map(() => 'Address::generate(&env)')
+      .join(',')}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
@@ -76,7 +78,7 @@ function pascalToSnakeCase(string: string) {
     .toLowerCase();
 }
 
-const ContractOptionsToScaffoldContractName = pascalToSnakeCase;
+export const contractOptionsToScaffoldContractName = pascalToSnakeCase;
 
 function getAddressArgs(c: Contract): string[] {
   return c.constructorArgs
@@ -331,7 +333,7 @@ mod test;
 export async function zipScaffold(c: Contract, opts: GenericOptions) {
   const zip = new JSZip();
 
-  const scaffoldContractName = ContractOptionsToScaffoldContractName(opts?.kind || 'contract');
+  const scaffoldContractName = contractOptionsToScaffoldContractName(opts?.kind || 'contract');
 
   zip.file(`contracts/${scaffoldContractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
   zip.file(`contracts/${scaffoldContractName}/src/test.rs`, test(c, opts));
