@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
-import { safePrint } from '../utils.js';
-import { fungibleSchema } from './common/schemas.js';
+import { safePrint } from '../../utils.js';
+import { fungibleSchema } from '../schemas.js';
 
 export function registerStellarFungible(server: McpServer) {
  server.tool(

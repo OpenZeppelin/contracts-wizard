@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { multisig } from '@openzeppelin/wizard-cairo';
-import { safePrint } from '../utils.js';
-import { multisigSchema } from './common/schemas.js';
+import { safePrint } from '../../utils.js';
+import { multisigSchema } from '../schemas.js';
 
 export function registerCairoMultisig(server: McpServer) {
   server.tool(

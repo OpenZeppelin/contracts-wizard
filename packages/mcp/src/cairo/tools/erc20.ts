@@ -1,13 +1,13 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
-import { erc20 } from '@openzeppelin/wizard';
-import { safePrint } from '../utils.js';
-import { erc20Schema } from './common/schemas.js';
+import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import { erc20 } from '@openzeppelin/wizard-cairo';
+import { safePrint } from '../../utils.js';
+import { erc20Schema } from '../schemas.js';
 
-export function registerSolidityERC20(server: McpServer) {
+export function registerCairoERC20(server: McpServer) {
   server.tool(
-    'solidity-generate-erc20',
-    'Generates an ERC20 smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'cairo-generate-erc20',
+    'Generates an ERC20 smart contract for Cairo, and returns the source code. Does not write to disk.',
     erc20Schema,
     async ({
       name,
@@ -15,13 +15,10 @@ export function registerSolidityERC20(server: McpServer) {
       burnable,
       pausable,
       premint,
-      premintChainId,
       mintable,
-      callback,
-      permit,
       votes,
-      flashmint,
-      crossChainBridging,
+      appName,
+      appVersion,
       access,
       upgradeable,
       info,
@@ -33,13 +30,10 @@ export function registerSolidityERC20(server: McpServer) {
         burnable,
         pausable,
         premint,
-        premintChainId,
         mintable,
-        callback,
-        permit,
         votes,
-        flashmint,
-        crossChainBridging,
+        appName,
+        appVersion,
         access,
         upgradeable,
         info,

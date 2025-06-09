@@ -1,13 +1,13 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
-import { custom } from '@openzeppelin/wizard-cairo';
-import { safePrint } from '../utils.js';
-import { customSchema } from './common/schemas.js';
+import type { KindedOptions } from '@openzeppelin/wizard';
+import { custom } from '@openzeppelin/wizard';
+import { safePrint } from '../../utils.js';
+import { customSchema } from '../schemas.js';
 
-export function registerCairoCustom(server: McpServer) {
+export function registerSolidityCustom(server: McpServer) {
   server.tool(
-    'cairo-generate-custom',
-    'Generates a custom smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'solidity-generate-custom',
+    'Generates a Custom smart contract for Solidity, and returns the source code. Does not write to disk.',
     customSchema,
     async ({
       name,

@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
-import { safePrint } from '../utils.js';
-import { erc20Schema } from './common/schemas.js';
+import { safePrint } from '../../utils.js';
+import { erc20Schema } from '../schemas.js';
 
 export function registerStylusERC20(server: McpServer) {
   server.tool(

@@ -1,37 +1,41 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
-import { erc20 } from '@openzeppelin/wizard-cairo';
-import { safePrint } from '../utils.js';
-import { erc20Schema } from './common/schemas.js';
+import { erc721 } from '@openzeppelin/wizard-cairo';
+import { safePrint } from '../../utils.js';
+import { erc721Schema } from '../schemas.js';
 
-export function registerCairoERC20(server: McpServer) {
+export function registerCairoERC721(server: McpServer) {
   server.tool(
-    'cairo-generate-erc20',
-    'Generates an ERC20 smart contract for Cairo, and returns the source code. Does not write to disk.',
-    erc20Schema,
+    'cairo-generate-erc721',
+    'Generates an ERC721 smart contract for Cairo, and returns the source code. Does not write to disk.',
+    erc721Schema,
     async ({
       name,
       symbol,
+      baseUri,
       burnable,
       pausable,
-      premint,
       mintable,
+      enumerable,
       votes,
+      royaltyInfo,
       appName,
       appVersion,
       access,
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['ERC20'] = {
-        kind: 'ERC20',
+      const opts: KindedOptions['ERC721'] = {
+        kind: 'ERC721',
         name,
         symbol,
+        baseUri,
         burnable,
         pausable,
-        premint,
         mintable,
+        enumerable,
         votes,
+        royaltyInfo,
         appName,
         appVersion,
         access,
@@ -42,7 +46,7 @@ export function registerCairoERC20(server: McpServer) {
         content: [
           {
             type: 'text',
-            text: safePrint(() => erc20.print(opts)),
+            text: safePrint(() => erc721.print(opts)),
           },
         ],
       };
