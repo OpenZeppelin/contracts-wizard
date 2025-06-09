@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { custom } from '@openzeppelin/wizard-cairo';
-import { safePrint } from './common/print.js';
+import { safePrint } from '../utils.js';
 import { customSchema } from './common/schemas.js';
 
 export function registerCairoCustom(server: McpServer) {

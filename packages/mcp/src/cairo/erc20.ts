@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { erc20 } from '@openzeppelin/wizard-cairo';
-import { safePrint } from './common/print.js';
+import { safePrint } from '../utils.js';
 import { erc20Schema } from './common/schemas.js';
 
 export function registerCairoERC20(server: McpServer) {

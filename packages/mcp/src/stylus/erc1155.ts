@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stylus';
 import { erc1155 } from '@openzeppelin/wizard-stylus';
-import { safePrint } from './common/print.js';
+import { safePrint } from '../utils.js';
 import { erc1155Schema } from './common/schemas.js';
 
 export function registerStylusERC1155(server: McpServer) {

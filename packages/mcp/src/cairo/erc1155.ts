@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { erc1155 } from '@openzeppelin/wizard-cairo';
-import { safePrint } from './common/print.js';
+import { safePrint } from '../utils.js';
 import { erc1155Schema } from './common/schemas.js';
 
 export function registerCairoERC1155(server: McpServer) {
