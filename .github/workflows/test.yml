@@ -44,9 +44,22 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
       - name: Set up environment
         uses: ./.github/actions/setup
+
+      # ----------------------------
+      # Solidity setup
       - name: Install Foundry
         if: matrix.package == 'solidity'
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de #v1.4.0
+
+      # ----------------------------
+      # Stellar setup
+      - name: Start Docker
+        if: matrix.package == 'stellar'
+        run: |
+          sudo service docker start
+          docker info
+
+      # ----------------------------
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/core/${{matrix.package}}

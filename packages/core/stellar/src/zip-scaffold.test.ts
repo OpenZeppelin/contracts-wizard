@@ -103,6 +103,8 @@ test.afterEach.always(async t => {
 });
 
 async function runTest(t: ExecutionContext<Context>, c: Contract, opts: GenericOptions) {
+  t.timeout(300_000);
+
   const zip = await zipScaffold(c, opts);
 
   assertLayout(t, zip, opts);
@@ -357,5 +359,227 @@ test.serial('fungible upgradable mintable pausable', async t => {
     upgradeable: true,
   };
   const c = buildFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible simple', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible full', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: true,
+    enumerable: true,
+    consecutive: true,
+    pausable: true,
+    upgradeable: true,
+    mintable: true,
+    sequential: true,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible burnable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: true,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible enumerable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: true,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible consecutive', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: true,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible pausable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: true,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible upgradeable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: true,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible mintable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: true,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible sequential', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: true,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+// Some combinations
+test.serial('nonfungible burnable enumerable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: true,
+    enumerable: true,
+    consecutive: false,
+    pausable: false,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible burnable pausable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: true,
+    enumerable: false,
+    consecutive: false,
+    pausable: true,
+    upgradeable: false,
+    mintable: false,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible mintable upgradeable', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: false,
+    enumerable: false,
+    consecutive: false,
+    pausable: false,
+    upgradeable: true,
+    mintable: true,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
+  await runTest(t, c, opts);
+});
+
+test.serial('nonfungible full except sequential', async t => {
+  const opts: GenericOptions = {
+    kind: 'NonFungible',
+    name: 'MyNFT',
+    symbol: 'MNFT',
+    burnable: true,
+    enumerable: true,
+    consecutive: true,
+    pausable: true,
+    upgradeable: true,
+    mintable: true,
+    sequential: false,
+  };
+  const c = buildNonFungible(opts);
   await runTest(t, c, opts);
 });
