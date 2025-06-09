@@ -1,5 +1,13 @@
 import { z } from 'zod';
-import { foo } from '@ericglau/wizard-common';
+import {
+  solidityCommonDescriptions,
+  solidityERC20Descriptions,
+  solidityERC721Descriptions,
+  solidityERC1155Descriptions,
+  solidityGovernorDescriptions,
+  solidityAccountDescriptions,
+  solidityStablecoinDescriptions,
+ } from '@ericglau/wizard-common';
 
 export const commonSchema = {
   access: z
@@ -8,15 +16,14 @@ export const commonSchema = {
     .or(z.literal('managed'))
     .optional()
     .describe(
-      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.'
+      solidityCommonDescriptions.access
     ),
   upgradeable: z
     .literal('transparent')
     .or(z.literal('uups'))
     .optional()
     .describe(
-      foo,
-      //'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.'
+      solidityCommonDescriptions.upgradeable
     ),
   info: z
     .object({
@@ -24,64 +31,68 @@ export const commonSchema = {
         .string()
         .optional()
         .describe(
-          'Email where people can contact you to report security issues. Will only be visible if contract source code is verified.'
+          solidityCommonDescriptions.securityContact
         ),
-      license: z.string().optional().describe('The license used by the contract, default is "MIT"'),
+      license: z.string().optional().describe(
+        solidityCommonDescriptions.license
+      ),
     })
     .optional()
-    .describe('Metadata about the contract and author'),
+    .describe(
+      solidityCommonDescriptions.info
+    ),
 };
 
 export const erc20Schema = {
-  name: z.string().describe('The name of the contract'),
-  symbol: z.string().describe('The short symbol for the token'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
-  premint: z.string().optional().describe('The number of tokens to premint for the deployer'),
-  premintChainId: z.string().optional().describe('The chain ID of the network on which to premint tokens'),
-  mintable: z.boolean().optional().describe('Whether privileged accounts will be able to create more supply or emit more tokens'),
-  callback: z.boolean().optional().describe('Whether to include support for code execution after transfers and approvals on recipient contracts in a single transaction'),
-  permit: z.boolean().optional().describe('Whether without paying gas, token holders will be able to allow third parties to transfer from their account.'),
+  name: z.string().describe(solidityCommonDescriptions.name),
+  symbol: z.string().describe(solidityCommonDescriptions.symbol),
+  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
+  premint: z.string().optional().describe(solidityERC20Descriptions.premint),
+  premintChainId: z.string().optional().describe(solidityERC20Descriptions.premintChainId),
+  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  callback: z.boolean().optional().describe(solidityERC20Descriptions.callback),
+  permit: z.boolean().optional().describe(solidityERC20Descriptions.permit),
   votes: z
     .literal('blocknumber')
     .or(z.literal('timestamp'))
     .optional()
-    .describe('Whether to keep track of historical balances for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps'),
-  flashmint: z.boolean().optional().describe('Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they\'re returned in the same transaction'),
+    .describe(solidityERC20Descriptions.votes),
+  flashmint: z.boolean().optional().describe(solidityERC20Descriptions.flashmint),
   crossChainBridging: z
     .literal('custom')
     .or(z.literal('superchain'))
     .optional()
-    .describe('Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.'),
+    .describe(solidityERC20Descriptions.crossChainBridging),
   ...commonSchema,
 };
 
 export const erc721Schema = {
-  name: z.string().describe('The name of the contract'),
-  symbol: z.string().describe('The short symbol for the token'),
-  baseUri: z.string().optional().describe('The base URI for all token metadata'),
-  enumerable: z.boolean().optional().describe('Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers'),
-  uriStorage: z.boolean().optional().describe('Whether to include functionality to update token URIs for individual token IDs'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
-  mintable: z.boolean().optional().describe('Whether privileged accounts will be able to create more supply or emit more tokens'),
-  incremental: z.boolean().optional().describe('Whether new tokens will be automatically assigned an incremental id'),
+  name: z.string().describe(solidityCommonDescriptions.name),
+  symbol: z.string().describe(solidityCommonDescriptions.symbol),
+  baseUri: z.string().optional().describe(solidityERC721Descriptions.baseUri),
+  enumerable: z.boolean().optional().describe(solidityERC721Descriptions.enumerable),
+  uriStorage: z.boolean().optional().describe(solidityERC721Descriptions.uriStorage),
+  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z
     .literal('blocknumber')
     .or(z.literal('timestamp'))
     .optional()
-    .describe('Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified)'),
+    .describe(solidityERC721Descriptions.votes),
   ...commonSchema,
 };
 
 export const erc1155Schema = {
-  name: z.string().describe('The name of the contract'),
-  uri: z.string().describe('The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
-  mintable: z.boolean().optional().describe('Whether privileged accounts will be able to create more supply or emit more tokens'),
-  supply: z.boolean().optional().describe('Whether to keep track of total supply of tokens'),
-  updatableUri: z.boolean().optional().describe('Whether privileged accounts will be able to set a new URI for all token types'),
+  name: z.string().describe(solidityCommonDescriptions.name),
+  uri: z.string().describe(solidityERC1155Descriptions.uri),
+  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  supply: z.boolean().optional().describe(solidityERC1155Descriptions.supply),
+  updatableUri: z.boolean().optional().describe(solidityERC1155Descriptions.updatableUri),
   ...commonSchema,
 };
 
@@ -92,11 +103,11 @@ export const stablecoinSchema = {
     .or(z.literal('allowlist'))
     .or(z.literal('blocklist'))
     .optional()
-    .describe('Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.'),
+    .describe(solidityStablecoinDescriptions.limitations),
   custodian: z
     .boolean()
     .optional()
-    .describe('Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.'),
+    .describe(solidityStablecoinDescriptions.custodian),
 };
 
 export const rwaSchema = stablecoinSchema;
@@ -108,15 +119,15 @@ export const accountSchema = {
     .or(z.literal('ERC1271'))
     .or(z.literal('ERC7739'))
     .optional()
-    .describe('Whether to implement the ERC-1271 or ERC-7739 standard for validating signatures. This is useful for the account to verify signatures.'),
+    .describe(solidityAccountDescriptions.signatureValidation),
   ERC721Holder: z
     .boolean()
     .optional()
-    .describe('Whether to implement the `onERC721Received` function to allow the account to receive ERC721 tokens.'),
+    .describe(solidityAccountDescriptions.ERC721Holder),
   ERC1155Holder: z
     .boolean()
     .optional()
-    .describe('Whether to implement the `onERC1155Received` function to allow the account to receive ERC1155 tokens.'),
+    .describe(solidityAccountDescriptions.ERC1155Holder),
   signer: z
     .literal(false)
     .or(z.literal('ERC7702'))
@@ -126,84 +137,78 @@ export const accountSchema = {
     .or(z.literal('Multisig'))
     .or(z.literal('MultisigWeighted'))
     .optional()
-    .describe(`Defines the signature verification algorithm used by the account to verify user operations. Options:
-    - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
-    - ERC7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
-    - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
-    - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
-    - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
-    - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`),
+    .describe(solidityAccountDescriptions.signer),
   batchedExecution: z
     .boolean()
     .optional()
-    .describe('Whether to implement a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.'),
+    .describe(solidityAccountDescriptions.batchedExecution),
   ERC7579Modules: z
     .literal(false)
     .or(z.literal('AccountERC7579'))
     .or(z.literal('AccountERC7579Hooked'))
     .optional()
-    .describe('Whether to implement the ERC-7579 compatibility to enable functionality on the account with modules.'),
+    .describe(solidityAccountDescriptions.ERC7579Modules),
   info: commonSchema.info,
 }
 
 export const governorSchema = {
-  name: z.string().describe('The name of the governor contract'),
-  delay: z.string().describe('The delay since proposal is created until voting starts, default is "1 day"'),
-  period: z.string().describe('The length of period during which people can cast their vote, default is "1 week"'),
+  name: z.string().describe(solidityCommonDescriptions.name),
+  delay: z.string().describe(solidityGovernorDescriptions.delay),
+  period: z.string().describe(solidityGovernorDescriptions.period),
   votes: z
     .literal('erc20votes')
     .or(z.literal('erc721votes'))
     .optional()
-    .describe('The type of voting token to use (ERC20Votes or ERC721Votes)'),
+    .describe(solidityGovernorDescriptions.votes),
   clockMode: z
     .literal('blocknumber')
     .or(z.literal('timestamp'))
     .optional()
-    .describe('The clock mode used by the voting token. For Governor, this must match what the ERC20 or ERC721 voting token uses.'),
+    .describe(solidityGovernorDescriptions.clockMode),
   timelock: z
     .literal(false)
     .or(z.literal('openzeppelin'))
     .or(z.literal('compound'))
     .optional()
-    .describe('The type of timelock to use for executing proposals'),
+    .describe(solidityGovernorDescriptions.timelock),
   blockTime: z
     .number()
     .optional()
-    .describe('The number of seconds assumed for a block, default is 12'),
+    .describe(solidityGovernorDescriptions.blockTime),
   decimals: z
     .number()
     .optional()
-    .describe('The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes'),
+    .describe(solidityGovernorDescriptions.decimals),
   proposalThreshold: z
     .string()
     .optional()
-    .describe('Minimum number of votes an account must have to create a proposal, default is 0'),
+    .describe(solidityGovernorDescriptions.proposalThreshold),
   quorumMode: z
     .literal('percent')
     .or(z.literal('absolute'))
     .optional()
-    .describe('The type of quorum mode to use (percentage or absolute number)'),
+    .describe(solidityGovernorDescriptions.quorumMode),
   quorumPercent: z
     .number()
     .optional()
-    .describe('The percentage of votes required for a proposal to pass, used when quorumMode is "percent"'),
+    .describe(solidityGovernorDescriptions.quorumPercent),
   quorumAbsolute: z
     .string()
     .optional()
-    .describe('The absolute number of votes required for a proposal to pass, used when quorumMode is "absolute"'),
+    .describe(solidityGovernorDescriptions.quorumAbsolute),
   storage: z
     .boolean()
     .optional()
-    .describe('Whether to enable storage of proposal details and enumerability of proposals'),
+    .describe(solidityGovernorDescriptions.storage),
   settings: z
     .boolean()
     .optional()
-    .describe('Whether to allow governance to update voting settings (delay, period, proposal threshold)'),
+    .describe(solidityGovernorDescriptions.settings),
   ...commonSchema,
 }
 
 export const customSchema = {
-  name: z.string().describe('The name of the custom contract'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
+  name: z.string().describe(solidityCommonDescriptions.name),
+  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
   ...commonSchema,
 }
