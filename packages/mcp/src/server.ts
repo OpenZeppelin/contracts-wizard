@@ -7,6 +7,7 @@ import { registerSolidityERC1155 } from './solidity/erc1155';
 import { registerSolidityGovernor } from './solidity/governor';
 import { registerSolidityRWA } from './solidity/rwa';
 import { registerSolidityStablecoin } from './solidity/stablecoin';
+import { registerCairoERC20 } from './cairo/erc20';
 
 export function createServer() {
   const server = new McpServer(
@@ -30,6 +31,8 @@ export function createServer() {
   registerSolidityGovernor(server);
   registerSolidityCustom(server);
   registerSolidityRWA(server);
+
+  registerCairoERC20(server);
 
   return server;
 }
