@@ -58,6 +58,10 @@ jobs:
         if: matrix.package == 'stellar'
         uses: stellar/stellar-cli@v22.5.0
 
+      - name: Set up Scaffold CLI
+        if: matrix.package == 'stellar'
+        run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
+
       - name: Start Docker
         if: matrix.package == 'stellar'
         run: |
