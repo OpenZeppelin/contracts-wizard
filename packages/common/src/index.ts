@@ -1,1 +1,1 @@
-export * from './ai/parameter-descriptions';
+export * from './ai/descriptions/solidity';
