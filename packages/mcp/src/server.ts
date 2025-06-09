@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityTools } from './solidity/common/register.js';
 import { registerCairoTools } from './cairo/common/register.js';
 import { registerStellarTools } from './stellar/common/register.js';
+import { registerStylusTools } from './stylus/common/register.js';
 
 export function createServer() {
   const server = new McpServer(
@@ -20,6 +21,7 @@ export function createServer() {
   registerSolidityTools(server);
   registerCairoTools(server);
   registerStellarTools(server);
+  registerStylusTools(server);
 
   return server;
 }
