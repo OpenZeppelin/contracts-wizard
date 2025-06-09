@@ -1,0 +1,47 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { KindedOptions } from '@openzeppelin/wizard-stellar';
+import { nonFungible } from '@openzeppelin/wizard-stellar';
+import { safePrint } from './common/print.js';
+import { nonFungibleSchema } from './common/schemas.js';
+
+export function registerStellarNonFungible(server: McpServer) {
+  server.tool(
+    'stellar-generate-non-fungible',
+    'Generates a non-fungible token smart contract for Stellar, based on the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721. Returns the source code. Does not write to disk.',
+    nonFungibleSchema,
+    async ({
+      name,
+      symbol,
+      burnable,
+      enumerable,
+      consecutive,
+      pausable,
+      mintable,
+      sequential,
+      upgradeable,
+      info,
+    }) => {
+      const opts: KindedOptions['NonFungible'] = {
+        kind: 'NonFungible',
+        name,
+        symbol,
+        burnable,
+        enumerable,
+        consecutive,
+        pausable,
+        mintable,
+        sequential,
+        upgradeable,
+        info,
+      };
+      return {
+        content: [
+          {
+            type: 'text',
+            text: safePrint(() => nonFungible.print(opts)),
+          },
+        ],
+      };
+    },
+  );
+}
