@@ -60,7 +60,7 @@ jobs:
 
       - name: Set up Scaffold CLI
         if: matrix.package == 'stellar'
-        run: cargo install scaffold-stellar-cli & cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
+        run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli & cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
 
       - name: Start Docker
         if: matrix.package == 'stellar'
