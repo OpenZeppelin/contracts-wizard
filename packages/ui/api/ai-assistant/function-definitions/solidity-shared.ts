@@ -1,5 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { SolidityCommonOptions } from '../types/languages.ts';
+import { foo } from '../../../../common/src/ai/parameter-descriptions.ts';
 
 export const commonFunctionDescription = {
   access: {
@@ -17,7 +18,8 @@ export const commonFunctionDescription = {
       { type: 'boolean', enum: [false] },
     ],
     description:
-      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
+      foo,
+      //'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
   },
 
   info: {

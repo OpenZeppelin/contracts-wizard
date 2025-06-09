@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.1",
-    "@openzeppelin/wizard": "^0.5.5"
+    "@openzeppelin/wizard": "^0.5.5",
+    "@ericglau/wizard-common": "^0.0.1-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

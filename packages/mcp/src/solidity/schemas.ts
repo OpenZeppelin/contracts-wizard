@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { foo } from '@ericglau/wizard-common';
 
 export const commonSchema = {
   access: z
@@ -14,7 +15,8 @@ export const commonSchema = {
     .or(z.literal('uups'))
     .optional()
     .describe(
-      'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.'
+      foo,
+      //'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.'
     ),
   info: z
     .object({
