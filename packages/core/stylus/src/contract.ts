@@ -43,6 +43,7 @@ export interface BaseImplementedTrait {
   priority?: number;
   omitInherit?: boolean;
   modulePath: string;
+  functions: BaseFunction[];
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -130,7 +131,6 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = {
         ...baseTrait,
-        functions: [],
       };
       this.implementedTraitsMap.set(key, t);
       this.addUseClause(baseTrait.modulePath, baseTrait.name);

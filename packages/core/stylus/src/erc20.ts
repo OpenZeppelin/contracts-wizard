@@ -147,6 +147,43 @@ const erc20Trait: BaseImplementedTrait = {
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
+  functions: [
+    {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: [`self.erc20.total_supply()`],
+    },
+    {
+      name: 'transfer',
+      args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
+      returns: 'U256',
+      code: [`self.erc20.transfer(account)`],
+    },
+    {
+      name: 'transfer',
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: 'Result<bool, Self::Error>',
+      code: [`self.erc20.transfer(to, value).map_err(|e| e.into())`],
+    },
+    {
+      name: 'allowance',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
+      returns: 'U256',
+      code: [`self.erc20.allowance(owner, spender)`],
+    },
+    {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'value', type: 'U256' },
+      ],
+      returns: 'Result<bool, Self::Error>',
+      code: [`self.erc20.transfer_from(from, to, value).map_err(|e| e.into())`],
+    },
+  ],
 };
 
 const erc20PermitTrait: BaseImplementedTrait = {
@@ -172,7 +209,6 @@ const flashMintTrait: BaseImplementedTrait = {
     name: 'flash_mint',
     type: 'Erc20FlashMint',
   },
-  omitInherit: true,
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 };
 
@@ -199,23 +235,6 @@ const noncesTrait: BaseImplementedTrait = {
 // }
 
 const functions = defineFunctions({
-  // Token Functions
-  transfer: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.transfer(to, value).map_err(|e| e.into())`],
-  },
-  transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'value', type: 'U256' },
-    ],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`],
-  },
-
   // Extensions
   burn: {
     args: [getSelfArg(), { name: 'value', type: 'U256' }],

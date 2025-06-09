@@ -10,7 +10,7 @@ const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
 export function printContract(contract: Contract): string {
-  const sortedGroups = sortImplsToGroups(contract);
+  const impls = sortImpls(contract);
   return formatLines(
     ...spaceBetween(
       [
@@ -21,10 +21,11 @@ export function printContract(contract: Contract): string {
       spaceBetween(
         printUseClauses(contract),
         printConstants(contract),
-        printStorage(contract.name.identifier, sortedGroups),
+        printStorage(contract.name.identifier, impls),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
-        printImplementedTraits(contract.name.identifier, sortedGroups),
+        printImplementsAttribute(contract.name.identifier, impls),
       ),
+      printImplementedTraits(contract.name.identifier, impls),
     ),
   );
 }
@@ -131,7 +132,7 @@ function sortUseClauses(contract: Contract): UseClause[] {
  * Sorts implemented traits by priority and name, and groups them by section.
  * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
  */
-function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
+function sortImpls(contract: Contract): ImplementedTrait[] {
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
@@ -139,24 +140,11 @@ function sortImplsToGroups(contract: Contract): [string, ImplementedTrait[]][] {
     return a.name.localeCompare(b.name);
   });
 
-  // group by section
-  const grouped = sortedTraits.reduce(
-    (result: { [section: string]: ImplementedTrait[] }, current: ImplementedTrait) => {
-      // default to no section
-      const section = current.section ?? DEFAULT_SECTION;
-      (result[section] = result[section] || []).push(current);
-      return result;
-    },
-    {},
-  );
-
-  const sortedGroups = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
-  return sortedGroups;
+  return sortedTraits;
 }
 
-function printStorage(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const structLines = sortedGroups
-    .flatMap(([_, impls]) => impls)
+function printStorage(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+  const structLines = implementedTraits
     .flatMap(trait => trait.storage)
     .map(s => [`${s.name}: ${s.type},`]);
 
@@ -178,9 +166,8 @@ function printEip712(contractName: string): Lines[] {
   ];
 }
 
-function printImplementedTraits(contractName: string, sortedGroups: [string, ImplementedTrait[]][]): Lines[] {
-  const traitNames = sortedGroups
-    .flatMap(([_, impls]) => impls)
+function printImplementsAttribute(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+  const traitNames = implementedTraits
     .filter(trait => !trait.omitInherit)
     .map(trait => {
       let name = trait.interface.name;
@@ -195,24 +182,36 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
     header.push(`#[implements(${traitNames.join(', ')})]`)
   }
 
-  const sections = sortedGroups.map(([section, impls]) => printSectionFunctions(section, impls));
+  // const sections = printFunctions(implementedTraits);
 
-  return sections.length > 0 && sections.some(s => s.length > 0)
-    ? [...header, `impl ${contractName} {`, spaceBetween(...sections), '}']
-    : [...header, `impl ${contractName} {}`];
+  // return sections.length > 0
+  //   ? [...header, `impl ${contractName} {`, spaceBetween(...[sections]), '}']
+  //   : [...header, `impl ${contractName} {}`];
+  
+  return [...header, `impl ${contractName} {}`];
 }
 
-function printSectionFunctions(section: string, impls: ImplementedTrait[]): Lines[] {
-  const functionBlocks = [];
-  const isDefaultSection = section === DEFAULT_SECTION;
-  if (!isDefaultSection) {
-    functionBlocks.push(['//', `// ${section}`, '//']);
-  }
-  impls.forEach(trait => {
-    trait.functions.forEach(fn => {
-      functionBlocks.push(printFunction(fn));
-    });
-  });
+function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+    return implementedTraits
+    .map((impl) =>  {
+      let content: Lines[] = []
+      if (impl.interface.associatedError) {
+        content.push('type Error = Vec<u8>;', '')
+      }
+      const fns = printTraitFunctions(impl);
+      if (fns.length > 0) {
+        content.push(...fns);
+      }
+      
+      return content.length > 0
+        ? ['#[public]', `impl ${impl.interface.name} for ${contractName} {`, spaceBetween(content), '}']
+        : ['#[public]', `impl ${impl.interface.name} for ${contractName} {}`]
+    })
+    .flatMap(lines => lines);
+}
+
+function printTraitFunctions(impl: ImplementedTrait): Lines[] {
+  const functionBlocks = impl.functions.map(fn => printFunction(fn));
   return spaceBetween(...functionBlocks);
 }
 
