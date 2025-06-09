@@ -19,6 +19,11 @@ export interface Storage {
   type: string;
 }
 
+export interface Interface {
+  name: string;
+  associatedError?: boolean;
+}
+
 export interface UseClause {
   containerPath: string;
   name: string;
@@ -29,6 +34,7 @@ export interface UseClause {
 export interface BaseImplementedTrait {
   name: string;
   storage: Storage;
+  interface: Interface;
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -128,6 +134,7 @@ export class ContractBuilder implements Contract {
       };
       this.implementedTraitsMap.set(key, t);
       this.addUseClause(baseTrait.modulePath, baseTrait.name);
+      this.addUseClause(baseTrait.modulePath, baseTrait.interface.name);
       return t;
     }
   }

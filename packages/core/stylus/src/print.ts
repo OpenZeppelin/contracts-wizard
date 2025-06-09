@@ -158,19 +158,19 @@ function printStorage(contractName: string, sortedGroups: [string, ImplementedTr
   const structLines = sortedGroups
     .flatMap(([_, impls]) => impls)
     .flatMap(trait => trait.storage)
-    .map(s => ['#[borrow]', `${s.name}: ${s.type},`]);
+    .map(s => [`${s.name}: ${s.type},`]);
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];
 
   return structLines.length === 0
-    ? [...baseStruct, `struct ${contractName} {}`]
+    ? [...baseStruct, `struct ${contractName};`]
     : [...baseStruct, `struct ${contractName} {`, ...structLines, `}`];
 }
 
 function printEip712(contractName: string): Lines[] {
   return [
     '#[storage]',
-    'struct Eip712 {}',
+    'struct Eip712;',
     '',
     'impl IEip712 for Eip712 {',
     spaceBetween([`const NAME: &'static str = "${contractName}";`, `const VERSION: &'static str = "1";`]),
@@ -182,11 +182,18 @@ function printImplementedTraits(contractName: string, sortedGroups: [string, Imp
   const traitNames = sortedGroups
     .flatMap(([_, impls]) => impls)
     .filter(trait => !trait.omitInherit)
-    .map(trait => trait.storage.type);
+    .map(trait => {
+      let name = trait.interface.name;
+      if (trait.interface.associatedError) {
+        name = `${name}<Error = Vec<u8>>`
+      }
+      return name;
+    });
 
-  const inheritAttribute = traitNames.length > 0 ? `#[inherit(${traitNames.join(', ')})]` : '#[inherit]';
-
-  const header = ['#[public]', inheritAttribute];
+  let header = ['#[public]'];
+  if (traitNames.length > 0) {
+    header.push(`#[implements(${traitNames.join(', ')})]`)
+  }
 
   const sections = sortedGroups.map(([section, impls]) => printSectionFunctions(section, impls));
 

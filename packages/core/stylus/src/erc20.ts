@@ -79,13 +79,11 @@ function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc20Trait);
   // c.addImplementedTrait(erc20MetadataTrait);
 
-  // the trait necessary to access Erc20 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
 
   // if (pausable) {
   //   c.addUseClause('alloc::vec', 'Vec');
-  //   c.addUseClause('alloy_primitives', 'Address');
-  //   c.addUseClause('alloy_primitives', 'U256');
 
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
@@ -98,9 +96,7 @@ function addPermit(c: ContractBuilder) {
   c.addEip712();
 
   c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'B256');
-  c.addUseClause('alloy_primitives', 'U256');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
 
   c.addFunction(erc20PermitTrait, functions.permit);
 
@@ -113,8 +109,6 @@ function addBurnable(c: ContractBuilder) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
 
   c.addFunction(erc20Trait, functions.burn);
   c.addFunction(erc20Trait, functions.burn_from);
@@ -132,8 +126,6 @@ function addFlashMint(c: ContractBuilder) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
 
   c.addUseClause('stylus_sdk', 'abi::Bytes');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
 
   c.addFunction(flashMintTrait, functions.max_flash_loan);
   c.addFunction(flashMintTrait, functions.flash_fee);
@@ -146,6 +138,10 @@ function addFlashMint(c: ContractBuilder) {
 
 const erc20Trait: BaseImplementedTrait = {
   name: 'Erc20',
+  interface: {
+    name: 'IErc20',
+    associatedError: true,
+  },
   storage: {
     name: 'erc20',
     type: 'Erc20',
@@ -155,6 +151,10 @@ const erc20Trait: BaseImplementedTrait = {
 
 const erc20PermitTrait: BaseImplementedTrait = {
   name: 'Erc20Permit',
+  interface: {
+    name: 'IErc20Permit',
+    associatedError: true,
+  },
   storage: {
     name: 'erc20_permit',
     type: 'Erc20Permit<Eip712>',
@@ -164,6 +164,10 @@ const erc20PermitTrait: BaseImplementedTrait = {
 
 const flashMintTrait: BaseImplementedTrait = {
   name: 'Erc20FlashMint',
+  interface: {
+    name: 'IErc3156FlashLender',
+    associatedError: true,
+  },
   storage: {
     name: 'flash_mint',
     type: 'Erc20FlashMint',
@@ -174,6 +178,9 @@ const flashMintTrait: BaseImplementedTrait = {
 
 const noncesTrait: BaseImplementedTrait = {
   name: 'Nonces',
+  interface: {
+    name: 'INonces',
+  },
   storage: {
     name: 'nonces',
     type: 'Nonces',
@@ -183,6 +190,7 @@ const noncesTrait: BaseImplementedTrait = {
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
 //   name: 'Erc20Metadata',
+//   interface: 'IErc20Metadata',
 //   storage: {
 //     name: 'metadata',
 //     type: 'Erc20Metadata',
