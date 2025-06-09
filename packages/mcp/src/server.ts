@@ -3,12 +3,13 @@ import { registerSolidityTools } from './solidity/common/register.js';
 import { registerCairoTools } from './cairo/common/register.js';
 import { registerStellarTools } from './stellar/common/register.js';
 import { registerStylusTools } from './stylus/common/register.js';
+import { version } from '../package.json';
 
 export function createServer() {
   const server = new McpServer(
     {
       name: 'OpenZeppelin Contracts Wizard',
-      version: '0.0.1',
+      version,
     },
     {
       instructions: `\
