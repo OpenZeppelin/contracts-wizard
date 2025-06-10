@@ -4,7 +4,6 @@ import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
 
-const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
@@ -23,7 +22,7 @@ export function printContract(contract: Contract): string {
         printConstants(contract),
         printStorage(contract.name.identifier, impls),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
-        printImplementsAttribute(contract.name.identifier, impls),
+        printImplementsAttribute(contract, impls),
       ),
       printImplementedTraits(contract.name.identifier, impls),
     ),
@@ -166,7 +165,7 @@ function printEip712(contractName: string): Lines[] {
   ];
 }
 
-function printImplementsAttribute(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[]): Lines[] {
   const traitNames = implementedTraits
     .filter(trait => !trait.omitInherit)
     .map(trait => {
@@ -182,13 +181,11 @@ function printImplementsAttribute(contractName: string, implementedTraits: Imple
     header.push(`#[implements(${traitNames.join(', ')})]`)
   }
 
-  // const sections = printFunctions(implementedTraits);
+  const fns = contract.functions.map(printFunction);
 
-  // return sections.length > 0
-  //   ? [...header, `impl ${contractName} {`, spaceBetween(...[sections]), '}']
-  //   : [...header, `impl ${contractName} {}`];
-  
-  return [...header, `impl ${contractName} {}`];
+  return fns.length > 0
+    ? [...header, `impl ${contract.name.identifier} {`, spaceBetween(...[fns]), '}']
+    : [...header, `impl ${contract.name.identifier} {}`];
 }
 
 function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {

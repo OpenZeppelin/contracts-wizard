@@ -1,15 +1,16 @@
 import test from 'ava';
 
-import type { BaseFunction, BaseImplementedTrait } from './contract';
+import type { BaseImplementedTrait } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { getSelfArg } from './common-options';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
   t.snapshot(printContract(Foo));
 });
 
-test('contract with function code before', t => {
+test('contract with parent with function code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'External',
@@ -18,15 +19,19 @@ test('contract with function code before', t => {
       type: 'External',
     },
     modulePath: 'mod_ext',
+    functions: [
+      {
+        name: 'someFunction',
+        args: [getSelfArg('immutable')],
+        code: ['self.external.someFunction();'],
+      }
+    ],
+    interface: {
+      name: 'IExternal',
+    }
   };
   Foo.addImplementedTrait(trait);
-  const fn: BaseFunction = {
-    name: 'someFunction',
-    args: [],
-    code: ['someFunction();'],
-  };
-  Foo.addFunction(trait, fn);
-  Foo.addFunctionCodeBefore(trait, fn, ['before();']);
+  Foo.addFunctionCodeBefore(trait, trait.functions[0]!, ['before();']);
   t.snapshot(printContract(Foo));
 });
 

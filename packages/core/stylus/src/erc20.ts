@@ -98,7 +98,7 @@ function addPermit(c: ContractBuilder) {
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
 
-  c.addFunction(erc20PermitTrait, functions.permit);
+  c.addFunction(functions.permit, erc20PermitTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
@@ -110,8 +110,8 @@ function addBurnable(c: ContractBuilder) {
 
   c.addUseClause('alloc::vec', 'Vec');
 
-  c.addFunction(erc20Trait, functions.burn);
-  c.addFunction(erc20Trait, functions.burn_from);
+  c.addFunction(functions.burn, erc20Trait);
+  c.addFunction(functions.burn_from, erc20Trait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
@@ -127,9 +127,9 @@ function addFlashMint(c: ContractBuilder) {
 
   c.addUseClause('stylus_sdk', 'abi::Bytes');
 
-  c.addFunction(flashMintTrait, functions.max_flash_loan);
-  c.addFunction(flashMintTrait, functions.flash_fee);
-  c.addFunction(flashMintTrait, functions.flash_loan);
+  c.addFunction(functions.max_flash_loan, flashMintTrait);
+  c.addFunction(functions.flash_fee, flashMintTrait);
+  c.addFunction(functions.flash_loan, flashMintTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);

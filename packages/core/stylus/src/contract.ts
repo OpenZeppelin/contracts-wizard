@@ -12,6 +12,7 @@ export interface Contract {
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
   eip712Needed?: boolean;
+  functions: ContractFunction[];
 }
 
 export interface Storage {
@@ -85,6 +86,7 @@ export class ContractBuilder implements Contract {
   private useClausesMap: Map<string, UseClause> = new Map();
   private errorsMap: Map<string, Error> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
+  private functionsArr: ContractFunction[] = [];
 
   eip712Needed?: boolean;
 
@@ -110,6 +112,10 @@ export class ContractBuilder implements Contract {
 
   get constants(): Variable[] {
     return [...this.constantsMap.values()];
+  }
+
+  get functions(): ContractFunction[] {
+    return [...this.functionsArr];
   }
 
   addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
@@ -157,8 +163,8 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
-    const t = this.addImplementedTrait(baseTrait);
+  addFunction(fn: BaseFunction, baseTrait?: BaseImplementedTrait): ContractFunction {
+    const t = baseTrait ? this.addImplementedTrait(baseTrait) : this;
 
     const signature = this.getFunctionSignature(fn);
 
@@ -185,25 +191,25 @@ export class ContractBuilder implements Contract {
 
   setFunctionCode(baseTrait: BaseImplementedTrait, fn: BaseFunction, code: string[]): void {
     this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+    const existingFn = this.addFunction(fn, baseTrait);
     existingFn.code = code;
   }
 
   addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
     this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+    const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
   addFunctionCodeAfter(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeAfter: string[]): void {
     this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+    const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
   addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
     this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+    const existingFn = this.addFunction(fn, baseTrait);
     existingFn.attribute = attribute;
   }
 }
