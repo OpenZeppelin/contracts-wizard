@@ -23,8 +23,8 @@ export function printContract(contract: Contract): string {
         printStorage(contract.name.identifier, impls),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
         printImplementsAttribute(contract, impls),
+        printImplementedTraits(contract.name.identifier, impls),
       ),
-      printImplementedTraits(contract.name.identifier, impls),
     ),
   );
 }
@@ -184,26 +184,27 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Impleme
   const fns = contract.functions.map(printFunction);
 
   return fns.length > 0
-    ? [...header, `impl ${contract.name.identifier} {`, spaceBetween(...[fns]), '}']
+    ? [...header, `impl ${contract.name.identifier} {`, spaceBetween(...fns), '}']
     : [...header, `impl ${contract.name.identifier} {}`];
 }
 
 function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
-    return implementedTraits
-    .map((impl) =>  {
-      let content: Lines[] = []
-      if (impl.interface.associatedError) {
-        content.push('type Error = Vec<u8>;', '')
-      }
-      const fns = printTraitFunctions(impl);
-      if (fns.length > 0) {
-        content.push(...fns);
-      }
-      
-      return content.length > 0
-        ? ['#[public]', `impl ${impl.interface.name} for ${contractName} {`, spaceBetween(content), '}']
-        : ['#[public]', `impl ${impl.interface.name} for ${contractName} {}`]
-    })
+    return spaceBetween(...implementedTraits
+      .map((impl) =>  {
+        let content: Lines[] = []
+        if (impl.interface.associatedError) {
+          content.push('type Error = Vec<u8>;', '')
+        }
+        const fns = printTraitFunctions(impl);
+        if (fns.length > 0) {
+          content.push(...fns);
+        }
+        
+        return content.length > 0
+          ? ['#[public]', `impl ${impl.interface.name} for ${contractName} {`, [spaceBetween(content)], '}']
+          : ['#[public]', `impl ${impl.interface.name} for ${contractName} {}`]
+      })
+    )
     .flatMap(lines => lines);
 }
 

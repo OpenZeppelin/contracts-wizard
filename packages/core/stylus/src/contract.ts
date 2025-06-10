@@ -163,7 +163,7 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(fn: BaseFunction, baseTrait?: BaseImplementedTrait): ContractFunction {
+  addFunction(fn: BaseFunction, baseTrait?: BaseImplementedTrait): ContractFunction {    
     const t = baseTrait ? this.addImplementedTrait(baseTrait) : this;
 
     const signature = this.getFunctionSignature(fn);
@@ -181,7 +181,13 @@ export class ContractBuilder implements Contract {
       ...fn,
       codeBefore: [],
     };
-    t.functions.push(contractFn);
+    
+    if (baseTrait) {
+      t.functions.push(contractFn);
+    } else {
+      this.functionsArr.push(contractFn);
+    }
+    
     return contractFn;
   }
 
@@ -189,26 +195,22 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  setFunctionCode(baseTrait: BaseImplementedTrait, fn: BaseFunction, code: string[]): void {
-    this.addImplementedTrait(baseTrait);
+  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: BaseImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.code = code;
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
-    this.addImplementedTrait(baseTrait);
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: BaseImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionCodeAfter(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeAfter: string[]): void {
-    this.addImplementedTrait(baseTrait);
+  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], baseTrait?: BaseImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
-  addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
-    this.addImplementedTrait(baseTrait);
+  addFunctionAttribute(fn: BaseFunction, attribute: string, baseTrait?: BaseImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.attribute = attribute;
   }

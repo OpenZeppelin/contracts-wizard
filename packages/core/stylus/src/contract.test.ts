@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import type { BaseImplementedTrait } from './contract';
+import type { BaseImplementedTrait, ContractFunction } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
 import { getSelfArg } from './common-options';
@@ -10,28 +10,141 @@ test('contract basics', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with parent with function code before', t => {
+test('contract with function', t => {
+  const Foo = new ContractBuilder('Foo');
+  const fn: ContractFunction = {
+    name: 'some_function',
+    args: [getSelfArg('immutable')],
+    code: ['todo!();'],
+  };
+  Foo.addFunction(fn);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with function and code before', t => {
+  const Foo = new ContractBuilder('Foo');
+  const fn: ContractFunction = {
+    name: 'some_function',
+    args: [getSelfArg('immutable')],
+    code: ['todo!();'],
+  };
+  Foo.addFunction(fn);
+  Foo.addFunctionCodeBefore(fn, ['before();']);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with parent', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
-    name: 'External',
+    name: 'Parent',
     storage: {
-      name: 'external',
-      type: 'External',
+      name: 'parent',
+      type: 'Parent',
     },
     modulePath: 'mod_ext',
     functions: [
       {
-        name: 'someFunction',
+        name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.external.someFunction();'],
+        code: ['self.parent.some_function();'],
       }
     ],
     interface: {
-      name: 'IExternal',
+      name: 'IParent',
     }
   };
   Foo.addImplementedTrait(trait);
-  Foo.addFunctionCodeBefore(trait, trait.functions[0]!, ['before();']);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with parent and associated error', t => {
+  const Foo = new ContractBuilder('Foo');
+  const trait: BaseImplementedTrait = {
+    name: 'Parent',
+    storage: {
+      name: 'parent',
+      type: 'Parent',
+    },
+    modulePath: 'mod_ext',
+    functions: [
+      {
+        name: 'some_function',
+        args: [getSelfArg('immutable')],
+        code: ['self.parent.some_function();'],
+        returns: 'Result<(), Vec<u8>>',
+      }
+    ],
+    interface: {
+      name: 'IParent',
+      associatedError: true,
+    }
+  };
+  Foo.addImplementedTrait(trait);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with parent and with function', t => {
+  const Foo = new ContractBuilder('Foo');
+  const trait: BaseImplementedTrait = {
+    name: 'Parent',
+    storage: {
+      name: 'parent',
+      type: 'Parent',
+    },
+    modulePath: 'mod_ext',
+    functions: [
+      {
+        name: 'some_function',
+        args: [getSelfArg('immutable')],
+        code: ['self.parent.some_function();'],
+      }
+    ],
+    interface: {
+      name: 'IParent',
+    }
+  };
+  Foo.addImplementedTrait(trait);
+  
+  const fn: ContractFunction = {
+    name: 'my_function',
+    args: [getSelfArg('immutable')],
+    code: ['todo!();'],
+  };
+  Foo.addFunction(fn);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with parent and with function with code before', t => {
+  const Foo = new ContractBuilder('Foo');
+  const trait: BaseImplementedTrait = {
+    name: 'Parent',
+    storage: {
+      name: 'parent',
+      type: 'Parent',
+    },
+    modulePath: 'mod_ext',
+    functions: [
+      {
+        name: 'some_function',
+        args: [getSelfArg('immutable')],
+        code: ['self.parent.some_function();'],
+      }
+    ],
+    interface: {
+      name: 'IParent',
+    }
+  };
+  Foo.addImplementedTrait(trait);
+  Foo.addFunctionCodeBefore(trait.functions[0]!, ['before();'], trait);
+  
+  const fn: ContractFunction = {
+    name: 'my_function',
+    args: [getSelfArg('immutable')],
+    code: ['todo!();'],
+  };
+  Foo.addFunction(fn);
+  Foo.addFunctionCodeBefore(fn, ['before();']);
+  
   t.snapshot(printContract(Foo));
 });
 
@@ -59,26 +172,37 @@ test('contract with sorted use clauses', t => {
 
 test('contract with sorted traits', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addFunction(
-    { name: 'Z', storage: { name: 'z', type: 'Z' }, modulePath: 'mod_z' },
-    { name: 'funcZ', args: [], code: [] },
-  );
-  Foo.addFunction(
-    { name: 'A', storage: { name: 'a', type: 'A' }, modulePath: 'mod_a' },
-    { name: 'funcA', args: [], code: [] },
-  );
-  Foo.addFunction(
-    {
-      name: 'Special',
-      storage: { name: 'special', type: 'Special' },
-      modulePath: 'mod_special',
-      section: 'Special Section',
-    },
-    { name: 'funcSpecial', args: [], code: [] },
-  );
-  Foo.addFunction(
-    { name: 'B', storage: { name: 'b', type: 'B' }, modulePath: 'mod_b' },
-    { name: 'funcB', args: [], code: [] },
-  );
+  const traitA: BaseImplementedTrait = { 
+    name: 'A',
+      storage: { name: 'a', type: 'A' },
+      modulePath: 'mod_a',
+      interface: { name: 'IA' },
+      functions: [{name: 'func_a', args: [], code: ['todo!();']}],
+  };
+  const traitB: BaseImplementedTrait = { 
+    name: 'B',
+      storage: { name: 'b', type: 'B' },
+      modulePath: 'mod_b',
+      interface: { name: 'IB' },
+      functions: [{name: 'func_b', args: [], code: ['todo!();']}],
+  };
+  const traitSpecial: BaseImplementedTrait = { 
+    name: 'Special',
+    storage: { name: 'special', type: 'Special' },
+    modulePath: 'mod_special',
+    interface: { name: 'ISpecial' },
+    functions: [{name: 'func_special', args: [], code: ['todo!();']}],
+  };
+  const traitZ: BaseImplementedTrait = { 
+    name: 'Z',
+    storage: { name: 'z', type: 'Z' },
+    modulePath: 'mod_z',
+    interface: { name: 'IZ' },
+    functions: [{name: 'func_z', args: [], code: ['todo!();']}],
+  };
+  Foo.addFunction(traitZ.functions[0]!, traitZ);
+  Foo.addFunction(traitA.functions[0]!, traitA);
+  Foo.addFunction(traitSpecial.functions[0]!, traitSpecial);
+  Foo.addFunction(traitB.functions[0]!, traitB);
   t.snapshot(printContract(Foo));
 });
