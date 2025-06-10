@@ -15,7 +15,7 @@ export function printContract(contract: Contract): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        printDocumentationTags(contract.documentationTags),
+        ...printDocumentationTags(contract.documentationTags),
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
         `#![no_std]`,
       ],
