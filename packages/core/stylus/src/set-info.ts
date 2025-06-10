@@ -1,7 +1,5 @@
 import type { ContractBuilder } from './contract';
 
-export const TAG_SECURITY_CONTACT = `@custom:security-contact`;
-
 export const infoOptions = [{}, { license: 'WTFPL' }] as const;
 
 export const defaults: Info = { license: 'MIT' };
@@ -15,7 +13,7 @@ export function setInfo(c: ContractBuilder, info: Info): void {
   const { securityContact, license } = info;
 
   if (securityContact) {
-    c.addDocumentationTag(TAG_SECURITY_CONTACT, securityContact);
+    c.addSecurityTag(securityContact);
   }
 
   if (license) {

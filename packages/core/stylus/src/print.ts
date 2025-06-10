@@ -16,11 +16,12 @@ export function printContract(contract: Contract): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
+        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
+        ...printDocumentationTags(contract.documentationTags),
       ],
       [`#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`, `extern crate alloc;`],
       spaceBetween(
         printUseClauses(contract),
-        printDocumentationTags(contract.documentationTags),
         printConstants(contract),
         printStorage(contract.name.identifier, sortedGroups),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
@@ -287,5 +288,9 @@ function printArgument(arg: Argument): string {
 }
 
 function printDocumentationTags(tags: DocumentationTag[]): string[] {
-  return tags.map(({ key, value }) => `/// ${key} ${value}`);
+  return tags.map(({ key, value }) => `// ${key} ${value}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }
