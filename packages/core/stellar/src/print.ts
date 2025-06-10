@@ -355,6 +355,6 @@ function printArgument(arg: Argument): string {
   }
 }
 
-function printDocumentationTags(tags: DocumentationTag[] = []): string[] {
+function printDocumentationTags(tags: DocumentationTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
