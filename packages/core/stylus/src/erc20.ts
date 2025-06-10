@@ -79,12 +79,11 @@ function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc20Trait);
   // c.addImplementedTrait(erc20MetadataTrait);
 
+  c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
   c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
 
   // if (pausable) {
-  //   c.addUseClause('alloc::vec', 'Vec');
-
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
@@ -95,7 +94,6 @@ function addPermit(c: ContractBuilder) {
   c.addImplementedTrait(erc20PermitTrait);
   c.addEip712();
 
-  c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
 
   // if (pausable) {
@@ -105,8 +103,6 @@ function addPermit(c: ContractBuilder) {
 
 function addBurnable(c: ContractBuilder) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
-
-  c.addUseClause('alloc::vec', 'Vec');
 
   c.addFunction(functions.burn, erc20Trait);
   c.addFunction(functions.burn_from, erc20Trait);
