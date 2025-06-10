@@ -91,7 +91,7 @@ function addBase(c: ContractBuilder) {
 
 function addPermit(c: ContractBuilder) {
   c.addImplementedTrait(noncesTrait);
-  c.addImplementedTrait(erc20PermitTrait);
+  c.addImplementedTrait(permitTrait);
   c.addEip712();
 
   c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
@@ -104,8 +104,7 @@ function addPermit(c: ContractBuilder) {
 function addBurnable(c: ContractBuilder) {
   c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
 
-  c.addFunction(functions.burn, erc20Trait);
-  c.addFunction(functions.burn_from, erc20Trait);
+  c.addImplementedTrait(burnableTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
@@ -131,13 +130,12 @@ function addFlashMint(c: ContractBuilder) {
 }
 
 const erc20Trait: BaseImplementedTrait = {
-  name: 'Erc20',
   interface: {
     name: 'IErc20',
     associatedError: true,
   },
-  storage: {
-    name: 'erc20',
+  implementation: {
+    storageName: 'erc20',
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
@@ -149,10 +147,10 @@ const erc20Trait: BaseImplementedTrait = {
       code: [`self.erc20.total_supply()`],
     },
     {
-      name: 'transfer',
+      name: 'balance_of',
       args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
       returns: 'U256',
-      code: [`self.erc20.transfer(account)`],
+      code: [`self.erc20.balance_of(account)`],
     },
     {
       name: 'transfer',
@@ -165,6 +163,12 @@ const erc20Trait: BaseImplementedTrait = {
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
       returns: 'U256',
       code: [`self.erc20.allowance(owner, spender)`],
+    },
+    {
+      name: 'approve',
+      args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: 'Result<bool, Self::Error>',
+      code: [`self.erc20.approve(spender, value).map_err(|e| e.into())`],
     },
     {
       name: 'transfer_from',
@@ -181,12 +185,11 @@ const erc20Trait: BaseImplementedTrait = {
 };
 
 const noncesTrait: BaseImplementedTrait = {
-  name: 'Nonces',
   interface: {
     name: 'INonces',
   },
-  storage: {
-    name: 'nonces',
+  implementation: {
+    storageName: 'nonces',
     type: 'Nonces',
   },
   modulePath: 'openzeppelin_stylus::utils::nonces',
@@ -200,15 +203,15 @@ const noncesTrait: BaseImplementedTrait = {
   ]
 };
 
-const erc20PermitTrait: BaseImplementedTrait = {
-  name: 'Erc20Permit',
+const permitTrait: BaseImplementedTrait = {
   interface: {
     name: 'IErc20Permit',
     associatedError: true,
   },
-  storage: {
-    name: 'erc20_permit',
-    type: 'Erc20Permit<Eip712>',
+  implementation: {
+    storageName: 'erc20_permit',
+    type: 'Erc20Permit',
+    genericType: 'Eip712',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
@@ -233,20 +236,41 @@ const erc20PermitTrait: BaseImplementedTrait = {
       ],
       returns: 'Result<(), Self::Error>',
       code: [
-        `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
+        `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.implementation!.storageName}, &mut self.${noncesTrait.implementation!.storageName}).map_err(|e| e.into())`,
       ],
     }
   ],
 };
 
+const burnableTrait: BaseImplementedTrait = {
+  interface: {
+    name: 'IErc20Burnable',
+    associatedError: true,
+  },
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  functions: [
+      {
+        name: 'burn',
+        args: [getSelfArg(), { name: 'value', type: 'U256' }],
+        returns: 'Result<(), Self::Error>',
+        code: [`self.${erc20Trait.implementation!.storageName}.burn(value).map_err(|e| e.into())`],
+      },
+      {
+        name: 'burn_from',
+        args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
+        returns: 'Result<(), Self::Error>',
+        code: [`self.${erc20Trait.implementation!.storageName}.burn_from(account, value).map_err(|e| e.into())`],
+      },
+  ],
+};
+
 const flashMintTrait: BaseImplementedTrait = {
-  name: 'Erc20FlashMint',
   interface: {
     name: 'IErc3156FlashLender',
     associatedError: true,
   },
-  storage: {
-    name: 'flash_mint',
+  implementation: {
+    storageName: 'flash_mint',
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
@@ -263,27 +287,15 @@ const flashMintTrait: BaseImplementedTrait = {
 // }
 
 const functions = defineFunctions({
-  // Extensions
-  burn: {
-    args: [getSelfArg(), { name: 'value', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.burn(value).map_err(|e| e.into())`],
-  },
-  burn_from: {
-    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`],
-  },
-
   max_flash_loan: {
     args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
     returns: 'U256',
-    code: [`self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`],
+    code: [`self.${flashMintTrait.implementation!.storageName}.max_flash_loan(token, &self.${erc20Trait.implementation!.storageName})`],
   },
   flash_fee: {
     args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<U256, Vec<u8>>',
-    code: [`self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`],
+    code: [`self.${flashMintTrait.implementation!.storageName}.flash_fee(token, value).map_err(|e| e.into())`],
   },
   flash_loan: {
     args: [
@@ -295,7 +307,7 @@ const functions = defineFunctions({
     ],
     returns: 'Result<bool, Vec<u8>>',
     code: [
-      `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.storage.name}).map_err(|e| e.into())`,
+      `self.${flashMintTrait.implementation!.storageName}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName}).map_err(|e| e.into())`,
     ],
   },
 });

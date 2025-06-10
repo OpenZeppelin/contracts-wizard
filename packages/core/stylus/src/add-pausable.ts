@@ -9,8 +9,8 @@ export function addPausable(c: ContractBuilder, access: Access) {
 
   const pausableTrait: BaseImplementedTrait = {
     name: 'Pausable',
-    storage: {
-      name: 'pausable',
+    implementation: {
+      storageName: 'pausable',
       type: 'Pausable',
     },
     modulePath: 'openzeppelin_stylus::utils',

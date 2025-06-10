@@ -37,8 +37,8 @@ test('contract with parent', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'Parent',
-    storage: {
-      name: 'parent',
+    implementation: {
+      storageName: 'parent',
       type: 'Parent',
     },
     modulePath: 'mod_ext',
@@ -61,8 +61,8 @@ test('contract with parent and associated error', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'Parent',
-    storage: {
-      name: 'parent',
+    implementation: {
+      storageName: 'parent',
       type: 'Parent',
     },
     modulePath: 'mod_ext',
@@ -87,8 +87,8 @@ test('contract with parent and with function', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'Parent',
-    storage: {
-      name: 'parent',
+    implementation: {
+      storageName: 'parent',
       type: 'Parent',
     },
     modulePath: 'mod_ext',
@@ -118,8 +118,8 @@ test('contract with parent and with function with code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
     name: 'Parent',
-    storage: {
-      name: 'parent',
+    implementation: {
+      storageName: 'parent',
       type: 'Parent',
     },
     modulePath: 'mod_ext',
@@ -174,28 +174,28 @@ test('contract with sorted traits', t => {
   const Foo = new ContractBuilder('Foo');
   const traitA: BaseImplementedTrait = { 
     name: 'A',
-      storage: { name: 'a', type: 'A' },
+      implementation: { storageName: 'a', type: 'A' },
       modulePath: 'mod_a',
       interface: { name: 'IA' },
       functions: [{name: 'func_a', args: [], code: ['todo!();']}],
   };
   const traitB: BaseImplementedTrait = { 
     name: 'B',
-      storage: { name: 'b', type: 'B' },
+      implementation: { storageName: 'b', type: 'B' },
       modulePath: 'mod_b',
       interface: { name: 'IB' },
       functions: [{name: 'func_b', args: [], code: ['todo!();']}],
   };
   const traitSpecial: BaseImplementedTrait = { 
     name: 'Special',
-    storage: { name: 'special', type: 'Special' },
+    implementation: { storageName: 'special', type: 'Special' },
     modulePath: 'mod_special',
     interface: { name: 'ISpecial' },
     functions: [{name: 'func_special', args: [], code: ['todo!();']}],
   };
   const traitZ: BaseImplementedTrait = { 
     name: 'Z',
-    storage: { name: 'z', type: 'Z' },
+    implementation: { storageName: 'z', type: 'Z' },
     modulePath: 'mod_z',
     interface: { name: 'IZ' },
     functions: [{name: 'func_z', args: [], code: ['todo!();']}],

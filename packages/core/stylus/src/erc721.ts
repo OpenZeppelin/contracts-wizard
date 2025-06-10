@@ -105,10 +105,10 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
 
   if (enumerable) {
     c.setFunctionCode(erc721Trait, functions.burn, [
-      `let owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
-      `self.${erc721Trait.storage.name}.burn(token_id)?;`,
-      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
-      `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
+      `let owner = self.${erc721Trait.implementation.storageName}.owner_of(token_id)?;`,
+      `self.${erc721Trait.implementation.storageName}.burn(token_id)?;`,
+      `self.${enumerableTrait.implementation.storageName}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.implementation.storageName})?;`,
+      `self.${enumerableTrait.implementation.storageName}._remove_token_from_all_tokens_enumeration(token_id);`,
       'Ok(())',
     ]);
   }
@@ -123,16 +123,16 @@ function addEnumerable(c: ContractBuilder) {
   c.addUseClause('stylus_sdk', 'abi::Bytes');
 
   c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
-    indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),
+    indentLine(`|| ${enumerableTrait.implementation.type}::supports_interface(interface_id)`, 1),
   ]);
 
   for (const fn of [functions.transfer_from, functions.safe_transfer_from, functions.safe_transfer_from_with_data]) {
     c.addFunctionCodeBefore(erc721Trait, fn, [
-      `let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
+      `let previous_owner = self.${erc721Trait.implementation.storageName}.owner_of(token_id)?;`,
     ]);
     c.addFunctionCodeAfter(erc721Trait, fn, [
-      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
-      `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
+      `self.${enumerableTrait.implementation.storageName}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.implementation.storageName})?;`,
+      `self.${enumerableTrait.implementation.storageName}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.implementation.storageName})?;`,
       'Ok(())',
     ]);
   }
@@ -140,8 +140,8 @@ function addEnumerable(c: ContractBuilder) {
 
 const erc721Trait: BaseImplementedTrait = {
   name: 'Erc721',
-  storage: {
-    name: 'erc721',
+  implementation: {
+    storageName: 'erc721',
     type: 'Erc721',
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
@@ -149,8 +149,8 @@ const erc721Trait: BaseImplementedTrait = {
 
 const enumerableTrait: BaseImplementedTrait = {
   name: 'Erc721Enumerable',
-  storage: {
-    name: 'enumerable',
+  implementation: {
+    storageName: 'enumerable',
     type: 'Erc721Enumerable',
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
@@ -176,7 +176,7 @@ const functions = defineFunctions({
     ],
     returns: 'Result<(), Vec<u8>>',
     // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.transfer_from(from, to, token_id)?;`],
+    code: [`self.${erc721Trait.implementation.storageName}.transfer_from(from, to, token_id)?;`],
   },
   safe_transfer_from: {
     args: [
@@ -187,7 +187,7 @@ const functions = defineFunctions({
     ],
     returns: 'Result<(), Vec<u8>>',
     // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.safe_transfer_from(from, to, token_id)?;`],
+    code: [`self.${erc721Trait.implementation.storageName}.safe_transfer_from(from, to, token_id)?;`],
   },
   safe_transfer_from_with_data: {
     attribute: 'selector(name = "safeTransferFrom")',
@@ -200,7 +200,7 @@ const functions = defineFunctions({
     ],
     returns: 'Result<(), Vec<u8>>',
     // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.safe_transfer_from_with_data(from, to, token_id, data)?;`],
+    code: [`self.${erc721Trait.implementation.storageName}.safe_transfer_from_with_data(from, to, token_id, data)?;`],
   },
 
   // Overrides
@@ -214,6 +214,6 @@ const functions = defineFunctions({
   burn: {
     args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
     returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc721Trait.storage.name}.burn(token_id).map_err(|e| e.into())`],
+    code: [`self.${erc721Trait.implementation.storageName}.burn(token_id).map_err(|e| e.into())`],
   },
 });

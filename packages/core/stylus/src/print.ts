@@ -136,7 +136,7 @@ function sortImpls(contract: Contract): ImplementedTrait[] {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
     }
-    return a.name.localeCompare(b.name);
+    return a.interface.name.localeCompare(b.interface.name);
   });
 
   return sortedTraits;
@@ -144,8 +144,11 @@ function sortImpls(contract: Contract): ImplementedTrait[] {
 
 function printStorage(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
   const structLines = implementedTraits
-    .flatMap(trait => trait.storage)
-    .map(s => [`${s.name}: ${s.type},`]);
+    .filter(trait => !!trait.implementation)
+    .map(({ implementation: i }) => {
+      const generics = i!.genericType ? `<${i!.genericType}>`: '';
+      return [`${i!.storageName}: ${i!.type}${generics},`];
+    });
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];
 

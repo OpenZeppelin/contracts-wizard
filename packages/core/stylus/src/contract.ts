@@ -15,9 +15,10 @@ export interface Contract {
   functions: ContractFunction[];
 }
 
-export interface Storage {
-  name: string;
+export interface Implementation {
+  storageName: string;
   type: string;
+  genericType?: string;
 }
 
 export interface Interface {
@@ -33,8 +34,7 @@ export interface UseClause {
 }
 
 export interface BaseImplementedTrait {
-  name: string;
-  storage: Storage;
+  implementation?: Implementation;
   interface: Interface;
   section?: string;
   /**
@@ -130,7 +130,7 @@ export class ContractBuilder implements Contract {
   }
 
   addImplementedTrait(baseTrait: BaseImplementedTrait): ImplementedTrait {
-    const key = baseTrait.name;
+    const key = baseTrait.interface.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
@@ -139,7 +139,9 @@ export class ContractBuilder implements Contract {
         ...baseTrait,
       };
       this.implementedTraitsMap.set(key, t);
-      this.addUseClause(baseTrait.modulePath, baseTrait.name);
+      if (baseTrait.implementation) {
+        this.addUseClause(baseTrait.modulePath, baseTrait.implementation?.type);
+      }
       this.addUseClause(baseTrait.modulePath, baseTrait.interface.name);
       return t;
     }

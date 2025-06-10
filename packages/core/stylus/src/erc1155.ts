@@ -137,8 +137,8 @@ function addBurnable(c: ContractBuilder, trait: BaseImplementedTrait) {
 
 const erc1155Trait: BaseImplementedTrait = {
   name: 'Erc1155',
-  storage: {
-    name: 'erc1155',
+  implementation: {
+    storageName: 'erc1155',
     type: 'Erc1155',
   },
   modulePath: 'openzeppelin_stylus::token::erc1155',
@@ -146,8 +146,8 @@ const erc1155Trait: BaseImplementedTrait = {
 
 const erc1155SupplyTrait: BaseImplementedTrait = {
   name: 'Erc1155Supply',
-  storage: {
-    name: 'erc1155_supply',
+  implementation: {
+    storageName: 'erc1155_supply',
     type: 'Erc1155Supply',
   },
   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
@@ -170,7 +170,7 @@ const functions = (trait: BaseImplementedTrait) =>
     supports_interface: {
       args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
       returns: 'bool',
-      code: [`${erc1155Trait.storage.type}::supports_interface(interface_id)`],
+      code: [`${erc1155Trait.implementation.type}::supports_interface(interface_id)`],
     },
 
     // Extensions
@@ -182,7 +182,7 @@ const functions = (trait: BaseImplementedTrait) =>
         { name: 'value', type: 'U256' },
       ],
       returns: 'Result<(), Vec<u8>>',
-      code: [`self.${trait.storage.name}.burn(account, token_id, value).map_err(|e| e.into())`],
+      code: [`self.${trait.implementation.storageName}.burn(account, token_id, value).map_err(|e| e.into())`],
     },
     burn_batch: {
       args: [
@@ -192,23 +192,23 @@ const functions = (trait: BaseImplementedTrait) =>
         { name: 'values', type: 'Vec<U256>' },
       ],
       returns: 'Result<(), Vec<u8>>',
-      code: [`self.${trait.storage.name}.burn_batch(account, token_ids, values).map_err(|e| e.into())`],
+      code: [`self.${trait.implementation.storageName}.burn_batch(account, token_ids, values).map_err(|e| e.into())`],
     },
 
     total_supply: {
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'U256',
-      code: [`self.${trait.storage.name}.total_supply(id)`],
+      code: [`self.${trait.implementation.storageName}.total_supply(id)`],
     },
     total_supply_all: {
       attribute: 'selector(name = "totalSupply")',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: [`self.${trait.storage.name}.total_supply_all()`],
+      code: [`self.${trait.implementation.storageName}.total_supply_all()`],
     },
     exists: {
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'bool',
-      code: [`self.${trait.storage.name}.exists(id)`],
+      code: [`self.${trait.implementation.storageName}.exists(id)`],
     },
   });
