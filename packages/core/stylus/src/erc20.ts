@@ -91,14 +91,12 @@ function addBase(c: ContractBuilder) {
 }
 
 function addPermit(c: ContractBuilder) {
-  c.addImplementedTrait(erc20PermitTrait);
   c.addImplementedTrait(noncesTrait);
+  c.addImplementedTrait(erc20PermitTrait);
   c.addEip712();
 
   c.addUseClause('alloc::vec', 'Vec');
   c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
-
-  c.addFunction(functions.permit, erc20PermitTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
@@ -186,6 +184,26 @@ const erc20Trait: BaseImplementedTrait = {
   ],
 };
 
+const noncesTrait: BaseImplementedTrait = {
+  name: 'Nonces',
+  interface: {
+    name: 'INonces',
+  },
+  storage: {
+    name: 'nonces',
+    type: 'Nonces',
+  },
+  modulePath: 'openzeppelin_stylus::utils::nonces',
+  functions: [
+    {
+      name: 'nonces',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
+      code: ['self.nonces.nonces(owner)'],
+      returns: 'U256'
+    }
+  ]
+};
+
 const erc20PermitTrait: BaseImplementedTrait = {
   name: 'Erc20Permit',
   interface: {
@@ -197,6 +215,32 @@ const erc20PermitTrait: BaseImplementedTrait = {
     type: 'Erc20Permit<Eip712>',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  functions: [
+    {
+      name: 'domain_separator',
+      attribute: 'selector(name = "DOMAIN_SEPARATOR")',
+      args: [getSelfArg('immutable')],
+      returns: 'B256',
+      code: [`self.erc20_permit.domain_separator()`],
+    },
+    {
+      name: 'permit',
+      args: [
+        getSelfArg(),
+        { name: 'owner', type: 'Address' },
+        { name: 'spender', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'deadline', type: 'U256' },
+        { name: 'v', type: 'u8' },
+        { name: 'r', type: 'B256' },
+        { name: 's', type: 'B256' },
+      ],
+      returns: 'Result<(), Self::Error>',
+      code: [
+        `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
+      ],
+    }
+  ],
 };
 
 const flashMintTrait: BaseImplementedTrait = {
@@ -210,18 +254,6 @@ const flashMintTrait: BaseImplementedTrait = {
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
-};
-
-const noncesTrait: BaseImplementedTrait = {
-  name: 'Nonces',
-  interface: {
-    name: 'INonces',
-  },
-  storage: {
-    name: 'nonces',
-    type: 'Nonces',
-  },
-  modulePath: 'openzeppelin_stylus::utils::nonces',
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -245,24 +277,6 @@ const functions = defineFunctions({
     args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
     returns: 'Result<(), Vec<u8>>',
     code: [`self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`],
-  },
-
-  permit: {
-    attribute: 'allow(clippy::too_many_arguments)',
-    args: [
-      getSelfArg(),
-      { name: 'owner', type: 'Address' },
-      { name: 'spender', type: 'Address' },
-      { name: 'value', type: 'U256' },
-      { name: 'deadline', type: 'U256' },
-      { name: 'v', type: 'u8' },
-      { name: 'r', type: 'B256' },
-      { name: 's', type: 'B256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    code: [
-      `self.${erc20PermitTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
-    ],
   },
 
   max_flash_loan: {
