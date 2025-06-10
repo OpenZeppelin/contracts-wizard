@@ -102,8 +102,6 @@ function addPermit(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
-
   c.addImplementedTrait(burnableTrait);
 
   // if (pausable) {
@@ -115,14 +113,7 @@ function addBurnable(c: ContractBuilder) {
 function addFlashMint(c: ContractBuilder) {
   c.addImplementedTrait(flashMintTrait);
 
-  // the trait necessary to access Erc20FlashMint functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
-
-  c.addUseClause('stylus_sdk', 'abi::Bytes');
-
-  c.addFunction(functions.max_flash_loan, flashMintTrait);
-  c.addFunction(functions.flash_fee, flashMintTrait);
-  c.addFunction(functions.flash_loan, flashMintTrait);
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);
@@ -274,6 +265,34 @@ const flashMintTrait: BaseImplementedTrait = {
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  functions: [
+    {
+      name: 'max_flash_loan',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
+      returns: 'U256',
+      code: [`self.flash_mint.max_flash_loan(token, &self.${erc20Trait.implementation!.storageName})`],
+    },
+    {
+      name: 'flash_fee',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: 'Result<U256, Self::Error>',
+      code: [`self.flash_mint.flash_fee(token, value).map_err(|e| e.into())`],
+    },
+    {
+      name: 'flash_loan',
+      args: [
+        getSelfArg(),
+        { name: 'receiver', type: 'Address' },
+        { name: 'token', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: 'Result<bool, Self::Error>',
+      code: [
+        `self.flash_mint.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName}).map_err(|e| e.into())`,
+      ],
+    },
+  ]
 };
 
 // const erc20MetadataTrait: BaseImplementedTrait = {
@@ -285,29 +304,3 @@ const flashMintTrait: BaseImplementedTrait = {
 //   }
 //   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 // }
-
-const functions = defineFunctions({
-  max_flash_loan: {
-    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
-    returns: 'U256',
-    code: [`self.${flashMintTrait.implementation!.storageName}.max_flash_loan(token, &self.${erc20Trait.implementation!.storageName})`],
-  },
-  flash_fee: {
-    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<U256, Vec<u8>>',
-    code: [`self.${flashMintTrait.implementation!.storageName}.flash_fee(token, value).map_err(|e| e.into())`],
-  },
-  flash_loan: {
-    args: [
-      getSelfArg(),
-      { name: 'receiver', type: 'Address' },
-      { name: 'token', type: 'Address' },
-      { name: 'value', type: 'U256' },
-      { name: 'data', type: 'Bytes' },
-    ],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [
-      `self.${flashMintTrait.implementation!.storageName}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName}).map_err(|e| e.into())`,
-    ],
-  },
-});
