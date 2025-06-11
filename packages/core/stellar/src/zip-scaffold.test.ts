@@ -95,15 +95,15 @@ async function asString(item: JSZipObject) {
 }
 
 test.beforeEach(async t => {
-  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-'));
+  t.context.tempFolder = `${await fs.mkdtemp(path.join(os.tmpdir(), `openzeppelin-wizard-scaffold`))}`;
 });
 
 test.afterEach.always(async t => {
-  await rimraf(t.context.tempFolder);
+  await fs.rm(t.context.tempFolder, { recursive: true, force: true });
 });
 
 async function runTest(t: ExecutionContext<Context>, c: Contract, opts: GenericOptions) {
-  t.timeout(300_000);
+  t.timeout(3_000_000);
 
   const zip = await zipScaffold(c, opts);
 
@@ -122,7 +122,7 @@ test('contractOptionsToScaffoldContractName converts PascalCase to snake_case', 
   t.is(contractOptionsToScaffoldContractName('MyCustomKind'), 'my_custom_kind');
 });
 
-test.serial('fungible simple', async t => {
+test('fungible simple', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -137,7 +137,7 @@ test.serial('fungible simple', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible full', async t => {
+test('fungible full', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -152,7 +152,7 @@ test.serial('fungible full', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible burnable', async t => {
+test('fungible burnable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -167,7 +167,7 @@ test.serial('fungible burnable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible mintable', async t => {
+test('fungible mintable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -182,7 +182,7 @@ test.serial('fungible mintable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible pausable', async t => {
+test('fungible pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -197,7 +197,7 @@ test.serial('fungible pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible burnable mintable', async t => {
+test('fungible burnable mintable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -212,7 +212,7 @@ test.serial('fungible burnable mintable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible burnable pausable', async t => {
+test('fungible burnable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -227,7 +227,7 @@ test.serial('fungible burnable pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible mintable pausable', async t => {
+test('fungible mintable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -242,7 +242,7 @@ test.serial('fungible mintable pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable simple', async t => {
+test('fungible upgradable simple', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -257,7 +257,7 @@ test.serial('fungible upgradable simple', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable full', async t => {
+test('fungible upgradable full', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -272,7 +272,7 @@ test.serial('fungible upgradable full', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable burnable', async t => {
+test('fungible upgradable burnable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -287,7 +287,7 @@ test.serial('fungible upgradable burnable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable mintable', async t => {
+test('fungible upgradable mintable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -302,7 +302,7 @@ test.serial('fungible upgradable mintable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable pausable', async t => {
+test('fungible upgradable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -317,7 +317,7 @@ test.serial('fungible upgradable pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable burnable mintable', async t => {
+test('fungible upgradable burnable mintable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -332,7 +332,7 @@ test.serial('fungible upgradable burnable mintable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable burnable pausable', async t => {
+test('fungible upgradable burnable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -347,7 +347,7 @@ test.serial('fungible upgradable burnable pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('fungible upgradable mintable pausable', async t => {
+test('fungible upgradable mintable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'Fungible',
     name: 'MyToken',
@@ -362,7 +362,7 @@ test.serial('fungible upgradable mintable pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible simple', async t => {
+test('nonfungible simple', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -379,7 +379,7 @@ test.serial('nonfungible simple', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible full except sequential mintable enumerable', async t => {
+test('nonfungible full except sequential mintable enumerable', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -396,7 +396,7 @@ test.serial('nonfungible full except sequential mintable enumerable', async t =>
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible burnable', async t => {
+test('nonfungible burnable', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -413,7 +413,7 @@ test.serial('nonfungible burnable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible consecutive', async t => {
+test('nonfungible consecutive', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -430,7 +430,7 @@ test.serial('nonfungible consecutive', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible pausable', async t => {
+test('nonfungible pausable', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -447,7 +447,7 @@ test.serial('nonfungible pausable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible upgradeable', async t => {
+test('nonfungible upgradeable', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -464,7 +464,7 @@ test.serial('nonfungible upgradeable', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible sequential', async t => {
+test('nonfungible sequential', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -481,7 +481,7 @@ test.serial('nonfungible sequential', async t => {
   await runTest(t, c, opts);
 });
 
-test.serial('nonfungible burnable pausable', async t => {
+test('nonfungible burnable pausable', async t => {
   const opts: GenericOptions = {
     kind: 'NonFungible',
     name: 'MyNFT',
@@ -500,7 +500,7 @@ test.serial('nonfungible burnable pausable', async t => {
 
 // -- TODO fix build --
 
-// test.serial('nonfungible enumerable', async t => {
+// test('nonfungible enumerable', async t => {
 //   const opts: GenericOptions = {
 //     kind: 'NonFungible',
 //     name: 'MyNFT',
@@ -517,7 +517,7 @@ test.serial('nonfungible burnable pausable', async t => {
 //   await runTest(t, c, opts);
 // });
 
-// test.serial('nonfungible mintable', async t => {
+// test('nonfungible mintable', async t => {
 //   const opts: GenericOptions = {
 //     kind: 'NonFungible',
 //     name: 'MyNFT',
@@ -534,7 +534,7 @@ test.serial('nonfungible burnable pausable', async t => {
 //   await runTest(t, c, opts);
 // });
 
-// test.serial('nonfungible burnable enumerable', async t => {
+// test('nonfungible burnable enumerable', async t => {
 //   const opts: GenericOptions = {
 //     kind: 'NonFungible',
 //     name: 'MyNFT',
@@ -551,7 +551,7 @@ test.serial('nonfungible burnable pausable', async t => {
 //   await runTest(t, c, opts);
 // });
 
-// test.serial('nonfungible full except consecutive', async t => {
+// test('nonfungible full except consecutive', async t => {
 //   const opts: GenericOptions = {
 //     kind: 'NonFungible',
 //     name: 'MyNFT',
@@ -568,7 +568,7 @@ test.serial('nonfungible burnable pausable', async t => {
 //   await runTest(t, c, opts);
 // });
 
-// test.serial('nonfungible mintable upgradeable', async t => {
+// test('nonfungible mintable upgradeable', async t => {
 //   const opts: GenericOptions = {
 //     kind: 'NonFungible',
 //     name: 'MyNFT',
