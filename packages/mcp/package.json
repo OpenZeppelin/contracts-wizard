@@ -20,7 +20,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector@0.12.0 node dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.1",
