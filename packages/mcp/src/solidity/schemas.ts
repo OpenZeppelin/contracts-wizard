@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  commonDescriptions,
   solidityCommonDescriptions,
   solidityERC20Descriptions,
   solidityERC721Descriptions,
@@ -44,13 +45,13 @@ export const commonSchema = {
 };
 
 export const erc20Schema = {
-  name: z.string().describe(solidityCommonDescriptions.name),
-  symbol: z.string().describe(solidityCommonDescriptions.symbol),
-  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
-  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(solidityERC20Descriptions.premint),
   premintChainId: z.string().optional().describe(solidityERC20Descriptions.premintChainId),
-  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   callback: z.boolean().optional().describe(solidityERC20Descriptions.callback),
   permit: z.boolean().optional().describe(solidityERC20Descriptions.permit),
   votes: z
@@ -68,14 +69,14 @@ export const erc20Schema = {
 };
 
 export const erc721Schema = {
-  name: z.string().describe(solidityCommonDescriptions.name),
-  symbol: z.string().describe(solidityCommonDescriptions.symbol),
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
   baseUri: z.string().optional().describe(solidityERC721Descriptions.baseUri),
   enumerable: z.boolean().optional().describe(solidityERC721Descriptions.enumerable),
   uriStorage: z.boolean().optional().describe(solidityERC721Descriptions.uriStorage),
-  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
-  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
-  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z
     .literal('blocknumber')
@@ -86,11 +87,11 @@ export const erc721Schema = {
 };
 
 export const erc1155Schema = {
-  name: z.string().describe(solidityCommonDescriptions.name),
+  name: z.string().describe(commonDescriptions.name),
   uri: z.string().describe(solidityERC1155Descriptions.uri),
-  burnable: z.boolean().optional().describe(solidityCommonDescriptions.burnable),
-  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
-  mintable: z.boolean().optional().describe(solidityCommonDescriptions.mintable),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   supply: z.boolean().optional().describe(solidityERC1155Descriptions.supply),
   updatableUri: z.boolean().optional().describe(solidityERC1155Descriptions.updatableUri),
   ...commonSchema,
@@ -152,7 +153,7 @@ export const accountSchema = {
 }
 
 export const governorSchema = {
-  name: z.string().describe(solidityCommonDescriptions.name),
+  name: z.string().describe(commonDescriptions.name),
   delay: z.string().describe(solidityGovernorDescriptions.delay),
   period: z.string().describe(solidityGovernorDescriptions.period),
   votes: z
@@ -208,7 +209,7 @@ export const governorSchema = {
 }
 
 export const customSchema = {
-  name: z.string().describe(solidityCommonDescriptions.name),
-  pausable: z.boolean().optional().describe(solidityCommonDescriptions.pausable),
+  name: z.string().describe(commonDescriptions.name),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   ...commonSchema,
 }

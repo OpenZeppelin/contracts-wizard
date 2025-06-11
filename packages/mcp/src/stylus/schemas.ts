@@ -1,32 +1,33 @@
 import { z } from 'zod';
+import { commonDescriptions, stylusCommonDescriptions, stylusERC20Descriptions, stylusERC721Descriptions, stylusERC1155Descriptions } from '@ericglau/wizard-common';
 
 export const commonSchema = {
   info: z
     .object({
-      license: z.string().optional().describe('The license used by the contract, default is "MIT"'),
+      license: z.string().optional().describe(stylusCommonDescriptions.license),
     })
     .optional()
-    .describe('Metadata about the contract'),
+    .describe(stylusCommonDescriptions.info),
 };
 
 export const erc20Schema = {
-  name: z.string().describe('The name of the contract'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  permit: z.boolean().optional().describe('Whether without paying gas, token holders will be able to allow third parties to transfer from their account.'),
-  flashmint: z.boolean().optional().describe('Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they\'re returned in the same transaction.'),
+  name: z.string().describe(commonDescriptions.name),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  permit: z.boolean().optional().describe(stylusERC20Descriptions.permit),
+  flashmint: z.boolean().optional().describe(stylusERC20Descriptions.flashmint),
   ...commonSchema,
 };
 
 export const erc721Schema = {
-  name: z.string().describe('The name of the contract'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  enumerable: z.boolean().optional().describe('Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.'),
+  name: z.string().describe(commonDescriptions.name),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  enumerable: z.boolean().optional().describe(stylusERC721Descriptions.enumerable),
   ...commonSchema,
 };
 
 export const erc1155Schema = {
-  name: z.string().describe('The name of the contract'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  supply: z.boolean().optional().describe('Whether to keep track of total supply of tokens'),
+  name: z.string().describe(commonDescriptions.name),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  supply: z.boolean().optional().describe(stylusERC1155Descriptions.supply),
   ...commonSchema,
 };

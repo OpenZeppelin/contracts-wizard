@@ -1,38 +1,44 @@
 import { z } from 'zod';
+import {
+  commonDescriptions,
+  stellarCommonDescriptions,
+  stellarFungibleDescriptions,
+  stellarNonFungibleDescriptions,
+ } from '@ericglau/wizard-common';
 
 export const commonSchema = {
   upgradeable: z
     .boolean()
     .optional()
     .describe(
-      'Whether the smart contract is upgradeable.'
+      stellarCommonDescriptions.upgradeable
     ),
   info: z
     .object({
-      license: z.string().optional().describe('The license used by the contract, default is "MIT"'),
+      license: z.string().optional().describe(stellarCommonDescriptions.license),
     })
     .optional()
-    .describe('Metadata about the contract'),
+    .describe(stellarCommonDescriptions.info),
 };
 
 export const fungibleSchema = {
-  name: z.string().describe('The name of the contract'),
-  symbol: z.string().describe('The short symbol for the token'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
-  premint: z.string().optional().describe('The number of tokens to premint for the deployer.'),
-  mintable: z.boolean().optional().describe('Whether privileged accounts will be able to create more supply or emit more tokens'),
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  premint: z.string().optional().describe(stellarFungibleDescriptions.premint),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   ...commonSchema,
 };
 
 export const nonFungibleSchema = {
-  name: z.string().describe('The name of the contract'),
-  symbol: z.string().describe('The short symbol for the token'),
-  burnable: z.boolean().optional().describe('Whether token holders will be able to destroy their tokens'),
-  enumerable: z.boolean().optional().describe('Whether the NFTs are enumerable (can be iterated over).'),
-  consecutive: z.boolean().optional().describe('To batch mint NFTs instead of minting them individually (sequential minting is mandatory).'),
-  pausable: z.boolean().optional().describe('Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.'),
-  mintable: z.boolean().optional().describe('Whether privileged accounts will be able to create more supply or emit more tokens'),
-  sequential: z.boolean().optional().describe('Whether the IDs of the minted NFTs will be sequential.'),
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  enumerable: z.boolean().optional().describe(stellarNonFungibleDescriptions.enumerable),
+  consecutive: z.boolean().optional().describe(stellarNonFungibleDescriptions.consecutive),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
+  sequential: z.boolean().optional().describe(stellarNonFungibleDescriptions.sequential),
   ...commonSchema,
 };

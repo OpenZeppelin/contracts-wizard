@@ -1,5 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StylusCommonContractOptions } from '../types/languages.ts';
+import { stylusCommonDescriptions } from '../../../../common/src/ai/descriptions/stylus.ts';
 
 export const stylusCommonFunctionDescription = {
   access: {
@@ -11,11 +12,11 @@ export const stylusCommonFunctionDescription = {
 
   info: {
     type: 'object',
-    description: 'Metadata about the contract and author',
+    description: stylusCommonDescriptions.info,
     properties: {
       license: {
         type: 'string',
-        description: 'The license used by the contract, default is "MIT"',
+        description: stylusCommonDescriptions.license,
       },
     },
   },
