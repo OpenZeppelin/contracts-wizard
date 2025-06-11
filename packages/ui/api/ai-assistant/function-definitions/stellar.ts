@@ -1,6 +1,7 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
+import { stellarCommonDescriptions, stellarFungibleDescriptions, stellarNonFungibleDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
@@ -13,17 +14,14 @@ export const stellarFungibleAIFunctionDefinition = {
         'symbol',
         'burnable',
         'pausable',
+        'upgradeable',
         'mintable',
         'access',
         'info',
       ]),
       premint: {
         type: 'string',
-        description: 'The number of tokens to premint for the deployer.',
-      },
-      upgradeable: {
-        type: 'boolean',
-        description: 'Whether the contract can be upgraded.',
+        description: stellarFungibleDescriptions.premint,
       },
     },
     required: ['name', 'symbol'],
@@ -42,25 +40,26 @@ export const stellarNonFungibleAIFunctionDefinition = {
         'symbol',
         'burnable',
         'pausable',
+        'upgradeable',
         'mintable',
         'access',
         'info',
       ]),
       enumerable: {
         type: 'boolean',
-        description: 'Whether the NFTs are enumerable (can be iterated over).',
+        description: stellarNonFungibleDescriptions.enumerable,
       },
       consecutive: {
         type: 'boolean',
-        description: 'To batch mint NFTs instead of minting them individually (sequential minting is mandatory).',
+        description: stellarNonFungibleDescriptions.consecutive,
       },
       sequential: {
         type: 'boolean',
-        description: 'Whether the IDs of the minted NFTs will be sequential.',
+        description: stellarNonFungibleDescriptions.sequential,
       },
       upgradeable: {
         type: 'boolean',
-        description: 'Whether the contract can be upgraded.',
+        description: stellarCommonDescriptions.upgradeable,
       },
     },
     required: ['name', 'symbol'],
