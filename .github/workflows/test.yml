@@ -81,13 +81,16 @@ jobs:
       - name: Install Scaffold & Registry CLIs
         if: matrix.package == 'stellar'
         run: |
-          # only rebuild if not already on the cache
-          if ! command -v stellar-scaffold-cli >/dev/null; then
-            cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
-          fi
-          if ! command -v stellar-registry-cli >/dev/null; then
-            cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
-          fi
+          rebuildIfNotFoundInCache() {
+            local binary_name="$1"
+
+            if ! command -v "$binary_name" >/dev/null; then
+              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
+            fi
+          }
+
+          rebuildIfNotFoundInCache stellar-scaffold-cli
+          rebuildIfNotFoundInCache stellar-registry-cli
 
       - name: Start Docker
         if: matrix.package == 'stellar'
