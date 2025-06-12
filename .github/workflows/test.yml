@@ -54,13 +54,40 @@ jobs:
       # ----------------------------
       # Stellar setup
 
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-registry
+          restore-keys: |
+            cargo-registry-
+        if: always()
+
+      - name: Cache scaffold CLIs
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin
+          key: scaffold-cli-${{ matrix.package }}
+          restore-keys: |
+            scaffold-cli-${{ matrix.package }}-
+        if: always()
+
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
         uses: stellar/stellar-cli@v22.5.0
 
-      - name: Set up Scaffold CLI
+      - name: Install Scaffold & Registry CLIs
         if: matrix.package == 'stellar'
-        run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli & cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
+        run: |
+          # only rebuild if not already on the cache
+          if ! command -v stellar-scaffold-cli >/dev/null; then
+            cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
+          fi
+          if ! command -v stellar-registry-cli >/dev/null; then
+            cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-registry-cli
+          fi
 
       - name: Start Docker
         if: matrix.package == 'stellar'
