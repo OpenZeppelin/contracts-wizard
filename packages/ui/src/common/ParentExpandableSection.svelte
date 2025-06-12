@@ -58,7 +58,7 @@
 <section class="controls-section">
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="items-center tooltip-container pr-2 grid grid-cols-[5fr,1fr]">
+    <label class="items-center tooltip-container pr-2 flex justify-between">
       <div class="flex items-center">
         <span class="mr-2">
           {#if type === 'checkbox'}
@@ -76,7 +76,7 @@
       <div class="flex items-center">
         <button
           on:click|preventDefault={toggleExpanded}
-          class="px-1 bg-transparent border-0"
+          class="px-1 bg-transparent border-0 mr-2"
           aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
         >
           {#if isExpanded}
@@ -85,7 +85,7 @@
             <ChevronRight />
           {/if}
         </button>
-        <HelpTooltip align="right" link={helpLink}>
+        <HelpTooltip link={helpLink}>
           {@html helpContent}
         </HelpTooltip>
       </div>
