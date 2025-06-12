@@ -65,13 +65,16 @@ jobs:
             cargo-registry-
         if: always()
 
+      - name: Get scaffold-stellar latest commit SHA
+        id: get-scaffold-sha
+        run: |
+          echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+
       - name: Cache scaffold CLIs
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin
-          key: scaffold-cli-${{ matrix.package }}
-          restore-keys: |
-            scaffold-cli-${{ matrix.package }}-
+          key: scaffold-cli-${{ runner.os }}-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
         if: always()
 
       - name: Set up Stellar CLI
@@ -91,12 +94,6 @@ jobs:
 
           rebuildIfNotFoundInCache stellar-scaffold-cli
           rebuildIfNotFoundInCache stellar-registry-cli
-
-      - name: Start Docker
-        if: matrix.package == 'stellar'
-        run: |
-          sudo service docker start
-          docker info
 
       # ----------------------------
       - name: Compile TypeScript
