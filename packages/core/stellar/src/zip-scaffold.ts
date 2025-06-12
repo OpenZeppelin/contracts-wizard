@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
-import { compatibleSorobanVersionTest, contractsVersionTag } from './utils/version';
+import { compatibleSorobanVersion, contractsVersionTag } from './utils/version';
 
 const dependencies = {
   base: ['stellar-default-impl-macro'],
@@ -165,7 +165,7 @@ setup_environment() {
   cp Cargo.toml Cargo.toml.bak
 
   cat <<EOF > deps.tmp
-${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, getDependenciesToAdd(opts))}${addDependenciesWith(`{ version = "${compatibleSorobanVersionTest}" }`, ['soroban'])}
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, getDependenciesToAdd(opts))}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
 EOF
 
   awk '

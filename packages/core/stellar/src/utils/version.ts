@@ -12,4 +12,4 @@ export const compatibleContractsSemver = '^0.2.0';
 /**
  * The Soroban version for which compilation and testing have passing tests
  */
-export const compatibleSorobanVersionTest = '22.0.8';
+export const compatibleSorobanVersion = '22.0.8';
