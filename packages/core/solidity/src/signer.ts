@@ -25,19 +25,16 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   c.addModifier('initializer', fn);
 
   const args = fn.args;
-  let disableInitializers = false;
 
   switch (signer) {
     case 'Multisig':
       c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
       c.addFunctionCode(`_setThreshold(${args[1]!.name});`, fn);
-      disableInitializers = true;
       break;
     case 'MultisigWeighted':
       c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
       c.addFunctionCode(`_setSignerWeights(${args[0]!.name}, ${args[1]!.name});`, fn);
       c.addFunctionCode(`_setThreshold(${args[2]!.name});`, fn);
-      disableInitializers = true;
       break;
     case 'ECDSA':
     case 'P256':
@@ -49,13 +46,18 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
           .trimEnd()});`,
         fn,
       );
-      disableInitializers = true;
   }
 
-  if (disableInitializers) {
-    c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
-    c.addConstructorCode(`_disableInitializers();`);
-  }
+  if (shouldDisableInitializer(signer)) addDisableInitializersConstructor(c);
+}
+
+function shouldDisableInitializer(signer: SignerOptions): boolean {
+  return (['Multisig', 'MultisigWeighted', 'ECDSA', 'P256', 'RSA'] as SignerOptions[]).includes(signer);
+}
+
+function addDisableInitializersConstructor(c: ContractBuilder): void {
+  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+  c.addConstructorCode(`_disableInitializers();`);
 }
 
 export const signers = {
