@@ -53,7 +53,8 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   }
 
   if (disableInitializers) {
-    c.addConstructorCode('_disableInitializers();');
+    c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+    c.addConstructorCode(`_disableInitializers();`);
   }
 }
 
