@@ -4,18 +4,22 @@ import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.
 import { registerSolidityRWA } from './rwa';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { StablecoinOptions } from '@openzeppelin/wizard';
+import { rwaSchema } from '../schemas';
+import { z } from 'zod';
 
 interface Context {
     tool: RegisteredTool;
+    schema: z.ZodObject<typeof rwaSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
     t.context.tool = registerSolidityRWA(new McpServer(testMcpInfo));
+    t.context.schema = z.object(rwaSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: StablecoinOptions) {
+async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
     const result = await t.context.tool.callback(
         {
             ...params,
@@ -27,8 +31,13 @@ async function assertSnapshot(t: ExecutionContext<Context>, params: StablecoinOp
     t.snapshot(result?.content[0]?.text);
 }
 
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
+    const _: Required<StablecoinOptions> = params;
+    t.pass();
+}
+
 test('solidity rwa basic', async (t) => {
-    const params: StablecoinOptions = {
+    const params: z.infer<typeof t.context.schema> = {
         name: 'TestToken',
         symbol: 'TST',
     };
@@ -36,7 +45,7 @@ test('solidity rwa basic', async (t) => {
 });
 
 test('solidity rwa all', async (t) => {
-    const params: Required<StablecoinOptions> = {
+    const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyRWA',
         symbol: 'RWA',
         premint: '2000',
@@ -46,17 +55,22 @@ test('solidity rwa all', async (t) => {
         pausable: true,
         callback: true,
         permit: true,
-        votes: true,
+        votes: 'blocknumber',
         flashmint: true,
         crossChainBridging: 'custom',
         premintChainId: '10',
         limitations: 'allowlist',
         custodian: true,
-        upgradeable: false,
+        upgradeable: 'transparent',
         info: {
             license: 'MIT',
             securityContact: 'security@example.com',
         },
     };
+
+    assertHasAllSupportedFields(t, params);
+
+    // Records an error in the snapshot, because some fields are incompatible with each other.
+    // This is ok, because we just need to check that all fields can be passed in.
     await assertSnapshot(t, params);
 });
