@@ -14,3 +14,10 @@ export function safePrint(printFn: () => string): string {
     }
   }
 }
+
+export function makeDetailedPrompt(origPrompt: string): string {
+  return `\
+${origPrompt}
+
+Returns the source code of the generated contract. Does not write to disk.`;
+}

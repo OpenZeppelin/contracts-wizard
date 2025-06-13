@@ -1,14 +1,14 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC20Options } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
-import { safePrint } from '../../utils';
+import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc20Schema } from '../schemas';
 import { stylusPrompts } from '@ericglau/wizard-common';
 
 export function registerStylusERC20(server: McpServer): RegisteredTool {
   return server.tool(
     'stylus-erc20',
-    stylusPrompts.ERC20,
+    makeDetailedPrompt(stylusPrompts.ERC20),
     erc20Schema,
     async ({
       name,

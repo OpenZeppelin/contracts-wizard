@@ -1,14 +1,14 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AccountOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils';
+import { safePrint, makeDetailedPrompt } from '../../utils';
 import { accountSchema } from '../schemas';
 import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityAccount(server: McpServer): RegisteredTool {
   return server.tool(
     'solidity-account',
-    solidityPrompts.Account,
+    makeDetailedPrompt(solidityPrompts.Account),
     accountSchema,
     async ({
       name,

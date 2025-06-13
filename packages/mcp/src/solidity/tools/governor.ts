@@ -1,14 +1,14 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard';
 import { governor } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils';
+import { safePrint, makeDetailedPrompt } from '../../utils';
 import { governorSchema } from '../schemas';
 import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityGovernor(server: McpServer): RegisteredTool {
   return server.tool(
     'solidity-governor',
-    solidityPrompts.Governor,
+    makeDetailedPrompt(solidityPrompts.Governor),
     governorSchema,
     async ({
       name,

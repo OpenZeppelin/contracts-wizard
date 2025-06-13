@@ -1,14 +1,14 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { custom } from '@openzeppelin/wizard-cairo-alpha';
-import { safePrint } from '../../utils.js';
-import { customSchema } from '../schemas.js';
+import { safePrint, makeDetailedPrompt } from '../../utils';
+import { customSchema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoCustom(server: McpServer) {
   server.tool(
     'cairo-custom',
-    cairoPrompts.Custom,
+    makeDetailedPrompt(cairoPrompts.Custom),
     customSchema,
     async ({
       name,

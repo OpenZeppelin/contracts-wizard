@@ -1,14 +1,14 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { NonFungibleOptions } from '@openzeppelin/wizard-stellar';
 import { nonFungible } from '@openzeppelin/wizard-stellar';
-import { safePrint } from '../../utils';
+import { safePrint, makeDetailedPrompt } from '../../utils';
 import { nonFungibleSchema } from '../schemas';
 import { stellarPrompts } from '@ericglau/wizard-common';
 
 export function registerStellarNonFungible(server: McpServer): RegisteredTool {
   return server.tool(
     'stellar-non-fungible',
-    stellarPrompts.NonFungible,
+    makeDetailedPrompt(stellarPrompts.NonFungible),
     nonFungibleSchema,
     async ({
       name,

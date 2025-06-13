@@ -1,14 +1,14 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { governor } from '@openzeppelin/wizard-cairo-alpha';
-import { safePrint } from '../../utils.js';
-import { governorSchema } from '../schemas.js';
+import { safePrint, makeDetailedPrompt } from '../../utils';
+import { governorSchema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoGovernor(server: McpServer) {
   server.tool(
     'cairo-governor',
-    cairoPrompts.Governor,
+    makeDetailedPrompt(cairoPrompts.Governor),
     governorSchema,
     async ({
       name,

@@ -1,14 +1,14 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { vesting } from '@openzeppelin/wizard-cairo-alpha';
-import { safePrint } from '../../utils.js';
-import { vestingSchema } from '../schemas.js';
+import { safePrint, makeDetailedPrompt } from '../../utils';
+import { vestingSchema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoVesting(server: McpServer) {
   server.tool(
     'cairo-vesting',
-    cairoPrompts.Vesting,
+    makeDetailedPrompt(cairoPrompts.Vesting),
     vestingSchema,
     async ({
       name,

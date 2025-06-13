@@ -1,14 +1,14 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { erc1155 } from '@openzeppelin/wizard-cairo-alpha';
-import { safePrint } from '../../utils.js';
-import { erc1155Schema } from '../schemas.js';
+import { safePrint, makeDetailedPrompt } from '../../utils';
+import { erc1155Schema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoERC1155(server: McpServer) {
   server.tool(
     'cairo-erc1155',
-    cairoPrompts.ERC1155,
+    makeDetailedPrompt(cairoPrompts.ERC1155),
     erc1155Schema,
     async ({
       name,
