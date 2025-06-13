@@ -21,10 +21,15 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
     name: 'Initializable',
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
-  const fn = signerFunctions[`initialize${signer}`];
-  c.addModifier('initializer', fn);
 
+  // Add locking constructor
+  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+  c.addConstructorCode(`_disableInitializers();`);
+
+  // Add initializer
+  const fn = signerFunctions[`initialize${signer}`];
   const args = fn.args;
+  c.addModifier('initializer', fn);
 
   switch (signer) {
     case 'Multisig':
@@ -47,17 +52,6 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
         fn,
       );
   }
-
-  if (shouldDisableInitializer(signer)) addDisableInitializersConstructor(c);
-}
-
-function shouldDisableInitializer(signer: SignerOptions): boolean {
-  return (['Multisig', 'MultisigWeighted', 'ECDSA', 'P256', 'RSA'] as SignerOptions[]).includes(signer);
-}
-
-function addDisableInitializersConstructor(c: ContractBuilder): void {
-  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
-  c.addConstructorCode(`_disableInitializers();`);
 }
 
 export const signers = {
