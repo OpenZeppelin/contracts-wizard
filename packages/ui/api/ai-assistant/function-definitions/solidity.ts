@@ -2,6 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
+  solidityPrompts,
   solidityAccountDescriptions,
   solidityERC20Descriptions,
   solidityERC721Descriptions,
@@ -12,7 +13,7 @@ import {
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard',
+  description: solidityPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
@@ -73,7 +74,7 @@ export const solidityERC20AIFunctionDefinition = {
 
 export const solidityERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard',
+  description: solidityPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
@@ -117,7 +118,7 @@ export const solidityERC721AIFunctionDefinition = {
 
 export const solidityERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard',
+  description: solidityPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
@@ -151,8 +152,7 @@ export const solidityERC1155AIFunctionDefinition = {
 
 export const solidityStablecoinAIFunctionDefinition = {
   name: 'Stablecoin',
-  description:
-    'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.Stablecoin,
   parameters: {
     type: 'object',
     properties: {
@@ -183,15 +183,13 @@ export const solidityStablecoinAIFunctionDefinition = {
 
 export const solidityRealWorldAssetAIFunctionDefinition = {
   name: 'RealWorldAsset',
-  description:
-    'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.RWA,
   parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
 export const solidityAccountAIFunctionDefinition = {
   name: 'Account',
-  description:
-    'Make an account contract that follows the ERC-4337 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.Account,
   parameters: {
     type: 'object',
     properties: {
@@ -252,7 +250,7 @@ export const solidityAccountAIFunctionDefinition = {
 
 export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO',
+  description: solidityPrompts.Governor,
   parameters: {
     type: 'object',
     properties: {
@@ -328,7 +326,7 @@ export const solidityGovernorAIFunctionDefinition = {
 
 export const solidityCustomAIFunctionDefinition = {
   name: 'Custom',
-  description: 'Make a custom smart contract',
+  description: solidityPrompts.Custom,
   parameters: {
     type: 'object',
     properties: addFunctionPropertiesFrom(commonFunctionDescription, [

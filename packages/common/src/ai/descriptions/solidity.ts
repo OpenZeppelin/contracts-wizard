@@ -1,3 +1,14 @@
+export const solidityPrompts = {
+    ERC20: 'Make a fungible token per the ERC-20 standard',
+    ERC721: 'Make a non-fungible token per the ERC-721 standard',
+    ERC1155: 'Make a non-fungible token per the ERC-1155 standard',
+    Stablecoin: 'Make a stablecoin token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
+    RWA: 'Make a real-world asset token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
+    Account: 'Make an account contract that follows the ERC-4337 standard. Experimental, some features are not audited and are subject to change.',
+    Governor: 'Make a contract to implement governance, such as for a DAO',
+    Custom: 'Make a custom smart contract',
+}
+
 export const solidityCommonDescriptions = {
     access: 'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
     upgradeable: 'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
