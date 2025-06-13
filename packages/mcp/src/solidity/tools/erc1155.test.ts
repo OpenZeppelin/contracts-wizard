@@ -4,18 +4,22 @@ import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.
 import { registerSolidityERC1155 } from './erc1155';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { ERC1155Options } from '@openzeppelin/wizard';
+import { erc1155Schema } from '../schemas';
+import { z } from 'zod';
 
 interface Context {
     tool: RegisteredTool;
+    schema: z.ZodObject<typeof erc1155Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
     t.context.tool = registerSolidityERC1155(new McpServer(testMcpInfo));
+    t.context.schema = z.object(erc1155Schema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: ERC1155Options) {
+async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
     const result = await t.context.tool.callback(
         {
             ...params,
@@ -27,8 +31,13 @@ async function assertSnapshot(t: ExecutionContext<Context>, params: ERC1155Optio
     t.snapshot(result?.content[0]?.text);
 }
 
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
+    const _: Required<ERC1155Options> = params;
+    t.pass();
+}
+
 test('solidity erc1155 basic', async (t) => {
-    const params: ERC1155Options = {
+    const params: z.infer<typeof t.context.schema> = {
         name: 'MyTokens',
         uri: 'https://example.com/token/{id}.json',
     };
@@ -36,7 +45,7 @@ test('solidity erc1155 basic', async (t) => {
 });
 
 test('solidity erc1155 all', async (t) => {
-    const params: Required<ERC1155Options> = {
+    const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyTokens',
         uri: 'https://example.com/token/{id}.json',
         burnable: true,
@@ -51,5 +60,6 @@ test('solidity erc1155 all', async (t) => {
             securityContact: 'security@example.com',
         },
     };
+    assertHasAllSupportedFields(t, params);
     await assertSnapshot(t, params);
 });

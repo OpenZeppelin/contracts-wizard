@@ -58,8 +58,6 @@ test('solidity account all', async (t) => {
             securityContact: 'security@example.com',
         },
     };
-
     assertHasAllSupportedFields(t, params);
-
     await assertSnapshot(t, params);
 });

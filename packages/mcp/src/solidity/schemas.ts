@@ -8,7 +8,7 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
- } from '@ericglau/wizard-common';
+} from '@ericglau/wizard-common';
 
 export const commonSchema = {
   access: z
@@ -205,7 +205,8 @@ export const governorSchema = {
     .boolean()
     .optional()
     .describe(solidityGovernorDescriptions.settings),
-  ...commonSchema,
+  upgradeable: commonSchema.upgradeable,
+  info: commonSchema.info,
 }
 
 export const customSchema = {

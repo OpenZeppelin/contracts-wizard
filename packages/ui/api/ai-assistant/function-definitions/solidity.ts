@@ -256,7 +256,7 @@ export const solidityGovernorAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'upgradeable', 'info']),
       delay: {
         type: 'string',
         description: solidityGovernorDescriptions.delay,
@@ -314,6 +314,11 @@ export const solidityGovernorAIFunctionDefinition = {
       settings: {
         type: 'boolean',
         description: solidityGovernorDescriptions.settings,
+      },
+      access: {
+        type: 'boolean',
+        enum: [false],
+        description: 'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
       },
     },
     required: ['name', 'delay', 'period'],

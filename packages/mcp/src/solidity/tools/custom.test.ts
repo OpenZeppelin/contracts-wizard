@@ -4,18 +4,22 @@ import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.
 import { registerSolidityCustom } from './custom';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { CustomOptions } from '@openzeppelin/wizard';
+import { customSchema } from '../schemas';
+import { z } from 'zod';
 
 interface Context {
     tool: RegisteredTool;
+    schema: z.ZodObject<typeof customSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
     t.context.tool = registerSolidityCustom(new McpServer(testMcpInfo));
+    t.context.schema = z.object(customSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: CustomOptions) {
+async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
     const result = await t.context.tool.callback(
         {
             ...params,
@@ -27,15 +31,20 @@ async function assertSnapshot(t: ExecutionContext<Context>, params: CustomOption
     t.snapshot(result?.content[0]?.text);
 }
 
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
+    const _: Required<CustomOptions> = params;
+    t.pass();
+}
+
 test('solidity custom basic', async (t) => {
-    const params: CustomOptions = {
+    const params: z.infer<typeof t.context.schema> = {
         name: 'MyCustom',
     };
     await assertSnapshot(t, params);
 });
 
 test('solidity custom all', async (t) => {
-    const params: Required<CustomOptions> = {
+    const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyCustom',
         pausable: true,
         access: 'roles',
@@ -45,5 +54,6 @@ test('solidity custom all', async (t) => {
             securityContact: 'security@example.com',
         },
     };
+    assertHasAllSupportedFields(t, params);
     await assertSnapshot(t, params);
 });
