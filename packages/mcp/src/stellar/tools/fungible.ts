@@ -1,11 +1,11 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
-import { safePrint } from '../../utils.js';
-import { fungibleSchema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { fungibleSchema } from '../schemas';
 
-export function registerStellarFungible(server: McpServer) {
- server.tool(
+export function registerStellarFungible(server: McpServer): RegisteredTool {
+  return server.tool(
     'stellar-generate-fungible',
     'Generates a fungible token smart contract for Stellar, based on the Fungible Token Standard, compatible with SEP-41, similar to ERC-20. Returns the source code. Does not write to disk.',
     fungibleSchema,
@@ -41,4 +41,3 @@ export function registerStellarFungible(server: McpServer) {
     },
   );
 }
-  
