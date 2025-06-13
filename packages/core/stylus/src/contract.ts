@@ -44,6 +44,7 @@ export interface BaseImplementedTrait {
   priority?: number;
   omitInherit?: boolean;
   modulePath: string;
+  // TODO: refactor to be <F extends string>: Record<F, BaseFunction>
   functions: BaseFunction[];
 }
 
@@ -51,11 +52,16 @@ export interface ImplementedTrait extends BaseImplementedTrait {
   functions: ContractFunction[];
 }
 
+export interface Result {
+  ok: string,
+  err: 'Self::Error',
+}
+
 export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string[];
-  returns?: string;
+  returns?: string | Result;
   comments?: string[];
   attribute?: string;
 }

@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, Result } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -219,8 +219,15 @@ function printTraitFunctions(impl: ImplementedTrait): Lines[] {
 function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
+  
+  // note: if there's code after the main code, it's not a getter
+  const mainCode = !!fn.codeAfter?.length 
+    ? [`${fn.code};`].concat(fn.codeAfter)
+    : typeof fn.returns === 'string' 
+      ? fn.code 
+      : [`Ok(${fn.code})`];
 
-  const codeLines = (fn.codeBefore?.concat(fn.code) ?? fn.code).concat(fn.codeAfter ?? []);
+  const codeLines = (fn.codeBefore?.concat(mainCode) ?? mainCode);
 
   return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
@@ -232,7 +239,7 @@ function printFunction2(
   kindedName: string,
   args: string[],
   attribute: string | undefined,
-  returns: string | undefined,
+  returns: string | Result | undefined,
   returnLine: string | undefined,
   code: Lines[],
 ): Lines[] {
@@ -270,7 +277,11 @@ function printFunction2(
   if (returns === undefined) {
     accum += ' {';
   } else {
-    accum += ` -> ${returns} {`;
+    if (typeof returns === 'string') {
+      accum += ` -> ${returns} {`;
+    } else {
+      accum += ` -> Result<${returns.ok}, ${returns.err}> {`;
+    }
   }
 
   fn.push(accum);

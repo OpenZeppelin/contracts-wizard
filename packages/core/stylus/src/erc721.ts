@@ -71,21 +71,18 @@ export function buildERC721(opts: ERC721Options): Contract {
 
 function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc721Trait);
+  c.addImplementedTrait(erc165Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
 
-  // the trait necessary to access Erc721 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc721', 'IErc721');
-
-  // Call nested IErc65 from Erc721
-  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc721Trait, functions.supports_interface);
+  c.addUseClause('alloc::vec', 'Vec');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'FixedBytes');
+  
+  c.addFunctionCodeAfter(erc165Trait.functions[0]!, ['  || <Self as IErc721>::interface_id() == interface_id'], erc165Trait)
 
   // if (pausable) {
   //   // Add transfer functions with pause checks
-  //   c.addUseClause('alloc::vec', 'Vec');
-  //   c.addUseClause('alloy_primitives', 'Address');
-  //   c.addUseClause('alloy_primitives', 'U256');
 
   //   c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
@@ -95,7 +92,7 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
   c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'IErc721Burnable');
 
   c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'U256');
+  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
 
   c.addFunction(erc721Trait, functions.burn);
 
@@ -139,12 +136,124 @@ function addEnumerable(c: ContractBuilder) {
 }
 
 const erc721Trait: BaseImplementedTrait = {
-  name: 'Erc721',
+  interface: {
+    name: 'IErc721',
+    associatedError: true,
+  },
   implementation: {
     storageName: 'erc721',
     type: 'Erc721',
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
+  functions: [
+    {
+      name: 'balance_of',
+      args: [
+        getSelfArg('immutable'),
+        { name: 'owner', type: 'Address' },
+      ],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: [`self.erc721.balance_of(owner)?`],
+    },
+    {
+      name: 'owner_of',
+      args: [
+        getSelfArg('immutable'),
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: [`self.erc721.owner_of(token_id)?`],
+    },
+    {
+      name: 'safe_transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.safe_transfer_from(from, to, token_id)?`],
+    },
+    {
+      name: 'safe_transfer_from_with_data',
+      attribute: 'selector(name = "safeTransferFrom")',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.safe_transfer_from_with_data(from, to, token_id, data)?`],
+    },
+    {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.transfer_from(from, to, token_id)?`],
+    },
+    {
+      name: 'approve',
+      args: [
+        getSelfArg(),
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.approve(to, token_id)?`],
+    },
+    {
+      name: 'set_approval_for_all',
+      args: [
+        getSelfArg(),
+        { name: 'operator', type: 'Address' },
+        { name: 'approved', type: 'bool' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.set_approval_for_all(operator, approved)?`],
+    },
+    {
+      name: 'get_approved',
+      args: [
+        getSelfArg('immutable'),
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: [`self.erc721.get_approved(token_id)?`],
+    },
+    {
+      name: 'is_approved_for_all',
+      args: [
+        getSelfArg('immutable'),
+        { name: 'owner', type: 'Address' },
+        { name: 'operator', type: 'Address' },
+      ],
+      returns: 'bool',
+      code: [`self.erc721.is_approved_for_all(owner, operator)`],
+    },
+  ],
+};
+
+const erc165Trait: BaseImplementedTrait = {
+  interface: {
+    name: 'IErc165',
+  },
+  modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
+  functions: [
+    {
+      name: 'supports_interface',
+      args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
+      returns: 'bool',
+      code: ['<Self as IErc165>::interface_id() == interface_id'],
+    },
+  ],
 };
 
 const enumerableTrait: BaseImplementedTrait = {
@@ -166,49 +275,8 @@ const enumerableTrait: BaseImplementedTrait = {
 // }
 
 const functions = defineFunctions({
-  // Token Functions
-  transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.implementation.storageName}.transfer_from(from, to, token_id)?;`],
-  },
-  safe_transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.implementation.storageName}.safe_transfer_from(from, to, token_id)?;`],
-  },
-  safe_transfer_from_with_data: {
-    attribute: 'selector(name = "safeTransferFrom")',
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-      { name: 'data', type: 'Bytes' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.implementation.storageName}.safe_transfer_from_with_data(from, to, token_id, data)?;`],
-  },
 
   // Overrides
-  supports_interface: {
-    args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
-    returns: 'bool',
-    code: ['Erc721::supports_interface(interface_id)'],
-  },
 
   // Extensions
   burn: {
