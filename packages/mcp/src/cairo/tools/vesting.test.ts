@@ -39,9 +39,9 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
 test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyVesting',
-        startDate: '1',
-        duration: '1',
-        cliffDuration: '1',
+        startDate: '2024-12-31T23:59',
+        duration: '1 day',
+        cliffDuration: '1 day',
         schedule: 'linear',
     };
     await assertSnapshot(t, params);
@@ -49,10 +49,10 @@ test('basic', async (t) => {
 
 test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
-        name: 'MyVesting',
-        startDate: '1',
-        duration: '1',
-        cliffDuration: '1',
+        name: 'CustomVesting',
+        startDate: '2024-12-31T23:59',
+        duration: '36 months',
+        cliffDuration: '90 days',
         schedule: 'custom',
         info: {
             license: 'MIT',
