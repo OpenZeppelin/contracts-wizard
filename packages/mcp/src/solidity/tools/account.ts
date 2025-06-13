@@ -1,11 +1,11 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils.js';
-import { accountSchema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { accountSchema } from '../schemas';
 
-export function registerSolidityAccount(server: McpServer) {
-  server.tool(
+export function registerSolidityAccount(server: McpServer): RegisteredTool {
+  return server.tool(
     'solidity-generate-account',
     '(Experimental) Generates an Account smart contract for Solidity, and returns the source code. Does not write to disk.',
     accountSchema,

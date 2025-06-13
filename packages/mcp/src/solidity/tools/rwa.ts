@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { realWorldAsset } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils.js';
-import { rwaSchema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { rwaSchema } from '../schemas';
 
 export function registerSolidityRWA(server: McpServer) {
   return server.tool(

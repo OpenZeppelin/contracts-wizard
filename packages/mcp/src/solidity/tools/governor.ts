@@ -1,11 +1,11 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { governor } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils.js';
-import { governorSchema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { governorSchema } from '../schemas';
 
-export function registerSolidityGovernor(server: McpServer) {
-  server.tool(
+export function registerSolidityGovernor(server: McpServer): RegisteredTool {
+  return server.tool(
     'solidity-generate-governor',
     'Generates a Governor smart contract for Solidity, and returns the source code. Does not write to disk.',
     governorSchema,
