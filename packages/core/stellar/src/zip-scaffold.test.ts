@@ -60,6 +60,9 @@ async function extractPackage(t: ExecutionContext<Context>, zip: JSZip) {
 async function runProjectSetUp(t: ExecutionContext<Context>) {
   const result = await asyncExec(`cd "${t.context.tempFolder}" && bash setup.sh`);
 
+  console.log(result.stdout);
+  console.log(result.stderr);
+
   t.regex(result.stdout, /Installation complete/);
 }
 
