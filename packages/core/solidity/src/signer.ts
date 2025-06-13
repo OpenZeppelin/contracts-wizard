@@ -6,11 +6,10 @@ export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   if (!signer) return;
-  const parent = signers[signer];
-  const name = parent.name;
-  c.addParent(parent);
+
+  c.addParent(signers[signer]);
   c.addOverride(
-    { name: name === signers.MultisigWeighted.name ? signers.Multisig.name : name },
+    { name: signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name },
     signerFunctions._rawSignatureValidation,
   );
 
@@ -21,31 +20,29 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
     name: 'Initializable',
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
+
+  // Add locking constructor
+  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+  c.addConstructorCode(`_disableInitializers();`);
+
+  // Add initializer
   const fn = signerFunctions[`initialize${signer}`];
   c.addModifier('initializer', fn);
 
-  const args = fn.args;
-
   switch (signer) {
     case 'Multisig':
-      c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${args[1]!.name});`, fn);
+      c.addFunctionCode(`_addSigners(${fn.args[0]!.name});`, fn);
+      c.addFunctionCode(`_setThreshold(${fn.args[1]!.name});`, fn);
       break;
     case 'MultisigWeighted':
-      c.addFunctionCode(`_addSigners(${args[0]!.name});`, fn);
-      c.addFunctionCode(`_setSignerWeights(${args[0]!.name}, ${args[1]!.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${args[2]!.name});`, fn);
+      c.addFunctionCode(`_addSigners(${fn.args[0]!.name});`, fn);
+      c.addFunctionCode(`_setSignerWeights(${fn.args[0]!.name}, ${fn.args[1]!.name});`, fn);
+      c.addFunctionCode(`_setThreshold(${fn.args[2]!.name});`, fn);
       break;
     case 'ECDSA':
     case 'P256':
     case 'RSA':
-      c.addFunctionCode(
-        `_setSigner(${fn.args
-          .map(({ name }) => name)
-          .join(', ')
-          .trimEnd()});`,
-        fn,
-      );
+      c.addFunctionCode(`_setSigner(${fn.args.map(({ name }) => name).join(', ')});`, fn);
   }
 }
 
@@ -76,49 +73,47 @@ export const signers = {
   },
 };
 
-export const signerFunctions = {
-  ...defineFunctions({
-    initializeECDSA: {
-      kind: 'public' as const,
-      args: [{ name: 'signer', type: 'address' }],
-    },
-    initializeP256: {
-      kind: 'public' as const,
-      args: [
-        { name: 'qx', type: 'bytes32' },
-        { name: 'qy', type: 'bytes32' },
-      ],
-    },
-    initializeRSA: {
-      kind: 'public' as const,
-      args: [
-        { name: 'e', type: 'bytes memory' },
-        { name: 'n', type: 'bytes memory' },
-      ],
-    },
-    initializeMultisig: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'threshold', type: 'uint256' },
-      ],
-    },
-    initializeMultisigWeighted: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'weights', type: 'uint256[] memory' },
-        { name: 'threshold', type: 'uint256' },
-      ],
-    },
-    _rawSignatureValidation: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
-      ],
-      returns: ['bool'],
-      mutability: 'view' as const,
-    },
-  }),
-};
+export const signerFunctions = defineFunctions({
+  initializeECDSA: {
+    kind: 'public' as const,
+    args: [{ name: 'signer', type: 'address' }],
+  },
+  initializeP256: {
+    kind: 'public' as const,
+    args: [
+      { name: 'qx', type: 'bytes32' },
+      { name: 'qy', type: 'bytes32' },
+    ],
+  },
+  initializeRSA: {
+    kind: 'public' as const,
+    args: [
+      { name: 'e', type: 'bytes memory' },
+      { name: 'n', type: 'bytes memory' },
+    ],
+  },
+  initializeMultisig: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'threshold', type: 'uint256' },
+    ],
+  },
+  initializeMultisigWeighted: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'weights', type: 'uint256[] memory' },
+      { name: 'threshold', type: 'uint256' },
+    ],
+  },
+  _rawSignatureValidation: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'hash', type: 'bytes32' },
+      { name: 'signature', type: 'bytes calldata' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const,
+  },
+});
