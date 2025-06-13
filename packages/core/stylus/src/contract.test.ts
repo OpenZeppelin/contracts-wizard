@@ -89,3 +89,10 @@ test('contract with security info', t => {
   Foo.addSecurityTag('security@example.com');
   t.snapshot(printContract(Foo));
 });
+
+test('contract with security info and documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addSecurityTag('security@example.com');
+  Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});
