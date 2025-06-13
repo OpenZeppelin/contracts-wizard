@@ -2,7 +2,7 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityERC721 } from './erc721';
-import { testInfo, testContext } from '../../helpers.test';
+import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { ERC721Options } from '@openzeppelin/wizard';
 
 interface Context {
@@ -12,16 +12,16 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
-    t.context.tool = registerSolidityERC721(new McpServer(testInfo));
+    t.context.tool = registerSolidityERC721(new McpServer(testMcpInfo));
 });
 
 async function assertSnapshot(t: ExecutionContext<Context>, params: ERC721Options) {
     const result = await t.context.tool.callback(
         {
             ...params,
-            ...testContext,
+            ...testMcpContext,
         },
-        testContext
+        testMcpContext
     );
 
     t.snapshot(result?.content[0]?.text);

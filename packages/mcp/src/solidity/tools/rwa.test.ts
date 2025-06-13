@@ -2,7 +2,7 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityRWA } from './rwa';
-import { testInfo, testContext } from '../../helpers.test';
+import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { StablecoinOptions } from '@openzeppelin/wizard';
 
 interface Context {
@@ -12,16 +12,16 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
-    t.context.tool = registerSolidityRWA(new McpServer(testInfo));
+    t.context.tool = registerSolidityRWA(new McpServer(testMcpInfo));
 });
 
 async function assertSnapshot(t: ExecutionContext<Context>, params: StablecoinOptions) {
     const result = await t.context.tool.callback(
         {
             ...params,
-            ...testContext,
+            ...testMcpContext,
         },
-        testContext
+        testMcpContext
     );
 
     t.snapshot(result?.content[0]?.text);
