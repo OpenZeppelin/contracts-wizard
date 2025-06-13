@@ -1,24 +1,24 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
+import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 
 const sharedFunctionDescription = {
-  name: { type: 'string', description: 'The name of the contract' },
+  name: { type: 'string', description: commonDescriptions.name },
 
-  symbol: { type: 'string', description: 'The short symbol for the token' },
+  symbol: { type: 'string', description: commonDescriptions.symbol },
 
   burnable: {
     type: 'boolean',
-    description: 'Whether token holders will be able to destroy their tokens',
+    description: commonDescriptions.burnable,
   },
 
   pausable: {
     type: 'boolean',
-    description:
-      'Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.',
+    description: commonDescriptions.pausable,
   },
 
   mintable: {
     type: 'boolean',
-    description: 'Whether privileged accounts will be able to create more supply or emit more tokens',
+    description: commonDescriptions.mintable,
   },
 } as const satisfies AiFunctionPropertyDefinition<{
   name: string;
@@ -32,7 +32,7 @@ export const addFunctionPropertiesFrom = <
   TContract,
   TCommonOptions extends Record<string, unknown> = Record<string, unknown>,
   TCommonOptionName extends keyof (typeof sharedFunctionDescription & TCommonOptions) &
-    keyof TContract = keyof (typeof sharedFunctionDescription & TCommonOptions) & keyof TContract,
+  keyof TContract = keyof (typeof sharedFunctionDescription & TCommonOptions) & keyof TContract,
 >(
   commonOptions: TCommonOptions,
   commonOptionNames: TCommonOptionName[],
