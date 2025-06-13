@@ -1,9 +1,9 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
-import { registerSolidityERC20 } from './erc20';
+import { registerSolidityRWA } from './rwa';
 import { testInfo, testContext } from '../../helpers.test';
-import { ERC20Options } from '@openzeppelin/wizard';
+import { StablecoinOptions } from '@openzeppelin/wizard';
 
 interface Context {
     tool: RegisteredTool;
@@ -12,10 +12,10 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
-    t.context.tool = registerSolidityERC20(new McpServer(testInfo));
+    t.context.tool = registerSolidityRWA(new McpServer(testInfo));
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: ERC20Options) {
+async function assertSnapshot(t: ExecutionContext<Context>, params: StablecoinOptions) {
     const result = await t.context.tool.callback(
         {
             ...params,
@@ -27,30 +27,32 @@ async function assertSnapshot(t: ExecutionContext<Context>, params: ERC20Options
     t.snapshot(result?.content[0]?.text);
 }
 
-test('solidity erc20 basic', async (t) => {
-    const params: ERC20Options = {
+test('solidity rwa basic', async (t) => {
+    const params: StablecoinOptions = {
         name: 'TestToken',
         symbol: 'TST',
     };
     await assertSnapshot(t, params);
 });
 
-test('solidity erc20 all', async (t) => {
-    const params: Required<ERC20Options> = {
-        name: 'TestToken',
-        symbol: 'TST',
+test('solidity rwa all', async (t) => {
+    const params: Required<StablecoinOptions> = {
+        name: 'MyStablecoin',
+        symbol: 'MST',
+        premint: '2000',
+        access: 'roles',
         burnable: true,
-        pausable: true,
-        premint: '1000000',
-        premintChainId: '1',
         mintable: true,
+        pausable: true,
         callback: true,
         permit: true,
         votes: true,
         flashmint: true,
-        crossChainBridging: false,
-        access: 'roles',
-        upgradeable: 'transparent',
+        crossChainBridging: 'custom',
+        premintChainId: '10',
+        limitations: 'allowlist',
+        custodian: true,
+        upgradeable: false,
         info: {
             license: 'MIT',
             securityContact: 'security@example.com',

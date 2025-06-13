@@ -1,11 +1,11 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { realWorldAsset } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils.js';
 import { rwaSchema } from '../schemas.js';
 
 export function registerSolidityRWA(server: McpServer) {
-  server.tool(
+  return server.tool(
     'solidity-generate-rwa',
     '(Experimental) Generates a Real-World Asset smart contract for Solidity, and returns the source code. Does not write to disk.',
     rwaSchema,
@@ -28,8 +28,7 @@ export function registerSolidityRWA(server: McpServer) {
       limitations,
       custodian,
     }) => {
-      const opts: KindedOptions['RealWorldAsset'] = {
-        kind: 'RealWorldAsset',
+      const opts: StablecoinOptions = {
         name,
         symbol,
         burnable,

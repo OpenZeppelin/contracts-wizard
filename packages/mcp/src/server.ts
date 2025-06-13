@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityTools } from './solidity/tools.js';
-import { registerCairoTools } from './cairo/register-tools.js';
-import { registerStellarTools } from './stellar/register-tools.js';
-import { registerStylusTools } from './stylus/register-tools.js';
+import { registerCairoTools } from './cairo/tools.js';
+import { registerStellarTools } from './stellar/tools.js';
+import { registerStylusTools } from './stylus/tools.js';
 import { version } from '../package.json';
 
 export function createServer() {
