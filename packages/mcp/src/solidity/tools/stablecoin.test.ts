@@ -1,6 +1,6 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityStablecoin } from './stablecoin';
 import { testInfo, testContext } from '../../helpers.test';
 import { StablecoinOptions } from '@openzeppelin/wizard';

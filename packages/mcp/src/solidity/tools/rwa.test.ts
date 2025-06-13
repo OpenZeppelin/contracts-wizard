@@ -1,6 +1,6 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityRWA } from './rwa';
 import { testInfo, testContext } from '../../helpers.test';
 import { StablecoinOptions } from '@openzeppelin/wizard';
@@ -37,8 +37,8 @@ test('solidity rwa basic', async (t) => {
 
 test('solidity rwa all', async (t) => {
     const params: Required<StablecoinOptions> = {
-        name: 'MyStablecoin',
-        symbol: 'MST',
+        name: 'MyRWA',
+        symbol: 'RWA',
         premint: '2000',
         access: 'roles',
         burnable: true,

@@ -1,6 +1,6 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityGovernor } from './governor';
 import { testInfo, testContext } from '../../helpers.test';
 import { GovernorOptions } from '@openzeppelin/wizard';
@@ -46,13 +46,13 @@ test('solidity governor all', async (t) => {
         timelock: 'openzeppelin',
         blockTime: 12,
         decimals: 18,
-        proposalThreshold: '0',
-        quorumMode: 'percent',
-        quorumPercent: 4,
-        quorumAbsolute: '0',
+        proposalThreshold: '1',
+        quorumMode: 'absolute',
+        quorumPercent: 0,
+        quorumAbsolute: '5',
         storage: true,
         settings: true,
-        access: 'roles',
+        access: false,
         upgradeable: 'uups',
         info: {
             license: 'MIT',

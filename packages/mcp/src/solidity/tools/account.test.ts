@@ -1,6 +1,6 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityAccount } from './account';
 import { testInfo, testContext } from '../../helpers.test';
 import { AccountOptions } from '@openzeppelin/wizard';
@@ -43,8 +43,8 @@ test('solidity account all', async (t) => {
         signer: 'ECDSA',
         batchedExecution: true,
         ERC7579Modules: 'AccountERC7579',
-        access: 'roles',
-        upgradeable: 'uups',
+        access: false,
+        upgradeable: false,
         info: {
             license: 'MIT',
             securityContact: 'security@example.com',

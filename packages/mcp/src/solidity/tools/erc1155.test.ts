@@ -1,6 +1,6 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityERC1155 } from './erc1155';
 import { testInfo, testContext } from '../../helpers.test';
 import { ERC1155Options } from '@openzeppelin/wizard';
