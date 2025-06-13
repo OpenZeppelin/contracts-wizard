@@ -1,6 +1,6 @@
 import type { ContractBuilder } from './contract';
 
-export const TAG_SECURITY_CONTACT = `@custom:security-contact`;
+export const TAG_SECURITY_CONTACT = `Security contact`;
 
 export const infoOptions = [{}, { license: 'WTFPL' }] as const;
 

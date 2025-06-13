@@ -308,8 +308,6 @@ export class ContractBuilder implements Contract {
   }
 
   addDocumentationTag(key: string, value: string) {
-    // eslint-disable-next-line no-useless-escape
-    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid documentation key: ${key}`);
     this.documentationTags.push({ key, value });
   }
 }
