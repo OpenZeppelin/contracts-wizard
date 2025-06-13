@@ -3,11 +3,12 @@ import type { CustomOptions } from '@openzeppelin/wizard';
 import { custom } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { customSchema } from '../schemas';
+import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityCustom(server: McpServer): RegisteredTool {
   return server.tool(
-    'solidity-generate-custom',
-    'Generates a Custom smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'solidity-custom',
+    solidityPrompts.Custom,
     customSchema,
     async ({
       name,

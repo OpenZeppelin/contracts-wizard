@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { governor } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { governorSchema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoGovernor(server: McpServer) {
   server.tool(
-    'cairo-generate-governor',
-    'Generates a Governor smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-governor',
+    cairoPrompts.Governor,
     governorSchema,
     async ({
       name,

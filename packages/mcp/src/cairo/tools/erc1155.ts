@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { erc1155 } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { erc1155Schema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoERC1155(server: McpServer) {
   server.tool(
-    'cairo-generate-erc1155',
-    'Generates an ERC1155 smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-erc1155',
+    cairoPrompts.ERC1155,
     erc1155Schema,
     async ({
       name,

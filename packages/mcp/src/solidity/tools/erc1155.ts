@@ -1,13 +1,14 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ERC1155Options, KindedOptions } from '@openzeppelin/wizard';
+import type { ERC1155Options } from '@openzeppelin/wizard';
 import { erc1155 } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { erc1155Schema } from '../schemas';
+import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityERC1155(server: McpServer): RegisteredTool {
   return server.tool(
-    'solidity-generate-erc1155',
-    'Generates an ERC1155 smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'solidity-erc1155',
+    solidityPrompts.ERC1155,
     erc1155Schema,
     async ({
       name,

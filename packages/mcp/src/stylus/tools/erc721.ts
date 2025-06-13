@@ -3,11 +3,12 @@ import type { ERC721Options } from '@openzeppelin/wizard-stylus';
 import { erc721 } from '@openzeppelin/wizard-stylus';
 import { safePrint } from '../../utils';
 import { erc721Schema } from '../schemas';
+import { stylusPrompts } from '@ericglau/wizard-common';
 
 export function registerStylusERC721(server: McpServer): RegisteredTool {
   return server.tool(
-    'stylus-generate-erc721',
-    'Generates an ERC721 smart contract for Stylus, and returns the source code. Does not write to disk.',
+    'stylus-erc721',
+    stylusPrompts.ERC721,
     erc721Schema,
     async ({
       name,

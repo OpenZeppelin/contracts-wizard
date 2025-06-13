@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { account } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { accountSchema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoAccount(server: McpServer) {
   server.tool(
-    'cairo-generate-account',
-    'Generates an Account smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-account',
+    cairoPrompts.Account,
     accountSchema,
     async ({
       name,

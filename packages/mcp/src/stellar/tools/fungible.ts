@@ -3,11 +3,12 @@ import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
 import { safePrint } from '../../utils';
 import { fungibleSchema } from '../schemas';
+import { stellarPrompts } from '@ericglau/wizard-common';
 
 export function registerStellarFungible(server: McpServer): RegisteredTool {
   return server.tool(
-    'stellar-generate-fungible',
-    'Generates a fungible token smart contract for Stellar, based on the Fungible Token Standard, compatible with SEP-41, similar to ERC-20. Returns the source code. Does not write to disk.',
+    'stellar-fungible',
+    stellarPrompts.Fungible,
     fungibleSchema,
     async ({
       name,

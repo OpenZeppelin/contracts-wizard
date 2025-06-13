@@ -1,12 +1,12 @@
 export const cairoPrompts = {
-    ERC20: 'Make a fungible token per the ERC-20 standard',
-    ERC721: 'Make a non-fungible token per the ERC-721 standard',
-    ERC1155: 'Make a non-fungible token per the ERC-1155 standard',
-    Governor: 'Make a contract to implement governance, such as for a DAO',
-    Multisig: 'Make a multi-signature smart contract that ensures that no single signer can unilaterally execute critical actions, requiring multiple registered signers to approve and collectively execute transactions',
-    Vesting: 'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
-    Account: 'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
-    Custom: 'Make a custom smart contract',
+    ERC20: 'Make a fungible token per the ERC-20 standard.',
+    ERC721: 'Make a non-fungible token per the ERC-721 standard.',
+    ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
+    Governor: 'Make a contract to implement governance, such as for a DAO.',
+    Multisig: 'Make a multi-signature smart contract that ensures that no single signer can unilaterally execute critical actions, requiring multiple registered signers to approve and collectively execute transactions.',
+    Vesting: 'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule.',
+    Account: 'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions.',
+    Custom: 'Make a custom smart contract.',
 };
 
 export const cairoCommonDescriptions = {

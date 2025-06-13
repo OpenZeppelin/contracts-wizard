@@ -3,11 +3,12 @@ import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { stablecoinSchema } from '../schemas';
+import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
   return server.tool(
-    'solidity-generate-stablecoin',
-    '(Experimental) Generates a Stablecoin smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'solidity-stablecoin',
+    solidityPrompts.Stablecoin,
     stablecoinSchema,
     async ({
       name,

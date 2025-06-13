@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { multisig } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { multisigSchema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoMultisig(server: McpServer) {
   server.tool(
-    'cairo-generate-multisig',
-    'Generates a Multisig smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-multisig',
+    cairoPrompts.Multisig,
     multisigSchema,
     async ({
       name,

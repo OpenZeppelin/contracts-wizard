@@ -1,7 +1,7 @@
 export const stylusPrompts = {
-    ERC20: 'Make a fungible token per the ERC-20 standard',
-    ERC721: 'Make a non-fungible token per the ERC-721 standard',
-    ERC1155: 'Make a non-fungible token per the ERC-1155 standard',
+    ERC20: 'Make a fungible token per the ERC-20 standard.',
+    ERC721: 'Make a non-fungible token per the ERC-721 standard.',
+    ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
 };
 
 export const stylusCommonDescriptions = {

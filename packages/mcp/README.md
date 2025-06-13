@@ -10,14 +10,14 @@ A Model Context Protocol (MCP) server that allows AI agents to generate smart co
 ### Solidity
 
 Provides the following tools:
-- `solidity-generate-erc20`: Generate an ERC20 smart contract for Solidity
-- `solidity-generate-erc721`: Generate an ERC721 smart contract for Solidity
-- `solidity-generate-erc1155`: Generate an ERC1155 smart contract for Solidity
-- `solidity-generate-stablecoin`: (Experimental) Generate a stablecoin smart contract for Solidity
-- `solidity-generate-account`: (Experimental) Generate an account smart contract for Solidity
-- `solidity-generate-custom`: Generate a custom smart contract for Solidity
-- `solidity-generate-governor`: Generate a governor smart contract for Solidity
-- `solidity-generate-rwa`: (Experimental) Generate a real-world asset smart contract for Solidity
+- `solidity-erc20`: Generate an ERC20 smart contract for Solidity
+- `solidity-erc721`: Generate an ERC721 smart contract for Solidity
+- `solidity-erc1155`: Generate an ERC1155 smart contract for Solidity
+- `solidity-stablecoin`: (Experimental) Generate a stablecoin smart contract for Solidity
+- `solidity-account`: (Experimental) Generate an account smart contract for Solidity
+- `solidity-custom`: Generate a custom smart contract for Solidity
+- `solidity-governor`: Generate a governor smart contract for Solidity
+- `solidity-rwa`: (Experimental) Generate a real-world asset smart contract for Solidity
 
 ## Installation
 

@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { erc20 } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { erc20Schema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoERC20(server: McpServer) {
   server.tool(
-    'cairo-generate-erc20',
-    'Generates an ERC20 smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-erc20',
+    cairoPrompts.ERC20,
     erc20Schema,
     async ({
       name,

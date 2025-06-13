@@ -1,6 +1,6 @@
 export const stellarPrompts = {
-    Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20',
-    NonFungible: 'Make a non-fungible token per the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721',
+    Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20.',
+    NonFungible: 'Make a non-fungible token per the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721.',
 };
 
 export const stellarCommonDescriptions = {

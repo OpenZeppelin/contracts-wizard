@@ -3,11 +3,12 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { vesting } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { vestingSchema } from '../schemas.js';
+import { cairoPrompts } from '@ericglau/wizard-common';
 
 export function registerCairoVesting(server: McpServer) {
   server.tool(
-    'cairo-generate-vesting',
-    'Generates a Vesting smart contract for Cairo, and returns the source code. Does not write to disk.',
+    'cairo-vesting',
+    cairoPrompts.Vesting,
     vestingSchema,
     async ({
       name,

@@ -3,11 +3,12 @@ import type { ERC20Options } from '@openzeppelin/wizard';
 import { erc20 } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { erc20Schema } from '../schemas';
+import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityERC20(server: McpServer): RegisteredTool {
   return server.tool(
-    'solidity-generate-erc20',
-    'Generates an ERC20 smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'solidity-erc20',
+    solidityPrompts.ERC20,
     erc20Schema,
     async ({
       name,

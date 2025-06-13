@@ -1,12 +1,12 @@
 export const solidityPrompts = {
-    ERC20: 'Make a fungible token per the ERC-20 standard',
-    ERC721: 'Make a non-fungible token per the ERC-721 standard',
-    ERC1155: 'Make a non-fungible token per the ERC-1155 standard',
+    ERC20: 'Make a fungible token per the ERC-20 standard.',
+    ERC721: 'Make a non-fungible token per the ERC-721 standard.',
+    ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
     Stablecoin: 'Make a stablecoin token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
     RWA: 'Make a real-world asset token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
     Account: 'Make an account contract that follows the ERC-4337 standard. Experimental, some features are not audited and are subject to change.',
-    Governor: 'Make a contract to implement governance, such as for a DAO',
-    Custom: 'Make a custom smart contract',
+    Governor: 'Make a contract to implement governance, such as for a DAO.',
+    Custom: 'Make a custom smart contract.',
 }
 
 export const solidityCommonDescriptions = {

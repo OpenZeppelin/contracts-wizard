@@ -3,11 +3,12 @@ import type { ERC721Options } from '@openzeppelin/wizard';
 import { erc721 } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { erc721Schema } from '../schemas';
+import { solidityPrompts } from '@ericglau/wizard-common';
 
 export function registerSolidityERC721(server: McpServer): RegisteredTool {
   return server.tool(
-    'solidity-generate-erc721',
-    'Generates an ERC721 smart contract for Solidity, and returns the source code. Does not write to disk.',
+    'solidity-erc721',
+    solidityPrompts.ERC721,
     erc721Schema,
     async ({
       name,
