@@ -3,7 +3,7 @@ import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoAccount } from './account';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { AccountOptions } from '@openzeppelin/wizard-cairo-alpha';
+import { AccountOptions } from '@openzeppelin/wizard-cairo';
 import { accountSchema } from '../schemas';
 import { z } from 'zod';
 

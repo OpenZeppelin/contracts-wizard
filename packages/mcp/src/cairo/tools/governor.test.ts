@@ -3,7 +3,7 @@ import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoGovernor } from './governor';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { GovernorOptions } from '@openzeppelin/wizard-cairo-alpha';
+import { GovernorOptions } from '@openzeppelin/wizard-cairo';
 import { governorSchema } from '../schemas';
 import { z } from 'zod';
 

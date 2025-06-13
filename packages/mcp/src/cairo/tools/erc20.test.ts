@@ -3,7 +3,7 @@ import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoERC20 } from './erc20';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { ERC20Options, ERC721Options } from '@openzeppelin/wizard-cairo-alpha';
+import { ERC20Options, ERC721Options } from '@openzeppelin/wizard-cairo';
 import { erc20Schema } from '../schemas';
 import { z } from 'zod';
 

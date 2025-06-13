@@ -1,6 +1,6 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
-import { erc20 } from '@openzeppelin/wizard-cairo-alpha';
+import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import { erc20 } from '@openzeppelin/wizard-cairo';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc20Schema } from '../schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';

@@ -3,7 +3,7 @@ import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoMultisig } from './multisig';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { MultisigOptions } from '@openzeppelin/wizard-cairo-alpha';
+import { MultisigOptions } from '@openzeppelin/wizard-cairo';
 import { multisigSchema } from '../schemas';
 import { z } from 'zod';
 
