@@ -72,11 +72,6 @@ export interface Argument {
   type?: string;
 }
 
-export interface DocumentationTag {
-  key: string;
-  value: string;
-}
-
 export class ContractBuilder implements Contract {
   readonly name: Name;
   license = 'MIT';

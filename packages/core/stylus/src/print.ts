@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, DocumentationTag } from './contract';
+import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
