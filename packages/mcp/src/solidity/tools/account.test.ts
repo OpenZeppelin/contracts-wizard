@@ -37,14 +37,14 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
     t.pass();
 }
 
-test('solidity account basic', async (t) => {
+test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyAccount',
     };
     await assertSnapshot(t, params);
 });
 
-test('solidity account all', async (t) => {
+test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyAccount',
         signatureValidation: 'ERC1271',

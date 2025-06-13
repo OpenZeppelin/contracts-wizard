@@ -36,7 +36,7 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
     t.pass();
 }
 
-test('solidity erc1155 basic', async (t) => {
+test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyTokens',
         uri: 'https://example.com/token/{id}.json',
@@ -44,7 +44,7 @@ test('solidity erc1155 basic', async (t) => {
     await assertSnapshot(t, params);
 });
 
-test('solidity erc1155 all', async (t) => {
+test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyTokens',
         uri: 'https://example.com/token/{id}.json',

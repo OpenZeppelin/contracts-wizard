@@ -36,7 +36,7 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
     t.pass();
 }
 
-test('solidity governor basic', async (t) => {
+test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyGovernor',
         delay: '1 day',
@@ -45,7 +45,7 @@ test('solidity governor basic', async (t) => {
     await assertSnapshot(t, params);
 });
 
-test('solidity governor all', async (t) => {
+test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyGovernor',
         delay: '1 day',

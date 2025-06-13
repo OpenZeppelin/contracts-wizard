@@ -36,14 +36,14 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
     t.pass();
 }
 
-test('solidity custom basic', async (t) => {
+test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyCustom',
     };
     await assertSnapshot(t, params);
 });
 
-test('solidity custom all', async (t) => {
+test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'MyCustom',
         pausable: true,

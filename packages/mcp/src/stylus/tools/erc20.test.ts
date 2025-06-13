@@ -36,14 +36,14 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
     t.pass();
 }
 
-test('stylus erc20 basic', async (t) => {
+test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'TestToken',
     };
     await assertSnapshot(t, params);
 });
 
-test('stylus erc20 all', async (t) => {
+test('all', async (t) => {
     const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'TestToken',
         burnable: true,
