@@ -1,10 +1,20 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoAlphaSharedFunctionDefinition } from './cairo-alpha-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
+import {
+  cairoPrompts,
+  cairoERC20Descriptions,
+  cairoERC721Descriptions,
+  cairoERC1155Descriptions,
+  cairoAccountDescriptions,
+  cairoGovernorDescriptions,
+  cairoMultisigDescriptions,
+  cairoVestingDescriptions,
+} from '../../../../common/src/ai/descriptions/cairo.ts';
 
 export const cairoAlphaERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard.',
+  description: cairoPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
@@ -22,12 +32,11 @@ export const cairoAlphaERC20AIFunctionDefinition = {
       ]),
       premint: {
         type: 'string',
-        description: 'The number of tokens to premint for the deployer.',
+        description: cairoERC20Descriptions.premint,
       },
       votes: {
         type: 'boolean',
-        description:
-          "Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.",
+        description: cairoERC20Descriptions.votes,
       },
     },
     required: ['name', 'symbol'],
@@ -37,7 +46,7 @@ export const cairoAlphaERC20AIFunctionDefinition = {
 
 export const cairoAlphaERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard.',
+  description: cairoPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
@@ -54,16 +63,14 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         'appName',
         'appVersion',
       ]),
-      baseUri: { type: 'string', description: 'A base uri for the non-fungible token.' },
+      baseUri: { type: 'string', description: cairoERC721Descriptions.baseUri },
       enumerable: {
         type: 'boolean',
-        description:
-          'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+        description: cairoERC721Descriptions.enumerable,
       },
       votes: {
         type: 'boolean',
-        description:
-          'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
+        description: cairoERC721Descriptions.votes,
       },
     },
     required: ['name', 'symbol'],
@@ -73,7 +80,7 @@ export const cairoAlphaERC721AIFunctionDefinition = {
 
 export const cairoAlphaERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard.',
+  description: cairoPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
@@ -89,12 +96,11 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
       ]),
       baseUri: {
         type: 'string',
-        description:
-          'The Location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
+        description: cairoERC1155Descriptions.baseUri,
       },
       updatableUri: {
         type: 'boolean',
-        description: 'Whether privileged accounts will be able to set a new URI for all token types.',
+        description: cairoERC1155Descriptions.updatableUri,
       },
     },
     required: ['name', 'baseUri'],
@@ -104,7 +110,7 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
 
 export const cairoAlphaGovernorAIFunctionDefinition = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO.',
+  description: cairoPrompts.Governor,
   parameters: {
     type: 'object',
     properties: {
@@ -117,59 +123,53 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
       ]),
       delay: {
         type: 'string',
-        description:
-          'The delay since proposal is created until voting starts, in readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/, default is "1 day".',
+        description: cairoGovernorDescriptions.delay,
       },
       period: {
         type: 'string',
-        description:
-          'The length of period during which people can cast their vote, in readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/, default is "1 week".',
+        description: cairoGovernorDescriptions.period,
       },
       proposalThreshold: {
         type: 'string',
-        description: 'Minimum number of votes an account must have to create a proposal, default is 0.',
+        description: cairoGovernorDescriptions.proposalThreshold,
       },
       decimals: {
         type: 'number',
-        description:
-          'The number of decimals to use for the contract, unless otherwise specified default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes).',
+        description: cairoGovernorDescriptions.decimals,
       },
       quorumMode: {
         type: 'string',
         enum: ['percent', 'absolute'],
-        description: 'The type of quorum mode to use, either by percentage or absolute value.',
+        description: cairoGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
         type: 'number',
-        description: 'The percent required, in cases of quorumMode equals percent.',
+        description: cairoGovernorDescriptions.quorumPercent,
       },
       quorumAbsolute: {
         type: 'string',
-        description: 'The absolute quorum required, in cases of quorumMode equals absolute.',
+        description: cairoGovernorDescriptions.quorumAbsolute,
       },
       votes: {
         type: 'string',
         enum: ['erc20votes', 'erc721votes'],
-        description:
-          'The type of voting to use. Either erc20votes, meaning voting power with a votes-enabled ERC20 token. Either erc721votes, meaning voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.',
+        description: cairoGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
         enum: ['timestamp'],
-        description:
-          'The clock mode used by the voting token. For now, only timestamp mode where the token uses voting durations expressed as timestamps is supported. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.',
+        description: cairoGovernorDescriptions.clockMode,
       },
       timelock: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['openzeppelin'] },
         ],
-        description:
-          'Whether to add a delay to actions taken by the Governor. Gives users time to exit the system if they disagree with governance decisions. If "openzeppelin", Module compatible with OpenZeppelin\'s TimelockController.',
+        description: cairoGovernorDescriptions.timelock,
       },
       settings: {
         type: 'boolean',
-        description: 'Whether to allow governance to update voting settings (delay, period, proposal threshold).',
+        description: cairoGovernorDescriptions.settings,
       },
     },
     required: ['name', 'delay', 'period'],
@@ -179,31 +179,27 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
 
 export const cairoAlphaVestingAIFunctionDefinition = {
   name: 'Vesting',
-  description:
-    'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
+  description: cairoPrompts.Vesting,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'info']),
       startDate: {
         type: 'string',
-        description: 'The timestamp marking the beginning of the vesting period. In HTML input datetime-local format',
+        description: cairoVestingDescriptions.startDate,
       },
       duration: {
         type: 'string',
-        description:
-          'The total duration of the vesting period. In readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/',
+        description: cairoVestingDescriptions.duration,
       },
       cliffDuration: {
         type: 'string',
-        description:
-          'The duration of the cliff period. Must be less than or equal to the total duration. In readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/',
+        description: cairoVestingDescriptions.cliffDuration,
       },
       schedule: {
         type: 'string',
         enum: ['linear', 'custom'],
-        description:
-          'A vesting schedule implementation, tokens can either be vested gradually following a linear curve or with custom vesting schedule that requires the implementation of the VestingSchedule trait.',
+        description: cairoVestingDescriptions.schedule,
       },
     },
     required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate'],
@@ -213,8 +209,7 @@ export const cairoAlphaVestingAIFunctionDefinition = {
 
 export const cairoAlphaAccountAIFunctionDefinition = {
   name: 'Account',
-  description:
-    'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
+  description: cairoPrompts.Account,
   parameters: {
     type: 'object',
     properties: {
@@ -222,19 +217,17 @@ export const cairoAlphaAccountAIFunctionDefinition = {
       type: {
         type: 'string',
         enum: ['stark', 'eth'],
-        description:
-          'Type of signature used for signature checking by the Account contract, Starknet account uses the STARK curve, Ethereum-flavored account uses the Secp256k1 curve.',
+        description: cairoAccountDescriptions.type,
       },
       declare: {
         type: 'boolean',
-        description: 'Whether to enable the account to declare other contract classes.',
+        description: cairoAccountDescriptions.declare,
       },
-      deploy: { type: 'boolean', description: 'Whether to enables the account to be counterfactually deployed.' },
-      pubkey: { type: 'boolean', description: 'Whether to enables the account to change its own public key.' },
+      deploy: { type: 'boolean', description: cairoAccountDescriptions.deploy },
+      pubkey: { type: 'boolean', description: cairoAccountDescriptions.pubkey },
       outsideExecution: {
         type: 'boolean',
-        description:
-          'Whether to allow a protocol to submit transactions on behalf of the account, as long as it has the relevant signatures.',
+        description: cairoAccountDescriptions.outsideExecution,
       },
     },
     required: ['name', 'type'],
@@ -244,14 +237,14 @@ export const cairoAlphaAccountAIFunctionDefinition = {
 
 export const cairoAlphaMultisigAIFunctionDefinition = {
   name: 'Multisig',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Multisig,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
       quorum: {
         type: 'string',
-        description: 'The minimal number of confirmations required by the Multisig to approve a transaction.',
+        description: cairoMultisigDescriptions.quorum,
       },
     },
     required: ['name', 'quorum'],
@@ -261,7 +254,7 @@ export const cairoAlphaMultisigAIFunctionDefinition = {
 
 export const cairoAlphaCustomAIFunctionDefinition = {
   name: 'Custom',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Custom,
   parameters: {
     type: 'object',
     properties: {

@@ -4,7 +4,6 @@ import { withCommonDefaults, defaults as commonDefaults } from './common-options
 import type { Contract, ImportContract } from './contract';
 import { ContractBuilder } from './contract';
 import { OptionsError } from './error';
-import { setAccessControl } from './set-access-control';
 import { printContract } from './print';
 import { setInfo } from './set-info';
 import { setUpgradeableGovernor } from './set-upgradeable';
@@ -13,6 +12,7 @@ import { durationToBlocks, durationToTimestamp } from './utils/duration';
 import { clockModeDefault, type ClockMode } from './set-clock-mode';
 
 export const defaults: Required<GovernorOptions> = {
+  ...commonDefaults,
   name: 'MyGovernor',
   delay: '1 day',
   period: '1 week',
@@ -28,10 +28,6 @@ export const defaults: Required<GovernorOptions> = {
   quorumAbsolute: '',
   storage: false,
   settings: true,
-
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info,
 } as const;
 
 export const votesOptions = ['erc20votes', 'erc721votes'] as const;
@@ -98,7 +94,6 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
 
-  setAccessControl(c, allOpts.access);
   setUpgradeableGovernor(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 

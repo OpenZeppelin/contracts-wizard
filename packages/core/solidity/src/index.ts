@@ -22,3 +22,11 @@ export { sanitizeKind } from './kind';
 export { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from './api';
 
 export { compatibleContractsSemver } from './utils/version';
+
+export type { ERC20Options } from './erc20';
+export type { ERC721Options } from './erc721';
+export type { ERC1155Options } from './erc1155';
+export type { StablecoinOptions } from './stablecoin';
+export type { AccountOptions } from './account';
+export type { GovernorOptions } from './governor';
+export type { CustomOptions } from './custom';

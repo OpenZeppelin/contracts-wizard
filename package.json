@@ -17,7 +17,9 @@
   },
   "workspaces": {
     "packages": [
+      "packages/common",
       "packages/core/*",
+      "packages/mcp",
       "packages/ui"
     ],
     "nohoist": [

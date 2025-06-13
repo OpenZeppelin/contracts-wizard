@@ -20,3 +20,7 @@ export { sanitizeKind } from './kind';
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
 export { erc1155, erc20, erc721 } from './api';
+
+export type { ERC20Options } from './erc20';
+export type { ERC721Options } from './erc721';
+export type { ERC1155Options } from './erc1155';
