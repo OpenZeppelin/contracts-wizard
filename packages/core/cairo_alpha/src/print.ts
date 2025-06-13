@@ -29,7 +29,7 @@ export function printContract(contract: Contract): string {
       ],
       printSuperVariables(contract),
       [
-        ...printDocumentation(contract.documentations),
+        ...printDocumentations(contract.documentations),
         `${contractAttribute}`,
         `mod ${contract.name} {`,
         spaceBetween(
@@ -429,6 +429,6 @@ function printArgument(arg: Argument): string {
   }
 }
 
-function printDocumentation(documentations: string[]): string[] {
+function printDocumentations(documentations: string[]): string[] {
   return documentations.map(documentation => `// ${documentation}`);
 }
