@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard';
 import { erc721 } from '@openzeppelin/wizard';
-import { safePrint } from '../../utils.js';
-import { erc721Schema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { erc721Schema } from '../schemas';
 
 export function registerSolidityERC721(server: McpServer) {
   server.tool(
