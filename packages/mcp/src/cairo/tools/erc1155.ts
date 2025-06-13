@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
-import { erc1155 } from '@openzeppelin/wizard-cairo';
+import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
+import { erc1155 } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint } from '../../utils.js';
 import { erc1155Schema } from '../schemas.js';
 
