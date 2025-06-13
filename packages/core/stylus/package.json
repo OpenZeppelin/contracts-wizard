@@ -17,7 +17,8 @@
     "prepare": "tsc",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch",
+    "test:update-snapshots": "ava --update-snapshots"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

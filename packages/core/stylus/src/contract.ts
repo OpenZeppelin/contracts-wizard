@@ -7,7 +7,9 @@ type Name = {
 
 export interface Contract {
   license: string;
+  securityContact: string;
   name: Name;
+  documentations: string[];
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
@@ -73,6 +75,9 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: Name;
   license = 'MIT';
+  securityContact = '';
+
+  readonly documentations: string[] = [];
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
@@ -198,5 +203,13 @@ export class ContractBuilder implements Contract {
     this.addImplementedTrait(baseTrait);
     const existingFn = this.addFunction(baseTrait, fn);
     existingFn.attribute = attribute;
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }
