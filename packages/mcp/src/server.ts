@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerSolidityTools } from './solidity/register-tools.js';
+import { registerSolidityTools } from './solidity/tools.js';
 import { registerCairoTools } from './cairo/register-tools.js';
 import { registerStellarTools } from './stellar/register-tools.js';
 import { registerStylusTools } from './stylus/register-tools.js';
