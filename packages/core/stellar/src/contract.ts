@@ -2,6 +2,8 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
+  securityContact: string;
+  documentations: string[];
   name: string;
   useClauses: UseClause[];
   constructorCode: string[];
@@ -72,7 +74,10 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
+  securityContact = '';
   ownable = false;
+
+  readonly documentations: string[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -249,5 +254,13 @@ export class ContractBuilder implements Contract {
 
   addDerives(derive: string): void {
     this.derivesSet.add(derive);
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }

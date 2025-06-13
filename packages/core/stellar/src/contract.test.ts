@@ -3,6 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseTraitImplBlock } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { TAG_SECURITY_CONTACT } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -80,5 +81,24 @@ test('contract with sorted use clauses', t => {
   Foo.addUseClause('another::library', 'AnotherLibrary');
   Foo.addUseClause('another::library', 'self', { alias: 'custom2' });
   Foo.addUseClause('another::library', 'self', { alias: 'custom1' });
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with security info', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addSecurityTag('security@example.com');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with security info and documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addSecurityTag('security@example.com');
+  Foo.addDocumentation('Some documentation');
   t.snapshot(printContract(Foo));
 });
