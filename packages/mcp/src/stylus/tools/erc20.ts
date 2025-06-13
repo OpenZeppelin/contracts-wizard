@@ -1,11 +1,11 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
-import { safePrint } from '../../utils.js';
-import { erc20Schema } from '../schemas.js';
+import { safePrint } from '../../utils';
+import { erc20Schema } from '../schemas';
 
-export function registerStylusERC20(server: McpServer) {
-  server.tool(
+export function registerStylusERC20(server: McpServer): RegisteredTool {
+  return server.tool(
     'stylus-generate-erc20',
     'Generates an ERC20 smart contract for Stylus, and returns the source code. Does not write to disk.',
     erc20Schema,
