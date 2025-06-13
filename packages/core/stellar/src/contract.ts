@@ -2,7 +2,8 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
-  documentationTags: DocumentationTag[];
+  securityContact: string;
+  documentations: string[];
   name: string;
   useClauses: UseClause[];
   constructorCode: string[];
@@ -70,17 +71,13 @@ export interface Argument {
   type?: string;
 }
 
-export interface DocumentationTag {
-  key: string;
-  value: string;
-}
-
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
+  securityContact = '';
   ownable = false;
 
-  readonly documentationTags: DocumentationTag[] = [];
+  readonly documentations: string[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -259,9 +256,11 @@ export class ContractBuilder implements Contract {
     this.derivesSet.add(derive);
   }
 
-  addDocumentationTag(key: string, value: string) {
-    // eslint-disable-next-line no-useless-escape
-    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid documentation key: ${key}`);
-    this.documentationTags.push({ key, value });
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }

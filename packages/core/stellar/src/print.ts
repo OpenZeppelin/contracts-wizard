@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause, DocumentationTag } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -15,8 +15,9 @@ export function printContract(contract: Contract): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        ...printDocumentationTags(contract.documentationTags),
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
+        ...(contract.documentations.length ? ['', ...printDocumentations(contract.documentations), ''] : []),
+        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact), ''] : []),
         `#![no_std]`,
       ],
       spaceBetween(
@@ -355,6 +356,10 @@ function printArgument(arg: Argument): string {
   }
 }
 
-function printDocumentationTags(tags: DocumentationTag[]): string[] {
-  return tags.map(({ key, value }) => `/// ${key} ${value}`);
+function printDocumentations(documentations: string[]): string[] {
+  return documentations.map(documentation => `//! ${documentation}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }

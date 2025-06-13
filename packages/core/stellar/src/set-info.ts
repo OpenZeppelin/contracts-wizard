@@ -15,7 +15,7 @@ export function setInfo(c: ContractBuilder, info: Info): void {
   const { securityContact, license } = info;
 
   if (securityContact) {
-    c.addDocumentationTag(TAG_SECURITY_CONTACT, securityContact);
+    c.addSecurityTag(securityContact);
   }
 
   if (license) {
