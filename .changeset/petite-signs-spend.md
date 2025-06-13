@@ -1,5 +1,4 @@
 ---
-'@openzeppelin/wizard': minor
 '@openzeppelin/wizard-cairo': minor
 '@openzeppelin/wizard-stellar': patch
 '@openzeppelin/wizard-stylus': patch
@@ -7,4 +6,4 @@
 '@openzeppelin/wizard-mcp': patch
 ---
 
-Add support for Wizard MCP server
+Add support for Wizard MCP server.
