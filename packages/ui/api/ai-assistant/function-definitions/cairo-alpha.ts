@@ -2,6 +2,7 @@ import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoAlphaSharedFunctionDefinition } from './cairo-alpha-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import {
+  cairoPrompts,
   cairoERC20Descriptions,
   cairoERC721Descriptions,
   cairoERC1155Descriptions,
@@ -13,7 +14,7 @@ import {
 
 export const cairoAlphaERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard.',
+  description: cairoPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
@@ -45,7 +46,7 @@ export const cairoAlphaERC20AIFunctionDefinition = {
 
 export const cairoAlphaERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard.',
+  description: cairoPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
@@ -79,7 +80,7 @@ export const cairoAlphaERC721AIFunctionDefinition = {
 
 export const cairoAlphaERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard.',
+  description: cairoPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
@@ -109,7 +110,7 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
 
 export const cairoAlphaGovernorAIFunctionDefinition = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO.',
+  description: cairoPrompts.Governor,
   parameters: {
     type: 'object',
     properties: {
@@ -178,8 +179,7 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
 
 export const cairoAlphaVestingAIFunctionDefinition = {
   name: 'Vesting',
-  description:
-    'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
+  description: cairoPrompts.Vesting,
   parameters: {
     type: 'object',
     properties: {
@@ -209,8 +209,7 @@ export const cairoAlphaVestingAIFunctionDefinition = {
 
 export const cairoAlphaAccountAIFunctionDefinition = {
   name: 'Account',
-  description:
-    'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
+  description: cairoPrompts.Account,
   parameters: {
     type: 'object',
     properties: {
@@ -238,7 +237,7 @@ export const cairoAlphaAccountAIFunctionDefinition = {
 
 export const cairoAlphaMultisigAIFunctionDefinition = {
   name: 'Multisig',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Multisig,
   parameters: {
     type: 'object',
     properties: {
@@ -255,7 +254,7 @@ export const cairoAlphaMultisigAIFunctionDefinition = {
 
 export const cairoAlphaCustomAIFunctionDefinition = {
   name: 'Custom',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Custom,
   parameters: {
     type: 'object',
     properties: {

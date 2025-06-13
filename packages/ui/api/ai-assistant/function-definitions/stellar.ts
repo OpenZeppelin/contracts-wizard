@@ -1,11 +1,11 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
-import { stellarCommonDescriptions, stellarFungibleDescriptions, stellarNonFungibleDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
+import { stellarPrompts, stellarCommonDescriptions, stellarFungibleDescriptions, stellarNonFungibleDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
-  description: 'Fungible Token Standard, compatible with SEP-41, similar to ERC-20',
+  description: stellarPrompts.Fungible,
   parameters: {
     type: 'object',
     properties: {
@@ -31,7 +31,7 @@ export const stellarFungibleAIFunctionDefinition = {
 
 export const stellarNonFungibleAIFunctionDefinition = {
   name: 'NonFungible',
-  description: 'Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721',
+  description: stellarPrompts.NonFungible,
   parameters: {
     type: 'object',
     properties: {

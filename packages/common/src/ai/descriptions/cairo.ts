@@ -1,3 +1,14 @@
+export const cairoPrompts = {
+    ERC20: 'Make a fungible token per the ERC-20 standard',
+    ERC721: 'Make a non-fungible token per the ERC-721 standard',
+    ERC1155: 'Make a non-fungible token per the ERC-1155 standard',
+    Governor: 'Make a contract to implement governance, such as for a DAO',
+    Multisig: 'Make a multi-signature smart contract that ensures that no single signer can unilaterally execute critical actions, requiring multiple registered signers to approve and collectively execute transactions',
+    Vesting: 'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
+    Account: 'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
+    Custom: 'Make a custom smart contract',
+};
+
 export const cairoCommonDescriptions = {
     access: 'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.',
     upgradeable: 'Whether the smart contract is upgradeable.',
@@ -6,7 +17,7 @@ export const cairoCommonDescriptions = {
     appName: 'Required when votes is enabled, for hashing and signing typed structured data. Name for domain separator implementing SNIP12Metadata trait. Prevents two applications from producing the same hash.',
     appVersion: 'Required when votes is enabled, for hashing and signing typed structured data. Version for domain separator implementing SNIP12Metadata trait. Prevents two versions of the same application from producing the same hash.',
     royaltyInfo: 'Provides information for how much royalty is owed and to whom, based on a sale price. Follows ERC-2981 standard.',
-}
+};
 
 export const cairoRoyaltyInfoDescriptions = {
     enabled: 'Whether to enable royalty feature for the contract',
