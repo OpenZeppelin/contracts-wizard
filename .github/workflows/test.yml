@@ -59,7 +59,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: 1.86.0
-          profile: default
+          profile: minimal
           override: true
           
       - name: Get scaffold-stellar latest commit SHA
