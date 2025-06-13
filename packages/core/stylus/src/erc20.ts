@@ -146,8 +146,8 @@ const erc20Trait: BaseImplementedTrait = {
     {
       name: 'transfer',
       args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: 'Result<bool, Self::Error>',
-      code: [`self.erc20.transfer(to, value).map_err(|e| e.into())`],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: [`self.erc20.transfer(to, value)?`],
     },
     {
       name: 'allowance',
@@ -158,8 +158,8 @@ const erc20Trait: BaseImplementedTrait = {
     {
       name: 'approve',
       args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: 'Result<bool, Self::Error>',
-      code: [`self.erc20.approve(spender, value).map_err(|e| e.into())`],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: [`self.erc20.approve(spender, value)?`],
     },
     {
       name: 'transfer_from',
@@ -169,8 +169,8 @@ const erc20Trait: BaseImplementedTrait = {
         { name: 'to', type: 'Address' },
         { name: 'value', type: 'U256' },
       ],
-      returns: 'Result<bool, Self::Error>',
-      code: [`self.erc20.transfer_from(from, to, value).map_err(|e| e.into())`],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: [`self.erc20.transfer_from(from, to, value)?`],
     },
   ],
 };
@@ -225,9 +225,9 @@ const permitTrait: BaseImplementedTrait = {
         { name: 'r', type: 'B256' },
         { name: 's', type: 'B256' },
       ],
-      returns: 'Result<(), Self::Error>',
+      returns: { ok: '()', err: 'Self::Error' },
       code: [
-        `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.implementation!.storageName}, &mut self.${noncesTrait.implementation!.storageName}).map_err(|e| e.into())`,
+        `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.implementation!.storageName}, &mut self.${noncesTrait.implementation!.storageName})?`,
       ],
     }
   ],
@@ -243,14 +243,14 @@ const burnableTrait: BaseImplementedTrait = {
       {
         name: 'burn',
         args: [getSelfArg(), { name: 'value', type: 'U256' }],
-        returns: 'Result<(), Self::Error>',
-        code: [`self.${erc20Trait.implementation!.storageName}.burn(value).map_err(|e| e.into())`],
+        returns: { ok: '()', err: 'Self::Error' },
+        code: [`self.${erc20Trait.implementation!.storageName}.burn(value)?`],
       },
       {
         name: 'burn_from',
         args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-        returns: 'Result<(), Self::Error>',
-        code: [`self.${erc20Trait.implementation!.storageName}.burn_from(account, value).map_err(|e| e.into())`],
+        returns: { ok: '()', err: 'Self::Error' },
+        code: [`self.${erc20Trait.implementation!.storageName}.burn_from(account, value)?`],
       },
   ],
 };
@@ -275,8 +275,8 @@ const flashMintTrait: BaseImplementedTrait = {
     {
       name: 'flash_fee',
       args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: 'Result<U256, Self::Error>',
-      code: [`self.flash_mint.flash_fee(token, value).map_err(|e| e.into())`],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: [`self.flash_mint.flash_fee(token, value)?`],
     },
     {
       name: 'flash_loan',
@@ -287,9 +287,9 @@ const flashMintTrait: BaseImplementedTrait = {
         { name: 'value', type: 'U256' },
         { name: 'data', type: 'Bytes' },
       ],
-      returns: 'Result<bool, Self::Error>',
+      returns: { ok: 'bool', err: 'Self::Error' },
       code: [
-        `self.flash_mint.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName}).map_err(|e| e.into())`,
+        `self.flash_mint.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName})?`,
       ],
     },
   ]

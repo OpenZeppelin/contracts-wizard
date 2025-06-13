@@ -78,8 +78,6 @@ function addBase(c: ContractBuilder) {
   c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
   c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
   c.addUseClause('stylus_sdk::alloy_primitives', 'FixedBytes');
-  
-  c.addFunctionCodeAfter(erc165Trait.functions[0]!, ['  || <Self as IErc721>::interface_id() == interface_id'], erc165Trait)
 
   // if (pausable) {
   //   // Add transfer functions with pause checks
@@ -89,49 +87,57 @@ function addBase(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder, enumerable: boolean) {
-  c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'IErc721Burnable');
-
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
-
-  c.addFunction(erc721Trait, functions.burn);
+  c.addImplementedTrait(burnableTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
   // }
 
   if (enumerable) {
-    c.setFunctionCode(erc721Trait, functions.burn, [
-      `let owner = self.${erc721Trait.implementation.storageName}.owner_of(token_id)?;`,
-      `self.${erc721Trait.implementation.storageName}.burn(token_id)?;`,
-      `self.${enumerableTrait.implementation.storageName}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.implementation.storageName})?;`,
-      `self.${enumerableTrait.implementation.storageName}._remove_token_from_all_tokens_enumeration(token_id);`,
-      'Ok(())',
-    ]);
+    c.addFunctionCodeBefore(
+      burnableTrait.functions[0]!,
+      [`let owner = self.${erc721Trait.implementation!.storageName}.owner_of(token_id)?;`],
+      burnableTrait
+    );
+    c.addFunctionCodeAfter(
+      burnableTrait.functions[0]!,
+      [
+        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
+        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_all_tokens_enumeration(token_id);`,
+        'Ok(())',
+      ],
+      burnableTrait
+    );
   }
 }
 
 function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
 
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
-  c.addUseClause('stylus_sdk', 'abi::Bytes');
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
 
-  c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
-    indentLine(`|| ${enumerableTrait.implementation.type}::supports_interface(interface_id)`, 1),
-  ]);
+  c.addFunctionCodeAfter(
+    erc165Trait.functions[0]!, 
+    [indentLine(`|| self.${enumerableTrait.implementation!.storageName}.supports_interface(interface_id)`, 1)],
+    erc165Trait,
+  );
 
-  for (const fn of [functions.transfer_from, functions.safe_transfer_from, functions.safe_transfer_from_with_data]) {
-    c.addFunctionCodeBefore(erc721Trait, fn, [
-      `let previous_owner = self.${erc721Trait.implementation.storageName}.owner_of(token_id)?;`,
-    ]);
-    c.addFunctionCodeAfter(erc721Trait, fn, [
-      `self.${enumerableTrait.implementation.storageName}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.implementation.storageName})?;`,
-      `self.${enumerableTrait.implementation.storageName}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.implementation.storageName})?;`,
-      'Ok(())',
-    ]);
+  // safe_transfer_from, safe_transfer_from_with_data, transfer_from
+  for (const fn of [erc721Trait.functions[2]!, erc721Trait.functions[3]!, erc721Trait.functions[4]!]) {
+    c.addFunctionCodeBefore(
+      fn,
+      [`let previous_owner = self.${erc721Trait.implementation!.storageName}.owner_of(token_id)?;`],
+      erc721Trait,
+    );
+    c.addFunctionCodeAfter(
+      fn,
+      [
+        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
+        `self.${enumerableTrait.implementation!.storageName}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
+        'Ok(())',
+      ],
+      erc721Trait,
+    );
   }
 }
 
@@ -251,18 +257,61 @@ const erc165Trait: BaseImplementedTrait = {
       name: 'supports_interface',
       args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
       returns: 'bool',
-      code: ['<Self as IErc165>::interface_id() == interface_id'],
+      code: [`self.${erc721Trait.implementation?.storageName}.supports_interface(interface_id)`],
+    },
+  ],
+};
+
+const burnableTrait: BaseImplementedTrait = {
+  interface: {
+    name: 'IErc721Burnable',
+    associatedError: true,
+  },
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  functions: [
+    {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: [`self.erc721.burn(token_id)?`],
     },
   ],
 };
 
 const enumerableTrait: BaseImplementedTrait = {
-  name: 'Erc721Enumerable',
+  interface: {
+    name: 'IErc721Enumerable',
+    associatedError: true,
+  },
   implementation: {
     storageName: 'enumerable',
     type: 'Erc721Enumerable',
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  functions: [
+    {
+      name: 'token_of_owner_by_index',
+      args: [
+        getSelfArg('immutable'),
+        { name: 'owner', type: 'Address' },
+        { name: 'index', type: 'U256' },
+      ],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: [`self.enumerable.token_of_owner_by_index(owner, index)?`],
+    },
+    {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: ['self.enumerable.total_supply()'],
+    },
+    {
+      name: 'token_by_index',
+      args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: [`self.enumerable.token_by_index(index)?`],
+    },
+  ]
 };
 
 // const erc721MetadataTrait: BaseImplementedTrait = {
@@ -273,15 +322,3 @@ const enumerableTrait: BaseImplementedTrait = {
 //   }
 //   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
 // }
-
-const functions = defineFunctions({
-
-  // Overrides
-
-  // Extensions
-  burn: {
-    args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc721Trait.implementation.storageName}.burn(token_id).map_err(|e| e.into())`],
-  },
-});
