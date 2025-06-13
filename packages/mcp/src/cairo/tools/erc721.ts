@@ -5,8 +5,8 @@ import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc721Schema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
-export function registerCairoERC721(server: McpServer) {
-  server.tool(
+export function registerCairoERC721(server: McpServer): RegisteredTool {
+  return server.tool(
     'cairo-erc721',
     makeDetailedPrompt(cairoPrompts.ERC721),
     erc721Schema,

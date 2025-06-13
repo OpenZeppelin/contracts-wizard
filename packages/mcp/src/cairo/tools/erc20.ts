@@ -1,12 +1,12 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { erc20 } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc20Schema } from '../schemas';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
-export function registerCairoERC20(server: McpServer) {
-  server.tool(
+export function registerCairoERC20(server: McpServer): RegisteredTool {
+  return server.tool(
     'cairo-erc20',
     makeDetailedPrompt(cairoPrompts.ERC20),
     erc20Schema,

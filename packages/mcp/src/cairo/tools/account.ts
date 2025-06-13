@@ -1,12 +1,12 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { account } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { accountSchema } from '../schemas.js';
 import { cairoPrompts } from '@ericglau/wizard-common';
 
-export function registerCairoAccount(server: McpServer) {
-  server.tool(
+export function registerCairoAccount(server: McpServer): RegisteredTool {
+  return server.tool(
     'cairo-account',
     makeDetailedPrompt(cairoPrompts.Account),
     accountSchema,
