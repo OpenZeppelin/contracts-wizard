@@ -4,15 +4,19 @@ import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.
 import { registerSolidityERC20 } from './erc20';
 import { testMcpInfo, testMcpContext } from '../../helpers.test';
 import { ERC20Options } from '@openzeppelin/wizard';
+import { erc20Schema } from '../schemas';
+import { z } from 'zod';
 
 interface Context {
     tool: RegisteredTool;
+    schema: z.ZodObject<typeof erc20Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before((t) => {
     t.context.tool = registerSolidityERC20(new McpServer(testMcpInfo));
+    t.context.schema = z.object(erc20Schema);
 });
 
 async function assertSnapshot(t: ExecutionContext<Context>, params: ERC20Options) {
@@ -27,8 +31,13 @@ async function assertSnapshot(t: ExecutionContext<Context>, params: ERC20Options
     t.snapshot(result?.content[0]?.text);
 }
 
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
+    const _: Required<ERC20Options> = params;
+    t.pass();
+}
+
 test('solidity erc20 basic', async (t) => {
-    const params: ERC20Options = {
+    const params: z.infer<typeof t.context.schema> = {
         name: 'TestToken',
         symbol: 'TST',
     };
@@ -36,7 +45,7 @@ test('solidity erc20 basic', async (t) => {
 });
 
 test('solidity erc20 all', async (t) => {
-    const params: Required<ERC20Options> = {
+    const params: Required<z.infer<typeof t.context.schema>> = {
         name: 'TestToken',
         symbol: 'TST',
         burnable: true,
@@ -46,9 +55,9 @@ test('solidity erc20 all', async (t) => {
         mintable: true,
         callback: true,
         permit: true,
-        votes: true,
+        votes: 'blocknumber',
         flashmint: true,
-        crossChainBridging: false,
+        crossChainBridging: 'superchain',
         access: 'roles',
         upgradeable: 'transparent',
         info: {
@@ -56,5 +65,10 @@ test('solidity erc20 all', async (t) => {
             securityContact: 'security@example.com',
         },
     };
+
+    assertHasAllSupportedFields(t, params);
+
+    // Records an readable error in the snapshot, because some fields are incompatible with each other.
+    // This is ok, because we just need to check that all fields can be passed in.
     await assertSnapshot(t, params);
 });
