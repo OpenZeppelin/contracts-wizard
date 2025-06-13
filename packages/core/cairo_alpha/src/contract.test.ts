@@ -110,6 +110,6 @@ test('contract with sorted use clauses', t => {
 
 test('contract with info', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addDocumentationTag(TAG_SECURITY_CONTACT, 'security@example.com');
+  Foo.addDocumentation(TAG_SECURITY_CONTACT, 'security@example.com');
   t.snapshot(printContract(Foo));
 });

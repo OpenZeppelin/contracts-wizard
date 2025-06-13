@@ -2,7 +2,7 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
-  documentationTags: DocumentationTag[];
+  documentationTags: string[];
   name: string;
   account: boolean;
   useClauses: UseClause[];
@@ -98,18 +98,13 @@ export interface Argument {
   type?: string;
 }
 
-export interface DocumentationTag {
-  key: string;
-  value: string;
-}
-
 export class ContractBuilder implements Contract {
   readonly name: string;
   readonly account: boolean;
   license = 'MIT';
   upgradeable = false;
 
-  readonly documentationTags: DocumentationTag[] = [];
+  readonly documentationTags: string[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -307,7 +302,7 @@ export class ContractBuilder implements Contract {
     this.interfaceFlagsSet.add(flag);
   }
 
-  addDocumentationTag(key: string, value: string) {
-    this.documentationTags.push({ key, value });
+  addDocumentation(description: string) {
+    this.documentationTags.push(description);
   }
 }

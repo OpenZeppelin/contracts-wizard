@@ -3,7 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseImplementedTrait, Component } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
-import { TAG_SECURITY_CONTACT } from './set-info';
+import { SECURITY_CONTACT_DOCUMENTATION, TAG_SECURITY_CONTACT } from './set-info';
 
 const FOO_COMPONENT: Component = {
   name: 'FooComponent',
@@ -110,6 +110,6 @@ test('contract with sorted use clauses', t => {
 
 test('contract with info', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addDocumentationTag(TAG_SECURITY_CONTACT, 'security@example.com');
+  Foo.addDocumentation(`${SECURITY_CONTACT_DOCUMENTATION}security@example.com`);
   t.snapshot(printContract(Foo));
 });
