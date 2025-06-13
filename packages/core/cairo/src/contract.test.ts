@@ -3,7 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseImplementedTrait, Component } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
-import { SECURITY_CONTACT_DOCUMENTATION, TAG_SECURITY_CONTACT } from './set-info';
+import { SECURITY_CONTACT_DOCUMENTATION } from './set-info';
 
 const FOO_COMPONENT: Component = {
   name: 'FooComponent',
