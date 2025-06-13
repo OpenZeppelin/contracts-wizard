@@ -3,7 +3,7 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { custom } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { customSchema } from '../schemas';
-import { cairoPrompts } from '@ericglau/wizard-common';
+import { cairoPrompts } from '@openzeppelin/wizard-common';
 
 export function registerCairoCustom(server: McpServer): RegisteredTool {
   return server.tool(

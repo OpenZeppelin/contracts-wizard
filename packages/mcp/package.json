@@ -1,5 +1,5 @@
 {
-  "name": "@ericglau/wizard-mcp",
+  "name": "@openzeppelin/wizard-mcp",
   "version": "0.0.1-alpha.5",
   "description": "MCP Server for OpenZeppelin Contracts Wizard",
   "license": "AGPL-3.0-only",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.1",
-    "@ericglau/wizard-common": "^0.0.1-alpha.1",
+    "@openzeppelin/wizard-common": "^0.0.1-alpha.1",
     "@openzeppelin/wizard": "^0.5.6",
     "@openzeppelin/wizard-stylus": "^0.2.0-alpha.4",
     "@openzeppelin/wizard-stellar": "^0.2.0",

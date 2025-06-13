@@ -3,7 +3,7 @@ import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { fungibleSchema } from '../schemas';
-import { stellarPrompts } from '@ericglau/wizard-common';
+import { stellarPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStellarFungible(server: McpServer): RegisteredTool {
   return server.tool(

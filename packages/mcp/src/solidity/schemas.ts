@@ -8,7 +8,7 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
-} from '@ericglau/wizard-common';
+} from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
   access: z

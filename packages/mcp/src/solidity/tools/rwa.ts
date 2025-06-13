@@ -3,7 +3,7 @@ import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { realWorldAsset } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { rwaSchema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityRWA(server: McpServer) {
   return server.tool(

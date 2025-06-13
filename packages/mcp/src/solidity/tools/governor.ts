@@ -3,7 +3,7 @@ import type { GovernorOptions } from '@openzeppelin/wizard';
 import { governor } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { governorSchema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityGovernor(server: McpServer): RegisteredTool {
   return server.tool(

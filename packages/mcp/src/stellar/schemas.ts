@@ -4,7 +4,7 @@ import {
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
- } from '@ericglau/wizard-common';
+} from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
   upgradeable: z

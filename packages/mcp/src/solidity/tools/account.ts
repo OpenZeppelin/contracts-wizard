@@ -3,7 +3,7 @@ import type { AccountOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { accountSchema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityAccount(server: McpServer): RegisteredTool {
   return server.tool(

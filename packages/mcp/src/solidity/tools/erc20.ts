@@ -3,7 +3,7 @@ import type { ERC20Options } from '@openzeppelin/wizard';
 import { erc20 } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc20Schema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityERC20(server: McpServer): RegisteredTool {
   return server.tool(

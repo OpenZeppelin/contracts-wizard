@@ -3,7 +3,7 @@ import type { KindedOptions } from '@openzeppelin/wizard-cairo-alpha';
 import { erc1155 } from '@openzeppelin/wizard-cairo-alpha';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc1155Schema } from '../schemas';
-import { cairoPrompts } from '@ericglau/wizard-common';
+import { cairoPrompts } from '@openzeppelin/wizard-common';
 
 export function registerCairoERC1155(server: McpServer): RegisteredTool {
   return server.tool(

@@ -3,7 +3,7 @@ import type { ERC20Options } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc20Schema } from '../schemas';
-import { stylusPrompts } from '@ericglau/wizard-common';
+import { stylusPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStylusERC20(server: McpServer): RegisteredTool {
   return server.tool(

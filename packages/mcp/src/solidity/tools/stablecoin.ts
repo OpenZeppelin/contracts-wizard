@@ -3,7 +3,7 @@ import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { stablecoinSchema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
   return server.tool(

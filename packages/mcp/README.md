@@ -30,7 +30,7 @@ Add the following to your MCP configuration file:
     "OpenZeppelin Contracts Wizard": {
       "command": "npx",
       "args": [
-        "@ericglau/wizard-mcp"
+        "@openzeppelin/wizard-mcp"
       ]
     }
   }

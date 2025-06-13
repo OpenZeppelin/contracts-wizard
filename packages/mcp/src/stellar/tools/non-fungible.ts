@@ -3,7 +3,7 @@ import type { NonFungibleOptions } from '@openzeppelin/wizard-stellar';
 import { nonFungible } from '@openzeppelin/wizard-stellar';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { nonFungibleSchema } from '../schemas';
-import { stellarPrompts } from '@ericglau/wizard-common';
+import { stellarPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStellarNonFungible(server: McpServer): RegisteredTool {
   return server.tool(

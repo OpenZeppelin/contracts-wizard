@@ -3,7 +3,7 @@ import type { CustomOptions } from '@openzeppelin/wizard';
 import { custom } from '@openzeppelin/wizard';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { customSchema } from '../schemas';
-import { solidityPrompts } from '@ericglau/wizard-common';
+import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityCustom(server: McpServer): RegisteredTool {
   return server.tool(

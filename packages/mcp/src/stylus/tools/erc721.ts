@@ -3,7 +3,7 @@ import type { ERC721Options } from '@openzeppelin/wizard-stylus';
 import { erc721 } from '@openzeppelin/wizard-stylus';
 import { safePrint, makeDetailedPrompt } from '../../utils';
 import { erc721Schema } from '../schemas';
-import { stylusPrompts } from '@ericglau/wizard-common';
+import { stylusPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStylusERC721(server: McpServer): RegisteredTool {
   return server.tool(

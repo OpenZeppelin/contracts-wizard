@@ -10,7 +10,7 @@ import {
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
-} from '@ericglau/wizard-common';
+} from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
   access: z
