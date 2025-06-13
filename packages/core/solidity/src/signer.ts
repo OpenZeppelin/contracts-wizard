@@ -43,13 +43,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
     case 'ECDSA':
     case 'P256':
     case 'RSA':
-      c.addFunctionCode(
-        `_setSigner(${fn.args
-          .map(({ name }) => name)
-          .join(', ')
-          .trimEnd()});`,
-        fn,
-      );
+      c.addFunctionCode(`_setSigner(${fn.args.map(({ name }) => name).join(', ')});`, fn);
   }
 }
 
