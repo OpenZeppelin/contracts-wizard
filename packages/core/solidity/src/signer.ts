@@ -73,49 +73,47 @@ export const signers = {
   },
 };
 
-export const signerFunctions = {
-  ...defineFunctions({
-    initializeECDSA: {
-      kind: 'public' as const,
-      args: [{ name: 'signer', type: 'address' }],
-    },
-    initializeP256: {
-      kind: 'public' as const,
-      args: [
-        { name: 'qx', type: 'bytes32' },
-        { name: 'qy', type: 'bytes32' },
-      ],
-    },
-    initializeRSA: {
-      kind: 'public' as const,
-      args: [
-        { name: 'e', type: 'bytes memory' },
-        { name: 'n', type: 'bytes memory' },
-      ],
-    },
-    initializeMultisig: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'threshold', type: 'uint256' },
-      ],
-    },
-    initializeMultisigWeighted: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'weights', type: 'uint256[] memory' },
-        { name: 'threshold', type: 'uint256' },
-      ],
-    },
-    _rawSignatureValidation: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
-      ],
-      returns: ['bool'],
-      mutability: 'view' as const,
-    },
-  }),
-};
+export const signerFunctions = defineFunctions({
+  initializeECDSA: {
+    kind: 'public' as const,
+    args: [{ name: 'signer', type: 'address' }],
+  },
+  initializeP256: {
+    kind: 'public' as const,
+    args: [
+      { name: 'qx', type: 'bytes32' },
+      { name: 'qy', type: 'bytes32' },
+    ],
+  },
+  initializeRSA: {
+    kind: 'public' as const,
+    args: [
+      { name: 'e', type: 'bytes memory' },
+      { name: 'n', type: 'bytes memory' },
+    ],
+  },
+  initializeMultisig: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'threshold', type: 'uint256' },
+    ],
+  },
+  initializeMultisigWeighted: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'weights', type: 'uint256[] memory' },
+      { name: 'threshold', type: 'uint256' },
+    ],
+  },
+  _rawSignatureValidation: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'hash', type: 'bytes32' },
+      { name: 'signature', type: 'bytes calldata' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const,
+  },
+});
