@@ -9,7 +9,7 @@ export interface Contract {
   license: string;
   securityContact: string;
   name: Name;
-  documentationTags: DocumentationTag[];
+  documentations: string[];
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
@@ -82,7 +82,7 @@ export class ContractBuilder implements Contract {
   license = 'MIT';
   securityContact = '';
 
-  readonly documentationTags: DocumentationTag[] = [];
+  readonly documentations: string[] = [];
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
@@ -210,10 +210,8 @@ export class ContractBuilder implements Contract {
     existingFn.attribute = attribute;
   }
 
-  addDocumentationTag(key: string, value: string) {
-    // eslint-disable-next-line no-useless-escape
-    if (!/^(@custom:)?[a-z][a-z\-]*$/.exec(key)) throw new Error(`Invalid documentation key: ${key}`);
-    this.documentationTags.push({ key, value });
+  addDocumentation(description: string) {
+    this.documentations.push(description);
   }
 
   addSecurityTag(securityContact: string) {

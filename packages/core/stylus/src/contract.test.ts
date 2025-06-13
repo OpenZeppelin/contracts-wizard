@@ -80,7 +80,7 @@ test('contract with sorted traits', t => {
 
 test('contract with documentation', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addDocumentationTag(`@custom:documentation`, 'some documentation');
+  Foo.addDocumentation('Some documentation');
   t.snapshot(printContract(Foo));
 });
 
