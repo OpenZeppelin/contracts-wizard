@@ -54,7 +54,16 @@ jobs:
       # ----------------------------
       # Stellar setup
 
+      - name: Set up Rust
+        if: matrix.package == 'stellar'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.86.0
+          profile: default
+          override: true
+
       - name: Cache Cargo registry
+        if: matrix.package == 'stellar'
         uses: actions/cache@v4
         with:
           path: |
@@ -63,19 +72,26 @@ jobs:
           key: cargo-registry
           restore-keys: |
             cargo-registry-
-        if: always()
 
       - name: Get scaffold-stellar latest commit SHA
+        if: matrix.package == 'stellar'
         id: get-scaffold-sha
         run: |
           echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
 
-      - name: Cache scaffold CLIs
+      - name: Cache Scaffold CLIs
+        if: matrix.package == 'stellar'
         uses: actions/cache@v4
         with:
-          path: ~/.cargo/bin
-          key: scaffold-cli-${{ runner.os }}-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
-        if: always()
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
+          restore-keys: |
+            cargo-scaffold-${{ matrix.package }}-
+            cargo-scaffold-
+            cargo-scaffold-
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
@@ -87,7 +103,7 @@ jobs:
           rebuildIfNotFoundInCache() {
             local binary_name="$1"
 
-            if ! command -v "$binary_name" >/dev/null; then
+            if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
               cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
             fi
           }
