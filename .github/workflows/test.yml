@@ -61,18 +61,7 @@ jobs:
           toolchain: 1.86.0
           profile: default
           override: true
-
-      - name: Cache Cargo registry
-        if: matrix.package == 'stellar'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: cargo-registry
-          restore-keys: |
-            cargo-registry-
-
+          
       - name: Get scaffold-stellar latest commit SHA
         if: matrix.package == 'stellar'
         id: get-scaffold-sha
@@ -92,6 +81,11 @@ jobs:
             cargo-scaffold-${{ matrix.package }}-
             cargo-scaffold-
             cargo-scaffold-
+
+      - name: Clean potentially conflicting wasm targets
+        if: matrix.package == 'stellar'
+        run: |
+          rm -rf ~/.rustup/toolchains/*/lib/rustlib/wasm32v1-none || true
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
