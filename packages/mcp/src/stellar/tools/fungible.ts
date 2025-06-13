@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-stellar';
+import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
 import { safePrint } from '../../utils';
 import { fungibleSchema } from '../schemas';
@@ -19,8 +19,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['Fungible'] = {
-        kind: 'Fungible',
+      const opts: FungibleOptions = {
         name,
         symbol,
         burnable,

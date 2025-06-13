@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { GovernorOptions } from '@openzeppelin/wizard';
 import { governor } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { governorSchema } from '../schemas';
@@ -27,8 +27,7 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['Governor'] = {
-        kind: 'Governor',
+      const opts: GovernorOptions = {
         name,
         delay,
         period,

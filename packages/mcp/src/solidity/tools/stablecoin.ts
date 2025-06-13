@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { stablecoinSchema } from '../schemas';
@@ -28,8 +28,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
       limitations,
       custodian,
     }) => {
-      const opts: KindedOptions['Stablecoin'] = {
-        kind: 'Stablecoin',
+      const opts: StablecoinOptions = {
         name,
         symbol,
         burnable,

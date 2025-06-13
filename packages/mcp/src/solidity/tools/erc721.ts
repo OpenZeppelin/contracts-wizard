@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { ERC721Options } from '@openzeppelin/wizard';
 import { erc721 } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { erc721Schema } from '../schemas';
@@ -24,8 +24,7 @@ export function registerSolidityERC721(server: McpServer): RegisteredTool {
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['ERC721'] = {
-        kind: 'ERC721',
+      const opts: ERC721Options = {
         name,
         symbol,
         baseUri,

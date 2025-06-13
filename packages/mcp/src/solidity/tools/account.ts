@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { AccountOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { accountSchema } from '../schemas';
@@ -19,8 +19,7 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
       ERC7579Modules,
       info,
     }) => {
-      const opts: KindedOptions['Account'] = {
-        kind: 'Account',
+      const opts: AccountOptions = {
         name,
         signatureValidation,
         ERC721Holder,

@@ -1,5 +1,5 @@
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-stylus';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ERC20Options } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
 import { safePrint } from '../../utils';
 import { erc20Schema } from '../schemas';
@@ -16,8 +16,7 @@ export function registerStylusERC20(server: McpServer): RegisteredTool {
       flashmint,
       info,
     }) => {
-      const opts: KindedOptions['ERC20'] = {
-        kind: 'ERC20',
+      const opts: ERC20Options = {
         name,
         burnable,
         permit,

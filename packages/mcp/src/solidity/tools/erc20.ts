@@ -1,10 +1,10 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ERC20Options } from '@openzeppelin/wizard';
 import { erc20 } from '@openzeppelin/wizard';
 import { safePrint } from '../../utils';
 import { erc20Schema } from '../schemas';
 
-export function registerSolidityERC20(server: McpServer) {
+export function registerSolidityERC20(server: McpServer): RegisteredTool {
   return server.tool(
     'solidity-generate-erc20',
     'Generates an ERC20 smart contract for Solidity, and returns the source code. Does not write to disk.',
@@ -26,8 +26,7 @@ export function registerSolidityERC20(server: McpServer) {
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['ERC20'] = {
-        kind: 'ERC20',
+      const opts: ERC20Options = {
         name,
         symbol,
         burnable,
