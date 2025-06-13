@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.2.1 (2025-06-10)
+
+- Fix missing `ContractOverrides` import and rename `defaultimpl` to `default_impl`. ([#566](https://github.com/OpenZeppelin/contracts-wizard/pull/566))
+
 ## 0.2.0 (2025-05-13)
 
 - Add NonFungible extension and minor refactorings to Fungible (crate renamings, etc.). ([#531](https://github.com/OpenZeppelin/contracts-wizard/pull/531))
