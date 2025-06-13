@@ -16,7 +16,7 @@ export function printContract(contract: Contract): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
-        ...printDocumentation(contract.documentations),
+        ...printDocumentations(contract.documentations),
         ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
       ],
       [`#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`, `extern crate alloc;`],
@@ -287,7 +287,7 @@ function printArgument(arg: Argument): string {
   }
 }
 
-function printDocumentation(documentations: string[]): string[] {
+function printDocumentations(documentations: string[]): string[] {
   return documentations.map(documentation => `//! ${documentation}`);
 }
 
