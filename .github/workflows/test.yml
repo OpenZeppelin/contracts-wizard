@@ -53,29 +53,7 @@ jobs:
 
       # ----------------------------
       # Stellar setup
-          
-      - name: Get scaffold-stellar latest commit SHA
-        if: matrix.package == 'stellar'
-        id: get-scaffold-sha
-        run: |
-          echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
-
-      - name: Cache Scaffold CLIs
-        if: matrix.package == 'stellar'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/cli
-          key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
-          restore-keys: |
-            cargo-scaffold-${{ matrix.package }}-
-            cargo-scaffold-
-            cargo-scaffold-
-
+      
       - name: Set up Rust
         if: matrix.package == 'stellar'
         uses: actions-rs/toolchain@v1
@@ -83,17 +61,6 @@ jobs:
           toolchain: 1.86.0
           profile: minimal
           override: true
-      
-      - name: Clean potentially conflicting wasm targets
-        if: matrix.package == 'stellar'
-        run: |
-          rm -rf ~/.rustup/toolchains/*/lib/rustlib/wasm32v1-none || true
-          rm -rf ~/.rustup/update-hashes || true
-          rustup show
-
-      - name: Add wasm32v1 target
-        if: matrix.package == 'stellar'
-        run: rustup target add wasm32v1-none
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
