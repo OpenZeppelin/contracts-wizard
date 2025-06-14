@@ -53,14 +53,6 @@ jobs:
 
       # ----------------------------
       # Stellar setup
-
-      - name: Set up Rust
-        if: matrix.package == 'stellar'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.86.0
-          profile: minimal
-          override: true
           
       - name: Get scaffold-stellar latest commit SHA
         if: matrix.package == 'stellar'
@@ -77,17 +69,31 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/
+            target/cli
           key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
           restore-keys: |
             cargo-scaffold-${{ matrix.package }}-
             cargo-scaffold-
             cargo-scaffold-
 
+      - name: Set up Rust
+        if: matrix.package == 'stellar'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.86.0
+          profile: minimal
+          override: true
+      
       - name: Clean potentially conflicting wasm targets
         if: matrix.package == 'stellar'
         run: |
           rm -rf ~/.rustup/toolchains/*/lib/rustlib/wasm32v1-none || true
+          rm -rf ~/.rustup/update-hashes || true
+          rustup show
+
+      - name: Add wasm32v1 target
+        if: matrix.package == 'stellar'
+        run: rustup target add wasm32v1-none
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
@@ -100,7 +106,7 @@ jobs:
             local binary_name="$1"
 
             if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
+              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name" --target-dir target/cli
             fi
           }
 
