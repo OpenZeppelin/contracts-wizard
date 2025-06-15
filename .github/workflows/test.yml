@@ -53,7 +53,7 @@ jobs:
 
       # ----------------------------
       # Stellar setup
-      
+
       - name: Set up Rust
         if: matrix.package == 'stellar'
         uses: actions-rs/toolchain@v1
@@ -61,6 +61,11 @@ jobs:
           toolchain: 1.86.0
           profile: minimal
           override: true
+      - name: Add wasm32v1 target (with check)
+        run: |
+          if ! rustup target list --installed | grep -q wasm32v1-none; then
+            rustup target add wasm32v1-none
+          fi
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
