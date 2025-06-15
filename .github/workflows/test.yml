@@ -31,6 +31,7 @@ jobs:
         run: yarn type:check:api
 
   build:
+    timeout-minutes: 90
     strategy:
       matrix:
         package:
@@ -59,6 +60,27 @@ jobs:
         run: |
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
           df -h
+      
+      # - name: Get scaffold-stellar latest commit SHA
+      #   if: matrix.package == 'stellar'
+      #   id: get-scaffold-sha
+      #   run: |
+      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+
+      # - name: Cache Scaffold CLIs
+      #   if: matrix.package == 'stellar'
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.cargo/bin/
+      #       ~/.cargo/registry/index/
+      #       ~/.cargo/registry/cache/
+      #       ~/.cargo/git/db/
+      #     key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
+      #     restore-keys: |
+      #       cargo-scaffold-${{ matrix.package }}-
+      #       cargo-scaffold-
+      #       cargo-scaffold-
 
       - name: Set up Rust
         if: matrix.package == 'stellar'
@@ -85,7 +107,7 @@ jobs:
             local binary_name="$1"
 
             if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name" --target-dir target/cli
+              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
             fi
           }
 
