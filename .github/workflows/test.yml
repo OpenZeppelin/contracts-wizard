@@ -54,6 +54,12 @@ jobs:
       # ----------------------------
       # Stellar setup
 
+      - name: Free up disk space
+        if: matrix.package == 'stellar'
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
+          df -h
+
       - name: Set up Rust
         if: matrix.package == 'stellar'
         uses: actions-rs/toolchain@v1
@@ -61,7 +67,8 @@ jobs:
           toolchain: 1.86.0
           profile: minimal
           override: true
-      - name: Add wasm32v1 target (with check)
+      - name: Add wasm32v1 target
+        if: matrix.package == 'stellar'
         run: |
           if ! rustup target list --installed | grep -q wasm32v1-none; then
             rustup target add wasm32v1-none
