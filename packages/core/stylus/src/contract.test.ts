@@ -15,7 +15,7 @@ test('contract with function', t => {
   const fn: ContractFunction = {
     name: 'some_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!();'],
+    code: ['todo!()'],
   };
   Foo.addFunction(fn);
   t.snapshot(printContract(Foo));
@@ -26,7 +26,7 @@ test('contract with function and code before', t => {
   const fn: ContractFunction = {
     name: 'some_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!();'],
+    code: ['todo!()'],
   };
   Foo.addFunction(fn);
   Foo.addFunctionCodeBefore(fn, ['before();']);
@@ -36,7 +36,6 @@ test('contract with function and code before', t => {
 test('contract with parent', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
-    name: 'Parent',
     implementation: {
       storageName: 'parent',
       type: 'Parent',
@@ -46,7 +45,7 @@ test('contract with parent', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function();'],
+        code: ['self.parent.some_function()'],
       }
     ],
     interface: {
@@ -60,7 +59,6 @@ test('contract with parent', t => {
 test('contract with parent and associated error', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
-    name: 'Parent',
     implementation: {
       storageName: 'parent',
       type: 'Parent',
@@ -70,9 +68,9 @@ test('contract with parent and associated error', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function();'],
-        returns: 'Result<(), Vec<u8>>',
-      }
+        code: ['self.parent.some_function()?'],
+        returns: { ok: '()', err: 'Self::Error' },
+      },
     ],
     interface: {
       name: 'IParent',
@@ -86,7 +84,6 @@ test('contract with parent and associated error', t => {
 test('contract with parent and with function', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
-    name: 'Parent',
     implementation: {
       storageName: 'parent',
       type: 'Parent',
@@ -96,7 +93,7 @@ test('contract with parent and with function', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function();'],
+        code: ['self.parent.some_function()'],
       }
     ],
     interface: {
@@ -117,7 +114,6 @@ test('contract with parent and with function', t => {
 test('contract with parent and with function with code before', t => {
   const Foo = new ContractBuilder('Foo');
   const trait: BaseImplementedTrait = {
-    name: 'Parent',
     implementation: {
       storageName: 'parent',
       type: 'Parent',
@@ -127,7 +123,7 @@ test('contract with parent and with function with code before', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function();'],
+        code: ['self.parent.some_function()'],
       }
     ],
     interface: {
@@ -140,7 +136,7 @@ test('contract with parent and with function with code before', t => {
   const fn: ContractFunction = {
     name: 'my_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!();'],
+    code: ['todo!()'],
   };
   Foo.addFunction(fn);
   Foo.addFunctionCodeBefore(fn, ['before();']);
@@ -173,32 +169,28 @@ test('contract with sorted use clauses', t => {
 test('contract with sorted traits', t => {
   const Foo = new ContractBuilder('Foo');
   const traitA: BaseImplementedTrait = { 
-    name: 'A',
-      implementation: { storageName: 'a', type: 'A' },
-      modulePath: 'mod_a',
-      interface: { name: 'IA' },
-      functions: [{name: 'func_a', args: [], code: ['todo!();']}],
+    implementation: { storageName: 'a', type: 'A' },
+    modulePath: 'mod_a',
+    interface: { name: 'IA' },
+    functions: [{name: 'func_a', args: [], code: ['todo!()']}],
   };
   const traitB: BaseImplementedTrait = { 
-    name: 'B',
-      implementation: { storageName: 'b', type: 'B' },
-      modulePath: 'mod_b',
-      interface: { name: 'IB' },
-      functions: [{name: 'func_b', args: [], code: ['todo!();']}],
+    implementation: { storageName: 'b', type: 'B' },
+    modulePath: 'mod_b',
+    interface: { name: 'IB' },
+    functions: [{name: 'func_b', args: [], code: ['todo!()']}],
   };
   const traitSpecial: BaseImplementedTrait = { 
-    name: 'Special',
     implementation: { storageName: 'special', type: 'Special' },
     modulePath: 'mod_special',
     interface: { name: 'ISpecial' },
-    functions: [{name: 'func_special', args: [], code: ['todo!();']}],
+    functions: [{name: 'func_special', args: [], code: ['todo!()']}],
   };
   const traitZ: BaseImplementedTrait = { 
-    name: 'Z',
     implementation: { storageName: 'z', type: 'Z' },
     modulePath: 'mod_z',
     interface: { name: 'IZ' },
-    functions: [{name: 'func_z', args: [], code: ['todo!();']}],
+    functions: [{name: 'func_z', args: [], code: ['todo!()']}],
   };
   Foo.addFunction(traitZ.functions[0]!, traitZ);
   Foo.addFunction(traitA.functions[0]!, traitA);

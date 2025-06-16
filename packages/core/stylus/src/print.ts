@@ -223,7 +223,7 @@ function printFunction(fn: ContractFunction): Lines[] {
   // note: if there's code after the main code, it's not a getter
   const mainCode = !!fn.codeAfter?.length 
     ? [`${fn.code};`].concat(fn.codeAfter)
-    : typeof fn.returns === 'string' 
+    : !fn.returns || typeof fn.returns === 'string' 
       ? fn.code 
       : [`Ok(${fn.code})`];
 

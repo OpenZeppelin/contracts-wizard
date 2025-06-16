@@ -190,10 +190,10 @@ export class ContractBuilder implements Contract {
       codeBefore: [],
     };
     
-    if (baseTrait) {
-      t.functions.push(contractFn);
+    if (t === this) {
+      t.functionsArr.push(contractFn);
     } else {
-      this.functionsArr.push(contractFn);
+      t.functions.push(contractFn);
     }
     
     return contractFn;
