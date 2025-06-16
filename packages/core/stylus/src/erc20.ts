@@ -1,6 +1,5 @@
 import type { BaseImplementedTrait, Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
