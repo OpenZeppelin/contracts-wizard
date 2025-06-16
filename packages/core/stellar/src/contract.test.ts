@@ -3,7 +3,6 @@ import test from 'ava';
 import type { BaseFunction, BaseTraitImplBlock } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
-import { TAG_SECURITY_CONTACT } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
