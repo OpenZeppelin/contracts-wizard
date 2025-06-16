@@ -31,6 +31,7 @@ jobs:
         run: yarn type:check:api
 
   build:
+    timeout-minutes: 90
     strategy:
       matrix:
         package:
@@ -44,9 +45,76 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
       - name: Set up environment
         uses: ./.github/actions/setup
+
+      # ----------------------------
+      # Solidity setup
       - name: Install Foundry
         if: matrix.package == 'solidity'
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de #v1.4.0
+
+      # ----------------------------
+      # Stellar setup
+
+      - name: Free up disk space
+        if: matrix.package == 'stellar'
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
+          df -h
+      
+      # - name: Get scaffold-stellar latest commit SHA
+      #   if: matrix.package == 'stellar'
+      #   id: get-scaffold-sha
+      #   run: |
+      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+
+      # - name: Cache Scaffold CLIs
+      #   if: matrix.package == 'stellar'
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.cargo/bin/
+      #       ~/.cargo/registry/index/
+      #       ~/.cargo/registry/cache/
+      #       ~/.cargo/git/db/
+      #     key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
+      #     restore-keys: |
+      #       cargo-scaffold-${{ matrix.package }}-
+      #       cargo-scaffold-
+      #       cargo-scaffold-
+
+      - name: Set up Rust
+        if: matrix.package == 'stellar'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.86.0
+          profile: minimal
+          override: true
+      - name: Add wasm32v1 target
+        if: matrix.package == 'stellar'
+        run: |
+          if ! rustup target list --installed | grep -q wasm32v1-none; then
+            rustup target add wasm32v1-none
+          fi
+
+      - name: Set up Stellar CLI
+        if: matrix.package == 'stellar'
+        uses: stellar/stellar-cli@v22.5.0
+
+      - name: Install Scaffold & Registry CLIs
+        if: matrix.package == 'stellar'
+        run: |
+          rebuildIfNotFoundInCache() {
+            local binary_name="$1"
+
+            if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
+              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
+            fi
+          }
+
+          rebuildIfNotFoundInCache stellar-scaffold-cli
+          rebuildIfNotFoundInCache stellar-registry-cli
+
+      # ----------------------------
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/core/${{matrix.package}}
