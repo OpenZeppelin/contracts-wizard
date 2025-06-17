@@ -288,7 +288,7 @@ const flashMintTrait: ImplementedTrait = {
       ],
       returns: { ok: 'bool', err: 'Self::Error' },
       code: [
-        `self.flash_mint.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.implementation!.storageName})?`,
+        `self.flash_mint.flash_loan(receiver, token, value, &data, &mut self.${erc20Trait.implementation!.storageName})?`,
       ],
     },
   ]
