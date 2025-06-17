@@ -49,7 +49,6 @@ test('all', async (t) => {
         premintChainId: '10',
         limitations: 'allowlist',
         custodian: true,
-        upgradeable: 'transparent',
         info: {
             license: 'MIT',
             securityContact: 'security@example.com',
@@ -57,8 +56,5 @@ test('all', async (t) => {
     };
 
     assertHasAllSupportedFields(t, params);
-
-    // Records an error in the snapshot, because some fields are incompatible with each other.
-    // This is ok, because we just need to check that all fields can be passed in.
-    await assertAPIEquivalence(t, params, stablecoin.print, true);
+    await assertAPIEquivalence(t, params, stablecoin.print);
 });

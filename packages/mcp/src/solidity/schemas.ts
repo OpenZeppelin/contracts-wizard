@@ -97,8 +97,10 @@ export const erc1155Schema = {
   ...commonSchema,
 };
 
+const { upgradeable, ...erc20SchemaOmitUpgradeable } = erc20Schema;
+
 export const stablecoinSchema = {
-  ...erc20Schema,
+  ...erc20SchemaOmitUpgradeable,
   limitations: z
     .literal(false)
     .or(z.literal('allowlist'))
