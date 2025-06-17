@@ -29,6 +29,11 @@
 <section class="controls-section">
   <h1>Features</h1>
 
+  <label class="labeled-input">
+    <span>Superchain Interop Function</span>
+    <input bind:value={opts.superchainInteropFunction} />
+  </label>
+
   <div class="checkbox-group">
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />

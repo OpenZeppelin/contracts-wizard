@@ -52,7 +52,7 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
-export type FunctionKind = 'internal' | 'public';
+export type FunctionKind = 'internal' | 'public' | 'external';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important

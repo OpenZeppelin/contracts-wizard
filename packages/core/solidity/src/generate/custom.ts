@@ -8,6 +8,7 @@ const booleans = [true, false];
 
 const blueprint = {
   name: ['MyContract'],
+  superchainInteropFunction: ['', 'myFunction'],
   pausable: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,
