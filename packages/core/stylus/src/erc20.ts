@@ -111,13 +111,18 @@ function addFlashMint(c: ContractBuilder) {
   // }
 }
 
+const ERC20_STORAGE_NAME = 'erc20';
+const NONCES_STORAGE_NAME = 'nonces';
+const PERMIT_STORAGE_NAME = 'erc20_permit';
+const FLASH_MINT_STORAGE_NAME = 'flash_mint';
+
 const erc20Trait: ImplementedTrait = {
   interface: {
     name: 'IErc20',
     associatedError: true,
   },
   implementation: {
-    storageName: 'erc20',
+    storageName: ERC20_STORAGE_NAME,
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
@@ -131,31 +136,31 @@ const erc20Trait: ImplementedTrait = {
       name: 'total_supply',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: `self.erc20.total_supply()`,
+      code: `self.${ERC20_STORAGE_NAME}.total_supply()`,
     },
     {
       name: 'balance_of',
       args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
       returns: 'U256',
-      code: `self.erc20.balance_of(account)`,
+      code: `self.${ERC20_STORAGE_NAME}.balance_of(account)`,
     },
     {
       name: 'transfer',
       args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.erc20.transfer(to, value)?`,
+      code: `self.${ERC20_STORAGE_NAME}.transfer(to, value)?`,
     },
     {
       name: 'allowance',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
       returns: 'U256',
-      code: `self.erc20.allowance(owner, spender)`,
+      code: `self.${ERC20_STORAGE_NAME}.allowance(owner, spender)`,
     },
     {
       name: 'approve',
       args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.erc20.approve(spender, value)?`,
+      code: `self.${ERC20_STORAGE_NAME}.approve(spender, value)?`,
     },
     {
       name: 'transfer_from',
@@ -166,7 +171,7 @@ const erc20Trait: ImplementedTrait = {
         { name: 'value', type: 'U256' },
       ],
       returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.erc20.transfer_from(from, to, value)?`,
+      code: `self.${ERC20_STORAGE_NAME}.transfer_from(from, to, value)?`,
     },
   ],
 };
@@ -176,7 +181,7 @@ const noncesTrait: ImplementedTrait = {
     name: 'INonces',
   },
   implementation: {
-    storageName: 'nonces',
+    storageName: NONCES_STORAGE_NAME,
     type: 'Nonces',
   },
   modulePath: 'openzeppelin_stylus::utils::nonces',
@@ -184,7 +189,7 @@ const noncesTrait: ImplementedTrait = {
     {
       name: 'nonces',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
-      code: 'self.nonces.nonces(owner)',
+      code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
       returns: 'U256'
     }
   ]
@@ -196,7 +201,7 @@ const permitTrait: ImplementedTrait = {
     associatedError: true,
   },
   implementation: {
-    storageName: 'erc20_permit',
+    storageName: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
     genericType: 'Eip712',
   },
@@ -208,7 +213,7 @@ const permitTrait: ImplementedTrait = {
       attribute: 'selector(name = "DOMAIN_SEPARATOR")',
       args: [getSelfArg('immutable')],
       returns: 'B256',
-      code: `self.erc20_permit.domain_separator()`,
+      code: `self.${PERMIT_STORAGE_NAME}.domain_separator()`,
     },
     {
       name: 'permit',
@@ -223,7 +228,7 @@ const permitTrait: ImplementedTrait = {
         { name: 's', type: 'B256' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: `self.erc20_permit.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.implementation!.storageName}, &mut self.${noncesTrait.implementation!.storageName})?`,
+      code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
     }
   ],
 };
@@ -239,13 +244,13 @@ const burnableTrait: ImplementedTrait = {
         name: 'burn',
         args: [getSelfArg(), { name: 'value', type: 'U256' }],
         returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${erc20Trait.implementation!.storageName}.burn(value)?`,
+        code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
       },
       {
         name: 'burn_from',
         args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
         returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${erc20Trait.implementation!.storageName}.burn_from(account, value)?`,
+        code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
       },
   ],
 };
@@ -256,7 +261,7 @@ const flashMintTrait: ImplementedTrait = {
     associatedError: true,
   },
   implementation: {
-    storageName: 'flash_mint',
+    storageName: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
@@ -266,13 +271,13 @@ const flashMintTrait: ImplementedTrait = {
       name: 'max_flash_loan',
       args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
       returns: 'U256',
-      code: `self.flash_mint.max_flash_loan(token, &self.${erc20Trait.implementation!.storageName})`,
+      code: `self.${FLASH_MINT_STORAGE_NAME}.max_flash_loan(token, &self.${ERC20_STORAGE_NAME})`,
     },
     {
       name: 'flash_fee',
       args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
-      code: `self.flash_mint.flash_fee(token, value)?`,
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_fee(token, value)?`,
     },
     {
       name: 'flash_loan',
@@ -284,7 +289,7 @@ const flashMintTrait: ImplementedTrait = {
         { name: 'data', type: 'Bytes' },
       ],
       returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.flash_mint.flash_loan(receiver, token, value, &data, &mut self.${erc20Trait.implementation!.storageName})?`,
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
     },
   ]
 };

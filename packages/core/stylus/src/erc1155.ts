@@ -259,7 +259,7 @@ const erc1155SupplyTrait: ImplementedTrait = {
     name: 'IErc1155Supply',
   },
   implementation: {
-    storageName: 'erc1155_supply',
+    storageName: ERC1155_SUPPLY_STORAGE_NAME,
     type: 'Erc1155Supply',
   },
   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
@@ -268,20 +268,20 @@ const erc1155SupplyTrait: ImplementedTrait = {
       name: 'total_supply',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'U256',
-      code: `self.erc1155_supply.total_supply(id)`,
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply(id)`,
     },
     {
       name: 'total_supply_all',
       attribute: 'selector(name = "totalSupply")',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: `self.erc1155_supply.total_supply_all()`,
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply_all()`,
     },
     {
       name: 'exists',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'bool',
-      code: `self.erc1155_supply.exists(id)`,
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.exists(id)`,
     },
   ],
 };
