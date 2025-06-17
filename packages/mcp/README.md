@@ -19,9 +19,15 @@ Provides tools to generate smart contracts for the following languages and contr
 
 ## Installation
 
-### MCP Configuration
+### Cursor
 
-Add the following to your MCP configuration file:
+For quick installation, use the button below.
+
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=openzeppelin-contracts-wizard&config=eyJjb21tYW5kIjoibnB4IEBvcGVuemVwcGVsaW4vd2l6YXJkLW1jcCJ9)
+
+For manual installation:
+1. Go to Settings > Cursor Settings > MCP Tools > New MCP Server.
+2. Add the following to your MCP configuration file and save.
 ```
 {
   "mcpServers": {
@@ -34,19 +40,49 @@ Add the following to your MCP configuration file:
   }
 }
 ```
+3. See the MCP server in the list.
 
 ### Windsurf
 
 1. Go to Settings > Windsurf Settings > Cascade > Manage Plugins > View raw config.
-2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
+2. Add the following to your MCP configuration file and save.
+```
+{
+  "mcpServers": {
+    "openzeppelin-contracts-wizard": {
+      "command": "npx",
+      "args": [
+        "@openzeppelin/wizard-mcp"
+      ]
+    }
+  }
+}
+```
 3. Click Refresh on the Manage Plugins page.
 4. See the MCP server in the list.
 
-### Cursor
+### VS Code
 
-1. Go to Settings > Cursor Settings > MCP Tools > New MCP Server.
-2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
-3. See the MCP server in the list.
+For quick installation, use one of the buttons below.
+
+[![Add to VS Code](https://img.shields.io/badge/VS_Code-NPM-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22%40openzeppelin%2Fwizard-mcp%22%5D%7D) [![Add to VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-NPM-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22%40openzeppelin%2Fwizard-mcp%22%5D%7D&quality=insiders)
+
+For manual installation:
+1. Follow VS Code documentation to [Add an MCP server to your workspace](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server-to-your-workspace) using the following configuration:
+```
+{
+  "servers": {
+    "openzeppelin-contracts-wizard": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@openzeppelin/wizard-mcp"
+      ]
+    }
+  }
+}
+```
+2. Start the MCP server according to [Manage MCP servers](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_manage-mcp-servers).
 
 ## Usage
 
