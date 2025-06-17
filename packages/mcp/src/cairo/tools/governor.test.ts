@@ -27,8 +27,8 @@ function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Requi
 test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyGovernor',
-        delay: '1',
-        period: '1',
+        delay: '1 day',
+        period: '1 week',
     };
     await assertAPIEquivalence(t, params, governor.print);
 });

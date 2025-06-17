@@ -3,7 +3,7 @@ import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityGovernor } from './governor';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
-import { GovernorOptions } from '@openzeppelin/wizard';
+import { governor, GovernorOptions } from '@openzeppelin/wizard';
 import { governorSchema } from '../schemas';
 import { z } from 'zod';
 
