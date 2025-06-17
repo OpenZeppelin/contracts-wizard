@@ -170,7 +170,6 @@ function printEip712(contractName: string): Lines[] {
 
 function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[]): Lines[] {
   const traitNames = implementedTraits
-    .filter(trait => !trait.omitInherit)
     .map(trait => {
       let name = trait.interface.name;
       if (trait.interface.associatedError) {

@@ -33,20 +33,15 @@ export interface UseClause {
   alias?: string;
 }
 
-export interface BaseImplementedTrait {
+export interface ImplementedTrait {
   implementation?: Implementation;
   interface: Interface;
-  section?: string;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
    */
   priority?: number;
-  omitInherit?: boolean;
   modulePath: string;
-}
-
-export interface ImplementedTrait extends BaseImplementedTrait {
   functions: ContractFunction[];
 }
 
