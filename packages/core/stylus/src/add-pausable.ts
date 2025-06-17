@@ -23,13 +23,13 @@ const pausableTrait: ImplementedTrait = {
       name: 'pause',
       args: [getSelfArg()],
       returns: { ok: '()', err: 'Self::Error' },
-      code: ['self.pausable.pause()?'],
+      code: 'self.pausable.pause()?',
     },
     {
       name: 'unpause',
       args: [getSelfArg()],
       returns: { ok: '()', err: 'Self::Error' },
-      code: ['self.pausable.unpause()?'],
+      code: 'self.pausable.unpause()?',
     },
   ]
 };

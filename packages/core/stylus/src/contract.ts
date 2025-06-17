@@ -58,7 +58,7 @@ export interface Result {
 export interface BaseFunction {
   name: string;
   args: Argument[];
-  code: string[];
+  code: string;
   returns?: string | Result;
   comments?: string[];
   attribute?: string;
@@ -196,7 +196,7 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: ImplementedTrait): void {
+  setFunctionCode(fn: BaseFunction, code: string, baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.code = code;
   }

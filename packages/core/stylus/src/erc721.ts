@@ -157,7 +157,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'owner', type: 'Address' },
       ],
       returns: { ok: 'U256', err: 'Self::Error' },
-      code: [`self.erc721.balance_of(owner)?`],
+      code: `self.erc721.balance_of(owner)?`,
     },
     {
       name: 'owner_of',
@@ -166,7 +166,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'token_id', type: 'U256' },
       ],
       returns: { ok: 'Address', err: 'Self::Error' },
-      code: [`self.erc721.owner_of(token_id)?`],
+      code: `self.erc721.owner_of(token_id)?`,
     },
     {
       name: 'safe_transfer_from',
@@ -177,7 +177,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'token_id', type: 'U256' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.safe_transfer_from(from, to, token_id)?`],
+      code: `self.erc721.safe_transfer_from(from, to, token_id)?`,
     },
     {
       name: 'safe_transfer_from_with_data',
@@ -190,7 +190,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'data', type: 'Bytes' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.safe_transfer_from_with_data(from, to, token_id, data)?`],
+      code: `self.erc721.safe_transfer_from_with_data(from, to, token_id, data)?`,
     },
     {
       name: 'transfer_from',
@@ -201,7 +201,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'token_id', type: 'U256' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.transfer_from(from, to, token_id)?`],
+      code: `self.erc721.transfer_from(from, to, token_id)?`,
     },
     {
       name: 'approve',
@@ -211,7 +211,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'token_id', type: 'U256' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.approve(to, token_id)?`],
+      code: `self.erc721.approve(to, token_id)?`,
     },
     {
       name: 'set_approval_for_all',
@@ -221,7 +221,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'approved', type: 'bool' },
       ],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.set_approval_for_all(operator, approved)?`],
+      code: `self.erc721.set_approval_for_all(operator, approved)?`,
     },
     {
       name: 'get_approved',
@@ -230,7 +230,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'token_id', type: 'U256' },
       ],
       returns: { ok: 'Address', err: 'Self::Error' },
-      code: [`self.erc721.get_approved(token_id)?`],
+      code: `self.erc721.get_approved(token_id)?`,
     },
     {
       name: 'is_approved_for_all',
@@ -240,7 +240,7 @@ const erc721Trait: ImplementedTrait = {
         { name: 'operator', type: 'Address' },
       ],
       returns: 'bool',
-      code: [`self.erc721.is_approved_for_all(owner, operator)`],
+      code: `self.erc721.is_approved_for_all(owner, operator)`,
     },
   ],
 };
@@ -255,7 +255,7 @@ const erc165Trait: ImplementedTrait = {
       name: 'supports_interface',
       args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
       returns: 'bool',
-      code: [`self.${erc721Trait.implementation?.storageName}.supports_interface(interface_id)`],
+      code: `self.${erc721Trait.implementation?.storageName}.supports_interface(interface_id)`,
     },
   ],
 };
@@ -271,7 +271,7 @@ const burnableTrait: ImplementedTrait = {
       name: 'burn',
       args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
-      code: [`self.erc721.burn(token_id)?`],
+      code: `self.erc721.burn(token_id)?`,
     },
   ],
 };
@@ -295,19 +295,19 @@ const enumerableTrait: ImplementedTrait = {
         { name: 'index', type: 'U256' },
       ],
       returns: { ok: 'U256', err: 'Self::Error' },
-      code: [`self.enumerable.token_of_owner_by_index(owner, index)?`],
+      code: `self.enumerable.token_of_owner_by_index(owner, index)?`,
     },
     {
       name: 'total_supply',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: ['self.enumerable.total_supply()'],
+      code: 'self.enumerable.total_supply()',
     },
     {
       name: 'token_by_index',
       args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
-      code: [`self.enumerable.token_by_index(index)?`],
+      code: `self.enumerable.token_by_index(index)?`,
     },
   ]
 };

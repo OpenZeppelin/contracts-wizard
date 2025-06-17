@@ -15,7 +15,7 @@ test('contract with function', t => {
   const fn: ContractFunction = {
     name: 'some_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!()'],
+    code: 'todo!()',
   };
   Foo.addFunction(fn);
   t.snapshot(printContract(Foo));
@@ -26,7 +26,7 @@ test('contract with function and code before', t => {
   const fn: ContractFunction = {
     name: 'some_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!()'],
+    code: 'todo!()',
   };
   Foo.addFunction(fn);
   Foo.addFunctionCodeBefore(fn, ['before();']);
@@ -45,7 +45,7 @@ test('contract with parent', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function()'],
+        code: 'self.parent.some_function()',
       }
     ],
     interface: {
@@ -68,7 +68,7 @@ test('contract with parent and associated error', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function()?'],
+        code: 'self.parent.some_function()?',
         returns: { ok: '()', err: 'Self::Error' },
       },
     ],
@@ -93,7 +93,7 @@ test('contract with parent and with function', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function()'],
+        code: 'self.parent.some_function()',
       }
     ],
     interface: {
@@ -105,7 +105,7 @@ test('contract with parent and with function', t => {
   const fn: ContractFunction = {
     name: 'my_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!();'],
+    code: 'todo!()',
   };
   Foo.addFunction(fn);
   t.snapshot(printContract(Foo));
@@ -123,7 +123,7 @@ test('contract with parent and with function with code before', t => {
       {
         name: 'some_function',
         args: [getSelfArg('immutable')],
-        code: ['self.parent.some_function()'],
+        code: 'self.parent.some_function()',
       }
     ],
     interface: {
@@ -136,7 +136,7 @@ test('contract with parent and with function with code before', t => {
   const fn: ContractFunction = {
     name: 'my_function',
     args: [getSelfArg('immutable')],
-    code: ['todo!()'],
+    code: 'todo!()',
   };
   Foo.addFunction(fn);
   Foo.addFunctionCodeBefore(fn, ['before();']);
@@ -172,25 +172,25 @@ test('contract with sorted traits', t => {
     implementation: { storageName: 'a', type: 'A' },
     modulePath: 'mod_a',
     interface: { name: 'IA' },
-    functions: [{name: 'func_a', args: [], code: ['todo!()']}],
+    functions: [{name: 'func_a', args: [], code: 'todo!()'}],
   };
   const traitB: ImplementedTrait = { 
     implementation: { storageName: 'b', type: 'B' },
     modulePath: 'mod_b',
     interface: { name: 'IB' },
-    functions: [{name: 'func_b', args: [], code: ['todo!()']}],
+    functions: [{name: 'func_b', args: [], code: 'todo!()'}],
   };
   const traitSpecial: ImplementedTrait = { 
     implementation: { storageName: 'special', type: 'Special' },
     modulePath: 'mod_special',
     interface: { name: 'ISpecial' },
-    functions: [{name: 'func_special', args: [], code: ['todo!()']}],
+    functions: [{name: 'func_special', args: [], code: 'todo!()'}],
   };
   const traitZ: ImplementedTrait = { 
     implementation: { storageName: 'z', type: 'Z' },
     modulePath: 'mod_z',
     interface: { name: 'IZ' },
-    functions: [{name: 'func_z', args: [], code: ['todo!()']}],
+    functions: [{name: 'func_z', args: [], code: 'todo!()'}],
   };
   Foo.addFunction(traitZ.functions[0]!, traitZ);
   Foo.addFunction(traitA.functions[0]!, traitA);

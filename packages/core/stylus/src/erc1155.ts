@@ -128,7 +128,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'id', type: 'U256' },
         ],
         returns: 'U256',
-        code: [`self.${storageName}.balance_of(account, id)`],
+        code: `self.${storageName}.balance_of(account, id)`,
       },
       {
         name: 'balance_of_batch',
@@ -138,7 +138,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'ids', type: 'Vec<U256>' },
         ],
         returns: { ok: 'Vec<U256>', err: 'Self::Error' },
-        code: [`self.${storageName}.balance_of_batch(accounts, ids)?`],
+        code: `self.${storageName}.balance_of_batch(accounts, ids)?`,
       },
       {
         name: 'set_approval_for_all',
@@ -148,7 +148,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'approved', type: 'bool' },
         ],
         returns: { ok: '()', err: 'Self::Error' },
-        code: [`self.${storageName}.set_approval_for_all(operator, approved)?`],
+        code: `self.${storageName}.set_approval_for_all(operator, approved)?`,
       },
       {
         name: 'is_approved_for_all',
@@ -158,7 +158,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'operator', type: 'Address' },
         ],
         returns: 'bool',
-        code: [`self.${storageName}.is_approved_for_all(account, operator)`],
+        code: `self.${storageName}.is_approved_for_all(account, operator)`,
       },
       {
         name: 'safe_transfer_from',
@@ -171,7 +171,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'data', type: 'Bytes' },
         ],
         returns: { ok: '()', err: 'Self::Error' },
-        code: [`self.${storageName}.safe_transfer_from(from, to, id, value, data)?`],
+        code: `self.${storageName}.safe_transfer_from(from, to, id, value, data)?`,
       },
       {
         name: 'safe_batch_transfer_from',
@@ -184,7 +184,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
           { name: 'data', type: 'Bytes' },
         ],
         returns: { ok: '()', err: 'Self::Error' },
-        code: [`self.${storageName}.safe_batch_transfer_from(from, to, ids, values, data)?`],
+        code: `self.${storageName}.safe_batch_transfer_from(from, to, ids, values, data)?`,
       },
     ],
   };
@@ -209,7 +209,7 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
         name: 'supports_interface',
         args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
         returns: 'bool',
-        code: [`self.${storageName}.supports_interface(interface_id)`],
+        code: `self.${storageName}.supports_interface(interface_id)`,
       },
     ],
   };
@@ -233,8 +233,8 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
         ],
         returns: { ok: '()', err: 'Self::Error' },
         code: storageName === 'erc1155' 
-          ? [`self.${storageName}.burn(account, token_id, value)?`]
-          : [`self.${storageName}._burn(account, token_id, value)?`],
+          ? `self.${storageName}.burn(account, token_id, value)?`
+          : `self.${storageName}._burn(account, token_id, value)?`,
       },
       {
         name: 'burn_batch',
@@ -246,8 +246,8 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
         ],
         returns: { ok: '()', err: 'Self::Error' },
         code: storageName === 'erc1155' 
-          ? [`self.${storageName}.burn_batch(account, token_ids, values)?`]
-          : [`self.${storageName}._burn_batch(account, token_ids, values)?`],
+          ? `self.${storageName}.burn_batch(account, token_ids, values)?`
+          : `self.${storageName}._burn_batch(account, token_ids, values)?`,
       },
     ],
   };
@@ -267,20 +267,20 @@ const erc1155SupplyTrait: ImplementedTrait = {
       name: 'total_supply',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'U256',
-      code: [`self.erc1155_supply.total_supply(id)`],
+      code: `self.erc1155_supply.total_supply(id)`,
     },
     {
       name: 'total_supply_all',
       attribute: 'selector(name = "totalSupply")',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: [`self.erc1155_supply.total_supply_all()`],
+      code: `self.erc1155_supply.total_supply_all()`,
     },
     {
       name: 'exists',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'bool',
-      code: [`self.erc1155_supply.exists(id)`],
+      code: `self.erc1155_supply.exists(id)`,
     },
   ],
 };

@@ -220,12 +220,16 @@ function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
   
-  // note: if there's code after the main code, it's not a getter
-  const mainCode = !!fn.codeAfter?.length 
-    ? [`${fn.code};`].concat(fn.codeAfter)
-    : !fn.returns || typeof fn.returns === 'string' 
-      ? fn.code 
-      : [`Ok(${fn.code})`];
+  const mainCode = !fn.returns
+    ? !!fn.codeAfter?.length
+      ? [`${fn.code};`].concat(fn.codeAfter)
+      : [fn.code]
+    : typeof fn.returns === 'string'
+      // if there's code after, it's probably chained view function(s)
+      ? [fn.code].concat(fn.codeAfter ?? [])
+      : !!fn.codeAfter?.length
+        ? [`${fn.code};`].concat(fn.codeAfter)
+        : [`Ok(${fn.code})`];
 
   const codeLines = (fn.codeBefore?.concat(mainCode) ?? mainCode);
 
