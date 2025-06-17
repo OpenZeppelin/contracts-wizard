@@ -207,7 +207,7 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
     functions: [
       {
         name: 'supports_interface',
-        args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
+        args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
         returns: 'bool',
         code: `self.${storageName}.supports_interface(interface_id)`,
       },
