@@ -1,12 +1,12 @@
 # Path Owners
-* @ericglau @CoveMB
+* @OpenZeppelin/wizard
 /packages/core/solidity @OpenZeppelin/contracts
 /packages/ui/src/solidity @OpenZeppelin/contracts
-/packages/core/cairo @ericnordelo @immrsd
-/packages/core/cairo_alpha @ericnordelo @immrsd
-/packages/ui/src/cairo @ericnordelo @immrsd
-/packages/ui/src/cairo_alpha @ericnordelo @immrsd
-/packages/core/stylus @0xNeshi @bidzyyys @qalisander
-/packages/ui/src/stylus @0xNeshi @bidzyyys @qalisander
-/packages/core/stellar @ozgunozerk @brozorec
-/packages/ui/src/stellar @ozgunozerk @brozorec
+/packages/core/cairo @OpenZeppelin/cairo
+/packages/core/cairo_alpha @OpenZeppelin/cairo
+/packages/ui/src/cairo @OpenZeppelin/cairo
+/packages/ui/src/cairo_alpha @OpenZeppelin/cairo
+/packages/core/stylus @OpenZeppelin/stylus
+/packages/ui/src/stylus @OpenZeppelin/stylus
+/packages/core/stellar @OpenZeppelin/stellar
+/packages/ui/src/stellar @OpenZeppelin/stellar
