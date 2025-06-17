@@ -149,6 +149,7 @@ const erc721Trait: ImplementedTrait = {
     type: 'Erc721',
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
+  priority: 1,
   functions: [
     {
       name: 'balance_of',
@@ -250,6 +251,7 @@ const erc165Trait: ImplementedTrait = {
     name: 'IErc165',
   },
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
+  priority: 4,
   functions: [
     {
       name: 'supports_interface',
@@ -266,6 +268,7 @@ const burnableTrait: ImplementedTrait = {
     associatedError: true,
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  priority: 3,
   functions: [
     {
       name: 'burn',
@@ -286,6 +289,7 @@ const enumerableTrait: ImplementedTrait = {
     type: 'Erc721Enumerable',
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  priority: 2,
   functions: [
     {
       name: 'token_of_owner_by_index',
