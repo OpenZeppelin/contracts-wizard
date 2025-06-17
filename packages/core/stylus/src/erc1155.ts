@@ -81,12 +81,6 @@ function addBase(c: ContractBuilder, storageName: StorageName) {
   c.addImplementedTrait(getErc1155WithStorageName(storageName));
   c.addImplementedTrait(getIErc165Trait(storageName));
 
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'FixedBytes');
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
-
   // if (pausable) {
   // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
   // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
@@ -119,6 +113,12 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
       associatedError: true,
     },
     modulePath: 'openzeppelin_stylus::token::erc1155',
+    requiredImports: [
+      { containerPath: 'alloc::vec', name: 'Vec' },
+      { containerPath: 'stylus_sdk::abi', name: 'Bytes' },
+      { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+      { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+    ],
     functions: [
       {
         name: 'balance_of',
@@ -204,6 +204,7 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
       name: 'IErc165',
     },
     modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
+    requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
     functions: [
       {
         name: 'supports_interface',

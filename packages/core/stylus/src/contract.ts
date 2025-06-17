@@ -43,6 +43,7 @@ export interface ImplementedTrait {
   priority?: number;
   modulePath: string;
   functions: ContractFunction[];
+  requiredImports?: UseClause[];
 }
 
 export interface Result {
@@ -140,6 +141,9 @@ export class ContractBuilder implements Contract {
         this.addUseClause(baseTrait.modulePath, baseTrait.implementation?.type);
       }
       this.addUseClause(baseTrait.modulePath, baseTrait.interface.name);
+      for (const useClause of (t.requiredImports ?? [])) {
+        this.addUseClause(useClause.containerPath, useClause.name, { ...useClause });
+      }
       return t;
     }
   }

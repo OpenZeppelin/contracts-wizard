@@ -73,12 +73,6 @@ function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc165Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
 
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'FixedBytes');
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
-
   // if (pausable) {
   //   // Add transfer functions with pause checks
 
@@ -150,6 +144,12 @@ const erc721Trait: ImplementedTrait = {
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
   priority: 1,
+  requiredImports: [
+    { containerPath: 'alloc::vec', name: 'Vec' },
+    { containerPath: 'stylus_sdk::abi', name: 'Bytes' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+  ],
   functions: [
     {
       name: 'balance_of',
@@ -252,6 +252,7 @@ const erc165Trait: ImplementedTrait = {
   },
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
   priority: 4,
+  requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
   functions: [
     {
       name: 'supports_interface',

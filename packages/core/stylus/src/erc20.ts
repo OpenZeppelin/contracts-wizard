@@ -78,10 +78,6 @@ function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc20Trait);
   // c.addImplementedTrait(erc20MetadataTrait);
 
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
-  c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
-
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
@@ -92,8 +88,6 @@ function addPermit(c: ContractBuilder) {
   c.addImplementedTrait(noncesTrait);
   c.addImplementedTrait(permitTrait);
   c.addEip712();
-
-  c.addUseClause('stylus_sdk::alloy_primitives', 'B256');
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
@@ -112,8 +106,6 @@ function addBurnable(c: ContractBuilder) {
 function addFlashMint(c: ContractBuilder) {
   c.addImplementedTrait(flashMintTrait);
 
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
-
   // if (pausable) {
   //   c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);
   // }
@@ -129,6 +121,11 @@ const erc20Trait: ImplementedTrait = {
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
+  requiredImports: [
+    { containerPath: 'alloc::vec', name: 'Vec' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+  ],
   functions: [
     {
       name: 'total_supply',
@@ -204,6 +201,7 @@ const permitTrait: ImplementedTrait = {
     genericType: 'Eip712',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' }],
   functions: [
     {
       name: 'domain_separator',
@@ -262,6 +260,7 @@ const flashMintTrait: ImplementedTrait = {
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
   functions: [
     {
       name: 'max_flash_loan',
