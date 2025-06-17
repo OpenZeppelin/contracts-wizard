@@ -14,6 +14,12 @@ export const stylusCommonFunctionDescription = {
     type: 'object',
     description: stylusCommonDescriptions.info,
     properties: {
+      securityContact: {
+        type: 'string',
+        description:
+          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
+      },
+
       license: {
         type: 'string',
         description: stylusCommonDescriptions.license,
