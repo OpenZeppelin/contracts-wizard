@@ -1,23 +1,21 @@
 # OpenZeppelin Contracts Wizard MCP Server
 
-A Model Context Protocol (MCP) server that allows AI agents to generate smart contracts using the OpenZeppelin Contracts Wizard.
+A Model Context Protocol (MCP) server that allows AI agents to generate smart contracts using the [OpenZeppelin Contracts Wizard](https://wizard.openzeppelin.com/).
 
 > [!WARNING]
 > AI agents determine when and how to use the MCP server and therefore may produce inaccurate results. You should always review any information produced by the AI agent to ensure that any results are accurate and suit your purposes.
 
 ## Features
 
-### Solidity
+Provides tools to generate smart contracts for the following languages and contract kinds. Tools are named in the format `<language>-<contract>`.
 
-Provides the following tools:
-- `solidity-erc20`: Generate an ERC20 smart contract for Solidity
-- `solidity-erc721`: Generate an ERC721 smart contract for Solidity
-- `solidity-erc1155`: Generate an ERC1155 smart contract for Solidity
-- `solidity-stablecoin`: (Experimental) Generate a stablecoin smart contract for Solidity
-- `solidity-account`: (Experimental) Generate an account smart contract for Solidity
-- `solidity-custom`: Generate a custom smart contract for Solidity
-- `solidity-governor`: Generate a governor smart contract for Solidity
-- `solidity-rwa`: (Experimental) Generate a real-world asset smart contract for Solidity
+| Language | Contracts |
+| --- | --- |
+| solidity | erc20, erc721, erc1155, stablecoin, rwa, account, governor, custom |
+| cairo | erc20, erc721, erc1155, account, multisig, governor, vesting, custom |
+| stellar | fungible, non-fungible |
+| stylus | erc20, erc721, erc1155 |
+
 
 ## Installation
 
@@ -27,7 +25,7 @@ Add the following to your MCP configuration file:
 ```
 {
   "mcpServers": {
-    "OpenZeppelin Contracts Wizard": {
+    "openzeppelin-contracts-wizard": {
       "command": "npx",
       "args": [
         "@openzeppelin/wizard-mcp"
@@ -42,13 +40,13 @@ Add the following to your MCP configuration file:
 1. Go to Settings > Windsurf Settings > Cascade > Manage Plugins > View raw config.
 2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
 3. Click Refresh on the Manage Plugins page.
-4. See the MCP Server in the list.
+4. See the MCP server in the list.
 
 ### Cursor
 
-1. Go to Settings > Cursor Settings > MCP > Add new global MCP server.
+1. Go to Settings > Cursor Settings > MCP Tools > New MCP Server.
 2. Add the above [MCP Configuration](#mcp-configuration) to the config file and save.
-3. See the MCP Server in the list.
+3. See the MCP server in the list.
 
 ## Usage
 
