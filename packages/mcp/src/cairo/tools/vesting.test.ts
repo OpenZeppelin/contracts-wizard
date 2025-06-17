@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoVesting } from './vesting';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { VestingOptions } from '@openzeppelin/wizard-cairo';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { vesting, VestingOptions } from '@openzeppelin/wizard-cairo';
 import { vestingSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(vestingSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<VestingOptions> = params;
     t.pass();
@@ -44,7 +32,7 @@ test('basic', async (t) => {
         cliffDuration: '1 day',
         schedule: 'linear',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, vesting.print);
 });
 
 test('all', async (t) => {
@@ -59,5 +47,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, vesting.print);
 });

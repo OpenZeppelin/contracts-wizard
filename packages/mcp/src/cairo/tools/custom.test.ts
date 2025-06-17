@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoCustom } from './custom';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { CustomOptions } from '@openzeppelin/wizard-cairo';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { custom, CustomOptions } from '@openzeppelin/wizard-cairo';
 import { customSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(customSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<CustomOptions> = params;
     t.pass();
@@ -40,7 +28,7 @@ test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyAccount',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, custom.print);
 });
 
 test('all', async (t) => {
@@ -54,5 +42,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, custom.print);
 });
