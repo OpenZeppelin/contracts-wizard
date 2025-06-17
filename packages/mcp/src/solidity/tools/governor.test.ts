@@ -2,7 +2,7 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityGovernor } from './governor';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import { GovernorOptions } from '@openzeppelin/wizard';
 import { governorSchema } from '../schemas';
 import { z } from 'zod';
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(governorSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<Omit<GovernorOptions, 'access'>> = params;
     t.pass();
@@ -42,7 +30,7 @@ test('basic', async (t) => {
         delay: '1 day',
         period: '1 week',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, governor.print);
 });
 
 test('all', async (t) => {
@@ -68,5 +56,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, governor.print);
 });

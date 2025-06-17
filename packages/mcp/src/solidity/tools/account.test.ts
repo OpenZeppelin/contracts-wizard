@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityAccount } from './account';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { AccountOptions } from '@openzeppelin/wizard';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { account, AccountOptions } from '@openzeppelin/wizard';
 import { accountSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(accountSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     // omit fields that are documented as unsupported
     const _: Required<Omit<AccountOptions, 'access' | 'upgradeable'>> = params;
@@ -41,7 +29,7 @@ test('basic', async (t) => {
     const params: z.infer<typeof t.context.schema> = {
         name: 'MyAccount',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, account.print);
 });
 
 test('all', async (t) => {
@@ -59,5 +47,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, account.print);
 });

@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityRWA } from './rwa';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { StablecoinOptions } from '@openzeppelin/wizard';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { realWorldAsset, StablecoinOptions } from '@openzeppelin/wizard';
 import { rwaSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(rwaSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<StablecoinOptions> = params;
     t.pass();
@@ -41,7 +29,7 @@ test('basic', async (t) => {
         name: 'TestToken',
         symbol: 'TST',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, realWorldAsset.print);
 });
 
 test('all', async (t) => {
@@ -72,5 +60,5 @@ test('all', async (t) => {
 
     // Records an error in the snapshot, because some fields are incompatible with each other.
     // This is ok, because we just need to check that all fields can be passed in.
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, realWorldAsset.print, true);
 });

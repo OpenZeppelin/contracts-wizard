@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityERC721 } from './erc721';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { ERC721Options } from '@openzeppelin/wizard';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { erc721, ERC721Options } from '@openzeppelin/wizard';
 import { erc721Schema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(erc721Schema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: z.infer<typeof t.context.schema>) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<ERC721Options> = params;
     t.pass();
@@ -41,7 +29,7 @@ test('basic', async (t) => {
         name: 'MyNFT',
         symbol: 'NFT',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, erc721.print);
 });
 
 test('all', async (t) => {
@@ -64,5 +52,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, erc721.print);
 });
