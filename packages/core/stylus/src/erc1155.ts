@@ -1,4 +1,4 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ImplementedTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -112,8 +112,8 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
   // }
 }
 
-function getErc1155WithStorageName(storageName: StorageName): BaseImplementedTrait {
-  let erc1155: BaseImplementedTrait = {
+function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
+  let erc1155: ImplementedTrait = {
     interface: {
       name: 'IErc1155',
       associatedError: true,
@@ -198,7 +198,7 @@ function getErc1155WithStorageName(storageName: StorageName): BaseImplementedTra
   return erc1155;
 }
 
-function getIErc165Trait(storageName: StorageName): BaseImplementedTrait {
+function getIErc165Trait(storageName: StorageName): ImplementedTrait {
   return {
     interface: {
       name: 'IErc165',
@@ -215,7 +215,7 @@ function getIErc165Trait(storageName: StorageName): BaseImplementedTrait {
   };
 }
 
-function getIErc1155BurnableTrait(storageName: StorageName): BaseImplementedTrait {
+function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
   return {
     interface: {
       name: 'IErc1155Burnable',
@@ -253,7 +253,7 @@ function getIErc1155BurnableTrait(storageName: StorageName): BaseImplementedTrai
   };
 }
 
-const erc1155SupplyTrait: BaseImplementedTrait = {
+const erc1155SupplyTrait: ImplementedTrait = {
   interface: {
     name: 'IErc1155Supply',
   },
@@ -285,7 +285,7 @@ const erc1155SupplyTrait: BaseImplementedTrait = {
   ],
 };
 
-// const erc1155MetadataTrait: BaseImplementedTrait = {
+// const erc1155MetadataTrait: ImplementedTrait = {
 //   name: 'Erc1155Metadata',
 //   storage: {
 //     name: 'metadata',

@@ -44,8 +44,6 @@ export interface BaseImplementedTrait {
   priority?: number;
   omitInherit?: boolean;
   modulePath: string;
-  // TODO: refactor to be <F extends string>: Record<F, BaseFunction>
-  functions: BaseFunction[];
 }
 
 export interface ImplementedTrait extends BaseImplementedTrait {
@@ -135,15 +133,13 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addImplementedTrait(baseTrait: BaseImplementedTrait): ImplementedTrait {
+  addImplementedTrait(baseTrait: ImplementedTrait): ImplementedTrait {
     const key = baseTrait.interface.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = {
-        ...baseTrait,
-      };
+      const t: ImplementedTrait = copy(baseTrait);
       this.implementedTraitsMap.set(key, t);
       if (baseTrait.implementation) {
         this.addUseClause(baseTrait.modulePath, baseTrait.implementation?.type);
@@ -171,7 +167,7 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(fn: BaseFunction, baseTrait?: BaseImplementedTrait): ContractFunction {    
+  addFunction(fn: BaseFunction, baseTrait?: ImplementedTrait): ContractFunction {    
     const t = baseTrait ? this.addImplementedTrait(baseTrait) : this;
 
     const signature = this.getFunctionSignature(fn);
@@ -185,10 +181,7 @@ export class ContractBuilder implements Contract {
     }
 
     // Otherwise, add the function
-    const contractFn: ContractFunction = {
-      ...fn,
-      codeBefore: [],
-    };
+    const contractFn: ContractFunction = copy(fn);
     
     if (t === this) {
       t.functionsArr.push(contractFn);
@@ -203,23 +196,27 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: BaseImplementedTrait): void {
+  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.code = code;
   }
 
-  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: BaseImplementedTrait): void {
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], baseTrait?: BaseImplementedTrait): void {
+  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
-  addFunctionAttribute(fn: BaseFunction, attribute: string, baseTrait?: BaseImplementedTrait): void {
+  addFunctionAttribute(fn: BaseFunction, attribute: string, baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.attribute = attribute;
   }
+}
+
+function copy<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj))
 }

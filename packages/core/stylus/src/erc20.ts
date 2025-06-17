@@ -1,4 +1,4 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ImplementedTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -119,7 +119,7 @@ function addFlashMint(c: ContractBuilder) {
   // }
 }
 
-const erc20Trait: BaseImplementedTrait = {
+const erc20Trait: ImplementedTrait = {
   interface: {
     name: 'IErc20',
     associatedError: true,
@@ -174,7 +174,7 @@ const erc20Trait: BaseImplementedTrait = {
   ],
 };
 
-const noncesTrait: BaseImplementedTrait = {
+const noncesTrait: ImplementedTrait = {
   interface: {
     name: 'INonces',
   },
@@ -193,7 +193,7 @@ const noncesTrait: BaseImplementedTrait = {
   ]
 };
 
-const permitTrait: BaseImplementedTrait = {
+const permitTrait: ImplementedTrait = {
   interface: {
     name: 'IErc20Permit',
     associatedError: true,
@@ -232,7 +232,7 @@ const permitTrait: BaseImplementedTrait = {
   ],
 };
 
-const burnableTrait: BaseImplementedTrait = {
+const burnableTrait: ImplementedTrait = {
   interface: {
     name: 'IErc20Burnable',
     associatedError: true,
@@ -254,7 +254,7 @@ const burnableTrait: BaseImplementedTrait = {
   ],
 };
 
-const flashMintTrait: BaseImplementedTrait = {
+const flashMintTrait: ImplementedTrait = {
   interface: {
     name: 'IErc3156FlashLender',
     associatedError: true,
@@ -294,7 +294,7 @@ const flashMintTrait: BaseImplementedTrait = {
   ]
 };
 
-// const erc20MetadataTrait: BaseImplementedTrait = {
+// const erc20MetadataTrait: ImplementedTrait = {
 //   name: 'Erc20Metadata',
 //   interface: 'IErc20Metadata',
 //   storage: {

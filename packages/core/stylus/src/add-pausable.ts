@@ -1,37 +1,35 @@
 import { getSelfArg } from './common-options';
-import type { BaseImplementedTrait, ContractBuilder } from './contract';
+import type { ContractBuilder, ImplementedTrait } from './contract';
 import type { Access } from './set-access-control';
-import { requireAccessControl } from './set-access-control';
-import { defineFunctions } from './utils/define-functions';
 
-export function addPausable(c: ContractBuilder, access: Access) {
-  c.addUseClause('alloc::vec', 'Vec');
+export function addPausable(c: ContractBuilder, _access: Access) {
+  c.addImplementedTrait(pausableTrait);
 
-  const pausableTrait: BaseImplementedTrait = {
-    name: 'Pausable',
-    implementation: {
-      storageName: 'pausable',
-      type: 'Pausable',
-    },
-    modulePath: 'openzeppelin_stylus::utils',
-  };
-
-  c.addFunction(pausableTrait, functions.pause);
-  c.addFunction(pausableTrait, functions.unpause);
-
-  requireAccessControl(c, pausableTrait, functions.pause, access, 'PAUSER', 'pauser');
-  requireAccessControl(c, pausableTrait, functions.unpause, access, 'PAUSER', 'pauser');
+  // requireAccessControl(c, pausableTrait, functions.pause, access, 'PAUSER', 'pauser');
+  // requireAccessControl(c, pausableTrait, functions.unpause, access, 'PAUSER', 'pauser');
 }
 
-const functions = defineFunctions({
-  pause: {
-    args: [getSelfArg()],
-    returns: 'Result<(), Vec<u8>>',
-    code: ['self.pausable.pause().map_err(|e| e.into())'],
+const pausableTrait: ImplementedTrait = {
+  interface: {
+    name: 'IPausable',
   },
-  unpause: {
-    args: [getSelfArg()],
-    returns: 'Result<(), Vec<u8>>',
-    code: ['self.pausable.unpause().map_err(|e| e.into())'],
+  implementation: {
+    storageName: 'pausable',
+    type: 'Pausable',
   },
-});
+  modulePath: 'openzeppelin_stylus::utils',
+  functions: [
+    {
+      name: 'pause',
+      args: [getSelfArg()],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: ['self.pausable.pause()?'],
+    },
+    {
+      name: 'unpause',
+      args: [getSelfArg()],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: ['self.pausable.unpause()?'],
+    },
+  ]
+};

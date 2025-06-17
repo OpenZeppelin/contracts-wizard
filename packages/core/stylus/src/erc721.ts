@@ -1,4 +1,4 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ImplementedTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -140,7 +140,7 @@ function addEnumerable(c: ContractBuilder) {
   }
 }
 
-const erc721Trait: BaseImplementedTrait = {
+const erc721Trait: ImplementedTrait = {
   interface: {
     name: 'IErc721',
     associatedError: true,
@@ -246,7 +246,7 @@ const erc721Trait: BaseImplementedTrait = {
   ],
 };
 
-const erc165Trait: BaseImplementedTrait = {
+const erc165Trait: ImplementedTrait = {
   interface: {
     name: 'IErc165',
   },
@@ -261,7 +261,7 @@ const erc165Trait: BaseImplementedTrait = {
   ],
 };
 
-const burnableTrait: BaseImplementedTrait = {
+const burnableTrait: ImplementedTrait = {
   interface: {
     name: 'IErc721Burnable',
     associatedError: true,
@@ -277,7 +277,7 @@ const burnableTrait: BaseImplementedTrait = {
   ],
 };
 
-const enumerableTrait: BaseImplementedTrait = {
+const enumerableTrait: ImplementedTrait = {
   interface: {
     name: 'IErc721Enumerable',
     associatedError: true,
@@ -313,7 +313,7 @@ const enumerableTrait: BaseImplementedTrait = {
   ]
 };
 
-// const erc721MetadataTrait: BaseImplementedTrait = {
+// const erc721MetadataTrait: ImplementedTrait = {
 //   name: 'Erc721Metadata',
 //   storage: {
 //     name: 'metadata',
