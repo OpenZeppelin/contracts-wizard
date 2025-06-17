@@ -7,7 +7,7 @@ A Model Context Protocol (MCP) server that allows AI agents to generate smart co
 
 ## Features
 
-Provides tools to generate smart contracts for the following languages and contract kinds. Tools are named in the format `<language>-<contract>`.
+Provides tools to generate smart contract source code for the following languages and contract kinds. Resulting contracts use OpenZeppelin Contracts libraries for each language. Tools are named in the format `<language>-<contract>`.
 
 | Language | Contracts |
 | --- | --- |
