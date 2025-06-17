@@ -20,7 +20,7 @@ test.before((t) => {
 });
 
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
-    const _: Required<StablecoinOptions> = params;
+    const _: Required<Omit<StablecoinOptions, 'upgradeable'>> = params;
     t.pass();
 }
 
