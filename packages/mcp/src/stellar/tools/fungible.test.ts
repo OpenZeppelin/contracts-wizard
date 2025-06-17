@@ -2,8 +2,8 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerStellarFungible } from './fungible';
-import { testMcpInfo, testMcpContext } from '../../helpers.test';
-import { FungibleOptions } from '@openzeppelin/wizard-stellar';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { fungible, FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungibleSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -19,18 +19,6 @@ test.before((t) => {
     t.context.schema = z.object(fungibleSchema);
 });
 
-async function assertSnapshot(t: ExecutionContext<Context>, params: FungibleOptions) {
-    const result = await t.context.tool.callback(
-        {
-            ...params,
-            ...testMcpContext,
-        },
-        testMcpContext
-    );
-
-    t.snapshot(result?.content[0]?.text);
-}
-
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
     const _: Required<Omit<FungibleOptions, 'access'>> = params;
     t.pass();
@@ -41,7 +29,7 @@ test('basic', async (t) => {
         name: 'TestToken',
         symbol: 'TST',
     };
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, fungible.print);
 });
 
 test('all', async (t) => {
@@ -58,5 +46,5 @@ test('all', async (t) => {
         },
     };
     assertHasAllSupportedFields(t, params);
-    await assertSnapshot(t, params);
+    await assertAPIEquivalence(t, params, fungible.print);
 });
