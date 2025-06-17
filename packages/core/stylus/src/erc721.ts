@@ -77,6 +77,7 @@ function addBase(c: ContractBuilder) {
   c.addUseClause('stylus_sdk::alloy_primitives', 'Address');
   c.addUseClause('stylus_sdk::alloy_primitives', 'U256');
   c.addUseClause('stylus_sdk::alloy_primitives', 'FixedBytes');
+  c.addUseClause('stylus_sdk::abi', 'Bytes');
 
   // if (pausable) {
   //   // Add transfer functions with pause checks
@@ -112,8 +113,6 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
 
 function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
-
-  c.addUseClause('stylus_sdk::abi', 'Bytes');
 
   c.addFunctionCodeAfter(
     erc165Trait.functions[0]!, 
@@ -254,7 +253,7 @@ const erc165Trait: ImplementedTrait = {
   functions: [
     {
       name: 'supports_interface',
-      args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
+      args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
       returns: 'bool',
       code: [`self.${erc721Trait.implementation?.storageName}.supports_interface(interface_id)`],
     },
