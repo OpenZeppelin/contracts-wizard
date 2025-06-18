@@ -54,7 +54,7 @@ async function testGenerate(params: {
   royaltyInfo?: RoyaltyInfoSubset;
 }) {
   const { ctx, kind, royaltyInfo } = params;
-  const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo');
+  const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
     dir: generatedSourcesPath,
