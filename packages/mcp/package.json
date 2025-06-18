@@ -17,8 +17,7 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build",
+    "prepare": "tsc",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector@0.12.0 node dist/index.js",
     "test": "ava",
@@ -31,7 +30,7 @@
     "@openzeppelin/wizard": "^0.5.6",
     "@openzeppelin/wizard-stylus": "^0.2.0-alpha.4",
     "@openzeppelin/wizard-stellar": "^0.2.0",
-    "@openzeppelin/wizard-cairo": "^1.1.0"
+    "@openzeppelin/wizard-cairo": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -14,8 +14,7 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build",
+    "prepare": "tsc",
     "watch": "tsc --watch"
   },
   "devDependencies": {
