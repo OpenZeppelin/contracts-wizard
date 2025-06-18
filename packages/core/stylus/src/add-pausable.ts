@@ -13,8 +13,8 @@ const pausableTrait: ImplementedTrait = {
   interface: {
     name: 'IPausable',
   },
-  implementation: {
-    storageName: 'pausable',
+  storage: {
+    name: 'pausable',
     type: 'Pausable',
   },
   modulePath: 'openzeppelin_stylus::utils',

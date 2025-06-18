@@ -144,10 +144,10 @@ function sortImpls(contract: Contract): ImplementedTrait[] {
 
 function printStorage(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
   const structLines = implementedTraits
-    .filter(trait => !!trait.implementation)
-    .map(({ implementation: i }) => {
+    .filter(trait => !!trait.storage)
+    .map(({ storage: i }) => {
       const generics = i!.genericType ? `<${i!.genericType}>`: '';
-      return [`${i!.storageName}: ${i!.type}${generics},`];
+      return [`${i!.name}: ${i!.type}${generics},`];
     });
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];

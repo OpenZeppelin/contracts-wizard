@@ -90,14 +90,14 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
   if (enumerable) {
     c.addFunctionCodeBefore(
       burnableTrait.functions[0]!,
-      [`let owner = self.${erc721Trait.implementation!.storageName}.owner_of(token_id)?;`],
+      [`let owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
       burnableTrait
     );
     c.addFunctionCodeAfter(
       burnableTrait.functions[0]!,
       [
-        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
-        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_all_tokens_enumeration(token_id);`,
+        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage!.name})?;`,
+        `self.${enumerableTrait.storage!.name}._remove_token_from_all_tokens_enumeration(token_id);`,
         'Ok(())',
       ],
       burnableTrait
@@ -110,7 +110,7 @@ function addEnumerable(c: ContractBuilder) {
 
   c.addFunctionCodeAfter(
     erc165Trait.functions[0]!, 
-    [indentLine(`|| self.${enumerableTrait.implementation!.storageName}.supports_interface(interface_id)`, 1)],
+    [indentLine(`|| self.${enumerableTrait.storage!.name}.supports_interface(interface_id)`, 1)],
     erc165Trait,
   );
 
@@ -118,14 +118,14 @@ function addEnumerable(c: ContractBuilder) {
   for (const fn of [erc721Trait.functions[2]!, erc721Trait.functions[3]!, erc721Trait.functions[4]!]) {
     c.addFunctionCodeBefore(
       fn,
-      [`let previous_owner = self.${erc721Trait.implementation!.storageName}.owner_of(token_id)?;`],
+      [`let previous_owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
       erc721Trait,
     );
     c.addFunctionCodeAfter(
       fn,
       [
-        `self.${enumerableTrait.implementation!.storageName}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
-        `self.${enumerableTrait.implementation!.storageName}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.implementation!.storageName})?;`,
+        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage!.name})?;`,
+        `self.${enumerableTrait.storage!.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage!.name})?;`,
         'Ok(())',
       ],
       erc721Trait,
@@ -141,8 +141,8 @@ const erc721Trait: ImplementedTrait = {
     name: 'IErc721',
     associatedError: true,
   },
-  implementation: {
-    storageName: ERC721_STORAGE_NAME,
+  storage: {
+    name: ERC721_STORAGE_NAME,
     type: 'Erc721',
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
@@ -288,8 +288,8 @@ const enumerableTrait: ImplementedTrait = {
     name: 'IErc721Enumerable',
     associatedError: true,
   },
-  implementation: {
-    storageName: ENUMERABLE_STORAGE_NAME,
+  storage: {
+    name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',

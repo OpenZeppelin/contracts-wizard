@@ -16,7 +16,7 @@ export interface Contract {
 }
 
 export interface Implementation {
-  storageName: string;
+  name: string;
   type: string;
   genericType?: string;
 }
@@ -34,7 +34,7 @@ export interface UseClause {
 }
 
 export interface ImplementedTrait {
-  implementation?: Implementation;
+  storage?: Implementation;
   interface: Interface;
   /**
    * Priority for which trait to print first.
@@ -137,8 +137,8 @@ export class ContractBuilder implements Contract {
     } else {
       const t: ImplementedTrait = copy(baseTrait);
       this.implementedTraitsMap.set(key, t);
-      if (baseTrait.implementation) {
-        this.addUseClause(baseTrait.modulePath, baseTrait.implementation?.type);
+      if (baseTrait.storage) {
+        this.addUseClause(baseTrait.modulePath, baseTrait.storage?.type);
       }
       this.addUseClause(baseTrait.modulePath, baseTrait.interface.name);
       for (const useClause of (t.requiredImports ?? [])) {

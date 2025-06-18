@@ -190,8 +190,8 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
   };
   // if `Erc1155Supply` is used as storage, then this can be omitted
   if (storageName === "erc1155") {
-    erc1155.implementation = {
-      storageName: 'erc1155',
+    erc1155.storage = {
+      name: 'erc1155',
       type: 'Erc1155',
     };
   }
@@ -258,8 +258,8 @@ const erc1155SupplyTrait: ImplementedTrait = {
   interface: {
     name: 'IErc1155Supply',
   },
-  implementation: {
-    storageName: ERC1155_SUPPLY_STORAGE_NAME,
+  storage: {
+    name: ERC1155_SUPPLY_STORAGE_NAME,
     type: 'Erc1155Supply',
   },
   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',

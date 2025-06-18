@@ -121,8 +121,8 @@ const erc20Trait: ImplementedTrait = {
     name: 'IErc20',
     associatedError: true,
   },
-  implementation: {
-    storageName: ERC20_STORAGE_NAME,
+  storage: {
+    name: ERC20_STORAGE_NAME,
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
@@ -180,8 +180,8 @@ const noncesTrait: ImplementedTrait = {
   interface: {
     name: 'INonces',
   },
-  implementation: {
-    storageName: NONCES_STORAGE_NAME,
+  storage: {
+    name: NONCES_STORAGE_NAME,
     type: 'Nonces',
   },
   modulePath: 'openzeppelin_stylus::utils::nonces',
@@ -200,8 +200,8 @@ const permitTrait: ImplementedTrait = {
     name: 'IErc20Permit',
     associatedError: true,
   },
-  implementation: {
-    storageName: PERMIT_STORAGE_NAME,
+  storage: {
+    name: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
     genericType: 'Eip712',
   },
@@ -260,8 +260,8 @@ const flashMintTrait: ImplementedTrait = {
     name: 'IErc3156FlashLender',
     associatedError: true,
   },
-  implementation: {
-    storageName: FLASH_MINT_STORAGE_NAME,
+  storage: {
+    name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
