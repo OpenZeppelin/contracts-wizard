@@ -3,12 +3,15 @@
 ## Unreleased
 
 - Add AccessControlWithDelay. ([#506](https://github.com/OpenZeppelin/contracts-wizard/pull/506))
-- Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.1. ([#533](https://github.com/OpenZeppelin/contracts-wizard/pull/533))
   - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.0. ([#491](https://github.com/OpenZeppelin/contracts-wizard/pull/491))
-  
+
+## 1.1.0 (2025-04-01)
+
+- Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
+
 ## 1.0.0 (2025-02-25)
 
 - **Breaking changes**:
