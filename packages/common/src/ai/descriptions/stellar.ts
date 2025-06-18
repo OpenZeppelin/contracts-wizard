@@ -1,3 +1,6 @@
+// IMPORTANT: This file must not have any imports since it is used in both Node and Deno environments,
+// which have different requirements for file extensions in import statements.
+
 export const stellarPrompts = {
   Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20.',
   NonFungible:

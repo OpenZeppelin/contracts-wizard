@@ -1,3 +1,6 @@
+// IMPORTANT: This file must not have any imports since it is used in both Node and Deno environments,
+// which have different requirements for file extensions in import statements.
+
 export const commonDescriptions = {
   name: 'The name of the contract',
   symbol: 'The short symbol for the token',

@@ -1,3 +1,6 @@
+// IMPORTANT: This file must not have any imports since it is used in both Node and Deno environments,
+// which have different requirements for file extensions in import statements.
+
 export const cairoPrompts = {
   ERC20: 'Make a fungible token per the ERC-20 standard.',
   ERC721: 'Make a non-fungible token per the ERC-721 standard.',
