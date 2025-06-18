@@ -19,7 +19,8 @@
     "packages": [
       "packages/common",
       "packages/core/*",
-      "packages/mcp"
+      "packages/mcp",
+      "packages/ui"
     ],
     "nohoist": [
       "**/@types/*",
