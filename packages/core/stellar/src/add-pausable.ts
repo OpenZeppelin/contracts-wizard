@@ -7,6 +7,7 @@ import { defineFunctions } from './utils/define-functions';
 export function addPausable(c: ContractBuilder, access: Access) {
   c.addUseClause('stellar_pausable', 'self', { alias: 'pausable' });
   c.addUseClause('stellar_pausable', 'Pausable');
+  c.addUseClause('stellar_default_impl_macro', 'default_impl');
 
   const pausableTrait = {
     traitName: 'Pausable',
@@ -19,8 +20,8 @@ export function addPausable(c: ContractBuilder, access: Access) {
   c.addTraitFunction(pausableTrait, functions.pause);
   c.addTraitFunction(pausableTrait, functions.unpause);
 
-  requireAccessControl(c, pausableTrait, functions.pause, access, 'caller');
-  requireAccessControl(c, pausableTrait, functions.unpause, access, 'caller');
+  requireAccessControl(c, pausableTrait, functions.pause, access);
+  requireAccessControl(c, pausableTrait, functions.unpause, access);
 }
 
 const functions = defineFunctions({

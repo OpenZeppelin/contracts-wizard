@@ -8,7 +8,7 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
   const functions = defineFunctions({
     _require_auth: {
       args: [getSelfArg(), { name: 'operator', type: '&Address' }],
-      code: ['operator.require_auth();'],
+      code: [],
     },
   });
 
@@ -26,5 +26,5 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
 
   c.addTraitFunction(upgradeableTrait, functions._require_auth);
 
-  requireAccessControl(c, upgradeableTrait, functions._require_auth, access, '*operator');
+  requireAccessControl(c, upgradeableTrait, functions._require_auth, access, false);
 }

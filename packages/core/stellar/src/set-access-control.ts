@@ -15,11 +15,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
     case 'ownable': {
       if (!c.ownable) {
         c.ownable = true;
-        c.addUseClause('soroban_sdk', 'symbol_short');
-        c.addUseClause('soroban_sdk', 'Symbol');
-        c.addVariable({ name: 'OWNER', type: 'Symbol', value: `symbol_short!("OWNER")` });
         c.addConstructorArgument({ name: 'owner', type: 'Address' });
-        c.addConstructorCode('e.storage().instance().set(&OWNER, &owner);');
+        c.addConstructorCode('ownable::set_owner(e, &owner);');
       }
       break;
     }
@@ -40,7 +37,7 @@ export function requireAccessControl(
   trait: BaseTraitImplBlock | undefined,
   fn: BaseFunction,
   access: Access,
-  caller?: string,
+  useMacro: boolean = true,
 ): void {
   if (access === false) {
     access = DEFAULT_ACCESS_CONTROL;
@@ -50,18 +47,23 @@ export function requireAccessControl(
   switch (access) {
     case 'ownable': {
       c.addUseClause('soroban_sdk', 'Address');
-      const getOwner = 'let owner: Address = e.storage().instance().get(&OWNER).expect("owner should be set");';
-      if (caller) {
-        c.addUseClause('soroban_sdk', 'panic_with_error');
-        c.addError('Unauthorized', 1); // TODO: Ensure there are no conflicts in error codes
-        c.addFunctionCodeBefore(
-          fn,
-          [getOwner, `if owner != ${caller} {`, `    panic_with_error!(e, ${c.name}Error::Unauthorized)`, '}'],
-          trait,
-        );
+      c.addUseClause('stellar_ownable', 'self', { alias: 'ownable' });
+      c.addUseClause('stellar_ownable', 'Ownable');
+      c.addUseClause('stellar_ownable_macro', 'only_owner');
+
+      const ownableTrait = {
+        traitName: 'Ownable',
+        structName: c.name,
+        tags: ['default_impl', 'contractimpl'],
+        section: 'Utils',
+      };
+      c.addTraitImplBlock(ownableTrait);
+      if (useMacro) {
+        c.addFunctionTag(fn, 'only_owner', trait);
       } else {
-        c.addFunctionCodeBefore(fn, [getOwner, 'owner.require_auth();'], trait);
+        c.addFunctionCodeBefore(fn, [`ownable::enforce_owner_auth(e);`], trait);
       }
+
       break;
     }
     default: {
