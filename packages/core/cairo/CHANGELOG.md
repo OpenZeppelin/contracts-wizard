@@ -5,7 +5,7 @@
 - Add AccessControlWithDelay. ([#506](https://github.com/OpenZeppelin/contracts-wizard/pull/506))
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v2.0.0.
+  - Use OpenZeppelin Contracts for Cairo v2.0.0. ([#574](https://github.com/OpenZeppelin/contracts-wizard/pull/574))
   - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.1. ([#533](https://github.com/OpenZeppelin/contracts-wizard/pull/533))
   - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.0. ([#491](https://github.com/OpenZeppelin/contracts-wizard/pull/491))
 
