@@ -1,4 +1,4 @@
-import type { Contract } from './contract';
+import type { ContractBuilder } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
@@ -39,7 +39,7 @@ export interface FungibleOptions extends CommonContractOptions {
   mintable?: boolean;
 }
 
-function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
+export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
@@ -51,7 +51,7 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   };
 }
 
-export function buildFungible(opts: FungibleOptions): Contract {
+export function buildFungible(opts: FungibleOptions): ContractBuilder {
   const c = new ContractBuilder(opts.name);
 
   const allOpts = withDefaults(opts);
@@ -215,7 +215,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
   }
 }
 
-const functions = defineFunctions({
+export const functions = defineFunctions({
   // Token Functions
   total_supply: {
     args: [getSelfArg()],

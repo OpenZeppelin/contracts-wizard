@@ -1,6 +1,8 @@
 import type { CommonContractOptions } from './common-options';
 import type { FungibleOptions } from './fungible';
 import type { NonFungibleOptions } from './non-fungible';
+import type { StablecoinOptions } from './stablecoin';
+import { printStablecoin, defaults as stablecoinDefaults } from './stablecoin';
 import { printFungible, defaults as fungibledefaults } from './fungible';
 import { printNonFungible, defaults as nonFungibledefaults } from './non-fungible';
 
@@ -26,6 +28,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
 
 export type Fungible = WizardContractAPI<FungibleOptions>; // TODO add AccessControlAPI<FungibleOptions> when access control is implemented, if useful
 export type NonFungible = WizardContractAPI<NonFungibleOptions>;
+export type Stablecoin = WizardContractAPI<StablecoinOptions>;
 
 export const fungible: Fungible = {
   print: printFungible,
@@ -35,4 +38,9 @@ export const fungible: Fungible = {
 export const nonFungible: NonFungible = {
   print: printNonFungible,
   defaults: nonFungibledefaults,
+};
+
+export const stablecoin: Stablecoin = {
+  print: printStablecoin,
+  defaults: stablecoinDefaults,
 };
