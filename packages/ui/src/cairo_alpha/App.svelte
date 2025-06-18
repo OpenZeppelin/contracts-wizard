@@ -94,8 +94,8 @@
           throw e;
         }
       }
+      allowRendering();
     }
-    allowRendering();
   }
 
   $: code = printContract(contract);

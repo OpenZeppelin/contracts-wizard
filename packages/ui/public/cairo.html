@@ -52,7 +52,7 @@
   </div>
   <div class="nav">
     <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
-    <div class="switch switch-cairo active with-version">
+    <div class="switch switch-cairo active with-version" id="cairo-switch">
       <img src="/icons/cairo.svg" alt="cairo">
       Cairo
       <select class="switch switch-cairo active version" id="version-dropdown">
@@ -108,6 +108,16 @@
     }
 
     function onStartup() {
+      // Hide version dropdown if both versions are the same
+      if (contractsVersions.cairo === contractsVersions.cairoAlpha) {
+        dropdown.style.display = 'none';
+
+        // Revert Cairo switch to non-versioned style
+        const cairoSwitch = document.getElementById('cairo-switch');
+        cairoSwitch.classList.remove('with-version');
+
+        return;
+      }
       populateLabels();
       dropdown.addEventListener('change', onchangeVersion);
       preselectFromParam();

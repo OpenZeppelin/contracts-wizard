@@ -114,6 +114,7 @@ body {
   font-size: smaller;
   font-weight: 400;
   padding: 0.25rem 0rem;
+  min-width: 70px;
   cursor: pointer;
 }
 
