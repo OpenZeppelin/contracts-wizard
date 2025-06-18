@@ -19,7 +19,6 @@
   "scripts": {
     "prepare": "tsc",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector@0.14.0 node dist/index.js",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch"
