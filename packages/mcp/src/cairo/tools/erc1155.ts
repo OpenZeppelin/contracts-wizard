@@ -10,18 +10,7 @@ export function registerCairoERC1155(server: McpServer): RegisteredTool {
     'cairo-erc1155',
     makeDetailedPrompt(cairoPrompts.ERC1155),
     erc1155Schema,
-    async ({
-      name,
-      baseUri,
-      burnable,
-      pausable,
-      mintable,
-      updatableUri,
-      royaltyInfo,
-      access,
-      upgradeable,
-      info,
-    }) => {
+    async ({ name, baseUri, burnable, pausable, mintable, updatableUri, royaltyInfo, access, upgradeable, info }) => {
       const opts: KindedOptions['ERC1155'] = {
         kind: 'ERC1155',
         name,

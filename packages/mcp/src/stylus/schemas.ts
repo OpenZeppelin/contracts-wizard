@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { commonDescriptions, stylusCommonDescriptions, stylusERC20Descriptions, stylusERC721Descriptions, stylusERC1155Descriptions } from '@openzeppelin/wizard-common';
+import {
+  commonDescriptions,
+  stylusCommonDescriptions,
+  stylusERC20Descriptions,
+  stylusERC721Descriptions,
+  stylusERC1155Descriptions,
+} from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
   info: z

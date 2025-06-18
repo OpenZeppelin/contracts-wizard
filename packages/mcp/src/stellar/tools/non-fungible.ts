@@ -10,18 +10,7 @@ export function registerStellarNonFungible(server: McpServer): RegisteredTool {
     'stellar-non-fungible',
     makeDetailedPrompt(stellarPrompts.NonFungible),
     nonFungibleSchema,
-    async ({
-      name,
-      symbol,
-      burnable,
-      enumerable,
-      consecutive,
-      pausable,
-      mintable,
-      sequential,
-      upgradeable,
-      info,
-    }) => {
+    async ({ name, symbol, burnable, enumerable, consecutive, pausable, mintable, sequential, upgradeable, info }) => {
       const opts: NonFungibleOptions = {
         name,
         symbol,

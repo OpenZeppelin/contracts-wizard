@@ -10,18 +10,7 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
     'solidity-erc1155',
     makeDetailedPrompt(solidityPrompts.ERC1155),
     erc1155Schema,
-    async ({
-      name,
-      uri,
-      burnable,
-      pausable,
-      mintable,
-      supply,
-      updatableUri,
-      access,
-      upgradeable,
-      info,
-    }) => {
+    async ({ name, uri, burnable, pausable, mintable, supply, updatableUri, access, upgradeable, info }) => {
       const opts: ERC1155Options = {
         name,
         uri,

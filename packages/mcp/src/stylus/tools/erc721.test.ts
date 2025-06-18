@@ -1,45 +1,47 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
-import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerStylusERC721 } from './erc721';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
-import { erc721, ERC721Options } from '@openzeppelin/wizard-stylus';
+import type { ERC721Options } from '@openzeppelin/wizard-stylus';
+import { erc721 } from '@openzeppelin/wizard-stylus';
 import { erc721Schema } from '../schemas';
 import { z } from 'zod';
 
 interface Context {
-    tool: RegisteredTool;
-    schema: z.ZodObject<typeof erc721Schema>;
+  tool: RegisteredTool;
+  schema: z.ZodObject<typeof erc721Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
-test.before((t) => {
-    t.context.tool = registerStylusERC721(new McpServer(testMcpInfo));
-    t.context.schema = z.object(erc721Schema);
+test.before(t => {
+  t.context.tool = registerStylusERC721(new McpServer(testMcpInfo));
+  t.context.schema = z.object(erc721Schema);
 });
 
 function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
-    const _: Required<Omit<ERC721Options, 'access'>> = params;
-    t.pass();
+  const _: Required<Omit<ERC721Options, 'access'>> = params;
+  t.pass();
 }
 
-test('basic', async (t) => {
-    const params: z.infer<typeof t.context.schema> = {
-        name: 'TestToken',
-    };
-    await assertAPIEquivalence(t, params, erc721.print);
+test('basic', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+  };
+  await assertAPIEquivalence(t, params, erc721.print);
 });
 
-test('all', async (t) => {
-    const params: Required<z.infer<typeof t.context.schema>> = {
-        name: 'TestToken',
-        burnable: true,
-        enumerable: true,
-        info: {
-            license: 'MIT',
-        },
-    };
-    assertHasAllSupportedFields(t, params);
-    await assertAPIEquivalence(t, params, erc721.print);
+test('all', async t => {
+  const params: Required<z.infer<typeof t.context.schema>> = {
+    name: 'TestToken',
+    burnable: true,
+    enumerable: true,
+    info: {
+      license: 'MIT',
+    },
+  };
+  assertHasAllSupportedFields(t, params);
+  await assertAPIEquivalence(t, params, erc721.print);
 });

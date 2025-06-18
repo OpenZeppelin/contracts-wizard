@@ -12,7 +12,10 @@ export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../.
 //Stellar
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
 import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
-export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access' | 'upgradeable'> & { access?: false; upgradeable?: false };
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access' | 'upgradeable'> & {
+  access?: false;
+  upgradeable?: false;
+};
 // Stylus
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';

@@ -10,12 +10,7 @@ export function registerStylusERC1155(server: McpServer): RegisteredTool {
     'stylus-erc1155',
     makeDetailedPrompt(stylusPrompts.ERC1155),
     erc1155Schema,
-    async ({
-      name,
-      burnable,
-      supply,
-      info,
-    }) => {
+    async ({ name, burnable, supply, info }) => {
       const opts: ERC1155Options = {
         name,
         burnable,

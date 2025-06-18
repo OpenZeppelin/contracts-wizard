@@ -33,29 +33,25 @@ export const solidityERC20AIFunctionDefinition = {
       },
       permit: {
         type: 'boolean',
-        description:
-          solidityERC20Descriptions.permit,
+        description: solidityERC20Descriptions.permit,
       },
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false, true] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description:
-          solidityERC20Descriptions.votes,
+        description: solidityERC20Descriptions.votes,
       },
       flashmint: {
         type: 'boolean',
-        description:
-          solidityERC20Descriptions.flashmint,
+        description: solidityERC20Descriptions.flashmint,
       },
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['custom', 'superchain'] },
         ],
-        description:
-          solidityERC20Descriptions.crossChainBridging,
+        description: solidityERC20Descriptions.crossChainBridging,
       },
       premintChainId: {
         type: 'string',
@@ -63,8 +59,7 @@ export const solidityERC20AIFunctionDefinition = {
       },
       callback: {
         type: 'boolean',
-        description:
-          solidityERC20Descriptions.callback,
+        description: solidityERC20Descriptions.callback,
       },
     },
     required: ['name', 'symbol'],
@@ -91,8 +86,7 @@ export const solidityERC721AIFunctionDefinition = {
       baseUri: { type: 'string', description: solidityERC721Descriptions.baseUri },
       enumerable: {
         type: 'boolean',
-        description:
-          solidityERC721Descriptions.enumerable,
+        description: solidityERC721Descriptions.enumerable,
       },
       uriStorage: {
         type: 'boolean',
@@ -107,8 +101,7 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description:
-          solidityERC721Descriptions.votes,
+        description: solidityERC721Descriptions.votes,
       },
     },
     required: ['name', 'symbol'],
@@ -133,8 +126,7 @@ export const solidityERC1155AIFunctionDefinition = {
       ]),
       uri: {
         type: 'string',
-        description:
-          solidityERC1155Descriptions.uri,
+        description: solidityERC1155Descriptions.uri,
       },
       supply: {
         type: 'boolean',
@@ -159,16 +151,14 @@ export const solidityStablecoinAIFunctionDefinition = {
       ...solidityERC20AIFunctionDefinition.parameters.properties,
       custodian: {
         type: 'boolean',
-        description:
-          solidityStablecoinDescriptions.custodian,
+        description: solidityStablecoinDescriptions.custodian,
       },
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
-        description:
-          solidityStablecoinDescriptions.limitations,
+        description: solidityStablecoinDescriptions.limitations,
       },
       upgradeable: {
         type: 'boolean',
@@ -199,18 +189,15 @@ export const solidityAccountAIFunctionDefinition = {
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ERC1271', 'ERC7739'] },
         ],
-        description:
-          solidityAccountDescriptions.signatureValidation,
+        description: solidityAccountDescriptions.signatureValidation,
       },
       ERC721Holder: {
         type: 'boolean',
-        description:
-          solidityAccountDescriptions.ERC721Holder,
+        description: solidityAccountDescriptions.ERC721Holder,
       },
       ERC1155Holder: {
         type: 'boolean',
-        description:
-          solidityAccountDescriptions.ERC1155Holder,
+        description: solidityAccountDescriptions.ERC1155Holder,
       },
       signer: {
         anyOf: [
@@ -221,16 +208,14 @@ export const solidityAccountAIFunctionDefinition = {
       },
       batchedExecution: {
         type: 'boolean',
-        description:
-          solidityAccountDescriptions.batchedExecution,
+        description: solidityAccountDescriptions.batchedExecution,
       },
       ERC7579Modules: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
         ],
-        description:
-          solidityAccountDescriptions.ERC7579Modules,
+        description: solidityAccountDescriptions.ERC7579Modules,
       },
       upgradeable: {
         type: 'boolean',
@@ -316,7 +301,8 @@ export const solidityGovernorAIFunctionDefinition = {
       access: {
         type: 'boolean',
         enum: [false],
-        description: 'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
+        description:
+          'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
       },
     },
     required: ['name', 'delay', 'period'],

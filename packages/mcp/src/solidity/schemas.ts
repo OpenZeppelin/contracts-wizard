@@ -16,32 +16,19 @@ export const commonSchema = {
     .or(z.literal('roles'))
     .or(z.literal('managed'))
     .optional()
-    .describe(
-      solidityCommonDescriptions.access
-    ),
+    .describe(solidityCommonDescriptions.access),
   upgradeable: z
     .literal('transparent')
     .or(z.literal('uups'))
     .optional()
-    .describe(
-      solidityCommonDescriptions.upgradeable
-    ),
+    .describe(solidityCommonDescriptions.upgradeable),
   info: z
     .object({
-      securityContact: z
-        .string()
-        .optional()
-        .describe(
-          solidityCommonDescriptions.securityContact
-        ),
-      license: z.string().optional().describe(
-        solidityCommonDescriptions.license
-      ),
+      securityContact: z.string().optional().describe(solidityCommonDescriptions.securityContact),
+      license: z.string().optional().describe(solidityCommonDescriptions.license),
     })
     .optional()
-    .describe(
-      solidityCommonDescriptions.info
-    ),
+    .describe(solidityCommonDescriptions.info),
 };
 
 export const erc20Schema = {
@@ -54,11 +41,7 @@ export const erc20Schema = {
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   callback: z.boolean().optional().describe(solidityERC20Descriptions.callback),
   permit: z.boolean().optional().describe(solidityERC20Descriptions.permit),
-  votes: z
-    .literal('blocknumber')
-    .or(z.literal('timestamp'))
-    .optional()
-    .describe(solidityERC20Descriptions.votes),
+  votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC20Descriptions.votes),
   flashmint: z.boolean().optional().describe(solidityERC20Descriptions.flashmint),
   crossChainBridging: z
     .literal('custom')
@@ -78,11 +61,7 @@ export const erc721Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
-  votes: z
-    .literal('blocknumber')
-    .or(z.literal('timestamp'))
-    .optional()
-    .describe(solidityERC721Descriptions.votes),
+  votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC721Descriptions.votes),
   ...commonSchema,
 };
 
@@ -97,7 +76,7 @@ export const erc1155Schema = {
   ...commonSchema,
 };
 
-const { upgradeable, ...erc20SchemaOmitUpgradeable } = erc20Schema;
+const { upgradeable: _, ...erc20SchemaOmitUpgradeable } = erc20Schema;
 
 export const stablecoinSchema = {
   ...erc20SchemaOmitUpgradeable,
@@ -107,10 +86,7 @@ export const stablecoinSchema = {
     .or(z.literal('blocklist'))
     .optional()
     .describe(solidityStablecoinDescriptions.limitations),
-  custodian: z
-    .boolean()
-    .optional()
-    .describe(solidityStablecoinDescriptions.custodian),
+  custodian: z.boolean().optional().describe(solidityStablecoinDescriptions.custodian),
 };
 
 export const rwaSchema = stablecoinSchema;
@@ -123,14 +99,8 @@ export const accountSchema = {
     .or(z.literal('ERC7739'))
     .optional()
     .describe(solidityAccountDescriptions.signatureValidation),
-  ERC721Holder: z
-    .boolean()
-    .optional()
-    .describe(solidityAccountDescriptions.ERC721Holder),
-  ERC1155Holder: z
-    .boolean()
-    .optional()
-    .describe(solidityAccountDescriptions.ERC1155Holder),
+  ERC721Holder: z.boolean().optional().describe(solidityAccountDescriptions.ERC721Holder),
+  ERC1155Holder: z.boolean().optional().describe(solidityAccountDescriptions.ERC1155Holder),
   signer: z
     .literal(false)
     .or(z.literal('ERC7702'))
@@ -141,10 +111,7 @@ export const accountSchema = {
     .or(z.literal('MultisigWeighted'))
     .optional()
     .describe(solidityAccountDescriptions.signer),
-  batchedExecution: z
-    .boolean()
-    .optional()
-    .describe(solidityAccountDescriptions.batchedExecution),
+  batchedExecution: z.boolean().optional().describe(solidityAccountDescriptions.batchedExecution),
   ERC7579Modules: z
     .literal(false)
     .or(z.literal('AccountERC7579'))
@@ -152,17 +119,13 @@ export const accountSchema = {
     .optional()
     .describe(solidityAccountDescriptions.ERC7579Modules),
   info: commonSchema.info,
-}
+};
 
 export const governorSchema = {
   name: z.string().describe(commonDescriptions.name),
   delay: z.string().describe(solidityGovernorDescriptions.delay),
   period: z.string().describe(solidityGovernorDescriptions.period),
-  votes: z
-    .literal('erc20votes')
-    .or(z.literal('erc721votes'))
-    .optional()
-    .describe(solidityGovernorDescriptions.votes),
+  votes: z.literal('erc20votes').or(z.literal('erc721votes')).optional().describe(solidityGovernorDescriptions.votes),
   clockMode: z
     .literal('blocknumber')
     .or(z.literal('timestamp'))
@@ -174,45 +137,24 @@ export const governorSchema = {
     .or(z.literal('compound'))
     .optional()
     .describe(solidityGovernorDescriptions.timelock),
-  blockTime: z
-    .number()
-    .optional()
-    .describe(solidityGovernorDescriptions.blockTime),
-  decimals: z
-    .number()
-    .optional()
-    .describe(solidityGovernorDescriptions.decimals),
-  proposalThreshold: z
-    .string()
-    .optional()
-    .describe(solidityGovernorDescriptions.proposalThreshold),
+  blockTime: z.number().optional().describe(solidityGovernorDescriptions.blockTime),
+  decimals: z.number().optional().describe(solidityGovernorDescriptions.decimals),
+  proposalThreshold: z.string().optional().describe(solidityGovernorDescriptions.proposalThreshold),
   quorumMode: z
     .literal('percent')
     .or(z.literal('absolute'))
     .optional()
     .describe(solidityGovernorDescriptions.quorumMode),
-  quorumPercent: z
-    .number()
-    .optional()
-    .describe(solidityGovernorDescriptions.quorumPercent),
-  quorumAbsolute: z
-    .string()
-    .optional()
-    .describe(solidityGovernorDescriptions.quorumAbsolute),
-  storage: z
-    .boolean()
-    .optional()
-    .describe(solidityGovernorDescriptions.storage),
-  settings: z
-    .boolean()
-    .optional()
-    .describe(solidityGovernorDescriptions.settings),
+  quorumPercent: z.number().optional().describe(solidityGovernorDescriptions.quorumPercent),
+  quorumAbsolute: z.string().optional().describe(solidityGovernorDescriptions.quorumAbsolute),
+  storage: z.boolean().optional().describe(solidityGovernorDescriptions.storage),
+  settings: z.boolean().optional().describe(solidityGovernorDescriptions.settings),
   upgradeable: commonSchema.upgradeable,
   info: commonSchema.info,
-}
+};
 
 export const customSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   ...commonSchema,
-}
+};

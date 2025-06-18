@@ -10,13 +10,7 @@ export function registerCairoCustom(server: McpServer): RegisteredTool {
     'cairo-custom',
     makeDetailedPrompt(cairoPrompts.Custom),
     customSchema,
-    async ({
-      name,
-      pausable,
-      access,
-      upgradeable,
-      info,
-    }) => {
+    async ({ name, pausable, access, upgradeable, info }) => {
       const opts: KindedOptions['Custom'] = {
         kind: 'Custom',
         name,

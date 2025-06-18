@@ -1,7 +1,12 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stylusCommonFunctionDescription } from './stylus-shared.ts';
-import { stylusPrompts, stylusCommonDescriptions, stylusERC20Descriptions, stylusERC721Descriptions, stylusERC1155Descriptions } from '../../../../common/src/ai/descriptions/stylus.ts';
+import {
+  stylusPrompts,
+  stylusERC20Descriptions,
+  stylusERC721Descriptions,
+  stylusERC1155Descriptions,
+} from '../../../../common/src/ai/descriptions/stylus.ts';
 
 export const stylusERC20AIFunctionDefinition = {
   name: 'ERC20',

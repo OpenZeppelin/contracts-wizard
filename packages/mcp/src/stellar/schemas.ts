@@ -7,12 +7,7 @@ import {
 } from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
-  upgradeable: z
-    .boolean()
-    .optional()
-    .describe(
-      stellarCommonDescriptions.upgradeable
-    ),
+  upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({
       license: z.string().optional().describe(stellarCommonDescriptions.license),

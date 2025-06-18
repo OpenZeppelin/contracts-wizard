@@ -13,19 +13,8 @@ import {
 } from '@openzeppelin/wizard-common';
 
 export const commonSchema = {
-  access: z
-    .literal('ownable')
-    .or(z.literal('roles'))
-    .optional()
-    .describe(
-      cairoCommonDescriptions.access
-    ),
-  upgradeable: z
-    .boolean()
-    .optional()
-    .describe(
-      cairoCommonDescriptions.upgradeable
-    ),
+  access: z.literal('ownable').or(z.literal('roles')).optional().describe(cairoCommonDescriptions.access),
+  upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
   info: z
     .object({
       license: z.string().optional().describe(cairoCommonDescriptions.license),
@@ -41,10 +30,7 @@ export const erc20Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(cairoERC20Descriptions.premint),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
-  votes: z
-    .boolean()
-    .optional()
-    .describe(cairoERC20Descriptions.votes),
+  votes: z.boolean().optional().describe(cairoERC20Descriptions.votes),
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
   ...commonSchema,
@@ -58,10 +44,7 @@ export const erc721Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   enumerable: z.boolean().optional().describe(cairoERC721Descriptions.enumerable),
-  votes: z
-    .boolean()
-    .optional()
-    .describe(cairoERC721Descriptions.votes),
+  votes: z.boolean().optional().describe(cairoERC721Descriptions.votes),
   royaltyInfo: z
     .object({
       enabled: z.boolean().describe(cairoRoyaltyInfoDescriptions.enabled),
@@ -117,7 +100,10 @@ export const governorSchema = {
   period: z.string().describe(cairoGovernorDescriptions.period),
   votes: z.enum(['erc20votes', 'erc721votes']).optional().describe(cairoGovernorDescriptions.votes),
   clockMode: z.enum(['timestamp']).optional().describe(cairoGovernorDescriptions.clockMode),
-  timelock: z.union([z.literal(false), z.literal('openzeppelin')]).optional().describe(cairoGovernorDescriptions.timelock),
+  timelock: z
+    .union([z.literal(false), z.literal('openzeppelin')])
+    .optional()
+    .describe(cairoGovernorDescriptions.timelock),
   decimals: z.number().optional().describe(cairoGovernorDescriptions.decimals),
   proposalThreshold: z.string().optional().describe(cairoGovernorDescriptions.proposalThreshold),
   quorumMode: z.enum(['percent', 'absolute']).optional().describe(cairoGovernorDescriptions.quorumMode),
@@ -143,4 +129,4 @@ export const customSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   ...commonSchema,
-}
+};

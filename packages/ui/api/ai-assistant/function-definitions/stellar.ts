@@ -1,7 +1,12 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
-import { stellarPrompts, stellarCommonDescriptions, stellarFungibleDescriptions, stellarNonFungibleDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
+import {
+  stellarPrompts,
+  stellarCommonDescriptions,
+  stellarFungibleDescriptions,
+  stellarNonFungibleDescriptions,
+} from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',

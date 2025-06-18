@@ -10,14 +10,7 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
     'cairo-vesting',
     makeDetailedPrompt(cairoPrompts.Vesting),
     vestingSchema,
-    async ({
-      name,
-      startDate,
-      duration,
-      cliffDuration,
-      schedule,
-      info,
-    }) => {
+    async ({ name, startDate, duration, cliffDuration, schedule, info }) => {
       const opts: KindedOptions['Vesting'] = {
         kind: 'Vesting',
         name,

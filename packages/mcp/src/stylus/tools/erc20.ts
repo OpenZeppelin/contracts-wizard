@@ -10,13 +10,7 @@ export function registerStylusERC20(server: McpServer): RegisteredTool {
     'stylus-erc20',
     makeDetailedPrompt(stylusPrompts.ERC20),
     erc20Schema,
-    async ({
-      name,
-      burnable,
-      permit,
-      flashmint,
-      info,
-    }) => {
+    async ({ name, burnable, permit, flashmint, info }) => {
       const opts: ERC20Options = {
         name,
         burnable,
