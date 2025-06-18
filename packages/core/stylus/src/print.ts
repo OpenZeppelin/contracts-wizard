@@ -172,7 +172,7 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Impleme
   const traitNames = implementedTraits
     .map(trait => {
       let name = trait.interface;
-      if (trait.hasError) {
+      if (trait.errors) {
         name = `${name}<Error = Vec<u8>>`
       }
       return name;
@@ -194,7 +194,7 @@ function printImplementedTraits(contractName: string, implementedTraits: Impleme
     return spaceBetween(...implementedTraits
       .map((impl) =>  {
         let content: Lines[] = []
-        if (impl.hasError) {
+        if (impl.errors) {
           content.push('type Error = Vec<u8>;', '')
         }
         const fns = printTraitFunctions(impl);

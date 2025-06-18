@@ -118,7 +118,14 @@ const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
 const erc20Trait: ImplementedTrait = {
   interface: 'IErc20',
-  hasError: true,
+  errors: [
+    { variant: 'InsufficientBalance', associated: 'ERC20InsufficientBalance' },
+    { variant: 'InvalidSender', associated: 'ERC20InvalidSender' },
+    { variant: 'InvalidReceiver', associated: 'ERC20InvalidReceiver' },
+    { variant: 'InsufficientAllowance', associated: 'ERC20InsufficientAllowance' },
+    { variant: 'InvalidSpender', associated: 'ERC20InvalidSpender' },
+    { variant: 'InvalidApprover', associated: 'ERC20InvalidApprover' },
+  ],
   storage: {
     name: ERC20_STORAGE_NAME,
     type: 'Erc20',
@@ -193,7 +200,12 @@ const noncesTrait: ImplementedTrait = {
 
 const permitTrait: ImplementedTrait = {
   interface: 'IErc20Permit',
-  hasError: true,
+  errors: [
+    { variant: 'ExpiredSignature', associated: 'ERC2612ExpiredSignature' },
+    { variant: 'InvalidSigner', associated: 'ERC2612InvalidSigner' },
+    { variant: 'InvalidSignature', associated: 'ECDSAInvalidSignature' },
+    { variant: 'InvalidSignatureS', associated: 'ECDSAInvalidSignatureS' },
+  ],
   storage: {
     name: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
@@ -229,7 +241,7 @@ const permitTrait: ImplementedTrait = {
 
 const burnableTrait: ImplementedTrait = {
   interface: 'IErc20Burnable',
-  hasError: true,
+  errors: [],
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
       {
@@ -249,7 +261,11 @@ const burnableTrait: ImplementedTrait = {
 
 const flashMintTrait: ImplementedTrait = {
   interface: 'IErc3156FlashLender',
-  hasError: true,
+  errors: [
+    { variant: 'UnsupportedToken', associated: 'ERC3156UnsupportedToken' },
+    { variant: 'ExceededMaxLoan', associated: 'ERC3156ExceededMaxLoan' },
+    { variant: 'ERC3156InvalidReceiver', associated: 'ERC3156InvalidReceiver' },
+  ],
   storage: {
     name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',

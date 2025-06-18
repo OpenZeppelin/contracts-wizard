@@ -71,7 +71,7 @@ test('contract with parent and associated error', t => {
       },
     ],
     interface: 'IParent',
-    hasError: true,
+    errors: [{ variant: 'SomeError', associated: 'Associated' }],
   };
   Foo.addImplementedTrait(trait);
   t.snapshot(printContract(Foo));

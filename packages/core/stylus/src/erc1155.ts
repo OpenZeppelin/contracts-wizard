@@ -109,7 +109,16 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
 function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
   let erc1155: ImplementedTrait = {
     interface: 'IErc1155',
-    hasError: true,
+    errors: [
+      { variant: 'InsufficientBalance', associated: 'ERC1155InsufficientBalance' },
+      { variant: 'InvalidSender', associated: 'ERC1155InvalidSender' },
+      { variant: 'InvalidReceiver', associated: 'ERC1155InvalidReceiver' },
+      { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
+      { variant: 'MissingApprovalForAll', associated: 'ERC1155MissingApprovalForAll' },
+      { variant: 'InvalidApprover', associated: 'ERC1155InvalidApprover' },
+      { variant: 'InvalidOperator', associated: 'ERC1155InvalidOperator' },
+      { variant: 'InvalidArrayLength', associated: 'ERC1155InvalidArrayLength' },
+    ],
     modulePath: 'openzeppelin_stylus::token::erc1155',
     requiredImports: [
       { containerPath: 'alloc::vec', name: 'Vec' },
@@ -215,7 +224,7 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
 function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
   return {
     interface: 'IErc1155Burnable',
-    hasError: true,
+    errors: [],
     modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
     functions: [
       {

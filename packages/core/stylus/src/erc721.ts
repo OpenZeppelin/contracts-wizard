@@ -138,7 +138,17 @@ const ENUMERABLE_STORAGE_NAME = 'enumerable';
 
 const erc721Trait: ImplementedTrait = {
   interface: 'IErc721',
-  hasError: true,
+  errors: [
+    { variant: 'InvalidOwner', associated: 'ERC721InvalidOwner' },
+    { variant: 'NonexistentToken', associated: 'ERC721NonexistentToken' },
+    { variant: 'IncorrectOwner', associated: 'ERC721IncorrectOwner' },
+    { variant: 'InvalidSender', associated: 'ERC721InvalidSender' },
+    { variant: 'InvalidReceiver', associated: 'ERC721InvalidReceiver' },
+    { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
+    { variant: 'InsufficientApproval', associated: 'ERC721InsufficientApproval' },
+    { variant: 'InvalidApprover', associated: 'ERC721InvalidApprover' },
+    { variant: 'InvalidOperator', associated: 'ERC721InvalidOperator' },
+  ],
   storage: {
     name: ERC721_STORAGE_NAME,
     type: 'Erc721',
@@ -264,7 +274,7 @@ const erc165Trait: ImplementedTrait = {
 
 const burnableTrait: ImplementedTrait = {
   interface: 'IErc721Burnable',
-  hasError: true,
+  errors: [],
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
   priority: 3,
   functions: [
@@ -279,7 +289,10 @@ const burnableTrait: ImplementedTrait = {
 
 const enumerableTrait: ImplementedTrait = {
   interface: 'IErc721Enumerable',
-  hasError: true,
+  errors: [
+    { variant: 'OutOfBoundsIndex', associated: 'ERC721OutOfBoundsIndex' },
+    { variant: 'EnumerableForbiddenBatchMint', associated: 'ERC721EnumerableForbiddenBatchMint' },
+  ],
   storage: {
     name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',

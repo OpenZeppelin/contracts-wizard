@@ -5,6 +5,8 @@ type Name = {
   stringLiteral: string;
 };
 
+type Interface = string;
+
 export interface Contract {
   license: string;
   name: Name;
@@ -13,6 +15,7 @@ export interface Contract {
   constants: Variable[];
   eip712Needed?: boolean;
   functions: ContractFunction[];
+  error?: string | Interface[]
 }
 
 export interface Implementation {
@@ -30,8 +33,8 @@ export interface UseClause {
 
 export interface ImplementedTrait {
   storage?: Implementation;
-  interface: string;
-  hasError?: boolean;
+  interface: Interface;
+  errors?: { variant: string, associated: string }[];
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -80,10 +83,10 @@ export class ContractBuilder implements Contract {
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
-  private errorsMap: Map<string, Error> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
   private functionsArr: ContractFunction[] = [];
-
+  
+  error?: string | Interface[];
   eip712Needed?: boolean;
 
   constructor(name: string) {
@@ -100,10 +103,6 @@ export class ContractBuilder implements Contract {
 
   get useClauses(): UseClause[] {
     return [...this.useClausesMap.values()];
-  }
-
-  get errors(): Error[] {
-    return [...this.errorsMap.values()];
   }
 
   get constants(): Variable[] {
@@ -140,6 +139,7 @@ export class ContractBuilder implements Contract {
       for (const useClause of (t.requiredImports ?? [])) {
         this.addUseClause(useClause.containerPath, useClause.name, { ...useClause });
       }
+      
       return t;
     }
   }
