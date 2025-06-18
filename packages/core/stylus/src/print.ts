@@ -136,7 +136,7 @@ function sortImpls(contract: Contract): ImplementedTrait[] {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
     }
-    return a.interface.name.localeCompare(b.interface.name);
+    return a.interface.localeCompare(b.interface);
   });
 
   return sortedTraits;
@@ -171,8 +171,8 @@ function printEip712(contractName: string): Lines[] {
 function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[]): Lines[] {
   const traitNames = implementedTraits
     .map(trait => {
-      let name = trait.interface.name;
-      if (trait.interface.associatedError) {
+      let name = trait.interface;
+      if (trait.hasError) {
         name = `${name}<Error = Vec<u8>>`
       }
       return name;
@@ -194,7 +194,7 @@ function printImplementedTraits(contractName: string, implementedTraits: Impleme
     return spaceBetween(...implementedTraits
       .map((impl) =>  {
         let content: Lines[] = []
-        if (impl.interface.associatedError) {
+        if (impl.hasError) {
           content.push('type Error = Vec<u8>;', '')
         }
         const fns = printTraitFunctions(impl);
@@ -203,8 +203,8 @@ function printImplementedTraits(contractName: string, implementedTraits: Impleme
         }
         
         return content.length > 0
-          ? ['#[public]', `impl ${impl.interface.name} for ${contractName} {`, [spaceBetween(content)], '}']
-          : ['#[public]', `impl ${impl.interface.name} for ${contractName} {}`]
+          ? ['#[public]', `impl ${impl.interface} for ${contractName} {`, [spaceBetween(content)], '}']
+          : ['#[public]', `impl ${impl.interface} for ${contractName} {}`]
       })
     )
     .flatMap(lines => lines);

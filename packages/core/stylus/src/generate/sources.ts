@@ -67,7 +67,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   if (subset === 'all') {
     return contracts;
   } else {
-    const getParents = (c: GeneratedContract) => c.contract.implementedTraits.map(p => `${p.modulePath}::${p.interface.name}`);
+    const getParents = (c: GeneratedContract) => c.contract.implementedTraits.map(p => `${p.modulePath}::${p.interface}`);
     return [...findCover(contracts, getParents)];
   }
 }

@@ -10,9 +10,7 @@ export function addPausable(c: ContractBuilder, _access: Access) {
 }
 
 const pausableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IPausable',
-  },
+  interface: 'IPausable',
   storage: {
     name: 'pausable',
     type: 'Pausable',

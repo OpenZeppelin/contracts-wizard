@@ -48,9 +48,7 @@ test('contract with parent', t => {
         code: 'self.parent.some_function()',
       }
     ],
-    interface: {
-      name: 'IParent',
-    }
+    interface: 'IParent',
   };
   Foo.addImplementedTrait(trait);
   t.snapshot(printContract(Foo));
@@ -72,10 +70,8 @@ test('contract with parent and associated error', t => {
         returns: { ok: '()', err: 'Self::Error' },
       },
     ],
-    interface: {
-      name: 'IParent',
-      associatedError: true,
-    }
+    interface: 'IParent',
+    hasError: true,
   };
   Foo.addImplementedTrait(trait);
   t.snapshot(printContract(Foo));
@@ -96,9 +92,7 @@ test('contract with parent and with function', t => {
         code: 'self.parent.some_function()',
       }
     ],
-    interface: {
-      name: 'IParent',
-    }
+    interface: 'IParent',
   };
   Foo.addImplementedTrait(trait);
   
@@ -126,9 +120,7 @@ test('contract with parent and with function with code before', t => {
         code: 'self.parent.some_function()',
       }
     ],
-    interface: {
-      name: 'IParent',
-    }
+    interface: 'IParent',
   };
   Foo.addImplementedTrait(trait);
   Foo.addFunctionCodeBefore(trait.functions[0]!, ['before();'], trait);
@@ -171,25 +163,25 @@ test('contract with sorted traits', t => {
   const traitA: ImplementedTrait = { 
     storage: { name: 'a', type: 'A' },
     modulePath: 'mod_a',
-    interface: { name: 'IA' },
+    interface: 'IA',
     functions: [{name: 'func_a', args: [], code: 'todo!()'}],
   };
   const traitB: ImplementedTrait = { 
     storage: { name: 'b', type: 'B' },
     modulePath: 'mod_b',
-    interface: { name: 'IB' },
+    interface: 'IB',
     functions: [{name: 'func_b', args: [], code: 'todo!()'}],
   };
   const traitSpecial: ImplementedTrait = { 
     storage: { name: 'special', type: 'Special' },
     modulePath: 'mod_special',
-    interface: { name: 'ISpecial' },
+    interface: 'ISpecial',
     functions: [{name: 'func_special', args: [], code: 'todo!()'}],
   };
   const traitZ: ImplementedTrait = { 
     storage: { name: 'z', type: 'Z' },
     modulePath: 'mod_z',
-    interface: { name: 'IZ' },
+    interface: 'IZ',
     functions: [{name: 'func_z', args: [], code: 'todo!()'}],
   };
   Foo.addFunction(traitZ.functions[0]!, traitZ);

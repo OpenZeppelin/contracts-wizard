@@ -108,10 +108,8 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
 
 function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
   let erc1155: ImplementedTrait = {
-    interface: {
-      name: 'IErc1155',
-      associatedError: true,
-    },
+    interface: 'IErc1155',
+    hasError: true,
     modulePath: 'openzeppelin_stylus::token::erc1155',
     requiredImports: [
       { containerPath: 'alloc::vec', name: 'Vec' },
@@ -200,9 +198,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
 
 function getIErc165Trait(storageName: StorageName): ImplementedTrait {
   return {
-    interface: {
-      name: 'IErc165',
-    },
+    interface: 'IErc165',
     modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
     requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
     functions: [
@@ -218,10 +214,8 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
 
 function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
   return {
-    interface: {
-      name: 'IErc1155Burnable',
-      associatedError: true,
-    },
+    interface: 'IErc1155Burnable',
+    hasError: true,
     modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
     functions: [
       {
@@ -255,9 +249,7 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
 }
 
 const erc1155SupplyTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc1155Supply',
-  },
+  interface: 'IErc1155Supply',
   storage: {
     name: ERC1155_SUPPLY_STORAGE_NAME,
     type: 'Erc1155Supply',

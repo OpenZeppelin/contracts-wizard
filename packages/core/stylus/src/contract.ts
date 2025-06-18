@@ -21,11 +21,6 @@ export interface Implementation {
   genericType?: string;
 }
 
-export interface Interface {
-  name: string;
-  associatedError?: boolean;
-}
-
 export interface UseClause {
   containerPath: string;
   name: string;
@@ -35,7 +30,8 @@ export interface UseClause {
 
 export interface ImplementedTrait {
   storage?: Implementation;
-  interface: Interface;
+  interface: string;
+  hasError?: boolean;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -130,7 +126,7 @@ export class ContractBuilder implements Contract {
   }
 
   addImplementedTrait(baseTrait: ImplementedTrait): ImplementedTrait {
-    const key = baseTrait.interface.name;
+    const key = baseTrait.interface;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
@@ -140,7 +136,7 @@ export class ContractBuilder implements Contract {
       if (baseTrait.storage) {
         this.addUseClause(baseTrait.modulePath, baseTrait.storage?.type);
       }
-      this.addUseClause(baseTrait.modulePath, baseTrait.interface.name);
+      this.addUseClause(baseTrait.modulePath, baseTrait.interface);
       for (const useClause of (t.requiredImports ?? [])) {
         this.addUseClause(useClause.containerPath, useClause.name, { ...useClause });
       }

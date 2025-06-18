@@ -117,10 +117,8 @@ const PERMIT_STORAGE_NAME = 'erc20_permit';
 const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
 const erc20Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20',
-    associatedError: true,
-  },
+  interface: 'IErc20',
+  hasError: true,
   storage: {
     name: ERC20_STORAGE_NAME,
     type: 'Erc20',
@@ -177,9 +175,7 @@ const erc20Trait: ImplementedTrait = {
 };
 
 const noncesTrait: ImplementedTrait = {
-  interface: {
-    name: 'INonces',
-  },
+  interface: 'INonces',
   storage: {
     name: NONCES_STORAGE_NAME,
     type: 'Nonces',
@@ -196,10 +192,8 @@ const noncesTrait: ImplementedTrait = {
 };
 
 const permitTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20Permit',
-    associatedError: true,
-  },
+  interface: 'IErc20Permit',
+  hasError: true,
   storage: {
     name: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
@@ -234,10 +228,8 @@ const permitTrait: ImplementedTrait = {
 };
 
 const burnableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20Burnable',
-    associatedError: true,
-  },
+  interface: 'IErc20Burnable',
+  hasError: true,
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
       {
@@ -256,10 +248,8 @@ const burnableTrait: ImplementedTrait = {
 };
 
 const flashMintTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc3156FlashLender',
-    associatedError: true,
-  },
+  interface: 'IErc3156FlashLender',
+  hasError: true,
   storage: {
     name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',

@@ -137,10 +137,8 @@ const ERC721_STORAGE_NAME = 'erc721';
 const ENUMERABLE_STORAGE_NAME = 'enumerable';
 
 const erc721Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721',
-    associatedError: true,
-  },
+  interface: 'IErc721',
+  hasError: true,
   storage: {
     name: ERC721_STORAGE_NAME,
     type: 'Erc721',
@@ -250,9 +248,7 @@ const erc721Trait: ImplementedTrait = {
 };
 
 const erc165Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc165',
-  },
+  interface: 'IErc165',
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
   priority: 4,
   requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
@@ -267,10 +263,8 @@ const erc165Trait: ImplementedTrait = {
 };
 
 const burnableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721Burnable',
-    associatedError: true,
-  },
+  interface: 'IErc721Burnable',
+  hasError: true,
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
   priority: 3,
   functions: [
@@ -284,10 +278,8 @@ const burnableTrait: ImplementedTrait = {
 };
 
 const enumerableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721Enumerable',
-    associatedError: true,
-  },
+  interface: 'IErc721Enumerable',
+  hasError: true,
   storage: {
     name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',
