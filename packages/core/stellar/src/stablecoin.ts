@@ -18,6 +18,8 @@ export const defaults: Required<StablecoinOptions> = {
   limitations: false,
 } as const;
 
+export const limitationsOptions = [false, 'allowlist', 'blocklist'] as const;
+
 export function printStablecoin(opts: StablecoinOptions = defaults): string {
   return printContract(buildStablecoin(opts));
 }

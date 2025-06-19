@@ -4,8 +4,6 @@ export const accessOptions = [false, 'ownable', 'roles'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = (typeof accessOptions)[number];
-export type OwnableProps = { useMacro: boolean };
-export type RolesProps = { useMacro: boolean; caller: string; role: string };
 export type AccessProps = {
   useMacro: boolean;
   caller?: string;

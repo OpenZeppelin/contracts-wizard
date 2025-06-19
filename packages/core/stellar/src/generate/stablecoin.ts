@@ -1,4 +1,4 @@
-import type { StablecoinOptions } from '../stablecoin';
+import { limitationsOptions, type StablecoinOptions } from '../stablecoin';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
@@ -14,6 +14,7 @@ const blueprint = {
   mintable: booleans,
   premint: ['1'],
   access: accessOptions,
+  limitations: limitationsOptions,
   info: infoOptions,
 };
 
