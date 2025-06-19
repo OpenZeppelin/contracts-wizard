@@ -3,7 +3,7 @@ import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerStylusERC20 } from './erc20';
-import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
+import { testMcpInfo, assertAPIEquivalence, DeepRequired } from '../../helpers.test';
 import type { ERC20Options } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
 import { erc20Schema } from '../schemas';
@@ -21,8 +21,8 @@ test.before(t => {
   t.context.schema = z.object(erc20Schema);
 });
 
-function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
-  const _: Required<Omit<ERC20Options, 'access'>> = params;
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: DeepRequired<z.infer<typeof t.context.schema>>) {
+  const _: DeepRequired<Omit<ERC20Options, 'access'>> = params;
   t.pass();
 }
 
@@ -34,13 +34,14 @@ test('basic', async t => {
 });
 
 test('all', async t => {
-  const params: Required<z.infer<typeof t.context.schema>> = {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     burnable: true,
     permit: true,
     flashmint: true,
     info: {
       license: 'MIT',
+      securityContact: 'security@example.com',
     },
   };
   assertHasAllSupportedFields(t, params);

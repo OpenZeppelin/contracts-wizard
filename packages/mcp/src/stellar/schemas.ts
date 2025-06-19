@@ -10,10 +10,10 @@ export const commonSchema = {
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({
-      license: z.string().optional().describe(stellarCommonDescriptions.license),
+      license: z.string().optional().describe(commonDescriptions.license),
     })
     .optional()
-    .describe(stellarCommonDescriptions.info),
+    .describe(commonDescriptions.info),
 };
 
 export const fungibleSchema = {

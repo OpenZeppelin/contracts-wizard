@@ -17,10 +17,10 @@ export const commonSchema = {
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
   info: z
     .object({
-      license: z.string().optional().describe(cairoCommonDescriptions.license),
+      license: z.string().optional().describe(commonDescriptions.license),
     })
     .optional()
-    .describe(cairoCommonDescriptions.info),
+    .describe(commonDescriptions.info),
 };
 
 export const erc20Schema = {

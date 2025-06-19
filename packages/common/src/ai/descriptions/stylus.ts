@@ -7,11 +7,6 @@ export const stylusPrompts = {
   ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
 };
 
-export const stylusCommonDescriptions = {
-  info: 'Metadata about the contract and author',
-  license: 'The license used by the contract, default is "MIT"',
-};
-
 export const stylusERC20Descriptions = {
   permit:
     'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.',

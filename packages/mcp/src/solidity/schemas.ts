@@ -24,11 +24,11 @@ export const commonSchema = {
     .describe(solidityCommonDescriptions.upgradeable),
   info: z
     .object({
-      securityContact: z.string().optional().describe(solidityCommonDescriptions.securityContact),
-      license: z.string().optional().describe(solidityCommonDescriptions.license),
+      securityContact: z.string().optional().describe(commonDescriptions.securityContact),
+      license: z.string().optional().describe(commonDescriptions.license),
     })
     .optional()
-    .describe(solidityCommonDescriptions.info),
+    .describe(commonDescriptions.info),
 };
 
 export const erc20Schema = {

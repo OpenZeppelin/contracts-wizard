@@ -8,8 +8,6 @@ export const stellarPrompts = {
 };
 
 export const stellarCommonDescriptions = {
-  info: 'Metadata about the contract and author',
-  license: 'The license used by the contract, default is "MIT"',
   upgradeable: 'Whether the contract can be upgraded.',
 };
 

@@ -19,10 +19,6 @@ export const solidityCommonDescriptions = {
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
   upgradeable:
     'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
-  info: 'Metadata about the contract and author',
-  securityContact:
-    'Email where people can contact you to report security issues. Will only be visible if contract source code is verified.',
-  license: 'The license used by the contract, default is "MIT"',
 };
 
 export const solidityERC20Descriptions = {

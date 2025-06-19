@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import {
   commonDescriptions,
-  stylusCommonDescriptions,
   stylusERC20Descriptions,
   stylusERC721Descriptions,
   stylusERC1155Descriptions,
@@ -10,10 +9,11 @@ import {
 export const commonSchema = {
   info: z
     .object({
-      license: z.string().optional().describe(stylusCommonDescriptions.license),
+      securityContact: z.string().optional().describe(commonDescriptions.securityContact),
+      license: z.string().optional().describe(commonDescriptions.license),
     })
     .optional()
-    .describe(stylusCommonDescriptions.info),
+    .describe(commonDescriptions.info),
 };
 
 export const erc20Schema = {
