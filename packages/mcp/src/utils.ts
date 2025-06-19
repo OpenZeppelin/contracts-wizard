@@ -3,9 +3,13 @@ import { OptionsError as OptionsErrorCairo } from '@openzeppelin/wizard-cairo';
 import { OptionsError as OptionsErrorStylus } from '@openzeppelin/wizard-stylus';
 import { OptionsError as OptionsErrorStellar } from '@openzeppelin/wizard-stellar';
 
-export function safePrint(printFn: () => string): string {
+export function safePrintCodeBlock(printFn: () => string): string {
   try {
-    return printFn();
+    return `\
+\`\`\`
+${printFn()}
+\`\`\`
+`;
   } catch (e) {
     if (
       e instanceof OptionsErrorSolidity ||
@@ -24,5 +28,5 @@ export function makeDetailedPrompt(origPrompt: string): string {
   return `\
 ${origPrompt}
 
-Returns the source code of the generated contract. Does not write to disk.`;
+Returns the source code of the generated contract, formatted in a code block. Does not write to disk.`;
 }

@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { vesting } from '@openzeppelin/wizard-cairo';
-import { safePrint, makeDetailedPrompt } from '../../utils';
+import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
 import { vestingSchema } from '../schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
@@ -24,7 +24,7 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrint(() => vesting.print(opts)),
+            text: safePrintCodeBlock(() => vesting.print(opts)),
           },
         ],
       };

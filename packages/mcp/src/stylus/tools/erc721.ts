@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC721Options } from '@openzeppelin/wizard-stylus';
 import { erc721 } from '@openzeppelin/wizard-stylus';
-import { safePrint, makeDetailedPrompt } from '../../utils';
+import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc721Schema } from '../schemas';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
 
@@ -21,7 +21,7 @@ export function registerStylusERC721(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrint(() => erc721.print(opts)),
+            text: safePrintCodeBlock(() => erc721.print(opts)),
           },
         ],
       };
