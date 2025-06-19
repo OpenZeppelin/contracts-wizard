@@ -4,7 +4,6 @@ import type { StablecoinOptions } from './stablecoin';
 import { buildStablecoin } from './stablecoin';
 import { printContract } from './print';
 
-import type { OptionsError } from '.';
 import { stablecoin } from '.';
 
 function testStablecoin(title: string, opts: Partial<StablecoinOptions>) {
