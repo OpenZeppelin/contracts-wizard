@@ -13,14 +13,14 @@ import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
 
 export const defaults: Required<FungibleOptions> = {
-  name: 'MyFungible',
+  name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
   pausable: false,
   upgradeable: false,
   premint: '0',
   mintable: false,
-  access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
+  access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
 
