@@ -47,8 +47,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
     ...opts,
   };
   test(title, t => {
-    const c = buildAccount(fullOpts);
-    t.snapshot(printContract(c));
+    t.snapshot(account.print(fullOpts));
   });
   testAPIEquivalence(`${title} API equivalence`, fullOpts);
 }
