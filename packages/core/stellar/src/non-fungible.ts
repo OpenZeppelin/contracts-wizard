@@ -185,7 +185,6 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 function addEnumerable(c: ContractBuilder) {
   c.addUseClause('stellar_non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
   c.addUseClause('stellar_default_impl_macro', 'default_impl');
-  c.addUseClause('stellar_non_fungible', 'ContractOverrides');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
@@ -200,7 +199,6 @@ function addEnumerable(c: ContractBuilder) {
 
 function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access) {
   c.addUseClause('stellar_non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
-  c.addUseClause('stellar_non_fungible', 'ContractOverrides');
 
   const nonFungibleConsecutiveTrait = {
     traitName: 'NonFungibleConsecutive',
