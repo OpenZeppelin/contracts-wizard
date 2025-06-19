@@ -3,7 +3,8 @@ import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerStylusERC1155 } from './erc1155';
-import { testMcpInfo, assertAPIEquivalence, DeepRequired } from '../../helpers.test';
+import type { DeepRequired } from '../../helpers.test';
+import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC1155Options } from '@openzeppelin/wizard-stylus';
 import { erc1155 } from '@openzeppelin/wizard-stylus';
 import { erc1155Schema } from '../schemas';
@@ -21,7 +22,10 @@ test.before(t => {
   t.context.schema = z.object(erc1155Schema);
 });
 
-function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: DeepRequired<z.infer<typeof t.context.schema>>) {
+function assertHasAllSupportedFields(
+  t: ExecutionContext<Context>,
+  params: DeepRequired<z.infer<typeof t.context.schema>>,
+) {
   const _: DeepRequired<Omit<ERC1155Options, 'access'>> = params;
   t.pass();
 }

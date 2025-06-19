@@ -3,6 +3,7 @@ import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoMultisig } from './multisig';
+import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { MultisigOptions } from '@openzeppelin/wizard-cairo';
 import { multisig } from '@openzeppelin/wizard-cairo';
@@ -21,8 +22,11 @@ test.before(t => {
   t.context.schema = z.object(multisigSchema);
 });
 
-function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
-  const _: Required<MultisigOptions> = params;
+function assertHasAllSupportedFields(
+  t: ExecutionContext<Context>,
+  params: DeepRequired<z.infer<typeof t.context.schema>>,
+) {
+  const _: DeepRequired<MultisigOptions> = params;
   t.pass();
 }
 
@@ -35,7 +39,7 @@ test('basic', async t => {
 });
 
 test('all', async t => {
-  const params: Required<z.infer<typeof t.context.schema>> = {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyMultisig',
     quorum: '50',
     upgradeable: true,

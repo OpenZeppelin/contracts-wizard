@@ -3,6 +3,7 @@ import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerCairoERC1155 } from './erc1155';
+import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC1155Options } from '@openzeppelin/wizard-cairo';
 import { erc1155 } from '@openzeppelin/wizard-cairo';
@@ -21,8 +22,11 @@ test.before(t => {
   t.context.schema = z.object(erc1155Schema);
 });
 
-function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: Required<z.infer<typeof t.context.schema>>) {
-  const _: Required<ERC1155Options> = params;
+function assertHasAllSupportedFields(
+  t: ExecutionContext<Context>,
+  params: DeepRequired<z.infer<typeof t.context.schema>>,
+) {
+  const _: DeepRequired<ERC1155Options> = params;
   t.pass();
 }
 
@@ -35,7 +39,7 @@ test('basic', async t => {
 });
 
 test('all', async t => {
-  const params: Required<z.infer<typeof t.context.schema>> = {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyNFT',
     baseUri: 'https://example.com/nft/',
     burnable: true,
