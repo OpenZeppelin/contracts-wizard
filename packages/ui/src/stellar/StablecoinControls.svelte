@@ -79,7 +79,7 @@
 
 
 <ExpandableToggleRadio
-  label="Limitations*"
+  label="Limitations"
   bind:value={opts.limitations}
   defaultValue="allowlist"
   helpContent="Restricts certain users from transferring tokens, either via allowing or blocking them."
@@ -87,12 +87,12 @@
   <div class="checkbox-group">
     <label class:checked={opts.limitations === 'allowlist'}>
       <input type="radio" bind:group={opts.limitations} value="allowlist" />
-      Allowlist*
+      Allowlist
       <HelpTooltip>Allows a list of addresses to transfer tokens.</HelpTooltip>
     </label>
     <label class:checked={opts.limitations === 'blocklist'}>
       <input type="radio" bind:group={opts.limitations} value="blocklist" />
-      Blocklist*
+      Blocklist
       <HelpTooltip>Blocks a list of addresses from transferring tokens.</HelpTooltip>
     </label>
   </div>

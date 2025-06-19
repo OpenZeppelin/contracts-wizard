@@ -297,7 +297,7 @@ export const functions = defineFunctions({
   // Extensions
   burn: {
     args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'amount', type: 'i128' }],
-    code: ['Self::ContractType::burn(e, &from, amount)'],
+    code: ['Base::burn(e, &from, amount)'],
   },
   burn_from: {
     args: [
@@ -306,7 +306,7 @@ export const functions = defineFunctions({
       { name: 'from', type: 'Address' },
       { name: 'amount', type: 'i128' },
     ],
-    code: ['Self::ContractType::burn_from(e, &spender, &from, amount)'],
+    code: ['Base::burn_from(e, &spender, &from, amount)'],
   },
   mint: {
     args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
