@@ -247,7 +247,7 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string): void {
     for (const existingCode of this.constructorCode) {
-      if (existingCode == code) {
+      if (existingCode === code) {
         return;
       }
     }
