@@ -6,6 +6,7 @@ import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } fr
 import { setInfo } from './set-info';
 import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 import { formatLines } from './utils/format-lines';
+import { toIdentifier } from './utils/to-identifier';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -258,19 +259,20 @@ export function buildFactory(opts: AccountOptions): Contract | null {
 
   const c = new ContractBuilder(allOpts.name + 'Factory');
 
+  const accountName = toIdentifier(allOpts.name);
+  const accountInitializer = signerFunctions.initialize[allOpts.signer];
+  const args = [ ...accountInitializer.args, { name: 'salt', type: 'bytes32' }];
+
   // Non upgradeable accounts
   c.addImportOnly({
     name: 'Clones',
     path: '@openzeppelin/contracts/proxy/Clones.sol',
   });
 
-  // implementation address
-  c.addVariable(`${allOpts.name} public immutable implementation = new ${allOpts.name}();`);
+  // Implementation address
+  c.addVariable(`${accountName} public immutable implementation = new ${accountName}();`);
 
-  // account initializer args
-  const initializer = signerFunctions.initialize[allOpts.signer];
-  const args = [ ...initializer.args, { name: 'salt', type: 'bytes32' }];
-
+  // Functions - create
   c.setFunctionBody(
     formatLines([
       `bytes32 effectiveSalt = _salt(${args.map(arg => arg.name).join(', ')});`,
@@ -278,7 +280,7 @@ export function buildFactory(opts: AccountOptions): Contract | null {
       `if (instance.code.length) {`,
       [
         `Clones.cloneDeterministic(address(implementation), effectiveSalt);`,
-        `${allOpts.name}(instance).${initializer.name}(${initializer.args.map(arg => arg.name).join(', ')});`,
+        `${accountName}(instance).${accountInitializer.name}(${accountInitializer.args.map(arg => arg.name).join(', ')});`,
       ],
       `}`,
       `return instance;`,
@@ -286,11 +288,13 @@ export function buildFactory(opts: AccountOptions): Contract | null {
     { name: 'create', kind: 'public' as const, args, returns: [ 'address' ] },
   );
 
+  // Functions - predict
   c.addFunctionCode(
     `return Clones.predictDeterministicAddress(address(implementation), _salt(${args.map(arg => arg.name).join(', ')}));`,
     { name: 'predict', kind: 'public' as const, args, returns: [ 'address' ] },
   );
 
+  // Functions - _salt
   c.addFunctionCode(
     `return keccak256(abi.encode(${args.map(arg => arg.name).join(', ')}));`,
     { name: '_salt', kind: 'internal' as const, args, returns: [ 'bytes32' ] },
