@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { premintPattern, fungible, infoDefaults } from '@openzeppelin/wizard-stellar';
 
+  import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -15,6 +16,8 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  $: requireAccessControl = fungible.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -72,5 +75,7 @@
     </label>
   </div>
 </section>
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} /> 
 
 <InfoSection bind:info={opts.info} />

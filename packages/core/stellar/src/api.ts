@@ -2,9 +2,21 @@ import type { CommonContractOptions } from './common-options';
 import type { FungibleOptions } from './fungible';
 import type { NonFungibleOptions } from './non-fungible';
 import type { StablecoinOptions } from './stablecoin';
-import { printStablecoin, defaults as stablecoinDefaults } from './stablecoin';
-import { printFungible, defaults as fungibledefaults } from './fungible';
-import { printNonFungible, defaults as nonFungibledefaults } from './non-fungible';
+import {
+  printStablecoin,
+  defaults as stablecoinDefaults,
+  isAccessControlRequired as stablecoinIsAccessControlRequired,
+} from './stablecoin';
+import {
+  printFungible,
+  defaults as fungibledefaults,
+  isAccessControlRequired as fungibleIsAccessControlRequired,
+} from './fungible';
+import {
+  printNonFungible,
+  defaults as nonFungibledefaults,
+  isAccessControlRequired as nonFungibleIsAccessControlRequired,
+} from './non-fungible';
 
 export interface WizardContractAPI<Options extends CommonContractOptions> {
   /**
@@ -26,21 +38,24 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
-export type Fungible = WizardContractAPI<FungibleOptions>; // TODO add AccessControlAPI<FungibleOptions> when access control is implemented, if useful
-export type NonFungible = WizardContractAPI<NonFungibleOptions>;
-export type Stablecoin = WizardContractAPI<StablecoinOptions>;
+export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<FungibleOptions>;
+export type NonFungible = WizardContractAPI<NonFungibleOptions> & AccessControlAPI<NonFungibleOptions>;
+export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
 
 export const fungible: Fungible = {
   print: printFungible,
   defaults: fungibledefaults,
+  isAccessControlRequired: fungibleIsAccessControlRequired,
 };
 
 export const nonFungible: NonFungible = {
   print: printNonFungible,
   defaults: nonFungibledefaults,
+  isAccessControlRequired: nonFungibleIsAccessControlRequired,
 };
 
 export const stablecoin: Stablecoin = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
+  isAccessControlRequired: stablecoinIsAccessControlRequired,
 };

@@ -35,6 +35,10 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
   };
 }
 
+export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
+  return opts.mintable === true || opts.limitations !== false || opts.pausable === true || opts.upgradeable === true;
+}
+
 export function buildStablecoin(opts: StablecoinOptions): Contract {
   const allOpts = withDefaults(opts);
 
@@ -71,11 +75,17 @@ function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'all
 
   c.addTraitFunction(limitationsTrait, getterFn);
 
+  const accessProps = {
+    useMacro: true,
+    role: 'manager',
+    caller: 'operator',
+  };
+
   c.addTraitFunction(limitationsTrait, addFn);
-  requireAccessControl(c, limitationsTrait, addFn, access);
+  requireAccessControl(c, limitationsTrait, addFn, access, accessProps);
 
   c.addTraitFunction(limitationsTrait, removeFn);
-  requireAccessControl(c, limitationsTrait, removeFn, access);
+  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps);
 }
 
 const functions = {

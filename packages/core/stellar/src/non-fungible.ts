@@ -57,6 +57,10 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
   };
 }
 
+export function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean {
+  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
+}
+
 export function buildNonFungible(opts: NonFungibleOptions): Contract {
   const c = new ContractBuilder(opts.name);
 

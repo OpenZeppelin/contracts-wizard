@@ -1,4 +1,3 @@
-import type { ContractBuilder } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
@@ -49,6 +48,10 @@ export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
   };
+}
+
+export function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean {
+  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true;
 }
 
 export function buildFungible(opts: FungibleOptions): ContractBuilder {
@@ -115,6 +118,30 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 
     c.addTraitFunction(fungibleTokenTrait, functions.transfer_from);
     c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
+  }
+}
+
+function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
+  if (access === 'ownable') {
+    c.addFreeFunction(functions.mint);
+
+    requireAccessControl(c, undefined, functions.mint, access);
+
+    if (pausable) {
+      c.addFunctionTag(functions.mint, 'when_not_paused');
+    }
+  } else if (access === 'roles') {
+    c.addFreeFunction(functions.mint_with_caller);
+
+    requireAccessControl(c, undefined, functions.mint_with_caller, access, {
+      useMacro: true,
+      caller: 'caller',
+      role: 'minter',
+    });
+
+    if (pausable) {
+      c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
+    }
   }
 }
 
@@ -205,16 +232,6 @@ export function getInitialSupply(premint: string, decimals: number): string {
   return result;
 }
 
-function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-  c.addFreeFunction(functions.mint);
-
-  requireAccessControl(c, undefined, functions.mint, access);
-
-  if (pausable) {
-    c.addFunctionTag(functions.mint, 'when_not_paused');
-  }
-}
-
 export const functions = defineFunctions({
   // Token Functions
   total_supply: {
@@ -293,6 +310,16 @@ export const functions = defineFunctions({
   },
   mint: {
     args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
+    code: ['Base::mint(e, &account, amount);'],
+  },
+  mint_with_caller: {
+    name: 'mint',
+    args: [
+      getSelfArg(),
+      { name: 'account', type: 'Address' },
+      { name: 'amount', type: 'i128' },
+      { name: 'caller', type: 'Address' },
+    ],
     code: ['Base::mint(e, &account, amount);'],
   },
 });

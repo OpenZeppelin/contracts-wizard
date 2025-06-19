@@ -46,16 +46,16 @@ export interface TraitImplBlock extends BaseTraitImplBlock {
 }
 
 export interface BaseFunction {
-  name: string;
   args: Argument[];
   code: string[];
+  name?: string;
   pub?: boolean;
   returns?: string;
 }
 
 export interface ContractFunction extends BaseFunction {
+  tags: string[];
   codeBefore?: string[];
-  tag?: string;
 }
 
 export interface Variable {
@@ -172,6 +172,7 @@ export class ContractBuilder implements Contract {
       const contractFn: ContractFunction = {
         ...fn,
         pub: true,
+        tags: [],
         codeBefore: [],
       };
       this.freeFunctionsMap.set(signature, contractFn);
@@ -196,6 +197,7 @@ export class ContractBuilder implements Contract {
     // Otherwise, add the function
     const contractFn: ContractFunction = {
       ...fn,
+      tags: [],
       codeBefore: [],
     };
     t.functions.push(contractFn);
@@ -231,7 +233,7 @@ export class ContractBuilder implements Contract {
 
   addFunctionTag(fn: BaseFunction, tag: string, baseTrait?: BaseTraitImplBlock): void {
     const existingFn = this.getOrCreateFunction(fn, baseTrait);
-    existingFn.tag = tag;
+    existingFn.tags = [...(existingFn.tags ?? []), tag];
   }
 
   addConstructorArgument(arg: Argument): void {
@@ -244,6 +246,11 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorCode(code: string): void {
+    for (const existingCode of this.constructorCode) {
+      if (existingCode == code) {
+        return;
+      }
+    }
     this.constructorCode.push(code);
   }
 
