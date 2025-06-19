@@ -5,6 +5,7 @@ import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
 import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
+import { formatLines } from './utils/format-lines';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -47,13 +48,16 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
 }
 
 export function printAccount(opts: AccountOptions = defaults): string {
-  return printContract(buildAccount(opts));
+  return printContract([
+    buildAccount(opts),
+    buildFactory(opts), // Todo: enable/disable factory from opts
+  ].filter(c => c !== null));
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for the community contracts
+  allOpts.upgradeable = false; // Upgradeability is not yet available for the accounts contracts
   allOpts.access = false; // Access control options are not used for Account
 
   const c = new ContractBuilder(allOpts.name);
@@ -244,53 +248,102 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   }
 }
 
-const functions = {
-  ...defineFunctions({
-    isValidSignature: {
-      kind: 'public' as const,
-      mutability: 'view' as const,
-      args: [
-        { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
+export function buildFactory(opts: AccountOptions): Contract | null {
+  const allOpts = withDefaults(opts);
+
+  if (!allOpts.signer || allOpts.signer === "ERC7702") return null;
+
+  allOpts.upgradeable = false; // Upgradeability is not yet available for the accounts contracts
+  allOpts.access = false; // Access control options are not used for Account
+
+  const c = new ContractBuilder(allOpts.name + 'Factory');
+
+  // Non upgradeable accounts
+  c.addImportOnly({
+    name: 'Clones',
+    path: '@openzeppelin/contracts/proxy/Clones.sol',
+  });
+
+  // implementation address
+  c.addVariable(`${allOpts.name} public immutable implementation = new ${allOpts.name}();`);
+
+  // account initializer args
+  const initializer = signerFunctions.initialize[allOpts.signer];
+  const args = [ ...initializer.args, { name: 'salt', type: 'bytes32' }];
+
+  c.setFunctionBody(
+    formatLines([
+      `bytes32 effectiveSalt = _salt(${args.map(arg => arg.name).join(', ')});`,
+      `address instance = Clones.predictDeterministicAddress(address(implementation), effectiveSalt);`,
+      `if (instance.code.length) {`,
+      [
+        `Clones.cloneDeterministic(address(implementation), effectiveSalt);`,
+        `${allOpts.name}(instance).${initializer.name}(${initializer.args.map(arg => arg.name).join(', ')});`,
       ],
-      returns: ['bytes4'],
-    },
-    _validateUserOp: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'userOp', type: 'PackedUserOperation calldata' },
-        { name: 'userOpHash', type: 'bytes32' },
-      ],
-      returns: ['uint256'],
-    },
-    _erc7821AuthorizedExecutor: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'caller', type: 'address' },
-        { name: 'mode', type: 'bytes32' },
-        { name: 'executionData', type: 'bytes calldata' },
-      ],
-      returns: ['bool'],
-      mutability: 'view' as const,
-    },
-    addSigners: {
-      kind: 'public' as const,
-      args: [{ name: 'signers', type: 'bytes[] memory' }],
-    },
-    removeSigners: {
-      kind: 'public' as const,
-      args: [{ name: 'signers', type: 'bytes[] memory' }],
-    },
-    setThreshold: {
-      kind: 'public' as const,
-      args: [{ name: 'threshold', type: 'uint256' }],
-    },
-    setSignerWeights: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'weights', type: 'uint256[] memory' },
-      ],
-    },
-  }),
-};
+      `}`,
+      `return instance;`,
+    ]).split('\n'),
+    { name: 'create', kind: 'public' as const, args, returns: [ 'address' ] },
+  );
+
+  c.addFunctionCode(
+    `return Clones.predictDeterministicAddress(address(implementation), _salt(${args.map(arg => arg.name).join(', ')}));`,
+    { name: 'predict', kind: 'public' as const, args, returns: [ 'address' ] },
+  );
+
+  c.addFunctionCode(
+    `return keccak256(abi.encode(${args.map(arg => arg.name).join(', ')}));`,
+    { name: '_salt', kind: 'internal' as const, args, returns: [ 'bytes32' ] },
+  );
+
+  return c;
+}
+
+const functions = defineFunctions({
+  isValidSignature: {
+    kind: 'public' as const,
+    mutability: 'view' as const,
+    args: [
+      { name: 'hash', type: 'bytes32' },
+      { name: 'signature', type: 'bytes calldata' },
+    ],
+    returns: ['bytes4'],
+  },
+  _validateUserOp: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'userOp', type: 'PackedUserOperation calldata' },
+      { name: 'userOpHash', type: 'bytes32' },
+    ],
+    returns: ['uint256'],
+  },
+  _erc7821AuthorizedExecutor: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'caller', type: 'address' },
+      { name: 'mode', type: 'bytes32' },
+      { name: 'executionData', type: 'bytes calldata' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const,
+  },
+  addSigners: {
+    kind: 'public' as const,
+    args: [{ name: 'signers', type: 'bytes[] memory' }],
+  },
+  removeSigners: {
+    kind: 'public' as const,
+    args: [{ name: 'signers', type: 'bytes[] memory' }],
+  },
+  setThreshold: {
+    kind: 'public' as const,
+    args: [{ name: 'threshold', type: 'uint256' }],
+  },
+  setSignerWeights: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'weights', type: 'uint256[] memory' },
+    ],
+  },
+});

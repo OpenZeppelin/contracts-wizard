@@ -21,7 +21,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
     name: 'Initializable',
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
-  const fn = signerFunctions[`initialize${signer}`];
+  const fn = signerFunctions.initialize[signer];
   c.addModifier('initializer', fn);
 
   const args = fn.args;
@@ -77,33 +77,38 @@ export const signers = {
 };
 
 export const signerFunctions = {
-  ...defineFunctions({
-    initializeECDSA: {
+  initialize: {
+    ECDSA: {
+      name: 'initialize',
       kind: 'public' as const,
       args: [{ name: 'signer', type: 'address' }],
     },
-    initializeP256: {
+    P256: {
+      name: 'initialize',
       kind: 'public' as const,
       args: [
         { name: 'qx', type: 'bytes32' },
         { name: 'qy', type: 'bytes32' },
       ],
     },
-    initializeRSA: {
+    RSA: {
+      name: 'initialize',
       kind: 'public' as const,
       args: [
         { name: 'e', type: 'bytes memory' },
         { name: 'n', type: 'bytes memory' },
       ],
     },
-    initializeMultisig: {
+    Multisig: {
+      name: 'initialize',
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
         { name: 'threshold', type: 'uint256' },
       ],
     },
-    initializeMultisigWeighted: {
+    MultisigWeighted: {
+      name: 'initialize',
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
@@ -111,14 +116,15 @@ export const signerFunctions = {
         { name: 'threshold', type: 'uint256' },
       ],
     },
-    _rawSignatureValidation: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
-      ],
-      returns: ['bool'],
-      mutability: 'view' as const,
-    },
-  }),
+  },
+  _rawSignatureValidation: {
+    name: '_rawSignatureValidation',
+    kind: 'internal' as const,
+    args: [
+      { name: 'hash', type: 'bytes32' },
+      { name: 'signature', type: 'bytes calldata' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const,
+  },
 };
