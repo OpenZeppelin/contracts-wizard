@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { account } from '@openzeppelin/wizard-cairo';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { accountSchema } from '../schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
@@ -26,7 +26,7 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => account.print(opts)),
+            text: safePrintCairoCodeBlock(() => account.print(opts)),
           },
         ],
       };

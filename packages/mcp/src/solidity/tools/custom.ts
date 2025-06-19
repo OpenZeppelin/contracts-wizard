@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CustomOptions } from '@openzeppelin/wizard';
 import { custom } from '@openzeppelin/wizard';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { customSchema } from '../schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
@@ -22,7 +22,7 @@ export function registerSolidityCustom(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => custom.print(opts)),
+            text: safePrintSolidityCodeBlock(() => custom.print(opts)),
           },
         ],
       };

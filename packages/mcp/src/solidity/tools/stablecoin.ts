@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { stablecoinSchema } from '../schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
@@ -50,7 +50,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => stablecoin.print(opts)),
+            text: safePrintSolidityCodeBlock(() => stablecoin.print(opts)),
           },
         ],
       };

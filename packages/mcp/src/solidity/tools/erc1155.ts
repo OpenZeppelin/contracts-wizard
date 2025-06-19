@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC1155Options } from '@openzeppelin/wizard';
 import { erc1155 } from '@openzeppelin/wizard';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc1155Schema } from '../schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
@@ -27,7 +27,7 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => erc1155.print(opts)),
+            text: safePrintSolidityCodeBlock(() => erc1155.print(opts)),
           },
         ],
       };

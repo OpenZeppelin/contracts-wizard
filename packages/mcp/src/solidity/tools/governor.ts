@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard';
 import { governor } from '@openzeppelin/wizard';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { governorSchema } from '../schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
@@ -50,7 +50,7 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => governor.print(opts)),
+            text: safePrintSolidityCodeBlock(() => governor.print(opts)),
           },
         ],
       };

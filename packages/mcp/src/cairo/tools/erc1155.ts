@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { KindedOptions } from '@openzeppelin/wizard-cairo';
 import { erc1155 } from '@openzeppelin/wizard-cairo';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc1155Schema } from '../schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
@@ -28,7 +28,7 @@ export function registerCairoERC1155(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => erc1155.print(opts)),
+            text: safePrintCairoCodeBlock(() => erc1155.print(opts)),
           },
         ],
       };

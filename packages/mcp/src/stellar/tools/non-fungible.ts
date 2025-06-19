@@ -1,7 +1,7 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { NonFungibleOptions } from '@openzeppelin/wizard-stellar';
 import { nonFungible } from '@openzeppelin/wizard-stellar';
-import { safePrintCodeBlock, makeDetailedPrompt } from '../../utils';
+import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
 import { nonFungibleSchema } from '../schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 
@@ -27,7 +27,7 @@ export function registerStellarNonFungible(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintCodeBlock(() => nonFungible.print(opts)),
+            text: safePrintRustCodeBlock(() => nonFungible.print(opts)),
           },
         ],
       };
