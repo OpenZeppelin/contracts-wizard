@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-stylus",
-  "version": "0.2.0-alpha.4",
+  "version": "0.2.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Stylus",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
