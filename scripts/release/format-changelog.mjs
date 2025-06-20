@@ -7,6 +7,8 @@ import { join } from 'path';
 import { getSupportedLanguageInCoreSubfolder } from '../language-input.mjs';
 
 function formatChangelog(dir) {
+  console.log(`Formatting changelog for ${dir}...`);
+
   const changelogPath = join(dir, 'CHANGELOG.md');
 
   const changelog = readFileSync(changelogPath, 'utf8');
@@ -36,7 +38,8 @@ function formatChangelog(dir) {
 
 const languageFolders = getSupportedLanguageInCoreSubfolder();
 for (const languageFolder of languageFolders) {
-  console.log(`Formatting changelog for ${languageFolder}...`);
   const languageFolderPath = join('./packages/core', languageFolder);
   formatChangelog(languageFolderPath);
 }
+formatChangelog('./packages/common');
+formatChangelog('./packages/mcp');
