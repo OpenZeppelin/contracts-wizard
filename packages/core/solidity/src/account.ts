@@ -76,7 +76,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Base
   c.addParent({
     name: 'Account',
-    path: `@openzeppelin/community-contracts/account/Account.sol`,
+    path: `@openzeppelin/contracts/account/Account.sol`,
   });
   c.addOverride({ name: 'Account' }, functions._validateUserOp);
 
@@ -93,28 +93,26 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
 }
 
 function addSignatureValidation(c: ContractBuilder, opts: AccountOptions) {
-  switch (opts.signatureValidation) {
-    case 'ERC7739':
-      c.addParent({
-        name: 'ERC7739',
-        path: '@openzeppelin/community-contracts/utils/cryptography/ERC7739.sol',
-      });
-      break;
-    case 'ERC1271':
-      c.addParent({
-        name: 'IERC1271',
-        path: '@openzeppelin/contracts/interfaces/IERC1271.sol',
-      });
-      c.addOverride({ name: 'IERC1271' }, functions.isValidSignature);
-      if (!opts.ERC7579Modules) {
-        c.setFunctionBody(
-          [
-            'return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff);',
-          ],
-          functions.isValidSignature,
-        );
-      }
-      break;
+  if (opts.signatureValidation === 'ERC7739') {
+    c.addParent({
+      name: 'ERC7739',
+      path: '@openzeppelin/contracts/utils/cryptography/signers/draft-ERC7739.sol',
+    });
+  } else if (opts.signatureValidation === 'ERC1271' && !opts.signatureValidation) {
+    c.addParent({
+      name: 'IERC1271',
+      path: '@openzeppelin/contracts/interfaces/IERC1271.sol',
+    });
+    c.addOverride({ name: 'IERC1271' }, functions.isValidSignature);
+    c.setFunctionBody(
+      [
+        'return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff);',
+      ],
+      functions.isValidSignature,
+    );
+  } else {
+    // ERC1271 is natively supported by ERC-7579, no need to expose ERC-1271 manually
+    // do nothing
   }
 }
 
@@ -139,7 +137,7 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.batchedExecution || !!opts.ERC7579Modules) return;
   c.addParent({
     name: 'ERC7821',
-    path: '@openzeppelin/community-contracts/account/extensions/ERC7821.sol',
+    path: '@openzeppelin/contracts/account/extensions/draft-ERC7821.sol',
   });
   c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
   c.setFunctionBody(
@@ -152,28 +150,30 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
   c.addParent({
     name: opts.ERC7579Modules,
-    path: `@openzeppelin/community-contracts/account/extensions/${opts.ERC7579Modules}.sol`,
+    path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
       name: 'AccountERC7579',
-      path: `@openzeppelin/community-contracts/account/extensions/AccountERC7579.sol`,
+      path: `@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol`,
     });
   }
   c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
   c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
 
-  if (opts.signatureValidation !== 'ERC7739') return;
-  c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
-  c.setFunctionBody(
-    [
-      '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
-      '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
-      'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-      'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
-    ],
-    functions.isValidSignature,
-  );
+  // ERC-7579 provides ERC-1271 interface. If ERC-7739 is enabled, we need to reconcile
+  if (opts.signatureValidation === 'ERC7739') {
+    c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
+    c.setFunctionBody(
+      [
+        '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
+        '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
+        'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
+        'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
+      ],
+      functions.isValidSignature,
+    );
+  }
 }
 
 function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
@@ -198,7 +198,7 @@ function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
 }
 
 function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
-  if (opts.signatureValidation != 'ERC7739') return;
+  if (opts.signatureValidation !== 'ERC7739') return;
   c.addParent(
     {
       name: 'EIP712',
@@ -224,7 +224,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   if (opts.signer && opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'AbstractSigner',
-      path: '@openzeppelin/community-contracts/utils/cryptography/AbstractSigner.sol',
+      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
@@ -244,53 +244,51 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   }
 }
 
-const functions = {
-  ...defineFunctions({
-    isValidSignature: {
-      kind: 'public' as const,
-      mutability: 'view' as const,
-      args: [
-        { name: 'hash', type: 'bytes32' },
-        { name: 'signature', type: 'bytes calldata' },
-      ],
-      returns: ['bytes4'],
-    },
-    _validateUserOp: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'userOp', type: 'PackedUserOperation calldata' },
-        { name: 'userOpHash', type: 'bytes32' },
-      ],
-      returns: ['uint256'],
-    },
-    _erc7821AuthorizedExecutor: {
-      kind: 'internal' as const,
-      args: [
-        { name: 'caller', type: 'address' },
-        { name: 'mode', type: 'bytes32' },
-        { name: 'executionData', type: 'bytes calldata' },
-      ],
-      returns: ['bool'],
-      mutability: 'view' as const,
-    },
-    addSigners: {
-      kind: 'public' as const,
-      args: [{ name: 'signers', type: 'bytes[] memory' }],
-    },
-    removeSigners: {
-      kind: 'public' as const,
-      args: [{ name: 'signers', type: 'bytes[] memory' }],
-    },
-    setThreshold: {
-      kind: 'public' as const,
-      args: [{ name: 'threshold', type: 'uint256' }],
-    },
-    setSignerWeights: {
-      kind: 'public' as const,
-      args: [
-        { name: 'signers', type: 'bytes[] memory' },
-        { name: 'weights', type: 'uint256[] memory' },
-      ],
-    },
-  }),
-};
+const functions = defineFunctions({
+  isValidSignature: {
+    kind: 'public' as const,
+    mutability: 'view' as const,
+    args: [
+      { name: 'hash', type: 'bytes32' },
+      { name: 'signature', type: 'bytes calldata' },
+    ],
+    returns: ['bytes4'],
+  },
+  _validateUserOp: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'userOp', type: 'PackedUserOperation calldata' },
+      { name: 'userOpHash', type: 'bytes32' },
+    ],
+    returns: ['uint256'],
+  },
+  _erc7821AuthorizedExecutor: {
+    kind: 'internal' as const,
+    args: [
+      { name: 'caller', type: 'address' },
+      { name: 'mode', type: 'bytes32' },
+      { name: 'executionData', type: 'bytes calldata' },
+    ],
+    returns: ['bool'],
+    mutability: 'view' as const,
+  },
+  addSigners: {
+    kind: 'public' as const,
+    args: [{ name: 'signers', type: 'bytes[] memory' }],
+  },
+  removeSigners: {
+    kind: 'public' as const,
+    args: [{ name: 'signers', type: 'bytes[] memory' }],
+  },
+  setThreshold: {
+    kind: 'public' as const,
+    args: [{ name: 'threshold', type: 'uint64' }],
+  },
+  setSignerWeights: {
+    kind: 'public' as const,
+    args: [
+      { name: 'signers', type: 'bytes[] memory' },
+      { name: 'weights', type: 'uint64[] memory' },
+    ],
+  },
+});
