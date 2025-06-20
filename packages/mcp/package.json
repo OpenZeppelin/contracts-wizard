@@ -3,7 +3,7 @@
   "version": "0.0.1-alpha.0",
   "description": "MCP Server for OpenZeppelin Contracts Wizard",
   "license": "AGPL-3.0-only",
-  "repository": "https://github.com/ericglau/contracts-wizard",
+  "repository": "https://github.com/OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
   "bin": {
     "wizard-mcp": "dist/index.js"
