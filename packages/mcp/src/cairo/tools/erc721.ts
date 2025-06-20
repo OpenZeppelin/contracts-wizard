@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { ERC721Options } from '@openzeppelin/wizard-cairo';
 import { erc721 } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc721Schema } from '../schemas';
@@ -26,8 +26,7 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
       upgradeable,
       info,
     }) => {
-      const opts: KindedOptions['ERC721'] = {
-        kind: 'ERC721',
+      const opts: ERC721Options = {
         name,
         symbol,
         baseUri,

@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { VestingOptions } from '@openzeppelin/wizard-cairo';
 import { vesting } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { vestingSchema } from '../schemas';
@@ -11,8 +11,7 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
     makeDetailedPrompt(cairoPrompts.Vesting),
     vestingSchema,
     async ({ name, startDate, duration, cliffDuration, schedule, info }) => {
-      const opts: KindedOptions['Vesting'] = {
-        kind: 'Vesting',
+      const opts: VestingOptions = {
         name,
         startDate,
         duration,

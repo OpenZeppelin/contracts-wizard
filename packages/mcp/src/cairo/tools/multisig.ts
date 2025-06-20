@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { MultisigOptions } from '@openzeppelin/wizard-cairo';
 import { multisig } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { multisigSchema } from '../schemas';
@@ -11,8 +11,7 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
     makeDetailedPrompt(cairoPrompts.Multisig),
     multisigSchema,
     async ({ name, quorum, upgradeable, info }) => {
-      const opts: KindedOptions['Multisig'] = {
-        kind: 'Multisig',
+      const opts: MultisigOptions = {
         name,
         quorum,
         upgradeable,

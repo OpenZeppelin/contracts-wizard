@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { AccountOptions } from '@openzeppelin/wizard-cairo';
 import { account } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { accountSchema } from '../schemas';
@@ -11,8 +11,7 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
     makeDetailedPrompt(cairoPrompts.Account),
     accountSchema,
     async ({ name, type, declare, deploy, pubkey, outsideExecution, upgradeable, info }) => {
-      const opts: KindedOptions['Account'] = {
-        kind: 'Account',
+      const opts: AccountOptions = {
         name,
         type,
         declare,

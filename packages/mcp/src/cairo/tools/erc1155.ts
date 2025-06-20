@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { ERC1155Options } from '@openzeppelin/wizard-cairo';
 import { erc1155 } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc1155Schema } from '../schemas';
@@ -11,8 +11,7 @@ export function registerCairoERC1155(server: McpServer): RegisteredTool {
     makeDetailedPrompt(cairoPrompts.ERC1155),
     erc1155Schema,
     async ({ name, baseUri, burnable, pausable, mintable, updatableUri, royaltyInfo, access, upgradeable, info }) => {
-      const opts: KindedOptions['ERC1155'] = {
-        kind: 'ERC1155',
+      const opts: ERC1155Options = {
         name,
         baseUri,
         burnable,

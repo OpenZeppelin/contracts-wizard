@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+import type { GovernorOptions } from '@openzeppelin/wizard-cairo';
 import { governor } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { governorSchema } from '../schemas';
@@ -28,8 +28,7 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
       appVersion,
       info,
     }) => {
-      const opts: KindedOptions['Governor'] = {
-        kind: 'Governor',
+      const opts: GovernorOptions = {
         name,
         delay,
         period,
