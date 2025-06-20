@@ -12,6 +12,10 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       return;
     }
     case 'ERC7702': {
+      // Add locking constructor
+      c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+      c.addConstructorCode(`_disableInitializers();`);
+
       // todo: error if upgradeable is set ?
       c.addParent(signers[signer]);
       break;
