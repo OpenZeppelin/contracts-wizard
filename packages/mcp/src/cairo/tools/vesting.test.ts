@@ -50,6 +50,7 @@ test('all', async t => {
     schedule: 'custom',
     info: {
       license: 'MIT',
+      securityContact: 'security@example.com',
     },
   };
   assertHasAllSupportedFields(t, params);

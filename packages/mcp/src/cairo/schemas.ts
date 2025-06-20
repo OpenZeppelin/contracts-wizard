@@ -18,6 +18,7 @@ export const commonSchema = {
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
   info: z
     .object({
+      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
       license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()

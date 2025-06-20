@@ -58,6 +58,7 @@ test('all', async t => {
     upgradeable: true,
     info: {
       license: 'MIT',
+      securityContact: 'security@example.com',
     },
   };
   assertHasAllSupportedFields(t, params);
