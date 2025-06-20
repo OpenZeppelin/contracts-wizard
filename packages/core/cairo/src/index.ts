@@ -26,3 +26,12 @@ export { sanitizeKind } from './kind';
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
 export { erc20, erc721, erc1155, account, multisig, governor, vesting, custom } from './api';
+
+export type { ERC20Options } from './erc20';
+export type { ERC721Options } from './erc721';
+export type { ERC1155Options } from './erc1155';
+export type { AccountOptions } from './account';
+export type { MultisigOptions } from './multisig';
+export type { GovernorOptions } from './governor';
+export type { VestingOptions } from './vesting';
+export type { CustomOptions } from './custom';
