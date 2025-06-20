@@ -1,6 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StylusCommonContractOptions } from '../types/languages.ts';
-import { stylusCommonDescriptions } from '../../../../common/src/ai/descriptions/stylus.ts';
+import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 
 export const stylusCommonFunctionDescription = {
   access: {
@@ -12,17 +12,16 @@ export const stylusCommonFunctionDescription = {
 
   info: {
     type: 'object',
-    description: stylusCommonDescriptions.info,
+    description: commonDescriptions.info,
     properties: {
       securityContact: {
         type: 'string',
-        description:
-          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
+        description: commonDescriptions.securityContact,
       },
 
       license: {
         type: 'string',
-        description: stylusCommonDescriptions.license,
+        description: commonDescriptions.license,
       },
     },
   },

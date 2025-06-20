@@ -1,5 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../types/languages.ts';
+import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { cairoCommonDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
 
 const commonContractFunctionDescription = {
@@ -10,11 +11,11 @@ const commonContractFunctionDescription = {
 
   info: {
     type: 'object',
-    description: cairoCommonDescriptions.info,
+    description: commonDescriptions.info,
     properties: {
       license: {
         type: 'string',
-        description: cairoCommonDescriptions.license,
+        description: commonDescriptions.license,
       },
     },
   },

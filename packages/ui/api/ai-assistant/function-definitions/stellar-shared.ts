@@ -1,5 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StellarCommonContractOptions } from '../types/languages.ts';
+import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { stellarCommonDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarCommonFunctionDescription = {
@@ -17,11 +18,11 @@ export const stellarCommonFunctionDescription = {
 
   info: {
     type: 'object',
-    description: stellarCommonDescriptions.info,
+    description: commonDescriptions.info,
     properties: {
       license: {
         type: 'string',
-        description: stellarCommonDescriptions.license,
+        description: commonDescriptions.license,
       },
     },
   },

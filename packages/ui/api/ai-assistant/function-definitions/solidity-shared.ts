@@ -1,5 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { SolidityCommonOptions } from '../types/languages.ts';
+import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { solidityCommonDescriptions } from '../../../../common/src/ai/descriptions/solidity.ts';
 
 export const commonFunctionDescription = {
@@ -21,15 +22,15 @@ export const commonFunctionDescription = {
 
   info: {
     type: 'object',
-    description: solidityCommonDescriptions.info,
+    description: commonDescriptions.info,
     properties: {
       securityContact: {
         type: 'string',
-        description: solidityCommonDescriptions.securityContact,
+        description: commonDescriptions.securityContact,
       },
       license: {
         type: 'string',
-        description: solidityCommonDescriptions.license,
+        description: commonDescriptions.license,
       },
     },
   },
