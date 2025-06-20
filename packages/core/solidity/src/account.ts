@@ -4,6 +4,7 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
+import { setUpgradeableAccount } from './set-upgradeable';
 import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 
 export const defaults: Required<AccountOptions> = {
@@ -53,13 +54,13 @@ export function printAccount(opts: AccountOptions = defaults): string {
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for the community contracts
   allOpts.access = false; // Access control options are not used for Account
 
   const c = new ContractBuilder(allOpts.name);
 
   addParents(c, allOpts);
   overrideRawSignatureValidation(c, allOpts);
+  setUpgradeableAccount(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
   if (opts.ERC7579Modules) {
@@ -85,7 +86,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Extensions
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
-  addSigner(c, opts.signer ?? false);
+  addSigner(c, opts.signer ?? false, opts.upgradeable);
   addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
@@ -105,9 +106,7 @@ function addSignatureValidation(c: ContractBuilder, opts: AccountOptions) {
     });
     c.addOverride({ name: 'IERC1271' }, functions.isValidSignature);
     c.setFunctionBody(
-      [
-        'return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff);',
-      ],
+      ['return _rawSignatureValidation(hash, signature) ? IERC1271.isValidSignature.selector : bytes4(0xffffffff);'],
       functions.isValidSignature,
     );
   } else {
@@ -148,18 +147,34 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
-  c.addParent({
-    name: opts.ERC7579Modules,
-    path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
-  });
-  if (opts.ERC7579Modules !== 'AccountERC7579') {
-    c.addImportOnly({
-      name: 'AccountERC7579',
-      path: `@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol`,
+
+  if (opts.upgradeable === false) {
+    c.addParent({
+      name: opts.ERC7579Modules,
+      path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
     });
+    if (opts.ERC7579Modules !== 'AccountERC7579') {
+      c.addImportOnly({
+        name: 'AccountERC7579',
+        path: `@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol`,
+      });
+    }
+    c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
+    c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+  } else {
+    c.addParent({
+      name: opts.ERC7579Modules + 'Upgradeable',
+      path: `@openzeppelin/contracts-upgradeable/account/extensions/draft-${opts.ERC7579Modules}Upgradeable.sol`,
+    });
+    if (opts.ERC7579Modules !== 'AccountERC7579') {
+      c.addImportOnly({
+        name: 'AccountERC7579Upgradeable',
+        path: `@openzeppelin/contracts-upgradeable/account/extensions/draft-AccountERC7579Upgradeable.sol`,
+      });
+    }
+    c.addOverride({ name: 'AccountERC7579Upgradeable' }, functions.isValidSignature);
+    c.addOverride({ name: 'AccountERC7579Upgradeable' }, functions._validateUserOp);
   }
-  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
-  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
 
   // ERC-7579 provides ERC-1271 interface. If ERC-7739 is enabled, we need to reconcile
   if (opts.signatureValidation === 'ERC7739') {

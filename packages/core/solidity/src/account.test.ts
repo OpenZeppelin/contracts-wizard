@@ -50,72 +50,96 @@ test('account API assert defaults', async t => {
   t.is(account.print(account.defaults), account.print());
 });
 
-for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
-  let title = 'Account';
-  if (signer) {
-    title += ` with Signer${signer}`;
+function format(upgradeable: false | 'uups' | 'transparent') {
+  switch (upgradeable) {
+    case false:
+      return 'non-upgradeable';
+    case 'uups':
+      return 'upgradeable uups';
+    case 'transparent':
+      return 'upgradeable transparent';
   }
+}
 
-  testAccount(`${title} named`, {
-    name: `Custom${title}`,
-    signer,
-  });
+for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
+  for (const upgradeable of [false, 'uups', 'transparent'] as const) {
+    let title = 'Account';
+    if (signer) {
+      title += ` with Signer${signer}`;
+    }
 
-  testAccount(`${title} with ERC1271`, {
-    name: `Custom${title}ERC1271`,
-    signatureValidation: 'ERC1271',
-    signer,
-  });
+    testAccount(`${title} named ${format(upgradeable)}`, {
+      name: `Custom${title}`,
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC7739`, {
-    name: `Custom${title}ERC7739`,
-    signatureValidation: 'ERC7739',
-    signer,
-  });
+    testAccount(`${title} with ERC1271 ${format(upgradeable)}`, {
+      name: `Custom${title}ERC1271`,
+      signatureValidation: 'ERC1271',
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC721Holder`, {
-    name: `Custom${title}ERC721Holder`,
-    ERC721Holder: true,
-    signer,
-  });
+    testAccount(`${title} with ERC7739 ${format(upgradeable)}`, {
+      name: `Custom${title}ERC7739`,
+      signatureValidation: 'ERC7739',
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC1155Holder`, {
-    name: `Custom${title}ERC1155Holder`,
-    ERC1155Holder: true,
-    signer,
-  });
+    testAccount(`${title} with ERC721Holder ${format(upgradeable)}`, {
+      name: `Custom${title}ERC721Holder`,
+      ERC721Holder: true,
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC721Holder and ERC1155Holder`, {
-    name: `Custom${title}ERC721HolderERC1155Holder`,
-    ERC721Holder: true,
-    ERC1155Holder: true,
-    signer,
-  });
+    testAccount(`${title} with ERC1155Holder ${format(upgradeable)}`, {
+      name: `Custom${title}ERC1155Holder`,
+      ERC1155Holder: true,
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC7821 Execution`, {
-    signer,
-    batchedExecution: true,
-  });
+    testAccount(`${title} with ERC721Holder and ERC1155Holder ${format(upgradeable)}`, {
+      name: `Custom${title}ERC721HolderERC1155Holder`,
+      ERC721Holder: true,
+      ERC1155Holder: true,
+      signer,
+      upgradeable,
+    });
 
-  testAccount(`${title} with ERC7579`, {
-    signer,
-    ERC7579Modules: 'AccountERC7579',
-  });
+    testAccount(`${title} with ERC7821 Execution ${format(upgradeable)}`, {
+      signer,
+      upgradeable,
+      batchedExecution: true,
+    });
 
-  testAccount(`${title} with ERC7579 with ERC1271`, {
-    signer,
-    ERC7579Modules: 'AccountERC7579',
-    signatureValidation: 'ERC1271',
-  });
+    testAccount(`${title} with ERC7579 ${format(upgradeable)}`, {
+      signer,
+      upgradeable,
+      ERC7579Modules: 'AccountERC7579',
+    });
 
-  testAccount(`${title} with ERC7579 with ERC7739`, {
-    signer,
-    ERC7579Modules: 'AccountERC7579',
-    signatureValidation: 'ERC7739',
-  });
+    testAccount(`${title} with ERC7579 with ERC1271 ${format(upgradeable)}`, {
+      signer,
+      upgradeable,
+      ERC7579Modules: 'AccountERC7579',
+      signatureValidation: 'ERC1271',
+    });
 
-  testAccount(`${title} with ERC7579 hooks`, {
-    signer,
-    ERC7579Modules: 'AccountERC7579Hooked',
-  });
+    testAccount(`${title} with ERC7579 with ERC7739 ${format(upgradeable)}`, {
+      signer,
+      upgradeable,
+      ERC7579Modules: 'AccountERC7579',
+      signatureValidation: 'ERC7739',
+    });
+
+    testAccount(`${title} with ERC7579 hooks ${format(upgradeable)}`, {
+      signer,
+      upgradeable,
+      ERC7579Modules: 'AccountERC7579Hooked',
+    });
+  }
 }

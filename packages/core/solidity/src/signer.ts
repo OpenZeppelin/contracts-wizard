@@ -1,16 +1,18 @@
 import type { ContractBuilder } from './contract';
+import type { Upgradeable } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 
 export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
-export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
+export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable = false): void {
   // Add parent, and constructor/initializer logic
-  switch(signer) {
-    case false:
+  switch (signer) {
+    case false: {
       return;
-    case 'ERC7702':
-    {
+    }
+    case 'ERC7702': {
+      // todo: error if upgradeable is set ?
       c.addParent(signers[signer]);
       break;
     }
@@ -18,12 +20,27 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
     case 'P256':
     case 'RSA':
     case 'Multisig':
-    case 'MultisigWeighted':
-    {
-      // TODO: support upgradeable here ?
-      const { args } = signerFunctions[signer];
-      args.forEach(arg => c.addConstructorArgument(arg));
-      c.addParent(signers[signer], args.map(arg => ({ lit: arg.name })));
+    case 'MultisigWeighted': {
+      const { args } = signerFunctions[signer];
+      if (upgradeable === false) {
+        // Add constructor args, and pass to (non-upgradeable) parent
+        args.forEach(arg => c.addConstructorArgument(arg));
+        c.addParent(
+          signers[signer],
+          args.map(arg => ({ lit: arg.name })),
+        );
+      } else {
+        // Add upgradeable parent and initializer
+        c.addParent({
+          name: signers[signer].name + 'Upgradeable',
+          path: signers[signer].path
+            .replace('@openzeppelin/contracts/', '@openzeppelin/contracts-upgradeable/')
+            .replace('.sol', 'Upgradeable.sol'),
+        });
+        const fn = { name: 'initialize', kind: 'public' as const, args };
+        c.addFunctionCode(`__${signers[signer].name}_init(${args.map(arg => arg.name).join(', ')});`, fn);
+        c.addModifier('initializer', fn);
+      }
       break;
     }
   }
