@@ -40,6 +40,10 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
         const fn = { name: 'initialize', kind: 'public' as const, args };
         c.addFunctionCode(`__${signers[signer].name}_init(${args.map(arg => arg.name).join(', ')});`, fn);
         c.addModifier('initializer', fn);
+
+        // Add locking constructor
+        c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+        c.addConstructorCode(`_disableInitializers();`);
       }
       break;
     }
