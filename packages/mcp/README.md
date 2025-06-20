@@ -1,5 +1,7 @@
 # OpenZeppelin Contracts Wizard MCP Server
 
+[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-mcp)](https://www.npmjs.com/package/@openzeppelin/wizard-mcp)
+
 A Model Context Protocol (MCP) server that allows AI agents to generate smart contracts using the [OpenZeppelin Contracts Wizard](https://wizard.openzeppelin.com/).
 
 > [!WARNING]
