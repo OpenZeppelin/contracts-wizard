@@ -12,6 +12,25 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '@openzeppelin/wizard-common';
+import type { KindedOptions } from '@openzeppelin/wizard-cairo';
+
+/**
+ * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
+ */
+function _typeAssertions() {
+  const _assertions: {
+    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
+  } = {
+    ERC20: z.object(erc20Schema).parse({}),
+    ERC721: z.object(erc721Schema).parse({}),
+    ERC1155: z.object(erc1155Schema).parse({}),
+    Account: z.object(accountSchema).parse({}),
+    Multisig: z.object(multisigSchema).parse({}),
+    Governor: z.object(governorSchema).parse({}),
+    Vesting: z.object(vestingSchema).parse({}),
+    Custom: z.object(customSchema).parse({}),
+  };
+}
 
 export const commonSchema = {
   access: z.literal('ownable').or(z.literal('roles')).optional().describe(cairoCommonDescriptions.access),
@@ -23,7 +42,7 @@ export const commonSchema = {
     })
     .optional()
     .describe(infoDescriptions.info),
-};
+} as const satisfies z.ZodRawShape;
 
 export const erc20Schema = {
   name: z.string().describe(commonDescriptions.name),
@@ -36,7 +55,7 @@ export const erc20Schema = {
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
   ...commonSchema,
-};
+} as const satisfies z.ZodRawShape;
 
 export const erc721Schema = {
   name: z.string().describe(commonDescriptions.name),
@@ -58,7 +77,7 @@ export const erc721Schema = {
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
   ...commonSchema,
-};
+} as const satisfies z.ZodRawShape;
 
 export const erc1155Schema = {
   name: z.string().describe(commonDescriptions.name),
@@ -76,7 +95,7 @@ export const erc1155Schema = {
     .optional()
     .describe(cairoCommonDescriptions.royaltyInfo),
   ...commonSchema,
-};
+} as const satisfies z.ZodRawShape;
 
 export const accountSchema = {
   name: z.string().describe(commonDescriptions.name),
@@ -87,14 +106,14 @@ export const accountSchema = {
   outsideExecution: z.boolean().optional().describe(cairoAccountDescriptions.outsideExecution),
   upgradeable: commonSchema.upgradeable,
   info: commonSchema.info,
-};
+} as const satisfies z.ZodRawShape;
 
 export const multisigSchema = {
   name: z.string().describe(commonDescriptions.name),
   quorum: z.string().describe(cairoMultisigDescriptions.quorum),
   upgradeable: commonSchema.upgradeable,
   info: commonSchema.info,
-};
+} as const satisfies z.ZodRawShape;
 
 export const governorSchema = {
   name: z.string().describe(commonDescriptions.name),
@@ -116,7 +135,7 @@ export const governorSchema = {
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
   info: commonSchema.info,
-};
+} as const satisfies z.ZodRawShape;
 
 export const vestingSchema = {
   name: z.string().describe(commonDescriptions.name),
@@ -125,10 +144,10 @@ export const vestingSchema = {
   cliffDuration: z.string().describe(cairoVestingDescriptions.cliffDuration),
   schedule: z.enum(['linear', 'custom']).describe(cairoVestingDescriptions.schedule),
   info: commonSchema.info,
-};
+} as const satisfies z.ZodRawShape;
 
 export const customSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   ...commonSchema,
-};
+} as const satisfies z.ZodRawShape;
