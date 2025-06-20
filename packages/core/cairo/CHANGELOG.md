@@ -1,14 +1,11 @@
 # Changelog
 
 
-## 2.1.0 (2025-06-20)
-
-- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
-- Add security contact in contract info ([#558](https://github.com/OpenZeppelin/contracts-wizard/pull/558))
-
-## 2.0.0 (2025-06-18)
+## 2.0.0 (2025-06-20)
 
 - Add AccessControlWithDelay. ([#506](https://github.com/OpenZeppelin/contracts-wizard/pull/506))
+- Add security contact in contract info. ([#558](https://github.com/OpenZeppelin/contracts-wizard/pull/558))
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v2.0.0. ([#574](https://github.com/OpenZeppelin/contracts-wizard/pull/574))
