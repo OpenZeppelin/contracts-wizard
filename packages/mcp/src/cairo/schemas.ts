@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   commonDescriptions,
+  infoDescriptions,
   cairoCommonDescriptions,
   cairoERC20Descriptions,
   cairoERC721Descriptions,
@@ -17,10 +18,10 @@ export const commonSchema = {
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
   info: z
     .object({
-      license: z.string().optional().describe(commonDescriptions.license),
+      license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()
-    .describe(commonDescriptions.info),
+    .describe(infoDescriptions.info),
 };
 
 export const erc20Schema = {

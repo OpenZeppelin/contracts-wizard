@@ -8,6 +8,9 @@ export const commonDescriptions = {
   pausable:
     'Whether privileged accounts will be able to pause specifically marked functionality. Useful for emergency response.',
   mintable: 'Whether privileged accounts will be able to create more supply or emit more tokens',
+};
+
+export const infoDescriptions = {
   info: 'Metadata about the contract and author',
   securityContact:
     'Email where people can contact you to report security issues. Will only be visible if contract source code is verified.',

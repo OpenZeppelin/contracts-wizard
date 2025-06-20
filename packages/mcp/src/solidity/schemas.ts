@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   commonDescriptions,
+  infoDescriptions,
   solidityCommonDescriptions,
   solidityERC20Descriptions,
   solidityERC721Descriptions,
@@ -24,11 +25,11 @@ export const commonSchema = {
     .describe(solidityCommonDescriptions.upgradeable),
   info: z
     .object({
-      securityContact: z.string().optional().describe(commonDescriptions.securityContact),
-      license: z.string().optional().describe(commonDescriptions.license),
+      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
+      license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()
-    .describe(commonDescriptions.info),
+    .describe(infoDescriptions.info),
 };
 
 export const erc20Schema = {

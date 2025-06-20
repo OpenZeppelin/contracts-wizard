@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   commonDescriptions,
+  infoDescriptions,
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
@@ -10,10 +11,10 @@ export const commonSchema = {
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({
-      license: z.string().optional().describe(commonDescriptions.license),
+      license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()
-    .describe(commonDescriptions.info),
+    .describe(infoDescriptions.info),
 };
 
 export const fungibleSchema = {

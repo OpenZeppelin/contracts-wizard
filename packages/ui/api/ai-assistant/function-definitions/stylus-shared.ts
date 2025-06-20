@@ -1,6 +1,6 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StylusCommonContractOptions } from '../types/languages.ts';
-import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
+import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 
 export const stylusCommonFunctionDescription = {
   access: {
@@ -12,16 +12,16 @@ export const stylusCommonFunctionDescription = {
 
   info: {
     type: 'object',
-    description: commonDescriptions.info,
+    description: infoDescriptions.info,
     properties: {
       securityContact: {
         type: 'string',
-        description: commonDescriptions.securityContact,
+        description: infoDescriptions.securityContact,
       },
 
       license: {
         type: 'string',
-        description: commonDescriptions.license,
+        description: infoDescriptions.license,
       },
     },
   },
