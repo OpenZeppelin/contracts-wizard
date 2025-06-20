@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 import { generateFungibleOptions } from './fungible';
 import { generateNonFungibleOptions } from './non-fungible';
+import { generateStablecoinOptions } from './stablecoin';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
@@ -22,6 +23,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'NonFungible') {
     for (const kindOpts of generateNonFungibleOptions()) {
       yield { kind: 'NonFungible', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Stablecoin') {
+    for (const kindOpts of generateStablecoinOptions()) {
+      yield { kind: 'Stablecoin', ...kindOpts };
     }
   }
 }

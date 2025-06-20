@@ -23,3 +23,4 @@ export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from
 
 export { fungible } from './api';
 export { nonFungible } from './api';
+export { stablecoin } from './api';

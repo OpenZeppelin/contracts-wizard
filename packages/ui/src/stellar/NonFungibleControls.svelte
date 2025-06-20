@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { nonFungible, infoDefaults } from '@openzeppelin/wizard-stellar';
 
+  import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import MintableSection from './MintableSection.svelte';
   import { error } from '../common/error-tooltip';
@@ -15,6 +16,8 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  $: requireAccessControl = nonFungible.isAccessControlRequired(opts);
 
   // Handler functions for checkbox changes
   function handleConsecutiveChange(value: boolean) {
@@ -95,5 +98,7 @@
     sequential: errors?.sequential,
   }}
 />
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} /> 
 
 <InfoSection bind:info={opts.info} />
