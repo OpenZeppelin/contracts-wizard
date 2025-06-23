@@ -77,7 +77,6 @@
   </div>
 </section>
 
-
 <ExpandableToggleRadio
   label="Limitations"
   bind:value={opts.limitations}
@@ -98,7 +97,6 @@
   </div>
 </ExpandableToggleRadio>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} /> 
-
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <InfoSection bind:info={opts.info} />

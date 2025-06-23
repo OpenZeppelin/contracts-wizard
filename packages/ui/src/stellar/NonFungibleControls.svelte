@@ -99,6 +99,6 @@
   }}
 />
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} /> 
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <InfoSection bind:info={opts.info} />

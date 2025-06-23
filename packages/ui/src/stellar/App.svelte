@@ -48,7 +48,8 @@
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     return {
-      downloadScaffold: opts?.kind === 'Fungible' || opts?.kind === 'NonFungible' || opts?.kind === 'Stablecoin' ? true : false,
+      downloadScaffold:
+        opts?.kind === 'Fungible' || opts?.kind === 'NonFungible' || opts?.kind === 'Stablecoin' ? true : false,
     };
   };
 
