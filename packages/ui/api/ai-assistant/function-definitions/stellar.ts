@@ -31,9 +31,46 @@ export const stellarFungibleAIFunctionDefinition = {
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
 
+export const stellarStablecoinAIFunctionDefinition = {
+  name: 'Stablecoin',
+  description: 'Make a stablecoin that uses Fungible Token Standard, compatible with SEP-41.',
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'symbol',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'info',
+      ]),
+      limitations: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['allowlist', 'blocklist'] },
+        ],
+        description:
+          'Whether to restrict certain users from transferring tokens, either via allowing or blocking them.',
+      },
+      premint: {
+        type: 'string',
+        description: 'The number of tokens to premint for the deployer.',
+      },
+      upgradeable: {
+        type: 'boolean',
+        description: 'Whether the contract can be upgraded.',
+      },
+    },
+    required: ['name', 'symbol'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Stablecoin'>;
+
 export const stellarNonFungibleAIFunctionDefinition = {
   name: 'NonFungible',
-  description: 'Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721',
+  description: 'Non-Fungible Token Standard, similar to ERC-721',
   parameters: {
     type: 'object',
     properties: {

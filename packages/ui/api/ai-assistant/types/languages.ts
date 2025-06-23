@@ -11,8 +11,7 @@ export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '.
 export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
 //Stellar
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
-import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
-export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
+export type { CommonContractOptions as StellarCommonContractOptions } from '../../../../core/stellar/dist/common-options';
 // Stylus
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
@@ -27,9 +26,10 @@ export type LanguagesContractsOptions = {
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
-  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible'> & {
-    Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
-    NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
+  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
+    Fungible: StellarKindedOptions['Fungible'];
+    NonFungible: StellarKindedOptions['NonFungible'];
+    Stablecoin: StellarKindedOptions['Stablecoin'];
   };
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
     ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;
