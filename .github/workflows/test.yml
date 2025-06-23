@@ -30,6 +30,16 @@ jobs:
       - name: Deno check API
         run: yarn type:check:api
 
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Run tests
+        run: yarn test
+        working-directory: packages/mcp
+
   build:
     timeout-minutes: 90
     strategy:

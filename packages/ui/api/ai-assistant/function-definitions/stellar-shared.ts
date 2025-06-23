@@ -1,5 +1,7 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StellarCommonContractOptions } from '../types/languages.ts';
+import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
+import { stellarCommonDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarCommonFunctionDescription = {
   access: {
@@ -7,17 +9,21 @@ export const stellarCommonFunctionDescription = {
       { type: 'string', enum: ['ownable', 'roles'] },
       { type: 'boolean', enum: [false] },
     ],
-    description:
-      'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.',
+    description: stellarCommonDescriptions.access,
+  },
+
+  upgradeable: {
+    type: 'boolean',
+    description: stellarCommonDescriptions.upgradeable,
   },
 
   info: {
     type: 'object',
-    description: 'Metadata about the contract and author',
+    description: infoDescriptions.info,
     properties: {
       license: {
         type: 'string',
-        description: 'The license used by the contract, default is "MIT"',
+        description: infoDescriptions.license,
       },
     },
   },

@@ -14,6 +14,10 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 Use the Contracts Wizard at https://wizard.openzeppelin.com/
 
+## MCP Server
+
+The [MCP server](packages/mcp/README.md) allows AI agents to generate smart contracts using the Contracts Wizard.
+
 ## TypeScript API
 
 You can use the programmatic TypeScript API to generate contracts from your own applications.
