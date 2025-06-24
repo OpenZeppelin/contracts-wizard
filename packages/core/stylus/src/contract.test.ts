@@ -138,23 +138,23 @@ test('contract with parent and with function with code before', t => {
 
 test('contract with standalone import', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addUseClause('some::library', 'SomeLibrary');
+  Foo.addUseClause({ containerPath: 'some::library', name: 'SomeLibrary' });
   t.snapshot(printContract(Foo));
 });
 
 test('contract with grouped imports', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addUseClause('some::library', 'SomeLibrary');
-  Foo.addUseClause('some::library', 'Misc');
+  Foo.addUseClause({ containerPath: 'some::library', name: 'SomeLibrary' });
+  Foo.addUseClause({ containerPath: 'some::library', name: 'Misc' });
   t.snapshot(printContract(Foo));
 });
 
 test('contract with sorted use clauses', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addUseClause('some::library', 'SomeLibrary');
-  Foo.addUseClause('another::library', 'AnotherLibrary');
-  Foo.addUseClause('another::library', 'Foo', { alias: 'Custom2' });
-  Foo.addUseClause('another::library', 'Foo', { alias: 'Custom1' });
+  Foo.addUseClause({ containerPath: 'some::library', name: 'SomeLibrary' });
+  Foo.addUseClause({ containerPath: 'another::library', name: 'AnotherLibrary' });
+  Foo.addUseClause({ containerPath: 'another::library', name: 'Foo', alias: 'Custom2' });
+  Foo.addUseClause({ containerPath: 'another::library', name: 'Foo', alias: 'Custom1' });
   t.snapshot(printContract(Foo));
 });
 

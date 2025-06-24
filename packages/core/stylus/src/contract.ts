@@ -94,7 +94,7 @@ export class ContractBuilder implements Contract {
       identifier: toIdentifier(name, true),
       stringLiteral: escapeString(name),
     };
-    this.addUseClause('stylus_sdk', 'prelude::*');
+    this.addUseClause({ containerPath: 'stylus_sdk::prelude', name: '*' });
   }
 
   get implementedTraits(): ImplementedTrait[] {
@@ -113,10 +113,10 @@ export class ContractBuilder implements Contract {
     return [...this.functionsArr];
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
+  addUseClause({ containerPath, name, groupable, alias }: UseClause): void {
     // groupable defaults to true
-    const groupable = options?.groupable ?? true;
-    const alias = options?.alias ?? '';
+    groupable ??= true;
+    alias ??= '';
     const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
@@ -133,11 +133,11 @@ export class ContractBuilder implements Contract {
       const t: ImplementedTrait = copy(baseTrait);
       this.implementedTraitsMap.set(key, t);
       if (baseTrait.storage) {
-        this.addUseClause(baseTrait.modulePath, baseTrait.storage?.type);
+        this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.storage?.type });
       }
-      this.addUseClause(baseTrait.modulePath, baseTrait.interface);
+      this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.interface });
       for (const useClause of (t.requiredImports ?? [])) {
-        this.addUseClause(useClause.containerPath, useClause.name, { ...useClause });
+        this.addUseClause({ ...useClause });
       }
       
       return t;
@@ -154,7 +154,7 @@ export class ContractBuilder implements Contract {
   }
 
   addEip712() {
-    this.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
+    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography::eip712', name: 'IEip712' });
     this.eip712Needed = true;
   }
 
