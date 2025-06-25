@@ -221,8 +221,8 @@
             <button class="download-option" on:click={downloadScaffoldHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Development Package (Scaffold)</p>
-                <p>Sample Scaffold project to get started with development and testing.</p>
+                <p>Scaffold Stellar Package</p>
+                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
               </div>
             </button>
           {/if}
