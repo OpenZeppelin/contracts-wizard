@@ -8,6 +8,7 @@ import {
   defaults as fungibleDefaults,
   withDefaults as withFungibleDefaults,
   functions as fungibleFunctions,
+  isAccessControlRequired as fungibleIsAccessControlRequired,
 } from './fungible';
 import { requireAccessControl, type Access } from './set-access-control';
 
@@ -38,7 +39,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable === true || opts.limitations !== false || opts.pausable === true || opts.upgradeable === true;
+  return fungibleIsAccessControlRequired(opts) || opts.limitations !== false;
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
@@ -53,7 +54,7 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
+function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
   const type = mode === 'allowlist';
 
   const limitationsTrait = {

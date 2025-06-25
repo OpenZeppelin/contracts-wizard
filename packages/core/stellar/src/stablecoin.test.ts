@@ -78,9 +78,37 @@ testStablecoin('stablecoin blocklist', {
   limitations: 'blocklist',
 });
 
-testStablecoin('stablecoin full', {
+testStablecoin('stablecoin full - ownable, allowlist', {
   premint: '2000',
   access: 'ownable',
+  limitations: 'allowlist',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+});
+
+testStablecoin('stablecoin full - ownable, blocklist', {
+  premint: '2000',
+  access: 'ownable',
+  limitations: 'blocklist',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+});
+
+testStablecoin('stablecoin full - roles, allowlist', {
+  premint: '2000',
+  access: 'roles',
+  limitations: 'allowlist',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+});
+
+testStablecoin('stablecoin full - roles, blocklist', {
+  premint: '2000',
+  access: 'roles',
+  limitations: 'blocklist',
   burnable: true,
   mintable: true,
   pausable: true,

@@ -122,25 +122,36 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 }
 
 function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
-  if (access === 'ownable') {
-    c.addFreeFunction(functions.mint);
+  switch (access) {
+    case false:
+      break;
+    case 'ownable': {
+      c.addFreeFunction(functions.mint);
 
-    requireAccessControl(c, undefined, functions.mint, access);
+      requireAccessControl(c, undefined, functions.mint, access);
 
-    if (pausable) {
-      c.addFunctionTag(functions.mint, 'when_not_paused');
+      if (pausable) {
+        c.addFunctionTag(functions.mint, 'when_not_paused');
+      }
+      break;
     }
-  } else if (access === 'roles') {
-    c.addFreeFunction(functions.mint_with_caller);
+    case 'roles': {
+      c.addFreeFunction(functions.mint_with_caller);
 
-    requireAccessControl(c, undefined, functions.mint_with_caller, access, {
-      useMacro: true,
-      caller: 'caller',
-      role: 'minter',
-    });
+      requireAccessControl(c, undefined, functions.mint_with_caller, access, {
+        useMacro: true,
+        caller: 'caller',
+        role: 'minter',
+      });
 
-    if (pausable) {
-      c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
+      if (pausable) {
+        c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
+      }
+      break;
+    }
+    default: {
+      const _: never = access;
+      throw new Error('Unknown value for `access`');
     }
   }
 }
