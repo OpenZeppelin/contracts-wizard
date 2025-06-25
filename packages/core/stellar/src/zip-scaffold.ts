@@ -4,30 +4,28 @@ import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
 import { compatibleSorobanVersion, contractsVersionTag } from './utils/version';
 
-const dependencies = {
+const getKeysOf = <TObject extends Record<string, unknown>>(objectToGetKeysOf: TObject) =>
+  Object.keys(objectToGetKeysOf) as (keyof TObject)[];
+
+const stellarDependencies = {
   base: ['stellar-default-impl-macro'],
   fungible: ['stellar-fungible'],
   nonFungible: ['stellar-non-fungible'],
   pausable: ['stellar-pausable', 'stellar-pausable-macros'],
   upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
+} as const;
+
+const allStellarDependencies = getKeysOf(stellarDependencies);
+
+const allDependencies = {
+  ...stellarDependencies,
   soroban: ['soroban-sdk'],
 } as const;
 
-const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: (keyof typeof dependencies)[]) =>
+const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: (keyof typeof allDependencies)[]) =>
   dependenciesToAdd.reduce((addedDependency, dependencyName) => {
-    return `${addedDependency}${dependencies[dependencyName].map(cargoDependencies => `${cargoDependencies} = ${dependencyValue}\n`).join('')}`;
+    return `${addedDependency}${allDependencies[dependencyName].map(cargoDependencies => `${cargoDependencies} = ${dependencyValue}\n`).join('')}`;
   }, '');
-
-const getDependenciesToAdd = (opts: GenericOptions): (keyof typeof dependencies)[] => {
-  const dependenciesToAdd: (keyof typeof dependencies)[] = ['base'];
-
-  if (opts.kind === 'Fungible') dependenciesToAdd.push('fungible');
-  if (opts.kind === 'NonFungible') dependenciesToAdd.push('nonFungible');
-  if (opts.pausable) dependenciesToAdd.push('pausable');
-  if (opts.upgradeable) dependenciesToAdd.push('upgradable');
-
-  return dependenciesToAdd;
-};
 
 const test = (c: Contract) => `#![cfg(test)]
 
@@ -65,7 +63,7 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-${addDependenciesWith('{ workspace = true }', [...getDependenciesToAdd(opts), 'soroban'])}
+${addDependenciesWith('{ workspace = true }', [...allStellarDependencies, 'soroban'])}
 [dev-dependencies]
 ${addDependenciesWith('{ workspace = true, features = ["testutils"] }', ['soroban'])}
 `;
@@ -165,7 +163,7 @@ setup_environment() {
   cp Cargo.toml Cargo.toml.bak
 
   cat <<EOF > deps.tmp
-${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, getDependenciesToAdd(opts))}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, allStellarDependencies)}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
 EOF
 
   awk '
