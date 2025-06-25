@@ -2,31 +2,31 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerStellarFungible } from './fungible';
+import { registerStellarStablecoin } from './stablecoin';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
-import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
-import { fungible } from '@openzeppelin/wizard-stellar';
-import { fungibleSchema } from '../schemas';
+import type { StablecoinOptions } from '@openzeppelin/wizard-stellar';
+import { stablecoin } from '@openzeppelin/wizard-stellar';
+import { stablecoinSchema } from '../schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof fungibleSchema>;
+  schema: z.ZodObject<typeof stablecoinSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
-  t.context.tool = registerStellarFungible(new McpServer(testMcpInfo));
-  t.context.schema = z.object(fungibleSchema);
+  t.context.tool = registerStellarStablecoin(new McpServer(testMcpInfo));
+  t.context.schema = z.object(stablecoinSchema);
 });
 
 function assertHasAllSupportedFields(
   t: ExecutionContext<Context>,
   params: DeepRequired<z.infer<typeof t.context.schema>>,
 ) {
-  const _: DeepRequired<FungibleOptions> = params;
+  const _: DeepRequired<StablecoinOptions> = params;
   t.pass();
 }
 
@@ -35,7 +35,7 @@ test('basic', async t => {
     name: 'TestToken',
     symbol: 'TST',
   };
-  await assertAPIEquivalence(t, params, fungible.print);
+  await assertAPIEquivalence(t, params, stablecoin.print);
 });
 
 test('all', async t => {
@@ -48,10 +48,11 @@ test('all', async t => {
     mintable: true,
     upgradeable: true,
     access: 'ownable',
+    limitations: 'allowlist',
     info: {
       license: 'MIT',
     },
   };
   assertHasAllSupportedFields(t, params);
-  await assertAPIEquivalence(t, params, fungible.print);
+  await assertAPIEquivalence(t, params, stablecoin.print);
 });
