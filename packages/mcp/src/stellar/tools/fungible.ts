@@ -10,7 +10,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
     'stellar-fungible',
     makeDetailedPrompt(stellarPrompts.Fungible),
     fungibleSchema,
-    async ({ name, symbol, burnable, pausable, premint, mintable, upgradeable, info }) => {
+    async ({ name, symbol, burnable, pausable, premint, mintable, upgradeable, access, info }) => {
       const opts: FungibleOptions = {
         name,
         symbol,
@@ -19,6 +19,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
         premint,
         mintable,
         upgradeable,
+        access,
         info,
       };
       return {

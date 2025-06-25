@@ -1,9 +1,16 @@
 import type { BaseFunction } from '../contract';
 
-type ImplicitNameFunction = Omit<BaseFunction, 'name'>;
+type OverridableImplicitNameFunction = Omit<BaseFunction, 'name'> & { name?: string };
 
-export function defineFunctions<F extends string>(fns: Record<F, ImplicitNameFunction>): Record<F, BaseFunction>;
+export function defineFunctions<F extends string>(
+  fns: Record<F, OverridableImplicitNameFunction>,
+): Record<F, BaseFunction>;
 
-export function defineFunctions(fns: Record<string, ImplicitNameFunction>): Record<string, BaseFunction> {
-  return Object.fromEntries(Object.entries(fns).map(([name, fn]) => [name, Object.assign({ name }, fn)]));
+export function defineFunctions(fns: Record<string, OverridableImplicitNameFunction>): Record<string, BaseFunction> {
+  return Object.fromEntries(
+    Object.entries(fns).map(([implicitName, fn]) => [
+      implicitName,
+      Object.assign({ name: fn.name ?? implicitName }, fn),
+    ]),
+  );
 }
