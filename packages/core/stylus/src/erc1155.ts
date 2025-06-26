@@ -108,16 +108,19 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
 
 function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
   let erc1155: ImplementedTrait = {
-    interface: 'IErc1155',
+    interface: {
+      name: 'IErc1155',
+      associatedError: true,
+    },
     errors: [
-      { variant: 'InsufficientBalance', associated: 'ERC1155InsufficientBalance' },
-      { variant: 'InvalidSender', associated: 'ERC1155InvalidSender' },
-      { variant: 'InvalidReceiver', associated: 'ERC1155InvalidReceiver' },
-      { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
-      { variant: 'MissingApprovalForAll', associated: 'ERC1155MissingApprovalForAll' },
-      { variant: 'InvalidApprover', associated: 'ERC1155InvalidApprover' },
-      { variant: 'InvalidOperator', associated: 'ERC1155InvalidOperator' },
-      { variant: 'InvalidArrayLength', associated: 'ERC1155InvalidArrayLength' },
+      { variant: 'InsufficientBalance', value: 'ERC1155InsufficientBalance' },
+      { variant: 'InvalidSender', value: 'ERC1155InvalidSender' },
+      { variant: 'InvalidReceiver', value: 'ERC1155InvalidReceiver' },
+      { variant: 'InvalidReceiverWithReason', value: 'InvalidReceiverWithReason' },
+      { variant: 'MissingApprovalForAll', value: 'ERC1155MissingApprovalForAll' },
+      { variant: 'InvalidApprover', value: 'ERC1155InvalidApprover' },
+      { variant: 'InvalidOperator', value: 'ERC1155InvalidOperator' },
+      { variant: 'InvalidArrayLength', value: 'ERC1155InvalidArrayLength' },
     ],
     modulePath: 'openzeppelin_stylus::token::erc1155',
     requiredImports: [
@@ -207,7 +210,9 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
 
 function getIErc165Trait(storageName: StorageName): ImplementedTrait {
   return {
-    interface: 'IErc165',
+    interface: {
+      name: 'IErc165',
+    },
     modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
     requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
     functions: [
@@ -223,8 +228,10 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
 
 function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
   return {
-    interface: 'IErc1155Burnable',
-    errors: [],
+    interface: {
+      name: 'IErc1155Burnable',
+      associatedError: true,
+    },
     modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
     functions: [
       {
@@ -258,7 +265,9 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
 }
 
 const erc1155SupplyTrait: ImplementedTrait = {
-  interface: 'IErc1155Supply',
+  interface: {
+    name: 'IErc1155Supply',
+  },
   storage: {
     name: ERC1155_SUPPLY_STORAGE_NAME,
     type: 'Erc1155Supply',

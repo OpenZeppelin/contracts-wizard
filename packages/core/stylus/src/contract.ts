@@ -5,7 +5,15 @@ type Name = {
   stringLiteral: string;
 };
 
-type Interface = string;
+export type Interface = {
+  name: string;
+  associatedError?: boolean;
+};
+
+export interface SolError { 
+  variant: string;
+  value: string;
+};
 
 export interface Contract {
   license: string;
@@ -15,7 +23,6 @@ export interface Contract {
   constants: Variable[];
   eip712Needed?: boolean;
   functions: ContractFunction[];
-  error?: string | Interface[]
 }
 
 export interface Implementation {
@@ -31,10 +38,12 @@ export interface UseClause {
   alias?: string;
 }
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export interface ImplementedTrait {
   storage?: Implementation;
   interface: Interface;
-  errors?: { variant: string, associated: string }[];
+  errors?: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>, wraps: Interface };
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -125,7 +134,7 @@ export class ContractBuilder implements Contract {
   }
 
   addImplementedTrait(baseTrait: ImplementedTrait): ImplementedTrait {
-    const key = baseTrait.interface;
+    const key = baseTrait.interface.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
@@ -135,7 +144,7 @@ export class ContractBuilder implements Contract {
       if (baseTrait.storage) {
         this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.storage?.type });
       }
-      this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.interface });
+      this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.interface.name });
       for (const useClause of (t.requiredImports ?? [])) {
         this.addUseClause({ ...useClause });
       }

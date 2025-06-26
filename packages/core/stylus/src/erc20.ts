@@ -117,14 +117,17 @@ const PERMIT_STORAGE_NAME = 'erc20_permit';
 const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
 const erc20Trait: ImplementedTrait = {
-  interface: 'IErc20',
+  interface: {
+    name: 'IErc20',
+    associatedError: true,
+  },
   errors: [
-    { variant: 'InsufficientBalance', associated: 'ERC20InsufficientBalance' },
-    { variant: 'InvalidSender', associated: 'ERC20InvalidSender' },
-    { variant: 'InvalidReceiver', associated: 'ERC20InvalidReceiver' },
-    { variant: 'InsufficientAllowance', associated: 'ERC20InsufficientAllowance' },
-    { variant: 'InvalidSpender', associated: 'ERC20InvalidSpender' },
-    { variant: 'InvalidApprover', associated: 'ERC20InvalidApprover' },
+    { variant: 'InsufficientBalance', value: 'ERC20InsufficientBalance' },
+    { variant: 'InvalidSender', value: 'ERC20InvalidSender' },
+    { variant: 'InvalidReceiver', value: 'ERC20InvalidReceiver' },
+    { variant: 'InsufficientAllowance', value: 'ERC20InsufficientAllowance' },
+    { variant: 'InvalidSpender', value: 'ERC20InvalidSpender' },
+    { variant: 'InvalidApprover', value: 'ERC20InvalidApprover' },
   ],
   storage: {
     name: ERC20_STORAGE_NAME,
@@ -182,7 +185,9 @@ const erc20Trait: ImplementedTrait = {
 };
 
 const noncesTrait: ImplementedTrait = {
-  interface: 'INonces',
+  interface: {
+    name: 'INonces',
+  },
   storage: {
     name: NONCES_STORAGE_NAME,
     type: 'Nonces',
@@ -199,13 +204,25 @@ const noncesTrait: ImplementedTrait = {
 };
 
 const permitTrait: ImplementedTrait = {
-  interface: 'IErc20Permit',
-  errors: [
-    { variant: 'ExpiredSignature', associated: 'ERC2612ExpiredSignature' },
-    { variant: 'InvalidSigner', associated: 'ERC2612InvalidSigner' },
-    { variant: 'InvalidSignature', associated: 'ECDSAInvalidSignature' },
-    { variant: 'InvalidSignatureS', associated: 'ECDSAInvalidSignatureS' },
-  ],
+  interface: {
+    name: 'IErc20Permit',
+    associatedError: true,
+  },
+  errors: {
+    list: [
+      { variant: 'ExpiredSignature', value: 'ERC2612ExpiredSignature' },
+      { variant: 'InvalidSigner', value: 'ERC2612InvalidSigner' },
+      { variant: 'InsufficientBalance', value: 'erc20::ERC20InsufficientBalance' },
+      { variant: 'InvalidSender', value: 'erc20::ERC20InvalidSender' },
+      { variant: 'InvalidReceiver', value: 'erc20::ERC20InvalidReceiver' },
+      { variant: 'InsufficientAllowance', value: 'erc20::ERC20InsufficientAllowance' },
+      { variant: 'InvalidSpender', value: 'erc20::ERC20InvalidSpender' },
+      { variant: 'InvalidApprover', value: 'erc20::ERC20InvalidApprover' },
+      { variant: 'InvalidSignature', value: 'ecdsa::ECDSAInvalidSignature' },
+      { variant: 'InvalidSignatureS', value: 'ecdsa::ECDSAInvalidSignatureS' },
+    ],
+    wraps: erc20Trait.interface,
+  },
   storage: {
     name: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
@@ -240,32 +257,46 @@ const permitTrait: ImplementedTrait = {
 };
 
 const burnableTrait: ImplementedTrait = {
-  interface: 'IErc20Burnable',
-  errors: [],
+  interface: {
+    name: 'IErc20Burnable',
+    associatedError: true,
+  },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
-      {
-        name: 'burn',
-        args: [getSelfArg(), { name: 'value', type: 'U256' }],
-        returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
-      },
-      {
-        name: 'burn_from',
-        args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-        returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
-      },
+    {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
+    },
+    {
+      name: 'burn_from',
+      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
+    },
   ],
 };
 
 const flashMintTrait: ImplementedTrait = {
-  interface: 'IErc3156FlashLender',
-  errors: [
-    { variant: 'UnsupportedToken', associated: 'ERC3156UnsupportedToken' },
-    { variant: 'ExceededMaxLoan', associated: 'ERC3156ExceededMaxLoan' },
-    { variant: 'ERC3156InvalidReceiver', associated: 'ERC3156InvalidReceiver' },
-  ],
+  interface: {
+    name: 'IErc3156FlashLender',
+    associatedError: true,
+  },
+  errors: {
+    list: [
+      { variant: 'UnsupportedToken', value: 'ERC3156UnsupportedToken' },
+      { variant: 'ExceededMaxLoan', value: 'ERC3156ExceededMaxLoan' },
+      { variant: 'ERC3156InvalidReceiver', value: 'ERC3156InvalidReceiver' },
+      { variant: 'InsufficientBalance', value: 'erc20::ERC20InsufficientBalance' },
+      { variant: 'InvalidSender', value: 'erc20::ERC20InvalidSender' },
+      { variant: 'InvalidReceiver', value: 'erc20::ERC20InvalidReceiver' },
+      { variant: 'InsufficientAllowance', value: 'erc20::ERC20InsufficientAllowance' },
+      { variant: 'InvalidSpender', value: 'erc20::ERC20InvalidSpender' },
+      { variant: 'InvalidApprover', value: 'erc20::ERC20InvalidApprover' },
+    ],
+    wraps: erc20Trait.interface,
+  },
   storage: {
     name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',
