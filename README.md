@@ -4,6 +4,7 @@
 [![Cairo NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-cairo?color=%23e55233&label=%40openzeppelin%2Fwizard-cairo)](https://www.npmjs.com/package/@openzeppelin/wizard-cairo)
 [![Stellar NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stellar?color=%23e55233&label=%40openzeppelin%2Fwizard-stellar)](https://www.npmjs.com/package/@openzeppelin/wizard-stellar)
 [![Stylus NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stylus?color=%23e55233&label=%40openzeppelin%2Fwizard-stylus)](https://www.npmjs.com/package/@openzeppelin/wizard-stylus)
+[![MCP NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-mcp?label=%40openzeppelin%2Fwizard-mcp)](https://www.npmjs.com/package/@openzeppelin/wizard-mcp)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca9b53e1-44eb-410d-aac7-31b2f5399b68/deploy-status)](https://app.netlify.com/sites/openzeppelin-contracts-wizard/deploys)
 
 Contracts Wizard is a web application to interactively build a contract out of components from OpenZeppelin Contracts. Select the kind of contract that you want, set your parameters and desired features, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
@@ -13,6 +14,10 @@ Contracts Wizard is a web application to interactively build a contract out of c
 ## Usage
 
 Use the Contracts Wizard at https://wizard.openzeppelin.com/
+
+## MCP Server
+
+The [MCP server](packages/mcp/README.md) allows AI agents to generate smart contracts using the Contracts Wizard.
 
 ## TypeScript API
 

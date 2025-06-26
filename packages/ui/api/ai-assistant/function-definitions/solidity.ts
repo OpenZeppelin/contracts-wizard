@@ -1,10 +1,19 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
+import {
+  solidityPrompts,
+  solidityAccountDescriptions,
+  solidityERC20Descriptions,
+  solidityERC721Descriptions,
+  solidityERC1155Descriptions,
+  solidityStablecoinDescriptions,
+  solidityGovernorDescriptions,
+} from '../../../../common/src/ai/descriptions/solidity.ts';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard',
+  description: solidityPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
@@ -20,42 +29,37 @@ export const solidityERC20AIFunctionDefinition = {
       ]),
       premint: {
         type: 'string',
-        description: 'The number of tokens to premint for the deployer.',
+        description: solidityERC20Descriptions.premint,
       },
       permit: {
         type: 'boolean',
-        description:
-          'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.',
+        description: solidityERC20Descriptions.permit,
       },
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false, true] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description:
-          'Whether to keep track of historical balances for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
+        description: solidityERC20Descriptions.votes,
       },
       flashmint: {
         type: 'boolean',
-        description:
-          "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
+        description: solidityERC20Descriptions.flashmint,
       },
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['custom', 'superchain'] },
         ],
-        description:
-          'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, or the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. Emphasize that these features are experimental, not audited and are subject to change. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
+        description: solidityERC20Descriptions.crossChainBridging,
       },
       premintChainId: {
         type: 'string',
-        description: 'The chain ID of the network on which to premint tokens.',
+        description: solidityERC20Descriptions.premintChainId,
       },
       callback: {
         type: 'boolean',
-        description:
-          'Whether to includes supports for code execution after transfers and approvals on recipient contracts in a single transaction.',
+        description: solidityERC20Descriptions.callback,
       },
     },
     required: ['name', 'symbol'],
@@ -65,7 +69,7 @@ export const solidityERC20AIFunctionDefinition = {
 
 export const solidityERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard',
+  description: solidityPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
@@ -79,27 +83,25 @@ export const solidityERC721AIFunctionDefinition = {
         'upgradeable',
         'info',
       ]),
-      baseUri: { type: 'string', description: 'A base uri for the token' },
+      baseUri: { type: 'string', description: solidityERC721Descriptions.baseUri },
       enumerable: {
         type: 'boolean',
-        description:
-          'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+        description: solidityERC721Descriptions.enumerable,
       },
       uriStorage: {
         type: 'boolean',
-        description: 'Allows updating token URIs for individual token IDs',
+        description: solidityERC721Descriptions.uriStorage,
       },
       incremental: {
         type: 'boolean',
-        description: 'Whether new tokens will be automatically assigned an incremental id',
+        description: solidityERC721Descriptions.incremental,
       },
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description:
-          'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
+        description: solidityERC721Descriptions.votes,
       },
     },
     required: ['name', 'symbol'],
@@ -109,7 +111,7 @@ export const solidityERC721AIFunctionDefinition = {
 
 export const solidityERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard',
+  description: solidityPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
@@ -124,16 +126,15 @@ export const solidityERC1155AIFunctionDefinition = {
       ]),
       uri: {
         type: 'string',
-        description:
-          'The Location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
+        description: solidityERC1155Descriptions.uri,
       },
       supply: {
         type: 'boolean',
-        description: 'Whether to keep track of total supply of tokens',
+        description: solidityERC1155Descriptions.supply,
       },
       updatableUri: {
         type: 'boolean',
-        description: 'Whether privileged accounts will be able to set a new URI for all token types',
+        description: solidityERC1155Descriptions.updatableUri,
       },
     },
     required: ['name', 'uri'],
@@ -143,24 +144,21 @@ export const solidityERC1155AIFunctionDefinition = {
 
 export const solidityStablecoinAIFunctionDefinition = {
   name: 'Stablecoin',
-  description:
-    'Make a stablecoin token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.Stablecoin,
   parameters: {
     type: 'object',
     properties: {
       ...solidityERC20AIFunctionDefinition.parameters.properties,
       custodian: {
         type: 'boolean',
-        description:
-          'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.',
+        description: solidityStablecoinDescriptions.custodian,
       },
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
-        description:
-          'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
+        description: solidityStablecoinDescriptions.limitations,
       },
       upgradeable: {
         type: 'boolean',
@@ -175,15 +173,13 @@ export const solidityStablecoinAIFunctionDefinition = {
 
 export const solidityRealWorldAssetAIFunctionDefinition = {
   name: 'RealWorldAsset',
-  description:
-    'Make a real-world asset token that uses the ERC-20 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.RWA,
   parameters: solidityStablecoinAIFunctionDefinition.parameters,
 } as const satisfies AiFunctionDefinition<'solidity', 'RealWorldAsset'>;
 
 export const solidityAccountAIFunctionDefinition = {
   name: 'Account',
-  description:
-    'Make an account contract that follows the ERC-4337 standard. Emphasize that this is experimental, and some features are not audited and subject to change.',
+  description: solidityPrompts.Account,
   parameters: {
     type: 'object',
     properties: {
@@ -193,44 +189,33 @@ export const solidityAccountAIFunctionDefinition = {
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ERC1271', 'ERC7739'] },
         ],
-        description:
-          'Whether to implement the ERC-1271 standard for validating signatures. This is useful for the account to verify signatures.',
+        description: solidityAccountDescriptions.signatureValidation,
       },
       ERC721Holder: {
         type: 'boolean',
-        description:
-          'Whether to implement the `onERC721Received` function to allow the account to receive ERC721 tokens.',
+        description: solidityAccountDescriptions.ERC721Holder,
       },
       ERC1155Holder: {
         type: 'boolean',
-        description:
-          'Whether to implement the `onERC1155Received` function to allow the account to receive ERC1155 tokens.',
+        description: solidityAccountDescriptions.ERC1155Holder,
       },
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
         ],
-        description: `Defines the signature verification algorithm used by the account to verify user operations. Options:
-        - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
-        - ERC7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
-        - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
-        - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
-        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
-        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`,
+        description: solidityAccountDescriptions.signer,
       },
       batchedExecution: {
         type: 'boolean',
-        description:
-          'Whether to a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
+        description: solidityAccountDescriptions.batchedExecution,
       },
       ERC7579Modules: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
         ],
-        description:
-          'Whether to implement the ERC-7579 compatibility to enable functionality on the account with modules.',
+        description: solidityAccountDescriptions.ERC7579Modules,
       },
       upgradeable: {
         type: 'boolean',
@@ -250,70 +235,74 @@ export const solidityAccountAIFunctionDefinition = {
 
 export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO',
+  description: solidityPrompts.Governor,
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'upgradeable', 'info']),
       delay: {
         type: 'string',
-        description: 'The delay since proposal is created until voting starts, default is "1 day"',
+        description: solidityGovernorDescriptions.delay,
       },
       period: {
         type: 'string',
-        description: 'The length of period during which people can cast their vote, default is "1 week"',
+        description: solidityGovernorDescriptions.period,
       },
       blockTime: {
         type: 'number',
-        description: 'The number of seconds assumed for a block, default is 12',
+        description: solidityGovernorDescriptions.blockTime,
       },
       proposalThreshold: {
         type: 'string',
-        description: 'Minimum number of votes an account must have to create a proposal, default is 0.',
+        description: solidityGovernorDescriptions.proposalThreshold,
       },
       decimals: {
         type: 'number',
-        description:
-          'The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes)',
+        description: solidityGovernorDescriptions.decimals,
       },
       quorumMode: {
         type: 'string',
         enum: ['percent', 'absolute'],
-        description: 'The type of quorum mode to use',
+        description: solidityGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
         type: 'number',
-        description: 'The percent required, in cases of quorumMode equals percent',
+        description: solidityGovernorDescriptions.quorumPercent,
       },
       quorumAbsolute: {
         type: 'string',
-        description: 'The absolute quorum required, in cases of quorumMode equals absolute',
+        description: solidityGovernorDescriptions.quorumAbsolute,
       },
       votes: {
         type: 'string',
         enum: ['erc20votes', 'erc721votes'],
-        description: 'The type of voting to use',
+        description: solidityGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
         enum: ['blocknumber', 'timestamp'],
-        description:
-          'The clock mode used by the voting token. For Governor, this must be chosen to match what the ERC20 or ERC721 voting token uses.',
+        description: solidityGovernorDescriptions.clockMode,
       },
       timelock: {
         anyOf: [
           { type: 'string', enum: ['openzeppelin', 'compound'] },
           { type: 'boolean', enum: [false] },
         ],
-        description: 'The type of timelock to use',
+        description: solidityGovernorDescriptions.timelock,
       },
       storage: {
         type: 'boolean',
-        description: 'Enable storage of proposal details and enumerability of proposals',
+        description: solidityGovernorDescriptions.storage,
       },
       settings: {
         type: 'boolean',
-        description: 'Allow governance to update voting settings (delay, period, proposal threshold)',
+        description: solidityGovernorDescriptions.settings,
+      },
+      access: {
+        type: 'boolean',
+        enum: [false],
+        description:
+          'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
       },
     },
     required: ['name', 'delay', 'period'],
@@ -323,7 +312,7 @@ export const solidityGovernorAIFunctionDefinition = {
 
 export const solidityCustomAIFunctionDefinition = {
   name: 'Custom',
-  description: 'Make a custom smart contract',
+  description: solidityPrompts.Custom,
   parameters: {
     type: 'object',
     properties: addFunctionPropertiesFrom(commonFunctionDescription, [
