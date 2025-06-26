@@ -190,3 +190,22 @@ test('contract with sorted traits', t => {
   Foo.addFunction(traitB.functions[0]!, traitB);
   t.snapshot(printContract(Foo));
 });
+
+test('contract with documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with security info', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addSecurityTag('security@example.com');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with security info and documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addSecurityTag('security@example.com');
+  Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});

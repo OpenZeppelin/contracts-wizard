@@ -98,7 +98,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.enumerable) {
-    addEnumerable(c, allOpts.burnable);
+    addEnumerable(c);
   }
 
   if (allOpts.consecutive) {
@@ -179,23 +179,20 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   }
 }
 
-function addEnumerable(c: ContractBuilder, burnable: boolean) {
+function addEnumerable(c: ContractBuilder) {
   c.addUseClause('stellar_non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
-  //c.addUseClause('stellar_default_impl_macro', 'default_impl');
+  c.addUseClause('stellar_default_impl_macro', 'default_impl');
+  c.addUseClause('stellar_non_fungible', 'ContractOverrides');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
     structName: c.name,
-    tags: ['defaultimpl', 'contractimpl'],
+    tags: ['default_impl', 'contractimpl'],
     section: 'Extensions',
   };
   c.addTraitImplBlock(nonFungibleEnumerableTrait);
 
   c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;');
-
-  if (burnable) {
-    c.overrideAssocType('NonFungibleBurnable', 'type ContractType = Enumerable;');
-  }
 
   // Below is not required due to `defaultimpl` macro. If we require to customize the functions,
   // then we should:

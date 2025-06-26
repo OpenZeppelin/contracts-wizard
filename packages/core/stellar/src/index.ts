@@ -23,3 +23,6 @@ export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from
 
 export { fungible } from './api';
 export { nonFungible } from './api';
+
+export type { FungibleOptions } from './fungible';
+export type { NonFungibleOptions } from './non-fungible';

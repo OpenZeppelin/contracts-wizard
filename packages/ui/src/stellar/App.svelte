@@ -28,6 +28,7 @@
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -39,6 +40,31 @@
     await tick();
     showCode = true;
   }
+
+  interface ButtonVisibilities {
+    downloadScaffold: boolean;
+  }
+
+  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    return {
+      downloadScaffold: opts?.kind === 'Fungible' || opts?.kind === 'NonFungible' ? true : false,
+    };
+  };
+
+  $: showButtons = getButtonVisibilities(opts);
+
+  const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
+
+  const downloadScaffoldHandler = async () => {
+    const { zipScaffold } = await zipScaffoldModule;
+    if (!opts) throw new Error('No options provided for scaffold generation');
+    const zip = await zipScaffold(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    saveAs(blob, 'project.zip');
+    if (opts) {
+      await postConfig(opts, 'download-scaffold', language);
+    }
+  };
 
   export let initialTab: string | undefined = 'Fungible';
 
@@ -162,6 +188,16 @@
               <p>Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</p>
             </div>
           </button>
+
+          {#if showButtons.downloadScaffold}
+            <button class="download-option" on:click={downloadScaffoldHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Scaffold Stellar Package</p>
+                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
         </Dropdown>
       </div>
     {/if}

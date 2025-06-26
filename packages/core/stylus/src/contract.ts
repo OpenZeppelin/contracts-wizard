@@ -9,7 +9,9 @@ type Interface = string;
 
 export interface Contract {
   license: string;
+  securityContact: string;
   name: Name;
+  documentations: string[];
   useClauses: UseClause[];
   implementedTraits: ImplementedTrait[];
   constants: Variable[];
@@ -80,6 +82,9 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: Name;
   license = 'MIT';
+  securityContact = '';
+
+  readonly documentations: string[] = [];
 
   private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
@@ -209,6 +214,14 @@ export class ContractBuilder implements Contract {
   addFunctionAttribute(fn: BaseFunction, attribute: string, baseTrait?: ImplementedTrait): void {
     const existingFn = this.addFunction(fn, baseTrait);
     existingFn.attribute = attribute;
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }
 
