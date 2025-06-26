@@ -20,6 +20,12 @@ export const stellarCommonFunctionDescription = {
     type: 'object',
     description: infoDescriptions.info,
     properties: {
+      securityContact: {
+        type: 'string',
+        description:
+          'Email where people can contact you to report security issues. Will only be visible if contract metadata is verified.',
+      },
+
       license: {
         type: 'string',
         description: infoDescriptions.license,

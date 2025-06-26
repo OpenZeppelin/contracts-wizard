@@ -231,7 +231,7 @@
             <button class="download-option" on:click={downloadRustHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Development Package (Rust)</p>
+                <p>Rust Development Package</p>
                 <p>Sample Rust project to get started with development and testing.</p>
               </div>
             </button>
