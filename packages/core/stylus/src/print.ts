@@ -148,7 +148,7 @@ function printStorage(contractName: string, implementedTraits: ImplementedTrait[
   const structLines = implementedTraits
     .filter(trait => !!trait.storage)
     .map(({ storage: i }) => {
-      const generics = i!.genericType ? `<${i!.genericType}>`: '';
+      const generics = i!.genericType ? `<${i!.genericType}>` : '';
       return [`${i!.name}: ${i!.type}${generics},`];
     });
 
@@ -171,18 +171,17 @@ function printEip712(contractName: string): Lines[] {
 }
 
 function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[]): Lines[] {
-  const traitNames = implementedTraits
-    .map(trait => {
-      let name = trait.interface;
-      if (trait.errors) {
-        name = `${name}<Error = Vec<u8>>`
-      }
-      return name;
-    });
+  const traitNames = implementedTraits.map(trait => {
+    let name = trait.interface;
+    if (trait.errors) {
+      name = `${name}<Error = Vec<u8>>`;
+    }
+    return name;
+  });
 
   let header = ['#[public]'];
   if (traitNames.length > 0) {
-    header.push(`#[implements(${traitNames.join(', ')})]`)
+    header.push(`#[implements(${traitNames.join(', ')})]`);
   }
 
   const fns = contract.functions.map(printFunction);
@@ -193,23 +192,22 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Impleme
 }
 
 function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
-    return spaceBetween(...implementedTraits
-      .map((impl) =>  {
-        let content: Lines[] = []
-        if (impl.errors) {
-          content.push('type Error = Vec<u8>;', '')
-        }
-        const fns = printTraitFunctions(impl);
-        if (fns.length > 0) {
-          content.push(...fns);
-        }
-        
-        return content.length > 0
-          ? ['#[public]', `impl ${impl.interface} for ${contractName} {`, [spaceBetween(content)], '}']
-          : ['#[public]', `impl ${impl.interface} for ${contractName} {}`]
-      })
-    )
-    .flatMap(lines => lines);
+  return spaceBetween(
+    ...implementedTraits.map(impl => {
+      let content: Lines[] = [];
+      if (impl.errors) {
+        content.push('type Error = Vec<u8>;', '');
+      }
+      const fns = printTraitFunctions(impl);
+      if (fns.length > 0) {
+        content.push(...fns);
+      }
+
+      return content.length > 0
+        ? ['#[public]', `impl ${impl.interface} for ${contractName} {`, [spaceBetween(content)], '}']
+        : ['#[public]', `impl ${impl.interface} for ${contractName} {}`];
+    }),
+  ).flatMap(lines => lines);
 }
 
 function printTraitFunctions(impl: ImplementedTrait): Lines[] {
@@ -220,19 +218,19 @@ function printTraitFunctions(impl: ImplementedTrait): Lines[] {
 function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
-  
+
   const mainCode = !fn.returns
     ? !!fn.codeAfter?.length
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
-      // if there's code after, it's probably chained view function(s)
-      ? [fn.code].concat(fn.codeAfter ?? [])
+      ? // if there's code after, it's probably chained view function(s)
+        [fn.code].concat(fn.codeAfter ?? [])
       : !!fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
 
-  const codeLines = (fn.codeBefore?.concat(mainCode) ?? mainCode);
+  const codeLines = fn.codeBefore?.concat(mainCode) ?? mainCode;
 
   return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }

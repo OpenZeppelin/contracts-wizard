@@ -129,41 +129,25 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
     functions: [
       {
         name: 'balance_of',
-        args: [
-          getSelfArg('immutable'),
-          { name: 'account', type: 'Address' },
-          { name: 'id', type: 'U256' },
-        ],
+        args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'id', type: 'U256' }],
         returns: 'U256',
         code: `self.${storageName}.balance_of(account, id)`,
       },
       {
         name: 'balance_of_batch',
-        args: [
-          getSelfArg('immutable'),
-          { name: 'accounts', type: 'Vec<Address>' },
-          { name: 'ids', type: 'Vec<U256>' },
-        ],
+        args: [getSelfArg('immutable'), { name: 'accounts', type: 'Vec<Address>' }, { name: 'ids', type: 'Vec<U256>' }],
         returns: { ok: 'Vec<U256>', err: 'Self::Error' },
         code: `self.${storageName}.balance_of_batch(accounts, ids)?`,
       },
       {
         name: 'set_approval_for_all',
-        args: [
-          getSelfArg(),
-          { name: 'operator', type: 'Address' },
-          { name: 'approved', type: 'bool' },
-        ],
+        args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
         returns: { ok: '()', err: 'Self::Error' },
         code: `self.${storageName}.set_approval_for_all(operator, approved)?`,
       },
       {
         name: 'is_approved_for_all',
-        args: [
-          getSelfArg('immutable'),
-          { name: 'account', type: 'Address' },
-          { name: 'operator', type: 'Address' },
-        ],
+        args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'operator', type: 'Address' }],
         returns: 'bool',
         code: `self.${storageName}.is_approved_for_all(account, operator)`,
       },
@@ -196,7 +180,7 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
     ],
   };
   // if `Erc1155Supply` is used as storage, then this can be omitted
-  if (storageName === "erc1155") {
+  if (storageName === 'erc1155') {
     erc1155.storage = {
       name: 'erc1155',
       type: 'Erc1155',
@@ -236,9 +220,10 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
           { name: 'value', type: 'U256' },
         ],
         returns: { ok: '()', err: 'Self::Error' },
-        code: storageName === 'erc1155' 
-          ? `self.${storageName}.burn(account, token_id, value)?`
-          : `self.${storageName}._burn(account, token_id, value)?`,
+        code:
+          storageName === 'erc1155'
+            ? `self.${storageName}.burn(account, token_id, value)?`
+            : `self.${storageName}._burn(account, token_id, value)?`,
       },
       {
         name: 'burn_batch',
@@ -249,9 +234,10 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
           { name: 'values', type: 'Vec<U256>' },
         ],
         returns: { ok: '()', err: 'Self::Error' },
-        code: storageName === 'erc1155' 
-          ? `self.${storageName}.burn_batch(account, token_ids, values)?`
-          : `self.${storageName}._burn_batch(account, token_ids, values)?`,
+        code:
+          storageName === 'erc1155'
+            ? `self.${storageName}.burn_batch(account, token_ids, values)?`
+            : `self.${storageName}._burn_batch(account, token_ids, values)?`,
       },
     ],
   };

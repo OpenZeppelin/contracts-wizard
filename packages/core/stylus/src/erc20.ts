@@ -193,9 +193,9 @@ const noncesTrait: ImplementedTrait = {
       name: 'nonces',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
       code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
-      returns: 'U256'
-    }
-  ]
+      returns: 'U256',
+    },
+  ],
 };
 
 const permitTrait: ImplementedTrait = {
@@ -235,7 +235,7 @@ const permitTrait: ImplementedTrait = {
       ],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
-    }
+    },
   ],
 };
 
@@ -244,18 +244,18 @@ const burnableTrait: ImplementedTrait = {
   errors: [],
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
-      {
-        name: 'burn',
-        args: [getSelfArg(), { name: 'value', type: 'U256' }],
-        returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
-      },
-      {
-        name: 'burn_from',
-        args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-        returns: { ok: '()', err: 'Self::Error' },
-        code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
-      },
+    {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
+    },
+    {
+      name: 'burn_from',
+      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
+    },
   ],
 };
 
@@ -297,7 +297,7 @@ const flashMintTrait: ImplementedTrait = {
       returns: { ok: 'bool', err: 'Self::Error' },
       code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
     },
-  ]
+  ],
 };
 
 // const erc20MetadataTrait: ImplementedTrait = {

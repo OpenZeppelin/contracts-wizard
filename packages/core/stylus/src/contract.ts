@@ -17,7 +17,7 @@ export interface Contract {
   constants: Variable[];
   eip712Needed?: boolean;
   functions: ContractFunction[];
-  error?: string | Interface[]
+  error?: string | Interface[];
 }
 
 export interface Implementation {
@@ -36,7 +36,7 @@ export interface UseClause {
 export interface ImplementedTrait {
   storage?: Implementation;
   interface: Interface;
-  errors?: { variant: string, associated: string }[];
+  errors?: { variant: string; associated: string }[];
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -48,8 +48,8 @@ export interface ImplementedTrait {
 }
 
 export interface Result {
-  ok: string,
-  err: 'Self::Error',
+  ok: string;
+  err: 'Self::Error';
 }
 
 export interface BaseFunction {
@@ -90,7 +90,7 @@ export class ContractBuilder implements Contract {
   private useClausesMap: Map<string, UseClause> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
   private functionsArr: ContractFunction[] = [];
-  
+
   error?: string | Interface[];
   eip712Needed?: boolean;
 
@@ -141,10 +141,10 @@ export class ContractBuilder implements Contract {
         this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.storage?.type });
       }
       this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.interface });
-      for (const useClause of (t.requiredImports ?? [])) {
+      for (const useClause of t.requiredImports ?? []) {
         this.addUseClause({ ...useClause });
       }
-      
+
       return t;
     }
   }
@@ -167,7 +167,7 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(fn: BaseFunction, baseTrait?: ImplementedTrait): ContractFunction {    
+  addFunction(fn: BaseFunction, baseTrait?: ImplementedTrait): ContractFunction {
     const t = baseTrait ? this.addImplementedTrait(baseTrait) : this;
 
     const signature = this.getFunctionSignature(fn);
@@ -182,13 +182,13 @@ export class ContractBuilder implements Contract {
 
     // Otherwise, add the function
     const contractFn: ContractFunction = copy(fn);
-    
+
     if (t === this) {
       t.functionsArr.push(contractFn);
     } else {
       t.functions.push(contractFn);
     }
-    
+
     return contractFn;
   }
 
@@ -226,5 +226,5 @@ export class ContractBuilder implements Contract {
 }
 
 function copy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj))
+  return JSON.parse(JSON.stringify(obj));
 }

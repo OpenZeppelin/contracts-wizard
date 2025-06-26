@@ -29,5 +29,5 @@ const pausableTrait: ImplementedTrait = {
       returns: { ok: '()', err: 'Self::Error' },
       code: 'self.pausable.unpause()?',
     },
-  ]
+  ],
 };
