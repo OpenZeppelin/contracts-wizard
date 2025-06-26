@@ -2,7 +2,28 @@ import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
-import { contractOptionsToContractName, createRustLibFile, printContractCargo, printRustNameTest } from './zip-shared';
+import {
+  addDependenciesWith,
+  allStellarDependencies,
+  contractOptionsToContractName,
+  createRustLibFile,
+  printContractCargo,
+  printRustNameTest,
+} from './zip-shared';
+
+const workspaceCargo = `[workspace]
+resolver = "2"
+members = ["contracts/*"]
+
+[workspace.package]
+authors = []
+edition = "2021"
+license = "Apache-2.0"
+version = "0.0.1"
+
+[workspace.dependencies]
+${addDependenciesWith('{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }', [...allStellarDependencies, 'soroban'])}
+`;
 
 const readme = `\
 # Sample Rust Contract Environment
@@ -28,6 +49,7 @@ export async function zipRust(c: Contract, opts: GenericOptions) {
   zip.file(`contracts/${contractName}/src/test.rs`, printRustNameTest(c));
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName));
+  zip.file('Cargo.toml', workspaceCargo);
   zip.file('README.md', readme);
 
   return zip;
