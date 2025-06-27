@@ -107,7 +107,7 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
 }
 
 function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
-  let erc1155: ContractTrait = {
+  const erc1155: ContractTrait = {
     name: 'IErc1155',
     errors: [
       { variant: 'InsufficientBalance', associated: 'ERC1155InsufficientBalance' },

@@ -5,7 +5,6 @@ import {
   type ContractTrait,
   type UseClause,
   type Result,
-  type StoredContractTrait,
   isStoredContractTrait,
 } from './contract';
 
@@ -186,7 +185,7 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Contrac
     return name;
   });
 
-  let header = ['#[public]'];
+  const header = ['#[public]'];
   if (traitNames.length > 0) {
     header.push(`#[implements(${traitNames.join(', ')})]`);
   }
@@ -201,7 +200,7 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Contrac
 function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
   return spaceBetween(
     ...implementedTraits.map(impl => {
-      let content: Lines[] = [];
+      const content: Lines[] = [];
       if (impl.errors) {
         content.push('type Error = Vec<u8>;', '');
       }
@@ -227,13 +226,13 @@ function printFunction(fn: ContractFunction): Lines[] {
   const args = fn.args.map(a => printArgument(a));
 
   const mainCode = !fn.returns
-    ? !!fn.codeAfter?.length
+    ? fn.codeAfter?.length
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
         [fn.code].concat(fn.codeAfter ?? [])
-      : !!fn.codeAfter?.length
+      : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
 
