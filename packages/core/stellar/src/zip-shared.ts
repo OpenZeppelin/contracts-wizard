@@ -11,7 +11,7 @@ export const contractOptionsToContractName = pascalToSnakeCase;
 
 export function getAddressArgs(c: Pick<Contract, 'constructorArgs'>): string[] {
   return (c.constructorArgs || [])
-    .filter(constructorArg => constructorArg.type?.toLowerCase().trim() === 'address')
+    .filter(constructorArg => constructorArg.type?.trim() === 'Address')
     .map(constructorArg => constructorArg.name);
 }
 

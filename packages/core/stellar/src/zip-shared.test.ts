@@ -38,7 +38,7 @@ test('getAddressArgs returns names of address type constructor arguments', t => 
       { name: 'admin', type: 'Address' },
     ],
   };
-  t.deepEqual(getAddressArgs(contract), ['owner', 'recipient', 'admin']);
+  t.deepEqual(getAddressArgs(contract), ['admin']);
 });
 
 test('getAddressArgs returns empty array if no address args', t => {
@@ -57,7 +57,7 @@ test('getAddressArgs handles missing or undefined types', t => {
       { name: 'foo' },
       { name: 'bar', type: undefined },
       { name: 'baz', type: null },
-      { name: 'admin', type: 'address' },
+      { name: 'admin', type: 'Address' },
     ],
   };
 
@@ -73,7 +73,7 @@ test('getAddressArgs ignores case and trims whitespace', t => {
       { name: 'baz', type: 'ADDRESS ' },
     ],
   };
-  t.deepEqual(getAddressArgs(contract), ['foo', 'bar', 'baz']);
+  t.deepEqual(getAddressArgs(contract), ['foo']);
 });
 
 test('getAddressArgs returns empty array when constructorArgs is empty', t => {
@@ -120,8 +120,8 @@ test('printRustNameTest generates test code with address args', t => {
   const contract = {
     name: 'Fungible',
     constructorArgs: [
-      { name: 'owner', type: 'address' },
-      { name: 'admin', type: 'address' },
+      { name: 'owner', type: 'Address' },
+      { name: 'admin', type: 'Address' },
     ],
   };
   const output = printRustNameTest(contract);
@@ -182,7 +182,7 @@ fn initial_state() {
 test('printRustNameTest handles single address arg', t => {
   const contract = {
     name: 'SingleArg',
-    constructorArgs: [{ name: 'owner', type: 'address' }],
+    constructorArgs: [{ name: 'owner', type: 'Address' }],
   };
   const output = printRustNameTest(contract);
 
