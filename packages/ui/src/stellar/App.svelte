@@ -3,6 +3,8 @@
 
   import hljs from './highlightjs';
 
+  import JSZip from 'jszip';
+
   import FungibleControls from './FungibleControls.svelte';
   import NonFungibleControls from './NonFungibleControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -21,7 +23,7 @@
     sanitizeKind,
     OptionsError,
   } from '@openzeppelin/wizard-stellar';
-  import { postConfig } from '../common/post-config';
+  import { postConfig, type DownloadAction } from '../common/post-config';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
@@ -29,6 +31,8 @@
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
+  import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
+  import type { Language } from '../common/languages-types';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -43,12 +47,33 @@
 
   interface ButtonVisibilities {
     downloadScaffold: boolean;
+    downloadRust: boolean;
   }
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     return {
-      downloadScaffold: opts?.kind === 'Fungible' || opts?.kind === 'NonFungible' ? true : false,
+      downloadScaffold: true,
+      downloadRust: true,
     };
+  };
+
+  type ZipFunction = (c: Contract, opts: KindedOptions[Kind]) => Promise<JSZip>;
+
+  export const downloadZip = async (
+    zipFunction: ZipFunction,
+    zipAction: DownloadAction,
+    language: Language,
+    contract: Contract,
+    opts?: KindedOptions[Kind],
+  ) => {
+    if (!opts) throw new Error('No options provided for zip generation');
+
+    const zip = await zipFunction(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+
+    saveAs(blob, 'project.zip');
+
+    if (opts) await postConfig(opts, zipAction, language);
   };
 
   $: showButtons = getButtonVisibilities(opts);
@@ -57,13 +82,16 @@
 
   const downloadScaffoldHandler = async () => {
     const { zipScaffold } = await zipScaffoldModule;
-    if (!opts) throw new Error('No options provided for scaffold generation');
-    const zip = await zipScaffold(contract, opts);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    saveAs(blob, 'project.zip');
-    if (opts) {
-      await postConfig(opts, 'download-scaffold', language);
-    }
+
+    await downloadZip(zipScaffold, 'download-scaffold', 'stellar', contract, opts);
+  };
+
+  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
+
+  const downloadRustHandler = async () => {
+    const { zipRust } = await zipRustModule;
+
+    await downloadZip(zipRust, 'download-rust-stellar', 'stellar', contract, opts);
   };
 
   export let initialTab: string | undefined = 'Fungible';
@@ -195,6 +223,16 @@
               <div class="download-option-content">
                 <p>Scaffold Stellar Package</p>
                 <p>Sample Scaffold Stellar project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
+
+          {#if showButtons.downloadRust}
+            <button class="download-option" on:click={downloadRustHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Rust Development Package</p>
+                <p>Sample Rust project to get started with development and testing.</p>
               </div>
             </button>
           {/if}
