@@ -1,6 +1,5 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
@@ -79,30 +78,16 @@ function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc20Trait);
   // c.addImplementedTrait(erc20MetadataTrait);
 
-  // the trait necessary to access Erc20 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc20', 'IErc20');
-
   // if (pausable) {
-  //   c.addUseClause('alloc::vec', 'Vec');
-  //   c.addUseClause('alloy_primitives', 'Address');
-  //   c.addUseClause('alloy_primitives', 'U256');
-
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
   //   c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
 }
 
 function addPermit(c: ContractBuilder) {
-  c.addImplementedTrait(erc20PermitTrait);
   c.addImplementedTrait(noncesTrait);
+  c.addImplementedTrait(permitTrait);
   c.addEip712();
-
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'B256');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  c.addFunction(erc20PermitTrait, functions.permit);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
@@ -110,14 +95,7 @@ function addPermit(c: ContractBuilder) {
 }
 
 function addBurnable(c: ContractBuilder) {
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc20Burnable');
-
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  c.addFunction(erc20Trait, functions.burn);
-  c.addFunction(erc20Trait, functions.burn_from);
+  c.addImplementedTrait(burnableTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc20Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
@@ -128,137 +106,206 @@ function addBurnable(c: ContractBuilder) {
 function addFlashMint(c: ContractBuilder) {
   c.addImplementedTrait(flashMintTrait);
 
-  // the trait necessary to access Erc20FlashMint functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc20::extensions', 'IErc3156FlashLender');
-
-  c.addUseClause('stylus_sdk', 'abi::Bytes');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  c.addFunction(flashMintTrait, functions.max_flash_loan);
-  c.addFunction(flashMintTrait, functions.flash_fee);
-  c.addFunction(flashMintTrait, functions.flash_loan);
-
   // if (pausable) {
   //   c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);
   // }
 }
 
-const erc20Trait: BaseImplementedTrait = {
-  name: 'Erc20',
+const ERC20_STORAGE_NAME = 'erc20';
+const NONCES_STORAGE_NAME = 'nonces';
+const PERMIT_STORAGE_NAME = 'erc20_permit';
+const FLASH_MINT_STORAGE_NAME = 'flash_mint';
+
+const erc20Trait: StoredContractTrait = {
+  name: 'IErc20',
+  errors: [
+    { variant: 'InsufficientBalance', associated: 'ERC20InsufficientBalance' },
+    { variant: 'InvalidSender', associated: 'ERC20InvalidSender' },
+    { variant: 'InvalidReceiver', associated: 'ERC20InvalidReceiver' },
+    { variant: 'InsufficientAllowance', associated: 'ERC20InsufficientAllowance' },
+    { variant: 'InvalidSpender', associated: 'ERC20InvalidSpender' },
+    { variant: 'InvalidApprover', associated: 'ERC20InvalidApprover' },
+  ],
   storage: {
-    name: 'erc20',
+    name: ERC20_STORAGE_NAME,
     type: 'Erc20',
   },
   modulePath: 'openzeppelin_stylus::token::erc20',
+  requiredImports: [
+    { containerPath: 'alloc::vec', name: 'Vec' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+  ],
+  functions: [
+    {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.total_supply()`,
+    },
+    {
+      name: 'balance_of',
+      args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.balance_of(account)`,
+    },
+    {
+      name: 'transfer',
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.transfer(to, value)?`,
+    },
+    {
+      name: 'allowance',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.allowance(owner, spender)`,
+    },
+    {
+      name: 'approve',
+      args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.approve(spender, value)?`,
+    },
+    {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'value', type: 'U256' },
+      ],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.transfer_from(from, to, value)?`,
+    },
+  ],
 };
 
-const erc20PermitTrait: BaseImplementedTrait = {
-  name: 'Erc20Permit',
+const noncesTrait: StoredContractTrait = {
+  name: 'INonces',
   storage: {
-    name: 'erc20_permit',
-    type: 'Erc20Permit<Eip712>',
-  },
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
-};
-
-const flashMintTrait: BaseImplementedTrait = {
-  name: 'Erc20FlashMint',
-  storage: {
-    name: 'flash_mint',
-    type: 'Erc20FlashMint',
-  },
-  omitInherit: true,
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
-};
-
-const noncesTrait: BaseImplementedTrait = {
-  name: 'Nonces',
-  storage: {
-    name: 'nonces',
+    name: NONCES_STORAGE_NAME,
     type: 'Nonces',
   },
   modulePath: 'openzeppelin_stylus::utils::nonces',
+  functions: [
+    {
+      name: 'nonces',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
+      code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
+      returns: 'U256',
+    },
+  ],
 };
 
-// const erc20MetadataTrait: BaseImplementedTrait = {
+const permitTrait: StoredContractTrait = {
+  name: 'IErc20Permit',
+  errors: [
+    { variant: 'ExpiredSignature', associated: 'ERC2612ExpiredSignature' },
+    { variant: 'InvalidSigner', associated: 'ERC2612InvalidSigner' },
+    { variant: 'InvalidSignature', associated: 'ECDSAInvalidSignature' },
+    { variant: 'InvalidSignatureS', associated: 'ECDSAInvalidSignatureS' },
+  ],
+  storage: {
+    name: PERMIT_STORAGE_NAME,
+    type: 'Erc20Permit',
+    genericType: 'Eip712',
+  },
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' }],
+  functions: [
+    {
+      name: 'domain_separator',
+      attribute: 'selector(name = "DOMAIN_SEPARATOR")',
+      args: [getSelfArg('immutable')],
+      returns: 'B256',
+      code: `self.${PERMIT_STORAGE_NAME}.domain_separator()`,
+    },
+    {
+      name: 'permit',
+      args: [
+        getSelfArg(),
+        { name: 'owner', type: 'Address' },
+        { name: 'spender', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'deadline', type: 'U256' },
+        { name: 'v', type: 'u8' },
+        { name: 'r', type: 'B256' },
+        { name: 's', type: 'B256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
+    },
+  ],
+};
+
+const burnableTrait: ContractTrait = {
+  name: 'IErc20Burnable',
+  errors: [],
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  functions: [
+    {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
+    },
+    {
+      name: 'burn_from',
+      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
+    },
+  ],
+};
+
+const flashMintTrait: StoredContractTrait = {
+  name: 'IErc3156FlashLender',
+  errors: [
+    { variant: 'UnsupportedToken', associated: 'ERC3156UnsupportedToken' },
+    { variant: 'ExceededMaxLoan', associated: 'ERC3156ExceededMaxLoan' },
+    { variant: 'ERC3156InvalidReceiver', associated: 'ERC3156InvalidReceiver' },
+  ],
+  storage: {
+    name: FLASH_MINT_STORAGE_NAME,
+    type: 'Erc20FlashMint',
+  },
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
+  functions: [
+    {
+      name: 'max_flash_loan',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${FLASH_MINT_STORAGE_NAME}.max_flash_loan(token, &self.${ERC20_STORAGE_NAME})`,
+    },
+    {
+      name: 'flash_fee',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_fee(token, value)?`,
+    },
+    {
+      name: 'flash_loan',
+      args: [
+        getSelfArg(),
+        { name: 'receiver', type: 'Address' },
+        { name: 'token', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
+    },
+  ],
+};
+
+// const erc20MetadataTrait: ImplementedTrait = {
 //   name: 'Erc20Metadata',
+//   interface: 'IErc20Metadata',
 //   storage: {
 //     name: 'metadata',
 //     type: 'Erc20Metadata',
 //   }
 //   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
 // }
-
-const functions = defineFunctions({
-  // Token Functions
-  transfer: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.transfer(to, value).map_err(|e| e.into())`],
-  },
-  transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'value', type: 'U256' },
-    ],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.transfer_from(from, to, value).map_err(|e| e.into())`],
-  },
-
-  // Extensions
-  burn: {
-    args: [getSelfArg(), { name: 'value', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.burn(value).map_err(|e| e.into())`],
-  },
-  burn_from: {
-    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc20Trait.storage.name}.burn_from(account, value).map_err(|e| e.into())`],
-  },
-
-  permit: {
-    attribute: 'allow(clippy::too_many_arguments)',
-    args: [
-      getSelfArg(),
-      { name: 'owner', type: 'Address' },
-      { name: 'spender', type: 'Address' },
-      { name: 'value', type: 'U256' },
-      { name: 'deadline', type: 'U256' },
-      { name: 'v', type: 'u8' },
-      { name: 'r', type: 'B256' },
-      { name: 's', type: 'B256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    code: [
-      `self.${erc20PermitTrait.storage.name}.permit(owner, spender, value, deadline, v, r, s, &mut self.${erc20Trait.storage.name}, &mut self.${noncesTrait.storage.name}).map_err(|e| e.into())`,
-    ],
-  },
-
-  max_flash_loan: {
-    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
-    returns: 'U256',
-    code: [`self.${flashMintTrait.storage.name}.max_flash_loan(token, &self.${erc20Trait.storage.name})`],
-  },
-  flash_fee: {
-    args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
-    returns: 'Result<U256, Vec<u8>>',
-    code: [`self.${flashMintTrait.storage.name}.flash_fee(token, value).map_err(|e| e.into())`],
-  },
-  flash_loan: {
-    args: [
-      getSelfArg(),
-      { name: 'receiver', type: 'Address' },
-      { name: 'token', type: 'Address' },
-      { name: 'value', type: 'U256' },
-      { name: 'data', type: 'Bytes' },
-    ],
-    returns: 'Result<bool, Vec<u8>>',
-    code: [
-      `self.${flashMintTrait.storage.name}.flash_loan(receiver, token, value, data, &mut self.${erc20Trait.storage.name}).map_err(|e| e.into())`,
-    ],
-  },
-});

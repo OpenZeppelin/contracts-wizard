@@ -5,20 +5,25 @@ type Name = {
   stringLiteral: string;
 };
 
+type InterfaceName = string;
+
 export interface Contract {
   license: string;
   securityContact: string;
   name: Name;
   documentations: string[];
   useClauses: UseClause[];
-  implementedTraits: ImplementedTrait[];
+  implementedTraits: ContractTrait[];
   constants: Variable[];
   eip712Needed?: boolean;
+  functions: ContractFunction[];
+  error?: string | InterfaceName[];
 }
 
-export interface Storage {
+export interface Implementation {
   name: string;
   type: string;
+  genericType?: string;
 }
 
 export interface UseClause {
@@ -28,28 +33,33 @@ export interface UseClause {
   alias?: string;
 }
 
-export interface BaseImplementedTrait {
-  name: string;
-  storage: Storage;
-  section?: string;
+export interface ContractTrait {
+  name: InterfaceName;
+  errors?: { variant: string; associated: string }[];
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
    */
   priority?: number;
-  omitInherit?: boolean;
   modulePath: string;
+  functions: ContractFunction[];
+  requiredImports?: UseClause[];
 }
 
-export interface ImplementedTrait extends BaseImplementedTrait {
-  functions: ContractFunction[];
+export interface StoredContractTrait extends ContractTrait {
+  storage: Implementation;
+}
+
+export interface Result {
+  ok: string;
+  err: 'Self::Error';
 }
 
 export interface BaseFunction {
   name: string;
   args: Argument[];
-  code: string[];
-  returns?: string;
+  code: string;
+  returns?: string | Result;
   comments?: string[];
   attribute?: string;
 }
@@ -79,11 +89,12 @@ export class ContractBuilder implements Contract {
 
   readonly documentations: string[] = [];
 
-  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
+  private implementedTraitsMap: Map<string, ContractTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
-  private errorsMap: Map<string, Error> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
+  private functionsArr: ContractFunction[] = [];
 
+  error?: string | InterfaceName[];
   eip712Needed?: boolean;
 
   constructor(name: string) {
@@ -91,10 +102,10 @@ export class ContractBuilder implements Contract {
       identifier: toIdentifier(name, true),
       stringLiteral: escapeString(name),
     };
-    this.addUseClause('stylus_sdk', 'prelude::*');
+    this.addUseClause({ containerPath: 'stylus_sdk::prelude', name: '*' });
   }
 
-  get implementedTraits(): ImplementedTrait[] {
+  get implementedTraits(): ContractTrait[] {
     return [...this.implementedTraitsMap.values()];
   }
 
@@ -102,18 +113,18 @@ export class ContractBuilder implements Contract {
     return [...this.useClausesMap.values()];
   }
 
-  get errors(): Error[] {
-    return [...this.errorsMap.values()];
-  }
-
   get constants(): Variable[] {
     return [...this.constantsMap.values()];
   }
 
-  addUseClause(containerPath: string, name: string, options?: { groupable?: boolean; alias?: string }): void {
+  get functions(): ContractFunction[] {
+    return [...this.functionsArr];
+  }
+
+  addUseClause({ containerPath, name, groupable, alias }: UseClause): void {
     // groupable defaults to true
-    const groupable = options?.groupable ?? true;
-    const alias = options?.alias ?? '';
+    groupable ??= true;
+    alias ??= '';
     const uniqueName = alias.length > 0 ? alias : name;
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
@@ -121,18 +132,22 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addImplementedTrait(baseTrait: BaseImplementedTrait): ImplementedTrait {
-    const key = baseTrait.name;
+  addImplementedTrait(trait: ContractTrait): ContractTrait {
+    const key = trait.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = {
-        ...baseTrait,
-        functions: [],
-      };
+      const t: ContractTrait = copy(trait);
       this.implementedTraitsMap.set(key, t);
-      this.addUseClause(baseTrait.modulePath, baseTrait.name);
+      if (isStoredContractTrait(t)) {
+        this.addUseClause({ containerPath: t.modulePath, name: t.storage.type });
+      }
+      this.addUseClause({ containerPath: t.modulePath, name: t.name });
+      for (const useClause of t.requiredImports ?? []) {
+        this.addUseClause({ ...useClause });
+      }
+
       return t;
     }
   }
@@ -147,7 +162,7 @@ export class ContractBuilder implements Contract {
   }
 
   addEip712() {
-    this.addUseClause('openzeppelin_stylus::utils::cryptography::eip712', 'IEip712');
+    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography::eip712', name: 'IEip712' });
     this.eip712Needed = true;
   }
 
@@ -155,8 +170,8 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(baseTrait: BaseImplementedTrait, fn: BaseFunction): ContractFunction {
-    const t = this.addImplementedTrait(baseTrait);
+  addFunction(fn: BaseFunction, trait?: ContractTrait): ContractFunction {
+    const t = trait ? this.addImplementedTrait(trait) : this;
 
     const signature = this.getFunctionSignature(fn);
 
@@ -169,11 +184,14 @@ export class ContractBuilder implements Contract {
     }
 
     // Otherwise, add the function
-    const contractFn: ContractFunction = {
-      ...fn,
-      codeBefore: [],
-    };
-    t.functions.push(contractFn);
+    const contractFn: ContractFunction = copy(fn);
+
+    if (t === this) {
+      t.functionsArr.push(contractFn);
+    } else {
+      t.functions.push(contractFn);
+    }
+
     return contractFn;
   }
 
@@ -181,27 +199,23 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  setFunctionCode(baseTrait: BaseImplementedTrait, fn: BaseFunction, code: string[]): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  setFunctionCode(fn: BaseFunction, code: string, trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.code = code;
   }
 
-  addFunctionCodeBefore(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeBefore: string[]): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionCodeAfter(baseTrait: BaseImplementedTrait, fn: BaseFunction, codeAfter: string[]): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
-  addFunctionAttribute(baseTrait: BaseImplementedTrait, fn: BaseFunction, attribute: string): void {
-    this.addImplementedTrait(baseTrait);
-    const existingFn = this.addFunction(baseTrait, fn);
+  addFunctionAttribute(fn: BaseFunction, attribute: string, trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.attribute = attribute;
   }
 
@@ -212,4 +226,12 @@ export class ContractBuilder implements Contract {
   addSecurityTag(securityContact: string) {
     this.securityContact = securityContact;
   }
+}
+
+function copy<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+export function isStoredContractTrait(trait: ContractTrait): trait is StoredContractTrait {
+  return 'storage' in trait;
 }

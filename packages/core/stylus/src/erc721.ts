@@ -1,6 +1,5 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
@@ -71,92 +70,237 @@ export function buildERC721(opts: ERC721Options): Contract {
 
 function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc721Trait);
+  c.addImplementedTrait(erc165Trait);
   // c.addImplementedTrait(erc721MetadataTrait);
-
-  // the trait necessary to access Erc721 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc721', 'IErc721');
-
-  // Call nested IErc65 from Erc721
-  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(erc721Trait, functions.supports_interface);
 
   // if (pausable) {
   //   // Add transfer functions with pause checks
-  //   c.addUseClause('alloc::vec', 'Vec');
-  //   c.addUseClause('alloy_primitives', 'Address');
-  //   c.addUseClause('alloy_primitives', 'U256');
 
   //   c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
   // }
 }
 
 function addBurnable(c: ContractBuilder, enumerable: boolean) {
-  c.addUseClause('openzeppelin_stylus::token::erc721::extensions', 'IErc721Burnable');
-
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  c.addFunction(erc721Trait, functions.burn);
+  c.addImplementedTrait(burnableTrait);
 
   // if (pausable) {
   //   c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
   // }
 
   if (enumerable) {
-    c.setFunctionCode(erc721Trait, functions.burn, [
-      `let owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
-      `self.${erc721Trait.storage.name}.burn(token_id)?;`,
-      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
-      `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
-      'Ok(())',
-    ]);
+    c.addFunctionCodeBefore(
+      burnableTrait.functions[0]!,
+      [`let owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
+      burnableTrait,
+    );
+    c.addFunctionCodeAfter(
+      burnableTrait.functions[0]!,
+      [
+        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage!.name})?;`,
+        `self.${enumerableTrait.storage!.name}._remove_token_from_all_tokens_enumeration(token_id);`,
+        'Ok(())',
+      ],
+      burnableTrait,
+    );
   }
 }
 
 function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
 
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
-  c.addUseClause('stylus_sdk', 'abi::Bytes');
+  c.addFunctionCodeAfter(
+    erc165Trait.functions[0]!,
+    [indentLine(`|| self.${enumerableTrait.storage!.name}.supports_interface(interface_id)`, 1)],
+    erc165Trait,
+  );
 
-  c.addFunctionCodeAfter(erc721Trait, functions.supports_interface, [
-    indentLine(`|| ${enumerableTrait.storage.type}::supports_interface(interface_id)`, 1),
-  ]);
-
-  for (const fn of [functions.transfer_from, functions.safe_transfer_from, functions.safe_transfer_from_with_data]) {
-    c.addFunctionCodeBefore(erc721Trait, fn, [
-      `let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`,
-    ]);
-    c.addFunctionCodeAfter(erc721Trait, fn, [
-      `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
-      `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
-      'Ok(())',
-    ]);
+  // safe_transfer_from, safe_transfer_from_with_data, transfer_from
+  for (const fn of [erc721Trait.functions[2]!, erc721Trait.functions[3]!, erc721Trait.functions[4]!]) {
+    c.addFunctionCodeBefore(
+      fn,
+      [`let previous_owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
+      erc721Trait,
+    );
+    c.addFunctionCodeAfter(
+      fn,
+      [
+        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage!.name})?;`,
+        `self.${enumerableTrait.storage!.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage!.name})?;`,
+        'Ok(())',
+      ],
+      erc721Trait,
+    );
   }
 }
 
-const erc721Trait: BaseImplementedTrait = {
-  name: 'Erc721',
+const ERC721_STORAGE_NAME = 'erc721';
+const ENUMERABLE_STORAGE_NAME = 'enumerable';
+
+const erc721Trait: StoredContractTrait = {
+  name: 'IErc721',
+  errors: [
+    { variant: 'InvalidOwner', associated: 'ERC721InvalidOwner' },
+    { variant: 'NonexistentToken', associated: 'ERC721NonexistentToken' },
+    { variant: 'IncorrectOwner', associated: 'ERC721IncorrectOwner' },
+    { variant: 'InvalidSender', associated: 'ERC721InvalidSender' },
+    { variant: 'InvalidReceiver', associated: 'ERC721InvalidReceiver' },
+    { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
+    { variant: 'InsufficientApproval', associated: 'ERC721InsufficientApproval' },
+    { variant: 'InvalidApprover', associated: 'ERC721InvalidApprover' },
+    { variant: 'InvalidOperator', associated: 'ERC721InvalidOperator' },
+  ],
   storage: {
-    name: 'erc721',
+    name: ERC721_STORAGE_NAME,
     type: 'Erc721',
   },
   modulePath: 'openzeppelin_stylus::token::erc721',
+  priority: 1,
+  requiredImports: [
+    { containerPath: 'alloc::vec', name: 'Vec' },
+    { containerPath: 'stylus_sdk::abi', name: 'Bytes' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+  ],
+  functions: [
+    {
+      name: 'balance_of',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.balance_of(owner)?`,
+    },
+    {
+      name: 'owner_of',
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.owner_of(token_id)?`,
+    },
+    {
+      name: 'safe_transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from(from, to, token_id)?`,
+    },
+    {
+      name: 'safe_transfer_from_with_data',
+      attribute: 'selector(name = "safeTransferFrom")',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from_with_data(from, to, token_id, data)?`,
+    },
+    {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.transfer_from(from, to, token_id)?`,
+    },
+    {
+      name: 'approve',
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.approve(to, token_id)?`,
+    },
+    {
+      name: 'set_approval_for_all',
+      args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.set_approval_for_all(operator, approved)?`,
+    },
+    {
+      name: 'get_approved',
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.get_approved(token_id)?`,
+    },
+    {
+      name: 'is_approved_for_all',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'operator', type: 'Address' }],
+      returns: 'bool',
+      code: `self.${ERC721_STORAGE_NAME}.is_approved_for_all(owner, operator)`,
+    },
+  ],
 };
 
-const enumerableTrait: BaseImplementedTrait = {
-  name: 'Erc721Enumerable',
+const erc165Trait: ContractTrait = {
+  name: 'IErc165',
+  modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
+  priority: 4,
+  requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
+  functions: [
+    {
+      name: 'supports_interface',
+      args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
+      returns: 'bool',
+      code: `self.${ERC721_STORAGE_NAME}.supports_interface(interface_id)`,
+    },
+  ],
+};
+
+const burnableTrait: ContractTrait = {
+  name: 'IErc721Burnable',
+  errors: [],
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  priority: 3,
+  functions: [
+    {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.burn(token_id)?`,
+    },
+  ],
+};
+
+const enumerableTrait: StoredContractTrait = {
+  name: 'IErc721Enumerable',
+  errors: [
+    { variant: 'OutOfBoundsIndex', associated: 'ERC721OutOfBoundsIndex' },
+    { variant: 'EnumerableForbiddenBatchMint', associated: 'ERC721EnumerableForbiddenBatchMint' },
+  ],
   storage: {
-    name: 'enumerable',
+    name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  priority: 2,
+  functions: [
+    {
+      name: 'token_of_owner_by_index',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'index', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ENUMERABLE_STORAGE_NAME}.token_of_owner_by_index(owner, index)?`,
+    },
+    {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: `self.${ENUMERABLE_STORAGE_NAME}.total_supply()`,
+    },
+    {
+      name: 'token_by_index',
+      args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ENUMERABLE_STORAGE_NAME}.token_by_index(index)?`,
+    },
+  ],
 };
 
-// const erc721MetadataTrait: BaseImplementedTrait = {
+// const erc721MetadataTrait: ImplementedTrait = {
 //   name: 'Erc721Metadata',
 //   storage: {
 //     name: 'metadata',
@@ -164,56 +308,3 @@ const enumerableTrait: BaseImplementedTrait = {
 //   }
 //   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
 // }
-
-const functions = defineFunctions({
-  // Token Functions
-  transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.transfer_from(from, to, token_id)?;`],
-  },
-  safe_transfer_from: {
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.safe_transfer_from(from, to, token_id)?;`],
-  },
-  safe_transfer_from_with_data: {
-    attribute: 'selector(name = "safeTransferFrom")',
-    args: [
-      getSelfArg(),
-      { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'U256' },
-      { name: 'data', type: 'Bytes' },
-    ],
-    returns: 'Result<(), Vec<u8>>',
-    // safe to end the code with `?;`, as when this code is set, it will have surrounding code
-    code: [`self.${erc721Trait.storage.name}.safe_transfer_from_with_data(from, to, token_id, data)?;`],
-  },
-
-  // Overrides
-  supports_interface: {
-    args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
-    returns: 'bool',
-    code: ['Erc721::supports_interface(interface_id)'],
-  },
-
-  // Extensions
-  burn: {
-    args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
-    returns: 'Result<(), Vec<u8>>',
-    code: [`self.${erc721Trait.storage.name}.burn(token_id).map_err(|e| e.into())`],
-  },
-});
