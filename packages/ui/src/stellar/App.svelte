@@ -81,17 +81,17 @@
   const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
 
   const downloadScaffoldHandler = async () => {
-    const { zipScaffold } = await zipScaffoldModule;
+    const { zipScaffoldProject } = await zipScaffoldModule;
 
-    await downloadZip(zipScaffold, 'download-scaffold', 'stellar', contract, opts);
+    await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
   };
 
   const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
 
   const downloadRustHandler = async () => {
-    const { zipRust } = await zipRustModule;
+    const { zipRustProject } = await zipRustModule;
 
-    await downloadZip(zipRust, 'download-rust-stellar', 'stellar', contract, opts);
+    await downloadZip(zipRustProject, 'download-rust-stellar', 'stellar', contract, opts);
   };
 
   export let initialTab: string | undefined = 'Fungible';
