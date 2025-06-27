@@ -20,6 +20,11 @@ export const stellarCommonFunctionDescription = {
     type: 'object',
     description: infoDescriptions.info,
     properties: {
+      securityContact: {
+        type: 'string',
+        description: infoDescriptions.securityContact,
+      },
+
       license: {
         type: 'string',
         description: infoDescriptions.license,
