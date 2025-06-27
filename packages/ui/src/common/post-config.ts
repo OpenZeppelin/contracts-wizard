@@ -15,8 +15,7 @@ export type Action =
   | 'download-file'
   | 'download-hardhat'
   | 'download-foundry'
-  | 'download-scaffold'
-  | 'defender';
+  | 'download-scaffold';
 export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar';
 
 export async function postConfig(
