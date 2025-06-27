@@ -225,7 +225,7 @@ This project demonstrates a basic Scaffold use case. It comes with a contract ge
 ## Installing dependencies
 
 - See [Git installation guide](https://github.com/git-guides/install-git).
-- See [Rust installation guide](https://www.rust-lang.org/tools/install).
+- See [Rust and Stellar installation guide](https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup).
 - See [Scaffold CLI installation guide](https://github.com/AhaLabs/scaffold-stellar?tab=readme-ov-file#quick-start).
 - See [Docker installation guide](https://docs.docker.com/engine/install/).
 - See [Node installation guide](https://nodejs.org/en/download).

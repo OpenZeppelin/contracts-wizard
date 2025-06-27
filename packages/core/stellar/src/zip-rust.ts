@@ -37,7 +37,7 @@ Continue your development journey with [Stellar CLI](https://github.com/stellar/
 
 ## Installing dependencies
 
-- See [Rust installation guide](https://www.rust-lang.org/tools/install).
+- See [Rust and Stellar installation guide](https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup).
 - See [Git installation guide](https://github.com/git-guides/install-git).
 `;
 
