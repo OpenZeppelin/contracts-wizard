@@ -1,4 +1,14 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, Result, Interface, SolError, NonEmptyArray } from './contract';
+import {
+  type Contract,
+  type Argument,
+  type ContractFunction,
+  type ContractTrait,
+  type UseClause,
+  type Result,
+  type SolError,
+  type TraitName,
+  isStoredContractTrait,
+} from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -8,16 +18,18 @@ const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
-type ErrorRecord = Record<string, { module: string, errors: SolError[] }>;
+type ErrorMap = Map<string, { module: string; errors: SolError[] }>;
 
-type ErrorData = {
-  type: 'inherited';
-  commonType: string;
-} | {
-  type: 'enum';
-  commonType: "Error";
-  record: ErrorRecord;
-};
+type ErrorData =
+  | {
+      type: 'inherited';
+      commonType: string;
+    }
+  | {
+      type: 'enum';
+      commonType: 'Error';
+      errorMap: ErrorMap;
+    };
 
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
@@ -27,6 +39,8 @@ export function printContract(contract: Contract): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts for Stylus ${compatibleContractsSemver}`,
+        ...printDocumentations(contract.documentations),
+        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
       ],
       [`#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]`, `extern crate alloc;`],
       spaceBetween(
@@ -144,12 +158,12 @@ function sortUseClauses(contract: Contract): UseClause[] {
  * Sorts implemented traits by priority and name, and groups them by section.
  * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
  */
-function sortImpls(contract: Contract): ImplementedTrait[] {
+function sortImpls(contract: Contract): ContractTrait[] {
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
     }
-    return a.interface.name.localeCompare(b.interface.name);
+    return a.name.localeCompare(b.name);
   });
 
   return sortedTraits;
@@ -160,30 +174,30 @@ function sortImpls(contract: Contract): ImplementedTrait[] {
  * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
  */
 function extractErrors(contract: Contract): ErrorData | undefined {
-  const wrapped: Interface[] = [];
-  const record: ErrorRecord = contract.implementedTraits
+  const wrapped: TraitName[] = [];
+  const errorMap: ErrorMap = contract.implementedTraits
     .filter(trait => trait.errors)
     .reduce((res, trait) => {
       const errors = trait.errors!;
-      if ("wraps" in errors) {
+      if ('wraps' in errors) {
         const wrappedErr = errors.wraps;
         wrapped.push(wrappedErr);
       }
       const modulePathSegments = trait.modulePath.split('::');
-      res[trait.interface.name] = { module: modulePathSegments.pop()!, errors: "wraps" in errors ? errors.list : errors };
+      res.set(trait.name, { module: modulePathSegments.pop()!, errors: 'wraps' in errors ? errors.list : errors });
       return res;
-    }, {} as ErrorRecord);
+    }, {} as ErrorMap);
 
   for (const iface of wrapped) {
-    delete record[iface.name];
+    errorMap.delete(iface);
   }
 
-  const ifacesWithErrors = Object.keys(record);
+  const ifacesWithErrors = Object.keys(errorMap);
   return ifacesWithErrors.length === 0
     ? undefined
     : ifacesWithErrors.length === 1
-      ? { type: 'inherited', commonType: `${record[ifacesWithErrors[0]!]!.module}::Error` }
-      : { type: 'enum', commonType: 'Error', record };
+      ? { type: 'inherited', commonType: `${errorMap.get(ifacesWithErrors[0]!)!.module}::Error` }
+      : { type: 'enum', commonType: 'Error', errorMap };
 }
 
 function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
@@ -193,7 +207,6 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
     if (errorData.type === 'enum') {
       lines.push('#[derive(SolidityError, Debug)]');
       lines.push('enum Error {');
-
     }
   }
   for (const constant of contract.constants) {
@@ -213,13 +226,11 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
   return lines;
 }
 
-function printStorage(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
-  const structLines = implementedTraits
-    .filter(trait => !!trait.storage)
-    .map(({ storage: i }) => {
-      const generics = i!.genericType ? `<${i!.genericType}>` : '';
-      return [`${i!.name}: ${i!.type}${generics},`];
-    });
+function printStorage(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
+  const structLines = implementedTraits.filter(isStoredContractTrait).map(({ storage: s }) => {
+    const generics = s.genericType ? `<${s.genericType}>` : '';
+    return [`${s.name}: ${s.type}${generics},`];
+  });
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];
 
@@ -239,22 +250,21 @@ function printEip712(contractName: string): Lines[] {
   ];
 }
 
-function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[], errorType?: string): Lines[] {
-  const traitNames = implementedTraits
-    .map(trait => {
-      let name = trait.interface.name;
-      if (trait.errors) {
-        if (!errorType) {
-          throw new Error(`Invalid impl attribute state for ${trait.interface.name}: errorType undefined`);
-        }
-        name = `${name}<Error = ${errorType}>`
+function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
+  const traitNames = implementedTraits.map(trait => {
+    let name = trait.name;
+    if (trait.errors) {
+      if (!errorType) {
+        throw new Error(`Invalid impl attribute state for ${trait.name}: errorType undefined`);
       }
-      return name;
-    });
+      name = `${name}<Error = ${errorType}>`;
+    }
+    return name;
+  });
 
-  let header = ['#[public]'];
+  const header = ['#[public]'];
   if (traitNames.length > 0) {
-    header.push(`#[implements(${traitNames.join(', ')})]`)
+    header.push(`#[implements(${traitNames.join(', ')})]`);
   }
 
   const fns = contract.functions.map(printFunction);
@@ -264,15 +274,15 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Impleme
     : [...header, `impl ${contract.name.identifier} {}`];
 }
 
-function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[], errorType?: string): Lines[] {
-  return spaceBetween(...implementedTraits
-    .map((trait) => {
-      let content: Lines[] = []
+function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
+  return spaceBetween(
+    ...implementedTraits.map(trait => {
+      const content: Lines[] = [];
       if (trait.errors) {
         if (!errorType) {
-          throw new Error(`Invalid impl block state for ${trait.interface.name}: errorType undefined`);
+          throw new Error(`Invalid impl block state for ${trait.name}: errorType undefined`);
         }
-        content.push(`type Error = ${errorType};`, '')
+        content.push(`type Error = ${errorType};`, '');
       }
       const fns = printTraitFunctions(trait);
       if (fns.length > 0) {
@@ -280,14 +290,13 @@ function printImplementedTraits(contractName: string, implementedTraits: Impleme
       }
 
       return content.length > 0
-        ? ['#[public]', `impl ${trait.interface} for ${contractName} {`, [spaceBetween(content)], '}']
-        : ['#[public]', `impl ${trait.interface} for ${contractName} {}`]
-    })
-  )
-    .flatMap(lines => lines);
+        ? ['#[public]', `impl ${trait.name} for ${contractName} {`, [spaceBetween(content)], '}']
+        : ['#[public]', `impl ${trait.name} for ${contractName} {}`];
+    }),
+  ).flatMap(lines => lines);
 }
 
-function printTraitFunctions(impl: ImplementedTrait): Lines[] {
+function printTraitFunctions(impl: ContractTrait): Lines[] {
   const functionBlocks = impl.functions.map(fn => printFunction(fn));
   return spaceBetween(...functionBlocks);
 }
@@ -297,17 +306,17 @@ function printFunction(fn: ContractFunction): Lines[] {
   const args = fn.args.map(a => printArgument(a));
 
   const mainCode = !fn.returns
-    ? !!fn.codeAfter?.length
+    ? fn.codeAfter?.length
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
-      // if there's code after, it's probably chained view function(s)
-      ? [fn.code].concat(fn.codeAfter ?? [])
-      : !!fn.codeAfter?.length
+      ? // if there's code after, it's probably chained view function(s)
+        [fn.code].concat(fn.codeAfter ?? [])
+      : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
 
-  const codeLines = (fn.codeBefore?.concat(mainCode) ?? mainCode);
+  const codeLines = fn.codeBefore?.concat(mainCode) ?? mainCode;
 
   return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
@@ -381,4 +390,12 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentations(documentations: string[]): string[] {
+  return documentations.map(documentation => `//! ${documentation}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }

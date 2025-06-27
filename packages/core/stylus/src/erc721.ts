@@ -1,4 +1,4 @@
-import type { Contract, ImplementedTrait } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -91,7 +91,7 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
     c.addFunctionCodeBefore(
       burnableTrait.functions[0]!,
       [`let owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
-      burnableTrait
+      burnableTrait,
     );
     c.addFunctionCodeAfter(
       burnableTrait.functions[0]!,
@@ -100,7 +100,7 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
         `self.${enumerableTrait.storage!.name}._remove_token_from_all_tokens_enumeration(token_id);`,
         'Ok(())',
       ],
-      burnableTrait
+      burnableTrait,
     );
   }
 }
@@ -109,7 +109,7 @@ function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
 
   c.addFunctionCodeAfter(
-    erc165Trait.functions[0]!, 
+    erc165Trait.functions[0]!,
     [indentLine(`|| self.${enumerableTrait.storage!.name}.supports_interface(interface_id)`, 1)],
     erc165Trait,
   );
@@ -136,11 +136,9 @@ function addEnumerable(c: ContractBuilder) {
 const ERC721_STORAGE_NAME = 'erc721';
 const ENUMERABLE_STORAGE_NAME = 'enumerable';
 
-const erc721Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721',
-    associatedError: true,
-  },
+const erc721Trait: StoredContractTrait = {
+  name: 'IErc721',
+  associatedError: true,
   errors: [
     { variant: 'InvalidOwner', value: 'ERC721InvalidOwner' },
     { variant: 'NonexistentToken', value: 'ERC721NonexistentToken' },
@@ -167,19 +165,13 @@ const erc721Trait: ImplementedTrait = {
   functions: [
     {
       name: 'balance_of',
-      args: [
-        getSelfArg('immutable'),
-        { name: 'owner', type: 'Address' },
-      ],
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.balance_of(owner)?`,
     },
     {
       name: 'owner_of',
-      args: [
-        getSelfArg('immutable'),
-        { name: 'token_id', type: 'U256' },
-      ],
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
       returns: { ok: 'Address', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.owner_of(token_id)?`,
     },
@@ -220,50 +212,33 @@ const erc721Trait: ImplementedTrait = {
     },
     {
       name: 'approve',
-      args: [
-        getSelfArg(),
-        { name: 'to', type: 'Address' },
-        { name: 'token_id', type: 'U256' },
-      ],
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.approve(to, token_id)?`,
     },
     {
       name: 'set_approval_for_all',
-      args: [
-        getSelfArg(),
-        { name: 'operator', type: 'Address' },
-        { name: 'approved', type: 'bool' },
-      ],
+      args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.set_approval_for_all(operator, approved)?`,
     },
     {
       name: 'get_approved',
-      args: [
-        getSelfArg('immutable'),
-        { name: 'token_id', type: 'U256' },
-      ],
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
       returns: { ok: 'Address', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.get_approved(token_id)?`,
     },
     {
       name: 'is_approved_for_all',
-      args: [
-        getSelfArg('immutable'),
-        { name: 'owner', type: 'Address' },
-        { name: 'operator', type: 'Address' },
-      ],
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'operator', type: 'Address' }],
       returns: 'bool',
       code: `self.${ERC721_STORAGE_NAME}.is_approved_for_all(owner, operator)`,
     },
   ],
 };
 
-const erc165Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc165',
-  },
+const erc165Trait: ContractTrait = {
+  name: 'IErc165',
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
   priority: 4,
   requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
@@ -277,11 +252,9 @@ const erc165Trait: ImplementedTrait = {
   ],
 };
 
-const burnableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721Burnable',
-    associatedError: true,
-  },
+const burnableTrait: ContractTrait = {
+  name: 'IErc721Burnable',
+  associatedError: true,
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
   priority: 3,
   functions: [
@@ -294,11 +267,9 @@ const burnableTrait: ImplementedTrait = {
   ],
 };
 
-const enumerableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc721Enumerable',
-    associatedError: true,
-  },
+const enumerableTrait: StoredContractTrait = {
+  name: 'IErc721Enumerable',
+  associatedError: true,
   errors: [
     { variant: 'OutOfBoundsIndex', value: 'ERC721OutOfBoundsIndex' },
     { variant: 'EnumerableForbiddenBatchMint', value: 'ERC721EnumerableForbiddenBatchMint' },
@@ -312,11 +283,7 @@ const enumerableTrait: ImplementedTrait = {
   functions: [
     {
       name: 'token_of_owner_by_index',
-      args: [
-        getSelfArg('immutable'),
-        { name: 'owner', type: 'Address' },
-        { name: 'index', type: 'U256' },
-      ],
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'index', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ENUMERABLE_STORAGE_NAME}.token_of_owner_by_index(owner, index)?`,
     },
@@ -332,7 +299,7 @@ const enumerableTrait: ImplementedTrait = {
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ENUMERABLE_STORAGE_NAME}.token_by_index(index)?`,
     },
-  ]
+  ],
 };
 
 // const erc721MetadataTrait: ImplementedTrait = {

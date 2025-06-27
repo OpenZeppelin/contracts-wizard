@@ -1,5 +1,5 @@
 import { getSelfArg } from './common-options';
-import type { ContractBuilder, ImplementedTrait } from './contract';
+import type { ContractBuilder, StoredContractTrait } from './contract';
 import type { Access } from './set-access-control';
 
 export function addPausable(c: ContractBuilder, _access: Access) {
@@ -9,8 +9,8 @@ export function addPausable(c: ContractBuilder, _access: Access) {
   // requireAccessControl(c, pausableTrait, functions.unpause, access, 'PAUSER', 'pauser');
 }
 
-const pausableTrait: ImplementedTrait = {
-  interface: 'IPausable',
+const pausableTrait: StoredContractTrait = {
+  name: 'IPausable',
   storage: {
     name: 'pausable',
     type: 'Pausable',
@@ -29,5 +29,5 @@ const pausableTrait: ImplementedTrait = {
       returns: { ok: '()', err: 'Self::Error' },
       code: 'self.pausable.unpause()?',
     },
-  ]
+  ],
 };

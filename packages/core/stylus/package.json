@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-stylus",
-  "version": "0.2.0-alpha.4",
+  "version": "0.2.0-alpha.5",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Stylus",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -17,7 +17,8 @@
     "prepare": "tsc",
     "prepublish": "rimraf dist *.tsbuildinfo",
     "test": "ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch",
+    "test:update-snapshots": "ava --update-snapshots"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

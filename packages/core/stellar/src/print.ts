@@ -9,6 +9,13 @@ const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '    ';
+export const createLevelAttributes = [`#![no_std]`];
+
+export const removeCreateLevelAttributes = (printedContract: string) =>
+  createLevelAttributes.reduce(
+    (cleanedPrintedContract, createLevelAttribute) => cleanedPrintedContract.replace(createLevelAttribute, ''),
+    printedContract,
+  );
 
 export function printContract(contract: Contract): string {
   return formatLines(
@@ -16,7 +23,9 @@ export function printContract(contract: Contract): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
-        `#![no_std]`,
+        ...(contract.documentations.length ? ['', ...printDocumentations(contract.documentations)] : []),
+        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
+        ...createLevelAttributes,
       ],
       spaceBetween(
         printUseClauses(contract),
@@ -352,4 +361,12 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentations(documentations: string[]): string[] {
+  return documentations.map(documentation => `//! ${documentation}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }

@@ -1,4 +1,4 @@
-import type { Contract, ImplementedTrait } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -116,11 +116,9 @@ const NONCES_STORAGE_NAME = 'nonces';
 const PERMIT_STORAGE_NAME = 'erc20_permit';
 const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
-const erc20Trait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20',
-    associatedError: true,
-  },
+const erc20Trait: StoredContractTrait = {
+  name: 'IErc20',
+  associatedError: true,
   errors: [
     { variant: 'InsufficientBalance', value: 'ERC20InsufficientBalance' },
     { variant: 'InvalidSender', value: 'ERC20InvalidSender' },
@@ -184,10 +182,8 @@ const erc20Trait: ImplementedTrait = {
   ],
 };
 
-const noncesTrait: ImplementedTrait = {
-  interface: {
-    name: 'INonces',
-  },
+const noncesTrait: StoredContractTrait = {
+  name: 'INonces',
   storage: {
     name: NONCES_STORAGE_NAME,
     type: 'Nonces',
@@ -198,16 +194,14 @@ const noncesTrait: ImplementedTrait = {
       name: 'nonces',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
       code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
-      returns: 'U256'
-    }
-  ]
+      returns: 'U256',
+    },
+  ],
 };
 
-const permitTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20Permit',
-    associatedError: true,
-  },
+const permitTrait: StoredContractTrait = {
+  name: 'IErc20Permit',
+  associatedError: true,
   errors: {
     list: [
       { variant: 'ExpiredSignature', value: 'ERC2612ExpiredSignature' },
@@ -221,7 +215,7 @@ const permitTrait: ImplementedTrait = {
       { variant: 'InvalidSignature', value: 'ecdsa::ECDSAInvalidSignature' },
       { variant: 'InvalidSignatureS', value: 'ecdsa::ECDSAInvalidSignatureS' },
     ],
-    wraps: erc20Trait.interface,
+    wraps: erc20Trait.name,
   },
   storage: {
     name: PERMIT_STORAGE_NAME,
@@ -252,15 +246,13 @@ const permitTrait: ImplementedTrait = {
       ],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
-    }
+    },
   ],
 };
 
-const burnableTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc20Burnable',
-    associatedError: true,
-  },
+const burnableTrait: ContractTrait = {
+  name: 'IErc20Burnable',
+  associatedError: true,
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
     {
@@ -278,11 +270,9 @@ const burnableTrait: ImplementedTrait = {
   ],
 };
 
-const flashMintTrait: ImplementedTrait = {
-  interface: {
-    name: 'IErc3156FlashLender',
-    associatedError: true,
-  },
+const flashMintTrait: StoredContractTrait = {
+  name: 'IErc3156FlashLender',
+  associatedError: true,
   errors: {
     list: [
       { variant: 'UnsupportedToken', value: 'ERC3156UnsupportedToken' },
@@ -295,7 +285,7 @@ const flashMintTrait: ImplementedTrait = {
       { variant: 'InvalidSpender', value: 'erc20::ERC20InvalidSpender' },
       { variant: 'InvalidApprover', value: 'erc20::ERC20InvalidApprover' },
     ],
-    wraps: erc20Trait.interface,
+    wraps: erc20Trait.name,
   },
   storage: {
     name: FLASH_MINT_STORAGE_NAME,
@@ -328,7 +318,7 @@ const flashMintTrait: ImplementedTrait = {
       returns: { ok: 'bool', err: 'Self::Error' },
       code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
     },
-  ]
+  ],
 };
 
 // const erc20MetadataTrait: ImplementedTrait = {

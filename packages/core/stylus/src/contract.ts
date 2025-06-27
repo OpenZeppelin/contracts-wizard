@@ -5,21 +5,20 @@ type Name = {
   stringLiteral: string;
 };
 
-export type Interface = {
-  name: string;
-  associatedError?: boolean;
-};
+export type TraitName = string;
 
-export interface SolError { 
+export interface SolError {
   variant: string;
   value: string;
-};
+}
 
 export interface Contract {
   license: string;
+  securityContact: string;
   name: Name;
+  documentations: string[];
   useClauses: UseClause[];
-  implementedTraits: ImplementedTrait[];
+  implementedTraits: ContractTrait[];
   constants: Variable[];
   eip712Needed?: boolean;
   functions: ContractFunction[];
@@ -40,10 +39,10 @@ export interface UseClause {
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
-export interface ImplementedTrait {
-  storage?: Implementation;
-  interface: Interface;
-  errors?: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>, wraps: Interface };
+export interface ContractTrait {
+  name: TraitName;
+  associatedError?: boolean;
+  errors?: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -54,9 +53,13 @@ export interface ImplementedTrait {
   requiredImports?: UseClause[];
 }
 
+export interface StoredContractTrait extends ContractTrait {
+  storage: Implementation;
+}
+
 export interface Result {
-  ok: string,
-  err: 'Self::Error',
+  ok: string;
+  err: 'Self::Error';
 }
 
 export interface BaseFunction {
@@ -89,13 +92,16 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: Name;
   license = 'MIT';
+  securityContact = '';
 
-  private implementedTraitsMap: Map<string, ImplementedTrait> = new Map();
+  readonly documentations: string[] = [];
+
+  private implementedTraitsMap: Map<string, ContractTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
   private functionsArr: ContractFunction[] = [];
-  
-  error?: string | Interface[];
+
+  error?: string | TraitName[];
   eip712Needed?: boolean;
 
   constructor(name: string) {
@@ -106,7 +112,7 @@ export class ContractBuilder implements Contract {
     this.addUseClause({ containerPath: 'stylus_sdk::prelude', name: '*' });
   }
 
-  get implementedTraits(): ImplementedTrait[] {
+  get implementedTraits(): ContractTrait[] {
     return [...this.implementedTraitsMap.values()];
   }
 
@@ -133,22 +139,22 @@ export class ContractBuilder implements Contract {
     }
   }
 
-  addImplementedTrait(baseTrait: ImplementedTrait): ImplementedTrait {
-    const key = baseTrait.interface.name;
+  addImplementedTrait(trait: ContractTrait): ContractTrait {
+    const key = trait.name;
     const existingTrait = this.implementedTraitsMap.get(key);
     if (existingTrait !== undefined) {
       return existingTrait;
     } else {
-      const t: ImplementedTrait = copy(baseTrait);
+      const t: ContractTrait = copy(trait);
       this.implementedTraitsMap.set(key, t);
-      if (baseTrait.storage) {
-        this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.storage?.type });
+      if (isStoredContractTrait(t)) {
+        this.addUseClause({ containerPath: t.modulePath, name: t.storage.type });
       }
-      this.addUseClause({ containerPath: baseTrait.modulePath, name: baseTrait.interface.name });
-      for (const useClause of (t.requiredImports ?? [])) {
+      this.addUseClause({ containerPath: t.modulePath, name: t.name });
+      for (const useClause of t.requiredImports ?? []) {
         this.addUseClause({ ...useClause });
       }
-      
+
       return t;
     }
   }
@@ -171,8 +177,8 @@ export class ContractBuilder implements Contract {
     return this.implementedTraitsMap.has(name);
   }
 
-  addFunction(fn: BaseFunction, baseTrait?: ImplementedTrait): ContractFunction {    
-    const t = baseTrait ? this.addImplementedTrait(baseTrait) : this;
+  addFunction(fn: BaseFunction, trait?: ContractTrait): ContractFunction {
+    const t = trait ? this.addImplementedTrait(trait) : this;
 
     const signature = this.getFunctionSignature(fn);
 
@@ -186,13 +192,13 @@ export class ContractBuilder implements Contract {
 
     // Otherwise, add the function
     const contractFn: ContractFunction = copy(fn);
-    
+
     if (t === this) {
       t.functionsArr.push(contractFn);
     } else {
       t.functions.push(contractFn);
     }
-    
+
     return contractFn;
   }
 
@@ -200,27 +206,39 @@ export class ContractBuilder implements Contract {
     return [fn.name, '(', ...fn.args.map(a => a.name), ')'].join('');
   }
 
-  setFunctionCode(fn: BaseFunction, code: string, baseTrait?: ImplementedTrait): void {
-    const existingFn = this.addFunction(fn, baseTrait);
+  setFunctionCode(fn: BaseFunction, code: string, trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.code = code;
   }
 
-  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], baseTrait?: ImplementedTrait): void {
-    const existingFn = this.addFunction(fn, baseTrait);
+  addFunctionCodeBefore(fn: BaseFunction, codeBefore: string[], trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.codeBefore = [...(existingFn.codeBefore ?? []), ...codeBefore];
   }
 
-  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], baseTrait?: ImplementedTrait): void {
-    const existingFn = this.addFunction(fn, baseTrait);
+  addFunctionCodeAfter(fn: BaseFunction, codeAfter: string[], trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.codeAfter = [...(existingFn.codeAfter ?? []), ...codeAfter];
   }
 
-  addFunctionAttribute(fn: BaseFunction, attribute: string, baseTrait?: ImplementedTrait): void {
-    const existingFn = this.addFunction(fn, baseTrait);
+  addFunctionAttribute(fn: BaseFunction, attribute: string, trait?: ContractTrait): void {
+    const existingFn = this.addFunction(fn, trait);
     existingFn.attribute = attribute;
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }
 
 function copy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj))
+  return JSON.parse(JSON.stringify(obj));
+}
+
+export function isStoredContractTrait(trait: ContractTrait): trait is StoredContractTrait {
+  return 'storage' in trait;
 }
