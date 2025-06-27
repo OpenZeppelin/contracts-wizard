@@ -1,7 +1,7 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 
-import { zipScaffold } from './zip-scaffold';
+import { zipScaffoldProject } from './zip-scaffold';
 
 import { buildFungible } from './fungible';
 import { buildNonFungible } from './non-fungible';
@@ -109,7 +109,7 @@ test.afterEach.always(async t => {
 async function runTest(t: ExecutionContext<Context>, c: Contract, opts: GenericOptions) {
   t.timeout(3_000_000);
 
-  const zip = await zipScaffold(c, opts);
+  const zip = await zipScaffoldProject(c, opts);
 
   assertLayout(t, zip, opts);
   await extractPackage(t, zip);

@@ -41,7 +41,7 @@ Continue your development journey with [Stellar CLI](https://github.com/stellar/
 - See [Git installation guide](https://github.com/git-guides/install-git).
 `;
 
-export async function zipRust(c: Contract, opts: GenericOptions) {
+export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const zip = new JSZip();
 
   const contractName = contractOptionsToContractName(opts?.kind || 'contract');
@@ -51,7 +51,11 @@ export async function zipRust(c: Contract, opts: GenericOptions) {
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName));
   zip.file('Cargo.toml', workspaceCargo);
-  zip.file('README.md', readme);
 
   return zip;
-}
+};
+
+const addRustProjectReadme = (zip: JSZip) => zip.file('README.md', readme);
+
+export const zipRustProject = (c: Contract, opts: GenericOptions) =>
+  addRustProjectReadme(createRustZipEnvironment(c, opts));
