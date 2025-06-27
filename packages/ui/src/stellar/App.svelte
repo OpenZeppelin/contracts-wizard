@@ -23,7 +23,7 @@
     sanitizeKind,
     OptionsError,
   } from '@openzeppelin/wizard-stellar';
-  import { postConfig, type ZipAction } from '../common/post-config';
+  import { postConfig, type DownloadAction } from '../common/post-config';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
@@ -61,7 +61,7 @@
 
   export const downloadZip = async (
     zipFunction: ZipFunction,
-    zipAction: ZipAction,
+    zipAction: DownloadAction,
     language: Language,
     contract: Contract,
     opts?: KindedOptions[Kind],
