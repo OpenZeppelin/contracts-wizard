@@ -51,6 +51,7 @@ test('all', async t => {
     limitations: 'allowlist',
     info: {
       license: 'MIT',
+      securityContact: 'security@contact.com',
     },
   };
   assertHasAllSupportedFields(t, params);

@@ -50,6 +50,7 @@ test('all', async t => {
     access: 'ownable',
     info: {
       license: 'MIT',
+      securityContact: 'security@contact.com',
     },
   };
   assertHasAllSupportedFields(t, params);
