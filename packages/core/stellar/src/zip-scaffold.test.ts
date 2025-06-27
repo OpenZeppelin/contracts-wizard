@@ -32,6 +32,7 @@ function assertLayout(t: ExecutionContext<Context>, zip: JSZip, opts: GenericOpt
   const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
   t.deepEqual(sorted, [
+    'Cargo.toml',
     'README-WIZARD.md',
     'contracts/',
     `contracts/${scaffoldContractName}/`,

@@ -57,5 +57,5 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
 
 const addRustProjectReadme = (zip: JSZip) => zip.file('README.md', readme);
 
-export const zipRustProject = (c: Contract, opts: GenericOptions) =>
+export const zipRustProject = async (c: Contract, opts: GenericOptions) =>
   addRustProjectReadme(createRustZipEnvironment(c, opts));
