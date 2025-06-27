@@ -70,6 +70,9 @@ function printUseClauses(contract: Contract): Lines[] {
   }, {});
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
+  // because imports with `self` were prioritized in `sortUseClauses`,
+  // we sort the lines again, but now by the final paths
+  lines.sort();
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
 }
 
@@ -153,11 +156,10 @@ function sortUseClauses(contract: Contract): UseClause[] {
       return -1;
     } else if (b.name === 'self') {
       return 1;
-    } else {
-      const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
-      const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
-      return aFullPath.localeCompare(bFullPath);
     }
+    const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
+    const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
+    return aFullPath.localeCompare(bFullPath);
   });
 }
 
@@ -216,20 +218,6 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
     }
   }
 
-  for (const constant of contract.constants) {
-    // inlineComment is optional, default to false
-    const inlineComment = constant.inlineComment ?? false;
-    const commented = !!constant.comment;
-
-    if (commented && !inlineComment) {
-      lines.push(`// ${constant.comment}`);
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    } else if (commented) {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value}; // ${constant.comment}`);
-    } else {
-      lines.push(`const ${constant.name}: ${constant.type} = ${constant.value};`);
-    }
-  }
   return lines;
 }
 
@@ -260,7 +248,7 @@ function printEip712(contractName: string): Lines[] {
 function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   const traitNames = implementedTraits.map(trait => {
     let name = trait.name;
-    if ('errors' in trait) {
+    if (trait.associatedError) {
       if (!errorType) {
         throw new Error(`Invalid impl attribute state for ${trait.name}: errorType undefined`);
       }
@@ -285,7 +273,7 @@ function printImplementedTraits(contractName: string, implementedTraits: Contrac
   return spaceBetween(
     ...implementedTraits.map(trait => {
       const content: Lines[] = [];
-      if ('errors' in trait) {
+      if (trait.associatedError) {
         if (!errorType) {
           throw new Error(`Invalid impl block state for ${trait.name}: errorType undefined`);
         }

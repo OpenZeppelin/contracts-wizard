@@ -135,7 +135,11 @@ export class ContractBuilder implements Contract {
     // groupable defaults to true
     groupable ??= true;
     alias ??= '';
-    const uniqueName = alias.length > 0 ? alias : name;
+
+    const uniqueName = name === 'self'
+      ? `${containerPath}::${name}`
+      : alias.length > 0 ? alias : name;
+
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
       this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });

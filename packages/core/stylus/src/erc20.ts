@@ -222,7 +222,7 @@ const permitTrait: StoredContractTrait = {
     type: 'Erc20Permit',
     genericType: 'Eip712',
   },
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::permit',
   requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' }],
   functions: [
     {
@@ -253,7 +253,7 @@ const permitTrait: StoredContractTrait = {
 const burnableTrait: ContractTrait = {
   name: 'IErc20Burnable',
   associatedError: true,
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::burnable',
   functions: [
     {
       name: 'burn',
@@ -291,7 +291,7 @@ const flashMintTrait: StoredContractTrait = {
     name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',
   },
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::flash_mint',
   requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
   functions: [
     {
