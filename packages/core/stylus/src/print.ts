@@ -22,14 +22,14 @@ type ErrorMap = Map<string, { module: string; errors: SolError[] }>;
 
 type ErrorData =
   | {
-      type: 'inherited';
-      commonType: string;
-    }
+    type: 'inherited';
+    commonType: string;
+  }
   | {
-      type: 'enum';
-      commonType: 'Error';
-      errorMap: ErrorMap;
-    };
+    type: 'enum';
+    commonType: 'Error';
+    errorMap: ErrorMap;
+  };
 
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
@@ -148,9 +148,16 @@ function splitLongLineInner(line: string): Lines[] {
 
 function sortUseClauses(contract: Contract): UseClause[] {
   return contract.useClauses.sort((a, b) => {
-    const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
-    const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
-    return aFullPath.localeCompare(bFullPath);
+    // `self` should always take precedence
+    if (a.name === 'self') {
+      return -1;
+    } else if (b.name === 'self') {
+      return 1;
+    } else {
+      const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
+      const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
+      return aFullPath.localeCompare(bFullPath);
+    }
   });
 }
 
@@ -176,9 +183,9 @@ function sortImpls(contract: Contract): ContractTrait[] {
 function extractErrors(contract: Contract): ErrorData | undefined {
   const wrapped: TraitName[] = [];
   const errorMap: ErrorMap = contract.implementedTraits
-    .filter(trait => trait.errors)
+    .filter(trait => 'errors' in trait)
     .reduce((res, trait) => {
-      const errors = trait.errors!;
+      const errors = trait.errors;
       if ('wraps' in errors) {
         const wrappedErr = errors.wraps;
         wrapped.push(wrappedErr);
@@ -186,17 +193,16 @@ function extractErrors(contract: Contract): ErrorData | undefined {
       const modulePathSegments = trait.modulePath.split('::');
       res.set(trait.name, { module: modulePathSegments.pop()!, errors: 'wraps' in errors ? errors.list : errors });
       return res;
-    }, {} as ErrorMap);
+    }, new Map());
 
   for (const iface of wrapped) {
     errorMap.delete(iface);
   }
 
-  const ifacesWithErrors = Object.keys(errorMap);
-  return ifacesWithErrors.length === 0
+  return errorMap.size === 0
     ? undefined
-    : ifacesWithErrors.length === 1
-      ? { type: 'inherited', commonType: `${errorMap.get(ifacesWithErrors[0]!)!.module}::Error` }
+    : errorMap.size === 1
+      ? { type: 'inherited', commonType: `${errorMap.get(errorMap.keys().next().value!)!.module}::Error` }
       : { type: 'enum', commonType: 'Error', errorMap };
 }
 
@@ -209,6 +215,7 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
       lines.push('enum Error {');
     }
   }
+
   for (const constant of contract.constants) {
     // inlineComment is optional, default to false
     const inlineComment = constant.inlineComment ?? false;
@@ -253,7 +260,7 @@ function printEip712(contractName: string): Lines[] {
 function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   const traitNames = implementedTraits.map(trait => {
     let name = trait.name;
-    if (trait.errors) {
+    if ('errors' in trait) {
       if (!errorType) {
         throw new Error(`Invalid impl attribute state for ${trait.name}: errorType undefined`);
       }
@@ -278,7 +285,7 @@ function printImplementedTraits(contractName: string, implementedTraits: Contrac
   return spaceBetween(
     ...implementedTraits.map(trait => {
       const content: Lines[] = [];
-      if (trait.errors) {
+      if ('errors' in trait) {
         if (!errorType) {
           throw new Error(`Invalid impl block state for ${trait.name}: errorType undefined`);
         }
@@ -311,7 +318,7 @@ function printFunction(fn: ContractFunction): Lines[] {
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
-        [fn.code].concat(fn.codeAfter ?? [])
+      [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];

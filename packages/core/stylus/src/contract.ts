@@ -39,10 +39,8 @@ export interface UseClause {
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
-export interface ContractTrait {
+export type ContractTrait = {
   name: TraitName;
-  associatedError?: boolean;
-  errors?: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -51,11 +49,16 @@ export interface ContractTrait {
   modulePath: string;
   functions: ContractFunction[];
   requiredImports?: UseClause[];
-}
+} & ({
+  associatedError: true;
+  errors: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
+} | {
+  associatedError?: boolean;
+});
 
-export interface StoredContractTrait extends ContractTrait {
+export type StoredContractTrait = ContractTrait & {
   storage: Implementation;
-}
+};
 
 export interface Result {
   ok: string;
@@ -151,6 +154,9 @@ export class ContractBuilder implements Contract {
         this.addUseClause({ containerPath: t.modulePath, name: t.storage.type });
       }
       this.addUseClause({ containerPath: t.modulePath, name: t.name });
+      if ('errors' in t) {
+        this.addUseClause({ containerPath: t.modulePath, name: 'self' });
+      }
       for (const useClause of t.requiredImports ?? []) {
         this.addUseClause({ ...useClause });
       }
