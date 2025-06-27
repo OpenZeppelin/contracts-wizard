@@ -10,6 +10,7 @@ import {
   printContractCargo,
   printRustNameTest,
 } from './zip-shared';
+import { contractsVersionTag, compatibleSorobanVersion } from './utils/version';
 
 const workspaceCargo = `[workspace]
 resolver = "2"
@@ -22,7 +23,7 @@ license = "Apache-2.0"
 version = "0.0.1"
 
 [workspace.dependencies]
-${addDependenciesWith('{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }', [...allStellarDependencies, 'soroban'])}
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, allStellarDependencies)}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
 `;
 
 const readme = `\

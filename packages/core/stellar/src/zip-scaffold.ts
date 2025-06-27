@@ -93,7 +93,7 @@ setup_environment() {
 }
 `;
 
-  const updateWorkspaceCargo = (opts: GenericOptions) => `update_cargo() {
+  const updateWorkspaceCargo = `update_cargo() {
   cp Cargo.toml Cargo.toml.bak
 
   cat <<EOF > deps.tmp
@@ -165,7 +165,7 @@ init_git(){
 
 ${environmentsFileUpdate(c, scaffoldContractName)}
 
-${updateWorkspaceCargo(opts)}
+${updateWorkspaceCargo}
 
 build_contracts() {
   cargo build
