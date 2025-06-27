@@ -1,4 +1,4 @@
-import type { BaseFunction, ContractBuilder, ImplementedTrait } from './contract';
+import type { BaseFunction, ContractBuilder, ContractTrait } from './contract';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
@@ -54,7 +54,7 @@ export function setAccessControl(_c: ContractBuilder, access: Access): void {
  */
 export function requireAccessControl(
   c: ContractBuilder,
-  _trait: ImplementedTrait,
+  _trait: ContractTrait,
   _fn: BaseFunction,
   access: Access,
   _roleIdPrefix: string,

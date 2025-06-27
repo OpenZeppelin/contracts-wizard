@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, ImplementedTrait, UseClause, Result } from './contract';
+import { type Contract, type Argument, type ContractFunction, type ContractTrait, type UseClause, type Result, type StoredContractTrait, isStoredContractTrait } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -133,23 +133,23 @@ function sortUseClauses(contract: Contract): UseClause[] {
  * Sorts implemented traits by priority and name, and groups them by section.
  * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
  */
-function sortImpls(contract: Contract): ImplementedTrait[] {
+function sortImpls(contract: Contract): ContractTrait[] {
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
     if (a.priority !== b.priority) {
       return (a.priority ?? Infinity) - (b.priority ?? Infinity);
     }
-    return a.interface.localeCompare(b.interface);
+    return a.name.localeCompare(b.name);
   });
 
   return sortedTraits;
 }
 
-function printStorage(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+function printStorage(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
   const structLines = implementedTraits
-    .filter(trait => !!trait.storage)
-    .map(({ storage: i }) => {
-      const generics = i!.genericType ? `<${i!.genericType}>` : '';
-      return [`${i!.name}: ${i!.type}${generics},`];
+    .filter(isStoredContractTrait)
+    .map(({ storage: s }) => {
+      const generics = s.genericType ? `<${s.genericType}>` : '';
+      return [`${s.name}: ${s.type}${generics},`];
     });
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];
@@ -170,9 +170,9 @@ function printEip712(contractName: string): Lines[] {
   ];
 }
 
-function printImplementsAttribute(contract: Contract, implementedTraits: ImplementedTrait[]): Lines[] {
+function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[]): Lines[] {
   const traitNames = implementedTraits.map(trait => {
-    let name = trait.interface;
+    let name = trait.name;
     if (trait.errors) {
       name = `${name}<Error = Vec<u8>>`;
     }
@@ -191,7 +191,7 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Impleme
     : [...header, `impl ${contract.name.identifier} {}`];
 }
 
-function printImplementedTraits(contractName: string, implementedTraits: ImplementedTrait[]): Lines[] {
+function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
   return spaceBetween(
     ...implementedTraits.map(impl => {
       let content: Lines[] = [];
@@ -204,13 +204,13 @@ function printImplementedTraits(contractName: string, implementedTraits: Impleme
       }
 
       return content.length > 0
-        ? ['#[public]', `impl ${impl.interface} for ${contractName} {`, [spaceBetween(content)], '}']
-        : ['#[public]', `impl ${impl.interface} for ${contractName} {}`];
+        ? ['#[public]', `impl ${impl.name} for ${contractName} {`, [spaceBetween(content)], '}']
+        : ['#[public]', `impl ${impl.name} for ${contractName} {}`];
     }),
   ).flatMap(lines => lines);
 }
 
-function printTraitFunctions(impl: ImplementedTrait): Lines[] {
+function printTraitFunctions(impl: ContractTrait): Lines[] {
   const functionBlocks = impl.functions.map(fn => printFunction(fn));
   return spaceBetween(...functionBlocks);
 }
@@ -225,7 +225,7 @@ function printFunction(fn: ContractFunction): Lines[] {
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
-        [fn.code].concat(fn.codeAfter ?? [])
+      [fn.code].concat(fn.codeAfter ?? [])
       : !!fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];

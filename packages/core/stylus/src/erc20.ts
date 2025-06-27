@@ -1,4 +1,4 @@
-import type { Contract, ImplementedTrait } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -116,8 +116,8 @@ const NONCES_STORAGE_NAME = 'nonces';
 const PERMIT_STORAGE_NAME = 'erc20_permit';
 const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
-const erc20Trait: ImplementedTrait = {
-  interface: 'IErc20',
+const erc20Trait: StoredContractTrait = {
+  name: 'IErc20',
   errors: [
     { variant: 'InsufficientBalance', associated: 'ERC20InsufficientBalance' },
     { variant: 'InvalidSender', associated: 'ERC20InvalidSender' },
@@ -181,8 +181,8 @@ const erc20Trait: ImplementedTrait = {
   ],
 };
 
-const noncesTrait: ImplementedTrait = {
-  interface: 'INonces',
+const noncesTrait: StoredContractTrait = {
+  name: 'INonces',
   storage: {
     name: NONCES_STORAGE_NAME,
     type: 'Nonces',
@@ -198,8 +198,8 @@ const noncesTrait: ImplementedTrait = {
   ],
 };
 
-const permitTrait: ImplementedTrait = {
-  interface: 'IErc20Permit',
+const permitTrait: StoredContractTrait = {
+  name: 'IErc20Permit',
   errors: [
     { variant: 'ExpiredSignature', associated: 'ERC2612ExpiredSignature' },
     { variant: 'InvalidSigner', associated: 'ERC2612InvalidSigner' },
@@ -239,8 +239,8 @@ const permitTrait: ImplementedTrait = {
   ],
 };
 
-const burnableTrait: ImplementedTrait = {
-  interface: 'IErc20Burnable',
+const burnableTrait: ContractTrait = {
+  name: 'IErc20Burnable',
   errors: [],
   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
   functions: [
@@ -259,8 +259,8 @@ const burnableTrait: ImplementedTrait = {
   ],
 };
 
-const flashMintTrait: ImplementedTrait = {
-  interface: 'IErc3156FlashLender',
+const flashMintTrait: StoredContractTrait = {
+  name: 'IErc3156FlashLender',
   errors: [
     { variant: 'UnsupportedToken', associated: 'ERC3156UnsupportedToken' },
     { variant: 'ExceededMaxLoan', associated: 'ERC3156ExceededMaxLoan' },

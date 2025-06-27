@@ -1,4 +1,4 @@
-import type { Contract, ImplementedTrait } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -106,9 +106,9 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
   // }
 }
 
-function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
-  let erc1155: ImplementedTrait = {
-    interface: 'IErc1155',
+function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
+  let erc1155: ContractTrait = {
+    name: 'IErc1155',
     errors: [
       { variant: 'InsufficientBalance', associated: 'ERC1155InsufficientBalance' },
       { variant: 'InvalidSender', associated: 'ERC1155InvalidSender' },
@@ -180,18 +180,14 @@ function getErc1155WithStorageName(storageName: StorageName): ImplementedTrait {
     ],
   };
   // if `Erc1155Supply` is used as storage, then this can be omitted
-  if (storageName === 'erc1155') {
-    erc1155.storage = {
-      name: 'erc1155',
-      type: 'Erc1155',
-    };
-  }
-  return erc1155;
+  return storageName === 'erc1155'
+    ? <StoredContractTrait>{ ...erc1155, storage: { name: 'erc1155', type: 'Erc1155' } }
+    : erc1155;;
 }
 
-function getIErc165Trait(storageName: StorageName): ImplementedTrait {
+function getIErc165Trait(storageName: StorageName): ContractTrait {
   return {
-    interface: 'IErc165',
+    name: 'IErc165',
     modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
     requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
     functions: [
@@ -205,9 +201,9 @@ function getIErc165Trait(storageName: StorageName): ImplementedTrait {
   };
 }
 
-function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
+function getIErc1155BurnableTrait(storageName: StorageName): ContractTrait {
   return {
-    interface: 'IErc1155Burnable',
+    name: 'IErc1155Burnable',
     errors: [],
     modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
     functions: [
@@ -243,8 +239,8 @@ function getIErc1155BurnableTrait(storageName: StorageName): ImplementedTrait {
   };
 }
 
-const erc1155SupplyTrait: ImplementedTrait = {
-  interface: 'IErc1155Supply',
+const erc1155SupplyTrait: StoredContractTrait = {
+  name: 'IErc1155Supply',
   storage: {
     name: ERC1155_SUPPLY_STORAGE_NAME,
     type: 'Erc1155Supply',

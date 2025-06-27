@@ -1,4 +1,4 @@
-import type { Contract, ImplementedTrait } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -136,8 +136,8 @@ function addEnumerable(c: ContractBuilder) {
 const ERC721_STORAGE_NAME = 'erc721';
 const ENUMERABLE_STORAGE_NAME = 'enumerable';
 
-const erc721Trait: ImplementedTrait = {
-  interface: 'IErc721',
+const erc721Trait: StoredContractTrait = {
+  name: 'IErc721',
   errors: [
     { variant: 'InvalidOwner', associated: 'ERC721InvalidOwner' },
     { variant: 'NonexistentToken', associated: 'ERC721NonexistentToken' },
@@ -236,8 +236,8 @@ const erc721Trait: ImplementedTrait = {
   ],
 };
 
-const erc165Trait: ImplementedTrait = {
-  interface: 'IErc165',
+const erc165Trait: ContractTrait = {
+  name: 'IErc165',
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
   priority: 4,
   requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
@@ -251,8 +251,8 @@ const erc165Trait: ImplementedTrait = {
   ],
 };
 
-const burnableTrait: ImplementedTrait = {
-  interface: 'IErc721Burnable',
+const burnableTrait: ContractTrait = {
+  name: 'IErc721Burnable',
   errors: [],
   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
   priority: 3,
@@ -266,8 +266,8 @@ const burnableTrait: ImplementedTrait = {
   ],
 };
 
-const enumerableTrait: ImplementedTrait = {
-  interface: 'IErc721Enumerable',
+const enumerableTrait: StoredContractTrait = {
+  name: 'IErc721Enumerable',
   errors: [
     { variant: 'OutOfBoundsIndex', associated: 'ERC721OutOfBoundsIndex' },
     { variant: 'EnumerableForbiddenBatchMint', associated: 'ERC721EnumerableForbiddenBatchMint' },
