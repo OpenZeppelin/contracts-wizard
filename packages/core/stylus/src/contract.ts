@@ -233,5 +233,5 @@ function copy<T>(obj: T): T {
 }
 
 export function isStoredContractTrait(trait: ContractTrait): trait is StoredContractTrait {
-  return "storage" in trait;
+  return 'storage' in trait;
 }

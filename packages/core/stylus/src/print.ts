@@ -1,4 +1,13 @@
-import { type Contract, type Argument, type ContractFunction, type ContractTrait, type UseClause, type Result, type StoredContractTrait, isStoredContractTrait } from './contract';
+import {
+  type Contract,
+  type Argument,
+  type ContractFunction,
+  type ContractTrait,
+  type UseClause,
+  type Result,
+  type StoredContractTrait,
+  isStoredContractTrait,
+} from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -145,12 +154,10 @@ function sortImpls(contract: Contract): ContractTrait[] {
 }
 
 function printStorage(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
-  const structLines = implementedTraits
-    .filter(isStoredContractTrait)
-    .map(({ storage: s }) => {
-      const generics = s.genericType ? `<${s.genericType}>` : '';
-      return [`${s.name}: ${s.type}${generics},`];
-    });
+  const structLines = implementedTraits.filter(isStoredContractTrait).map(({ storage: s }) => {
+    const generics = s.genericType ? `<${s.genericType}>` : '';
+    return [`${s.name}: ${s.type}${generics},`];
+  });
 
   const baseStruct = ['#[entrypoint]', '#[storage]'];
 
@@ -225,7 +232,7 @@ function printFunction(fn: ContractFunction): Lines[] {
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
-      [fn.code].concat(fn.codeAfter ?? [])
+        [fn.code].concat(fn.codeAfter ?? [])
       : !!fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];

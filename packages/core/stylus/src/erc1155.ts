@@ -182,7 +182,7 @@ function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
   // if `Erc1155Supply` is used as storage, then this can be omitted
   return storageName === 'erc1155'
     ? <StoredContractTrait>{ ...erc1155, storage: { name: 'erc1155', type: 'Erc1155' } }
-    : erc1155;;
+    : erc1155;
 }
 
 function getIErc165Trait(storageName: StorageName): ContractTrait {
