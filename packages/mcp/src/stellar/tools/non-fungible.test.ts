@@ -51,6 +51,7 @@ test('all', async t => {
     sequential: true,
     info: {
       license: 'MIT',
+      securityContact: 'security@contact.com',
     },
   };
   assertHasAllSupportedFields(t, params);

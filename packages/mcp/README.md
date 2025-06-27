@@ -25,59 +25,66 @@ Provides tools to generate smart contract source code for the following language
 
 For quick installation, use the button below.
 
-[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=openzeppelin-contracts-wizard&config=eyJjb21tYW5kIjoibnB4IEBvcGVuemVwcGVsaW4vd2l6YXJkLW1jcCJ9)
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=openzeppelin-contracts-wizard&config=eyJjb21tYW5kIjoibnB4IC15IEBvcGVuemVwcGVsaW4vd2l6YXJkLW1jcCJ9)
 
 For manual installation:
-1. Go to Settings > Cursor Settings > MCP Tools > New MCP Server.
-2. Add the following to your MCP configuration file and save.
-```
-{
-  "mcpServers": {
-    "openzeppelin-contracts-wizard": {
-      "command": "npx",
-      "args": [
-        "@openzeppelin/wizard-mcp"
-      ]
-    }
-  }
-}
-```
+1. Go to Settings > Cursor Settings > Tools & Integrations > MCP Tools > New MCP Server.
+2. Add the contents from the [Client Configuration](#client-configuration-cursorwindsurfclaude-desktop) section to your MCP configuration file and save.
 3. See the MCP server in the list.
 
 ### Windsurf
 
 1. Go to Settings > Windsurf Settings > Cascade > Manage Plugins > View raw config.
-2. Add the following to your MCP configuration file and save.
-```
+2. Add the contents from the [Client Configuration](#client-configuration-cursorwindsurfclaude-desktop) section to your MCP configuration file and save.
+3. Click Refresh on the Manage Plugins page.
+4. See the MCP server in the list.
+
+### Claude Desktop
+
+1. Go to Settings > Developer > Edit Config.
+2. Add the contents from the [Client Configuration](#client-configuration-cursorwindsurfclaude-desktop) section to your MCP configuration file and save.
+3. Restart Claude Desktop.
+4. Click the "Search and tools" button and see the MCP server in the list.
+
+### Client Configuration (Cursor/Windsurf/Claude Desktop)
+
+```json
 {
   "mcpServers": {
     "openzeppelin-contracts-wizard": {
       "command": "npx",
       "args": [
+        "-y",
         "@openzeppelin/wizard-mcp"
       ]
     }
   }
 }
 ```
-3. Click Refresh on the Manage Plugins page.
-4. See the MCP server in the list.
+
+### Claude Code
+
+```sh
+claude mcp add openzeppelin-contracts-wizard -- npx -y @openzeppelin/wizard-mcp
+```
 
 ### VS Code
 
 For quick installation, use one of the buttons below.
 
-[![Add to VS Code](https://img.shields.io/badge/VS_Code-NPM-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22%40openzeppelin%2Fwizard-mcp%22%5D%7D) [![Add to VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-NPM-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22%40openzeppelin%2Fwizard-mcp%22%5D%7D&quality=insiders)
+[![Add to VS Code](https://img.shields.io/badge/VS_Code-NPM-0098FF?style=flat-square)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%20%22%40openzeppelin%2Fwizard-mcp%22%5D%7D)  
+[![Add to VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-NPM-24bfa5?style=flat-square)](https://insiders.vscode.dev/redirect/mcp/install?name=openzeppelin-contracts-wizard&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%20%22%40openzeppelin%2Fwizard-mcp%22%5D%7D&quality=insiders)
 
 For manual installation:
 1. Follow VS Code documentation to [Add an MCP server to your workspace](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server-to-your-workspace) using the following configuration:
-```
+```json
 {
   "servers": {
     "openzeppelin-contracts-wizard": {
       "type": "stdio",
       "command": "npx",
       "args": [
+        "-y",
         "@openzeppelin/wizard-mcp"
       ]
     }
@@ -88,4 +95,4 @@ For manual installation:
 
 ## Usage
 
-In your IDE's Write or Agent mode, ask the AI agent to write or modify smart contracts for your use case. When the AI agent determines it is appropriate to do so, it will use the MCP server to generate the contracts or determine best practices for your use case.
+When interacting with an AI agent, for example in your IDE's Write or Agent mode, ask it to write or modify smart contracts for your use case. When the AI agent determines it is appropriate to do so, it will use the MCP server to generate the contracts or determine best practices for your use case.
