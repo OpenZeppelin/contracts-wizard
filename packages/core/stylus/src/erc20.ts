@@ -204,8 +204,8 @@ const permitTrait: StoredContractTrait = {
   associatedError: true,
   errors: {
     list: [
-      { variant: 'ExpiredSignature', value: 'ERC2612ExpiredSignature' },
-      { variant: 'InvalidSigner', value: 'ERC2612InvalidSigner' },
+      { variant: 'ExpiredSignature', value: 'permit::ERC2612ExpiredSignature' },
+      { variant: 'InvalidSigner', value: 'permit::ERC2612InvalidSigner' },
       { variant: 'InsufficientBalance', value: 'erc20::ERC20InsufficientBalance' },
       { variant: 'InvalidSender', value: 'erc20::ERC20InvalidSender' },
       { variant: 'InvalidReceiver', value: 'erc20::ERC20InvalidReceiver' },
@@ -275,9 +275,9 @@ const flashMintTrait: StoredContractTrait = {
   associatedError: true,
   errors: {
     list: [
-      { variant: 'UnsupportedToken', value: 'ERC3156UnsupportedToken' },
-      { variant: 'ExceededMaxLoan', value: 'ERC3156ExceededMaxLoan' },
-      { variant: 'ERC3156InvalidReceiver', value: 'ERC3156InvalidReceiver' },
+      { variant: 'UnsupportedToken', value: 'flash_mint::ERC3156UnsupportedToken' },
+      { variant: 'ExceededMaxLoan', value: 'flash_mint::ERC3156ExceededMaxLoan' },
+      { variant: 'ERC3156InvalidReceiver', value: 'flash_mint::ERC3156InvalidReceiver' },
       { variant: 'InsufficientBalance', value: 'erc20::ERC20InsufficientBalance' },
       { variant: 'InvalidSender', value: 'erc20::ERC20InvalidSender' },
       { variant: 'InvalidReceiver', value: 'erc20::ERC20InvalidReceiver' },

@@ -11,14 +11,14 @@ import {
 } from './contract';
 
 import type { Lines } from './utils/format-lines';
-import { formatLines, spaceBetween } from './utils/format-lines';
+import { formatLines, indentLine, spaceBetween } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
 
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
-type ErrorMap = Map<string, { module: string; errors: SolError[] }>;
+type ErrorMap = Map<string, { module: string; errors: SolError[], wrapped: boolean }>;
 
 type ErrorData =
   | {
@@ -198,7 +198,10 @@ function extractErrors(contract: Contract): ErrorData | undefined {
     }, new Map());
 
   for (const iface of wrapped) {
-    errorMap.delete(iface);
+    const errors = errorMap.get(iface);
+    if (errors) {
+      errors.wrapped = true;
+    }
   }
 
   return errorMap.size === 0
@@ -213,8 +216,34 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
 
   if (errorData) {
     if (errorData.type === 'enum') {
-      lines.push('#[derive(SolidityError, Debug)]');
-      lines.push('enum Error {');
+      const errorEnum = [];
+      errorEnum.push('#[derive(SolidityError, Debug)]');
+      errorEnum.push('enum Error {');
+      const allErrors = new Set<string>();
+      for (const { errors, wrapped } of errorData.errorMap.values()) {
+        if (wrapped) {
+          continue;
+        }
+        for (const error of errors) {
+          allErrors.add(`${error.variant}(${error.value}),`);
+        }
+      }
+      errorEnum.push(spaceBetween(Array.from(allErrors)));
+      errorEnum.push('}');
+
+      const errorConversions = [];
+      for (const { errors, module } of errorData.errorMap.values()) {
+        const errorConversionsForTrait = [];
+        errorConversionsForTrait.push(`impl From<${module}::Error> for Error {`);
+        errorConversionsForTrait.push(spaceBetween([`fn from(error: ${module}::Error) -> Self {`, ['match value {']]));
+        errorConversionsForTrait.push([spaceBetween([errors.map(error => `${module}::Error::${error.variant}(e) => Error::${error.variant}(e),`)])]);
+        errorConversionsForTrait.push(indentLine('}', 2));
+        errorConversionsForTrait.push(indentLine('}', 1));
+        errorConversionsForTrait.push(`}`);
+        errorConversions.push(errorConversionsForTrait);
+      }
+
+      lines.push(...spaceBetween(errorEnum, ...errorConversions));
     }
   }
 
