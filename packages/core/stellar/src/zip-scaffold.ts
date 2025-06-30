@@ -3,80 +3,14 @@ import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
 import { compatibleSorobanVersion, contractsVersionTag } from './utils/version';
-
-const getKeysOf = <TObject extends Record<string, unknown>>(objectToGetKeysOf: TObject) =>
-  Object.keys(objectToGetKeysOf) as (keyof TObject)[];
-
-const stellarDependencies = {
-  base: ['stellar-default-impl-macro'],
-  fungible: ['stellar-fungible'],
-  nonFungible: ['stellar-non-fungible'],
-  pausable: ['stellar-pausable', 'stellar-pausable-macros'],
-  upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
-} as const;
-
-const allStellarDependencies = getKeysOf(stellarDependencies);
-
-const allDependencies = {
-  ...stellarDependencies,
-  soroban: ['soroban-sdk'],
-} as const;
-
-const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: (keyof typeof allDependencies)[]) =>
-  dependenciesToAdd.reduce((addedDependency, dependencyName) => {
-    return `${addedDependency}${allDependencies[dependencyName].map(cargoDependencies => `${cargoDependencies} = ${dependencyValue}\n`).join('')}`;
-  }, '');
-
-const test = (c: Contract) => `#![cfg(test)]
-
-extern crate std;
-
-use soroban_sdk::{ ${getAddressArgs(c).length ? 'testutils::Address as _, Address, ' : ''}Env, String };
-
-use crate::contract::{ ${c.name}, ${c.name}Client };
-
-#[test]
-fn initial_state() {
-    let env = Env::default();
-
-    let contract_addr = env.register(${c.name}, (${getAddressArgs(c)
-      .map(() => 'Address::generate(&env)')
-      .join(',')}${getAddressArgs(c).length === 1 ? ',' : ''}));
-    let client = ${c.name}Client::new(&env, &contract_addr);
-
-    assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
-}
-
-// Add more tests bellow
-`;
-
-function contractCargo(opts: GenericOptions, scaffoldContractName: string) {
-  return `[package]
-name = "${scaffoldContractName.replace(/_/, '-')}-contract"
-edition.workspace = true
-license.workspace = true
-publish = false
-version.workspace = true
-
-[lib]
-crate-type = ["cdylib"]
-doctest = false
-
-[dependencies]
-${addDependenciesWith('{ workspace = true }', [...allStellarDependencies, 'soroban'])}
-[dev-dependencies]
-${addDependenciesWith('{ workspace = true, features = ["testutils"] }', ['soroban'])}
-`;
-}
-
-function pascalToSnakeCase(string: string) {
-  return string
-    .replace(/([A-Z])/g, '_$1')
-    .replace(/^_/, '')
-    .toLowerCase();
-}
-
-export const contractOptionsToScaffoldContractName = pascalToSnakeCase;
+import {
+  addDependenciesWith,
+  allStellarDependencies,
+  contractOptionsToContractName,
+  createRustLibFile,
+  printContractCargo,
+  printRustNameTest,
+} from './zip-shared';
 
 function getAddressArgs(c: Contract): string[] {
   return c.constructorArgs
@@ -159,7 +93,7 @@ setup_environment() {
 }
 `;
 
-  const updateWorkspaceCargo = (opts: GenericOptions) => `update_cargo() {
+  const updateWorkspaceCargo = `update_cargo() {
   cp Cargo.toml Cargo.toml.bak
 
   cat <<EOF > deps.tmp
@@ -231,7 +165,7 @@ init_git(){
 
 ${environmentsFileUpdate(c, scaffoldContractName)}
 
-${updateWorkspaceCargo(opts)}
+${updateWorkspaceCargo}
 
 build_contracts() {
   cargo build
@@ -291,7 +225,7 @@ This project demonstrates a basic Scaffold use case. It comes with a contract ge
 ## Installing dependencies
 
 - See [Git installation guide](https://github.com/git-guides/install-git).
-- See [Rust installation guide](https://www.rust-lang.org/tools/install).
+- See [Rust and Stellar installation guide](https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup).
 - See [Scaffold CLI installation guide](https://github.com/AhaLabs/scaffold-stellar?tab=readme-ov-file#quick-start).
 - See [Docker installation guide](https://docs.docker.com/engine/install/).
 - See [Node installation guide](https://nodejs.org/en/download).
@@ -323,22 +257,15 @@ npm run dev
 `;
 };
 
-const createLib = `#![no_std]
-#![allow(dead_code)]
-
-mod contract;
-mod test;
-`;
-
 export async function zipScaffold(c: Contract, opts: GenericOptions) {
   const zip = new JSZip();
 
-  const scaffoldContractName = contractOptionsToScaffoldContractName(opts?.kind || 'contract');
+  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
   zip.file(`contracts/${scaffoldContractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
-  zip.file(`contracts/${scaffoldContractName}/src/test.rs`, test(c));
-  zip.file(`contracts/${scaffoldContractName}/src/lib.rs`, createLib);
-  zip.file(`contracts/${scaffoldContractName}/Cargo.toml`, contractCargo(opts, scaffoldContractName));
+  zip.file(`contracts/${scaffoldContractName}/src/test.rs`, printRustNameTest(c));
+  zip.file(`contracts/${scaffoldContractName}/src/lib.rs`, createRustLibFile);
+  zip.file(`contracts/${scaffoldContractName}/Cargo.toml`, printContractCargo(scaffoldContractName));
   zip.file('setup.sh', setupSh(c, opts, scaffoldContractName));
   zip.file('README-WIZARD.md', readme(c));
 
