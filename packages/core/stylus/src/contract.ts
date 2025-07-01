@@ -1,11 +1,17 @@
 import { escapeString, toIdentifier } from './utils/convert-strings';
+import { copy } from './utils/copy';
 
 type Name = {
   identifier: string;
   stringLiteral: string;
 };
 
-type InterfaceName = string;
+export type TraitName = string;
+
+export interface SolError {
+  variant: string;
+  value: { module: string; error: string };
+}
 
 export interface Contract {
   license: string;
@@ -17,7 +23,6 @@ export interface Contract {
   constants: Variable[];
   eip712Needed?: boolean;
   functions: ContractFunction[];
-  error?: string | InterfaceName[];
 }
 
 export interface Implementation {
@@ -33,9 +38,12 @@ export interface UseClause {
   alias?: string;
 }
 
-export interface ContractTrait {
-  name: InterfaceName;
-  errors?: { variant: string; associated: string }[];
+type NonEmptyArray<T> = [T, ...T[]];
+
+export type ErrorList = NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
+
+export type ContractTrait = {
+  name: TraitName;
   /**
    * Priority for which trait to print first.
    * Lower numbers are higher priority, undefined is lowest priority.
@@ -44,11 +52,19 @@ export interface ContractTrait {
   modulePath: string;
   functions: ContractFunction[];
   requiredImports?: UseClause[];
-}
+} & (
+  | {
+      associatedError: true;
+      errors: ErrorList;
+    }
+  | {
+      associatedError?: boolean;
+    }
+);
 
-export interface StoredContractTrait extends ContractTrait {
+export type StoredContractTrait = ContractTrait & {
   storage: Implementation;
-}
+};
 
 export interface Result {
   ok: string;
@@ -94,7 +110,7 @@ export class ContractBuilder implements Contract {
   private constantsMap: Map<string, Variable> = new Map();
   private functionsArr: ContractFunction[] = [];
 
-  error?: string | InterfaceName[];
+  error?: string | TraitName[];
   eip712Needed?: boolean;
 
   constructor(name: string) {
@@ -125,7 +141,9 @@ export class ContractBuilder implements Contract {
     // groupable defaults to true
     groupable ??= true;
     alias ??= '';
-    const uniqueName = alias.length > 0 ? alias : name;
+
+    const uniqueName = name === 'self' ? `${containerPath}::${name}` : alias.length > 0 ? alias : name;
+
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {
       this.useClausesMap.set(uniqueName, { containerPath, name, groupable, alias });
@@ -144,6 +162,9 @@ export class ContractBuilder implements Contract {
         this.addUseClause({ containerPath: t.modulePath, name: t.storage.type });
       }
       this.addUseClause({ containerPath: t.modulePath, name: t.name });
+      if ('errors' in t) {
+        this.addUseClause({ containerPath: t.modulePath, name: 'self' });
+      }
       for (const useClause of t.requiredImports ?? []) {
         this.addUseClause({ ...useClause });
       }
@@ -162,7 +183,7 @@ export class ContractBuilder implements Contract {
   }
 
   addEip712() {
-    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography::eip712', name: 'IEip712' });
+    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography', name: 'eip712::IEip712' });
     this.eip712Needed = true;
   }
 
@@ -226,10 +247,6 @@ export class ContractBuilder implements Contract {
   addSecurityTag(securityContact: string) {
     this.securityContact = securityContact;
   }
-}
-
-function copy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
 }
 
 export function isStoredContractTrait(trait: ContractTrait): trait is StoredContractTrait {

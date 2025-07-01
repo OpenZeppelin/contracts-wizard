@@ -5,8 +5,12 @@ import {
   type ContractTrait,
   type UseClause,
   type Result,
+  type SolError,
+  type TraitName,
+  type ErrorList,
   isStoredContractTrait,
 } from './contract';
+import { copy } from './utils/copy';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -16,8 +20,26 @@ const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
+type ErrorPrintItem = {
+  module: string;
+  errors: SolError[];
+  wrapped: boolean;
+};
+
+type ErrorPrintData =
+  | {
+      type: 'inherited';
+      commonType: string;
+    }
+  | {
+      type: 'enum';
+      commonType: 'Error';
+      errors: ErrorPrintItem[];
+    };
+
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
+  const errorData = extractErrors(contract);
   return formatLines(
     ...spaceBetween(
       [
@@ -30,10 +52,11 @@ export function printContract(contract: Contract): string {
       spaceBetween(
         printUseClauses(contract),
         printConstants(contract),
+        printErrors(errorData),
         printStorage(contract.name.identifier, impls),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
-        printImplementsAttribute(contract, impls),
-        printImplementedTraits(contract.name.identifier, impls),
+        printImplementsAttribute(contract, impls, errorData?.commonType),
+        printImplementedTraits(contract.name.identifier, impls, errorData?.commonType),
       ),
     ),
   );
@@ -53,6 +76,9 @@ function printUseClauses(contract: Contract): Lines[] {
   }, {});
 
   const lines = Object.entries(grouped).flatMap(([groupName, group]) => getLinesFromUseClausesGroup(group, groupName));
+  // because imports with `self` were prioritized in `sortUseClauses`,
+  // we sort the lines again, but now by the final paths
+  lines.sort();
   return lines.flatMap(line => splitLongUseClauseLine(line.toString()));
 }
 
@@ -82,7 +108,9 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
       lines.push(`use ${useClause.containerPath}::${nameWithAlias(useClause)};`);
     }
   } else {
-    if (group.length == 1) {
+    if (group.length === 0) {
+      throw new Error(`Empty use clause group: ${groupName}`);
+    } else if (group.length == 1) {
       lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
       const names = group.map(useClause => nameWithAlias(useClause)).join(', ');
@@ -131,6 +159,10 @@ function splitLongLineInner(line: string): Lines[] {
 
 function sortUseClauses(contract: Contract): UseClause[] {
   return contract.useClauses.sort((a, b) => {
+    // `self` should always take precedence
+    if (a.name === 'self') return -1;
+    if (b.name === 'self') return 1;
+
     const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
     const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
     return aFullPath.localeCompare(bFullPath);
@@ -150,6 +182,122 @@ function sortImpls(contract: Contract): ContractTrait[] {
   });
 
   return sortedTraits;
+}
+
+/**
+ * Extract errors from the contract and determine the error type.
+ * @returns ErrorData if errors exist, undefined otherwise. For single unwrapped errors,
+ * returns inherited type. For multiple errors, returns enum type with grouped errors.
+ */
+function extractErrors(contract: Contract): ErrorPrintData | undefined {
+  const { errorMap, wrappedTraitNames } = buildErrorMap(contract);
+  markWrappedErrors(errorMap, wrappedTraitNames);
+
+  const errors = Array.from(errorMap.values());
+  const nonWrappedErrors = errors.filter(e => !e.wrapped);
+
+  return nonWrappedErrors.length === 0
+    ? undefined
+    : nonWrappedErrors.length === 1
+      ? { type: 'inherited', commonType: `${nonWrappedErrors[0]!.module}::Error` }
+      : { type: 'enum', commonType: 'Error', errors };
+}
+
+function buildErrorMap(contract: Contract): {
+  errorMap: Map<string, ErrorPrintItem>;
+  wrappedTraitNames: TraitName[];
+} {
+  const wrappedTraitNames: TraitName[] = [];
+  const errorMap = new Map<string, ErrorPrintItem>();
+
+  for (const trait of contract.implementedTraits) {
+    if (!('errors' in trait)) continue;
+
+    const errors = copy(trait.errors);
+
+    if ('wraps' in errors) {
+      const wrappedErrName = errors.wraps;
+      wrappedTraitNames.push(wrappedErrName);
+      mergeWrappedErrors(errors, contract, wrappedErrName);
+    }
+
+    const module = trait.modulePath.split('::').pop()!;
+    errorMap.set(trait.name, {
+      module,
+      errors: 'wraps' in errors ? errors.list : errors,
+      wrapped: false,
+    });
+  }
+
+  return { errorMap, wrappedTraitNames };
+}
+
+function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrName: string): void {
+  const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErrName);
+  if (!wrappedErrTrait || !('errors' in wrappedErrTrait)) {
+    throw new Error(`Trait ${wrappedErrName} does not have errors`);
+  }
+
+  const wrappedErrErrors = wrappedErrTrait.errors;
+  const errorsToMerge = 'list' in wrappedErrErrors ? wrappedErrErrors.list : wrappedErrErrors;
+
+  if ('list' in errors) {
+    errors.list.push(...errorsToMerge);
+  } else {
+    errors.push(...errorsToMerge);
+  }
+}
+
+function markWrappedErrors(errorMap: Map<string, ErrorPrintItem>, wrappedTraitNames: TraitName[]): void {
+  for (const traitName of wrappedTraitNames) {
+    const errors = errorMap.get(traitName);
+    if (errors) {
+      errors.wrapped = true;
+    }
+  }
+}
+
+function printErrors(errorData?: ErrorPrintData): Lines[] {
+  if (!errorData || errorData.type === 'inherited') {
+    return [];
+  }
+
+  // collect all errors from non-wrapped traits, removing duplicates as some traits may wrap the same error
+  const allErrors = errorData.errors
+    .filter(e => !e.wrapped)
+    .flatMap(e => e.errors)
+    .reduce((acc, error) => {
+      return acc.add(`${error.variant}(${error.value.module}::${error.value.error}),`);
+    }, new Set<string>());
+
+  const errorEnum: Lines[] = [
+    '#[derive(SolidityError, Debug)]',
+    'enum Error {',
+    spaceBetween(Array.from(allErrors)),
+    '}',
+  ];
+
+  const errorConversions = [];
+  for (const { errors, module } of errorData.errors) {
+    const errorConversionsForTrait = [
+      `impl From<${module}::Error> for Error {`,
+      spaceBetween([
+        `fn from(error: ${module}::Error) -> Self {`,
+        ['match value {'],
+        [errors.map(error => printVariant(module, error))],
+        ['}'],
+        '}',
+      ]),
+      '}',
+    ];
+    errorConversions.push(errorConversionsForTrait);
+  }
+
+  return spaceBetween(errorEnum, ...errorConversions);
+}
+
+function printVariant(module: string, error: SolError): string {
+  return `${module}::Error::${error.variant}(e) => Error::${error.variant}(e),`;
 }
 
 function printStorage(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
@@ -176,13 +324,9 @@ function printEip712(contractName: string): Lines[] {
   ];
 }
 
-function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[]): Lines[] {
+function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   const traitNames = implementedTraits.map(trait => {
-    let name = trait.name;
-    if (trait.errors) {
-      name = `${name}<Error = Vec<u8>>`;
-    }
-    return name;
+    return trait.associatedError ? `${trait.name}<Error = ${errorType}>` : trait.name;
   });
 
   const header = ['#[public]'];
@@ -197,21 +341,19 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Contrac
     : [...header, `impl ${contract.name.identifier} {}`];
 }
 
-function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
+function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   return spaceBetween(
-    ...implementedTraits.map(impl => {
-      const content: Lines[] = [];
-      if (impl.errors) {
-        content.push('type Error = Vec<u8>;', '');
+    ...implementedTraits.map(trait => {
+      const content = [];
+      if (trait.associatedError) {
+        content.push([`type Error = ${errorType};`]);
       }
-      const fns = printTraitFunctions(impl);
-      if (fns.length > 0) {
-        content.push(...fns);
-      }
+      const fns = printTraitFunctions(trait);
+      content.push(fns);
 
       return content.length > 0
-        ? ['#[public]', `impl ${impl.name} for ${contractName} {`, [spaceBetween(content)], '}']
-        : ['#[public]', `impl ${impl.name} for ${contractName} {}`];
+        ? ['#[public]', `impl ${trait.name} for ${contractName} {`, [spaceBetween(...content)], '}']
+        : ['#[public]', `impl ${trait.name} for ${contractName} {}`];
     }),
   ).flatMap(lines => lines);
 }

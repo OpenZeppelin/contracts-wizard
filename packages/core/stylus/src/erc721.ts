@@ -138,16 +138,17 @@ const ENUMERABLE_STORAGE_NAME = 'enumerable';
 
 const erc721Trait: StoredContractTrait = {
   name: 'IErc721',
+  associatedError: true,
   errors: [
-    { variant: 'InvalidOwner', associated: 'ERC721InvalidOwner' },
-    { variant: 'NonexistentToken', associated: 'ERC721NonexistentToken' },
-    { variant: 'IncorrectOwner', associated: 'ERC721IncorrectOwner' },
-    { variant: 'InvalidSender', associated: 'ERC721InvalidSender' },
-    { variant: 'InvalidReceiver', associated: 'ERC721InvalidReceiver' },
-    { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
-    { variant: 'InsufficientApproval', associated: 'ERC721InsufficientApproval' },
-    { variant: 'InvalidApprover', associated: 'ERC721InvalidApprover' },
-    { variant: 'InvalidOperator', associated: 'ERC721InvalidOperator' },
+    { variant: 'InvalidOwner', value: { module: 'erc721', error: 'ERC721InvalidOwner' } },
+    { variant: 'NonexistentToken', value: { module: 'erc721', error: 'ERC721NonexistentToken' } },
+    { variant: 'IncorrectOwner', value: { module: 'erc721', error: 'ERC721IncorrectOwner' } },
+    { variant: 'InvalidSender', value: { module: 'erc721', error: 'ERC721InvalidSender' } },
+    { variant: 'InvalidReceiver', value: { module: 'erc721', error: 'ERC721InvalidReceiver' } },
+    { variant: 'InvalidReceiverWithReason', value: { module: 'erc721', error: 'ERC721InvalidReceiverWithReason' } },
+    { variant: 'InsufficientApproval', value: { module: 'erc721', error: 'ERC721InsufficientApproval' } },
+    { variant: 'InvalidApprover', value: { module: 'erc721', error: 'ERC721InvalidApprover' } },
+    { variant: 'InvalidOperator', value: { module: 'erc721', error: 'ERC721InvalidOperator' } },
   ],
   storage: {
     name: ERC721_STORAGE_NAME,
@@ -253,8 +254,8 @@ const erc165Trait: ContractTrait = {
 
 const burnableTrait: ContractTrait = {
   name: 'IErc721Burnable',
-  errors: [],
-  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  associatedError: true,
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions::burnable',
   priority: 3,
   functions: [
     {
@@ -268,15 +269,19 @@ const burnableTrait: ContractTrait = {
 
 const enumerableTrait: StoredContractTrait = {
   name: 'IErc721Enumerable',
+  associatedError: true,
   errors: [
-    { variant: 'OutOfBoundsIndex', associated: 'ERC721OutOfBoundsIndex' },
-    { variant: 'EnumerableForbiddenBatchMint', associated: 'ERC721EnumerableForbiddenBatchMint' },
+    { variant: 'OutOfBoundsIndex', value: { module: 'enumerable', error: 'ERC721OutOfBoundsIndex' } },
+    {
+      variant: 'EnumerableForbiddenBatchMint',
+      value: { module: 'enumerable', error: 'ERC721EnumerableForbiddenBatchMint' },
+    },
   ],
   storage: {
     name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',
   },
-  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions::enumerable',
   priority: 2,
   functions: [
     {

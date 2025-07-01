@@ -118,13 +118,14 @@ const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
 const erc20Trait: StoredContractTrait = {
   name: 'IErc20',
+  associatedError: true,
   errors: [
-    { variant: 'InsufficientBalance', associated: 'ERC20InsufficientBalance' },
-    { variant: 'InvalidSender', associated: 'ERC20InvalidSender' },
-    { variant: 'InvalidReceiver', associated: 'ERC20InvalidReceiver' },
-    { variant: 'InsufficientAllowance', associated: 'ERC20InsufficientAllowance' },
-    { variant: 'InvalidSpender', associated: 'ERC20InvalidSpender' },
-    { variant: 'InvalidApprover', associated: 'ERC20InvalidApprover' },
+    { variant: 'InsufficientBalance', value: { module: 'erc20', error: 'ERC20InsufficientBalance' } },
+    { variant: 'InvalidSender', value: { module: 'erc20', error: 'ERC20InvalidSender' } },
+    { variant: 'InvalidReceiver', value: { module: 'erc20', error: 'ERC20InvalidReceiver' } },
+    { variant: 'InsufficientAllowance', value: { module: 'erc20', error: 'ERC20InsufficientAllowance' } },
+    { variant: 'InvalidSpender', value: { module: 'erc20', error: 'ERC20InvalidSpender' } },
+    { variant: 'InvalidApprover', value: { module: 'erc20', error: 'ERC20InvalidApprover' } },
   ],
   storage: {
     name: ERC20_STORAGE_NAME,
@@ -200,19 +201,26 @@ const noncesTrait: StoredContractTrait = {
 
 const permitTrait: StoredContractTrait = {
   name: 'IErc20Permit',
-  errors: [
-    { variant: 'ExpiredSignature', associated: 'ERC2612ExpiredSignature' },
-    { variant: 'InvalidSigner', associated: 'ERC2612InvalidSigner' },
-    { variant: 'InvalidSignature', associated: 'ECDSAInvalidSignature' },
-    { variant: 'InvalidSignatureS', associated: 'ECDSAInvalidSignatureS' },
-  ],
+  associatedError: true,
+  errors: {
+    list: [
+      { variant: 'ExpiredSignature', value: { module: 'permit', error: 'ERC2612ExpiredSignature' } },
+      { variant: 'InvalidSigner', value: { module: 'permit', error: 'ERC2612InvalidSigner' } },
+      { variant: 'InvalidSignature', value: { module: 'ecdsa', error: 'ECDSAInvalidSignature' } },
+      { variant: 'InvalidSignatureS', value: { module: 'ecdsa', error: 'ECDSAInvalidSignatureS' } },
+    ],
+    wraps: erc20Trait.name,
+  },
   storage: {
     name: PERMIT_STORAGE_NAME,
     type: 'Erc20Permit',
     genericType: 'Eip712',
   },
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
-  requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' }],
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::permit',
+  requiredImports: [
+    { containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' },
+    { containerPath: 'openzeppelin_stylus::utils::cryptography', name: 'ecdsa' },
+  ],
   functions: [
     {
       name: 'domain_separator',
@@ -241,8 +249,8 @@ const permitTrait: StoredContractTrait = {
 
 const burnableTrait: ContractTrait = {
   name: 'IErc20Burnable',
-  errors: [],
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  associatedError: true,
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::burnable',
   functions: [
     {
       name: 'burn',
@@ -261,16 +269,20 @@ const burnableTrait: ContractTrait = {
 
 const flashMintTrait: StoredContractTrait = {
   name: 'IErc3156FlashLender',
-  errors: [
-    { variant: 'UnsupportedToken', associated: 'ERC3156UnsupportedToken' },
-    { variant: 'ExceededMaxLoan', associated: 'ERC3156ExceededMaxLoan' },
-    { variant: 'ERC3156InvalidReceiver', associated: 'ERC3156InvalidReceiver' },
-  ],
+  associatedError: true,
+  errors: {
+    list: [
+      { variant: 'UnsupportedToken', value: { module: 'flash_mint', error: 'ERC3156UnsupportedToken' } },
+      { variant: 'ExceededMaxLoan', value: { module: 'flash_mint', error: 'ERC3156ExceededMaxLoan' } },
+      { variant: 'ERC3156InvalidReceiver', value: { module: 'flash_mint', error: 'ERC3156InvalidReceiver' } },
+    ],
+    wraps: erc20Trait.name,
+  },
   storage: {
     name: FLASH_MINT_STORAGE_NAME,
     type: 'Erc20FlashMint',
   },
-  modulePath: 'openzeppelin_stylus::token::erc20::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc20::extensions::flash_mint',
   requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
   functions: [
     {

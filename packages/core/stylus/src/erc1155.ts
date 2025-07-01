@@ -109,15 +109,16 @@ function addBurnable(c: ContractBuilder, storageName: StorageName) {
 function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
   const erc1155: ContractTrait = {
     name: 'IErc1155',
+    associatedError: true,
     errors: [
-      { variant: 'InsufficientBalance', associated: 'ERC1155InsufficientBalance' },
-      { variant: 'InvalidSender', associated: 'ERC1155InvalidSender' },
-      { variant: 'InvalidReceiver', associated: 'ERC1155InvalidReceiver' },
-      { variant: 'InvalidReceiverWithReason', associated: 'InvalidReceiverWithReason' },
-      { variant: 'MissingApprovalForAll', associated: 'ERC1155MissingApprovalForAll' },
-      { variant: 'InvalidApprover', associated: 'ERC1155InvalidApprover' },
-      { variant: 'InvalidOperator', associated: 'ERC1155InvalidOperator' },
-      { variant: 'InvalidArrayLength', associated: 'ERC1155InvalidArrayLength' },
+      { variant: 'InsufficientBalance', value: { module: 'erc1155', error: 'ERC1155InsufficientBalance' } },
+      { variant: 'InvalidSender', value: { module: 'erc1155', error: 'ERC1155InvalidSender' } },
+      { variant: 'InvalidReceiver', value: { module: 'erc1155', error: 'ERC1155InvalidReceiver' } },
+      { variant: 'InvalidReceiverWithReason', value: { module: 'erc1155', error: 'ERC1155InvalidReceiverWithReason' } },
+      { variant: 'MissingApprovalForAll', value: { module: 'erc1155', error: 'ERC1155MissingApprovalForAll' } },
+      { variant: 'InvalidApprover', value: { module: 'erc1155', error: 'ERC1155InvalidApprover' } },
+      { variant: 'InvalidOperator', value: { module: 'erc1155', error: 'ERC1155InvalidOperator' } },
+      { variant: 'InvalidArrayLength', value: { module: 'erc1155', error: 'ERC1155InvalidArrayLength' } },
     ],
     modulePath: 'openzeppelin_stylus::token::erc1155',
     requiredImports: [
@@ -204,7 +205,7 @@ function getIErc165Trait(storageName: StorageName): ContractTrait {
 function getIErc1155BurnableTrait(storageName: StorageName): ContractTrait {
   return {
     name: 'IErc1155Burnable',
-    errors: [],
+    associatedError: true,
     modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
     functions: [
       {

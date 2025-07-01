@@ -71,7 +71,8 @@ test('contract with parent and associated error', t => {
       },
     ],
     name: 'IParent',
-    errors: [{ variant: 'SomeError', associated: 'Associated' }],
+    associatedError: true,
+    errors: [{ variant: 'SomeError', value: { module: 'mod_ext', error: 'Associated' } }],
   };
   Foo.addImplementedTrait(trait);
   t.snapshot(printContract(Foo));
