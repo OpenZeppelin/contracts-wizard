@@ -19,7 +19,11 @@ const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
-type ErrorMap = Map<string, { module: string; errors: SolError[], wrapped: boolean }>;
+type ErrorListItem = {
+  module: string;
+  errors: SolError[];
+  wrapped: boolean;
+};
 
 type ErrorData =
   | {
@@ -29,7 +33,7 @@ type ErrorData =
   | {
     type: 'enum';
     commonType: 'Error';
-    errorMap: ErrorMap;
+    errors: ErrorListItem[];
   };
 
 export function printContract(contract: Contract): string {
@@ -180,46 +184,71 @@ function sortImpls(contract: Contract): ContractTrait[] {
 }
 
 /**
- * Extract errors, grouping them by trait.
- * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
+ * Extract errors from the contract and determine the error type.
+ * @returns ErrorData if errors exist, undefined otherwise. For single unwrapped errors,
+ * returns inherited type. For multiple errors, returns enum type with grouped errors.
  */
 function extractErrors(contract: Contract): ErrorData | undefined {
-  const wrapped: TraitName[] = [];
-  const errorMap: ErrorMap = contract.implementedTraits
-    .filter(trait => 'errors' in trait)
-    .reduce((res, trait) => {
-      const errors = copy(trait.errors);
-      if ('wraps' in errors) {
-        const wrappedErr = errors.wraps;
-        wrapped.push(wrappedErr);
+  const { errorMap, wrappedTraitNames } = buildErrorMap(contract);
+  markWrappedErrors(errorMap, wrappedTraitNames);
 
-        const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErr);
-        if (wrappedErrTrait && 'errors' in wrappedErrTrait) {
-          const wrappedErrErrors = wrappedErrTrait.errors;
-          if ('list' in wrappedErrErrors) {
-            errors.list.push(...wrappedErrErrors.list);
-          } else {
-            errors.list.push(...wrappedErrErrors);
-          }
-        }
-      }
-      const modulePathSegments = trait.modulePath.split('::');
-      res.set(trait.name, { module: modulePathSegments.pop()!, errors: 'wraps' in errors ? errors.list : errors });
-      return res;
-    }, new Map());
+  const errors = Array.from(errorMap.values());
+  const nonWrappedErrors = errors.filter(e => !e.wrapped);
 
-  for (const iface of wrapped) {
-    const errors = errorMap.get(iface);
+  return nonWrappedErrors.length === 0
+    ? undefined
+    : nonWrappedErrors.length === 1
+      ? { type: 'inherited', commonType: `${nonWrappedErrors[0]!.module}::Error` }
+      : { type: 'enum', commonType: 'Error', errors };
+}
+
+function buildErrorMap(contract: Contract): {
+  errorMap: Map<string, ErrorListItem>;
+  wrappedTraitNames: TraitName[]
+} {
+  const wrappedTraitNames: TraitName[] = [];
+  const errorMap = new Map<string, ErrorListItem>();
+
+  for (const trait of contract.implementedTraits) {
+    if (!('errors' in trait)) continue;
+
+    const errors = copy(trait.errors);
+
+    if ('wraps' in errors) {
+      const wrappedErrName = errors.wraps;
+      wrappedTraitNames.push(wrappedErrName);
+      mergeWrappedErrors(errors, contract, wrappedErrName);
+    }
+
+    const module = trait.modulePath.split('::').pop()!;
+    errorMap.set(trait.name, {
+      module,
+      errors: 'wraps' in errors ? errors.list : errors,
+      wrapped: false,
+    });
+  }
+
+  return { errorMap, wrappedTraitNames };
+}
+
+function mergeWrappedErrors(errors: any, contract: Contract, wrappedErrName: string): void {
+  const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErrName);
+  if (!wrappedErrTrait || !('errors' in wrappedErrTrait)) {
+    throw new Error(`Trait ${wrappedErrName} does not have errors`);
+  }
+
+  const wrappedErrErrors = wrappedErrTrait.errors;
+  const errorsToMerge = 'list' in wrappedErrErrors ? wrappedErrErrors.list : wrappedErrErrors;
+  errors.list.push(...errorsToMerge);
+}
+
+function markWrappedErrors(errorMap: Map<string, ErrorListItem>, wrappedTraitNames: TraitName[]): void {
+  for (const traitName of wrappedTraitNames) {
+    const errors = errorMap.get(traitName);
     if (errors) {
       errors.wrapped = true;
     }
   }
-
-  return errorMap.size === 0
-    ? undefined
-    : Array.from(errorMap.values()).filter(e => !e.wrapped).length === 1
-      ? { type: 'inherited', commonType: `${Array.from(errorMap.values()).filter(e => !e.wrapped)[0]!.module}::Error` }
-      : { type: 'enum', commonType: 'Error', errorMap };
 }
 
 function printErrors(errorData?: ErrorData): Lines[] {
@@ -231,7 +260,7 @@ function printErrors(errorData?: ErrorData): Lines[] {
       errorEnum.push('#[derive(SolidityError, Debug)]');
       errorEnum.push('enum Error {');
       const allErrors = new Set<string>();
-      for (const { errors, wrapped } of errorData.errorMap.values()) {
+      for (const { errors, wrapped } of errorData.errors) {
         if (wrapped) {
           continue;
         }
@@ -243,7 +272,7 @@ function printErrors(errorData?: ErrorData): Lines[] {
       errorEnum.push('}');
 
       const errorConversions = [];
-      for (const { errors, module } of errorData.errorMap.values()) {
+      for (const { errors, module } of errorData.errors) {
         const errorConversionsForTrait = [];
         errorConversionsForTrait.push(`impl From<${module}::Error> for Error {`);
         errorConversionsForTrait.push(spaceBetween([`fn from(error: ${module}::Error) -> Self {`, ['match value {']]));
