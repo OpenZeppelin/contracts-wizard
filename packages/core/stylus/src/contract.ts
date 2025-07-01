@@ -40,6 +40,8 @@ export interface UseClause {
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
+export type ErrorList = NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
+
 export type ContractTrait = {
   name: TraitName;
   /**
@@ -50,12 +52,15 @@ export type ContractTrait = {
   modulePath: string;
   functions: ContractFunction[];
   requiredImports?: UseClause[];
-} & ({
-  associatedError: true;
-  errors: NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
-} | {
-  associatedError?: boolean;
-});
+} & (
+  | {
+      associatedError: true;
+      errors: ErrorList;
+    }
+  | {
+      associatedError?: boolean;
+    }
+);
 
 export type StoredContractTrait = ContractTrait & {
   storage: Implementation;
@@ -137,9 +142,7 @@ export class ContractBuilder implements Contract {
     groupable ??= true;
     alias ??= '';
 
-    const uniqueName = name === 'self'
-      ? `${containerPath}::${name}`
-      : alias.length > 0 ? alias : name;
+    const uniqueName = name === 'self' ? `${containerPath}::${name}` : alias.length > 0 ? alias : name;
 
     const present = this.useClausesMap.has(uniqueName);
     if (!present) {

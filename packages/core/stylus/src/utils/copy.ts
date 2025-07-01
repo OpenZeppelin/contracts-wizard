@@ -1,3 +1,3 @@
 export function copy<T>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj));
+  return JSON.parse(JSON.stringify(obj));
 }

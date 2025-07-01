@@ -272,7 +272,10 @@ const enumerableTrait: StoredContractTrait = {
   associatedError: true,
   errors: [
     { variant: 'OutOfBoundsIndex', value: { module: 'enumerable', error: 'ERC721OutOfBoundsIndex' } },
-    { variant: 'EnumerableForbiddenBatchMint', value: { module: 'enumerable', error: 'ERC721EnumerableForbiddenBatchMint' } },
+    {
+      variant: 'EnumerableForbiddenBatchMint',
+      value: { module: 'enumerable', error: 'ERC721EnumerableForbiddenBatchMint' },
+    },
   ],
   storage: {
     name: ENUMERABLE_STORAGE_NAME,

@@ -7,34 +7,35 @@ import {
   type Result,
   type SolError,
   type TraitName,
+  type ErrorList,
   isStoredContractTrait,
 } from './contract';
 import { copy } from './utils/copy';
 
 import type { Lines } from './utils/format-lines';
-import { formatLines, indentLine, spaceBetween } from './utils/format-lines';
+import { formatLines, spaceBetween } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
 
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
-type ErrorListItem = {
+type ErrorPrintItem = {
   module: string;
   errors: SolError[];
   wrapped: boolean;
 };
 
-type ErrorData =
+type ErrorPrintData =
   | {
-    type: 'inherited';
-    commonType: string;
-  }
+      type: 'inherited';
+      commonType: string;
+    }
   | {
-    type: 'enum';
-    commonType: 'Error';
-    errors: ErrorListItem[];
-  };
+      type: 'enum';
+      commonType: 'Error';
+      errors: ErrorPrintItem[];
+    };
 
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
@@ -188,7 +189,7 @@ function sortImpls(contract: Contract): ContractTrait[] {
  * @returns ErrorData if errors exist, undefined otherwise. For single unwrapped errors,
  * returns inherited type. For multiple errors, returns enum type with grouped errors.
  */
-function extractErrors(contract: Contract): ErrorData | undefined {
+function extractErrors(contract: Contract): ErrorPrintData | undefined {
   const { errorMap, wrappedTraitNames } = buildErrorMap(contract);
   markWrappedErrors(errorMap, wrappedTraitNames);
 
@@ -203,11 +204,11 @@ function extractErrors(contract: Contract): ErrorData | undefined {
 }
 
 function buildErrorMap(contract: Contract): {
-  errorMap: Map<string, ErrorListItem>;
-  wrappedTraitNames: TraitName[]
+  errorMap: Map<string, ErrorPrintItem>;
+  wrappedTraitNames: TraitName[];
 } {
   const wrappedTraitNames: TraitName[] = [];
-  const errorMap = new Map<string, ErrorListItem>();
+  const errorMap = new Map<string, ErrorPrintItem>();
 
   for (const trait of contract.implementedTraits) {
     if (!('errors' in trait)) continue;
@@ -231,7 +232,7 @@ function buildErrorMap(contract: Contract): {
   return { errorMap, wrappedTraitNames };
 }
 
-function mergeWrappedErrors(errors: any, contract: Contract, wrappedErrName: string): void {
+function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrName: string): void {
   const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErrName);
   if (!wrappedErrTrait || !('errors' in wrappedErrTrait)) {
     throw new Error(`Trait ${wrappedErrName} does not have errors`);
@@ -239,10 +240,15 @@ function mergeWrappedErrors(errors: any, contract: Contract, wrappedErrName: str
 
   const wrappedErrErrors = wrappedErrTrait.errors;
   const errorsToMerge = 'list' in wrappedErrErrors ? wrappedErrErrors.list : wrappedErrErrors;
-  errors.list.push(...errorsToMerge);
+
+  if ('list' in errors) {
+    errors.list.push(...errorsToMerge);
+  } else {
+    errors.push(...errorsToMerge);
+  }
 }
 
-function markWrappedErrors(errorMap: Map<string, ErrorListItem>, wrappedTraitNames: TraitName[]): void {
+function markWrappedErrors(errorMap: Map<string, ErrorPrintItem>, wrappedTraitNames: TraitName[]): void {
   for (const traitName of wrappedTraitNames) {
     const errors = errorMap.get(traitName);
     if (errors) {
@@ -251,7 +257,7 @@ function markWrappedErrors(errorMap: Map<string, ErrorListItem>, wrappedTraitNam
   }
 }
 
-function printErrors(errorData?: ErrorData): Lines[] {
+function printErrors(errorData?: ErrorPrintData): Lines[] {
   if (!errorData || errorData.type === 'inherited') {
     return [];
   }
@@ -261,7 +267,7 @@ function printErrors(errorData?: ErrorData): Lines[] {
     .filter(e => !e.wrapped)
     .flatMap(e => e.errors)
     .reduce((acc, error) => {
-      return acc.add(`${error.variant}(${error.value.module}::${error.value.error}),`)
+      return acc.add(`${error.variant}(${error.value.module}::${error.value.error}),`);
     }, new Set<string>());
 
   const errorEnum: Lines[] = [
@@ -282,7 +288,7 @@ function printErrors(errorData?: ErrorData): Lines[] {
         ['}'],
         '}',
       ]),
-      '}'
+      '}',
     ];
     errorConversions.push(errorConversionsForTrait);
   }
@@ -367,7 +373,7 @@ function printFunction(fn: ContractFunction): Lines[] {
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
-      [fn.code].concat(fn.codeAfter ?? [])
+        [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
