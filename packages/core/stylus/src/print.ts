@@ -287,14 +287,7 @@ function printEip712(contractName: string): Lines[] {
 
 function printImplementsAttribute(contract: Contract, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   const traitNames = implementedTraits.map(trait => {
-    let name = trait.name;
-    if (trait.associatedError) {
-      if (!errorType) {
-        throw new Error(`Invalid impl attribute state for ${trait.name}: errorType undefined`);
-      }
-      name = `${name}<Error = ${errorType}>`;
-    }
-    return name;
+    return trait.associatedError ? `${trait.name}<Error = ${errorType}>` : trait.name;
   });
 
   const header = ['#[public]'];
