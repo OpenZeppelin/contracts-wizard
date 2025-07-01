@@ -252,42 +252,46 @@ function markWrappedErrors(errorMap: Map<string, ErrorListItem>, wrappedTraitNam
 }
 
 function printErrors(errorData?: ErrorData): Lines[] {
-  const lines = [];
-
-  if (errorData) {
-    if (errorData.type === 'enum') {
-      const errorEnum = [];
-      errorEnum.push('#[derive(SolidityError, Debug)]');
-      errorEnum.push('enum Error {');
-      const allErrors = new Set<string>();
-      for (const { errors, wrapped } of errorData.errors) {
-        if (wrapped) {
-          continue;
-        }
-        for (const error of errors) {
-          allErrors.add(`${error.variant}(${error.value.module}::${error.value.error}),`);
-        }
-      }
-      errorEnum.push(spaceBetween(Array.from(allErrors)));
-      errorEnum.push('}');
-
-      const errorConversions = [];
-      for (const { errors, module } of errorData.errors) {
-        const errorConversionsForTrait = [];
-        errorConversionsForTrait.push(`impl From<${module}::Error> for Error {`);
-        errorConversionsForTrait.push(spaceBetween([`fn from(error: ${module}::Error) -> Self {`, ['match value {']]));
-        errorConversionsForTrait.push([spaceBetween([errors.map(error => `${module}::Error::${error.variant}(e) => Error::${error.variant}(e),`)])]);
-        errorConversionsForTrait.push(indentLine('}', 2));
-        errorConversionsForTrait.push(indentLine('}', 1));
-        errorConversionsForTrait.push(`}`);
-        errorConversions.push(errorConversionsForTrait);
-      }
-
-      lines.push(...spaceBetween(errorEnum, ...errorConversions));
-    }
+  if (!errorData || errorData.type === 'inherited') {
+    return [];
   }
 
-  return lines;
+  // collect all errors from non-wrapped traits, removing duplicates as some traits may wrap the same error
+  const allErrors = errorData.errors
+    .filter(e => !e.wrapped)
+    .flatMap(e => e.errors)
+    .reduce((acc, error) => {
+      return acc.add(`${error.variant}(${error.value.module}::${error.value.error}),`)
+    }, new Set<string>());
+
+  const errorEnum: Lines[] = [
+    '#[derive(SolidityError, Debug)]',
+    'enum Error {',
+    spaceBetween(Array.from(allErrors)),
+    '}',
+  ];
+
+  const errorConversions = [];
+  for (const { errors, module } of errorData.errors) {
+    const errorConversionsForTrait = [
+      `impl From<${module}::Error> for Error {`,
+      spaceBetween([
+        `fn from(error: ${module}::Error) -> Self {`,
+        ['match value {'],
+        [errors.map(error => printVariant(module, error))],
+        ['}'],
+        '}',
+      ]),
+      '}'
+    ];
+    errorConversions.push(errorConversionsForTrait);
+  }
+
+  return spaceBetween(errorEnum, ...errorConversions);
+}
+
+function printVariant(module: string, error: SolError): string {
+  return `${module}::Error::${error.variant}(e) => Error::${error.variant}(e),`;
 }
 
 function printStorage(contractName: string, implementedTraits: ContractTrait[]): Lines[] {
