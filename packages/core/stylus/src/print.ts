@@ -103,7 +103,9 @@ function getLinesFromUseClausesGroup(group: UseClause[], groupName: string): Lin
       lines.push(`use ${useClause.containerPath}::${nameWithAlias(useClause)};`);
     }
   } else {
-    if (group.length == 1) {
+    if (group.length === 0) {
+      throw new Error(`Empty use clause group: ${groupName}`);
+    } else if (group.length == 1) {
       lines.push(`use ${groupName}::${nameWithAlias(group[0]!)};`);
     } else if (group.length > 1) {
       const names = group.map(useClause => nameWithAlias(useClause)).join(', ');
@@ -153,11 +155,9 @@ function splitLongLineInner(line: string): Lines[] {
 function sortUseClauses(contract: Contract): UseClause[] {
   return contract.useClauses.sort((a, b) => {
     // `self` should always take precedence
-    if (a.name === 'self') {
-      return -1;
-    } else if (b.name === 'self') {
-      return 1;
-    }
+    if (a.name === 'self') return -1;
+    if (b.name === 'self') return 1;
+
     const aFullPath = `${a.containerPath}::${nameWithAlias(a)}`;
     const bFullPath = `${b.containerPath}::${nameWithAlias(b)}`;
     return aFullPath.localeCompare(bFullPath);
