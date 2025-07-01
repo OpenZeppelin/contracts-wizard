@@ -305,20 +305,15 @@ function printImplementsAttribute(contract: Contract, implementedTraits: Contrac
 function printImplementedTraits(contractName: string, implementedTraits: ContractTrait[], errorType?: string): Lines[] {
   return spaceBetween(
     ...implementedTraits.map(trait => {
-      const content: Lines[] = [];
+      const content = [];
       if (trait.associatedError) {
-        if (!errorType) {
-          throw new Error(`Invalid impl block state for ${trait.name}: errorType undefined`);
-        }
-        content.push(`type Error = ${errorType};`, '');
+        content.push([`type Error = ${errorType};`]);
       }
       const fns = printTraitFunctions(trait);
-      if (fns.length > 0) {
-        content.push(...fns);
-      }
+      content.push(fns);
 
       return content.length > 0
-        ? ['#[public]', `impl ${trait.name} for ${contractName} {`, [spaceBetween(content)], '}']
+        ? ['#[public]', `impl ${trait.name} for ${contractName} {`, [spaceBetween(...content)], '}']
         : ['#[public]', `impl ${trait.name} for ${contractName} {}`];
     }),
   ).flatMap(lines => lines);
