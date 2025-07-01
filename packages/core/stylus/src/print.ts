@@ -9,6 +9,7 @@ import {
   type TraitName,
   isStoredContractTrait,
 } from './contract';
+import { copy } from './utils/copy';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, indentLine, spaceBetween } from './utils/format-lines';
@@ -46,7 +47,7 @@ export function printContract(contract: Contract): string {
       spaceBetween(
         printUseClauses(contract),
         printConstants(contract),
-        printErrors(contract, errorData),
+        printErrors(errorData),
         printStorage(contract.name.identifier, impls),
         contract.eip712Needed ? printEip712(contract.name.stringLiteral) : [],
         printImplementsAttribute(contract, impls, errorData?.commonType),
@@ -187,10 +188,20 @@ function extractErrors(contract: Contract): ErrorData | undefined {
   const errorMap: ErrorMap = contract.implementedTraits
     .filter(trait => 'errors' in trait)
     .reduce((res, trait) => {
-      const errors = trait.errors;
+      const errors = copy(trait.errors);
       if ('wraps' in errors) {
         const wrappedErr = errors.wraps;
         wrapped.push(wrappedErr);
+
+        const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErr);
+        if (wrappedErrTrait && 'errors' in wrappedErrTrait) {
+          const wrappedErrErrors = wrappedErrTrait.errors;
+          if ('list' in wrappedErrErrors) {
+            errors.list.push(...wrappedErrErrors.list);
+          } else {
+            errors.list.push(...wrappedErrErrors);
+          }
+        }
       }
       const modulePathSegments = trait.modulePath.split('::');
       res.set(trait.name, { module: modulePathSegments.pop()!, errors: 'wraps' in errors ? errors.list : errors });
@@ -211,7 +222,7 @@ function extractErrors(contract: Contract): ErrorData | undefined {
       : { type: 'enum', commonType: 'Error', errorMap };
 }
 
-function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
+function printErrors(errorData?: ErrorData): Lines[] {
   const lines = [];
 
   if (errorData) {
@@ -225,7 +236,7 @@ function printErrors(contract: Contract, errorData?: ErrorData): Lines[] {
           continue;
         }
         for (const error of errors) {
-          allErrors.add(`${error.variant}(${error.value}),`);
+          allErrors.add(`${error.variant}(${error.value.module}::${error.value.error}),`);
         }
       }
       errorEnum.push(spaceBetween(Array.from(allErrors)));

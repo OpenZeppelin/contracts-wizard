@@ -1,4 +1,5 @@
 import { escapeString, toIdentifier } from './utils/convert-strings';
+import { copy } from './utils/copy';
 
 type Name = {
   identifier: string;
@@ -9,7 +10,7 @@ export type TraitName = string;
 
 export interface SolError {
   variant: string;
-  value: string;
+  value: { module: string; error: string };
 }
 
 export interface Contract {
@@ -179,7 +180,7 @@ export class ContractBuilder implements Contract {
   }
 
   addEip712() {
-    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography::eip712', name: 'IEip712' });
+    this.addUseClause({ containerPath: 'openzeppelin_stylus::utils::cryptography', name: 'eip712::IEip712' });
     this.eip712Needed = true;
   }
 
@@ -243,10 +244,6 @@ export class ContractBuilder implements Contract {
   addSecurityTag(securityContact: string) {
     this.securityContact = securityContact;
   }
-}
-
-function copy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
 }
 
 export function isStoredContractTrait(trait: ContractTrait): trait is StoredContractTrait {

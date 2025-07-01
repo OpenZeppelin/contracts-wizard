@@ -255,7 +255,7 @@ const erc165Trait: ContractTrait = {
 const burnableTrait: ContractTrait = {
   name: 'IErc721Burnable',
   associatedError: true,
-  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions::burnable',
   priority: 3,
   functions: [
     {
@@ -278,7 +278,7 @@ const enumerableTrait: StoredContractTrait = {
     name: ENUMERABLE_STORAGE_NAME,
     type: 'Erc721Enumerable',
   },
-  modulePath: 'openzeppelin_stylus::token::erc721::extensions',
+  modulePath: 'openzeppelin_stylus::token::erc721::extensions::enumerable',
   priority: 2,
   functions: [
     {
