@@ -38,7 +38,7 @@ export interface UseClause {
   alias?: string;
 }
 
-export type NonEmptyArray<T> = [T, ...T[]];
+type NonEmptyArray<T> = [T, ...T[]];
 
 export type ErrorList = NonEmptyArray<SolError> | { list: NonEmptyArray<SolError>; wraps: TraitName };
 
