@@ -206,8 +206,8 @@ function extractErrors(contract: Contract): ErrorData | undefined {
 
   return errorMap.size === 0
     ? undefined
-    : errorMap.size === 1
-      ? { type: 'inherited', commonType: `${errorMap.get(errorMap.keys().next().value!)!.module}::Error` }
+    : Array.from(errorMap.values()).filter(e => !e.wrapped).length === 1
+      ? { type: 'inherited', commonType: `${Array.from(errorMap.values()).filter(e => !e.wrapped)[0]!.module}::Error` }
       : { type: 'enum', commonType: 'Error', errorMap };
 }
 
