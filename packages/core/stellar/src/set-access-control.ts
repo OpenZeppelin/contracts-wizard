@@ -97,8 +97,8 @@ export function requireAccessControl(
         c.addConstructorCode(`access_control::grant_role_no_auth(e, &admin, &${role}, &Symbol::new(e, "${role}"));`);
 
         if (useMacro) {
-          c.addUseClause('stellar_access_control_macros', 'has_role');
-          c.addFunctionTag(fn, `has_role(${caller}, "${role}")`, trait);
+          c.addUseClause('stellar_access_control_macros', 'only_role');
+          c.addFunctionTag(fn, `only_role(${caller}, "${role}")`, trait);
         } else {
           c.addFunctionCodeBefore(
             fn,
