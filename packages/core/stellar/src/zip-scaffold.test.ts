@@ -1,7 +1,7 @@
 import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 
-import { zipScaffold, contractOptionsToScaffoldContractName } from './zip-scaffold';
+import { zipScaffold } from './zip-scaffold';
 
 import { buildFungible } from './fungible';
 import { buildNonFungible } from './non-fungible';
@@ -15,6 +15,7 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
+import { contractOptionsToContractName } from './zip-shared';
 const asyncExec = util.promisify(child.exec);
 
 interface Context {
@@ -28,7 +29,7 @@ function assertLayout(t: ExecutionContext<Context>, zip: JSZip, opts: GenericOpt
     .map(f => f.name)
     .sort();
 
-  const scaffoldContractName = contractOptionsToScaffoldContractName(opts?.kind || 'contract');
+  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
   t.deepEqual(sorted, [
     'README-WIZARD.md',
@@ -73,7 +74,7 @@ async function runContractTest(t: ExecutionContext<Context>) {
 }
 
 async function assertContents(t: ExecutionContext<Context>, zip: JSZip, opts: GenericOptions) {
-  const scaffoldContractName = contractOptionsToScaffoldContractName(opts?.kind || 'contract');
+  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
   const contentComparison = [
     await getItemString(zip, `contracts/${scaffoldContractName}/src/contract.rs`),
@@ -117,12 +118,12 @@ async function runTest(t: ExecutionContext<Context>, c: Contract, opts: GenericO
   await assertContents(t, zip, opts);
 }
 
-test('contractOptionsToScaffoldContractName converts PascalCase to snake_case', t => {
-  t.is(contractOptionsToScaffoldContractName('Fungible'), 'fungible');
-  t.is(contractOptionsToScaffoldContractName('NonFungible'), 'non_fungible');
-  t.is(contractOptionsToScaffoldContractName('Pausable'), 'pausable');
-  t.is(contractOptionsToScaffoldContractName('Upgradeable'), 'upgradeable');
-  t.is(contractOptionsToScaffoldContractName('MyCustomKind'), 'my_custom_kind');
+test('contractOptionsToContractName converts PascalCase to snake_case', t => {
+  t.is(contractOptionsToContractName('Fungible'), 'fungible');
+  t.is(contractOptionsToContractName('NonFungible'), 'non_fungible');
+  t.is(contractOptionsToContractName('Pausable'), 'pausable');
+  t.is(contractOptionsToContractName('Upgradeable'), 'upgradeable');
+  t.is(contractOptionsToContractName('MyCustomKind'), 'my_custom_kind');
 });
 
 // test('fungible simple', async t => {
