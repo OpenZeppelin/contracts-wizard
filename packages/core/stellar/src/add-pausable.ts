@@ -36,10 +36,10 @@ const functions = defineFunctions({
   },
   pause: {
     args: [getSelfArg(), { name: 'caller', type: 'Address' }],
-    code: ['pausable::pause(e, &caller)'],
+    code: ['pausable::pause(e)'],
   },
   unpause: {
     args: [getSelfArg(), { name: 'caller', type: 'Address' }],
-    code: ['pausable::unpause(e, &caller)'],
+    code: ['pausable::unpause(e)'],
   },
 });
