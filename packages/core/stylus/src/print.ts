@@ -283,7 +283,7 @@ function printErrors(errorData?: ErrorPrintData): Lines[] {
       `impl From<${module}::Error> for Error {`,
       spaceBetween([
         `fn from(error: ${module}::Error) -> Self {`,
-        ['match value {'],
+        ['match error {'],
         [errors.map(error => printVariant(module, error))],
         ['}'],
         '}',
