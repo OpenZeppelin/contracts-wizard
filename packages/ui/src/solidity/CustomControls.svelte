@@ -8,6 +8,8 @@
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
 
+  import OPIcon from '../common/icons/OPIcon.svelte';
+
   export let opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
     ...custom.defaults,
@@ -27,12 +29,16 @@
 </section>
 
 <section class="controls-section">
-  <h1>Features</h1>
+  <div class="flex items-center"><h1>Cross-Chain Messaging</h1>&nbsp;<OPIcon /></div>
 
   <label class="labeled-input">
-    <span>Superchain Interop Function</span>
+    <span>Function Name</span>
     <input bind:value={opts.superchainInteropFunction} />
   </label>
+</section>
+
+<section class="controls-section">
+  <h1>Features</h1>
 
   <div class="checkbox-group">
     <label class:checked={opts.pausable}>
