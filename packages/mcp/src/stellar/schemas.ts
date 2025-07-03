@@ -5,6 +5,7 @@ import {
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
+  stellarStablecoinDescriptions,
 } from '@openzeppelin/wizard-common';
 import type { KindedOptions } from '@openzeppelin/wizard-stellar';
 
@@ -16,14 +17,17 @@ function _typeAssertions() {
     [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
   } = {
     Fungible: z.object(fungibleSchema).parse({}),
+    Stablecoin: z.object(stablecoinSchema).parse({}),
     NonFungible: z.object(nonFungibleSchema).parse({}),
   };
 }
 
 export const commonSchema = {
+  access: z.literal('ownable').or(z.literal('roles')).optional().describe(stellarCommonDescriptions.access),
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({
+      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
       license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()
@@ -38,6 +42,16 @@ export const fungibleSchema = {
   premint: z.string().optional().describe(stellarFungibleDescriptions.premint),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   ...commonSchema,
+} as const satisfies z.ZodRawShape;
+
+export const stablecoinSchema = {
+  ...fungibleSchema,
+  limitations: z
+    .literal(false)
+    .or(z.literal('allowlist'))
+    .or(z.literal('blocklist'))
+    .optional()
+    .describe(stellarStablecoinDescriptions.limitations),
 } as const satisfies z.ZodRawShape;
 
 export const nonFungibleSchema = {

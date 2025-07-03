@@ -171,19 +171,6 @@ footer a:focus {
   text-decoration: underline;
 }
 
-@media screen and (max-width: 768px) {
-  .defender {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    padding: 3rem;
-    text-align: left;
-  }
-  .defender a {
-    margin: 0 auto 0 0;
-    width: max-content;
-  }
-}
-
 /* To reset HubSpot Popup Banner's default animation effect */
 body .leadinModal.leadinModal-theme-top {
   top: auto;

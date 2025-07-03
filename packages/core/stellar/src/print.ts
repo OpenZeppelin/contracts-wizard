@@ -23,6 +23,8 @@ export function printContract(contract: Contract): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
+        ...(contract.documentations.length ? ['', ...printDocumentations(contract.documentations)] : []),
+        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
         ...createLevelAttributes,
       ],
       spaceBetween(
@@ -246,7 +248,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.pub, head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
@@ -287,7 +289,7 @@ function printConstructor(contract: Contract): Lines[] {
       true,
       head,
       args.map(a => printArgument(a)),
-      undefined,
+      [],
       undefined,
       undefined,
       body,
@@ -304,15 +306,15 @@ function printFunction2(
   pub: boolean | undefined,
   kindedName: string,
   args: string[],
-  tag: string | undefined,
+  tags: string[],
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[],
 ): Lines[] {
   const fn = [];
 
-  if (tag !== undefined) {
-    fn.push(`#[${tag}]`);
+  for (let i = 0; i < tags.length; i++) {
+    fn.push(`#[${tags[i]}]`);
   }
 
   let accum = '';
@@ -359,4 +361,12 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printDocumentations(documentations: string[]): string[] {
+  return documentations.map(documentation => `//! ${documentation}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }
