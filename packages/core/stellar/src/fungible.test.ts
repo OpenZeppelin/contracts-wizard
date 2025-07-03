@@ -67,9 +67,21 @@ testFungible('fungible ownable', {
   access: 'ownable',
 });
 
-testFungible('fungible full', {
+testFungible('fungible roles', {
+  access: 'roles',
+});
+
+testFungible('fungible full - ownable', {
   premint: '2000',
   access: 'ownable',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+});
+
+testFungible('fungible full - roles', {
+  premint: '2000',
+  access: 'roles',
   burnable: true,
   mintable: true,
   pausable: true,

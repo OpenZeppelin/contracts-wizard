@@ -7,6 +7,7 @@
 
   import FungibleControls from './FungibleControls.svelte';
   import NonFungibleControls from './NonFungibleControls.svelte';
+  import StablecoinControls from './StablecoinControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -121,6 +122,9 @@
           case 'Fungible':
             opts.premint = initialOpts.premint ?? opts.premint;
             break;
+          case 'Stablecoin':
+            opts.premint = initialOpts.premint ?? opts.premint;
+            break;
           case 'NonFungible':
             break;
         }
@@ -188,6 +192,7 @@
       <OverflowMenu>
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
         <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
+        <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin </button>
       </OverflowMenu>
     </div>
 
@@ -250,6 +255,9 @@
       </div>
       <div class:hidden={tab !== 'NonFungible'}>
         <NonFungibleControls bind:opts={allOpts.NonFungible} errors={errors.NonFungible} />
+      </div>
+      <div class:hidden={tab !== 'Stablecoin'}>
+        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
