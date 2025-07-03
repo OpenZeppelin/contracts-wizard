@@ -29,7 +29,13 @@
 </section>
 
 <section class="controls-section">
-  <div class="flex items-center"><h1>Cross-Chain Messaging</h1>&nbsp;<OPIcon /></div>
+
+  <div class="flex items-center">
+    <span class="mr-2">
+      <input type="checkbox" />
+    </span>
+    <span class="flex items-center"><h1>Cross-Chain Messaging</h1>&nbsp;<OPIcon /></span>
+  </div>
 
   <label class="labeled-input">
     <span>Function Name</span>
