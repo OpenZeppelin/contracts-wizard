@@ -145,7 +145,7 @@ const erc721Trait: StoredContractTrait = {
     { variant: 'IncorrectOwner', value: { module: 'erc721', error: 'ERC721IncorrectOwner' } },
     { variant: 'InvalidSender', value: { module: 'erc721', error: 'ERC721InvalidSender' } },
     { variant: 'InvalidReceiver', value: { module: 'erc721', error: 'ERC721InvalidReceiver' } },
-    { variant: 'InvalidReceiverWithReason', value: { module: 'erc721', error: 'ERC721InvalidReceiverWithReason' } },
+    { variant: 'InvalidReceiverWithReason', value: { module: 'erc721', error: 'InvalidReceiverWithReason' } },
     { variant: 'InsufficientApproval', value: { module: 'erc721', error: 'ERC721InsufficientApproval' } },
     { variant: 'InvalidApprover', value: { module: 'erc721', error: 'ERC721InvalidApprover' } },
     { variant: 'InvalidOperator', value: { module: 'erc721', error: 'ERC721InvalidOperator' } },

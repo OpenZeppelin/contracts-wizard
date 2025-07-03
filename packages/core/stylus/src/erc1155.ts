@@ -114,7 +114,7 @@ function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
       { variant: 'InsufficientBalance', value: { module: 'erc1155', error: 'ERC1155InsufficientBalance' } },
       { variant: 'InvalidSender', value: { module: 'erc1155', error: 'ERC1155InvalidSender' } },
       { variant: 'InvalidReceiver', value: { module: 'erc1155', error: 'ERC1155InvalidReceiver' } },
-      { variant: 'InvalidReceiverWithReason', value: { module: 'erc1155', error: 'ERC1155InvalidReceiverWithReason' } },
+      { variant: 'InvalidReceiverWithReason', value: { module: 'erc1155', error: 'InvalidReceiverWithReason' } },
       { variant: 'MissingApprovalForAll', value: { module: 'erc1155', error: 'ERC1155MissingApprovalForAll' } },
       { variant: 'InvalidApprover', value: { module: 'erc1155', error: 'ERC1155InvalidApprover' } },
       { variant: 'InvalidOperator', value: { module: 'erc1155', error: 'ERC1155InvalidOperator' } },
