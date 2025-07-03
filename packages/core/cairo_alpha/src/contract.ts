@@ -2,6 +2,7 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
+  documentations: string[];
   name: string;
   account: boolean;
   useClauses: UseClause[];
@@ -102,6 +103,8 @@ export class ContractBuilder implements Contract {
   readonly account: boolean;
   license = 'MIT';
   upgradeable = false;
+
+  readonly documentations: string[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -297,5 +300,9 @@ export class ContractBuilder implements Contract {
 
   addInterfaceFlag(flag: string): void {
     this.interfaceFlagsSet.add(flag);
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
   }
 }

@@ -7,7 +7,7 @@ scarb-version = "2.11.4"
 
 [dependencies]
 starknet = "2.11.4"
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v2.0.0-alpha.1" }
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v2.0.0" }
 
 [lib]
 

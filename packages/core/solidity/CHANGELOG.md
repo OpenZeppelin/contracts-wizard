@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 0.6.0 (2025-06-20)
+
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
+  - **Possibly breaking changes**:
+    - `Governor`: Remove usage of `access` option. This option now has no effect.
+
+- `Accounts`: Add `_disableInitializers()` to account implementations ([#568](https://github.com/OpenZeppelin/contracts-wizard/pull/568))
+
 ## 0.5.6 (2025-05-21)
 
 - `MultisigERC7913`: Add `onlyEntryPointOrSelf` modifier to public configuration functions. ([#554](https://github.com/OpenZeppelin/contracts-wizard/pull/554))
