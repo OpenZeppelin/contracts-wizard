@@ -7,8 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
-
-  import OPIcon from '../common/icons/OPIcon.svelte';
+  import CrossChainMessagingSection from './CrossChainMessagingSection.svelte';
 
   export let opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
@@ -16,8 +15,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let crossChainMessagingEnabled = false;
-  $: opts.crossChainMessaging = crossChainMessagingEnabled ? 'superchain' : false;
+
 
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
@@ -31,20 +29,7 @@
   </label>
 </section>
 
-<section class="controls-section">
-
-  <div class="flex items-center">
-    <span class="mr-2">
-      <input type="checkbox" bind:checked={crossChainMessagingEnabled} />
-    </span>
-    <span class="flex items-center"><h1>Cross-Chain Messaging</h1>&nbsp;<OPIcon /></span>
-  </div>
-
-  <label class="labeled-input">
-    <span>Function Name</span>
-    <input bind:value={opts.crossChainFunctionName} />
-  </label>
-</section>
+<CrossChainMessagingSection bind:opts={opts} />
 
 <section class="controls-section">
   <h1>Features</h1>

@@ -12,10 +12,14 @@
   import ChevronRight from './icons/ChevronRight.svelte';
   import ChevronDown from './icons/ChevronDown.svelte';
 
+  import type { ComponentType } from 'svelte';
+
   export let label: string;
   export let type: 'checkbox' | 'toggleradio';
 
   export let checkboxChecked: boolean | undefined = undefined;
+
+  export let icon: ComponentType | undefined = undefined;
 
   export let toggleRadioValue: false | T | undefined = undefined;
   export let toggleRadioDefaultValue: T | undefined = undefined;
@@ -71,7 +75,7 @@
             />
           {/if}
         </span>
-        <span>{label}</span>
+        <span class="flex items-center">{label}{#if icon}&nbsp;&nbsp;<svelte:component this={icon}/>{/if}</span>
       </div>
       <div class="flex items-center">
         <button
