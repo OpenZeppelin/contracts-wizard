@@ -8,6 +8,7 @@ import { Access, requireAccessControl, setAccessControl } from './set-access-con
 import { addPausable } from './add-pausable';
 import { printContract } from './print';
 import { defineFunctions } from './utils/define-functions';
+import { toIdentifier } from './utils/to-identifier';
 
 export const CrossChainMessagingOptions = [false, 'superchain'] as const;
 export type CrossChainMessaging = (typeof CrossChainMessagingOptions)[number];
@@ -70,22 +71,24 @@ export function buildCustom(opts: CustomOptions): Contract {
 }
 
 function addSuperchainInterop(c: ContractBuilder, functionName: string, access: Access, pausable: boolean) {
+  const sanitizedFunctionName = toIdentifier(functionName, false);
+
   // Add source function
   const sourceFn: BaseFunction = {
-    name: `call${functionName.replace(/^(.)/i, c => c.toUpperCase())}`,
+    name: `call${sanitizedFunctionName.replace(/^(.)/, c => c.toUpperCase())}`,
     kind: 'public' as const,
     args: [],
   };
 
   requireAccessControl(c, sourceFn, access, 'CROSS_CHAIN_CALLER', 'crossChainCaller');
   c.addFunctionCode(
-    `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${functionName}, (/* TODO: Add arguments */)));`,
+    `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
     sourceFn,
   );
 
   // Add destination function
   const destFn: BaseFunction = {
-    name: functionName,
+    name: sanitizedFunctionName,
     kind: 'external' as const,
     args: [],
   };

@@ -24,6 +24,7 @@
       <input
         bind:value={functionName}
         disabled={!enabled}
+        placeholder="myFunction"
       />
     </label>
   </ExpandableCheckbox>
