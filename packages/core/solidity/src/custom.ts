@@ -68,4 +68,3 @@ export function buildCustom(opts: CustomOptions): Contract {
 
   return c;
 }
-

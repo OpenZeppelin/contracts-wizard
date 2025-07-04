@@ -63,11 +63,7 @@ function printCustomErrors(errors: CustomError[]): Lines[] {
 }
 
 function printModifierDefinitions(modifierDefinitions: ModifierDefinition[]): Lines[] {
-  return modifierDefinitions.flatMap(def => [
-    `modifier ${def.name}() {`,
-    def.code,
-    '}',
-  ]);
+  return modifierDefinitions.flatMap(def => [`modifier ${def.name}() {`, def.code, '}']);
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -88,9 +84,9 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
-        parents.map(p => p + ';'),
-        contract.constructorCode,
-      )
+          parents.map(p => p + ';'),
+          contract.constructorCode,
+        )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     const constructor = printFunction2([], head, args, undefined, modifiers, body);
@@ -231,7 +227,9 @@ function printFunction2(
   const braces = code.length > 0 ? '{' : '{}';
 
   if (headingLength <= 72) {
-    fn.push([`${kindedName}(${args.join(', ')}${formatInlineComment(argInlineComment)})`, ...modifiers, braces].join(' '));
+    fn.push(
+      [`${kindedName}(${args.join(', ')}${formatInlineComment(argInlineComment)})`, ...modifiers, braces].join(' '),
+    );
   } else {
     fn.push(`${kindedName}(${args.join(', ')}${formatInlineComment(argInlineComment)})`, modifiers, braces);
   }
