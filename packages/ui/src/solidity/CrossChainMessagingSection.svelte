@@ -14,15 +14,15 @@
     label="Cross-Chain Messaging"
     icon={OPIcon}
     bind:checked={enabled}
-    helpContent="TODO"
-    helpLink="TODO"
+    helpContent="Adds an example for Superchain interop message passing."
+    helpLink="https://docs.optimism.io/interop/message-passing"
     error={errors?.crossChainFunctionName}
   >
     <label class="labeled-input">
       <span class="flex justify-between pr-2">
         Function Name
         <HelpTooltip>
-          The name of the function that will be callable from another chain.
+          The name of a custom function that will be callable from another chain.
         </HelpTooltip>
       </span>
       <input
