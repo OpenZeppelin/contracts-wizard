@@ -53,14 +53,14 @@ export type ContractTrait = {
   functions: ContractFunction[];
   requiredImports?: UseClause[];
 } & (
-    | {
+  | {
       associatedError: true;
       errors: ErrorList;
     }
-    | {
+  | {
       associatedError?: boolean;
     }
-  );
+);
 
 export type StoredContractTrait = ContractTrait & {
   storage: Implementation;

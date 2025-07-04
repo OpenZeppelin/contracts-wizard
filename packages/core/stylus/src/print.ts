@@ -28,14 +28,14 @@ type ErrorPrintItem = {
 
 type ErrorPrintData =
   | {
-    type: 'inherited';
-    commonType: string;
-  }
+      type: 'inherited';
+      commonType: string;
+    }
   | {
-    type: 'enum';
-    commonType: 'Error';
-    errors: ErrorPrintItem[];
-  };
+      type: 'enum';
+      commonType: 'Error';
+      errors: ErrorPrintItem[];
+    };
 
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
@@ -382,10 +382,10 @@ function printFunction(fn: ContractFunction): Lines[] {
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
-      // if there's code after, then this is definitely chaining additional
-      // ERC165 checks, as view function code is never otherwise chained with other code.
-      // TODO: this is a hack, and we should find a better way to handle this.
-      ? [fn.code].concat(fn.codeAfter ?? [])
+      ? // if there's code after, then this is definitely chaining additional
+        // ERC165 checks, as view function code is never otherwise chained with other code.
+        // TODO: this is a hack, and we should find a better way to handle this.
+        [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
