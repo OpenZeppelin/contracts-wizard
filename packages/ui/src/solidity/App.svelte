@@ -371,7 +371,7 @@
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} />
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom} />
       </div>
     </div>
 

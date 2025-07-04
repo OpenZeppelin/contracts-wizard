@@ -7,8 +7,8 @@ import { setInfo } from './set-info';
 import { Access, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { printContract } from './print';
-import { defineFunctions } from './utils/define-functions';
 import { toIdentifier } from './utils/to-identifier';
+import { OptionsError } from './error';
 
 export const CrossChainMessagingOptions = [false, 'superchain'] as const;
 export type CrossChainMessaging = (typeof CrossChainMessagingOptions)[number];
@@ -35,7 +35,7 @@ function withDefaults(opts: CustomOptions): Required<CustomOptions> {
     ...opts,
     ...withCommonDefaults(opts),
     crossChainMessaging: opts.crossChainMessaging ?? defaults.crossChainMessaging,
-    crossChainFunctionName: opts.crossChainFunctionName?.length ? opts.crossChainFunctionName : defaults.crossChainFunctionName,
+    crossChainFunctionName: opts.crossChainFunctionName ?? defaults.crossChainFunctionName,
     pausable: opts.pausable ?? defaults.pausable,
   };
 }
@@ -72,6 +72,11 @@ export function buildCustom(opts: CustomOptions): Contract {
 
 function addSuperchainInterop(c: ContractBuilder, functionName: string, access: Access, pausable: boolean) {
   const sanitizedFunctionName = toIdentifier(functionName, false);
+  if (sanitizedFunctionName.length === 0) {
+    throw new OptionsError({
+      crossChainFunctionName: 'Not a valid function name',
+    });
+  }
 
   // Add source function
   const sourceFn: BaseFunction = {

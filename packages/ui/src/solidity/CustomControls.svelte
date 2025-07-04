@@ -1,13 +1,15 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { custom, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import CrossChainMessagingSection from './CrossChainMessagingSection.svelte';
+
+  export let errors: undefined | OptionsErrorMessages;
 
   export let opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
@@ -45,7 +47,7 @@
   </div>
 </section>
 
-<CrossChainMessagingSection bind:enabled={crossChainMessagingEnabled} bind:functionName={opts.crossChainFunctionName} />
+<CrossChainMessagingSection bind:enabled={crossChainMessagingEnabled} bind:functionName={opts.crossChainFunctionName} {errors} />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
