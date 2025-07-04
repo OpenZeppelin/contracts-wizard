@@ -95,3 +95,9 @@ export const solidityGovernorDescriptions = {
   storage: 'Enable storage of proposal details and enumerability of proposals',
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
 };
+
+export const solidityCustomDescriptions = {
+  crossChainMessaging: 'Whether to add an example for Superchain interop message passing',
+  crossChainFunctionName:
+    'The name of a custom function that will be callable from another chain, default is "myFunction"',
+};

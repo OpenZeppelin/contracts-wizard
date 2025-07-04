@@ -1,5 +1,6 @@
 import test from 'ava';
-import { custom, OptionsError } from '.';
+import type { OptionsError } from '.';
+import { custom } from '.';
 
 import type { CustomOptions } from './custom';
 import { buildCustom } from './custom';
@@ -84,10 +85,7 @@ test('superchain messaging, invalid function name', async t => {
       crossChainFunctionName: '  ',
     }),
   );
-  t.is(
-    (error as OptionsError).messages.crossChainFunctionName,
-    'Not a valid function name',
-  );
+  t.is((error as OptionsError).messages.crossChainFunctionName, 'Not a valid function name');
 });
 
 testCustom('upgradeable uups with access control disabled', {
