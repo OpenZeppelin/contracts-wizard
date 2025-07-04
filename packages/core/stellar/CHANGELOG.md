@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.3.0 (2025-07-03)
+
+- Add Stablecoin with Limitations and Access Control (ownable and roles). ([#575](https://github.com/OpenZeppelin/contracts-wizard/pull/575))
+  - **Breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.3.0
+
 ## 0.2.3 (2025-06-27)
 
 - Add security contact in contract info ([#563](https://github.com/OpenZeppelin/contracts-wizard/pull/563))
