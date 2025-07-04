@@ -13,3 +13,6 @@
 **/NOTICE
 build/
 public/
+remappings.txt
+*.cairo
+*.sh

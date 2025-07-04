@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prepare": "echo \"Nothing to prepare\"",
     "build": "node scripts/copy-versions.mjs && rollup -c",
     "type:check:api": "deno task --config deno.json type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",

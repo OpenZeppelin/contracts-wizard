@@ -71,9 +71,6 @@ const defaults: Required<ERC1155Options>
 const defaults: Required<AccountOptions>
 ```
 ```js
-const defaults: Required<AccountOptions>
-```
-```js
 const defaults: Required<MultisigOptions>
 ```
 ```js
