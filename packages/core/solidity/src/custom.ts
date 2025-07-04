@@ -87,10 +87,12 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
   c.addImportOnly({
     name: 'IL2ToL2CrossDomainMessenger',
     path: '@eth-optimism/contracts-bedrock/src/L2/IL2ToL2CrossDomainMessenger.sol',
+    transpiled: false,
   });
   c.addImportOnly({
     name: 'Predeploys',
     path: '@eth-optimism/contracts-bedrock/src/libraries/Predeploys.sol',
+    transpiled: false,
   });
   c.addVariable('IL2ToL2CrossDomainMessenger public immutable messenger = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER);');
 

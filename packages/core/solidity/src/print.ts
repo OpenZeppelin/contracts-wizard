@@ -44,8 +44,8 @@ export function printContract(contract: Contract, opts?: Options): string {
         spaceBetween(
           contract.variables,
           printCustomErrors(contract.customErrors),
-          printConstructor(contract, helpers),
           printModifierDefinitions(contract.modifierDefinitions),
+          printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
           hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
