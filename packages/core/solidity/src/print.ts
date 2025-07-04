@@ -7,6 +7,7 @@ import type {
   NatspecTag,
   ImportContract,
   CustomError,
+  ModifierDefinition,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -44,6 +45,7 @@ export function printContract(contract: Contract, opts?: Options): string {
           contract.variables,
           printCustomErrors(contract.customErrors),
           printConstructor(contract, helpers),
+          printModifierDefinitions(contract.modifierDefinitions),
           ...fns.code,
           ...fns.modifiers,
           hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
@@ -58,6 +60,14 @@ export function printContract(contract: Contract, opts?: Options): string {
 
 function printCustomErrors(errors: CustomError[]): Lines[] {
   return errors.map(e => `error ${e.name}();`);
+}
+
+function printModifierDefinitions(modifierDefinitions: ModifierDefinition[]): Lines[] {
+  return modifierDefinitions.flatMap(def => [
+    `modifier ${def.name}() {`,
+    def.code,
+    '}',
+  ]);
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {

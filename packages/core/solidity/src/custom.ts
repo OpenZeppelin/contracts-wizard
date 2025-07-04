@@ -94,15 +94,15 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
   });
   c.addVariable('IL2ToL2CrossDomainMessenger public immutable messenger = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER);');
 
-  // TODO: define modifiers
-  // c.setFunctionBody(
-  //   [
-  //     'if (msg.sender != address(messenger)) revert CallerNotL2ToL2CrossDomainMessenger();',
-  //     'if (messenger.crossDomainMessageSender() != address(this)) revert InvalidCrossDomainSender();',
-  //     '_;',
-  //   ],
-  //   sourceFn,
-  // );
+  // Add modifier definition
+  c.addModifierDefinition({
+    name: 'onlyCrossDomainCallback',
+    code: [
+      'if (msg.sender != address(messenger)) revert CallerNotL2ToL2CrossDomainMessenger();',
+      'if (messenger.crossDomainMessageSender() != address(this)) revert InvalidCrossDomainSender();',
+      '_;',
+    ],
+  });
 
   // Add source function
   const sourceFn: BaseFunction = {
@@ -132,7 +132,6 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
     args: [],
     argInlineComment: 'TODO: Add arguments',
   };
-
   c.setFunctionComments([
     '/**',
     ' * @dev IMPORTANT: You must either design the deployer to allow only a specific trusted contract,',
@@ -144,6 +143,7 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
     ' */',
   ], destFn);
 
+  c.addModifier('onlyCrossDomainCallback', destFn);
   if (pausable) {
     c.addModifier('whenNotPaused', destFn);
   }

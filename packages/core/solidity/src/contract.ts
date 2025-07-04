@@ -12,6 +12,7 @@ export interface Contract {
   variables: string[];
   upgradeable: boolean;
   customErrors: CustomError[];
+  modifierDefinitions: ModifierDefinition[];
 }
 
 export interface CustomError {
@@ -38,6 +39,11 @@ export interface ReferencedContract {
 export interface Using {
   library: ImportContract;
   usingFor: string;
+}
+
+export interface ModifierDefinition {
+  name: string;
+  code: string[];
 }
 
 export interface BaseFunction {
@@ -93,6 +99,7 @@ export class ContractBuilder implements Contract {
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
+  private modifierDefinitionsMap: Map<string, ModifierDefinition> = new Map<string, ModifierDefinition>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -126,6 +133,10 @@ export class ContractBuilder implements Contract {
 
   get customErrors(): CustomError[] {
     return [...this.customErrorSet].map(name => ({ name }));
+  }
+
+  get modifierDefinitions(): ModifierDefinition[] {
+    return [...this.modifierDefinitionsMap.values()];
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
@@ -234,6 +245,12 @@ export class ContractBuilder implements Contract {
   addCustomError(name: string): boolean {
     const present = this.customErrorSet.has(name);
     this.customErrorSet.add(name);
+    return !present;
+  }
+
+  addModifierDefinition(modifier: ModifierDefinition): boolean {
+    const present = this.modifierDefinitionsMap.has(modifier.name);
+    this.modifierDefinitionsMap.set(modifier.name, modifier);
     return !present;
   }
 }
