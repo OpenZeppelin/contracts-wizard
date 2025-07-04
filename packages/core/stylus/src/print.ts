@@ -28,14 +28,14 @@ type ErrorPrintItem = {
 
 type ErrorPrintData =
   | {
-      type: 'inherited';
-      commonType: string;
-    }
+    type: 'inherited';
+    commonType: string;
+  }
   | {
-      type: 'enum';
-      commonType: 'Error';
-      errors: ErrorPrintItem[];
-    };
+    type: 'enum';
+    commonType: 'Error';
+    errors: ErrorPrintItem[];
+  };
 
 export function printContract(contract: Contract): string {
   const impls = sortImpls(contract);
@@ -170,8 +170,8 @@ function sortUseClauses(contract: Contract): UseClause[] {
 }
 
 /**
- * Sorts implemented traits by priority and name, and groups them by section.
- * @returns An array of tuples, where the first element is the section name and the second element is an array of implemented traits.
+ * Sorts contract traits by priority and name.
+ * @returns An array of sorted contract traits.
  */
 function sortImpls(contract: Contract): ContractTrait[] {
   const sortedTraits = contract.implementedTraits.sort((a, b) => {
@@ -373,7 +373,7 @@ function printFunction(fn: ContractFunction): Lines[] {
       : [fn.code]
     : typeof fn.returns === 'string'
       ? // if there's code after, it's probably chained view function(s)
-        [fn.code].concat(fn.codeAfter ?? [])
+      [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
