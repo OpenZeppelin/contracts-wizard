@@ -6,7 +6,7 @@ import { printContract } from './print';
 
 import type { OptionsError } from '.';
 import { fungible } from '.';
-import { runRustCompilationTest } from './test';
+import { runRustCompilationTest } from './utils/compile-test';
 
 function testFungible(title: string, opts: Partial<FungibleOptions>) {
   test(title, t => {

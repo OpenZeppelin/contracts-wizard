@@ -1,8 +1,8 @@
 import _test from 'ava';
 
-import { runRustCompilationTest } from './test';
 import { buildFungible } from './fungible';
 import test from 'ava';
+import { runRustCompilationTest } from './utils/compile-test';
 
 test(
   'rust zip fungible simple',
