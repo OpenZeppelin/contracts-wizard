@@ -1,19 +1,16 @@
 <script lang="ts">
-    import type { KindedOptions } from '@openzeppelin/wizard';
     import HelpTooltip from '../common/HelpTooltip.svelte';
     import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
     import OPIcon from '../common/icons/OPIcon.svelte';
-  
-    export let opts: KindedOptions['Custom'];
 
-    let crossChainMessagingEnabled = false;
-    $: opts.crossChainMessaging = crossChainMessagingEnabled ? 'superchain' : false;
+    export let enabled: boolean;
+    export let functionName: string;
   </script>
   
   <ExpandableCheckbox
     label="Cross-Chain Messaging"
     icon={OPIcon}
-    bind:checked={crossChainMessagingEnabled}
+    bind:checked={enabled}
     helpContent="TODO"
     helpLink="TODO"
   >
@@ -25,8 +22,8 @@
         </HelpTooltip>
       </span>
       <input
-        bind:value={opts.crossChainFunctionName}
-        disabled={!crossChainMessagingEnabled}
+        bind:value={functionName}
+        disabled={!enabled}
       />
     </label>
   </ExpandableCheckbox>
