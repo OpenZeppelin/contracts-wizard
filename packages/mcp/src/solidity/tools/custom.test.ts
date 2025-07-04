@@ -43,6 +43,8 @@ test('all', async t => {
     pausable: true,
     access: 'roles',
     upgradeable: 'uups',
+    crossChainMessaging: 'superchain',
+    crossChainFunctionName: 'myCustomFunction',
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',
