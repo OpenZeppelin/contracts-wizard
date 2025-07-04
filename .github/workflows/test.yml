@@ -71,15 +71,15 @@ jobs:
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
           df -h
       
-      # - name: Get scaffold-stellar latest commit SHA
-      #   if: matrix.package == 'stellar'
-      #   id: get-scaffold-sha
-      #   run: |
-      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+      - name: Get scaffold-stellar latest commit SHA
+        if: matrix.package == 'stellar'
+        id: get-scaffold-sha
+        run: |
+          echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
 
       - name: Cache Rust dependencies
         if: matrix.package == 'stellar'
-        uses: actions/cache@v3
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 #v4.2.3
         with:
           path: |
             ~/.cargo/bin/
@@ -96,7 +96,7 @@ jobs:
         with:
           toolchain: stable, nightly
           components: clippy, rustfmt, llvm-tools-preview
-          target: wasm32-unknown-unknown
+          target: wasm32v1-none
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
