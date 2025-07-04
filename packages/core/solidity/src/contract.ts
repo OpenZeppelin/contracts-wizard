@@ -11,6 +11,11 @@ export interface Contract {
   constructorArgs: FunctionArgument[];
   variables: string[];
   upgradeable: boolean;
+  customErrors: CustomError[];
+}
+
+export interface CustomError {
+  name: string;
 }
 
 export type Value = string | number | { lit: string } | { note: string; value: Value };
@@ -38,6 +43,7 @@ export interface Using {
 export interface BaseFunction {
   name: string;
   args: FunctionArgument[];
+  argInlineComment?: string;
   returns?: string[];
   kind: FunctionKind;
   mutability?: FunctionMutability;
@@ -83,6 +89,7 @@ export class ContractBuilder implements Contract {
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
+  readonly customErrorSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
@@ -115,6 +122,10 @@ export class ContractBuilder implements Contract {
 
   get variables(): string[] {
     return [...this.variableSet];
+  }
+
+  get customErrors(): CustomError[] {
+    return [...this.customErrorSet].map(name => ({ name }));
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
@@ -217,6 +228,12 @@ export class ContractBuilder implements Contract {
   addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);
+    return !present;
+  }
+
+  addCustomError(name: string): boolean {
+    const present = this.customErrorSet.has(name);
+    this.customErrorSet.add(name);
     return !present;
   }
 }

@@ -78,6 +78,32 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
     });
   }
 
+  // Add custom errors
+  c.addCustomError('CallerNotL2ToL2CrossDomainMessenger');
+  c.addCustomError('InvalidCrossDomainSender');
+  c.addCustomError('InvalidDestination');
+
+  // Add cross domain messenger
+  c.addImportOnly({
+    name: 'IL2ToL2CrossDomainMessenger',
+    path: '@eth-optimism/contracts-bedrock/src/L2/IL2ToL2CrossDomainMessenger.sol',
+  });
+  c.addImportOnly({
+    name: 'Predeploys',
+    path: '@eth-optimism/contracts-bedrock/src/libraries/Predeploys.sol',
+  });
+  c.addVariable('IL2ToL2CrossDomainMessenger public immutable messenger = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER);');
+
+  // TODO: define modifiers
+  // c.setFunctionBody(
+  //   [
+  //     'if (msg.sender != address(messenger)) revert CallerNotL2ToL2CrossDomainMessenger();',
+  //     'if (messenger.crossDomainMessageSender() != address(this)) revert InvalidCrossDomainSender();',
+  //     '_;',
+  //   ],
+  //   sourceFn,
+  // );
+
   // Add source function
   const sourceFn: BaseFunction = {
     name: `call${sanitizedFunctionName.replace(/^(.)/, c => c.toUpperCase())}`,
@@ -91,8 +117,11 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
     c.setFunctionComments(['// NOTE: Anyone can call this function'], sourceFn);
   }
 
-  c.addFunctionCode(
-    `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
+  c.setFunctionBody(
+    [
+      'if (_toChainId == block.chainid) revert InvalidDestination();',
+      `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
+    ],
     sourceFn,
   );
 
@@ -101,7 +130,19 @@ function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: st
     name: sanitizedFunctionName,
     kind: 'external' as const,
     args: [],
+    argInlineComment: 'TODO: Add arguments',
   };
+
+  c.setFunctionComments([
+    '/**',
+    ' * @dev IMPORTANT: You must either design the deployer to allow only a specific trusted contract,',
+    ' * such as this contract, to be deployed through it, or use CREATE2 from a deployer contract',
+    ' * that is itself deployed by an EOA you control.',
+    ' * This precaution is critical because if an unauthorized contract is deployed at the same',
+    ' * address on any Superchain network, it could allow malicious actors to invoke your function',
+    ' * from another chain.',
+    ' */',
+  ], destFn);
 
   if (pausable) {
     c.addModifier('whenNotPaused', destFn);
