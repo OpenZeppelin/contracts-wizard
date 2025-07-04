@@ -203,7 +203,7 @@ function sortImpls(contract: Contract): ContractTrait[] {
  * For multiple errors, returns enum type with grouped errors.
  */
 function extractErrors(contract: Contract): ErrorPrintData | undefined {
-  const { errorMap, wrappedTraitNames } = buildErrorMap(contract);
+  const { errorMap, wrappedErrorsTraitNames: wrappedTraitNames } = buildErrorMap(contract);
   markWrappedErrors(errorMap, wrappedTraitNames);
 
   const errors = Array.from(errorMap.values());
@@ -218,9 +218,9 @@ function extractErrors(contract: Contract): ErrorPrintData | undefined {
 
 function buildErrorMap(contract: Contract): {
   errorMap: Map<string, ErrorPrintItem>;
-  wrappedTraitNames: TraitName[];
+  wrappedErrorsTraitNames: TraitName[];
 } {
-  const wrappedTraitNames: TraitName[] = [];
+  const wrappedErrorsTraitNames: TraitName[] = [];
   const errorMap = new Map<string, ErrorPrintItem>();
 
   for (const trait of contract.implementedTraits) {
@@ -229,9 +229,9 @@ function buildErrorMap(contract: Contract): {
     const errors = copy(trait.errors);
 
     if ('wraps' in errors) {
-      const wrappedErrName = errors.wraps;
-      wrappedTraitNames.push(wrappedErrName);
-      mergeWrappedErrors(errors, contract, wrappedErrName);
+      const wrappedErrorsTraitName = errors.wraps;
+      wrappedErrorsTraitNames.push(wrappedErrorsTraitName);
+      mergeWrappedErrors(errors, contract, wrappedErrorsTraitName);
     }
 
     const module = trait.modulePath.split('::').pop()!;
@@ -242,13 +242,13 @@ function buildErrorMap(contract: Contract): {
     });
   }
 
-  return { errorMap, wrappedTraitNames };
+  return { errorMap, wrappedErrorsTraitNames };
 }
 
-function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrName: string): void {
-  const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErrName);
+function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrorsTraitName: TraitName): void {
+  const wrappedErrTrait = contract.implementedTraits.find(t => t.name === wrappedErrorsTraitName);
   if (!wrappedErrTrait || !('errors' in wrappedErrTrait)) {
-    throw new Error(`Trait ${wrappedErrName} does not have errors`);
+    throw new Error(`Trait ${wrappedErrorsTraitName} does not have errors`);
   }
 
   const wrappedErrErrors = wrappedErrTrait.errors;
@@ -264,10 +264,10 @@ function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrNam
 /**
  * Marks wrapped errors as wrapped.
  * @param errorMap - The error map.
- * @param wrappedTraitNames - The names of the traits that wrap errors.
+ * @param wrappedErrorsTraitNames - The names of the traits that wrap errors.
  */
-function markWrappedErrors(errorMap: Map<string, ErrorPrintItem>, wrappedTraitNames: TraitName[]): void {
-  for (const traitName of wrappedTraitNames) {
+function markWrappedErrors(errorMap: Map<string, ErrorPrintItem>, wrappedErrorsTraitNames: TraitName[]): void {
+  for (const traitName of wrappedErrorsTraitNames) {
     const errors = errorMap.get(traitName);
     if (errors) {
       errors.wrapped = true;

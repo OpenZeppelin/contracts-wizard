@@ -67,15 +67,27 @@ export type StoredContractTrait = ContractTrait & {
 };
 
 export interface Result {
-  ok: string;
+  ok: Type;
   err: 'Self::Error';
 }
+
+export type Type =
+  | '()'
+  | 'U256'
+  | 'Address'
+  | 'bool'
+  | 'B256'
+  | 'Vec<U256>'
+  | 'Bytes'
+  | 'FixedBytes<4>'
+  | 'u8'
+  | 'Vec<Address>';
 
 export interface BaseFunction {
   name: string;
   args: Argument[];
   code: string;
-  returns?: string | Result;
+  returns?: Type | Result;
   comments?: string[];
   attribute?: string;
 }
@@ -87,7 +99,7 @@ export interface ContractFunction extends BaseFunction {
 
 export interface Variable {
   name: string;
-  type: string;
+  type: Type;
   value: string;
   comment?: string;
   inlineComment?: boolean;
@@ -95,7 +107,7 @@ export interface Variable {
 
 export interface Argument {
   name: string;
-  type?: string;
+  type?: Type;
 }
 
 export class ContractBuilder implements Contract {
@@ -105,7 +117,7 @@ export class ContractBuilder implements Contract {
 
   readonly documentations: string[] = [];
 
-  private implementedTraitsMap: Map<string, ContractTrait> = new Map();
+  private implementedTraitsMap: Map<TraitName, ContractTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
   private functionsMap: Map<string, ContractFunction> = new Map();
@@ -187,7 +199,7 @@ export class ContractBuilder implements Contract {
     this.eip712Needed = true;
   }
 
-  traitExists(name: string): boolean {
+  traitExists(name: TraitName): boolean {
     return this.implementedTraitsMap.has(name);
   }
 
