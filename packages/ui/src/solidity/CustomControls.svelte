@@ -16,6 +16,9 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
+  let crossChainMessagingEnabled = false;
+  $: opts.crossChainMessaging = crossChainMessagingEnabled ? 'superchain' : false;
+
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
 
@@ -32,14 +35,14 @@
 
   <div class="flex items-center">
     <span class="mr-2">
-      <input type="checkbox" />
+      <input type="checkbox" bind:checked={crossChainMessagingEnabled} />
     </span>
     <span class="flex items-center"><h1>Cross-Chain Messaging</h1>&nbsp;<OPIcon /></span>
   </div>
 
   <label class="labeled-input">
     <span>Function Name</span>
-    <input bind:value={opts.superchainInteropFunction} />
+    <input bind:value={opts.crossChainFunctionName} />
   </label>
 </section>
 

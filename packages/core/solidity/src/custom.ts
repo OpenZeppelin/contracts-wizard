@@ -9,15 +9,20 @@ import { addPausable } from './add-pausable';
 import { printContract } from './print';
 import { defineFunctions } from './utils/define-functions';
 
+export const CrossChainMessagingOptions = [false, 'superchain'] as const;
+export type CrossChainMessaging = (typeof CrossChainMessagingOptions)[number];
+
 export interface CustomOptions extends CommonOptions {
   name: string;
-  superchainInteropFunction?: string;
+  crossChainMessaging?: CrossChainMessaging;
+  crossChainFunctionName?: string;
   pausable?: boolean;
 }
 
 export const defaults: Required<CustomOptions> = {
   name: 'MyContract',
-  superchainInteropFunction: '',
+  crossChainMessaging: false,
+  crossChainFunctionName: 'myFunction',
   pausable: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -28,7 +33,8 @@ function withDefaults(opts: CustomOptions): Required<CustomOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
-    superchainInteropFunction: opts.superchainInteropFunction ?? defaults.superchainInteropFunction,
+    crossChainMessaging: opts.crossChainMessaging ?? defaults.crossChainMessaging,
+    crossChainFunctionName: opts.crossChainFunctionName?.length ? opts.crossChainFunctionName : defaults.crossChainFunctionName,
     pausable: opts.pausable ?? defaults.pausable,
   };
 }
@@ -48,8 +54,8 @@ export function buildCustom(opts: CustomOptions): Contract {
 
   const { access, upgradeable, info } = allOpts;
 
-  if (allOpts.superchainInteropFunction) {
-    addSuperchainInterop(c, allOpts.superchainInteropFunction, allOpts.access, allOpts.pausable);
+  if (allOpts.crossChainMessaging === 'superchain') {
+    addSuperchainInterop(c, allOpts.crossChainFunctionName, allOpts.access, allOpts.pausable);
   }
 
   if (allOpts.pausable) {
@@ -63,23 +69,23 @@ export function buildCustom(opts: CustomOptions): Contract {
   return c;
 }
 
-function addSuperchainInterop(c: ContractBuilder, superchainInteropFunction: string, access: Access, pausable: boolean) {
+function addSuperchainInterop(c: ContractBuilder, functionName: string, access: Access, pausable: boolean) {
   // Add source function
   const sourceFn: BaseFunction = {
-    name: `call${superchainInteropFunction.replace(/^(.)/i, c => c.toUpperCase())}`,
+    name: `call${functionName.replace(/^(.)/i, c => c.toUpperCase())}`,
     kind: 'public' as const,
     args: [],
   };
 
   requireAccessControl(c, sourceFn, access, 'CROSS_CHAIN_CALLER', 'crossChainCaller');
   c.addFunctionCode(
-    `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${superchainInteropFunction}, (/* TODO: Add arguments */)));`,
+    `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${functionName}, (/* TODO: Add arguments */)));`,
     sourceFn,
   );
 
   // Add destination function
   const destFn: BaseFunction = {
-    name: superchainInteropFunction,
+    name: functionName,
     kind: 'external' as const,
     args: [],
   };
