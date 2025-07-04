@@ -1,4 +1,5 @@
 import type { Contract } from './contract';
+import { contractsVersionTag, compatibleSorobanVersion } from './utils/version';
 
 function pascalToSnakeCase(string: string) {
   return string
@@ -82,4 +83,18 @@ export const createRustLibFile = `#![no_std]
 
 mod contract;
 mod test;
+`;
+
+export const workspaceCargo = `[workspace]
+resolver = "2"
+members = ["contracts/*"]
+
+[workspace.package]
+authors = []
+edition = "2021"
+license = "Apache-2.0"
+version = "0.0.1"
+
+[workspace.dependencies]
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, allStellarDependencies)}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
 `;
