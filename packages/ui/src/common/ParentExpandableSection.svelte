@@ -75,7 +75,9 @@
             />
           {/if}
         </span>
-        <span class="flex items-center">{label}{#if icon}&nbsp;&nbsp;<svelte:component this={icon}/>{/if}</span>
+        <span class="flex items-center"
+          >{label}{#if icon}&nbsp;&nbsp;<svelte:component this={icon} />{/if}</span
+        >
       </div>
       <div class="flex items-center">
         <button

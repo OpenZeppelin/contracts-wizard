@@ -47,7 +47,11 @@
   </div>
 </section>
 
-<CrossChainMessagingSection bind:enabled={crossChainMessagingEnabled} bind:functionName={opts.crossChainFunctionName} {errors} />
+<CrossChainMessagingSection
+  bind:enabled={crossChainMessagingEnabled}
+  bind:functionName={opts.crossChainFunctionName}
+  {errors}
+/>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
