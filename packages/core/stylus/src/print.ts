@@ -62,6 +62,14 @@ export function printContract(contract: Contract): string {
   );
 }
 
+function printDocumentations(documentations: string[]): string[] {
+  return documentations.map(documentation => `//! ${documentation}`);
+}
+
+function printSecurityTag(securityContact: string) {
+  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
+}
+
 function printUseClauses(contract: Contract): Lines[] {
   const useClauses = [...sortUseClauses(contract)];
 
@@ -376,23 +384,55 @@ function printTraitFunctions(impl: ContractTrait): Lines[] {
 function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
   const args = fn.args.map(a => printArgument(a));
-
-  const mainCode = !fn.returns
-    ? fn.codeAfter?.length
-      ? [`${fn.code};`].concat(fn.codeAfter)
-      : [fn.code]
-    : typeof fn.returns === 'string'
-      ? // if there's code after, then this is definitely chaining additional
-        // ERC165 checks, as view function code is never otherwise chained with other code.
-        // TODO: this is a hack, and we should find a better way to handle this.
-        [fn.code].concat(fn.codeAfter ?? [])
-      : fn.codeAfter?.length
-        ? [`${fn.code};`].concat(fn.codeAfter)
-        : [`Ok(${fn.code})`];
-
-  const codeLines = (fn.codeBefore ?? []).concat(mainCode);
+  const codeLines = buildCodeLines(fn);
 
   return printFunctionInner(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
+}
+
+/**
+ * Builds the code lines for a function based on its return type and code structure.
+ */
+function buildCodeLines(fn: ContractFunction) {
+  const mainCode = buildMainCode(fn);
+
+  return (fn.codeBefore ?? []).concat(mainCode);
+}
+
+/**
+ * Builds the main code section based on function return type and code structure.
+ */
+function buildMainCode(fn: ContractFunction) {
+  if (!fn.returns) {
+    return buildCodeWithoutReturn(fn);
+  }
+
+  if (typeof fn.returns === 'string') {
+    return buildCodeWithStringReturn(fn);
+  }
+
+  return buildCodeWithResultReturn(fn);
+}
+
+/**
+ * Builds code for functions without return values.
+ */
+function buildCodeWithoutReturn(fn: ContractFunction) {
+  return fn.codeAfter?.length ? [`${fn.code};`].concat(fn.codeAfter) : [fn.code];
+}
+
+/**
+ * Builds code for functions with string return types.
+ * Handles special case for ERC165 checks with chained code.
+ */
+function buildCodeWithStringReturn(fn: ContractFunction) {
+  return [fn.code].concat(fn.codeAfter ?? []);
+}
+
+/**
+ * Builds code for functions with Result return types.
+ */
+function buildCodeWithResultReturn(fn: ContractFunction) {
+  return fn.codeAfter?.length ? [`${fn.code};`].concat(fn.codeAfter) : [`Ok(${fn.code})`];
 }
 
 function printFunctionInner(
@@ -463,12 +503,4 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
-}
-
-function printDocumentations(documentations: string[]): string[] {
-  return documentations.map(documentation => `//! ${documentation}`);
-}
-
-function printSecurityTag(securityContact: string) {
-  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
 }
