@@ -65,7 +65,7 @@ export function printContract(contract: Contract): string {
 function printUseClauses(contract: Contract): Lines[] {
   const useClauses = [...sortUseClauses(contract)];
 
-  // group by containerPath
+  // group by containerPath, so that grouped imports are printed together
   const grouped = useClauses.reduce((result: { [containerPath: string]: UseClause[] }, useClause: UseClause) => {
     if (useClause.groupable) {
       (result[useClause.containerPath] = result[useClause.containerPath] || []).push(useClause);
@@ -85,7 +85,7 @@ function printUseClauses(contract: Contract): Lines[] {
 function printConstants(contract: Contract): Lines[] {
   const lines = [];
   for (const constant of contract.constants) {
-    // inlineComment is optional, default to false
+    // inlineComment is optional, defaults to false
     const inlineComment = constant.inlineComment ?? false;
     const commented = !!constant.comment;
 
@@ -124,6 +124,11 @@ function nameWithAlias(useClause: UseClause): string {
   return useClause.alias ? `${useClause.name} as ${useClause.alias}` : useClause.name;
 }
 
+/**
+ * Splits a long use clause line into multiple lines.
+ * @param line - The line to split.
+ * @returns An array of lines.
+ */
 function splitLongUseClauseLine(line: string): Lines[] {
   const lines = [];
 
@@ -142,13 +147,13 @@ function splitLongUseClauseLine(line: string): Lines[] {
 function splitLongLineInner(line: string): Lines[] {
   const lines = [];
   if (line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
-    const maxAccessibleString = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
-    const lastCommaIndex = maxAccessibleString.lastIndexOf(',');
+    const truncatedLine = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
+    const lastCommaIndex = truncatedLine.lastIndexOf(',');
     if (lastCommaIndex !== -1) {
-      lines.push(TAB + maxAccessibleString.slice(0, lastCommaIndex + 1));
+      lines.push(TAB + truncatedLine.slice(0, lastCommaIndex + 1));
       lines.push(...splitLongLineInner(line.slice(lastCommaIndex + 2)));
     } else {
-      lines.push(TAB + maxAccessibleString);
+      lines.push(TAB + truncatedLine);
     }
   } else {
     lines.push(TAB + line);
@@ -248,6 +253,11 @@ function mergeWrappedErrors(errors: ErrorList, contract: Contract, wrappedErrNam
   }
 }
 
+/**
+ * Marks wrapped errors as wrapped.
+ * @param errorMap - The error map.
+ * @param wrappedTraitNames - The names of the traits that wrap errors.
+ */
 function markWrappedErrors(errorMap: Map<string, ErrorPrintItem>, wrappedTraitNames: TraitName[]): void {
   for (const traitName of wrappedTraitNames) {
     const errors = errorMap.get(traitName);
@@ -372,18 +382,20 @@ function printFunction(fn: ContractFunction): Lines[] {
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
-      ? // if there's code after, then this is definitely chaining additional ERC165 checks
-      [fn.code].concat(fn.codeAfter ?? [])
+      // if there's code after, then this is definitely chaining additional
+      // ERC165 checks, as view function code is never otherwise chained with other code.
+      // TODO: this is a hack, and we should find a better way to handle this.
+      ? [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
 
   const codeLines = (fn.codeBefore ?? []).concat(mainCode);
 
-  return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
+  return printFunctionInner(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
 
-function printFunction2(
+function printFunctionInner(
   comments: string[] | undefined,
   kindedName: string,
   args: string[],
@@ -409,7 +421,8 @@ function printFunction2(
     if (formattedArgs.length > 80) {
       fn.push(accum);
       accum = '';
-      // argument list is too long, so print each arg on a separate line
+      // argument list is longer than 80 characters,
+      // so print each arg on a separate line
       fn.push(args.map(arg => `${arg},`));
     } else {
       accum += `${formattedArgs}`;
