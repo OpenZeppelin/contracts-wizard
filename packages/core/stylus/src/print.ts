@@ -124,7 +124,6 @@ function nameWithAlias(useClause: UseClause): string {
   return useClause.alias ? `${useClause.name} as ${useClause.alias}` : useClause.name;
 }
 
-// TODO: remove this when we can use a formatting js library
 function splitLongUseClauseLine(line: string): Lines[] {
   const lines = [];
 
@@ -143,13 +142,13 @@ function splitLongUseClauseLine(line: string): Lines[] {
 function splitLongLineInner(line: string): Lines[] {
   const lines = [];
   if (line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
-    const max_accessible_string = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
-    const lastCommaIndex = max_accessible_string.lastIndexOf(',');
+    const maxAccessibleString = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
+    const lastCommaIndex = maxAccessibleString.lastIndexOf(',');
     if (lastCommaIndex !== -1) {
-      lines.push(TAB + max_accessible_string.slice(0, lastCommaIndex + 1));
+      lines.push(TAB + maxAccessibleString.slice(0, lastCommaIndex + 1));
       lines.push(...splitLongLineInner(line.slice(lastCommaIndex + 2)));
     } else {
-      lines.push(TAB + max_accessible_string);
+      lines.push(TAB + maxAccessibleString);
     }
   } else {
     lines.push(TAB + line);
@@ -186,8 +185,9 @@ function sortImpls(contract: Contract): ContractTrait[] {
 
 /**
  * Extract errors from the contract and determine the error type.
- * @returns ErrorData if errors exist, undefined otherwise. For single unwrapped errors,
- * returns inherited type. For multiple errors, returns enum type with grouped errors.
+ * @returns {ErrorPrintData | undefined} if errors exist, undefined otherwise.
+ * For single unwrapped errors, returns inherited type.
+ * For multiple errors, returns enum type with grouped errors.
  */
 function extractErrors(contract: Contract): ErrorPrintData | undefined {
   const { errorMap, wrappedTraitNames } = buildErrorMap(contract);
@@ -372,19 +372,17 @@ function printFunction(fn: ContractFunction): Lines[] {
       ? [`${fn.code};`].concat(fn.codeAfter)
       : [fn.code]
     : typeof fn.returns === 'string'
-      ? // if there's code after, it's probably chained view function(s)
+      ? // if there's code after, then this is definitely chaining additional ERC165 checks
       [fn.code].concat(fn.codeAfter ?? [])
       : fn.codeAfter?.length
         ? [`${fn.code};`].concat(fn.codeAfter)
         : [`Ok(${fn.code})`];
 
-  const codeLines = fn.codeBefore?.concat(mainCode) ?? mainCode;
+  const codeLines = (fn.codeBefore ?? []).concat(mainCode);
 
   return printFunction2(fn.comments, head, args, fn.attribute, fn.returns, undefined, codeLines);
 }
 
-// generic for functions and constructors
-// kindedName = 'fn foo'
 function printFunction2(
   comments: string[] | undefined,
   kindedName: string,
@@ -411,7 +409,7 @@ function printFunction2(
     if (formattedArgs.length > 80) {
       fn.push(accum);
       accum = '';
-      // print each arg in a separate line
+      // argument list is too long, so print each arg on a separate line
       fn.push(args.map(arg => `${arg},`));
     } else {
       accum += `${formattedArgs}`;
