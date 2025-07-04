@@ -1,161 +1,80 @@
-import type { TestFn, ExecutionContext } from 'ava';
+import type { ExecutionContext } from 'ava';
 import _test from 'ava';
 
 import { zipScaffoldProject } from './zip-scaffold';
 
-import { buildFungible } from './fungible';
-import { buildNonFungible } from './non-fungible';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
 import util from 'util';
 import child from 'child_process';
-import type { Contract } from './contract';
-import { rimraf } from 'rimraf';
-import type { JSZipObject } from 'jszip';
-import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import { contractOptionsToContractName } from './zip-shared';
+import type { MakeContract } from './test';
+import { runCargoTest, withTemporaryFolderDo } from './test';
+import { assertLayout, expandPathsFromFilesPaths, extractPackage, snapshotZipContents } from './utils/zip-test';
+import { buildFungible } from './fungible';
+import test from 'ava';
+
 const asyncExec = util.promisify(child.exec);
 
-interface Context {
-  tempFolder: string;
-}
-
-const test = _test as TestFn<Context>;
-
-function assertLayout(t: ExecutionContext<Context>, zip: JSZip, opts: GenericOptions) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
-
-  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
-
-  t.deepEqual(sorted, [
-    'Cargo.toml',
-    'README-WIZARD.md',
-    'contracts/',
-    `contracts/${scaffoldContractName}/`,
-    `contracts/${scaffoldContractName}/Cargo.toml`,
-    `contracts/${scaffoldContractName}/src/`,
-    `contracts/${scaffoldContractName}/src/contract.rs`,
-    `contracts/${scaffoldContractName}/src/lib.rs`,
-    `contracts/${scaffoldContractName}/src/test.rs`,
-    'setup.sh',
-  ]);
-}
-
-async function extractPackage(t: ExecutionContext<Context>, zip: JSZip) {
-  const tempFolder = t.context.tempFolder;
-
-  const items = Object.values(Object.values(zip.files));
-
-  for (const item of items) {
-    if (item.dir) {
-      await fs.mkdir(path.join(tempFolder, item.name));
-    } else {
-      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
-    }
-  }
-}
-
-async function runProjectSetUp(t: ExecutionContext<Context>) {
-  const result = await asyncExec(`cd "${t.context.tempFolder}" && bash setup.sh`);
-
-  console.log(result.stdout);
-  console.log(result.stderr);
+async function runProjectSetUp(t: ExecutionContext, folderPath: string) {
+  const result = await asyncExec(`cd "${folderPath}" && bash setup.sh`);
 
   t.regex(result.stdout, /Installation complete/);
 }
 
-async function runContractTest(t: ExecutionContext<Context>) {
-  const result = await asyncExec(`cd "${t.context.tempFolder}" && cargo test`);
+const runScaffoldCompilationTest = withTemporaryFolderDo(
+  async (makeContract: MakeContract, opts: GenericOptions, test: ExecutionContext, folderPath: string) => {
+    test.timeout(3_000_000);
 
-  t.regex(result.stdout, /0 failed/);
-}
+    const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
-async function assertContents(t: ExecutionContext<Context>, zip: JSZip, opts: GenericOptions) {
-  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
+    const expectedZipFiles = [
+      'Cargo.toml',
+      `contracts/${scaffoldContractName}/src/contract.rs`,
+      `contracts/${scaffoldContractName}/src/test.rs`,
+      `contracts/${scaffoldContractName}/src/lib.rs`,
+      `contracts/${scaffoldContractName}/Cargo.toml`,
+      'setup.sh',
+      'README-WIZARD.md',
+    ];
 
-  const contentComparison = [
-    await getItemString(zip, `contracts/${scaffoldContractName}/src/contract.rs`),
-    await getItemString(zip, `contracts/${scaffoldContractName}/src/test.rs`),
-    await getItemString(zip, `contracts/${scaffoldContractName}/src/lib.rs`),
-    await getItemString(zip, `contracts/${scaffoldContractName}/Cargo.toml`),
-    await getItemString(zip, 'setup.sh'),
-    await getItemString(zip, 'README-WIZARD.md'),
-  ];
+    const zip = await zipScaffoldProject(makeContract(opts), opts);
 
-  t.snapshot(contentComparison);
-}
+    assertLayout(test, zip, expandPathsFromFilesPaths(expectedZipFiles));
+    await extractPackage(zip, folderPath);
+    await runCargoTest(test, folderPath);
+    await runProjectSetUp(test, folderPath);
 
-async function getItemString({ files }: JSZip, key: string) {
-  const obj = files[key];
-  if (obj === undefined) throw Error(`Item ${key} not found in zip`);
-  return await asString(obj);
-}
+    await snapshotZipContents(test, zip, expectedZipFiles);
+  },
+);
 
-async function asString(item: JSZipObject) {
-  return Buffer.from(await item.async('arraybuffer')).toString();
-}
+test(
+  'zip scaffold fungible simple',
+  runScaffoldCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: undefined,
+    burnable: false,
+    mintable: false,
+    pausable: false,
+    upgradeable: false,
+  }),
+);
 
-test.beforeEach(async t => {
-  t.context.tempFolder = `${await fs.mkdtemp(path.join(os.tmpdir(), `openzeppelin-wizard-scaffold`))}`;
-});
-
-test.afterEach.always(async t => {
-  await fs.rm(t.context.tempFolder, { recursive: true, force: true });
-});
-
-async function runTest(t: ExecutionContext<Context>, c: Contract, opts: GenericOptions) {
-  t.timeout(3_000_000);
-
-  const zip = await zipScaffoldProject(c, opts);
-
-  assertLayout(t, zip, opts);
-  await extractPackage(t, zip);
-  await runProjectSetUp(t);
-  await runContractTest(t);
-  await assertContents(t, zip, opts);
-}
-
-test('contractOptionsToContractName converts PascalCase to snake_case', t => {
-  t.is(contractOptionsToContractName('Fungible'), 'fungible');
-  t.is(contractOptionsToContractName('NonFungible'), 'non_fungible');
-  t.is(contractOptionsToContractName('Pausable'), 'pausable');
-  t.is(contractOptionsToContractName('Upgradeable'), 'upgradeable');
-  t.is(contractOptionsToContractName('MyCustomKind'), 'my_custom_kind');
-});
-
-// test('fungible simple', async t => {
-//   const opts: GenericOptions = {
-//     kind: 'Fungible',
-//     name: 'MyToken',
-//     symbol: 'MTK',
-//     premint: undefined,
-//     burnable: false,
-//     mintable: false,
-//     pausable: false,
-//     upgradeable: false,
-//   };
-//   const c = buildFungible(opts);
-//   await runTest(t, c, opts);
-// });
-
-// test('fungible full', async t => {
-//   const opts: GenericOptions = {
-//     kind: 'Fungible',
-//     name: 'MyToken',
-//     symbol: 'MTK',
-//     premint: '2000',
-//     burnable: true,
-//     mintable: true,
-//     pausable: true,
-//     upgradeable: false,
-//   };
-//   const c = buildFungible(opts);
-//   await runTest(t, c, opts);
-// });
+test(
+  'zip scaffold fungible upgradable full',
+  runScaffoldCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    upgradeable: true,
+  }),
+);
 
 // test('fungible burnable', async t => {
 //   const opts: GenericOptions = {

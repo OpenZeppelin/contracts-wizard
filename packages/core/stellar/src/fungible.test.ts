@@ -6,6 +6,7 @@ import { printContract } from './print';
 
 import type { OptionsError } from '.';
 import { fungible } from '.';
+import { runRustCompilationTest } from './test';
 
 function testFungible(title: string, opts: Partial<FungibleOptions>) {
   test(title, t => {
@@ -115,3 +116,227 @@ test('fungible getInitialSupply', async t => {
   t.not(error, undefined);
   t.is((error as OptionsError).messages.premint, 'Not a valid number');
 });
+
+test(
+  'compilation fungible simple',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: undefined,
+    burnable: false,
+    mintable: false,
+    pausable: false,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible full',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible burnable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: false,
+    pausable: false,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible mintable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: true,
+    pausable: false,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: false,
+    pausable: true,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible burnable mintable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: true,
+    pausable: false,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible burnable pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: false,
+    pausable: true,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible mintable pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: true,
+    pausable: true,
+    upgradeable: false,
+  }),
+);
+
+test(
+  'compilation fungible upgradable simple',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: undefined,
+    burnable: false,
+    mintable: false,
+    pausable: false,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable full',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable burnable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: false,
+    pausable: false,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable mintable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: true,
+    pausable: false,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: false,
+    pausable: true,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable burnable mintable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: true,
+    pausable: false,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable burnable pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: true,
+    mintable: false,
+    pausable: true,
+    upgradeable: true,
+  }),
+);
+
+test(
+  'compilation fungible upgradable mintable pausable',
+  runRustCompilationTest(buildFungible, {
+    kind: 'Fungible',
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '2000',
+    burnable: false,
+    mintable: true,
+    pausable: true,
+    upgradeable: true,
+  }),
+);
