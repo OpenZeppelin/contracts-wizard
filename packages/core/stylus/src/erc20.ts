@@ -6,6 +6,7 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
+import { defineFunctions } from './utils/define-functions';
 
 export interface ERC20Options extends CommonContractOptions {
   name: string;
@@ -116,6 +117,124 @@ const NONCES_STORAGE_NAME = 'nonces';
 const PERMIT_STORAGE_NAME = 'erc20_permit';
 const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 
+const functions = {
+  erc20: defineFunctions({
+    total_supply: {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.total_supply()`,
+    },
+    balance_of: {
+      name: 'balance_of',
+      args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.balance_of(account)`,
+    },
+    transfer: {
+      name: 'transfer',
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.transfer(to, value)?`,
+    },
+    allowance: {
+      name: 'allowance',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${ERC20_STORAGE_NAME}.allowance(owner, spender)`,
+    },
+    approve: {
+      name: 'approve',
+      args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.approve(spender, value)?`,
+    },
+    transfer_from: {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'value', type: 'U256' },
+      ],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.transfer_from(from, to, value)?`,
+    },
+  }),
+  nonces: defineFunctions({
+    get_nonce: {
+      name: 'nonces',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
+    },
+  }),
+  permit: defineFunctions({
+    domain_separator: {
+      name: 'domain_separator',
+      attribute: 'selector(name = "DOMAIN_SEPARATOR")',
+      args: [getSelfArg('immutable')],
+      returns: 'B256',
+      code: `self.${PERMIT_STORAGE_NAME}.domain_separator()`,
+    },
+    permit: {
+      name: 'permit',
+      args: [
+        getSelfArg(),
+        { name: 'owner', type: 'Address' },
+        { name: 'spender', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'deadline', type: 'U256' },
+        { name: 'v', type: 'u8' },
+        { name: 'r', type: 'B256' },
+        { name: 's', type: 'B256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
+    },
+  }),
+  burnable: defineFunctions({
+    burn: {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
+    },
+    burn_from: {
+      name: 'burn_from',
+      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
+    },
+  }),
+  flash_mint: defineFunctions({
+    max_flash_loan: {
+      name: 'max_flash_loan',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
+      returns: 'U256',
+      code: `self.${FLASH_MINT_STORAGE_NAME}.max_flash_loan(token, &self.${ERC20_STORAGE_NAME})`,
+    },
+    flash_fee: {
+      name: 'flash_fee',
+      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_fee(token, value)?`,
+    },
+    flash_loan: {
+      name: 'flash_loan',
+      args: [
+        getSelfArg(),
+        { name: 'receiver', type: 'Address' },
+        { name: 'token', type: 'Address' },
+        { name: 'value', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: { ok: 'bool', err: 'Self::Error' },
+      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
+    },
+  }),
+};
+
 const erc20Trait: StoredContractTrait = {
   name: 'IErc20',
   associatedError: true,
@@ -137,49 +256,7 @@ const erc20Trait: StoredContractTrait = {
     { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
     { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
   ],
-  functions: [
-    {
-      name: 'total_supply',
-      args: [getSelfArg('immutable')],
-      returns: 'U256',
-      code: `self.${ERC20_STORAGE_NAME}.total_supply()`,
-    },
-    {
-      name: 'balance_of',
-      args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
-      returns: 'U256',
-      code: `self.${ERC20_STORAGE_NAME}.balance_of(account)`,
-    },
-    {
-      name: 'transfer',
-      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.${ERC20_STORAGE_NAME}.transfer(to, value)?`,
-    },
-    {
-      name: 'allowance',
-      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
-      returns: 'U256',
-      code: `self.${ERC20_STORAGE_NAME}.allowance(owner, spender)`,
-    },
-    {
-      name: 'approve',
-      args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.${ERC20_STORAGE_NAME}.approve(spender, value)?`,
-    },
-    {
-      name: 'transfer_from',
-      args: [
-        getSelfArg(),
-        { name: 'from', type: 'Address' },
-        { name: 'to', type: 'Address' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.${ERC20_STORAGE_NAME}.transfer_from(from, to, value)?`,
-    },
-  ],
+  functions: Object.values(functions.erc20),
 };
 
 const noncesTrait: StoredContractTrait = {
@@ -189,14 +266,7 @@ const noncesTrait: StoredContractTrait = {
     type: 'Nonces',
   },
   modulePath: 'openzeppelin_stylus::utils::nonces',
-  functions: [
-    {
-      name: 'nonces',
-      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
-      code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
-      returns: 'U256',
-    },
-  ],
+  functions: Object.values(functions.nonces),
 };
 
 const permitTrait: StoredContractTrait = {
@@ -221,50 +291,14 @@ const permitTrait: StoredContractTrait = {
     { containerPath: 'stylus_sdk::alloy_primitives', name: 'B256' },
     { containerPath: 'openzeppelin_stylus::utils::cryptography', name: 'ecdsa' },
   ],
-  functions: [
-    {
-      name: 'domain_separator',
-      attribute: 'selector(name = "DOMAIN_SEPARATOR")',
-      args: [getSelfArg('immutable')],
-      returns: 'B256',
-      code: `self.${PERMIT_STORAGE_NAME}.domain_separator()`,
-    },
-    {
-      name: 'permit',
-      args: [
-        getSelfArg(),
-        { name: 'owner', type: 'Address' },
-        { name: 'spender', type: 'Address' },
-        { name: 'value', type: 'U256' },
-        { name: 'deadline', type: 'U256' },
-        { name: 'v', type: 'u8' },
-        { name: 'r', type: 'B256' },
-        { name: 's', type: 'B256' },
-      ],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${PERMIT_STORAGE_NAME}.permit(owner, spender, value, deadline, v, r, s, &mut self.${ERC20_STORAGE_NAME}, &mut self.${NONCES_STORAGE_NAME})?`,
-    },
-  ],
+  functions: Object.values(functions.permit),
 };
 
 const burnableTrait: ContractTrait = {
   name: 'IErc20Burnable',
   associatedError: true,
   modulePath: 'openzeppelin_stylus::token::erc20::extensions::burnable',
-  functions: [
-    {
-      name: 'burn',
-      args: [getSelfArg(), { name: 'value', type: 'U256' }],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
-    },
-    {
-      name: 'burn_from',
-      args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
-    },
-  ],
+  functions: Object.values(functions.burnable),
 };
 
 const flashMintTrait: StoredContractTrait = {
@@ -284,32 +318,7 @@ const flashMintTrait: StoredContractTrait = {
   },
   modulePath: 'openzeppelin_stylus::token::erc20::extensions::flash_mint',
   requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
-  functions: [
-    {
-      name: 'max_flash_loan',
-      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
-      returns: 'U256',
-      code: `self.${FLASH_MINT_STORAGE_NAME}.max_flash_loan(token, &self.${ERC20_STORAGE_NAME})`,
-    },
-    {
-      name: 'flash_fee',
-      args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
-      returns: { ok: 'U256', err: 'Self::Error' },
-      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_fee(token, value)?`,
-    },
-    {
-      name: 'flash_loan',
-      args: [
-        getSelfArg(),
-        { name: 'receiver', type: 'Address' },
-        { name: 'token', type: 'Address' },
-        { name: 'value', type: 'U256' },
-        { name: 'data', type: 'Bytes' },
-      ],
-      returns: { ok: 'bool', err: 'Self::Error' },
-      code: `self.${FLASH_MINT_STORAGE_NAME}.flash_loan(receiver, token, value, &data, &mut self.${ERC20_STORAGE_NAME})?`,
-    },
-  ],
+  functions: Object.values(functions.flash_mint),
 };
 
 // const erc20MetadataTrait: ImplementedTrait = {
