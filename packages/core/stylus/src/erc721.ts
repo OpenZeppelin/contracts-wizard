@@ -7,6 +7,7 @@ import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
 import { indentLine } from './utils/format-lines';
+import { defineFunctions } from './utils/define-functions';
 
 export interface ERC721Options extends CommonContractOptions {
   name: string;
@@ -89,15 +90,15 @@ function addBurnable(c: ContractBuilder, enumerable: boolean) {
 
   if (enumerable) {
     c.addFunctionCodeBefore(
-      burnableTrait.functions[0]!,
-      [`let owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
+      functions.burnable.burn,
+      [`let owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`],
       burnableTrait,
     );
     c.addFunctionCodeAfter(
-      burnableTrait.functions[0]!,
+      functions.burnable.burn,
       [
-        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage!.name})?;`,
-        `self.${enumerableTrait.storage!.name}._remove_token_from_all_tokens_enumeration(token_id);`,
+        `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(owner, token_id, &self.${erc721Trait.storage.name})?;`,
+        `self.${enumerableTrait.storage.name}._remove_token_from_all_tokens_enumeration(token_id);`,
         'Ok(())',
       ],
       burnableTrait,
@@ -109,23 +110,27 @@ function addEnumerable(c: ContractBuilder) {
   c.addImplementedTrait(enumerableTrait);
 
   c.addFunctionCodeAfter(
-    erc165Trait.functions[0]!,
-    [indentLine(`|| self.${enumerableTrait.storage!.name}.supports_interface(interface_id)`, 1)],
+    functions.erc165.supports_interface,
+    [indentLine(`|| self.${enumerableTrait.storage.name}.supports_interface(interface_id)`, 1)],
     erc165Trait,
   );
 
   // safe_transfer_from, safe_transfer_from_with_data, transfer_from
-  for (const fn of [erc721Trait.functions[2]!, erc721Trait.functions[3]!, erc721Trait.functions[4]!]) {
+  for (const fn of [
+    functions.erc721.safe_transfer_from,
+    functions.erc721.safe_transfer_from_with_data,
+    functions.erc721.transfer_from,
+  ]) {
     c.addFunctionCodeBefore(
       fn,
-      [`let previous_owner = self.${erc721Trait.storage!.name}.owner_of(token_id)?;`],
+      [`let previous_owner = self.${erc721Trait.storage.name}.owner_of(token_id)?;`],
       erc721Trait,
     );
     c.addFunctionCodeAfter(
       fn,
       [
-        `self.${enumerableTrait.storage!.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage!.name})?;`,
-        `self.${enumerableTrait.storage!.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage!.name})?;`,
+        `self.${enumerableTrait.storage.name}._remove_token_from_owner_enumeration(previous_owner, token_id, &self.${erc721Trait.storage.name})?;`,
+        `self.${enumerableTrait.storage.name}._add_token_to_owner_enumeration(to, token_id, &self.${erc721Trait.storage.name})?;`,
         'Ok(())',
       ],
       erc721Trait,
@@ -135,6 +140,118 @@ function addEnumerable(c: ContractBuilder) {
 
 const ERC721_STORAGE_NAME = 'erc721';
 const ENUMERABLE_STORAGE_NAME = 'enumerable';
+
+const functions = {
+  erc721: defineFunctions({
+    balance_of: {
+      name: 'balance_of',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.balance_of(owner)?`,
+    },
+    owner_of: {
+      name: 'owner_of',
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.owner_of(token_id)?`,
+    },
+    safe_transfer_from: {
+      name: 'safe_transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from(from, to, token_id)?`,
+    },
+    safe_transfer_from_with_data: {
+      attribute: 'selector(name = "safeTransferFrom")',
+      name: 'safe_transfer_from_with_data',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+        { name: 'data', type: 'Bytes' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from_with_data(from, to, token_id, data)?`,
+    },
+    transfer_from: {
+      name: 'transfer_from',
+      args: [
+        getSelfArg(),
+        { name: 'from', type: 'Address' },
+        { name: 'to', type: 'Address' },
+        { name: 'token_id', type: 'U256' },
+      ],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.transfer_from(from, to, token_id)?`,
+    },
+    approve: {
+      name: 'approve',
+      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.approve(to, token_id)?`,
+    },
+    set_approval_for_all: {
+      name: 'set_approval_for_all',
+      args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.set_approval_for_all(operator, approved)?`,
+    },
+    get_approved: {
+      name: 'get_approved',
+      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
+      returns: { ok: 'Address', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.get_approved(token_id)?`,
+    },
+    is_approved_for_all: {
+      name: 'is_approved_for_all',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'operator', type: 'Address' }],
+      returns: 'bool',
+      code: `self.${ERC721_STORAGE_NAME}.is_approved_for_all(owner, operator)`,
+    },
+  }),
+  erc165: defineFunctions({
+    supports_interface: {
+      name: 'supports_interface',
+      args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
+      returns: 'bool',
+      code: `self.${ERC721_STORAGE_NAME}.supports_interface(interface_id)`,
+    },
+  }),
+  burnable: defineFunctions({
+    burn: {
+      name: 'burn',
+      args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
+      returns: { ok: '()', err: 'Self::Error' },
+      code: `self.${ERC721_STORAGE_NAME}.burn(token_id)?`,
+    },
+  }),
+  enumerable: defineFunctions({
+    token_of_owner_by_index: {
+      name: 'token_of_owner_by_index',
+      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'index', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ENUMERABLE_STORAGE_NAME}.token_of_owner_by_index(owner, index)?`,
+    },
+    total_supply: {
+      name: 'total_supply',
+      args: [getSelfArg('immutable')],
+      returns: 'U256',
+      code: `self.${ENUMERABLE_STORAGE_NAME}.total_supply()`,
+    },
+    token_by_index: {
+      name: 'token_by_index',
+      args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
+      returns: { ok: 'U256', err: 'Self::Error' },
+      code: `self.${ENUMERABLE_STORAGE_NAME}.token_by_index(index)?`,
+    },
+  }),
+};
 
 const erc721Trait: StoredContractTrait = {
   name: 'IErc721',
@@ -162,79 +279,7 @@ const erc721Trait: StoredContractTrait = {
     { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
     { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
   ],
-  functions: [
-    {
-      name: 'balance_of',
-      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
-      returns: { ok: 'U256', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.balance_of(owner)?`,
-    },
-    {
-      name: 'owner_of',
-      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
-      returns: { ok: 'Address', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.owner_of(token_id)?`,
-    },
-    {
-      name: 'safe_transfer_from',
-      args: [
-        getSelfArg(),
-        { name: 'from', type: 'Address' },
-        { name: 'to', type: 'Address' },
-        { name: 'token_id', type: 'U256' },
-      ],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from(from, to, token_id)?`,
-    },
-    {
-      name: 'safe_transfer_from_with_data',
-      attribute: 'selector(name = "safeTransferFrom")',
-      args: [
-        getSelfArg(),
-        { name: 'from', type: 'Address' },
-        { name: 'to', type: 'Address' },
-        { name: 'token_id', type: 'U256' },
-        { name: 'data', type: 'Bytes' },
-      ],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from_with_data(from, to, token_id, data)?`,
-    },
-    {
-      name: 'transfer_from',
-      args: [
-        getSelfArg(),
-        { name: 'from', type: 'Address' },
-        { name: 'to', type: 'Address' },
-        { name: 'token_id', type: 'U256' },
-      ],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.transfer_from(from, to, token_id)?`,
-    },
-    {
-      name: 'approve',
-      args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'U256' }],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.approve(to, token_id)?`,
-    },
-    {
-      name: 'set_approval_for_all',
-      args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.set_approval_for_all(operator, approved)?`,
-    },
-    {
-      name: 'get_approved',
-      args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
-      returns: { ok: 'Address', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.get_approved(token_id)?`,
-    },
-    {
-      name: 'is_approved_for_all',
-      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'operator', type: 'Address' }],
-      returns: 'bool',
-      code: `self.${ERC721_STORAGE_NAME}.is_approved_for_all(owner, operator)`,
-    },
-  ],
+  functions: Object.values(functions.erc721),
 };
 
 const erc165Trait: ContractTrait = {
@@ -242,14 +287,7 @@ const erc165Trait: ContractTrait = {
   modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
   priority: 4,
   requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
-  functions: [
-    {
-      name: 'supports_interface',
-      args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
-      returns: 'bool',
-      code: `self.${ERC721_STORAGE_NAME}.supports_interface(interface_id)`,
-    },
-  ],
+  functions: Object.values(functions.erc165),
 };
 
 const burnableTrait: ContractTrait = {
@@ -257,14 +295,7 @@ const burnableTrait: ContractTrait = {
   associatedError: true,
   modulePath: 'openzeppelin_stylus::token::erc721::extensions::burnable',
   priority: 3,
-  functions: [
-    {
-      name: 'burn',
-      args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
-      returns: { ok: '()', err: 'Self::Error' },
-      code: `self.${ERC721_STORAGE_NAME}.burn(token_id)?`,
-    },
-  ],
+  functions: Object.values(functions.burnable),
 };
 
 const enumerableTrait: StoredContractTrait = {
@@ -283,33 +314,5 @@ const enumerableTrait: StoredContractTrait = {
   },
   modulePath: 'openzeppelin_stylus::token::erc721::extensions::enumerable',
   priority: 2,
-  functions: [
-    {
-      name: 'token_of_owner_by_index',
-      args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'index', type: 'U256' }],
-      returns: { ok: 'U256', err: 'Self::Error' },
-      code: `self.${ENUMERABLE_STORAGE_NAME}.token_of_owner_by_index(owner, index)?`,
-    },
-    {
-      name: 'total_supply',
-      args: [getSelfArg('immutable')],
-      returns: 'U256',
-      code: `self.${ENUMERABLE_STORAGE_NAME}.total_supply()`,
-    },
-    {
-      name: 'token_by_index',
-      args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
-      returns: { ok: 'U256', err: 'Self::Error' },
-      code: `self.${ENUMERABLE_STORAGE_NAME}.token_by_index(index)?`,
-    },
-  ],
+  functions: Object.values(functions.enumerable),
 };
-
-// const erc721MetadataTrait: ImplementedTrait = {
-//   name: 'Erc721Metadata',
-//   storage: {
-//     name: 'metadata',
-//     type: 'Erc721Metadata',
-//   }
-//   modulePath: 'openzeppelin_stylus::token::erc721::extensions',
-// }
