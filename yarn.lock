@@ -316,6 +316,11 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
+"@eth-optimism/contracts-bedrock@^0.17.3":
+  version "0.17.3"
+  resolved "https://registry.yarnpkg.com/@eth-optimism/contracts-bedrock/-/contracts-bedrock-0.17.3.tgz#ab3085e90d50e66ddbf07512ca1d666b5bab625b"
+  integrity sha512-cHPO7ntWeOBDLO7ZFFSZGI1D7CDqf4loRbRVJrFIsqLEz+hysWIqA0e3dv2GnrjVeuYePBfI2NTBEG4uwz9bQQ==
+
 "@ethersproject/abi@^5.1.2":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/abi/-/abi-5.7.0.tgz#b3f3e045bbbeed1af3947335c247ad625a44e449"
