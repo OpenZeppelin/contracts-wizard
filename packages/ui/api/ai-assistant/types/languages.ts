@@ -12,8 +12,7 @@ export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../.
 //Stellar
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
 import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
-export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access' | 'upgradeable'> & {
-  access?: false;
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'upgradeable'> & {
   upgradeable?: false;
 };
 // Stylus
@@ -31,9 +30,10 @@ export type LanguagesContractsOptions = {
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
-  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible'> & {
+  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
+    Stablecoin: StellarKindedOptions['Stablecoin'] & StellarCommonContractOptions;
   };
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
     ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;
