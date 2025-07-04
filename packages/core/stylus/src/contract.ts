@@ -53,14 +53,14 @@ export type ContractTrait = {
   functions: ContractFunction[];
   requiredImports?: UseClause[];
 } & (
-  | {
+    | {
       associatedError: true;
       errors: ErrorList;
     }
-  | {
+    | {
       associatedError?: boolean;
     }
-);
+  );
 
 export type StoredContractTrait = ContractTrait & {
   storage: Implementation;
@@ -108,7 +108,7 @@ export class ContractBuilder implements Contract {
   private implementedTraitsMap: Map<string, ContractTrait> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private constantsMap: Map<string, Variable> = new Map();
-  private functionsArr: ContractFunction[] = [];
+  private functionsMap: Map<string, ContractFunction> = new Map();
 
   error?: string | TraitName[];
   eip712Needed?: boolean;
@@ -134,7 +134,7 @@ export class ContractBuilder implements Contract {
   }
 
   get functions(): ContractFunction[] {
-    return [...this.functionsArr];
+    return [...this.functionsMap.values()];
   }
 
   addUseClause({ containerPath, name, groupable, alias }: UseClause): void {
@@ -192,28 +192,32 @@ export class ContractBuilder implements Contract {
   }
 
   addFunction(fn: BaseFunction, trait?: ContractTrait): ContractFunction {
-    const t = trait ? this.addImplementedTrait(trait) : this;
-
     const signature = this.getFunctionSignature(fn);
 
-    // Look for the existing function with the same signature and return it if found
-    for (let i = 0; i < t.functions.length; i++) {
-      const existingFn = t.functions[i];
-      if (existingFn !== undefined && this.getFunctionSignature(existingFn) === signature) {
+    if (trait) {
+      const t = this.addImplementedTrait(trait);
+
+      // Look for the existing function with the same signature and return it if found
+      for (let i = 0; i < t.functions.length; i++) {
+        const existingFn = t.functions[i];
+        if (existingFn !== undefined && this.getFunctionSignature(existingFn) === signature) {
+          return existingFn;
+        }
+      }
+
+      // Otherwise, add the function
+      const contractFn: ContractFunction = copy(fn);
+      t.functions.push(contractFn);
+      return contractFn;
+    } else {
+      const existingFn = this.functionsMap.get(signature);
+      if (existingFn) {
         return existingFn;
       }
+      const contractFn: ContractFunction = copy(fn);
+      this.functionsMap.set(signature, contractFn);
+      return contractFn;
     }
-
-    // Otherwise, add the function
-    const contractFn: ContractFunction = copy(fn);
-
-    if (t === this) {
-      t.functionsArr.push(contractFn);
-    } else {
-      t.functions.push(contractFn);
-    }
-
-    return contractFn;
   }
 
   private getFunctionSignature(fn: BaseFunction): string {
