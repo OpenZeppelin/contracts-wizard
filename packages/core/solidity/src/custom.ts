@@ -56,7 +56,7 @@ export function buildCustom(opts: CustomOptions): Contract {
   const { access, upgradeable, info } = allOpts;
 
   if (allOpts.crossChainMessaging === 'superchain') {
-    addSuperchainInterop(c, allOpts.crossChainFunctionName, allOpts.access, allOpts.pausable);
+    addSuperchainInteropMessagePassing(c, allOpts.crossChainFunctionName, allOpts.access, allOpts.pausable);
   }
 
   if (allOpts.pausable) {
@@ -70,7 +70,7 @@ export function buildCustom(opts: CustomOptions): Contract {
   return c;
 }
 
-function addSuperchainInterop(c: ContractBuilder, functionName: string, access: Access, pausable: boolean) {
+function addSuperchainInteropMessagePassing(c: ContractBuilder, functionName: string, access: Access, pausable: boolean) {
   const sanitizedFunctionName = toIdentifier(functionName, false);
   if (sanitizedFunctionName.length === 0) {
     throw new OptionsError({
@@ -85,7 +85,12 @@ function addSuperchainInterop(c: ContractBuilder, functionName: string, access: 
     args: [],
   };
 
-  requireAccessControl(c, sourceFn, access, 'CROSS_CHAIN_CALLER', 'crossChainCaller');
+  if (access) {
+    requireAccessControl(c, sourceFn, access, 'CROSSCHAIN_CALLER', 'crossChainCaller');
+  } else {
+    c.setFunctionComments(['// NOTE: Anyone can call this function'], sourceFn);
+  }
+
   c.addFunctionCode(
     `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
     sourceFn,
