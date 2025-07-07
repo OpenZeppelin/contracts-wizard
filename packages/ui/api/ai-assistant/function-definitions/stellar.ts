@@ -6,6 +6,7 @@ import {
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
+  stellarStablecoinDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
@@ -33,6 +34,42 @@ export const stellarFungibleAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
+
+export const stellarStablecoinAIFunctionDefinition = {
+  name: 'Stablecoin',
+  description: stellarPrompts.Stablecoin,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'symbol',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'info',
+      ]),
+      limitations: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['allowlist', 'blocklist'] },
+        ],
+        description: stellarStablecoinDescriptions.limitations,
+      },
+      premint: {
+        type: 'string',
+        description: stellarStablecoinDescriptions.premint,
+      },
+      upgradeable: {
+        type: 'boolean',
+        description: stellarCommonDescriptions.upgradeable,
+      },
+    },
+    required: ['name', 'symbol'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Stablecoin'>;
 
 export const stellarNonFungibleAIFunctionDefinition = {
   name: 'NonFungible',

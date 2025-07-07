@@ -13,7 +13,7 @@ export type DownloadAction =
   | 'download-scaffold'
   | 'download-rust-stellar';
 
-export type Action = 'copy' | 'remix' | DownloadAction | 'defender';
+export type Action = 'copy' | 'remix' | DownloadAction;
 
 export async function postConfig(opts: Partial<LanguagesOptions>, action: Action, language: Language) {
   window.gtag?.('event', 'wizard_action', { ...opts, action, wizard_lang: language });
