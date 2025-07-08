@@ -11,7 +11,6 @@ import { defineFunctions } from './utils/define-functions';
 export interface ERC20Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
-  // pausable?: boolean;
   permit?: boolean;
   flashmint?: boolean;
 }
@@ -19,7 +18,6 @@ export interface ERC20Options extends CommonContractOptions {
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   burnable: false,
-  // pausable: false,
   permit: true,
   flashmint: false,
   access: commonDefaults.access,
@@ -35,7 +33,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
-    // pausable: opts.pausable ?? defaults.pausable,
     permit: opts.permit ?? defaults.permit,
     flashmint: opts.flashmint ?? defaults.flashmint,
   };
@@ -52,10 +49,6 @@ export function buildERC20(opts: ERC20Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c);
-
-  // if (allOpts.pausable) {
-  //   addPausable(c, allOpts.access);
-  // }
 
   if (allOpts.burnable) {
     addBurnable(c);
@@ -77,39 +70,20 @@ export function buildERC20(opts: ERC20Options): Contract {
 
 function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc20Trait);
-  // c.addImplementedTrait(erc20MetadataTrait);
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(erc20Trait, functions.transfer, ['self.pausable.when_not_paused()?;']);
-  //   c.addFunctionCodeBefore(erc20Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 function addPermit(c: ContractBuilder) {
   c.addImplementedTrait(noncesTrait);
   c.addImplementedTrait(permitTrait);
   c.addEip712();
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(erc20PermitTrait, functions.permit, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 function addBurnable(c: ContractBuilder) {
   c.addImplementedTrait(burnableTrait);
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(erc20Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
-  //   c.addFunctionCodeBefore(erc20Trait, functions.burn_from, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 function addFlashMint(c: ContractBuilder) {
   c.addImplementedTrait(flashMintTrait);
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(flashMintTrait, functions.flash_loan, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 const ERC20_STORAGE_NAME = 'erc20';
@@ -320,13 +294,3 @@ const flashMintTrait: StoredContractTrait = {
   requiredImports: [{ containerPath: 'stylus_sdk::abi', name: 'Bytes' }],
   functions: Object.values(functions.flash_mint),
 };
-
-// const erc20MetadataTrait: ImplementedTrait = {
-//   name: 'Erc20Metadata',
-//   interface: 'IErc20Metadata',
-//   storage: {
-//     name: 'metadata',
-//     type: 'Erc20Metadata',
-//   }
-//   modulePath: 'openzeppelin_stylus::token::erc20::extensions',
-// }

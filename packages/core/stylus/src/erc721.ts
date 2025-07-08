@@ -13,14 +13,12 @@ export interface ERC721Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
   enumerable?: boolean;
-  // pausable?: boolean;
 }
 
 export const defaults: Required<ERC721Options> = {
   name: 'MyToken',
   burnable: false,
   enumerable: false,
-  // pausable: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -35,7 +33,6 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
     enumerable: opts.enumerable ?? defaults.enumerable,
-    // pausable: opts.pausable ?? defaults.pausable,
   };
 }
 
@@ -50,10 +47,6 @@ export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
   addBase(c);
-
-  // if (allOpts.pausable) {
-  //   addPausable(c, allOpts.access);
-  // }
 
   if (allOpts.burnable) {
     addBurnable(c, allOpts.enumerable);
@@ -72,21 +65,10 @@ export function buildERC721(opts: ERC721Options): Contract {
 function addBase(c: ContractBuilder) {
   c.addImplementedTrait(erc721Trait);
   c.addImplementedTrait(erc165Trait);
-  // c.addImplementedTrait(erc721MetadataTrait);
-
-  // if (pausable) {
-  //   // Add transfer functions with pause checks
-
-  //   c.addFunctionCodeBefore(erc721Trait, functions.transfer_from, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 function addBurnable(c: ContractBuilder, enumerable: boolean) {
   c.addImplementedTrait(burnableTrait);
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(erc721Trait, functions.burn, ['self.pausable.when_not_paused()?;']);
-  // }
 
   if (enumerable) {
     c.addFunctionCodeBefore(
@@ -115,7 +97,6 @@ function addEnumerable(c: ContractBuilder) {
     erc165Trait,
   );
 
-  // safe_transfer_from, safe_transfer_from_with_data, transfer_from
   for (const fn of [
     functions.erc721.safe_transfer_from,
     functions.erc721.safe_transfer_from_with_data,

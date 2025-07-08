@@ -16,14 +16,12 @@ type StorageName = typeof ERC1155_SUPPLY_STORAGE_NAME | typeof ERC1155_STORAGE_N
 export interface ERC1155Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
-  // pausable?: boolean;
   supply?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
   burnable: false,
-  // pausable: false,
   supply: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
@@ -38,7 +36,6 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
-    // pausable: opts.pausable ?? defaults.pausable,
     supply: opts.supply ?? defaults.supply,
   };
 }
@@ -53,7 +50,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  // Erc1155Supply reexports Erc1155 functionality
+  // Erc1155Supply reexports Erc1155 functionality, so it's used as inherited storage
   const storageName = allOpts.supply ? ERC1155_SUPPLY_STORAGE_NAME : ERC1155_STORAGE_NAME;
 
   addBase(c, storageName);
@@ -61,12 +58,6 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   if (allOpts.supply) {
     addSupply(c);
   }
-
-  // c.addImplementedTrait(erc1155MetadataTrait);
-
-  // if (allOpts.pausable) {
-  //   addPausable(c, allOpts.access);
-  // }
 
   if (allOpts.burnable) {
     addBurnable(c, storageName);
@@ -82,29 +73,14 @@ function addBase(c: ContractBuilder, storageName: StorageName) {
   c.addImplementedTrait(getErc1155WithStorageName(storageName));
   c.addImplementedTrait(getIErc165Trait(storageName));
 
-  // if (pausable) {
-  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
-  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
-// This adds supply-related parts without re-adding the contract structure,
-// as it was already added in `addBase`.
 function addSupply(c: ContractBuilder) {
   c.addImplementedTrait(erc1155SupplyTrait);
-
-  // if (pausable) {
-  //   // Add pausable checks to appropriate functions
-  // }
 }
 
 function addBurnable(c: ContractBuilder, storageName: StorageName) {
   c.addImplementedTrait(getIErc1155BurnableTrait(storageName));
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(trait, fns.burn, ['self.pausable.when_not_paused()?;']);
-  //   c.addFunctionCodeBefore(trait, fns.burn_batch, ['self.pausable.when_not_paused()?;']);
-  // }
 }
 
 const functions = {
@@ -280,12 +256,3 @@ const erc1155SupplyTrait: StoredContractTrait = {
   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
   functions: Object.values(functions.erc1155Supply),
 };
-
-// const erc1155MetadataTrait: ImplementedTrait = {
-//   name: 'Erc1155Metadata',
-//   storage: {
-//     name: 'metadata',
-//     type: 'Erc1155Metadata',
-//   }
-//   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
-// }
