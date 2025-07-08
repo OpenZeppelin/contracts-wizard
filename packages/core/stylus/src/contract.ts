@@ -6,7 +6,19 @@ type Name = {
   stringLiteral: string;
 };
 
-export type TraitName = 'IErc20' | 'IErc20Burnable' | 'IErc20Permit' | 'IErc3156FlashLender' | 'IErc721' | 'IErc721Burnable' | 'IErc721Enumerable' | 'IErc1155' | 'IErc1155Burnable' | 'IErc1155Supply' | 'IErc165' | 'INonces';
+export type TraitName =
+  | 'IErc20'
+  | 'IErc20Burnable'
+  | 'IErc20Permit'
+  | 'IErc3156FlashLender'
+  | 'IErc721'
+  | 'IErc721Burnable'
+  | 'IErc721Enumerable'
+  | 'IErc1155'
+  | 'IErc1155Burnable'
+  | 'IErc1155Supply'
+  | 'IErc165'
+  | 'INonces';
 
 export interface SolError {
   variant: string;
@@ -53,14 +65,14 @@ export type ContractTrait = {
   functions: ContractFunction[];
   requiredImports?: UseClause[];
 } & (
-    | {
+  | {
       associatedError: true;
       errors: ErrorList;
     }
-    | {
+  | {
       associatedError?: boolean;
     }
-  );
+);
 
 export type StoredContractTrait = ContractTrait & {
   storage: Implementation;

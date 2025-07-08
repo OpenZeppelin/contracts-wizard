@@ -72,7 +72,6 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 function addBase(c: ContractBuilder, storageName: StorageName) {
   c.addImplementedTrait(getErc1155WithStorageName(storageName));
   c.addImplementedTrait(getIErc165Trait(storageName));
-
 }
 
 function addSupply(c: ContractBuilder) {
