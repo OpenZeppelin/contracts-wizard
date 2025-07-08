@@ -5,6 +5,8 @@ import { ContractBuilder } from './contract';
 import { printContract } from './print';
 import { getSelfArg } from './common-options';
 
+// use actual trait names just for testing, even though their implementation not as per EIP
+
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
   t.snapshot(printContract(Foo));
@@ -48,7 +50,7 @@ test('contract with parent', t => {
         code: 'self.parent.some_function()',
       },
     ],
-    name: 'IParent',
+    name: 'IErc20',
   };
   Foo.addImplementedTrait(trait);
   t.snapshot(printContract(Foo));
@@ -70,7 +72,7 @@ test('contract with parent and associated error', t => {
         returns: { ok: '()', err: 'Self::Error' },
       },
     ],
-    name: 'IParent',
+    name: 'IErc20',
     associatedError: true,
     errors: [{ variant: 'SomeError', value: { module: 'mod_ext', error: 'Associated' } }],
   };
@@ -93,7 +95,7 @@ test('contract with parent and with function', t => {
         code: 'self.parent.some_function()',
       },
     ],
-    name: 'IParent',
+    name: 'IErc20',
   };
   Foo.addImplementedTrait(trait);
 
@@ -121,7 +123,7 @@ test('contract with parent and with function with code before', t => {
         code: 'self.parent.some_function()',
       },
     ],
-    name: 'IParent',
+    name: 'IErc20',
   };
   Foo.addImplementedTrait(trait);
   Foo.addFunctionCodeBefore(trait.functions[0]!, ['before();'], trait);
@@ -164,25 +166,25 @@ test('contract with sorted traits', t => {
   const traitA: StoredContractTrait = {
     storage: { name: 'a', type: 'A' },
     modulePath: 'mod_a',
-    name: 'IA',
+    name: 'IErc20',
     functions: [{ name: 'func_a', args: [], code: 'todo!()' }],
   };
   const traitB: StoredContractTrait = {
     storage: { name: 'b', type: 'B' },
     modulePath: 'mod_b',
-    name: 'IB',
+    name: 'IErc721',
     functions: [{ name: 'func_b', args: [], code: 'todo!()' }],
   };
   const traitSpecial: StoredContractTrait = {
     storage: { name: 'special', type: 'Special' },
     modulePath: 'mod_special',
-    name: 'ISpecial',
+    name: 'IErc1155',
     functions: [{ name: 'func_special', args: [], code: 'todo!()' }],
   };
   const traitZ: StoredContractTrait = {
     storage: { name: 'z', type: 'Z' },
     modulePath: 'mod_z',
-    name: 'IZ',
+    name: 'IErc165',
     functions: [{ name: 'func_z', args: [], code: 'todo!()' }],
   };
   Foo.addFunction(traitZ.functions[0]!, traitZ);
