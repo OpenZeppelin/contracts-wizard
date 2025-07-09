@@ -100,7 +100,7 @@ jobs:
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@7ab5f0565ed3a03b41789aaac7211c286fa0028c #v22.8.2
+        uses: stellar/stellar-cli@v22.8.2 #v22.8.2
 
       - name: Install Scaffold & Registry CLIs
         if: matrix.package == 'stellar'
