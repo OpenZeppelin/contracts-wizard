@@ -4,7 +4,7 @@ import { buildFungible } from './fungible';
 import test from 'ava';
 import { runRustCompilationTest } from './utils/compile-test';
 
-test(
+test.serial(
   'rust zip fungible simple',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -18,7 +18,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'rust zip fungible upgradable full',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',

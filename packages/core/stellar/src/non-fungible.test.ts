@@ -172,7 +172,7 @@ test('non-fungible API assert defaults', async t => {
   t.is(nonFungible.print(nonFungible.defaults), nonFungible.print());
 });
 
-test(
+test.serial(
   'compilation nonfungible simple',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -188,7 +188,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible full except sequential mintable enumerable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -204,7 +204,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible burnable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -220,7 +220,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible consecutive',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -236,7 +236,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible pausable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -252,7 +252,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible upgradeable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -268,7 +268,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible sequential',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -284,7 +284,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible burnable pausable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -300,7 +300,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible enumerable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -316,7 +316,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible burnable enumerable',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',
@@ -332,7 +332,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation nonfungible full except consecutive',
   runRustCompilationTest(buildNonFungible, {
     kind: 'NonFungible',

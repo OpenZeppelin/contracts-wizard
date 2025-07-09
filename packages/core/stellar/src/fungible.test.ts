@@ -129,7 +129,7 @@ test('fungible getInitialSupply', async t => {
   t.is((error as OptionsError).messages.premint, 'Not a valid number');
 });
 
-test(
+test.serial(
   'compilation fungible simple',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -143,7 +143,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible full',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -157,7 +157,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible burnable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -171,7 +171,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible mintable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -185,7 +185,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -199,7 +199,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible burnable mintable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -213,7 +213,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible burnable pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -227,7 +227,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible mintable pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -241,7 +241,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable simple',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -255,7 +255,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable full',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -269,7 +269,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable burnable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -283,7 +283,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable mintable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -297,7 +297,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -311,7 +311,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable burnable mintable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -325,7 +325,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable burnable pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -339,7 +339,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'compilation fungible upgradable mintable pausable',
   runRustCompilationTest(buildFungible, {
     kind: 'Fungible',

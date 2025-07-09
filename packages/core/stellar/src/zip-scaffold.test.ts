@@ -47,7 +47,7 @@ const runScaffoldCompilationTest = withTemporaryFolderDo(
   },
 );
 
-test(
+test.serial(
   'zip scaffold fungible simple',
   runScaffoldCompilationTest(buildFungible, {
     kind: 'Fungible',
@@ -61,7 +61,7 @@ test(
   }),
 );
 
-test(
+test.serial(
   'zip scaffold fungible full',
   runScaffoldCompilationTest(buildFungible, {
     kind: 'Fungible',
