@@ -15,7 +15,7 @@ export const compatibleContractsSemver = '^0.3.0';
 export const compatibleSorobanVersion = '22.0.8';
 
 /**
- * The Soroban version for which compilation and testing have passing tests
+ * The dependencies used in contracts
  */
 export const stellarDependencies = {
   base: ['stellar-default-impl-macro'],
