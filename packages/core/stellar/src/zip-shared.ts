@@ -1,5 +1,5 @@
 import type { Contract } from './contract';
-import { contractsVersionTag, compatibleSorobanVersion } from './utils/version';
+import { contractsVersionTag, compatibleSorobanVersion, stellarDependencies } from './utils/version';
 
 function pascalToSnakeCase(string: string) {
   return string
@@ -41,16 +41,6 @@ fn initial_state() {
 
 const getKeysOf = <TObject extends Record<string, unknown>>(objectToGetKeysOf: TObject) =>
   Object.keys(objectToGetKeysOf) as (keyof TObject)[];
-
-export const stellarDependencies = {
-  base: ['stellar-default-impl-macro'],
-  fungible: ['stellar-fungible'],
-  nonFungible: ['stellar-non-fungible'],
-  pausable: ['stellar-pausable', 'stellar-pausable-macros'],
-  upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
-  accessControl: ['stellar-access-control', 'stellar-access-control-macros'],
-  ownable: ['stellar-ownable', 'stellar-ownable-macro'],
-} as const;
 
 export const allStellarDependencies = getKeysOf(stellarDependencies);
 
