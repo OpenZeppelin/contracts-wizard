@@ -65,11 +65,17 @@ jobs:
       # ----------------------------
       # Stellar setup
       
+      # - name: Get scaffold-stellar latest commit SHA
+      #   if: matrix.package == 'stellar'
+      #   id: get-scaffold-sha
+      #   run: |
+      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+
       - name: Get scaffold-stellar latest commit SHA
         if: matrix.package == 'stellar'
         id: get-scaffold-sha
         run: |
-          echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+          echo "sha=ebf79b8a57ad1b51a46162afd98ca05c648085fe" >> $GITHUB_OUTPUT
 
       - name: Cache Rust dependencies
         if: matrix.package == 'stellar'
@@ -103,7 +109,7 @@ jobs:
             local binary_name="$1"
 
             if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
+              cargo install --git "https://github.com/ahalabs/scaffold-stellar" --rev ${{ steps.get-scaffold-sha.outputs.sha }} "$binary_name"
             fi
           }
 
