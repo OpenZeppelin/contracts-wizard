@@ -64,12 +64,6 @@ jobs:
 
       # ----------------------------
       # Stellar setup
-
-      - name: Free up disk space
-        if: matrix.package == 'stellar'
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
-          df -h
       
       - name: Get scaffold-stellar latest commit SHA
         if: matrix.package == 'stellar'
@@ -100,7 +94,7 @@ jobs:
 
       - name: Set up Stellar CLI
         if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@v22.8.1
+        uses: stellar/stellar-cli@v22.8.2
 
       - name: Install Scaffold & Registry CLIs
         if: matrix.package == 'stellar'
