@@ -26,7 +26,7 @@ function assertHasAllSupportedFields(
   t: ExecutionContext<Context>,
   params: DeepRequired<z.infer<typeof t.context.schema>>,
 ) {
-  const _: DeepRequired<Omit<FungibleOptions, 'access'>> = params;
+  const _: DeepRequired<FungibleOptions> = params;
   t.pass();
 }
 
@@ -47,6 +47,7 @@ test('all', async t => {
     premint: '1000000',
     mintable: true,
     upgradeable: true,
+    access: 'ownable',
     info: {
       license: 'MIT',
       securityContact: 'security@contact.com',

@@ -248,7 +248,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.pub, head, args, fn.tag, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
@@ -289,7 +289,7 @@ function printConstructor(contract: Contract): Lines[] {
       true,
       head,
       args.map(a => printArgument(a)),
-      undefined,
+      [],
       undefined,
       undefined,
       body,
@@ -306,15 +306,15 @@ function printFunction2(
   pub: boolean | undefined,
   kindedName: string,
   args: string[],
-  tag: string | undefined,
+  tags: string[],
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[],
 ): Lines[] {
   const fn = [];
 
-  if (tag !== undefined) {
-    fn.push(`#[${tag}]`);
+  for (let i = 0; i < tags.length; i++) {
+    fn.push(`#[${tags[i]}]`);
   }
 
   let accum = '';
