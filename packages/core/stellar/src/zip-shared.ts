@@ -48,6 +48,8 @@ export const stellarDependencies = {
   nonFungible: ['stellar-non-fungible'],
   pausable: ['stellar-pausable', 'stellar-pausable-macros'],
   upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
+  accessControl: ['stellar-access-control', 'stellar-access-control-macros'],
+  ownable: ['stellar-ownable', 'stellar-ownable-macro'],
 } as const;
 
 export const allStellarDependencies = getKeysOf(stellarDependencies);
