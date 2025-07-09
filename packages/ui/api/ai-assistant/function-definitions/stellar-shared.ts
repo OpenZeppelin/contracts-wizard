@@ -5,10 +5,11 @@ import { stellarCommonDescriptions } from '../../../../common/src/ai/description
 
 export const stellarCommonFunctionDescription = {
   access: {
-    type: 'boolean',
-    enum: [false],
-    description: 'The type of access control to provision, currently not supported',
-    // 'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions.',
+    anyOf: [
+      { type: 'string', enum: ['ownable', 'roles'] },
+      { type: 'boolean', enum: [false] },
+    ],
+    description: stellarCommonDescriptions.access,
   },
 
   upgradeable: {
