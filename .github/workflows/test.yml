@@ -92,16 +92,16 @@ jobs:
       #       cargo-scaffold-
       #       cargo-scaffold-
 
-      - name: Set up rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: stable, nightly
-          components: clippy, rustfmt, llvm-tools-preview
-          target: wasm32v1-none
+      # - name: Set up rust toolchain
+      #   uses: actions-rust-lang/setup-rust-toolchain@v1
+      #   with:
+      #     toolchain: stable, nightly
+      #     components: clippy, rustfmt, llvm-tools-preview
+      #     target: wasm32v1-none
 
-      - name: Set up Stellar CLI
-        if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@v22.8.2
+      # - name: Set up Stellar CLI
+      #   if: matrix.package == 'stellar'
+      #   uses: stellar/stellar-cli@v22.8.2
 
       # ----------------------------
       - name: Compile TypeScript
