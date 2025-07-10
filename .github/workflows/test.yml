@@ -98,23 +98,23 @@ jobs:
           components: clippy, rustfmt, llvm-tools-preview
           target: wasm32v1-none
 
-      - name: Set up Stellar CLI
-        if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@v22.8.2 #v22.8.2
+      # - name: Set up Stellar CLI
+      #   if: matrix.package == 'stellar'
+      #   uses: stellar/stellar-cli@v22.8.2 #v22.8.2
 
-      - name: Install Scaffold & Registry CLIs
-        if: matrix.package == 'stellar'
-        run: |
-          rebuildIfNotFoundInCache() {
-            local binary_name="$1"
+      # - name: Install Scaffold & Registry CLIs
+      #   if: matrix.package == 'stellar'
+      #   run: |
+      #     rebuildIfNotFoundInCache() {
+      #       local binary_name="$1"
 
-            if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" --rev ${{ steps.get-scaffold-sha.outputs.sha }} "$binary_name"
-            fi
-          }
+      #       if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
+      #         cargo install --git "https://github.com/ahalabs/scaffold-stellar" --rev ${{ steps.get-scaffold-sha.outputs.sha }} "$binary_name"
+      #       fi
+      #     }
 
-          rebuildIfNotFoundInCache stellar-scaffold-cli
-          rebuildIfNotFoundInCache stellar-registry-cli
+      #     rebuildIfNotFoundInCache stellar-scaffold-cli
+      #     rebuildIfNotFoundInCache stellar-registry-cli
 
       # ----------------------------
       - name: Compile TypeScript

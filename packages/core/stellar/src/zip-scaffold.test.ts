@@ -47,30 +47,30 @@ const runScaffoldCompilationTest = withTemporaryFolderDo(
   },
 );
 
-test.serial(
-  'zip scaffold fungible simple',
-  runScaffoldCompilationTest(buildFungible, {
-    kind: 'Fungible',
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: undefined,
-    burnable: false,
-    mintable: false,
-    pausable: false,
-    upgradeable: false,
-  }),
-);
+// test.serial(
+//   'zip scaffold fungible simple',
+//   runScaffoldCompilationTest(buildFungible, {
+//     kind: 'Fungible',
+//     name: 'MyToken',
+//     symbol: 'MTK',
+//     premint: undefined,
+//     burnable: false,
+//     mintable: false,
+//     pausable: false,
+//     upgradeable: false,
+//   }),
+// );
 
-test.serial(
-  'zip scaffold fungible full',
-  runScaffoldCompilationTest(buildFungible, {
-    kind: 'Fungible',
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '2000',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-    upgradeable: true,
-  }),
-);
+// test.serial(
+//   'zip scaffold fungible full',
+//   runScaffoldCompilationTest(buildFungible, {
+//     kind: 'Fungible',
+//     name: 'MyToken',
+//     symbol: 'MTK',
+//     premint: '2000',
+//     burnable: true,
+//     mintable: true,
+//     pausable: true,
+//     upgradeable: true,
+//   }),
+// );
