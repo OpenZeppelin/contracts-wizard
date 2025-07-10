@@ -1,4 +1,5 @@
 import type { Contract } from './contract';
+import { contractsVersionTag, compatibleSorobanVersion, stellarDependencies } from './utils/version';
 
 function pascalToSnakeCase(string: string) {
   return string
@@ -41,14 +42,6 @@ fn initial_state() {
 const getKeysOf = <TObject extends Record<string, unknown>>(objectToGetKeysOf: TObject) =>
   Object.keys(objectToGetKeysOf) as (keyof TObject)[];
 
-export const stellarDependencies = {
-  base: ['stellar-default-impl-macro'],
-  fungible: ['stellar-fungible'],
-  nonFungible: ['stellar-non-fungible'],
-  pausable: ['stellar-pausable', 'stellar-pausable-macros'],
-  upgradable: ['stellar-upgradeable', 'stellar-upgradeable-macros'],
-} as const;
-
 export const allStellarDependencies = getKeysOf(stellarDependencies);
 
 export const allDependencies = {
@@ -82,4 +75,18 @@ export const createRustLibFile = `#![no_std]
 
 mod contract;
 mod test;
+`;
+
+export const workspaceCargo = `[workspace]
+resolver = "2"
+members = ["contracts/*"]
+
+[workspace.package]
+authors = []
+edition = "2021"
+license = "Apache-2.0"
+version = "0.0.1"
+
+[workspace.dependencies]
+${addDependenciesWith(`{ git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "${contractsVersionTag}" }`, allStellarDependencies)}${addDependenciesWith(`{ version = "${compatibleSorobanVersion}" }`, ['soroban'])}
 `;
