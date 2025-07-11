@@ -14,7 +14,7 @@ import { zipRustProject } from '../zip-rust';
 const asyncExec = promisify(exec);
 
 export const runCargoTest = async (t: ExecutionContext, temporaryFolder: string) => {
-  const result = await asyncExec(`cd "${temporaryFolder}" && cargo test`);
+  const result = await asyncExec(`cd "${temporaryFolder}" && RUSTFLAGS="-D warnings" cargo test`);
 
   t.regex(result.stdout, /0 failed/);
 };
@@ -31,9 +31,11 @@ export const withTemporaryFolderDo =
   async (test: ExecutionContext) => {
     const temporaryFolder = await mkdtemp(path.join(tmpdir(), `compilation-test-${crypto.randomUUID()}`));
 
-    await testFunction(...testFunctionArguments, test, temporaryFolder);
-
-    await rm(temporaryFolder, { recursive: true, force: true });
+    try {
+      await testFunction(...testFunctionArguments, test, temporaryFolder);
+    } finally {
+      await rm(temporaryFolder, { recursive: true, force: true });
+    }
   };
 
 export const runRustCompilationTest = withTemporaryFolderDo(

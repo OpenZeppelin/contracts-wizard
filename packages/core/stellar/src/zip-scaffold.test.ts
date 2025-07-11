@@ -47,6 +47,8 @@ const runScaffoldCompilationTest = withTemporaryFolderDo(
   },
 );
 
+test('placeholder', t => t.assert(true));
+
 // test.serial(
 //   'zip scaffold fungible simple',
 //   runScaffoldCompilationTest(buildFungible, {
