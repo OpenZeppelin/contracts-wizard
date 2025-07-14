@@ -49,6 +49,18 @@ jobs:
           - cairo
           - stellar
           - stylus
+        # This variant config creates 2 branches of the matrix a default and a compile one to run the compile tests in their own job
+        variant:
+          - default
+          - compile
+        # This excludes config only runs the compile variant for stellar 
+        exclude:
+          - package: solidity
+            variant: compile
+          - package: cairo
+            variant: compile
+          - package: stylus
+            variant: compile
 
     runs-on: ubuntu-latest
     steps:
@@ -63,22 +75,16 @@ jobs:
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de #v1.4.0
 
       # ----------------------------
-      # Stellar setup
-      
-      # - name: Get scaffold-stellar latest commit SHA
-      #   if: matrix.package == 'stellar'
-      #   id: get-scaffold-sha
-      #   run: |
-      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
+      # Stellar compile setup
 
       - name: Get scaffold-stellar latest commit SHA
-        if: matrix.package == 'stellar'
+        if: matrix.package == 'stellar' && matrix.variant == 'compile'
         id: get-scaffold-sha
         run: |
           echo "sha=ebf79b8a57ad1b51a46162afd98ca05c648085fe" >> $GITHUB_OUTPUT
 
       - name: Cache Rust dependencies
-        if: matrix.package == 'stellar'
+        if: matrix.package == 'stellar' && matrix.variant == 'compile'
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 #v4.2.3
         with:
           path: |
@@ -92,29 +98,12 @@ jobs:
 
 
       - name: Set up rust toolchain
+        if: matrix.package == 'stellar' && matrix.variant == 'compile'
         uses: actions-rust-lang/setup-rust-toolchain@fb51252c7ba57d633bc668f941da052e410add48 #v1.13.0
         with:
           toolchain: stable, nightly
           components: clippy, rustfmt, llvm-tools-preview
           target: wasm32v1-none
-
-      # - name: Set up Stellar CLI
-      #   if: matrix.package == 'stellar'
-      #   uses: stellar/stellar-cli@v22.8.2 #v22.8.2
-
-      # - name: Install Scaffold & Registry CLIs
-      #   if: matrix.package == 'stellar'
-      #   run: |
-      #     rebuildIfNotFoundInCache() {
-      #       local binary_name="$1"
-
-      #       if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-      #         cargo install --git "https://github.com/ahalabs/scaffold-stellar" --rev ${{ steps.get-scaffold-sha.outputs.sha }} "$binary_name"
-      #       fi
-      #     }
-
-      #     rebuildIfNotFoundInCache stellar-scaffold-cli
-      #     rebuildIfNotFoundInCache stellar-registry-cli
 
       # ----------------------------
       - name: Compile TypeScript
@@ -124,5 +113,11 @@ jobs:
         run: yarn svelte-check
         working-directory: packages/ui
       - name: Run tests
-        run: yarn test
+        if: matrix.variant == 'default'
+        run: yarn test '**/*.test.ts' '!**/*.compile.test.ts'
+        working-directory: packages/core/${{matrix.package}}
+
+      - name: Run tests
+        if: matrix.variant == 'compile'
+        run: yarn test '**/*.compile.test.ts'
         working-directory: packages/core/${{matrix.package}}
