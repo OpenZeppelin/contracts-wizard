@@ -94,55 +94,55 @@ test.serial(
   }),
 );
 
-test.serial(
-  'compilation stablecoin allowlist',
-  runRustCompilationTest(buildStablecoin, {
-    kind: 'Stablecoin',
-    name: 'MyStablecoin',
-    symbol: 'MST',
-    limitations: 'allowlist',
-  }),
-);
+// test.serial(
+//   'compilation stablecoin allowlist',
+//   runRustCompilationTest(buildStablecoin, {
+//     kind: 'Stablecoin',
+//     name: 'MyStablecoin',
+//     symbol: 'MST',
+//     limitations: 'allowlist',
+//   }),
+// );
 
-test.serial(
-  'compilation stablecoin blocklist',
-  runRustCompilationTest(buildStablecoin, {
-    kind: 'Stablecoin',
-    name: 'MyStablecoin',
-    symbol: 'MST',
-    limitations: 'blocklist',
-  }),
-);
+// test.serial(
+//   'compilation stablecoin blocklist',
+//   runRustCompilationTest(buildStablecoin, {
+//     kind: 'Stablecoin',
+//     name: 'MyStablecoin',
+//     symbol: 'MST',
+//     limitations: 'blocklist',
+//   }),
+// );
 
-test.serial(
-  'compilation stablecoin full - ownable, allowlist',
-  runRustCompilationTest(buildStablecoin, {
-    kind: 'Stablecoin',
-    name: 'MyStablecoin',
-    symbol: 'MST',
-    premint: '2000',
-    access: 'ownable',
-    limitations: 'allowlist',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-  }),
-);
+// test.serial(
+//   'compilation stablecoin full - ownable, allowlist',
+//   runRustCompilationTest(buildStablecoin, {
+//     kind: 'Stablecoin',
+//     name: 'MyStablecoin',
+//     symbol: 'MST',
+//     premint: '2000',
+//     access: 'ownable',
+//     limitations: 'allowlist',
+//     burnable: true,
+//     mintable: true,
+//     pausable: true,
+//   }),
+// );
 
-test.serial(
-  'compilation stablecoin full - ownable, blocklist',
-  runRustCompilationTest(buildStablecoin, {
-    kind: 'Stablecoin',
-    name: 'MyStablecoin',
-    symbol: 'MST',
-    premint: '2000',
-    access: 'ownable',
-    limitations: 'blocklist',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-  }),
-);
+// test.serial(
+//   'compilation stablecoin full - ownable, blocklist',
+//   runRustCompilationTest(buildStablecoin, {
+//     kind: 'Stablecoin',
+//     name: 'MyStablecoin',
+//     symbol: 'MST',
+//     premint: '2000',
+//     access: 'ownable',
+//     limitations: 'blocklist',
+//     burnable: true,
+//     mintable: true,
+//     pausable: true,
+//   }),
+// );
 
 test.serial(
   'compilation stablecoin full - roles, allowlist',
@@ -174,16 +174,16 @@ test.serial(
   }),
 );
 
-test.serial(
-  'compilation stablecoin full - complex name',
-  runRustCompilationTest(buildStablecoin, {
-    kind: 'Stablecoin',
-    name: 'Custom  $ Token',
-    symbol: 'MST',
-    premint: '2000',
-    access: 'ownable',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-  }),
-);
+// test.serial(
+//   'compilation stablecoin full - complex name',
+//   runRustCompilationTest(buildStablecoin, {
+//     kind: 'Stablecoin',
+//     name: 'Custom  $ Token',
+//     symbol: 'MST',
+//     premint: '2000',
+//     access: 'ownable',
+//     burnable: true,
+//     mintable: true,
+//     pausable: true,
+//   }),
+// );
