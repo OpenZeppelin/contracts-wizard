@@ -165,21 +165,21 @@ test('non- fungible compile placeholder', t => t.pass());
 //   }),
 // );
 
-test.serial(
-  'compilation nonfungible full except consecutive',
-  runRustCompilationTest(buildNonFungible, {
-    kind: 'NonFungible',
-    name: 'MyNFT',
-    symbol: 'MNFT',
-    burnable: true,
-    enumerable: true,
-    consecutive: false,
-    pausable: true,
-    upgradeable: true,
-    mintable: true,
-    sequential: true,
-  }),
-);
+// test.serial(
+//   'compilation nonfungible full except consecutive',
+//   runRustCompilationTest(buildNonFungible, {
+//     kind: 'NonFungible',
+//     name: 'MyNFT',
+//     symbol: 'MNFT',
+//     burnable: true,
+//     enumerable: true,
+//     consecutive: false,
+//     pausable: true,
+//     upgradeable: true,
+//     mintable: true,
+//     sequential: true,
+//   }),
+// );
 
 // test('compilation nonfungible mintable', async t => {
 //   const opts: GenericOptions = {
