@@ -232,6 +232,10 @@ stellar-pausable = { workspace = true }
 stellar-pausable-macros = { workspace = true }
 stellar-upgradeable = { workspace = true }
 stellar-upgradeable-macros = { workspace = true }
+stellar-access-control = { workspace = true }
+stellar-access-control-macros = { workspace = true }
+stellar-ownable = { workspace = true }
+stellar-ownable-macro = { workspace = true }
 soroban-sdk = { workspace = true }
 
 [dev-dependencies]
