@@ -28,5 +28,6 @@ export type { ERC721Options } from './erc721';
 export type { ERC1155Options } from './erc1155';
 export type { StablecoinOptions } from './stablecoin';
 export type { AccountOptions } from './account';
+export type { ERC7579Options } from './erc7579';
 export type { GovernorOptions } from './governor';
 export type { CustomOptions } from './custom';
