@@ -5,7 +5,9 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 
 ## Project layout
 
+- `packages/common` contains common code used internally by some of the below packages.
 - `packages/core` contains the code generation logic for each language under separately named subfolders.
+- `packages/mcp` contains the MCP server.
 - `packages/ui` is the interface built in Svelte.
 
 ## Building and testing the project
@@ -14,7 +16,7 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 The following prerequisites are required to build the project locally:
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
-- [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation) to run a local API server for the AI Assistant
+- [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation) (Optional) to run a local API server for the AI Assistant
   - Note that using the shell installation method is recommended (the `upgrade` command, which allows you to install a specific Deno version, is not always available when installing Deno with other installers).  
   - To install the version of Deno that matches the Netlify deploy environment, run `deno upgrade --version 1.46.3`.
   - When adding dependencies for the Deno app add the dependency as a dev dependency using yarn, map the dependency to the Deno equivalent url in import_map.json and import it like a typescript dependency in the app.
@@ -64,6 +66,29 @@ Then from the `packages/ui` directory:
 
 > [!TIP]
 > You can also start both the UI and API servers simultaneously by running `yarn dev` from the root directory.
+
+### Testing the MCP server (Optional)
+
+#### Running MCP tests
+From the `packages/mcp` directory:
+- ```yarn test```
+
+#### Running the local MCP server in your IDE
+1. From the `packages/mcp` directory, run `yarn watch` to compile and watch for changes.
+2. Configure your IDE's MCP configuration file with the following, replacing `<ABSOLUTE_PATH_TO_WIZARD_PROJECT_ROOT>` with the absolute path to the root directory of this repository:
+```
+{
+  "mcpServers": {
+    "openzeppelin-contracts-wizard": {
+      "command": "node",
+      "args": [
+        "<ABSOLUTE_PATH_TO_WIZARD_PROJECT_ROOT>/packages/mcp/dist/index.js"
+      ]
+    }
+  }
+}
+```
+3. When you make changes to the MCP server's code, refresh the MCP server in your IDE to pick up the changes.
 
 ## Creating Pull Requests (PRs)
 

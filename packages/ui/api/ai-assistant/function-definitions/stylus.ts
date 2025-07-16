@@ -1,23 +1,27 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stylusCommonFunctionDescription } from './stylus-shared.ts';
+import {
+  stylusPrompts,
+  stylusERC20Descriptions,
+  stylusERC721Descriptions,
+  stylusERC1155Descriptions,
+} from '../../../../common/src/ai/descriptions/stylus.ts';
 
 export const stylusERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard',
+  description: stylusPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(stylusCommonFunctionDescription, ['name', 'burnable', 'access', 'info']),
       permit: {
         type: 'boolean',
-        description:
-          'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.',
+        description: stylusERC20Descriptions.permit,
       },
       flashmint: {
         type: 'boolean',
-        description:
-          "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
+        description: stylusERC20Descriptions.flashmint,
       },
     },
     required: ['name'],
@@ -27,15 +31,14 @@ export const stylusERC20AIFunctionDefinition = {
 
 export const stylusERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard',
+  description: stylusPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(stylusCommonFunctionDescription, ['name', 'burnable', 'access', 'info']),
       enumerable: {
         type: 'boolean',
-        description:
-          'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+        description: stylusERC721Descriptions.enumerable,
       },
     },
     required: ['name'],
@@ -45,14 +48,14 @@ export const stylusERC721AIFunctionDefinition = {
 
 export const stylusERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard',
+  description: stylusPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(stylusCommonFunctionDescription, ['name', 'burnable', 'access', 'info']),
       supply: {
         type: 'boolean',
-        description: 'Whether to keep track of total supply of tokens',
+        description: stylusERC1155Descriptions.supply,
       },
     },
     required: ['name'],

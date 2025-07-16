@@ -183,11 +183,15 @@ function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
         `_setSignerWeights(${functions.setSignerWeights.args.map(({ name }) => name).join(', ')});`,
         functions.setSignerWeights,
       );
+      c.addModifier('onlyEntryPointOrSelf', functions.setSignerWeights);
     // eslint-disable-next-line no-fallthrough
     case 'Multisig':
       c.addFunctionCode(`_addSigners(${functions.addSigners.args[0]!.name});`, functions.addSigners);
+      c.addModifier('onlyEntryPointOrSelf', functions.addSigners);
       c.addFunctionCode(`_removeSigners(${functions.removeSigners.args[0]!.name});`, functions.removeSigners);
+      c.addModifier('onlyEntryPointOrSelf', functions.removeSigners);
       c.addFunctionCode(`_setThreshold(${functions.setThreshold.args[0]!.name});`, functions.setThreshold);
+      c.addModifier('onlyEntryPointOrSelf', functions.setThreshold);
       break;
     default:
   }
@@ -216,7 +220,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     c.setFunctionBody(['// Custom validation logic', 'return false;'], signerFunctions._rawSignatureValidation);
   }
 
-  // Dissambiguate between Signer and AccountERC7579
+  // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'AbstractSigner',

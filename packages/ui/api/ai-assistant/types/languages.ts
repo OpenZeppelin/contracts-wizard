@@ -12,7 +12,9 @@ export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../.
 //Stellar
 import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
 import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
-export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'access'> & { access?: false };
+export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'upgradeable'> & {
+  upgradeable?: false;
+};
 // Stylus
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
@@ -20,17 +22,19 @@ export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 
 
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'ERC7579'> & {
+  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'> & {
     Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
     Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
+    Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
     ERC7579: Omit<SolidityKindedOptions['ERC7579'], 'upgradeable'> & { upgradeable?: false };
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
-  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible'> & {
+  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
+    Stablecoin: StellarKindedOptions['Stablecoin'] & StellarCommonContractOptions;
   };
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {
     ERC20: StylusKindedOptions['ERC20'] & StylusCommonContractOptions;

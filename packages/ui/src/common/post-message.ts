@@ -1,6 +1,4 @@
-import type { SolcInputSources } from '@openzeppelin/wizard/get-imports';
-
-export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage | DefenderDeployMessage;
+export type Message = ResizeMessage | TabChangeMessage | UnsupportedVersionMessage;
 
 export interface ResizeMessage {
   kind: 'oz-wizard-resize';
@@ -16,29 +14,8 @@ export interface UnsupportedVersionMessage {
   kind: 'oz-wizard-unsupported-version';
 }
 
-export interface DefenderDeployMessage {
-  kind: 'oz-wizard-defender-deploy';
-  sources: SolcInputSources;
-  enforceDeterministicReason?: string;
-  groupNetworksBy?: 'superchain';
-}
-
 export function postMessage(msg: Message) {
   if (parent) {
     parent.postMessage(msg, '*');
-  }
-}
-
-export function postMessageToIframe(id: 'defender-deploy', msg: Message) {
-  const iframe: HTMLIFrameElement | null = document.getElementById(id) as HTMLIFrameElement;
-  if (iframe) {
-    iframe.contentWindow?.postMessage(msg, '*');
-    // in case the iframe is still loading, waits
-    // a second to fully load and tries again
-    iframe.onload = () => {
-      setTimeout(() => {
-        iframe?.contentWindow?.postMessage(msg, '*');
-      }, 1000);
-    };
   }
 }
