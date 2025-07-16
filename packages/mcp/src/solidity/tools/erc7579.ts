@@ -1,5 +1,5 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ERC7579Options } from '@openzeppelin/wizard/dist/erc7579';
+import type { ERC7579Options } from '@openzeppelin/wizard';
 import { erc7579 } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { erc7579Schema } from '../schemas';
