@@ -12,8 +12,8 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
     },
   });
 
-  c.addUseClause('stellar_upgradeable', 'UpgradeableInternal');
-  c.addUseClause('stellar_upgradeable_macros', 'Upgradeable');
+  c.addUseClause('stellar_contract_utils::upgradeable', 'UpgradeableInternal');
+  c.addUseClause('stellar_macros', 'Upgradeable');
 
   c.addDerives('Upgradeable');
 

@@ -5,9 +5,9 @@ import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
 export function addPausable(c: ContractBuilder, access: Access) {
-  c.addUseClause('stellar_pausable', 'self', { alias: 'pausable' });
-  c.addUseClause('stellar_pausable', 'Pausable');
-  c.addUseClause('stellar_default_impl_macro', 'default_impl');
+  c.addUseClause('stellar_contract_utils::pausable', 'self', { alias: 'pausable' });
+  c.addUseClause('stellar_contract_utils::pausable', 'Pausable');
+  c.addUseClause('stellar_macros', 'default_impl');
 
   const pausableTrait = {
     traitName: 'Pausable',

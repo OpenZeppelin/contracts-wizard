@@ -92,9 +92,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addConstructorCode(`Base::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
   // Set token functions
-  c.addUseClause('stellar_fungible', 'Base');
-  c.addUseClause('stellar_fungible', 'FungibleToken');
-  c.addUseClause('stellar_default_impl_macro', 'default_impl');
+  c.addUseClause('stellar_tokens::fungible', 'Base');
+  c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
+  c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
@@ -111,7 +111,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addTraitImplBlock(fungibleTokenTrait);
 
   if (pausable) {
-    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
+    c.addUseClause('stellar_macros', 'when_not_paused');
 
     c.addTraitFunction(fungibleTokenTrait, functions.transfer);
     c.addFunctionTag(functions.transfer, 'when_not_paused', fungibleTokenTrait);
@@ -157,7 +157,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
 }
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
-  c.addUseClause('stellar_fungible', 'burnable::FungibleBurnable');
+  c.addUseClause('stellar_tokens::fungible', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
@@ -168,7 +168,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
   };
 
   if (pausable) {
-    c.addUseClause('stellar_pausable_macros', 'when_not_paused');
+    c.addUseClause('stellar_macros', 'when_not_paused');
 
     c.addTraitFunction(fungibleBurnableTrait, functions.burn);
     c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
