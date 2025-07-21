@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.2.0 (2025-07-21)
+
+- Refactor Stylus templates to match the official v0.2.0 release ([#584](https://github.com/OpenZeppelin/contracts-wizard/pull/584))
+  - **Breaking changes**:
+    - Requires OpenZeppelin Contracts for Stylus v0.2.0
+
 ## 0.2.0-alpha.5 (2025-06-20)
 
 - Add security contact in contract info ([#564](https://github.com/OpenZeppelin/contracts-wizard/pull/564))
