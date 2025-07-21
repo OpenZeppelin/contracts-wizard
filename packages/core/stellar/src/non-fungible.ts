@@ -132,7 +132,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
-  c.addUseClause('soroban_sdk', 'Address');
   c.addUseClause('soroban_sdk', 'String');
   c.addUseClause('soroban_sdk', 'Env');
 
@@ -158,7 +157,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
 
 function addBurnable(c: ContractBuilder, pausable: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'burnable::NonFungibleBurnable');
-  c.addUseClause('soroban_sdk', 'Address');
 
   const nonFungibleBurnableTrait = {
     traitName: 'NonFungibleBurnable',
@@ -199,6 +197,7 @@ function addEnumerable(c: ContractBuilder) {
 
 function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access) {
   c.addUseClause('stellar_tokens::non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
+  c.addUseClause('soroban_sdk', 'Address');
 
   const nonFungibleConsecutiveTrait = {
     traitName: 'NonFungibleConsecutive',
@@ -225,6 +224,7 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access) {
 }
 
 function addMintable(c: ContractBuilder, enumerable: boolean, pausable: boolean, sequential: boolean, access: Access) {
+  c.addUseClause('soroban_sdk', 'Address');
   const accessProps = { useMacro: true, role: 'minter', caller: 'caller' };
 
   let mintFn;
