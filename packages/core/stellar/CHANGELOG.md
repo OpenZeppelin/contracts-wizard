@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.4.0 (2025-07-22)
+
+- Dependencies from crates.io and remove unused imports ([#602](https://github.com/OpenZeppelin/contracts-wizard/pull/602))
+  - **Breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.4.1
+
 ## 0.3.0 (2025-07-03)
 
 - Add Stablecoin with Limitations and Access Control (ownable and roles). ([#575](https://github.com/OpenZeppelin/contracts-wizard/pull/575))
