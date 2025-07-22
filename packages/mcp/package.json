@@ -28,7 +28,7 @@
     "@openzeppelin/wizard-common": "^0.0.2",
     "@openzeppelin/wizard": "^0.6.0",
     "@openzeppelin/wizard-stylus": "^0.2.0-alpha.5",
-    "@openzeppelin/wizard-stellar": "^0.4.0",
+    "@openzeppelin/wizard-stellar": "^0.4.1",
     "@openzeppelin/wizard-cairo": "^2.0.0"
   },
   "devDependencies": {

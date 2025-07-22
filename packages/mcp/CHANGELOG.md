@@ -4,7 +4,7 @@
 ## 0.0.4 (2025-07-22)
 
 - Updated dependencies [[`9e61c0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/9e61c0ff0553bbba5e723495bfc5ee963174fc16)]:
-  - @openzeppelin/wizard-stellar@0.4.0
+  - @openzeppelin/wizard-stellar@0.4.1
 
 ## 0.0.3 (2025-07-03)
 
