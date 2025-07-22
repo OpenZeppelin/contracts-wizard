@@ -4,4 +4,4 @@
 
 Dependencies from crates.io and remove unused imports
 - **Breaking changes**:
-  - Use OpenZeppelin Stellar Soroban Contracts v0.4.0
+  - Use OpenZeppelin Stellar Soroban Contracts v0.4.1
