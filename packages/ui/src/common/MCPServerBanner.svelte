@@ -5,7 +5,7 @@
       href="https://mcp.openzeppelin.com/"
       target="_blank"
       rel="noopener noreferrer"
-      class="text-gray-600 hover:underline">MCP Servers now available</a
+      class="text-gray-600 hover:underline">Try the MCP servers!</a
     >
   </div>
 </div>
