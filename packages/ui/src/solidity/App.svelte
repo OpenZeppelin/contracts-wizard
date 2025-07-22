@@ -318,7 +318,7 @@
 
   <div class="flex flex-row grow">
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[var(--code-height)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
@@ -346,7 +346,7 @@
       </div>
     </div>
 
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[var(--code-height)] relative">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
@@ -355,6 +355,11 @@
         {/if}
       </pre>
     </div>
+  </div>
+
+  <div class="flex w-full justify-end items-center gap-2">
+    <div class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md text-sm font-medium">New</div>
+    <div><a href="https://mcp.openzeppelin.com/" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:underline">MCP Servers now available</a></div>
   </div>
 </div>
 

@@ -52,4 +52,10 @@
   --shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 
   --icon-adjust: 0.125em;
+
+  /* Layout */
+  --header-height-compensation: 84px;
+  --mcp-banner-height-compensation: 38px;
+  --code-height: calc(100vh - var(--header-height-compensation) - var(--mcp-banner-height-compensation));
+  --ai-assistant-bottom-offset: calc(32px + var(--mcp-banner-height-compensation));
 }
