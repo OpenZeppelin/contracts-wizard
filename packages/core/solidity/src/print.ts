@@ -6,6 +6,8 @@ import type {
   Value,
   NatspecTag,
   ImportContract,
+  CustomError,
+  ModifierDefinition,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -41,6 +43,8 @@ export function printContract(contract: Contract, opts?: Options): string {
 
         spaceBetween(
           contract.variables,
+          printCustomErrors(contract.customErrors),
+          printModifierDefinitions(contract.modifierDefinitions),
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
@@ -52,6 +56,14 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printCustomErrors(errors: CustomError[]): Lines[] {
+  return errors.map(e => `error ${e.name}();`);
+}
+
+function printModifierDefinitions(modifierDefinitions: ModifierDefinition[]): Lines[] {
+  return modifierDefinitions.flatMap(def => [`modifier ${def.name}() {`, def.code, '}']);
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -77,7 +89,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
         )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
-    const constructor = printFunction2([], head, args, modifiers, body);
+    const constructor = printFunction2([], head, args, undefined, modifiers, body);
     if (!helpers.upgradeable) {
       return constructor;
     } else {
@@ -189,6 +201,7 @@ function printFunction(fn: ContractFunction, helpers: Helpers): Lines[] {
       fn.comments,
       'function ' + fn.name,
       fn.args.map(a => printArgument(a, helpers)),
+      fn.argInlineComment,
       modifiers,
       code,
     );
@@ -203,6 +216,7 @@ function printFunction2(
   comments: string[],
   kindedName: string,
   args: string[],
+  argInlineComment: string | undefined,
   modifiers: string[],
   code: Lines[],
 ): Lines[] {
@@ -213,9 +227,11 @@ function printFunction2(
   const braces = code.length > 0 ? '{' : '{}';
 
   if (headingLength <= 72) {
-    fn.push([`${kindedName}(${args.join(', ')})`, ...modifiers, braces].join(' '));
+    fn.push(
+      [`${kindedName}(${args.join(', ')}${formatInlineComment(argInlineComment)})`, ...modifiers, braces].join(' '),
+    );
   } else {
-    fn.push(`${kindedName}(${args.join(', ')})`, modifiers, braces);
+    fn.push(`${kindedName}(${args.join(', ')}${formatInlineComment(argInlineComment)})`, modifiers, braces);
   }
 
   if (code.length > 0) {
@@ -223,6 +239,10 @@ function printFunction2(
   }
 
   return fn;
+}
+
+function formatInlineComment(comment: string | undefined): string {
+  return comment ? `/* ${comment} */` : '';
 }
 
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {

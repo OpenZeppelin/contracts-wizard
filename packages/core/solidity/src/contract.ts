@@ -11,6 +11,12 @@ export interface Contract {
   constructorArgs: FunctionArgument[];
   variables: string[];
   upgradeable: boolean;
+  customErrors: CustomError[];
+  modifierDefinitions: ModifierDefinition[];
+}
+
+export interface CustomError {
+  name: string;
 }
 
 export type Value = string | number | { lit: string } | { note: string; value: Value };
@@ -35,9 +41,15 @@ export interface Using {
   usingFor: string;
 }
 
+export interface ModifierDefinition {
+  name: string;
+  code: string[];
+}
+
 export interface BaseFunction {
   name: string;
   args: FunctionArgument[];
+  argInlineComment?: string;
   returns?: string[];
   kind: FunctionKind;
   mutability?: FunctionMutability;
@@ -52,7 +64,7 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
-export type FunctionKind = 'internal' | 'public';
+export type FunctionKind = 'internal' | 'public' | 'external';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
@@ -83,9 +95,11 @@ export class ContractBuilder implements Contract {
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
   readonly variableSet: Set<string> = new Set();
+  readonly customErrorSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
+  private modifierDefinitionsMap: Map<string, ModifierDefinition> = new Map<string, ModifierDefinition>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -115,6 +129,14 @@ export class ContractBuilder implements Contract {
 
   get variables(): string[] {
     return [...this.variableSet];
+  }
+
+  get customErrors(): CustomError[] {
+    return [...this.customErrorSet].map(name => ({ name }));
+  }
+
+  get modifierDefinitions(): ModifierDefinition[] {
+    return [...this.modifierDefinitionsMap.values()];
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
@@ -217,6 +239,18 @@ export class ContractBuilder implements Contract {
   addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);
+    return !present;
+  }
+
+  addCustomError(name: string): boolean {
+    const present = this.customErrorSet.has(name);
+    this.customErrorSet.add(name);
+    return !present;
+  }
+
+  addModifierDefinition(modifier: ModifierDefinition): boolean {
+    const present = this.modifierDefinitionsMap.has(modifier.name);
+    this.modifierDefinitionsMap.set(modifier.name, modifier);
     return !present;
   }
 }
