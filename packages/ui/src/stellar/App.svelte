@@ -32,8 +32,8 @@
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
+  import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
-  import MCPServerBanner from '../common/MCPServerBanner.svelte';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -248,7 +248,7 @@
 
   <div class="flex flex-row grow">
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[var(--code-height)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'Fungible'}>
         <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
@@ -260,16 +260,14 @@
         <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
       </div>
     </div>
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[var(--code-height)]">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -stellar grow overflow-auto p-4">{@html highlightedCode}</code>
         {/if}
-      </pre>
+    </pre>
     </div>
   </div>
-
-  <MCPServerBanner />
 </div>
 
 <style lang="postcss">

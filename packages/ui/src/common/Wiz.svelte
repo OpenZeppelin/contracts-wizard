@@ -208,7 +208,7 @@
   };
 </script>
 
-<div class="absolute bottom-[var(--ai-assistant-bottom-offset)] right-8 h-[calc(100%-188px)]">
+<div class="absolute bottom-8 right-8 h-[calc(100%-188px)]">
   <div
     class={`${showing ? '' : 'hidden'} ${expanded ? 'w-[40rem]' : 'w-80'} max-w-[400px] min-h-[200px] absolute flex flex-col-reverse right-0 bottom-[3.75rem] border-0 shadow-xl bg-gray-50 rounded-md animate-fade-up max-h-full overflow-y-auto z-20`}
   >
