@@ -43,6 +43,17 @@ body {
   margin-right: 20px;
 }
 
+.banner {
+  text-align: left;
+  font-family: 'inter', Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: row;
+  height: 36px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f6ff;
+}
+
 /* Navigation */
 .nav {
   text-align: left;
