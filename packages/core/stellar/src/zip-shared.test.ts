@@ -86,12 +86,6 @@ test('getAddressArgs returns empty array when constructorArgs is missing', t => 
   t.deepEqual(getAddressArgs({}), []);
 });
 
-test('addDependenciesWith adds dependencies with correct value', t => {
-  const result = addDependenciesWith('^1.0.0', ['base', 'fungible']);
-  t.true(result.includes('stellar-default-impl-macro = ^1.0.0'));
-  t.true(result.includes('stellar-fungible = ^1.0.0'));
-});
-
 test('addDependenciesWith handles empty dependenciesToAdd', t => {
   const result = addDependenciesWith('^1.0.0', []);
   t.is(result, '');
@@ -99,20 +93,16 @@ test('addDependenciesWith handles empty dependenciesToAdd', t => {
 
 test('addDependenciesWith works with all dependency types', t => {
   const result = addDependenciesWith('^1.0.0', [
-    'base',
-    'fungible',
-    'nonFungible',
-    'pausable',
-    'upgradable',
-    'soroban',
+    'stellar-tokens',
+    'stellar-access',
+    'stellar-contract-utils',
+    'stellar-macros',
+    'soroban-sdk',
   ]);
-  t.true(result.includes('stellar-default-impl-macro = ^1.0.0'));
-  t.true(result.includes('stellar-fungible = ^1.0.0'));
-  t.true(result.includes('stellar-non-fungible = ^1.0.0'));
-  t.true(result.includes('stellar-pausable = ^1.0.0'));
-  t.true(result.includes('stellar-pausable-macros = ^1.0.0'));
-  t.true(result.includes('stellar-upgradeable = ^1.0.0'));
-  t.true(result.includes('stellar-upgradeable-macros = ^1.0.0'));
+  t.true(result.includes('stellar-tokens = ^1.0.0'));
+  t.true(result.includes('stellar-access = ^1.0.0'));
+  t.true(result.includes('stellar-contract-utils = ^1.0.0'));
+  t.true(result.includes('stellar-macros = ^1.0.0'));
   t.true(result.includes('soroban-sdk = ^1.0.0'));
 });
 
@@ -225,17 +215,10 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-stellar-default-impl-macro = { workspace = true }
-stellar-fungible = { workspace = true }
-stellar-non-fungible = { workspace = true }
-stellar-pausable = { workspace = true }
-stellar-pausable-macros = { workspace = true }
-stellar-upgradeable = { workspace = true }
-stellar-upgradeable-macros = { workspace = true }
-stellar-access-control = { workspace = true }
-stellar-access-control-macros = { workspace = true }
-stellar-ownable = { workspace = true }
-stellar-ownable-macro = { workspace = true }
+stellar-tokens = { workspace = true }
+stellar-access = { workspace = true }
+stellar-contract-utils = { workspace = true }
+stellar-macros = { workspace = true }
 soroban-sdk = { workspace = true }
 
 [dev-dependencies]
