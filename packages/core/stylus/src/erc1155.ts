@@ -86,31 +86,26 @@ const functions = {
   erc1155: (storageName: StorageName) =>
     defineFunctions({
       balance_of: {
-        name: 'balance_of',
         args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'id', type: 'U256' }],
         returns: 'U256',
         code: `self.${storageName}.balance_of(account, id)`,
       },
       balance_of_batch: {
-        name: 'balance_of_batch',
         args: [getSelfArg('immutable'), { name: 'accounts', type: 'Vec<Address>' }, { name: 'ids', type: 'Vec<U256>' }],
         returns: { ok: 'Vec<U256>', err: 'Self::Error' },
         code: `self.${storageName}.balance_of_batch(accounts, ids)?`,
       },
       set_approval_for_all: {
-        name: 'set_approval_for_all',
         args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
         returns: { ok: '()', err: 'Self::Error' },
         code: `self.${storageName}.set_approval_for_all(operator, approved)?`,
       },
       is_approved_for_all: {
-        name: 'is_approved_for_all',
         args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'operator', type: 'Address' }],
         returns: 'bool',
         code: `self.${storageName}.is_approved_for_all(account, operator)`,
       },
       safe_transfer_from: {
-        name: 'safe_transfer_from',
         args: [
           getSelfArg(),
           { name: 'from', type: 'Address' },
@@ -123,7 +118,6 @@ const functions = {
         code: `self.${storageName}.safe_transfer_from(from, to, id, value, data)?`,
       },
       safe_batch_transfer_from: {
-        name: 'safe_batch_transfer_from',
         args: [
           getSelfArg(),
           { name: 'from', type: 'Address' },
@@ -139,7 +133,6 @@ const functions = {
   erc165: (storageName: StorageName) =>
     defineFunctions({
       supports_interface: {
-        name: 'supports_interface',
         args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
         returns: 'bool',
         code: `self.${storageName}.supports_interface(interface_id)`,
@@ -148,7 +141,6 @@ const functions = {
   burnable: (storageName: StorageName) =>
     defineFunctions({
       burn: {
-        name: 'burn',
         args: [
           getSelfArg(),
           { name: 'account', type: 'Address' },
@@ -162,7 +154,6 @@ const functions = {
             : `self.${storageName}._burn(account, token_id, value)?`,
       },
       burn_batch: {
-        name: 'burn_batch',
         args: [
           getSelfArg(),
           { name: 'account', type: 'Address' },
@@ -178,20 +169,17 @@ const functions = {
     }),
   erc1155Supply: defineFunctions({
     total_supply: {
-      name: 'total_supply',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'U256',
       code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply(id)`,
     },
     total_supply_all: {
-      name: 'total_supply_all',
       attribute: 'selector(name = "totalSupply")',
       args: [getSelfArg('immutable')],
       returns: 'U256',
       code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply_all()`,
     },
     exists: {
-      name: 'exists',
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'bool',
       code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.exists(id)`,

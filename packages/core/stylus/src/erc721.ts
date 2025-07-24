@@ -125,19 +125,16 @@ const ENUMERABLE_STORAGE_NAME = 'enumerable';
 const functions = {
   erc721: defineFunctions({
     balance_of: {
-      name: 'balance_of',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.balance_of(owner)?`,
     },
     owner_of: {
-      name: 'owner_of',
       args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
       returns: { ok: 'Address', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.owner_of(token_id)?`,
     },
     safe_transfer_from: {
-      name: 'safe_transfer_from',
       args: [
         getSelfArg(),
         { name: 'from', type: 'Address' },
@@ -149,7 +146,6 @@ const functions = {
     },
     safe_transfer_from_with_data: {
       attribute: 'selector(name = "safeTransferFrom")',
-      name: 'safe_transfer_from_with_data',
       args: [
         getSelfArg(),
         { name: 'from', type: 'Address' },
@@ -161,7 +157,6 @@ const functions = {
       code: `self.${ERC721_STORAGE_NAME}.safe_transfer_from_with_data(from, to, token_id, data)?`,
     },
     transfer_from: {
-      name: 'transfer_from',
       args: [
         getSelfArg(),
         { name: 'from', type: 'Address' },
@@ -172,25 +167,21 @@ const functions = {
       code: `self.${ERC721_STORAGE_NAME}.transfer_from(from, to, token_id)?`,
     },
     approve: {
-      name: 'approve',
       args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.approve(to, token_id)?`,
     },
     set_approval_for_all: {
-      name: 'set_approval_for_all',
       args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.set_approval_for_all(operator, approved)?`,
     },
     get_approved: {
-      name: 'get_approved',
       args: [getSelfArg('immutable'), { name: 'token_id', type: 'U256' }],
       returns: { ok: 'Address', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.get_approved(token_id)?`,
     },
     is_approved_for_all: {
-      name: 'is_approved_for_all',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'operator', type: 'Address' }],
       returns: 'bool',
       code: `self.${ERC721_STORAGE_NAME}.is_approved_for_all(owner, operator)`,
@@ -198,7 +189,6 @@ const functions = {
   }),
   erc165: defineFunctions({
     supports_interface: {
-      name: 'supports_interface',
       args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
       returns: 'bool',
       code: `self.${ERC721_STORAGE_NAME}.supports_interface(interface_id)`,
@@ -206,7 +196,6 @@ const functions = {
   }),
   burnable: defineFunctions({
     burn: {
-      name: 'burn',
       args: [getSelfArg(), { name: 'token_id', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC721_STORAGE_NAME}.burn(token_id)?`,
@@ -214,19 +203,16 @@ const functions = {
   }),
   enumerable: defineFunctions({
     token_of_owner_by_index: {
-      name: 'token_of_owner_by_index',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'index', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ENUMERABLE_STORAGE_NAME}.token_of_owner_by_index(owner, index)?`,
     },
     total_supply: {
-      name: 'total_supply',
       args: [getSelfArg('immutable')],
       returns: 'U256',
       code: `self.${ENUMERABLE_STORAGE_NAME}.total_supply()`,
     },
     token_by_index: {
-      name: 'token_by_index',
       args: [getSelfArg('immutable'), { name: 'index', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${ENUMERABLE_STORAGE_NAME}.token_by_index(index)?`,
