@@ -9,15 +9,18 @@
 
 Contracts Wizard is a web application to interactively build a contract out of components from OpenZeppelin Contracts. Select the kind of contract that you want, set your parameters and desired features, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
-[![](./screenshot.png)](https://wizard.openzeppelin.com/)
+[![](./screenshot.png)](https://wizard.openzeppelin.com)
 
 ## Usage
 
-Use the Contracts Wizard at https://wizard.openzeppelin.com/
+Use the Contracts Wizard at https://wizard.openzeppelin.com
 
-## MCP Server
+## MCP Servers
 
-The [MCP server](packages/mcp/README.md) allows AI agents to generate smart contracts using the Contracts Wizard.
+MCP Servers allow AI agents to generate smart contracts with the same options as the Contracts Wizard.
+
+For local installation, see the [Contracts MCP Server](packages/mcp/README.md) package.  
+For a hosted version, see [OpenZeppelin MCP Servers](https://mcp.openzeppelin.com).
 
 ## TypeScript API
 
