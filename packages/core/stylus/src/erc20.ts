@@ -94,37 +94,31 @@ const FLASH_MINT_STORAGE_NAME = 'flash_mint';
 const functions = {
   erc20: defineFunctions({
     total_supply: {
-      name: 'total_supply',
       args: [getSelfArg('immutable')],
       returns: 'U256',
       code: `self.${ERC20_STORAGE_NAME}.total_supply()`,
     },
     balance_of: {
-      name: 'balance_of',
       args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }],
       returns: 'U256',
       code: `self.${ERC20_STORAGE_NAME}.balance_of(account)`,
     },
     transfer: {
-      name: 'transfer',
       args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'bool', err: 'Self::Error' },
       code: `self.${ERC20_STORAGE_NAME}.transfer(to, value)?`,
     },
     allowance: {
-      name: 'allowance',
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }, { name: 'spender', type: 'Address' }],
       returns: 'U256',
       code: `self.${ERC20_STORAGE_NAME}.allowance(owner, spender)`,
     },
     approve: {
-      name: 'approve',
       args: [getSelfArg(), { name: 'spender', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'bool', err: 'Self::Error' },
       code: `self.${ERC20_STORAGE_NAME}.approve(spender, value)?`,
     },
     transfer_from: {
-      name: 'transfer_from',
       args: [
         getSelfArg(),
         { name: 'from', type: 'Address' },
@@ -136,8 +130,7 @@ const functions = {
     },
   }),
   nonces: defineFunctions({
-    get_nonce: {
-      name: 'nonces',
+    nonces: {
       args: [getSelfArg('immutable'), { name: 'owner', type: 'Address' }],
       returns: 'U256',
       code: `self.${NONCES_STORAGE_NAME}.nonces(owner)`,
@@ -145,14 +138,12 @@ const functions = {
   }),
   permit: defineFunctions({
     domain_separator: {
-      name: 'domain_separator',
       attribute: 'selector(name = "DOMAIN_SEPARATOR")',
       args: [getSelfArg('immutable')],
       returns: 'B256',
       code: `self.${PERMIT_STORAGE_NAME}.domain_separator()`,
     },
     permit: {
-      name: 'permit',
       args: [
         getSelfArg(),
         { name: 'owner', type: 'Address' },
@@ -169,13 +160,11 @@ const functions = {
   }),
   burnable: defineFunctions({
     burn: {
-      name: 'burn',
       args: [getSelfArg(), { name: 'value', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC20_STORAGE_NAME}.burn(value)?`,
     },
     burn_from: {
-      name: 'burn_from',
       args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: '()', err: 'Self::Error' },
       code: `self.${ERC20_STORAGE_NAME}.burn_from(account, value)?`,
@@ -183,19 +172,16 @@ const functions = {
   }),
   flash_mint: defineFunctions({
     max_flash_loan: {
-      name: 'max_flash_loan',
       args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }],
       returns: 'U256',
       code: `self.${FLASH_MINT_STORAGE_NAME}.max_flash_loan(token, &self.${ERC20_STORAGE_NAME})`,
     },
     flash_fee: {
-      name: 'flash_fee',
       args: [getSelfArg('immutable'), { name: 'token', type: 'Address' }, { name: 'value', type: 'U256' }],
       returns: { ok: 'U256', err: 'Self::Error' },
       code: `self.${FLASH_MINT_STORAGE_NAME}.flash_fee(token, value)?`,
     },
     flash_loan: {
-      name: 'flash_loan',
       args: [
         getSelfArg(),
         { name: 'receiver', type: 'Address' },
