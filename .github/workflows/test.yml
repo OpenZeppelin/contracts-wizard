@@ -92,37 +92,16 @@ jobs:
       #       cargo-scaffold-
       #       cargo-scaffold-
 
-      - name: Set up Rust
-        if: matrix.package == 'stellar'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.86.0
-          profile: minimal
-          override: true
-      - name: Add wasm32v1 target
-        if: matrix.package == 'stellar'
-        run: |
-          if ! rustup target list --installed | grep -q wasm32v1-none; then
-            rustup target add wasm32v1-none
-          fi
+      # - name: Set up rust toolchain
+      #   uses: actions-rust-lang/setup-rust-toolchain@v1
+      #   with:
+      #     toolchain: stable, nightly
+      #     components: clippy, rustfmt, llvm-tools-preview
+      #     target: wasm32v1-none
 
-      - name: Set up Stellar CLI
-        if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@v22.8.1
-
-      - name: Install Scaffold & Registry CLIs
-        if: matrix.package == 'stellar'
-        run: |
-          rebuildIfNotFoundInCache() {
-            local binary_name="$1"
-
-            if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
-            fi
-          }
-
-          rebuildIfNotFoundInCache stellar-scaffold-cli
-          rebuildIfNotFoundInCache stellar-registry-cli
+      # - name: Set up Stellar CLI
+      #   if: matrix.package == 'stellar'
+      #   uses: stellar/stellar-cli@v22.8.2
 
       # ----------------------------
       - name: Compile TypeScript

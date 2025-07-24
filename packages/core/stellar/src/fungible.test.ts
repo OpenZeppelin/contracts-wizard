@@ -85,6 +85,7 @@ testFungible('fungible full - roles', {
   burnable: true,
   mintable: true,
   pausable: true,
+  upgradeable: true,
 });
 
 testFungible('fungible full - complex name', {
@@ -94,6 +95,7 @@ testFungible('fungible full - complex name', {
   burnable: true,
   mintable: true,
   pausable: true,
+  upgradeable: true,
 });
 
 testAPIEquivalence('fungible API default');
