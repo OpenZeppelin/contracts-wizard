@@ -27,7 +27,7 @@ Provides tools to generate smart contract source code for the following language
 
 For quick installation, use the button below.
 
-[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=OpenZeppelinContracts&config=eyJjb21tYW5kIjoibnB4IC15IEBvcGVuemVwcGVsaW4vY29udHJhY3RzLW1jcCJ9)
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=OpenZeppelinContracts&config=ewogICJjb21tYW5kIjogIm5weCIsCiAgImFyZ3MiOiBbCiAgICAiLXkiLAogICAgIkBvcGVuemVwcGVsaW4vY29udHJhY3RzLW1jcCIKICBdCn0=)
 
 For manual installation:
 1. Go to Settings > Cursor Settings > Tools & Integrations > MCP Tools > New MCP Server.
