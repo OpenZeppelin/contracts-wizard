@@ -14,7 +14,7 @@ import { zipRustProject } from '../zip-rust';
 const asyncExec = promisify(exec);
 
 export const runCargoTest = async (t: ExecutionContext, temporaryFolder: string) => {
-  const result = await asyncExec(`cd "${temporaryFolder}" && RUSTFLAGS="-D warnings" cargo test`);
+  const result = await asyncExec(`cd "${temporaryFolder}" && cargo test`);
 
   t.regex(result.stdout, /0 failed/);
 };

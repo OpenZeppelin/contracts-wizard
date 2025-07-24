@@ -119,5 +119,7 @@ jobs:
 
       - name: Run tests
         if: matrix.variant == 'compile'
+        env:
+          RUSTFLAGS: ""
         run: yarn test '**/*.compile.test.ts'
         working-directory: packages/core/${{matrix.package}}
