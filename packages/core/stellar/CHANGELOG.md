@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.2 (2025-07-25)
+
+- Fixe access control dependency import to import from `stellar_access` instead of `stellar_contract_utils` ([#608](https://github.com/OpenZeppelin/contracts-wizard/pull/608))
+
 ## 0.4.1 (2025-07-22)
 
 - Dependencies from crates.io and remove unused imports ([#602](https://github.com/OpenZeppelin/contracts-wizard/pull/602))
