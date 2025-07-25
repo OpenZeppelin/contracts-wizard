@@ -21,8 +21,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       if (!c.ownable) {
         c.ownable = true;
         c.addUseClause('soroban_sdk', 'Address');
-        c.addUseClause('stellar_contract_utils::ownable', 'self', { alias: 'ownable' });
-        c.addUseClause('stellar_contract_utils::ownable', 'Ownable');
+        c.addUseClause('stellar_access::ownable', 'self', { alias: 'ownable' });
+        c.addUseClause('stellar_access::ownable', 'Ownable');
 
         const ownableTrait = {
           traitName: 'Ownable',
@@ -39,8 +39,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
     }
     case 'roles': {
       c.addUseClause('soroban_sdk', 'Address');
-      c.addUseClause('stellar_contract_utils::access_control', 'self', { alias: 'access_control' });
-      c.addUseClause('stellar_contract_utils::access_control', 'AccessControl');
+      c.addUseClause('stellar_access::access_control', 'self', { alias: 'access_control' });
+      c.addUseClause('stellar_access::access_control', 'AccessControl');
 
       const accessControltrait = {
         traitName: 'AccessControl',
