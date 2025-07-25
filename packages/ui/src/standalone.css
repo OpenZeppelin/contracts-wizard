@@ -45,13 +45,15 @@ body {
 
 .banner {
   text-align: left;
+  padding: 0px 20px;
   font-family: 'inter', Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: row;
-  height: 36px;
+  min-height: 36px;
   justify-content: center;
   align-items: center;
   background-color: #f5f6ff;
+  min-width: 800px;
 }
 
 /* Navigation */
