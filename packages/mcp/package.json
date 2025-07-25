@@ -5,8 +5,17 @@
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "contracts-mcp": "dist/index.js"
+    "contracts-mcp": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "ts:main": "src/index.ts",
   "files": [
