@@ -97,7 +97,7 @@ function addSignatureValidation(c: ContractBuilder, opts: AccountOptions) {
     case 'ERC7739':
       c.addParent({
         name: 'ERC7739',
-        path: '@openzeppelin/community-contracts/utils/cryptography/ERC7739.sol',
+        path: '@openzeppelin/community-contracts/utils/cryptography/signers/ERC7739.sol',
       });
       break;
     case 'ERC1271':
@@ -224,7 +224,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   if (opts.signer && opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'AbstractSigner',
-      path: '@openzeppelin/community-contracts/utils/cryptography/AbstractSigner.sol',
+      path: '@openzeppelin/community-contracts/utils/cryptography/signers/AbstractSigner.sol',
     });
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);

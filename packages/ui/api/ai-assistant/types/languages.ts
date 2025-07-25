@@ -27,6 +27,7 @@ export type LanguagesContractsOptions = {
     RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
     Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
     Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
+    ERC7579: Omit<SolidityKindedOptions['ERC7579'], 'upgradeable'> & { upgradeable?: false };
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;

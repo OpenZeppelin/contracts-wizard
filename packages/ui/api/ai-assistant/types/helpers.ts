@@ -32,15 +32,17 @@ type MembersOf<U, K extends string> = K extends 'boolean'
     ? Extract<U, string>
     : K extends 'number'
       ? Extract<U, number>
-      : never;
+      : K extends 'object'
+        ? Extract<U, object>
+        : never;
 
 type BooleanEnum = [false] | [true] | [false, true] | [true, false];
 
 type EnumFor<K extends string, U> = K extends 'boolean' ? BooleanEnum : Permutation<MembersOf<U, K>>;
 
-type TypeFor<K extends string, U> = {
+export type TypeFor<K extends string, U> = {
   type: K;
-  enum: EnumFor<K, U>;
+  enum: K extends 'object' ? undefined : EnumFor<K, U>;
 };
 
 type Wrap<T> = { __wrapped: T };

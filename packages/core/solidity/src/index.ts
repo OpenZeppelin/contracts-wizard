@@ -19,7 +19,7 @@ export { OptionsError } from './error';
 export type { Kind } from './kind';
 export { sanitizeKind } from './kind';
 
-export { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from './api';
+export { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, erc7579, governor, custom } from './api';
 
 export { compatibleContractsSemver } from './utils/version';
 
@@ -28,5 +28,6 @@ export type { ERC721Options } from './erc721';
 export type { ERC1155Options } from './erc1155';
 export type { StablecoinOptions } from './stablecoin';
 export type { AccountOptions } from './account';
+export type { ERC7579Options } from './erc7579';
 export type { GovernorOptions } from './governor';
 export type { CustomOptions } from './custom';

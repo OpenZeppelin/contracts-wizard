@@ -22,7 +22,7 @@ The following contract types are supported:
 - `governor`
 - `custom`
 
-Note that `stablecoin`, `realWorldAsset`, and `account` are experimental and may be subject to change.
+Note that `stablecoin`, `realWorldAsset`, `account`, and `erc7579` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 
@@ -43,6 +43,9 @@ function print(opts?: StablecoinOptions): string
 ```
 ```js
 function print(opts?: AccountOptions): string
+```
+```js
+function print(opts?: ERC7579Options): string
 ```
 ```js
 function print(opts?: GovernorOptions): string
@@ -67,6 +70,9 @@ const defaults: Required<StablecoinOptions>
 ```
 ```js
 const defaults: Required<AccountOptions>
+```
+```js
+const defaults: Required<ERC7579Options>
 ```
 ```js
 const defaults: Required<GovernorOptions>
