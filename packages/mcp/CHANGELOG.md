@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.0.5 (2025-07-25)
+
+- **Breaking changes**: Renamed package from `@openzeppelin/wizard-mcp` to `@openzeppelin/contracts-mcp` ([#607](https://github.com/OpenZeppelin/contracts-wizard/pull/607))
+
 ## 0.0.4 (2025-07-22)
 
 - Updated dependencies [[`9e61c0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/9e61c0ff0553bbba5e723495bfc5ee963174fc16)]:
