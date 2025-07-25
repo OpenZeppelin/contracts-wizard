@@ -54,7 +54,7 @@
         }}
       />
       Signature Validation
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#signature_validation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#signature_validation">
         Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
         (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic, making
         them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
@@ -70,7 +70,7 @@
         }}
       />
       Account Bound
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#erc_7739_signatures">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#erc_7739_signatures">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
         multiple smart accounts owned by the same private key. This preserves the readability of signed contents while
         ensuring each signature is uniquely bound to a specific account and chain.
@@ -112,7 +112,7 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#batched_execution">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#batched_execution">
         Enables atomic execution of multiple transactions in a single operation, reducing total transaction costs and
         latency.
       </HelpTooltip>
@@ -157,7 +157,7 @@
   bind:value={opts.signer}
   defaultValue="ECDSA"
   helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's <code>isValidSignature</code> to verify signatures on behalf of the account."
-  helpLink="https://docs.openzeppelin.com/community-contracts/accounts#selecting_a_signer"
+  helpLink="https://docs.openzeppelin.com/contracts/accounts#selecting_a_signer"
 >
   <div class="checkbox-group">
     <label class:checked={opts.signer === 'ECDSA'}>
@@ -171,7 +171,7 @@
     <label class:checked={opts.signer === 'ERC7702'}>
       <input type="radio" bind:group={opts.signer} value="ERC7702" />
       EOA Delegation
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/eoa-delegation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
@@ -179,7 +179,7 @@
     <label class:checked={opts.signer === 'Multisig'}>
       <input type="radio" bind:group={opts.signer} value="Multisig" />
       Multisig*
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig">
         ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
         maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
         requirement.
@@ -188,7 +188,7 @@
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
       Multisig Weighted*
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig#multisignererc7913weighted">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig#multisignererc7913weighted">
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
       </HelpTooltip>
