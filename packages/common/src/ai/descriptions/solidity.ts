@@ -108,9 +108,17 @@ export const solidityERC7579Descriptions = {
       confirmation:
         'Whether the multisig validator requires explicit confirmation (e.g., EIP-712 signature) from each signer when adding them to the multisig module.',
     },
+    _description: `The validator module for the account. Options:
+    - signature: Whether the account supports signature validation via ERC-7913, enabling cryptographic verification of user operations.
+    - multisig: The multisig validator module.
+      - weighted: Whether the multisig validator supports weighted signatures, allowing each signer to have a different voting weight for flexible threshold schemes.
+      - confirmation: Whether the multisig validator requires explicit confirmation (e.g., EIP-712 signature) from each signer when adding them to the multisig module.
+      `,
   },
   executor: {
     delayed: 'Whether the executor module supports delayed or scheduled execution of operations.',
+    _description: `The executor module for the account. Options:
+    - delayed: Whether the executor module supports delayed or scheduled execution of operations.`,
   },
   hook: 'Whether the account supports hooks, which are modules that can execute custom logic before and/or after account operations.',
   fallback:

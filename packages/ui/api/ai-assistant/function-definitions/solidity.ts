@@ -9,7 +9,10 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
+  solidityERC7579Descriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
+import type { ERC7579ExecutorType, ERC7579ValidatorType } from '../../../../core/solidity/dist/erc7579.js';
+import type { AiFunctionCallAnyOf, TypeFor } from '../types/helpers.ts';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -232,6 +235,67 @@ export const solidityAccountAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Account'>;
+
+export const solidityERC7579AIFunctionDefinition = {
+  name: 'ERC7579',
+  description: solidityPrompts.ERC7579,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'info', 'access']),
+      validator: {
+        anyOf: [
+          { type: 'boolean', enum: [false] } as TypeFor<'boolean', false>,
+          {
+            type: 'object',
+            properties: {
+              signature: { type: 'boolean', description: solidityERC7579Descriptions.validator.signature },
+              multisig: {
+                type: 'object',
+                properties: {
+                  weighted: { type: 'boolean', description: solidityERC7579Descriptions.validator.multisig.weighted },
+                  confirmation: {
+                    type: 'boolean',
+                    description: solidityERC7579Descriptions.validator.multisig.confirmation,
+                  },
+                },
+                additionalProperties: false,
+              },
+            },
+            additionalProperties: false,
+          } as TypeFor<'object', ERC7579ValidatorType>,
+        ] as AiFunctionCallAnyOf<false | ERC7579ValidatorType>,
+        description: solidityERC7579Descriptions.validator._description,
+      },
+      // executor: {
+      //   anyOf: [
+      //     { type: 'boolean', enum: [false] } as TypeFor<'boolean', false>,
+      //     {
+      //       type: 'object',
+      //       properties: {
+      //         delayed: {
+      //           type: 'boolean',
+      //           description: solidityERC7579Descriptions.executor.delayed,
+      //         },
+      //       },
+      //       additionalProperties: false,
+      //     } as TypeFor<'object', ERC7579ExecutorType>,
+      //   ] as AiFunctionCallAnyOf<false | ERC7579ExecutorType>,
+      //   description: solidityERC7579Descriptions.executor._description,
+      // },
+      hook: {
+        type: 'boolean',
+        description: solidityERC7579Descriptions.hook,
+      },
+      fallback: {
+        type: 'boolean',
+        description: solidityERC7579Descriptions.fallback,
+      },
+    },
+    required: ['name', 'hook', 'fallback'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'solidity', 'ERC7579'>;
 
 export const solidityGovernorAIFunctionDefinition = {
   name: 'Governor',

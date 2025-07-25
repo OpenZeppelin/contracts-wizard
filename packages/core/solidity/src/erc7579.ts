@@ -8,8 +8,8 @@ import { requireAccessControl, setAccessControl } from './set-access-control';
 export const defaults: Required<ERC7579Options> = {
   ...commonDefaults,
   name: 'MyERC7579Module',
-  validator: undefined,
-  executor: undefined,
+  validator: false,
+  executor: false,
   hook: false,
   fallback: false,
   access: commonDefaults.access,
@@ -31,8 +31,8 @@ export type ERC7579ExecutorType = {
 
 export interface ERC7579Options extends CommonOptions {
   name: string;
-  validator: ERC7579ValidatorType | undefined;
-  executor: ERC7579ExecutorType | undefined;
+  validator?: ERC7579ValidatorType | false;
+  executor?: ERC7579ExecutorType | false;
   hook: boolean;
   fallback: boolean;
 }
@@ -301,18 +301,18 @@ function overrideValidation(c: ContractBuilder, opts: ERC7579Options): void {
 }
 
 function addInstallFns(c: ContractBuilder, opts: ERC7579Options): void {
-  if (opts.validator?.signature) {
+  if (opts.validator && opts.validator.signature) {
     c.addOverride({ name: 'ERC7579Signature' }, functions.onInstall);
     c.addOverride({ name: 'ERC7579Signature' }, functions.onUninstall);
   }
 
-  if (opts.validator?.multisig) {
+  if (opts.validator && opts.validator.multisig) {
     const name = opts.validator.multisig.weighted ? 'ERC7579MultisigWeighted' : 'ERC7579Multisig';
     c.addOverride({ name }, functions.onInstall);
     c.addOverride({ name }, functions.onUninstall);
   }
 
-  if (opts.executor?.delayed) {
+  if (opts.executor && opts.executor.delayed) {
     c.addOverride({ name: 'ERC7579DelayedExecutor' }, functions.onInstall);
     c.addOverride({ name: 'ERC7579DelayedExecutor' }, functions.onUninstall);
   }
