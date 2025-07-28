@@ -8,6 +8,25 @@
   export let enabled: boolean;
   export let functionName: string;
   export let errors: undefined | OptionsErrorMessages;
+
+  // Show notice when enabled
+  import { superchainGenericTooltipProps } from './superchain-tooltip';
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+
+  let crosschainLabel: HTMLElement;
+  let crosschainTooltip: TippyInstance;
+  onMount(() => {
+    crosschainTooltip = tippy(crosschainLabel, superchainGenericTooltipProps);
+  });
+
+  let wasCrosschain = false;
+  $: {
+    if (!wasCrosschain && enabled) {
+      crosschainTooltip.show();
+    }
+    wasCrosschain = enabled;
+  }
 </script>
 
 <ExpandableCheckbox
@@ -18,7 +37,7 @@
   helpLink="https://docs.optimism.io/interop/message-passing"
   error={errors?.crossChainFunctionName}
 >
-  <label class="labeled-input">
+  <label bind:this={crosschainLabel} class="labeled-input">
     <span class="flex justify-between pr-2">
       Function Name
       <HelpTooltip>The name of a custom function that will be callable from another chain.</HelpTooltip>
