@@ -62,7 +62,9 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
   const sourceFn: BaseFunction = {
     name: `call${sanitizedFunctionName.replace(/^(.)/, c => c.toUpperCase())}`,
     kind: 'public' as const,
-    args: [],
+    args: [
+      { name: '_toChainId', type: 'uint256' },
+    ],
   };
 
   if (access) {
