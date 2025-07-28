@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.0.5 (2025-07-25)
+
+- **Breaking changes**: Renamed package from `@openzeppelin/wizard-mcp` to `@openzeppelin/contracts-mcp` ([#607](https://github.com/OpenZeppelin/contracts-wizard/pull/607))
+
+## 0.0.4 (2025-07-22)
+
+- Updated dependencies [[`9e61c0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/9e61c0ff0553bbba5e723495bfc5ee963174fc16)]:
+  - @openzeppelin/wizard-stellar@0.4.1
+
 ## 0.0.3 (2025-07-03)
 
 - Stellar: Add Stablecoin with Limitations and Access Control (ownable and roles). ([#575](https://github.com/OpenZeppelin/contracts-wizard/pull/575))

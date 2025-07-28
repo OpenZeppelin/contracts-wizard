@@ -21,8 +21,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       if (!c.ownable) {
         c.ownable = true;
         c.addUseClause('soroban_sdk', 'Address');
-        c.addUseClause('stellar_ownable', 'self', { alias: 'ownable' });
-        c.addUseClause('stellar_ownable', 'Ownable');
+        c.addUseClause('stellar_access::ownable', 'self', { alias: 'ownable' });
+        c.addUseClause('stellar_access::ownable', 'Ownable');
 
         const ownableTrait = {
           traitName: 'Ownable',
@@ -39,8 +39,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
     }
     case 'roles': {
       c.addUseClause('soroban_sdk', 'Address');
-      c.addUseClause('stellar_access_control', 'self', { alias: 'access_control' });
-      c.addUseClause('stellar_access_control', 'AccessControl');
+      c.addUseClause('stellar_access::access_control', 'self', { alias: 'access_control' });
+      c.addUseClause('stellar_access::access_control', 'AccessControl');
 
       const accessControltrait = {
         traitName: 'AccessControl',
@@ -78,7 +78,7 @@ export function requireAccessControl(
 
   switch (access) {
     case 'ownable': {
-      c.addUseClause('stellar_ownable_macro', 'only_owner');
+      c.addUseClause('stellar_macros', 'only_owner');
 
       if (accessProps.useMacro) {
         c.addFunctionTag(fn, 'only_owner', trait);
@@ -97,7 +97,7 @@ export function requireAccessControl(
         c.addConstructorCode(`access_control::grant_role_no_auth(e, &admin, &${role}, &Symbol::new(e, "${role}"));`);
 
         if (useMacro) {
-          c.addUseClause('stellar_access_control_macros', 'only_role');
+          c.addUseClause('stellar_macros', 'only_role');
           c.addFunctionTag(fn, `only_role(${caller}, "${role}")`, trait);
         } else {
           c.addFunctionCodeBefore(
@@ -108,7 +108,7 @@ export function requireAccessControl(
         }
       } else {
         if (useMacro) {
-          c.addUseClause('stellar_access_control_macros', 'only_admin');
+          c.addUseClause('stellar_macros', 'only_admin');
           c.addFunctionTag(fn, 'only_admin', trait);
         } else {
           c.addFunctionCodeBefore(fn, ['access_control::enforce_admin_auth(e);'], trait);

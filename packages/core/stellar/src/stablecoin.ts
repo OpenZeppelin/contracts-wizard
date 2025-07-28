@@ -65,10 +65,10 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
   };
 
   if (type) {
-    c.addUseClause('stellar_fungible', 'allowlist::{AllowList, FungibleAllowList}');
+    c.addUseClause('stellar_tokens::fungible', 'allowlist::{AllowList, FungibleAllowList}');
     c.overrideAssocType('FungibleToken', 'type ContractType = AllowList;');
   } else {
-    c.addUseClause('stellar_fungible', 'blocklist::{BlockList, FungibleBlockList}');
+    c.addUseClause('stellar_tokens::fungible', 'blocklist::{BlockList, FungibleBlockList}');
     c.overrideAssocType('FungibleToken', 'type ContractType = BlockList;');
   }
 
