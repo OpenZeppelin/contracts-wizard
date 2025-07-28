@@ -6,14 +6,18 @@ import { runRustCompilationTest } from './utils/compile-test';
 
 test.serial(
   'rust zip fungible burnable',
-  runRustCompilationTest(buildFungible, {
-    kind: 'Fungible',
-    name: 'MyToken',
-    symbol: 'MTK',
-    premint: '2000',
-    burnable: true,
-    mintable: false,
-    pausable: false,
-    upgradeable: false,
-  }),
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      burnable: true,
+      mintable: false,
+      pausable: false,
+      upgradeable: false,
+    },
+    { snapshotResult: true },
+  ),
 );

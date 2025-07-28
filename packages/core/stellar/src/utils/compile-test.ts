@@ -10,6 +10,7 @@ import { assertLayout, snapshotZipContents, expandPathsFromFilesPaths, extractPa
 import { mkdtemp, rm } from 'fs/promises';
 import { contractOptionsToContractName } from '../zip-shared';
 import { zipRustProject } from '../zip-rust';
+import test from 'ava';
 
 const asyncExec = promisify(exec);
 
@@ -39,7 +40,13 @@ export const withTemporaryFolderDo =
   };
 
 export const runRustCompilationTest = withTemporaryFolderDo(
-  async (makeContract: MakeContract, opts: GenericOptions, test: ExecutionContext, folderPath: string) => {
+  async (
+    makeContract: MakeContract,
+    opts: GenericOptions,
+    testOptions: { snapshotResult: boolean },
+    test: ExecutionContext,
+    folderPath: string,
+  ) => {
     test.timeout(3_000_000);
 
     const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
@@ -59,6 +66,6 @@ export const runRustCompilationTest = withTemporaryFolderDo(
     await extractPackage(zip, folderPath);
     await runCargoTest(test, folderPath);
 
-    await snapshotZipContents(test, zip, expectedZipFiles);
+    if (testOptions.snapshotResult) await snapshotZipContents(test, zip, expectedZipFiles);
   },
 );
