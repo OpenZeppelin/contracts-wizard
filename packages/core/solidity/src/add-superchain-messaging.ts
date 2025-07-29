@@ -94,12 +94,11 @@ function addDestinationFunction(sanitizedFunctionName: string, c: ContractBuilde
   c.setFunctionComments(
     [
       '/**',
-      ' * @dev IMPORTANT: You must either design the deployer to allow only a specific trusted contract,',
-      ' * such as this contract, to be deployed through it, or use CREATE2 from a deployer contract',
-      ' * that is itself deployed by an EOA you control.',
-      ' * This precaution is critical because if an unauthorized contract is deployed at the same',
-      ' * address on any Superchain network, it could allow malicious actors to invoke your function',
-      ' * from another chain.',
+      ' * @dev IMPORTANT: This function trusts contracts at the same address on other chains.',
+      ' * If an unauthorized contract is deployed at the same address on any chain in the Superchain, it could allow',
+      ' * malicious actors to invoke your function from that chain.',
+      ' * To prevent this, you must either design the deployer to allow only this contract\'s bytecode to be deployed',
+      ' * through it, or use CREATE2 from a deployer contract that is itself deployed by an EOA you control.',
       ' */',
     ],
     destFn,
