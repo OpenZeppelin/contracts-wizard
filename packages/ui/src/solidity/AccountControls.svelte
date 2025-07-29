@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { account } from '@openzeppelin/wizard';
+  import { error } from '../common/error-tooltip';
 
   import InfoSection from './InfoSection.svelte';
 
@@ -35,7 +36,7 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name} />
+    <input bind:value={opts.name} use:error={errors?.name} />
   </label>
 </section>
 
