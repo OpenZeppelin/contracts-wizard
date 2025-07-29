@@ -2,8 +2,7 @@
  * Tippy.js properties for generic Superchain tooltips.
  */
 export const superchainGenericTooltipProps: { [prop: string]: string | boolean } = {
-  content:
-    '<strong>Important:</strong> Only available on chains in the Superchain.',
+  content: '<strong>Important:</strong> Only available on chains in the Superchain.',
   trigger: 'manual',
   placement: 'bottom',
   maxWidth: '22em',
