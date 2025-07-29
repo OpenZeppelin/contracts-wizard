@@ -28,6 +28,7 @@
   {disabledReason}
   {required}
   {error}
+  on:change
 >
   <slot />
 </ParentExpandableSection>

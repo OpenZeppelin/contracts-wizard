@@ -3,9 +3,9 @@
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
   import { error } from '../common/error-tooltip';
-  import type { OptionsErrorMessages } from '@openzeppelin/wizard';
+  import type { OptionsErrorMessages, CrossChainMessaging } from '@openzeppelin/wizard';
 
-  export let enabled: boolean;
+  export let mode: CrossChainMessaging;
   export let functionName: string;
   export let errors: undefined | OptionsErrorMessages;
 
@@ -20,19 +20,27 @@
     crosschainTooltip = tippy(crosschainLabel, superchainGenericTooltipProps);
   });
 
-  let wasCrosschain = false;
+  $: enabled = mode === 'superchain';
+
+  function handleChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    mode = target.checked ? 'superchain' : false;
+  }
+
+  let wasEnabled = false;
   $: {
-    if (!wasCrosschain && enabled) {
+    if (!wasEnabled && enabled) {
       crosschainTooltip.show();
     }
-    wasCrosschain = enabled;
+    wasEnabled = enabled;
   }
 </script>
 
 <ExpandableCheckbox
   label="Cross-Chain Messaging"
   icon={OPIcon}
-  bind:checked={enabled}
+  checked={enabled}
+  on:change={handleChange}
   helpContent="Adds an example for Superchain interop message passing."
   helpLink="https://docs.optimism.io/interop/message-passing"
   error={errors?.crossChainFunctionName}

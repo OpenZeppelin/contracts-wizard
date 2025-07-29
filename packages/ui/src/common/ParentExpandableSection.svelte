@@ -66,7 +66,7 @@
       <div class="flex items-center">
         <span class="mr-2">
           {#if type === 'checkbox'}
-            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
+            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} on:change />
           {:else if type === 'toggleradio'}
             <ToggleRadio
               bind:value={toggleRadioValue}

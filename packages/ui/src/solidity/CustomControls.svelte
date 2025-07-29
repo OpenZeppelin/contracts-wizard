@@ -17,9 +17,6 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  let crossChainMessagingEnabled = false;
-  $: opts.crossChainMessaging = crossChainMessagingEnabled ? 'superchain' : false;
-
   $: requireAccessControl = custom.isAccessControlRequired(opts);
 </script>
 
@@ -48,7 +45,7 @@
 </section>
 
 <CrossChainMessagingSection
-  bind:enabled={crossChainMessagingEnabled}
+  bind:mode={opts.crossChainMessaging}
   bind:functionName={opts.crossChainFunctionName}
   {errors}
 />
