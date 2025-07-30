@@ -202,7 +202,7 @@ function getHardhatPlugins(c: Contract) {
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  const importsOptimism = c.imports.some((i) => i.path.startsWith('@eth-optimism/contracts-bedrock/'));
+  const importsOptimism = c.imports.some(i => i.path.startsWith('@eth-optimism/contracts-bedrock/'));
 
   let packageJson, packageLock;
   if (importsOptimism) {

@@ -49,9 +49,7 @@ function addCrossDomainMessengerImmutable(c: ContractBuilder) {
   };
   c.addVariable(
     'IL2ToL2CrossDomainMessenger public immutable messenger = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER);',
-    [
-      allowImmutableNatspec
-    ],
+    [allowImmutableNatspec],
   );
 }
 

@@ -96,9 +96,9 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
-        parents.map(p => p + ';'),
-        contract.constructorCode,
-      )
+          parents.map(p => p + ';'),
+          contract.constructorCode,
+        )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     const constructor = printFunction2([], head, args, undefined, modifiers, body);
