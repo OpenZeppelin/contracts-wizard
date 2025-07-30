@@ -1,6 +1,21 @@
 # Changelog
 
 
+## 0.6.0 (2025-06-20)
+
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
+  - **Possibly breaking changes**:
+    - `Governor`: Remove usage of `access` option. This option now has no effect.
+
+- `Accounts`: Add `_disableInitializers()` to account implementations ([#568](https://github.com/OpenZeppelin/contracts-wizard/pull/568))
+
+## 0.5.6 (2025-05-21)
+
+- `MultisigERC7913`: Add `onlyEntryPointOrSelf` modifier to public configuration functions. ([#554](https://github.com/OpenZeppelin/contracts-wizard/pull/554))
+- Use `onlyGovernance` to restrict upgrades for Governor with UUPS ([#544](https://github.com/OpenZeppelin/contracts-wizard/pull/544))
+  - **Potentially breaking changes**:
+    - Governor with UUPS: `_authorizeUpgrade` function is restricted by `onlyGovernance` instead of `onlyOwner`
+
 ## 0.5.5 (2025-05-13)
 
 - Add `account` contract types for ERC-4337. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486), [#523](https://github.com/OpenZeppelin/contracts-wizard/pull/523), [#527](https://github.com/OpenZeppelin/contracts-wizard/pull/527))
@@ -8,8 +23,8 @@
 - Remove redundant overrides in Governor. ([#522](https://github.com/OpenZeppelin/contracts-wizard/pull/522))
 - Simplify Community Contracts imports. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
 - **Potentially breaking changes**:
-    - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
-    - Changes import path format for `@openzeppelin/community-contracts`. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
+  - Update pragma versions to 0.8.27. ([#486](https://github.com/OpenZeppelin/contracts-wizard/pull/486))
+  - Changes import path format for `@openzeppelin/community-contracts`. ([#537](https://github.com/OpenZeppelin/contracts-wizard/pull/537))
 
 ## 0.5.4 (2025-04-01)
 

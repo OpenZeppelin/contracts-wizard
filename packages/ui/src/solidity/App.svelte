@@ -17,12 +17,9 @@
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
-  import ArrowsLeft from '../common/icons/ArrowsLeft.svelte';
-  import ArrowsRight from '../common/icons/ArrowsRight.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
-  import DefenderDeployModal from './DefenderDeployModal.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
@@ -33,7 +30,6 @@
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
-  import { postMessageToIframe } from '../common/post-message';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
@@ -59,8 +55,6 @@
 
   export let initialOpts: InitialOptions = {};
   let initialValuesSet = false;
-
-  let showDeployModal = false;
 
   let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
   let errors: { [k in Kind]?: OptionsErrorMessages } = {};
@@ -108,29 +102,6 @@
   $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
   $: hasErrors = errors[tab] !== undefined;
-  $: showDeployModal = !hasErrors && showDeployModal;
-
-  $: if (showDeployModal) {
-    let enforceDeterministicReason: string | undefined;
-    let groupNetworksBy: 'superchain' | undefined;
-
-    const isSuperchainERC20 =
-      opts !== undefined &&
-      (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') &&
-      opts.crossChainBridging === 'superchain';
-    if (isSuperchainERC20) {
-      enforceDeterministicReason =
-        'SuperchainERC20 requires deploying your contract to the same address on every chain in the Superchain.';
-      groupNetworksBy = 'superchain';
-    }
-
-    postMessageToIframe('defender-deploy', {
-      kind: 'oz-wizard-defender-deploy',
-      sources: getSolcSources(contract),
-      enforceDeterministicReason,
-      groupNetworksBy,
-    });
-  }
 
   $: showButtons = getButtonVisibilities(opts);
 
@@ -346,7 +317,9 @@
   </div>
 
   <div class="flex flex-row grow">
-    <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+    <div
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+    >
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
@@ -374,29 +347,6 @@
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
-      {#if !hasErrors}
-        <div class="absolute p-px right-6 rounded-full top-4 z-10 {showDeployModal ? 'hide-deploy' : ''}">
-          <button
-            class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-2 bg-white border-white"
-            on:click={() => (showDeployModal = !showDeployModal)}
-          >
-            <ArrowsRight />
-          </button>
-        </div>
-        <div class="button-bg absolute p-px right-4 rounded-full top-4 z-10">
-          <button
-            class="text-sm border-solid border p-2 pr-4 rounded-full cursor-pointer flex items-center gap-2 transition-all pl-4 bg-indigo-600 border-indigo-600 text-white"
-            on:click={async () => {
-              if (opts) {
-                await postConfig(opts, 'defender', language);
-              }
-              showDeployModal = !showDeployModal;
-            }}
-          >
-            <ArrowsLeft /> Deploy
-          </button>
-        </div>
-      {/if}
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
@@ -404,93 +354,11 @@
           >
         {/if}
       </pre>
-      <DefenderDeployModal isOpen={showDeployModal} />
     </div>
   </div>
 </div>
 
 <style lang="postcss">
-  /* deploy with defender button border animation start*/
-  @property --angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 40deg;
-  }
-  @property --spread {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-  }
-  @property --x {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 0px;
-  }
-  @property --y {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 0px;
-  }
-  @property --blur {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 0px;
-  }
-  @keyframes conic-effect {
-    0% {
-      --angle: 40deg;
-      --spread: 0deg;
-      --x: 0px;
-      --y: 0px;
-      --blur: 0px;
-    }
-    10% {
-      --x: 2px;
-      --y: -2px;
-    }
-    20% {
-      --blur: 15px;
-      --spread: 80deg;
-    }
-
-    30% {
-      --x: -2px;
-      --y: -2px;
-    }
-    40% {
-      --angle: 320deg;
-      --spread: 00deg;
-      --x: 0px;
-      --y: 0px;
-      --blur: 0px;
-    }
-    100% {
-      --angle: 320deg;
-      --spread: 0deg;
-      --x: 0px;
-      --y: 0px;
-      --blur: 0px;
-    }
-  }
-
-  .no-select {
-    user-select: none;
-  }
-
-  .button-bg {
-    animation: conic-effect 12s ease-in-out infinite;
-    animation-delay: 4.2s;
-    background: conic-gradient(
-      #4f46e5 calc(var(--angle) - var(--spread)),
-      #7e7ada var(--angle),
-      rgb(79, 70, 229) calc(var(--angle) + var(--spread))
-    );
-    box-shadow: var(--x) var(--y) var(--blur) #9793da45;
-    display: inline-flex;
-    transition: transform 300ms;
-  }
-  /* end deploy with defender button border animation */
-
   .button-bg:hover {
     transform: translateX(-2px);
     transition: transform 300ms;

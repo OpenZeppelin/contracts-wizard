@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-stellar",
-  "version": "0.2.0",
+  "version": "0.4.2",
   "description": "A boilerplate generator to get started with OpenZeppelin Stellar Soroban Contracts",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",

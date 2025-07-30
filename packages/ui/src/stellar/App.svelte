@@ -3,8 +3,11 @@
 
   import hljs from './highlightjs';
 
+  import JSZip from 'jszip';
+
   import FungibleControls from './FungibleControls.svelte';
   import NonFungibleControls from './NonFungibleControls.svelte';
+  import StablecoinControls from './StablecoinControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -21,13 +24,16 @@
     sanitizeKind,
     OptionsError,
   } from '@openzeppelin/wizard-stellar';
-  import { postConfig } from '../common/post-config';
+  import { postConfig, type DownloadAction } from '../common/post-config';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
+  import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
+  import type { Language } from '../common/languages-types';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -39,6 +45,55 @@
     await tick();
     showCode = true;
   }
+
+  interface ButtonVisibilities {
+    downloadScaffold: boolean;
+    downloadRust: boolean;
+  }
+
+  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    return {
+      downloadScaffold: true,
+      downloadRust: true,
+    };
+  };
+
+  type ZipFunction = (c: Contract, opts: KindedOptions[Kind]) => Promise<JSZip>;
+
+  export const downloadZip = async (
+    zipFunction: ZipFunction,
+    zipAction: DownloadAction,
+    language: Language,
+    contract: Contract,
+    opts?: KindedOptions[Kind],
+  ) => {
+    if (!opts) throw new Error('No options provided for zip generation');
+
+    const zip = await zipFunction(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+
+    saveAs(blob, 'project.zip');
+
+    if (opts) await postConfig(opts, zipAction, language);
+  };
+
+  $: showButtons = getButtonVisibilities(opts);
+
+  const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
+
+  const downloadScaffoldHandler = async () => {
+    const { zipScaffoldProject } = await zipScaffoldModule;
+
+    await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
+  };
+
+  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
+
+  const downloadRustHandler = async () => {
+    const { zipRustProject } = await zipRustModule;
+
+    await downloadZip(zipRustProject, 'download-rust-stellar', 'stellar', contract, opts);
+  };
 
   export let initialTab: string | undefined = 'Fungible';
 
@@ -65,6 +120,9 @@
         opts.name = initialOpts.name ?? opts.name;
         switch (opts.kind) {
           case 'Fungible':
+            opts.premint = initialOpts.premint ?? opts.premint;
+            break;
+          case 'Stablecoin':
             opts.premint = initialOpts.premint ?? opts.premint;
             break;
           case 'NonFungible':
@@ -134,6 +192,7 @@
       <OverflowMenu>
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
         <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
+        <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin </button>
       </OverflowMenu>
     </div>
 
@@ -162,18 +221,43 @@
               <p>Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</p>
             </div>
           </button>
+
+          {#if showButtons.downloadScaffold}
+            <button class="download-option" on:click={downloadScaffoldHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Scaffold Stellar Package</p>
+                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
+
+          {#if showButtons.downloadRust}
+            <button class="download-option" on:click={downloadRustHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Rust Development Package</p>
+                <p>Sample Rust project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
         </Dropdown>
       </div>
     {/if}
   </div>
 
   <div class="flex flex-row grow">
-    <div class="controls rounded-l-3xl w-72 flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto">
+    <div
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+    >
       <div class:hidden={tab !== 'Fungible'}>
         <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
       </div>
       <div class:hidden={tab !== 'NonFungible'}>
         <NonFungibleControls bind:opts={allOpts.NonFungible} errors={errors.NonFungible} />
+      </div>
+      <div class:hidden={tab !== 'Stablecoin'}>
+        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

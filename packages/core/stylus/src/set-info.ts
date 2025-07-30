@@ -6,10 +6,15 @@ export const defaults: Info = { license: 'MIT' };
 
 export type Info = {
   license?: string;
+  securityContact?: string;
 };
 
 export function setInfo(c: ContractBuilder, info: Info): void {
-  const { license } = info;
+  const { securityContact, license } = info;
+
+  if (securityContact) {
+    c.addSecurityTag(securityContact);
+  }
 
   if (license) {
     c.license = license;

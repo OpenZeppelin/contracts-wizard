@@ -43,6 +43,19 @@ body {
   margin-right: 20px;
 }
 
+.banner {
+  text-align: left;
+  padding: 0px 20px;
+  font-family: 'inter', Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: row;
+  min-height: 36px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f6ff;
+  min-width: 800px;
+}
+
 /* Navigation */
 .nav {
   text-align: left;
@@ -114,6 +127,7 @@ body {
   font-size: smaller;
   font-weight: 400;
   padding: 0.25rem 0rem;
+  min-width: 70px;
   cursor: pointer;
 }
 
@@ -168,19 +182,6 @@ footer a:hover,
 footer a:focus {
   color: #4e5de4;
   text-decoration: underline;
-}
-
-@media screen and (max-width: 768px) {
-  .defender {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    padding: 3rem;
-    text-align: left;
-  }
-  .defender a {
-    margin: 0 auto 0 0;
-    width: max-content;
-  }
 }
 
 /* To reset HubSpot Popup Banner's default animation effect */

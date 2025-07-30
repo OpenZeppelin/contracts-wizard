@@ -1,0 +1,24 @@
+{
+  "name": "@openzeppelin/wizard-common",
+  "version": "0.0.2",
+  "description": "Common library for OpenZeppelin Contracts Wizard components. Used internally.",
+  "license": "AGPL-3.0-only",
+  "repository": "https://github.com/OpenZeppelin/contracts-wizard",
+  "main": "dist/index.js",
+  "ts:main": "src/index.ts",
+  "files": [
+    "LICENSE",
+    "NOTICE",
+    "/dist",
+    "/src",
+    "!**/*.test.*"
+  ],
+  "scripts": {
+    "prepare": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
