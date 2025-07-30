@@ -177,11 +177,7 @@ export const governorSchema = {
 export const customSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
-  crossChainMessaging: z
-    .literal('superchain')
-    .or(z.literal(false))
-    .optional()
-    .describe(solidityCustomDescriptions.crossChainMessaging),
+  crossChainMessaging: z.literal('superchain').optional().describe(solidityCustomDescriptions.crossChainMessaging),
   crossChainFunctionName: z.string().optional().describe(solidityCustomDescriptions.crossChainFunctionName),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;

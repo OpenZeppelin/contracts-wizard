@@ -97,7 +97,8 @@ export const solidityGovernorDescriptions = {
 };
 
 export const solidityCustomDescriptions = {
-  crossChainMessaging: 'Whether to add an example for Superchain interop message passing',
+  crossChainMessaging:
+    'Whether to add an example for Superchain interop message passing. Options are "superchain" or false',
   crossChainFunctionName:
-    'The name of a custom function that will be callable from another chain, default is "myFunction"',
+    'The name of a custom function that will be callable from another chain, default is "myFunction". Only used if crossChainMessaging is set to "superchain"',
 };
