@@ -1,12 +1,12 @@
 # Path Owners
 * @OpenZeppelin/wizard
-/packages/core/solidity @OpenZeppelin/contracts
-/packages/ui/src/solidity @OpenZeppelin/contracts
-/packages/core/cairo @OpenZeppelin/cairo
-/packages/core/cairo_alpha @OpenZeppelin/cairo
-/packages/ui/src/cairo @OpenZeppelin/cairo
-/packages/ui/src/cairo_alpha @OpenZeppelin/cairo
-/packages/core/stylus @OpenZeppelin/stylus
-/packages/ui/src/stylus @OpenZeppelin/stylus
-/packages/core/stellar @OpenZeppelin/stellar
-/packages/ui/src/stellar @OpenZeppelin/stellar
+/packages/core/solidity @OpenZeppelin/contracts @OpenZeppelin/wizard
+/packages/ui/src/solidity @OpenZeppelin/contracts @OpenZeppelin/wizard
+/packages/core/cairo @OpenZeppelin/cairo @OpenZeppelin/wizard
+/packages/core/cairo_alpha @OpenZeppelin/cairo @OpenZeppelin/wizard
+/packages/ui/src/cairo @OpenZeppelin/cairo @OpenZeppelin/wizard
+/packages/ui/src/cairo_alpha @OpenZeppelin/cairo @OpenZeppelin/wizard
+/packages/core/stylus @OpenZeppelin/stylus @OpenZeppelin/wizard
+/packages/ui/src/stylus @OpenZeppelin/stylus @OpenZeppelin/wizard
+/packages/core/stellar @OpenZeppelin/stellar @OpenZeppelin/wizard
+/packages/ui/src/stellar @OpenZeppelin/stellar @OpenZeppelin/wizard
