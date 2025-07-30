@@ -176,6 +176,8 @@ const script = (c: Contract, opts?: GenericOptions) => {
   }
 };
 
+const importsOptimism = (c: Contract) => c.imports.some(i => i.path.startsWith('@eth-optimism/contracts-bedrock/'));
+
 const setupSh = (c: Contract) => `\
 #!/usr/bin/env bash
 
@@ -204,8 +206,7 @@ then
   # Initialize sample Foundry project
   forge init --force --quiet
 
-${
-  c.upgradeable
+${c.upgradeable
     ? `\
   # Install OpenZeppelin Contracts and Upgrades
   forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
@@ -215,7 +216,7 @@ ${
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
-}
+  }
 
   # Remove unneeded Foundry template files
   rm src/Counter.sol
@@ -231,8 +232,7 @@ ${
   then
     echo "" >> remappings.txt
   fi
-${
-  c.upgradeable
+${c.upgradeable
     ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
   echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
@@ -247,7 +247,22 @@ ${
     : `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
 `
-}
+  }
+${importsOptimism(c) ?
+    `\
+
+  # Setup Optimism dependencies
+  echo "" >> foundry.toml
+  echo "[dependencies]" >> foundry.toml
+  echo "\\"@eth-optimism-contracts-bedrock\\" = { version = \\"^0.17.3\\" }" >> foundry.toml
+  forge soldeer install
+  OPTIMISM_PATH=$(grep '@eth-optimism-contracts-bedrock' remappings.txt | cut -d'=' -f2)
+  if [ -n "$OPTIMISM_PATH" ]; then
+    echo "@eth-optimism/contracts-bedrock/=$OPTIMISM_PATH" >> remappings.txt
+  fi\
+`
+    : ''
+  }
 
   # Perform initial git commit
   git add .
