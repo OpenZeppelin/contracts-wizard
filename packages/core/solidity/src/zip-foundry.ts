@@ -180,7 +180,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
 const OPTIMISM_NPM_PACKAGE = '@eth-optimism/contracts-bedrock';
 const OPTIMISM_SOLDEER_PACKAGE = '@eth-optimism-contracts-bedrock';
 const importsOptimism = (c: Contract) => c.imports.some(i => i.path.startsWith(OPTIMISM_NPM_PACKAGE));
-const optimismNpmVersion = packageJson.devDependencies[OPTIMISM_NPM_PACKAGE];
+const optimismSemver = packageJson.devDependencies[OPTIMISM_NPM_PACKAGE];
 
 const setupSh = (c: Contract) => `\
 #!/usr/bin/env bash
@@ -258,11 +258,11 @@ ${importsOptimism(c) ?
   # Setup Optimism dependencies
   echo "" >> foundry.toml
   echo "[dependencies]" >> foundry.toml
-  echo "\\"${OPTIMISM_SOLDEER_PACKAGE}\\" = { version = \\"${optimismNpmVersion}\\" }" >> foundry.toml
+  echo "\\"${OPTIMISM_SOLDEER_PACKAGE}\\" = { version = \\"${optimismSemver}\\" }" >> foundry.toml
   forge soldeer install
   OPTIMISM_PATH=$(grep '@eth-optimism-contracts-bedrock' remappings.txt | cut -d'=' -f2)
   if [ -n "$OPTIMISM_PATH" ]; then
-    echo "${OPTIMISM_SOLDEER_PACKAGE}/=$OPTIMISM_PATH" >> remappings.txt
+    echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.txt
   fi\
 `
     : ''
