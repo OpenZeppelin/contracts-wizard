@@ -82,9 +82,21 @@
   const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
 
   const downloadScaffoldHandler = async () => {
-    const { zipScaffoldProject } = await zipScaffoldModule;
+    // const { zipScaffoldProject } = await zipScaffoldModule;
 
-    await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
+    // await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
+
+    // make variable localhost:5000
+    await fetch('localhost:5000/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contract,
+        opts,
+      }),
+    });
   };
 
   const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
