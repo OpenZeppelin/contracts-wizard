@@ -260,9 +260,13 @@ ${importsOptimism(c) ?
   echo "[dependencies]" >> foundry.toml
   echo "\\"${OPTIMISM_SOLDEER_PACKAGE}\\" = { version = \\"${optimismSemver}\\" }" >> foundry.toml
   forge soldeer install
-  OPTIMISM_PATH=$(grep '@eth-optimism-contracts-bedrock' remappings.txt | cut -d'=' -f2)
-  if [ -n "$OPTIMISM_PATH" ]; then
+  OPTIMISM_PATH=$(grep '${OPTIMISM_SOLDEER_PACKAGE}' remappings.txt | cut -d'=' -f2)
+  if [ -n "$OPTIMISM_PATH" ]
+  then
     echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.txt
+  else
+    echo "Failed to update remappings.txt. Manually update remappings.txt to add ${OPTIMISM_NPM_PACKAGE}/ with the same path as ${OPTIMISM_SOLDEER_PACKAGE}/"
+    exit 1
   fi\
 `
     : ''
