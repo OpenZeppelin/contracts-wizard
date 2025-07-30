@@ -202,14 +202,28 @@ function getHardhatPlugins(c: Contract) {
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  const { default: packageJson } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package.json')
-    : await import('./environments/hardhat/package.json');
-  packageJson.license = c.license;
+  const importsOptimism = c.imports.some((i) => i.path.startsWith('@eth-optimism/contracts-bedrock/'));
 
-  const { default: packageLock } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package-lock.json')
-    : await import('./environments/hardhat/package-lock.json');
+  let packageJson, packageLock;
+  if (importsOptimism) {
+    if (c.upgradeable) {
+      packageJson = (await import('./environments/hardhat/optimism-upgradeable/package.json')).default;
+      packageLock = (await import('./environments/hardhat/optimism-upgradeable/package-lock.json')).default;
+    } else {
+      packageJson = (await import('./environments/hardhat/optimism/package.json')).default;
+      packageLock = (await import('./environments/hardhat/optimism/package-lock.json')).default;
+    }
+  } else {
+    if (c.upgradeable) {
+      packageJson = (await import('./environments/hardhat/upgradeable/package.json')).default;
+      packageLock = (await import('./environments/hardhat/upgradeable/package-lock.json')).default;
+    } else {
+      packageJson = (await import('./environments/hardhat/package.json')).default;
+      packageLock = (await import('./environments/hardhat/package-lock.json')).default;
+    }
+  }
+
+  packageJson.license = c.license;
   packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
