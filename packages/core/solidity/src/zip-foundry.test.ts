@@ -102,12 +102,35 @@ test.serial('custom basic', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('custom cross chain messaging superchain', async t => {
+  const opts: GenericOptions = {
+    kind: 'Custom',
+    name: 'My Contract',
+    crossChainMessaging: 'superchain',
+    crossChainFunctionName: 'myCustomFunction',
+  };
+  const c = buildCustom(opts);
+  await runTest(c, t, opts);
+});
+
 test.serial('custom transparent, managed', async t => {
   const opts: GenericOptions = {
     kind: 'Custom',
     name: 'My Contract',
     upgradeable: 'transparent',
     access: 'managed',
+  };
+  const c = buildCustom(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('custom transparent, managed, cross chain messaging superchain', async t => {
+  const opts: GenericOptions = {
+    kind: 'Custom',
+    name: 'My Contract',
+    upgradeable: 'transparent',
+    access: 'managed',
+    crossChainMessaging: 'superchain',
   };
   const c = buildCustom(opts);
   await runTest(c, t, opts);
