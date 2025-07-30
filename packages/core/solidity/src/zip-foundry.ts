@@ -263,9 +263,11 @@ ${importsOptimism(c) ?
   OPTIMISM_PATH=$(grep '${OPTIMISM_SOLDEER_PACKAGE}' remappings.txt | cut -d'=' -f2)
   if [ -n "$OPTIMISM_PATH" ]
   then
-    echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.txt
+    grep -v '${OPTIMISM_SOLDEER_PACKAGE}' remappings.txt > remappings.tmp
+    echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.tmp
+    mv remappings.tmp remappings.txt
   else
-    echo "Failed to update remappings.txt. Manually update remappings.txt to add ${OPTIMISM_NPM_PACKAGE}/ with the same path as ${OPTIMISM_SOLDEER_PACKAGE}/"
+    echo "Failed to update remappings.txt. Manually update remappings.txt to rename ${OPTIMISM_SOLDEER_PACKAGE}-${optimismSemver}/ to ${OPTIMISM_NPM_PACKAGE}/"
     exit 1
   fi\
 `
