@@ -9,7 +9,7 @@ export interface Contract {
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
-  variables: string[];
+  variables: Variable[];
   upgradeable: boolean;
   customErrors: CustomError[];
   modifierDefinitions: ModifierDefinition[];
@@ -17,6 +17,11 @@ export interface Contract {
 
 export interface CustomError {
   name: string;
+}
+
+export interface Variable {
+  code: string;
+  natspecTags?: NatspecTag[];
 }
 
 export type Value = string | number | { lit: string } | { note: string; value: Value };
@@ -94,12 +99,12 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
   readonly customErrorSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
   private modifierDefinitionsMap: Map<string, ModifierDefinition> = new Map<string, ModifierDefinition>();
+  private variableMap: Map<string, Variable> = new Map<string, Variable>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -127,8 +132,8 @@ export class ContractBuilder implements Contract {
     return [...this.functionMap.values()];
   }
 
-  get variables(): string[] {
-    return [...this.variableSet];
+  get variables(): Variable[] {
+    return [...this.variableMap.values()];
   }
 
   get customErrors(): CustomError[] {
@@ -236,9 +241,9 @@ export class ContractBuilder implements Contract {
   /**
    * Note: The type in the variable is not currently transpiled, even if it refers to a contract
    */
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
+  addVariable(code: string, natspecTags?: NatspecTag[]): boolean {
+    const present = this.variableMap.has(code);
+    this.variableMap.set(code, { code, natspecTags });
     return !present;
   }
 

@@ -42,8 +42,16 @@ function addCrossDomainMessengerImmutable(c: ContractBuilder) {
     path: '@eth-optimism/contracts-bedrock/src/libraries/Predeploys.sol',
     transpiled: false,
   });
+
+  const allowImmutableNatspec = {
+    key: '@custom:oz-upgrades-unsafe-allow',
+    value: 'state-variable-immutable',
+  };
   c.addVariable(
     'IL2ToL2CrossDomainMessenger public immutable messenger = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER);',
+    [
+      allowImmutableNatspec
+    ],
   );
 }
 

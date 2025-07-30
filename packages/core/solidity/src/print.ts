@@ -8,6 +8,7 @@ import type {
   ImportContract,
   CustomError,
   ModifierDefinition,
+  Variable,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -42,7 +43,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          contract.variables,
+          printVariables(contract.variables),
           printCustomErrors(contract.customErrors),
           printModifierDefinitions(contract.modifierDefinitions),
           printConstructor(contract, helpers),
@@ -56,6 +57,17 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printVariables(variables: Variable[]): Lines[] {
+  return variables.flatMap(v => {
+    const lines: Lines[] = [];
+    if (v.natspecTags) {
+      lines.push(...printNatspecTags(v.natspecTags));
+    }
+    lines.push(v.code);
+    return lines;
+  });
 }
 
 function printCustomErrors(errors: CustomError[]): Lines[] {
@@ -84,9 +96,9 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
     const body = helpers.upgradeable
       ? spaceBetween(
-          parents.map(p => p + ';'),
-          contract.constructorCode,
-        )
+        parents.map(p => p + ';'),
+        contract.constructorCode,
+      )
       : contract.constructorCode;
     const head = helpers.upgradeable ? 'function initialize' : 'constructor';
     const constructor = printFunction2([], head, args, undefined, modifiers, body);
