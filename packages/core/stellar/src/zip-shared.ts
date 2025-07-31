@@ -58,6 +58,9 @@ license.workspace = true
 publish = false
 version.workspace = true
 
+[package.metadata.stellar]
+cargo_inherit = true
+
 [lib]
 crate-type = ["cdylib"]
 doctest = false
