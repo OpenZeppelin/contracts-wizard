@@ -1,7 +1,7 @@
 ---
 '@openzeppelin/wizard': patch
 '@openzeppelin/wizard-common': patch
-'@openzeppelin/wizard-mcp': patch
+'@openzeppelin/contracts-mcp': patch
 ---
 
-Add option for Superchain interop message passing in Custom contracts
+Solidity: Add option for Superchain interop message passing in Custom contracts
