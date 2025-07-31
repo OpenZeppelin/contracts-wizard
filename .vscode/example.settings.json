@@ -4,5 +4,11 @@
   "deno.enable": true,
   "deno.enablePaths": [
     "packages/ui/scripts/deno/"
-  ]
+  ],
+  "rust-analyzer.linkedProjects": [
+    "packages/ui/stellar/Cargo.toml"
+  ],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  }
 }

@@ -1,0 +1,2 @@
+fn(Json<Contract>) -> impl std::future::Future<Output = std::string::String> {controllers::download_scaffold::download_scaffold}
+fn(Json<Contract>) -> impl std::future::Future<Output = std::string::String> {controllers::download_scaffold::download_scaffold}: HttpServiceFactory

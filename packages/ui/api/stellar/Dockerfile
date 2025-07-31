@@ -2,11 +2,6 @@
 FROM rust:1.88-slim AS builder
 WORKDIR /usr/src/stellar
 
-# Copy manifest only and build dependencies
-COPY Cargo.toml ./
-RUN mkdir src && echo 'fn main() { println!("Building dependencies"); }' > src/main.rs
-RUN cargo build --release
-
 # Copy source code and compile
 COPY . .
 RUN cargo build --release
