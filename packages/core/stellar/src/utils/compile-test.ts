@@ -1,6 +1,5 @@
 import { tmpdir } from 'os';
 import type { ExecutionContext } from 'ava';
-import _test from 'ava';
 import path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -10,7 +9,6 @@ import { assertLayout, snapshotZipContents, expandPathsFromFilesPaths, extractPa
 import { mkdtemp, rm } from 'fs/promises';
 import { contractOptionsToContractName } from '../zip-shared';
 import { zipRustProject } from '../zip-rust';
-import test from 'ava';
 
 const asyncExec = promisify(exec);
 

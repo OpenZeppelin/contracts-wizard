@@ -1,5 +1,4 @@
 import type { ExecutionContext } from 'ava';
-import _test from 'ava';
 
 import { zipScaffoldProject } from './zip-scaffold';
 

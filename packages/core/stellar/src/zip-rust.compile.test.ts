@@ -1,5 +1,3 @@
-import _test from 'ava';
-
 import { buildFungible } from './fungible';
 import test from 'ava';
 import { runRustCompilationTest } from './utils/compile-test';
