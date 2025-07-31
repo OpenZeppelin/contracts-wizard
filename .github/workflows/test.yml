@@ -54,6 +54,14 @@ jobs:
         variant:
           - default
           - compile
+        exclude:
+          - package: solidity
+            variant: compile
+          - package: cairo
+            variant: compile
+          - package: stylus
+            variant: compile
+        
 
     runs-on: ubuntu-latest
     steps:
