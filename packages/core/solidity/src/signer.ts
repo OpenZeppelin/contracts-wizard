@@ -26,7 +26,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   c.addConstructorCode(`_disableInitializers();`);
 
   // Add initializer
-  const fn = signerFunctions[`initialize${signer}`];
+  const fn = signerFunctions.initialize[signer];
   c.addModifier('initializer', fn);
 
   switch (signer) {
@@ -73,41 +73,49 @@ export const signers = {
   },
 };
 
-export const signerFunctions = defineFunctions({
-  initializeECDSA: {
-    kind: 'public' as const,
-    args: [{ name: 'signer', type: 'address' }],
-  },
-  initializeP256: {
-    kind: 'public' as const,
-    args: [
-      { name: 'qx', type: 'bytes32' },
-      { name: 'qy', type: 'bytes32' },
-    ],
-  },
-  initializeRSA: {
-    kind: 'public' as const,
-    args: [
-      { name: 'e', type: 'bytes memory' },
-      { name: 'n', type: 'bytes memory' },
-    ],
-  },
-  initializeMultisig: {
-    kind: 'public' as const,
-    args: [
-      { name: 'signers', type: 'bytes[] memory' },
-      { name: 'threshold', type: 'uint256' },
-    ],
-  },
-  initializeMultisigWeighted: {
-    kind: 'public' as const,
-    args: [
-      { name: 'signers', type: 'bytes[] memory' },
-      { name: 'weights', type: 'uint256[] memory' },
-      { name: 'threshold', type: 'uint256' },
-    ],
+export const signerFunctions = {
+  initialize: {
+    ECDSA: {
+      name: 'initialize',
+      kind: 'public' as const,
+      args: [{ name: 'signer', type: 'address' }],
+    },
+    P256: {
+      name: 'initialize',
+      kind: 'public' as const,
+      args: [
+        { name: 'qx', type: 'bytes32' },
+        { name: 'qy', type: 'bytes32' },
+      ],
+    },
+    RSA: {
+      name: 'initialize',
+      kind: 'public' as const,
+      args: [
+        { name: 'e', type: 'bytes memory' },
+        { name: 'n', type: 'bytes memory' },
+      ],
+    },
+    Multisig: {
+      name: 'initialize',
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'threshold', type: 'uint256' },
+      ],
+    },
+    MultisigWeighted: {
+      name: 'initialize',
+      kind: 'public' as const,
+      args: [
+        { name: 'signers', type: 'bytes[] memory' },
+        { name: 'weights', type: 'uint256[] memory' },
+        { name: 'threshold', type: 'uint256' },
+      ],
+    },
   },
   _rawSignatureValidation: {
+    name: '_rawSignatureValidation',
     kind: 'internal' as const,
     args: [
       { name: 'hash', type: 'bytes32' },
@@ -116,4 +124,4 @@ export const signerFunctions = defineFunctions({
     returns: ['bool'],
     mutability: 'view' as const,
   },
-});
+};
