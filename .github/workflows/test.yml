@@ -41,6 +41,7 @@ jobs:
         working-directory: packages/mcp
 
   build:
+    name: build (${{ matrix.package }}, ${{ matrix.variant }})
     timeout-minutes: 90
     strategy:
       matrix:
@@ -108,7 +109,7 @@ jobs:
         env:
           RUSTFLAGS: ""
         run: |
-          FILES=$(find packages/core/${{matrix.package}} -type f -name '*.compile.test.ts')
+          FILES=$(find ./ -type f -name '*.compile.test.ts')
           if [ -z "$FILES" ]; then
             echo "No compile tests found. Skipping."
             exit 0
