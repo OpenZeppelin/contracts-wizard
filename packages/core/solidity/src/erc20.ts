@@ -313,7 +313,7 @@ function addCrossChainBridging(
 ) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
+    path: `@openzeppelin/contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
   };
 
   c.addParent(ERC20Bridgeable);
