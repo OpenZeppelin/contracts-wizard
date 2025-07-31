@@ -113,7 +113,7 @@ jobs:
         working-directory: packages/core/${{matrix.package}}
 
       - name: Run tests
-        if: matrix.variant == 'compile'
+        if: matrix.variant == 'compile' && contains(steps.filter.outputs.changes, format('packages/core/{0}/', matrix.package))
         env:
           RUSTFLAGS: ""
         run: |
