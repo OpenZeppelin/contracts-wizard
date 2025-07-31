@@ -3,7 +3,7 @@ import test from 'ava';
 import { runRustCompilationTest } from './utils/compile-test';
 
 test.serial(
-  'rust zip fungible burnable',
+  'rust zip',
   runRustCompilationTest(
     buildFungible,
     {
