@@ -107,5 +107,12 @@ jobs:
         if: matrix.variant == 'compile'
         env:
           RUSTFLAGS: ""
-        run: yarn test '**/*.compile.test.ts'
+        run: |
+          FILES=$(find packages/core/${{matrix.package}} -type f -name '*.compile.test.ts')
+          if [ -z "$FILES" ]; then
+            echo "No compile tests found. Skipping."
+            exit 0
+          else
+            yarn test '**/*.compile.test.ts'
+          fi
         working-directory: packages/core/${{matrix.package}}
