@@ -4,10 +4,10 @@
 //!
 //! ## Structure
 //!
-//! * `controllers` - Request handling and business logic
-//! * `routes` - API endpoint definitions and routing
-//! * `models` - Data structures and types used in the API
 //! * `config` - Configuration management for the API server
+//! * `controllers` - Request handling and business logic
+//! * `models` - Data structures and types used in the API
+//! * `routes` - API endpoint definitions and routing
 
 pub mod config;
 pub mod controllers;

@@ -35,6 +35,8 @@
   import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
 
+  const fargateHost = process.env.FARGATE_HOST;
+
   const WizStellar = createWiz<'stellar'>();
 
   const dispatch = createEventDispatcher();
@@ -87,7 +89,7 @@
     // await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
 
     // make variable localhost:5000
-    await fetch('localhost:5000/', {
+    await fetch(`${fargateHost}/stellar/download-scaffold`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

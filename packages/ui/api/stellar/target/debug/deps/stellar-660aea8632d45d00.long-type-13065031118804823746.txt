@@ -1,2 +1,0 @@
-fn(actix_web::web::Json<Contract>) -> impl std::future::Future<Output = std::string::String> {controllers::download_scaffold::download_scaffold}
-fn(actix_web::web::Json<Contract>) -> impl std::future::Future<Output = std::string::String> {controllers::download_scaffold::download_scaffold}: HttpServiceFactory
