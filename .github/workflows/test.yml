@@ -53,14 +53,6 @@ jobs:
         variant:
           - default
           - compile
-        # This excludes config only runs the compile variant for stellar 
-        exclude:
-          - package: solidity
-            variant: compile
-          - package: cairo
-            variant: compile
-          - package: stylus
-            variant: compile
 
     runs-on: ubuntu-latest
     steps:
