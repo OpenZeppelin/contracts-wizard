@@ -74,7 +74,7 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
   if (access) {
     requireAccessControl(c, sourceFn, access, 'CROSSCHAIN_CALLER', 'crossChainCaller');
   } else {
-    c.setFunctionComments(['// NOTE: Anyone can call this function'], sourceFn);
+    c.setFunctionComments(['/// @dev NOTE: This function is unprotected. Anyone can call this function.'], sourceFn);
   }
 
   if (pausable) {
