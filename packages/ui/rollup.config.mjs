@@ -43,6 +43,23 @@ function onStartRun(cmd, ...args) {
   };
 }
 
+function importTextAsString(extensions) {
+  return {
+    name: 'text-import',
+    async load(id) {
+      if (extensions.some(ext => id.endsWith(ext))) {
+        const { readFile } = await import('fs/promises');
+        try {
+          const content = await readFile(id, 'utf8');
+          return `export default ${JSON.stringify(content)};`;
+        } catch (error) {
+          this.error(`Could not read text file: ${id}`);
+        }
+      }
+    },
+  };
+}
+
 /** @type import('rollup').RollupOptions */
 export default [
   {
@@ -101,6 +118,9 @@ export default [
     plugins: [
       // Generate openzeppelin-contracts.js data file
       onStartRun(...'yarn --cwd ../core/solidity prepare'.split(' ')),
+
+      // Import .lock files as strings, used for soldeer.lock for Download Foundry package
+      importTextAsString(['.lock']),
 
       svelte(await import('./svelte.config.js')),
 

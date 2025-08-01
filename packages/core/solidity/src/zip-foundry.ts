@@ -210,8 +210,7 @@ then
   # Initialize sample Foundry project
   forge init --force --quiet
 
-${
-  c.upgradeable
+${c.upgradeable
     ? `\
   # Install OpenZeppelin Contracts and Upgrades
   forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
@@ -221,7 +220,7 @@ ${
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
-}
+  }
 
   # Remove unneeded Foundry template files
   rm src/Counter.sol
@@ -237,8 +236,7 @@ ${
   then
     echo "" >> remappings.txt
   fi
-${
-  c.upgradeable
+${c.upgradeable
     ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
   echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
@@ -253,9 +251,8 @@ ${
     : `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
 `
-}
-${
-  importsOptimism(c)
+  }
+${importsOptimism(c)
     ? `\
 
   # Setup Optimism dependencies
@@ -270,12 +267,12 @@ ${
     echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.tmp
     mv remappings.tmp remappings.txt
   else
-    echo "Failed to update remappings.txt. Manually update remappings.txt to rename ${OPTIMISM_SOLDEER_PACKAGE}-${optimismSemver}/ to ${OPTIMISM_NPM_PACKAGE}/"
+    echo "Failed to setup Optimism dependencies. Run 'forge soldeer install', then update remappings.txt to rename ${OPTIMISM_SOLDEER_PACKAGE}-${optimismSemver}/ to ${OPTIMISM_NPM_PACKAGE}/"
     exit 1
   fi\
 `
     : ''
-}
+  }
 
   # Perform initial git commit
   git add .
@@ -326,6 +323,10 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c, opts));
   zip.file('setup.sh', setupSh(c));
+  if (importsOptimism(c)) {
+    const soldeerLock = (await import('./environments/foundry/optimism/soldeer.lock')).default;
+    zip.file('soldeer.lock', soldeerLock);
+  }
   zip.file('README.md', readme(c));
 
   return zip;
