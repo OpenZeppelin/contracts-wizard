@@ -210,7 +210,8 @@ then
   # Initialize sample Foundry project
   forge init --force --quiet
 
-${c.upgradeable
+${
+  c.upgradeable
     ? `\
   # Install OpenZeppelin Contracts and Upgrades
   forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
@@ -220,7 +221,7 @@ ${c.upgradeable
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
-  }
+}
 
   # Remove unneeded Foundry template files
   rm src/Counter.sol
@@ -236,7 +237,8 @@ ${c.upgradeable
   then
     echo "" >> remappings.txt
   fi
-${c.upgradeable
+${
+  c.upgradeable
     ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
   echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
@@ -251,8 +253,9 @@ ${c.upgradeable
     : `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
 `
-  }
-${importsOptimism(c)
+}
+${
+  importsOptimism(c)
     ? `\
 
   # Setup Optimism dependencies
@@ -272,7 +275,7 @@ ${importsOptimism(c)
   fi\
 `
     : ''
-  }
+}
 
   # Perform initial git commit
   git add .
