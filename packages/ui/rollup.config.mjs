@@ -43,18 +43,14 @@ function onStartRun(cmd, ...args) {
   };
 }
 
-function importTextAsString(extensions) {
+function importTextAsString(fileExtensions) {
   return {
     name: 'text-import',
     async load(id) {
-      if (extensions.some(ext => id.endsWith(ext))) {
+      if (fileExtensions.some(ext => id.endsWith(ext))) {
         const { readFile } = await import('fs/promises');
-        try {
-          const content = await readFile(id, 'utf8');
-          return `export default ${JSON.stringify(content)};`;
-        } catch (error) {
-          this.error(`Could not read text file: ${id}`);
-        }
+        const content = await readFile(id, 'utf8');
+        return `export default ${JSON.stringify(content)};`;
       }
     },
   };
