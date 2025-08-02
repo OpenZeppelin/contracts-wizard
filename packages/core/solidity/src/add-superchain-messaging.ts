@@ -68,7 +68,7 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
   const sourceFn: BaseFunction = {
     name: `call${sanitizedFunctionName.replace(/^(.)/, c => c.toUpperCase())}`,
     kind: 'public' as const,
-    args: [{ name: '_toChainId', type: 'uint256' }],
+    args: [{ name: 'toChainId', type: 'uint256' }],
   };
 
   if (access) {
@@ -83,8 +83,8 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
 
   c.setFunctionBody(
     [
-      'if (_toChainId == block.chainid) revert InvalidDestination();',
-      `messenger.sendMessage(_toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
+      'if (toChainId == block.chainid) revert InvalidDestination();',
+      `messenger.sendMessage(toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
     ],
     sourceFn,
   );
