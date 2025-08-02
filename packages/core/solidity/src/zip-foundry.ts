@@ -316,6 +316,22 @@ forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 See [Solidity scripting guide](https://book.getfoundry.sh/guides/scripting-with-solidity) for more information.
 `;
 
+/**
+ * Load soldeer.lock in environment specific way: browser (for UI) or Node.js (e.g. for tests)
+ */
+async function loadSoldeerLock() {
+  if (typeof process === 'undefined') {
+    // Browser environment - use Rollup plugin
+    return (await import('./environments/foundry/optimism/soldeer.lock')).default;
+  } else {
+    // Node.js environment - read file directly
+    const { readFile } = await import('fs/promises');
+    const { resolve } = await import('path');
+    const lockFilePath = resolve(__dirname, 'environments/foundry/optimism/soldeer.lock');
+    return await readFile(lockFilePath, 'utf8');
+  }
+}
+
 export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
@@ -324,8 +340,7 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`script/${c.name}.s.sol`, script(c, opts));
   zip.file('setup.sh', setupSh(c));
   if (importsOptimism(c)) {
-    const soldeerLock = (await import('./environments/foundry/optimism/soldeer.lock')).default;
-    zip.file('soldeer.lock', soldeerLock);
+    zip.file('soldeer.lock', await loadSoldeerLock());
   }
   zip.file('README.md', readme(c));
 
