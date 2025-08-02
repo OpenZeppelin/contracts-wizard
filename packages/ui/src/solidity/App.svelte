@@ -318,7 +318,7 @@
 
   <div class="flex flex-row grow">
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-80 w-80 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
@@ -342,7 +342,7 @@
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} />
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom} />
       </div>
     </div>
 

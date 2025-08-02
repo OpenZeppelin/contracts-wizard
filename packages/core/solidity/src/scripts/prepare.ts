@@ -26,7 +26,8 @@ async function main() {
     for (const [sourceFile, { ast }] of Object.entries(buildInfo.output.sources)) {
       if (
         sourceFile.startsWith('@openzeppelin/contracts') ||
-        sourceFile.startsWith('@openzeppelin/community-contracts')
+        sourceFile.startsWith('@openzeppelin/community-contracts') ||
+        sourceFile.startsWith('@eth-optimism/contracts-bedrock')
       ) {
         const sourceDependencies = (dependencies[sourceFile] ??= new Set());
         for (const imp of findAll('ImportDirective', ast)) {
@@ -38,7 +39,8 @@ async function main() {
     for (const [sourceFile, { content }] of Object.entries(buildInfo.input.sources)) {
       if (
         sourceFile.startsWith('@openzeppelin/contracts') ||
-        sourceFile.startsWith('@openzeppelin/community-contracts')
+        sourceFile.startsWith('@openzeppelin/community-contracts') ||
+        sourceFile.startsWith('@eth-optimism/contracts-bedrock')
       ) {
         sources[sourceFile] = content;
       }

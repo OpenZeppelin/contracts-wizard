@@ -11,7 +11,7 @@
   import OPIcon from '../common/icons/OPIcon.svelte';
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
-  import { superchainTooltipProps } from './superchain-tooltip';
+  import { superchainERC20TooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['ERC20']> = {
     kind: 'ERC20',
@@ -31,7 +31,7 @@
   let superchainLabel: HTMLElement;
   let superchainTooltip: TippyInstance;
   onMount(() => {
-    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
+    superchainTooltip = tippy(superchainLabel, superchainERC20TooltipProps);
   });
 
   let wasSuperchain = false;

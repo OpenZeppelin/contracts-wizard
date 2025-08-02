@@ -9,6 +9,7 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
+  solidityCustomDescriptions,
 } from '@openzeppelin/wizard-common';
 import type { KindedOptions } from '@openzeppelin/wizard';
 
@@ -176,5 +177,7 @@ export const governorSchema = {
 export const customSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  crossChainMessaging: z.literal('superchain').optional().describe(solidityCustomDescriptions.crossChainMessaging),
+  crossChainFunctionName: z.string().optional().describe(solidityCustomDescriptions.crossChainFunctionName),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;
