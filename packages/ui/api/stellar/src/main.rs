@@ -4,6 +4,8 @@ use actix_web::{
     middleware::{self, Logger},
     web, App, HttpServer,
 };
+use dotenvy::dotenv;
+use log::info;
 use std::sync::Arc;
 use stellar::config::ServerConfig;
 
@@ -11,6 +13,9 @@ use stellar::routes::configure_routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+    env_logger::init();
+
     let config = Arc::new(ServerConfig::from_environment_variables());
 
     let wizard_origin = config.wizard_origin.clone();
@@ -20,7 +25,7 @@ async fn main() -> std::io::Result<()> {
         .finish()
         .unwrap();
 
-    println!("Starting server on {}:{}", config.host, config.port);
+    info!("Starting server on {}:{}", config.host, config.port);
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -33,8 +38,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Governor::new(&rate_limit_config))
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
-            .service(web::scope("/stellar"))
-            .configure(configure_routes)
+            .service(web::scope("/stellar").configure(configure_routes))
     })
     .bind((config.host.as_str(), config.port))?
     .run()

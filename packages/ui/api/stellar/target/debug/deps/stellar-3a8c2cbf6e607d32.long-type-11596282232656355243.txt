@@ -1,6 +1,0 @@
-App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>
-App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>: Clone
-Rc<actix_service::boxed::BoxServiceFactory<(), ServiceRequest, ServiceResponse, actix_web::Error, ()>>
-Option<Rc<actix_service::boxed::BoxServiceFactory<(), ServiceRequest, ServiceResponse, actix_web::Error, ()>>>
-actix_service::transform::ApplyTransform<Cors, actix_web::app_service::AppEntry, ServiceRequest>
-impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>

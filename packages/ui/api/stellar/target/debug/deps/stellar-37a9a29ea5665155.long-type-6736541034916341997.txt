@@ -1,1 +1,0 @@
-HttpServer<App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>, _, _, _>
