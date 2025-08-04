@@ -119,11 +119,7 @@ jobs:
         if: matrix.variant == 'compile'
         run: |
           BASE=${{ github.event.pull_request.base.sha || github.event.before }}
-          echo "Diffing against base: $BASE"
           echo "changes=$(git diff --name-only $BASE ${{ github.sha }} | tr '\n' ' ')" >> $GITHUB_OUTPUT
-
-      - name: Debug changed files
-        run: echo "${{ steps.filter.outputs.changes }}"
 
       - name: Run tests
         if: matrix.variant == 'compile' && contains(steps.filter.outputs.changes, format('packages/core/{0}/', matrix.package))
