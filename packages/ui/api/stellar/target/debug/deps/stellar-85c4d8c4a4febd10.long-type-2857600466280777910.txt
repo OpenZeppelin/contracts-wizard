@@ -1,0 +1,7 @@
+(dyn actix_web::service::AppServiceFactory + 'static)
+Unique<(dyn actix_web::service::AppServiceFactory + 'static)>
+Box<(dyn actix_web::service::AppServiceFactory + 'static)>
+PhantomData<Box<(dyn actix_web::service::AppServiceFactory + 'static)>>
+alloc::raw_vec::RawVec<Box<(dyn actix_web::service::AppServiceFactory + 'static)>>
+Vec<Box<(dyn actix_web::service::AppServiceFactory + 'static)>>
+App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>

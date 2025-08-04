@@ -89,16 +89,20 @@
     // await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
 
     // make variable localhost:5000
-    await fetch(`${fargateHost}/stellar/download-scaffold`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contract,
-        opts,
-      }),
-    });
+    try {
+      await fetch(`${fargateHost}/stellar/download-scaffold`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contract,
+          opts,
+        }),
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');

@@ -1,0 +1,11 @@
+App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>
+App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>: Clone
+Rc<RefCell<Option<actix_web::app_service::AppRoutingFactory>>>
+Rc<actix_service::boxed::BoxServiceFactory<(), ServiceRequest, ServiceResponse, actix_web::Error, ()>>
+Option<Rc<actix_service::boxed::BoxServiceFactory<(), ServiceRequest, ServiceResponse, actix_web::Error, ()>>>
+Rc<(Cors, actix_web::app_service::AppEntry)>
+actix_service::transform::ApplyTransform<Cors, actix_web::app_service::AppEntry, ServiceRequest>
+impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>
+Rc<actix_web::request::HttpRequestInner>
+Rc<RefCell<actix_http::h1::payload::Inner>>
+actix_http::h1::payload::Payload

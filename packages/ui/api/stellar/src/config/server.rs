@@ -8,8 +8,8 @@ pub struct ServerConfig {
     pub port: u16,
     /// The number of requests allowed per second.
     pub rate_limit_requests_per_second: u64,
-    /// The maximum burst size for rate limiting.
-    pub rate_limit_burst_size: u32,
+    /// Origin of the Wizard web application.
+    pub wizard_origin: String,
 }
 
 impl ServerConfig {
@@ -20,22 +20,19 @@ impl ServerConfig {
     /// - `HOST` defaults to `"0.0.0.0"`.
     /// - `APP_PORT` defaults to `8080`.
     /// - `RATE_LIMIT_REQUESTS_PER_SECOND` defaults to `100`.
-    /// - `RATE_LIMIT_BURST_SIZE` defaults to `300`.
     pub fn from_environment_variables() -> Self {
         Self {
             host: env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
             port: env::var("APP_PORT")
-                .unwrap_or_else(|_| "8080".to_string())
+                .unwrap_or_else(|_| "3000".to_string())
                 .parse()
                 .unwrap_or(8080),
             rate_limit_requests_per_second: env::var("RATE_LIMIT_REQUESTS_PER_SECOND")
                 .unwrap_or_else(|_| "100".to_string())
                 .parse()
                 .unwrap_or(100),
-            rate_limit_burst_size: env::var("RATE_LIMIT_BURST_SIZE")
-                .unwrap_or_else(|_| "300".to_string())
-                .parse()
-                .unwrap_or(300),
+            wizard_origin: env::var("WIZARD_ORIGIN")
+                .unwrap_or_else(|_| "http://localhost:8080".to_string()),
         }
     }
 }

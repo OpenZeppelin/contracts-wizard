@@ -1,0 +1,1 @@
+Rc<actix_service::boxed::BoxServiceFactory<(), ServiceRequest, ServiceResponse, actix_web::Error, ()>>

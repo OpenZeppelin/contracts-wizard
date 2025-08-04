@@ -1,9 +1,9 @@
 //! This module build the Scaffold zip using Stellar upgrade command and return the result zipped.
 use crate::controllers::download_scaffold;
 use crate::models::Contract;
-use actix_web::{get, web, HttpResponse};
+use actix_web::{post, web, HttpResponse};
 
-#[get("/download-scaffold")]
+#[post("/download-scaffold")]
 async fn download_scaffold_route(
     req: web::Json<Contract>,
 ) -> Result<HttpResponse, actix_web::Error> {

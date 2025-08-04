@@ -1,0 +1,7 @@
+(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)
+Unique<(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)>
+Box<(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)>
+PhantomData<Box<(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)>>
+alloc::raw_vec::RawVec<Box<(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)>>
+Vec<Box<(dyn Fn() -> Pin<Box<(dyn std::future::Future<Output = Result<Box<(dyn actix_web::data::DataFactory + 'static)>, ()>> + 'static)>> + 'static)>>
+App<impl ServiceFactory<ServiceRequest, Config = (), Response = ServiceResponse<EitherBody<BoxBody>>, Error = actix_web::Error, InitError = ()>>
