@@ -1,0 +1,18 @@
+FROM rust:latest
+
+WORKDIR /usr/src/stellar-api
+
+RUN apt-get update && apt-get install -y \
+    gdb lldb build-essential pkg-config libssl-dev curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rustup update stable && rustup component add rustfmt clippy:contentReference[oaicite:0]{index=0}
+
+RUN cargo install cargo-watch:contentReference[oaicite:1]{index=1}
+
+RUN useradd -m rustdev && chown -R rustdev /usr/src/app
+USER rustdev
+
+EXPOSE 5000
+
+CMD ["cargo", "watch", "-x", "run"]:contentReference[oaicite:2]{index=2}

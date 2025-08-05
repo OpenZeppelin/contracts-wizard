@@ -7,9 +7,9 @@ use actix_web::{
 use dotenvy::dotenv;
 use log::info;
 use std::sync::Arc;
-use stellar::config::ServerConfig;
+use stellar_api::config::ServerConfig;
 
-use stellar::routes::configure_routes;
+use stellar_api::routes::configure_routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

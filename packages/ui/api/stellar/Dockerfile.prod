@@ -1,0 +1,19 @@
+FROM rust:1.88-slim-bullseye AS builder
+WORKDIR /usr/src/stellar-api
+
+COPY Cargo.toml Cargo.lock ./
+RUN cargo fetch --locked
+
+COPY src/ src/
+RUN cargo build --release --locked
+
+FROM gcr.io/distroless/cc-debian12:nonroot AS runtime
+
+COPY --from=builder --chown=65532:65532 /usr/src/stellar-api/target/release/stellar-api /app/stellar-api
+
+WORKDIR /app
+
+COPY --from=builder /usr/src/stellar-api/target/release/stellar-api .
+
+EXPOSE 5000
+CMD ["/app/stellar-api"]
