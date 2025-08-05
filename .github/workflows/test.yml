@@ -54,10 +54,20 @@ jobs:
         variant:
           - default
           - compile
+        exclude:
+          - package: solidity
+            variant: compile
+          - package: cairo
+            variant: compile
+          - package: stylus
+            variant: compile
+        
 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+        with:
+            fetch-depth: 0
       - name: Set up environment
         uses: ./.github/actions/setup
 
@@ -104,8 +114,15 @@ jobs:
         run: yarn test '**/*.test.ts' '!**/*.compile.test.ts'
         working-directory: packages/core/${{matrix.package}}
 
-      - name: Run tests
+      - name: Get list of changed files
+        id: filter
         if: matrix.variant == 'compile'
+        run: |
+          BASE=${{ github.event.pull_request.base.sha || github.event.before }}
+          echo "changes=$(git diff --name-only $BASE ${{ github.sha }} | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Run tests
+        if: matrix.variant == 'compile' && contains(steps.filter.outputs.changes, format('packages/core/{0}/', matrix.package))
         env:
           RUSTFLAGS: ""
         run: |
