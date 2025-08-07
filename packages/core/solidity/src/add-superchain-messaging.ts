@@ -84,7 +84,7 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
   c.setFunctionBody(
     [
       'if (toChainId == block.chainid) revert InvalidDestination();',
-      `messenger.sendMessage(toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments */)));`,
+      `messenger.sendMessage(toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments to match ${sanitizedFunctionName} */)));`,
     ],
     sourceFn,
   );
