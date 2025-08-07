@@ -28,7 +28,6 @@ function safeSanitizeFunctionName(functionName: string) {
 function addCustomErrors(c: ContractBuilder) {
   c.addCustomError('CallerNotL2ToL2CrossDomainMessenger');
   c.addCustomError('InvalidCrossDomainSender');
-  c.addCustomError('InvalidDestination');
 }
 
 function addCrossDomainMessengerImmutable(c: ContractBuilder) {
@@ -83,7 +82,6 @@ function addSourceFunction(sanitizedFunctionName: string, access: Access, c: Con
 
   c.setFunctionBody(
     [
-      'if (toChainId == block.chainid) revert InvalidDestination();',
       `messenger.sendMessage(toChainId, address(this), abi.encodeCall(this.${sanitizedFunctionName}, (/* TODO: Add arguments to match ${sanitizedFunctionName} */)));`,
     ],
     sourceFn,
