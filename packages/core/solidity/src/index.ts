@@ -29,4 +29,4 @@ export type { ERC1155Options } from './erc1155';
 export type { StablecoinOptions } from './stablecoin';
 export type { AccountOptions } from './account';
 export type { GovernorOptions } from './governor';
-export type { CustomOptions } from './custom';
+export type { CustomOptions, CrossChainMessaging } from './custom';

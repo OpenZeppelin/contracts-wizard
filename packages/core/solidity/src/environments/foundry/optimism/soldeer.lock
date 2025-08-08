@@ -1,0 +1,6 @@
+[[dependencies]]
+name = "@eth-optimism-contracts-bedrock"
+version = "0.17.3"
+url = "https://soldeer-revisions.s3.amazonaws.com/@eth-optimism-contracts-bedrock/0_17_3_06-06-2024_05:37:28_contracts-bedrock.zip"
+checksum = "cd0264f2f2c9f0278f7f8259f4a2b230897262afe14eb8baef996274e53c23db"
+integrity = "7646fa5b18fa27ac5e3de58996a778e2e3675a8d24d3fbf59a889f7397570a73"

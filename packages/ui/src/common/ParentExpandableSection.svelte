@@ -12,10 +12,14 @@
   import ChevronRight from './icons/ChevronRight.svelte';
   import ChevronDown from './icons/ChevronDown.svelte';
 
+  import type { ComponentType } from 'svelte';
+
   export let label: string;
   export let type: 'checkbox' | 'toggleradio';
 
   export let checkboxChecked: boolean | undefined = undefined;
+
+  export let icon: ComponentType | undefined = undefined;
 
   export let toggleRadioValue: false | T | undefined = undefined;
   export let toggleRadioDefaultValue: T | undefined = undefined;
@@ -62,7 +66,7 @@
       <div class="flex items-center">
         <span class="mr-2">
           {#if type === 'checkbox'}
-            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
+            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} on:change />
           {:else if type === 'toggleradio'}
             <ToggleRadio
               bind:value={toggleRadioValue}
@@ -71,7 +75,9 @@
             />
           {/if}
         </span>
-        <span>{label}</span>
+        <span class="flex items-center"
+          >{label}{#if icon}&nbsp;&nbsp;<svelte:component this={icon} />{/if}</span
+        >
       </div>
       <div class="flex items-center">
         <button
