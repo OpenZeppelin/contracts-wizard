@@ -90,7 +90,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.upgradeable, access);
+    addCrossChainBridging(c, allOpts.crossChainBridging, access);
   }
 
   if (allOpts.premint) {
@@ -308,22 +308,15 @@ function addFlashMint(c: ContractBuilder) {
 function addCrossChainBridging(
   c: ContractBuilder,
   crossChainBridging: 'custom' | 'superchain',
-  upgradeable: Upgradeable,
   access: Access,
 ) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
+    path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,
   };
 
   c.addParent(ERC20Bridgeable);
   c.addOverride(ERC20Bridgeable, supportsInterface);
-
-  if (upgradeable) {
-    throw new OptionsError({
-      crossChainBridging: 'Upgradeability is not currently supported with Cross-Chain Bridging',
-    });
-  }
 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   switch (crossChainBridging) {
