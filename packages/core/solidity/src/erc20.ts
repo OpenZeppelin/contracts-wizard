@@ -90,7 +90,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.upgradeable, access);
+    addCrossChainBridging(c, allOpts.crossChainBridging, access);
   }
 
   if (allOpts.premint) {
@@ -308,22 +308,15 @@ function addFlashMint(c: ContractBuilder) {
 function addCrossChainBridging(
   c: ContractBuilder,
   crossChainBridging: 'custom' | 'superchain',
-  upgradeable: Upgradeable,
   access: Access,
 ) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Bridgeable.sol`,
+    path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,
   };
 
   c.addParent(ERC20Bridgeable);
   c.addOverride(ERC20Bridgeable, supportsInterface);
-
-  if (upgradeable) {
-    throw new OptionsError({
-      crossChainBridging: 'Upgradeability is not currently supported with Cross-Chain Bridging',
-    });
-  }
 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   switch (crossChainBridging) {
@@ -345,13 +338,13 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
   switch (access) {
     case false:
     case 'ownable': {
-      const addedBridgeImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
+      const addedBridgeImmutable = c.addVariable(`address public tokenBridge;`);
       if (addedBridgeImmutable) {
-        c.addConstructorArgument({ type: 'address', name: 'tokenBridge' });
-        c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
-        c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
+        c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
+        c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
+        c.addConstructorCode(`tokenBridge = tokenBridge_;`);
       }
-      c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
       break;
     }
     case 'roles': {

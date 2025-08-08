@@ -118,12 +118,7 @@
         downloadHardhat: false,
         downloadFoundry: false,
       };
-    } else if (
-      opts?.kind === 'Stablecoin' ||
-      opts?.kind === 'RealWorldAsset' ||
-      opts?.kind === 'Account' ||
-      (opts?.kind === 'ERC20' && opts.crossChainBridging)
-    ) {
+    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset' || opts?.kind === 'Account') {
       return {
         openInRemix: false,
         downloadHardhat: false,

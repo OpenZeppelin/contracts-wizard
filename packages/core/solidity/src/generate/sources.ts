@@ -101,15 +101,15 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
   if (subset === 'all') {
     return contracts;
   } else {
-    const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.contract.path);
+    const getImports = (c: GeneratedContract) => c.contract.imports.map(importContract => importContract.path);
     return [
       ...findCover(
         contracts.filter(c => c.options.upgradeable),
-        getParents,
+        getImports,
       ),
       ...findCover(
         contracts.filter(c => !c.options.upgradeable),
-        getParents,
+        getImports,
       ),
     ];
   }
