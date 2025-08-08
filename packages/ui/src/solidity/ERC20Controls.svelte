@@ -174,7 +174,7 @@
   bind:value={opts.crossChainBridging}
   defaultValue="custom"
   helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
-  helpLink="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable"
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Bridgeable"
 >
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
