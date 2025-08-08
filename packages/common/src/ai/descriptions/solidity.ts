@@ -10,6 +10,8 @@ export const solidityPrompts = {
   RWA: 'Make a real-world asset token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
   Account:
     'Make an account contract that follows the ERC-4337 standard. Experimental, some features are not audited and are subject to change.',
+  ERC7579:
+    'Make an account module contract that follows the ERC-7579 standard. Experimental, some features are not audited and are subject to change.',
   Governor: 'Make a contract to implement governance, such as for a DAO.',
   Custom: 'Make a custom smart contract.',
 };
@@ -94,4 +96,31 @@ export const solidityGovernorDescriptions = {
   timelock: 'The type of timelock to use',
   storage: 'Enable storage of proposal details and enumerability of proposals',
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
+};
+
+export const solidityERC7579Descriptions = {
+  validator: {
+    signature:
+      'Whether the account supports signature validation via ERC-7913, enabling cryptographic verification of user operations.',
+    multisig: {
+      weighted:
+        'Whether the multisig validator supports weighted signatures, allowing each signer to have a different voting weight for flexible threshold schemes.',
+      confirmation:
+        'Whether the multisig validator requires explicit confirmation (e.g., EIP-712 signature) from each signer when adding them to the multisig module.',
+    },
+    _description: `The validator module for the account. Options:
+    - signature: Whether the account supports signature validation via ERC-7913, enabling cryptographic verification of user operations.
+    - multisig: The multisig validator module.
+      - weighted: Whether the multisig validator supports weighted signatures, allowing each signer to have a different voting weight for flexible threshold schemes.
+      - confirmation: Whether the multisig validator requires explicit confirmation (e.g., EIP-712 signature) from each signer when adding them to the multisig module.
+      `,
+  },
+  executor: {
+    delayed: 'Whether the executor module supports delayed or scheduled execution of operations.',
+    _description: `The executor module for the account. Options:
+    - delayed: Whether the executor module supports delayed or scheduled execution of operations.`,
+  },
+  hook: 'Whether the account supports hooks, which are modules that can execute custom logic before and/or after account operations.',
+  fallback:
+    'Whether the account supports fallback handlers, which can extend the fallback functionality of the account and handle calls to unknown functions.',
 };

@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerSolidityAccount } from './tools/account.js';
+import { registerSolidityERC7579 } from './tools/erc7579.js';
 import { registerSolidityCustom } from './tools/custom.js';
 import { registerSolidityERC20 } from './tools/erc20.js';
 import { registerSolidityERC721 } from './tools/erc721.js';
@@ -22,6 +23,7 @@ function getRegisterFunctions(server: McpServer): SolidityToolRegisterFunctions 
     Stablecoin: () => registerSolidityStablecoin(server),
     RealWorldAsset: () => registerSolidityRWA(server),
     Account: () => registerSolidityAccount(server),
+    ERC7579: () => registerSolidityERC7579(server),
     Governor: () => registerSolidityGovernor(server),
     Custom: () => registerSolidityCustom(server),
   };

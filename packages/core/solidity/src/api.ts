@@ -25,6 +25,8 @@ import {
 } from './stablecoin';
 import type { AccountOptions } from './account';
 import { printAccount, defaults as accountDefaults } from './account';
+import type { ERC7579Options } from './erc7579';
+import { printERC7579, defaults as erc7579Defaults } from './erc7579';
 import type { GovernorOptions } from './governor';
 import {
   printGovernor,
@@ -64,6 +66,7 @@ export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC11
 export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
 export type RealWorldAsset = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
 export type Account = WizardContractAPI<AccountOptions>;
+export type ERC7579 = WizardContractAPI<ERC7579Options>;
 export type Governor = WizardContractAPI<GovernorOptions> & AccessControlAPI<GovernorOptions>;
 export type Custom = WizardContractAPI<CustomOptions> & AccessControlAPI<CustomOptions>;
 
@@ -90,6 +93,10 @@ export const stablecoin: Stablecoin = {
 export const account: Account = {
   print: printAccount,
   defaults: accountDefaults,
+};
+export const erc7579: ERC7579 = {
+  print: printERC7579,
+  defaults: erc7579Defaults,
 };
 export const realWorldAsset: RealWorldAsset = {
   print: printStablecoin,

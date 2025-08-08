@@ -9,6 +9,7 @@
   import StablecoinControls from './StablecoinControls.svelte';
   import RealWorldAssetControls from './RealWorldAssetControls.svelte';
   import AccountControls from './AccountControls.svelte';
+  import ERC7579Controls from './ERC7579Controls.svelte';
   import GovernorControls from './GovernorControls.svelte';
   import CustomControls from './CustomControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -215,7 +216,7 @@
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account', 'ERC7579']}
     sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
   />
 
@@ -230,6 +231,7 @@
           Real-World Asset*
         </button>
         <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+        <button class:selected={tab === 'ERC7579'} on:click={() => (tab = 'ERC7579')}> ERC7579* </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
@@ -337,6 +339,9 @@
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
+      </div>
+      <div class:hidden={tab !== 'ERC7579'}>
+        <ERC7579Controls bind:opts={allOpts.ERC7579} errors={errors.ERC7579} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />

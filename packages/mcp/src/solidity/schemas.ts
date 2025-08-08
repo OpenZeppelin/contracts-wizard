@@ -9,6 +9,7 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
+  solidityERC7579Descriptions,
 } from '@openzeppelin/wizard-common';
 import type { KindedOptions } from '@openzeppelin/wizard';
 
@@ -26,6 +27,7 @@ function _typeAssertions() {
     RealWorldAsset: z.object(rwaSchema).parse({}),
     Account: z.object(accountSchema).parse({}),
     Governor: z.object(governorSchema).parse({}),
+    ERC7579: z.object(erc7579Schema).parse({}),
     Custom: z.object(customSchema).parse({}),
   };
 }
@@ -112,7 +114,7 @@ export const stablecoinSchema = {
 export const rwaSchema = stablecoinSchema;
 
 export const accountSchema = {
-  name: z.string().describe('The name of the account contract'),
+  name: z.string().describe(commonDescriptions.name),
   signatureValidation: z
     .literal(false)
     .or(z.literal('ERC1271'))
@@ -170,6 +172,24 @@ export const governorSchema = {
   storage: z.boolean().optional().describe(solidityGovernorDescriptions.storage),
   settings: z.boolean().optional().describe(solidityGovernorDescriptions.settings),
   upgradeable: commonSchema.upgradeable,
+  info: commonSchema.info,
+} as const satisfies z.ZodRawShape;
+
+export const erc7579Schema = {
+  name: z.string().describe(commonDescriptions.name),
+  validator: z.object({
+    signature: z.boolean().describe(solidityERC7579Descriptions.validator.signature),
+    multisig: z.object({
+      weighted: z.boolean().describe(solidityERC7579Descriptions.validator.multisig.weighted),
+      confirmation: z.boolean().describe(solidityERC7579Descriptions.validator.multisig.confirmation),
+    }),
+  }),
+  executor: z.object({
+    delayed: z.boolean().describe(solidityERC7579Descriptions.executor.delayed),
+  }),
+  hook: z.boolean().describe(solidityERC7579Descriptions.hook),
+  fallback: z.boolean().describe(solidityERC7579Descriptions.fallback),
+  access: commonSchema.access,
   info: commonSchema.info,
 } as const satisfies z.ZodRawShape;
 
