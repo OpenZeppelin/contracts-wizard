@@ -139,7 +139,7 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.batchedExecution || !!opts.ERC7579Modules) return;
   c.addParent({
     name: 'ERC7821',
-    path: '@openzeppelin/contracts/account/extensions/ERC7821.sol',
+    path: '@openzeppelin/contracts/account/extensions/draft-ERC7821.sol',
   });
   c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
   c.setFunctionBody(
@@ -152,7 +152,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
   c.addParent({
     name: opts.ERC7579Modules,
-    path: `@openzeppelin/community-contracts/account/extensions/${opts.ERC7579Modules}.sol`,
+    path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
@@ -283,13 +283,13 @@ const functions = {
     },
     setThreshold: {
       kind: 'public' as const,
-      args: [{ name: 'threshold', type: 'uint256' }],
+      args: [{ name: 'threshold', type: 'uint64' }],
     },
     setSignerWeights: {
       kind: 'public' as const,
       args: [
         { name: 'signers', type: 'bytes[] memory' },
-        { name: 'weights', type: 'uint256[] memory' },
+        { name: 'weights', type: 'uint64[] memory' },
       ],
     },
   }),
