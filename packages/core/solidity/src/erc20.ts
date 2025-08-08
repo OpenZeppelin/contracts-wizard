@@ -338,13 +338,13 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
   switch (access) {
     case false:
     case 'ownable': {
-      const addedBridgeImmutable = c.addVariable(`address public immutable TOKEN_BRIDGE;`);
+      const addedBridgeImmutable = c.addVariable(`address public tokenBridge;`);
       if (addedBridgeImmutable) {
-        c.addConstructorArgument({ type: 'address', name: 'tokenBridge' });
-        c.addConstructorCode(`require(tokenBridge != address(0), "Invalid TOKEN_BRIDGE address");`);
-        c.addConstructorCode(`TOKEN_BRIDGE = tokenBridge;`);
+        c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
+        c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
+        c.addConstructorCode(`tokenBridge = tokenBridge_;`);
       }
-      c.setFunctionBody([`if (caller != TOKEN_BRIDGE) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
       break;
     }
     case 'roles': {
