@@ -49,27 +49,27 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
 export const signers = {
   ERC7702: {
     name: 'SignerERC7702',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerERC7702.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerERC7702.sol',
   },
   ECDSA: {
     name: 'SignerECDSA',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerECDSA.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerECDSA.sol',
   },
   P256: {
     name: 'SignerP256',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerP256.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerP256.sol',
   },
   RSA: {
     name: 'SignerRSA',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerRSA.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerRSA.sol',
   },
   Multisig: {
     name: 'MultiSignerERC7913',
-    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913.sol',
   },
   MultisigWeighted: {
     name: 'MultiSignerERC7913Weighted',
-    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913Weighted.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913Weighted.sol',
   },
 };
 
@@ -96,15 +96,15 @@ export const signerFunctions = defineFunctions({
     kind: 'public' as const,
     args: [
       { name: 'signers', type: 'bytes[] memory' },
-      { name: 'threshold', type: 'uint256' },
+      { name: 'threshold', type: 'uint64' },
     ],
   },
   initializeMultisigWeighted: {
     kind: 'public' as const,
     args: [
       { name: 'signers', type: 'bytes[] memory' },
-      { name: 'weights', type: 'uint256[] memory' },
-      { name: 'threshold', type: 'uint256' },
+      { name: 'weights', type: 'uint64[] memory' },
+      { name: 'threshold', type: 'uint64' },
     ],
   },
   _rawSignatureValidation: {

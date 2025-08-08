@@ -207,22 +207,22 @@
 </ExpandableToggleRadio>
 
 <ExpandableToggleRadio
-  label="Cross-Chain Bridging*"
+  label="Cross-Chain Bridging"
   bind:value={opts.crossChainBridging}
   defaultValue="custom"
   helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
-  helpLink="https://docs.openzeppelin.com/community-contracts/api/token#ERC20Bridgeable"
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Bridgeable"
 >
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
       <input type="radio" bind:group={opts.crossChainBridging} value="custom" />
-      Custom*
+      Custom
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
     <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
       <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
-      SuperchainERC20* &nbsp;<OPIcon />
+      SuperchainERC20 &nbsp;<OPIcon />
       <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
         Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
         chains in the Superchain.

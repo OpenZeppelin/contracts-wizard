@@ -217,6 +217,7 @@ export const solidityAccountAIFunctionDefinition = {
         ],
         description: solidityAccountDescriptions.ERC7579Modules,
       },
+      // TODO: Only AccountERC7579Hooked is upgradeable, how to handle this?
       upgradeable: {
         type: 'boolean',
         enum: [false],
