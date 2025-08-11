@@ -25,7 +25,7 @@
     "@upstash/redis": "1.25.2",
     "ai": "2.2.16",
     "autoprefixer": "^10.4.2",
-    "openai": "4.11.1",
+    "openai": "4.104.0",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.8",
     "postcss-load-config": "^6.0.0",
