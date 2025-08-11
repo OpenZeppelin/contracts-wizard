@@ -1,4 +1,5 @@
 import test from 'ava';
+import type { OptionsError } from '.';
 import { custom } from '.';
 
 import type { CustomOptions } from './custom';
@@ -66,6 +67,27 @@ testCustom('access control managed', {
   access: 'managed',
 });
 
+testCustom('superchain messaging', {
+  crossChainMessaging: 'superchain',
+});
+
+testCustom('superchain messaging ownable pausable', {
+  crossChainMessaging: 'superchain',
+  access: 'ownable',
+  pausable: true,
+});
+
+test('superchain messaging, invalid function name', async t => {
+  const error = t.throws(() =>
+    buildCustom({
+      name: 'MyContract',
+      crossChainMessaging: 'superchain',
+      crossChainFunctionName: '  ',
+    }),
+  );
+  t.is((error as OptionsError).messages.crossChainFunctionName, 'Not a valid function name');
+});
+
 testCustom('upgradeable uups with access control disabled', {
   // API should override access to true since it is required for UUPS
   access: false,
@@ -81,6 +103,8 @@ testAPIEquivalence('custom API full upgradeable', {
   access: 'roles',
   pausable: true,
   upgradeable: 'uups',
+  crossChainMessaging: 'superchain',
+  crossChainFunctionName: 'myCustomFunction',
 });
 
 testAPIEquivalence('custom API full upgradeable with managed', {
@@ -88,6 +112,8 @@ testAPIEquivalence('custom API full upgradeable with managed', {
   access: 'managed',
   pausable: true,
   upgradeable: 'uups',
+  crossChainMessaging: 'superchain',
+  crossChainFunctionName: 'myCustomFunction',
 });
 
 test('custom API assert defaults', async t => {

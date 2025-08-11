@@ -102,6 +102,17 @@ test.serial('custom basic', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('custom cross chain messaging superchain', async t => {
+  const opts: GenericOptions = {
+    kind: 'Custom',
+    name: 'My Contract',
+    crossChainMessaging: 'superchain',
+    crossChainFunctionName: 'myCustomFunction',
+  };
+  const c = buildCustom(opts);
+  await runTest(c, t, opts, true);
+});
+
 test.serial('custom transparent, managed', async t => {
   const opts: GenericOptions = {
     kind: 'Custom',
@@ -113,15 +124,27 @@ test.serial('custom transparent, managed', async t => {
   await runTest(c, t, opts);
 });
 
-async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
+test.serial('custom transparent, managed, cross chain messaging superchain', async t => {
+  const opts: GenericOptions = {
+    kind: 'Custom',
+    name: 'My Contract',
+    upgradeable: 'transparent',
+    access: 'managed',
+    crossChainMessaging: 'superchain',
+  };
+  const c = buildCustom(opts);
+  await runTest(c, t, opts, true);
+});
+
+async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions, expectSoldeerLock?: boolean) {
   const zip = await zipFoundry(c, opts);
 
-  assertLayout(zip, c, t);
+  assertLayout(zip, c, t, expectSoldeerLock);
   await extractAndRunPackage(zip, c, t);
-  await assertContents(zip, c, t);
+  await assertContents(zip, c, t, expectSoldeerLock);
 }
 
-function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>, expectSoldeerLock?: boolean) {
   const sorted = Object.values(zip.files)
     .map(f => f.name)
     .sort();
@@ -130,6 +153,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
     'script/',
     `script/${c.name}.s.sol`,
     'setup.sh',
+    ...(expectSoldeerLock ? ['soldeer.lock'] : []),
     'src/',
     `src/${c.name}.sol`,
     'test/',
@@ -175,12 +199,13 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   t.regex(rerunResult.stdout, /Foundry project already initialized\./);
 }
 
-async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
+async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>, expectSoldeerLock?: boolean) {
   const normalizeVersion = (text: string) => text.replace(/\bv\d+\.\d+\.\d+\b/g, 'vX.Y.Z');
 
   const contentComparison = [
     normalizeVersion(await getItemString(zip, `setup.sh`)),
     await getItemString(zip, `README.md`),
+    ...(expectSoldeerLock ? [await getItemString(zip, `soldeer.lock`)] : []),
     await getItemString(zip, `script/${c.name}.s.sol`),
     await getItemString(zip, `src/${c.name}.sol`),
     await getItemString(zip, `test/${c.name}.t.sol`),

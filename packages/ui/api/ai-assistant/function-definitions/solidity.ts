@@ -9,6 +9,7 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
+  solidityCustomDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 
 export const solidityERC20AIFunctionDefinition = {
@@ -315,13 +316,20 @@ export const solidityCustomAIFunctionDefinition = {
   description: solidityPrompts.Custom,
   parameters: {
     type: 'object',
-    properties: addFunctionPropertiesFrom(commonFunctionDescription, [
-      'name',
-      'pausable',
-      'access',
-      'upgradeable',
-      'info',
-    ]),
+    properties: {
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'pausable', 'access', 'upgradeable', 'info']),
+      crossChainMessaging: {
+        anyOf: [
+          { type: 'string', enum: ['superchain'] },
+          { type: 'boolean', enum: [false] },
+        ],
+        description: solidityCustomDescriptions.crossChainMessaging,
+      },
+      crossChainFunctionName: {
+        type: 'string',
+        description: solidityCustomDescriptions.crossChainFunctionName,
+      },
+    },
     required: ['name'],
     additionalProperties: false,
   },

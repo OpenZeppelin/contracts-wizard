@@ -3,6 +3,7 @@ import test from 'ava';
 import { getImports } from './get-imports';
 import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
+import { buildCustom } from './custom';
 import { generateSources } from './generate/sources';
 import { buildGeneric } from './build-generic';
 
@@ -85,6 +86,17 @@ test('erc721 auto increment uups', t => {
     '@openzeppelin/contracts/utils/math/Math.sol',
     '@openzeppelin/contracts/utils/math/SafeCast.sol',
     '@openzeppelin/contracts/utils/math/SignedMath.sol',
+  ]);
+});
+
+test('custom cross chain messaging superchain', t => {
+  const c = buildCustom({ name: 'MyToken', crossChainMessaging: 'superchain' });
+  const sources = getImports(c);
+  const files = Object.keys(sources).sort();
+
+  t.deepEqual(files, [
+    '@eth-optimism/contracts-bedrock/src/L2/IL2ToL2CrossDomainMessenger.sol',
+    '@eth-optimism/contracts-bedrock/src/libraries/Predeploys.sol',
   ]);
 });
 

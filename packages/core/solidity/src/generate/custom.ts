@@ -1,4 +1,4 @@
-import type { CustomOptions } from '../custom';
+import { CrossChainMessagingOptions, type CustomOptions } from '../custom';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
@@ -8,6 +8,8 @@ const booleans = [true, false];
 
 const blueprint = {
   name: ['MyContract'],
+  crossChainMessaging: CrossChainMessagingOptions,
+  crossChainFunctionName: ['myFunction'],
   pausable: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,

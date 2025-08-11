@@ -1,8 +1,10 @@
 <script lang="ts">
   import ParentExpandableSection from './ParentExpandableSection.svelte';
+  import type { ComponentType } from 'svelte';
 
   export let label: string;
   export let checked: boolean;
+  export let icon: ComponentType | undefined = undefined;
 
   export let helpContent: string;
   export let helpLink: string | undefined = undefined;
@@ -19,12 +21,14 @@
   type="checkbox"
   {label}
   bind:checkboxChecked={checked}
+  {icon}
   {helpContent}
   {helpLink}
   {disabled}
   {disabledReason}
   {required}
   {error}
+  on:change
 >
   <slot />
 </ParentExpandableSection>

@@ -1,0 +1,17 @@
+{
+  "name": "hardhat-sample",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "@eth-optimism/contracts-bedrock": "^0.17.3",
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "hardhat": "^2.16.1"
+  }
+}

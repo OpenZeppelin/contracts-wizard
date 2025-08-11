@@ -338,7 +338,7 @@ function addCrossChainBridging(
       throw new Error('Unknown value for `crossChainBridging`');
     }
   }
-  c.addVariable('error Unauthorized();');
+  c.addCustomError('Unauthorized');
 }
 
 function addCustomBridging(c: ContractBuilder, access: Access) {

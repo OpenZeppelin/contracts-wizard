@@ -6,6 +6,7 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import packageJson from '../package.json';
 
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
@@ -176,6 +177,11 @@ const script = (c: Contract, opts?: GenericOptions) => {
   }
 };
 
+const OPTIMISM_NPM_PACKAGE = '@eth-optimism/contracts-bedrock';
+const OPTIMISM_SOLDEER_PACKAGE = '@eth-optimism-contracts-bedrock';
+const importsOptimism = (c: Contract) => c.imports.some(i => i.path.startsWith(OPTIMISM_NPM_PACKAGE));
+const optimismSemver = packageJson.devDependencies[OPTIMISM_NPM_PACKAGE];
+
 const setupSh = (c: Contract) => `\
 #!/usr/bin/env bash
 
@@ -248,6 +254,28 @@ ${
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
 `
 }
+${
+  importsOptimism(c)
+    ? `\
+
+  # Setup Optimism dependencies
+  echo "" >> foundry.toml
+  echo "[dependencies]" >> foundry.toml
+  echo "\\"${OPTIMISM_SOLDEER_PACKAGE}\\" = { version = \\"${optimismSemver}\\" }" >> foundry.toml
+  forge soldeer install
+  OPTIMISM_PATH=$(grep '${OPTIMISM_SOLDEER_PACKAGE}' remappings.txt | cut -d'=' -f2)
+  if [ -n "$OPTIMISM_PATH" ]
+  then
+    grep -v '${OPTIMISM_SOLDEER_PACKAGE}' remappings.txt > remappings.tmp
+    echo "${OPTIMISM_NPM_PACKAGE}/=$OPTIMISM_PATH" >> remappings.tmp
+    mv remappings.tmp remappings.txt
+  else
+    echo "Failed to setup Optimism dependencies. Run 'forge soldeer install', then update remappings.txt to rename ${OPTIMISM_SOLDEER_PACKAGE}-${optimismSemver}/ to ${OPTIMISM_NPM_PACKAGE}/"
+    exit 1
+  fi\
+`
+    : ''
+}
 
   # Perform initial git commit
   git add .
@@ -291,6 +319,22 @@ forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 See [Solidity scripting guide](https://book.getfoundry.sh/guides/scripting-with-solidity) for more information.
 `;
 
+/**
+ * Load soldeer.lock in environment specific way: browser (for UI) or Node.js (e.g. for tests)
+ */
+async function loadSoldeerLock() {
+  if (typeof process === 'undefined') {
+    // Browser environment - use Rollup plugin
+    return (await import('./environments/foundry/optimism/soldeer.lock')).default;
+  } else {
+    // Node.js environment - read file directly
+    const { readFile } = await import('fs/promises');
+    const { resolve } = await import('path');
+    const lockFilePath = resolve(__dirname, 'environments/foundry/optimism/soldeer.lock');
+    return await readFile(lockFilePath, 'utf8');
+  }
+}
+
 export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
@@ -298,6 +342,9 @@ export async function zipFoundry(c: Contract, opts?: GenericOptions) {
   zip.file(`test/${c.name}.t.sol`, test(c, opts));
   zip.file(`script/${c.name}.s.sol`, script(c, opts));
   zip.file('setup.sh', setupSh(c));
+  if (importsOptimism(c)) {
+    zip.file('soldeer.lock', await loadSoldeerLock());
+  }
   zip.file('README.md', readme(c));
 
   return zip;

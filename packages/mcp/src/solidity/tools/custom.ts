@@ -10,10 +10,12 @@ export function registerSolidityCustom(server: McpServer): RegisteredTool {
     'solidity-custom',
     makeDetailedPrompt(solidityPrompts.Custom),
     customSchema,
-    async ({ name, pausable, access, upgradeable, info }) => {
+    async ({ name, pausable, crossChainMessaging, crossChainFunctionName, access, upgradeable, info }) => {
       const opts: CustomOptions = {
         name,
         pausable,
+        crossChainMessaging,
+        crossChainFunctionName,
         access,
         upgradeable,
         info,
