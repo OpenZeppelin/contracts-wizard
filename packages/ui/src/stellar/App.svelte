@@ -30,7 +30,7 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
-  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
   import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
@@ -88,7 +88,7 @@
 
     // await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
 
-    // make variable localhost:5000
+    // make variable localhost:8888
     try {
       await fetch(`${fargateHost}/stellar/download-scaffold`, {
         method: 'POST',

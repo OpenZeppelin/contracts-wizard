@@ -130,7 +130,7 @@ export default [
         'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
         'process.env.API_HOST': JSON.stringify(production ? '' : `http://localhost:${process.env.API_PORT || 3000}`),
         'process.env.FARGATE_HOST': JSON.stringify(
-          production ? 'TODO' : `http://localhost:${process.env.FARGATE_PORT || 5000}`,
+          production ? 'TODO' : `http://localhost:${process.env.FARGATE_PORT || 8888}`,
         ),
       }),
 

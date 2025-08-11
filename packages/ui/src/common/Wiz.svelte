@@ -52,7 +52,7 @@
     AiFunctionCall,
     AiFunctionCallResponse,
     Chat,
-  } from '../../api/ai-assistant/types/assistant';
+  } from '../../api/ai/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
 
   const apiHost = process.env.API_HOST;

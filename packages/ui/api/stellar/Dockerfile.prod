@@ -15,5 +15,5 @@ WORKDIR /app
 
 COPY --from=builder /usr/src/stellar-api/target/release/stellar-api .
 
-EXPOSE 5000
+EXPOSE 8888
 CMD ["/app/stellar-api"]

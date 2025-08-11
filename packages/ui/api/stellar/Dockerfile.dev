@@ -6,13 +6,16 @@ RUN apt-get update && apt-get install -y \
     gdb lldb build-essential pkg-config libssl-dev curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN rustup update stable && rustup component add rustfmt clippy:contentReference[oaicite:0]{index=0}
+RUN rustup update stable \
+    && rustup default stable \
+    && rustup component add --toolchain stable rustfmt clippy
 
-RUN cargo install cargo-watch:contentReference[oaicite:1]{index=1}
+COPY Cargo.toml Cargo.lock ./
+RUN cargo fetch
+COPY . .
 
-RUN useradd -m rustdev && chown -R rustdev /usr/src/app
-USER rustdev
+RUN cargo install cargo-watch
 
-EXPOSE 5000
+EXPOSE 8888
 
-CMD ["cargo", "watch", "-x", "run"]:contentReference[oaicite:2]{index=2}
+CMD ["cargo", "watch", "-x", "run"]

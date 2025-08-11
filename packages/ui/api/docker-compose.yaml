@@ -1,0 +1,23 @@
+services:
+  stellar-api:
+    container_name: stellar-api
+    build:
+      context: stellar
+      dockerfile: /Dockerfile.dev
+    volumes:
+      - ./:/usr/src/stellar-api
+      - stellar-cargo-target:/usr/src/stellar-api/target
+      - stellar-cargo-cache:/usr/local/cargo/registry
+      - stellar-cargo-git:/usr/local/cargo/git
+    env_file:
+      - ./.env
+    ports:
+      - '8888:8888'
+    command: ['cargo', 'watch', '-x', 'run']
+    tty: true
+    stdin_open: true
+
+volumes:
+  stellar-cargo-target:
+  stellar-cargo-cache:
+  stellar-cargo-git:

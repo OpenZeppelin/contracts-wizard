@@ -9,11 +9,11 @@
  cargo run --release
  ```
 
- The server listens on port 5000.
+ The server listens on port 8888.
 
  ## Docker
 
  ```bash
  docker build -t stellar packages/ui/api/stellar
- docker run -p 5000:5000 stellar
+ docker run -p 8888:8888 stellar
  ```
