@@ -1,5 +1,5 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
+import { commonDescriptions } from '../../../../../common/src/ai/descriptions/common.ts';
 
 const sharedFunctionDescription = {
   name: { type: 'string', description: commonDescriptions.name },

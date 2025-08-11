@@ -10,7 +10,7 @@ import {
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
-} from '../../../../common/src/ai/descriptions/cairo.ts';
+} from '../../../../../common/src/ai/descriptions/cairo.ts';
 
 export const cairoAlphaERC20AIFunctionDefinition = {
   name: 'ERC20',

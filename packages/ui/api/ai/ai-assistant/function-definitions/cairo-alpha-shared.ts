@@ -1,7 +1,10 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { CairoAlphaCommonContractOptions, CairoAlphaRoyaltyInfoOptions } from '../types/languages.ts';
-import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
-import { cairoCommonDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
+import { infoDescriptions } from '../../../../../common/src/ai/descriptions/common.ts';
+import {
+  cairoCommonDescriptions,
+  cairoRoyaltyInfoDescriptions,
+} from '../../../../../common/src/ai/descriptions/cairo.ts';
 
 const commonContractFunctionDescription = {
   upgradeable: {

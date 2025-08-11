@@ -1,7 +1,7 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { StellarCommonContractOptions } from '../types/languages.ts';
-import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
-import { stellarCommonDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
+import { infoDescriptions } from '../../../../../common/src/ai/descriptions/common.ts';
+import { stellarCommonDescriptions } from '../../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarCommonFunctionDescription = {
   access: {

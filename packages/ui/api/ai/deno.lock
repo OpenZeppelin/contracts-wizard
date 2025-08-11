@@ -1,5 +1,5 @@
 {
-  "version": "3",
+  "version": "5",
   "redirects": {
     "https://deno.land/std/fmt/colors.ts": "https://deno.land/std@0.224.0/fmt/colors.ts",
     "https://deno.land/std/path/mod.ts": "https://deno.land/std@0.224.0/path/mod.ts",
@@ -130,47 +130,5 @@
     "https://esm.sh/openai@4.11.1/denonext/streaming.mjs": "cd02b549af9f25b83c8cb9f59ecd0404ca3e596353a67ec0eb621585e18c00c5",
     "https://esm.sh/openai@4.11.1/denonext/uploads.mjs": "65d3319337d257a44c48afebf1ca88d8b3cb9a4b19266e82cdc9bafaefe6af20",
     "https://esm.sh/openai@4.11.1/denonext/version.mjs": "7b5553edf996f31a2befb3a45966048d3b406d979ed1ec0cdac873cbfcd1c4aa"
-  },
-  "workspace": {
-    "packageJson": {
-      "dependencies": [
-        "npm:@rollup/plugin-alias@^5.0.0",
-        "npm:@rollup/plugin-commonjs@^28.0.0",
-        "npm:@rollup/plugin-json@^6.0.0",
-        "npm:@rollup/plugin-node-resolve@^16.0.0",
-        "npm:@rollup/plugin-replace@^6.0.0",
-        "npm:@rollup/plugin-typescript@^12.0.0",
-        "npm:@types/file-saver@^2.0.1",
-        "npm:@types/node@^20.0.0",
-        "npm:@types/resize-observer-browser@^0.1.5",
-        "npm:@types/semver@^7.5.7",
-        "npm:@upstash/redis@1.25.2",
-        "npm:ai@2.2.16",
-        "npm:autoprefixer@^10.4.2",
-        "npm:file-saver@^2.0.5",
-        "npm:highlight.js@^11.0.0",
-        "npm:highlightjs-cairo@^0.4.0",
-        "npm:highlightjs-solidity@^2.0.0",
-        "npm:openai@4.11.1",
-        "npm:path-browserify@^1.0.1",
-        "npm:postcss-load-config@^6.0.0",
-        "npm:postcss@^8.2.8",
-        "npm:rollup-plugin-livereload@^2.0.0",
-        "npm:rollup-plugin-styles@^4.0.0",
-        "npm:rollup-plugin-svelte@^7.0.0",
-        "npm:rollup-plugin-terser@^7.0.0",
-        "npm:rollup@^4.0.0",
-        "npm:semver@^7.6.0",
-        "npm:sirv-cli@^3.0.0",
-        "npm:svelte-check@^3.0.1",
-        "npm:svelte-preprocess@^5.0.0",
-        "npm:svelte@^3.55.0",
-        "npm:tailwindcss@^3.0.15",
-        "npm:tippy.js@^6.3.1",
-        "npm:tslib@^2.0.0",
-        "npm:typescript@^5.0.0",
-        "npm:util@^0.12.4"
-      ]
-    }
   }
 }

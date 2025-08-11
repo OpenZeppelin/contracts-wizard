@@ -9,7 +9,7 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
-} from '../../../../common/src/ai/descriptions/solidity.ts';
+} from '../../../../../common/src/ai/descriptions/solidity.ts';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',

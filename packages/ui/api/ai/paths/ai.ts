@@ -1,18 +1,18 @@
 import { OpenAIStream } from 'ai';
-import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
-import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
-import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
-import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
-import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
-import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
-import { getOpenAiInstance } from './services/open-ai.ts';
-import { getEnvironmentVariableOr } from './utils/env.ts';
-import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
-import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
+import * as solidityFunctions from '../ai-assistant/function-definitions/solidity.ts';
+import * as cairoFunctions from '../ai-assistant/function-definitions/cairo.ts';
+import * as cairoAlphaFunctions from '../ai-assistant/function-definitions/cairo-alpha.ts';
+import * as stellarFunctions from '../ai-assistant/function-definitions/stellar.ts';
+import * as stylusFunctions from '../ai-assistant/function-definitions/stylus.ts';
+import { saveChatInRedisIfDoesNotExist } from '../services/redis.ts';
+import { getOpenAiInstance } from '../services/open-ai.ts';
+import { getEnvironmentVariableOr } from '../utils/env.ts';
+import type { AiChatBodyRequest, Chat } from '../ai-assistant/types/assistant.ts';
+import type { SupportedLanguage } from '../ai-assistant/types/languages.ts';
 import type {
   AllContractsAIFunctionDefinitions,
   SimpleAiFunctionDefinition,
-} from './ai-assistant/types/function-definition.ts';
+} from '../ai-assistant/types/function-definition.ts';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,

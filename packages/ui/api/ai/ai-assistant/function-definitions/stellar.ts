@@ -7,7 +7,7 @@ import {
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
-} from '../../../../common/src/ai/descriptions/stellar.ts';
+} from '../../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',

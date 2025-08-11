@@ -6,7 +6,7 @@ import {
   stylusERC20Descriptions,
   stylusERC721Descriptions,
   stylusERC1155Descriptions,
-} from '../../../../common/src/ai/descriptions/stylus.ts';
+} from '../../../../../common/src/ai/descriptions/stylus.ts';
 
 export const stylusERC20AIFunctionDefinition = {
   name: 'ERC20',
