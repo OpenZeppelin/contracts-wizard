@@ -5,7 +5,6 @@ import { addPauseFunctions } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
-import type { Upgradeable } from './set-upgradeable';
 import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
