@@ -143,6 +143,10 @@ body {
     contrast(100%);
 }
 
+.nav .switch.switch-uniswap-hooks.active {
+  --color-2: #f50eb4;
+}
+
 .nav-row {
   padding: 0 1rem 0;
   max-width: 100%;
