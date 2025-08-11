@@ -31,10 +31,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
-        ...(importsCommunityContracts(contract)
-          ? [`// Compatible with OpenZeppelin Community Contracts ${communityContractsVersion}`]
-          : []),
+        ...printCompatibleLibraryVersions(contract),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
@@ -57,6 +54,15 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printCompatibleLibraryVersions(contract: Contract): string[] {
+  const lines: string[] = [];
+  lines.push(`// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`);
+  if (importsCommunityContracts(contract)) {
+    lines.push(`// Compatible with OpenZeppelin Community Contracts git commit ${communityContractsVersion}`);
+  }
+  return lines;
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
