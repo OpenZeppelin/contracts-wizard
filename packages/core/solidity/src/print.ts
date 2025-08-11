@@ -17,6 +17,8 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
+import { importsCommunityContracts } from './utils/imports-libraries';
+import { communityContractsVersion } from '../openzeppelin-contracts.json';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -30,6 +32,9 @@ export function printContract(contract: Contract, opts?: Options): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
+        ...(importsCommunityContracts(contract)
+          ? [`// Compatible with OpenZeppelin Community Contracts ${communityContractsVersion}`]
+          : []),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 

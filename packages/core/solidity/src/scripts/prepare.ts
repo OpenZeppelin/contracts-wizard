@@ -4,7 +4,8 @@ import hre from 'hardhat';
 import type { BuildInfo } from 'hardhat/types';
 import { findAll } from 'solidity-ast/utils';
 import { rimraf } from 'rimraf';
-import { version } from '@openzeppelin/contracts/package.json';
+import { version as contractsVersion } from '@openzeppelin/contracts/package.json';
+import { devDependencies } from '../../package.json';
 
 import type { OpenZeppelinContracts } from '../../openzeppelin-contracts';
 import { writeGeneratedSources } from '../generate/sources';
@@ -45,13 +46,24 @@ async function main() {
     }
   }
 
+  const communityContractsVersion = extractGitCommitHash(devDependencies['@openzeppelin/community-contracts']);
+
   const contracts: OpenZeppelinContracts = {
-    version,
+    contractsVersion,
+    communityContractsVersion,
     sources,
     dependencies: mapValues(transitiveClosure(dependencies), d => Array.from(d)),
   };
 
   await fs.writeFile('openzeppelin-contracts.json', JSON.stringify(contracts, null, 2));
+}
+
+function extractGitCommitHash(dependencyVersion: string): string {
+  const splitHash = dependencyVersion.split('#');
+  if (!dependencyVersion.startsWith('git+') || splitHash.length !== 2) {
+    throw new Error(`Expected git dependency in format git+<url>#<commit-hash>, but got ${dependencyVersion}`);
+  }
+  return splitHash[1]!;
 }
 
 main().catch(e => {

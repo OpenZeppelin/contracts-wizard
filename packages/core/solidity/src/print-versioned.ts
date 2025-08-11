@@ -7,7 +7,7 @@ export function printContractVersioned(contract: Contract): string {
     transformImport: p => {
       return {
         ...p,
-        path: p.path.replace(/^@openzeppelin\/contracts(-upgradeable)?/, `$&@${contracts.version}`),
+        path: p.path.replace(/^@openzeppelin\/contracts(-upgradeable)?/, `$&@${contracts.contractsVersion}`),
       };
     },
   });
