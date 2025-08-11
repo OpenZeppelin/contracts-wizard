@@ -60,7 +60,7 @@ function printCompatibleLibraryVersions(contract: Contract): string[] {
   const lines: string[] = [];
   lines.push(`// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`);
   if (importsCommunityContracts(contract)) {
-    lines.push(`// Compatible with OpenZeppelin Community Contracts git commit ${communityContractsVersion}`);
+    lines.push(`// Compatible with OpenZeppelin Community Contracts commit ${communityContractsVersion}`);
   }
   return lines;
 }
