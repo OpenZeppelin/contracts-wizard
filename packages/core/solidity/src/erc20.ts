@@ -305,11 +305,7 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addCrossChainBridging(
-  c: ContractBuilder,
-  crossChainBridging: 'custom' | 'superchain',
-  access: Access,
-) {
+function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,

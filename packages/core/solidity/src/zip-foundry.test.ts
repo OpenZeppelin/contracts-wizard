@@ -71,7 +71,6 @@ test.serial('erc20 ownable, uups, crossChainBridging custom', async t => {
   await runTest(c, t, opts);
 });
 
-
 test.serial('erc20 uups, roles', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',
