@@ -18,20 +18,32 @@ async fn main() -> std::io::Result<()> {
 
     let config = Arc::new(ServerConfig::from_environment_variables());
 
-    let wizard_origin = config.wizard_origin.clone();
-
     let rate_limit_config = GovernorConfigBuilder::default()
         .requests_per_second(config.rate_limit_requests_per_second)
         .finish()
         .unwrap();
 
-    info!("Starting server on {}:{}", config.host, config.port);
+    let host = config.host.clone();
+    let port = config.port;
+
+    info!("Starting server on {}:{}", host, port);
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-            .allowed_origin(wizard_origin.as_str())
-            .allowed_methods(["POST"])
-            .allow_any_header();
+        let cors = {
+            let wizard_origin = config.wizard_origin.clone();
+            Cors::default()
+                .allowed_origin_fn(move |origin, _req| {
+                    if let Ok(origin_str) = origin.to_str() {
+                        origin_str.ends_with("wizard.netlify.app")
+                            || origin_str == "https://wizard.openzeppelin.com"
+                            || origin_str == wizard_origin
+                    } else {
+                        false
+                    }
+                })
+                .allowed_methods(["POST"])
+                .allow_any_header()
+        };
 
         App::new()
             .wrap(cors)
@@ -40,7 +52,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(web::scope("/stellar").configure(configure_routes))
     })
-    .bind((config.host.as_str(), config.port))?
+    .bind((host.as_str(), port))?
     .run()
     .await
 }

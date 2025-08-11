@@ -1,11 +1,11 @@
-FROM denoland/deno:latest
+# Match netlify version environment
+FROM denoland/deno:1.46.3
 
 COPY . /app/ui/api/ai
 COPY ../../common /app/common
 
-RUN deno cache --unstable development-server.ts
+WORKDIR /app/ui/api/ai
 
 EXPOSE 3000
 
-WORKDIR /app/ui/api/ai
 CMD ["deno","task","dev"]

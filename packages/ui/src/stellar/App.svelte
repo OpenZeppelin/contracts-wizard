@@ -84,11 +84,6 @@
   const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
 
   const downloadScaffoldHandler = async () => {
-    // const { zipScaffoldProject } = await zipScaffoldModule;
-
-    // await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
-
-    // make variable localhost:8888
     try {
       await fetch(`${fargateHost}/stellar/download-scaffold`, {
         method: 'POST',
@@ -101,6 +96,7 @@
         }),
       });
     } catch (error) {
+      //TODO handle error (display message)
       console.log(error);
     }
   };

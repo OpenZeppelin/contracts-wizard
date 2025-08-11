@@ -1,31 +1,43 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ContractWithOptions {
     contract: Contract,
     opts: ContractOptions,
 }
 
-//TODO camel case
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Contract {
     license: String,
-    securityContact: String,
+    security_contact: String,
     ownable: bool,
     documentations: Vec<String>,
-    constructorArgs: Vec<String>,
-    constructorCode: Vec<String>,
-    implementedTraitsMap: HashMap<String, String>,
-    freeFunctionsMap: HashMap<String, String>,
-    variablesMap: HashMap<String, String>,
-    useClausesMap: HashMap<String, String>,
-    errorsMap: HashMap<String, String>,
-    derivesSet: HashMap<String, String>,
+    constructor_args: Vec<ConstructorArg>,
+    constructor_code: Vec<String>,
+    implemented_traits_map: HashMap<String, String>,
+    free_functions_map: HashMap<String, String>,
+    variables_map: HashMap<String, String>,
+    use_clauses_map: HashMap<String, String>,
+    errors_map: HashMap<String, String>,
+    derives_set: HashMap<String, String>,
     name: String,
 }
 
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
+pub struct ConstructorArg {
+    name: String,
+    #[serde(rename = "type")]
+    arg_type: String,
+}
+#[allow(dead_code)]
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ContractOptions {
     kind: String,
     name: String,
@@ -33,13 +45,14 @@ pub struct ContractOptions {
     burnable: bool,
     pausable: bool,
     upgradeable: bool,
-    premint: String,
+    premint: Option<String>,
     mintable: bool,
-    access: bool,
-    info: Info,
+    access: Option<String>,
+    info: Option<Info>,
 }
 
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
-struct Info {
+pub struct Info {
     license: String,
 }
