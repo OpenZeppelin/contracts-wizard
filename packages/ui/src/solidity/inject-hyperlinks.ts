@@ -21,7 +21,7 @@ export function injectHyperlinks(code: string) {
     result = result
       .replace(
         importCommunityContractsRegex,
-        `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/openzeppelin-community-contracts/tree/${compatibleCommunityContractsGitCommit}/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+        `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/openzeppelin-community-contracts/blob/${compatibleCommunityContractsGitCommit}/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
       )
       .replace(
         compatibleCommunityContractsRegexGlobal,
