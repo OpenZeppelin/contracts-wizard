@@ -71,7 +71,7 @@ function evaluateSelection(
       } else if (
         requestedVersion === 'alpha' ||
         (semver.satisfies(requestedVersion, cairoAlphaSemver) &&
-          (cairoVersion as string) !== (cairoAlphaVersion as string))
+          semver.compare(cairoVersion, cairoAlphaVersion) !== 0)
       ) {
         return { compatible: true, appType: 'cairo_alpha' };
       } else if (requestedVersion === 'stable' || semver.satisfies(requestedVersion, cairoSemver)) {
