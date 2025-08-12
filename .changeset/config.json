@@ -13,6 +13,7 @@
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
   "ignore": [
+    "@openzeppelin/wizard-cairo",
     "@openzeppelin/wizard-cairo-alpha",
     "ui"
   ]
