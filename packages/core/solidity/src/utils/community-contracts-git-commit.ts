@@ -18,7 +18,7 @@ export function getCommunityContractsGitCommit(): string {
  *
  * @param dependencyName The name of the package dependency.
  * @param dependencyVersion The version string of the package dependency.
- * @returns The git commit hash.
+ * @returns The git commit hash, normalized to lowercase.
  * @throws Error if the version string or commit hash is not in the expected format.
  */
 export function extractGitCommitHash(dependencyName: string, dependencyVersion: string): string {
