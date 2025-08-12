@@ -18,7 +18,7 @@ import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import { importsCommunityContracts } from './utils/imports-libraries';
-import { communityContractsVersion } from '../openzeppelin-contracts.json';
+import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -60,7 +60,7 @@ function printCompatibleLibraryVersions(contract: Contract): string[] {
   const lines: string[] = [];
   lines.push(`// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`);
   if (importsCommunityContracts(contract)) {
-    lines.push(`// Compatible with OpenZeppelin Community Contracts commit ${communityContractsVersion}`);
+    lines.push(`// Compatible with OpenZeppelin Community Contracts commit ${getCommunityContractsGitCommit()}`);
   }
   return lines;
 }
