@@ -7,7 +7,7 @@ export function injectHyperlinks(code: string) {
   const importCommunityContractsRegex =
     /&quot;(@openzeppelin\/)(community-contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
-  const compatibleCommunityContractsRegexSingle = /OpenZeppelin Community Contracts commit ([a-f0-9]{40})/;
+  const compatibleCommunityContractsRegexSingle = /Community Contracts commit ([a-fA-F0-9]{7,40})/;
   const compatibleCommunityContractsRegexGlobal = new RegExp(compatibleCommunityContractsRegexSingle.source, 'g');
 
   const compatibleCommunityContractsGitCommit = code.match(compatibleCommunityContractsRegexSingle)?.[1];
@@ -25,7 +25,7 @@ export function injectHyperlinks(code: string) {
       )
       .replace(
         compatibleCommunityContractsRegexGlobal,
-        `OpenZeppelin Community Contracts commit <a class="import-link" href="https://github.com/OpenZeppelin/openzeppelin-community-contracts/tree/$1" target="_blank" rel="noopener noreferrer" title="View repository at commit $1">$1</a>`,
+        `Community Contracts commit <a class="import-link" href="https://github.com/OpenZeppelin/openzeppelin-community-contracts/tree/$1" target="_blank" rel="noopener noreferrer" title="View repository at commit $1">$1</a>`,
       );
   }
 

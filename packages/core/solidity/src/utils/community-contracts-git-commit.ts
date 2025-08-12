@@ -16,10 +16,10 @@ function extractGitCommitHash(dependencyName: string, dependencyVersion: string)
     );
   }
   const hash = split[1]!;
-  if (!/^[0-9a-f]{40}$/.test(hash)) {
+  if (!/^[a-fA-F0-9]{7,40}$/.test(hash)) {
     throw new Error(
-      `Expected git commit hash for package dependency ${dependencyName} to have 40 hex chars, but got ${hash}`,
+      `Expected git commit hash for package dependency ${dependencyName} to have between 7 and 40 hex chars, but got ${hash}`,
     );
   }
-  return hash;
+  return hash.toLowerCase();
 }
