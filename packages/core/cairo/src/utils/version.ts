@@ -8,8 +8,8 @@ export const contractsVersionTag = `v${contractsVersion}`;
  * Cairo compiler versions.
  */
 export const edition = '2024_07';
-export const cairoVersion = '2.12.0';
-export const scarbVersion = '2.12.0';
+export const cairoVersion = '2.11.4';
+export const scarbVersion = '2.11.4';
 
 /**
  * Semantic version string representing of the minimum compatible version of Contracts to display in output.
