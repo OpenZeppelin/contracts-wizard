@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.0.7 (2025-08-12)
+
+- Updated dependencies [[`f39adfd`](https://github.com/OpenZeppelin/contracts-wizard/commit/f39adfdafa0fe772e292f48f5182e488c096132c)]:
+  - @openzeppelin/wizard@0.7.0
+  - @openzeppelin/wizard-common@0.0.3
+
 ## 0.0.6 (2025-07-29)
 
 - Update Wizard API dependencies ([#612](https://github.com/OpenZeppelin/contracts-wizard/pull/612))
