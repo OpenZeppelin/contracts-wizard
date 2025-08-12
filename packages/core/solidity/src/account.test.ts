@@ -2,7 +2,7 @@ import test from 'ava';
 import { account } from '.';
 
 import type { AccountOptions } from './account';
-import { buildAccount } from './account';
+import { buildAccount, buildFactory } from './account';
 import { printContract } from './print';
 
 /**
@@ -12,7 +12,7 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
   test(title, t => {
     t.is(
       account.print(opts),
-      printContract(
+      printContract([
         buildAccount({
           name: 'MyAccount',
           signatureValidation: 'ERC7739',
@@ -22,7 +22,16 @@ function testAPIEquivalence(title: string, opts?: AccountOptions) {
           ERC7579Modules: false,
           ...opts,
         }),
-      ),
+        buildFactory({
+          name: 'MyAccount',
+          signatureValidation: 'ERC7739',
+          ERC721Holder: true,
+          ERC1155Holder: true,
+          batchedExecution: false,
+          ERC7579Modules: false,
+          ...opts,
+        }),
+      ].filter(c => c !== null)),
     );
   });
 }
@@ -38,8 +47,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
     ...opts,
   };
   test(title, t => {
-    const c = buildAccount(fullOpts);
-    t.snapshot(printContract(c));
+    t.snapshot(account.print(fullOpts));
   });
   testAPIEquivalence(`${title} API equivalence`, fullOpts);
 }
