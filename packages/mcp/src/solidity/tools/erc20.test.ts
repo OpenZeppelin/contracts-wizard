@@ -62,7 +62,5 @@ test('all', async t => {
 
   assertHasAllSupportedFields(t, params);
 
-  // Records an error in the snapshot, because some fields are incompatible with each other.
-  // This is ok, because we just need to check that all fields can be passed in.
-  await assertAPIEquivalence(t, params, erc20.print, true);
+  await assertAPIEquivalence(t, params, erc20.print);
 });
