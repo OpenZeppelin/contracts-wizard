@@ -187,34 +187,14 @@ testERC20('erc20 crossChainBridging superchain managed', {
   access: 'managed',
 });
 
-test('erc20 crossChainBridging custom, upgradeable not allowed', async t => {
-  const error = t.throws(() =>
-    buildERC20({
-      name: 'MyToken',
-      symbol: 'MTK',
-      crossChainBridging: 'custom',
-      upgradeable: 'transparent',
-    }),
-  );
-  t.is(
-    (error as OptionsError).messages.crossChainBridging,
-    'Upgradeability is not currently supported with Cross-Chain Bridging',
-  );
+testERC20('erc20 crossChainBridging custom upgradeable', {
+  crossChainBridging: 'custom',
+  upgradeable: 'transparent',
 });
 
-test('erc20 crossChainBridging superchain, upgradeable not allowed', async t => {
-  const error = t.throws(() =>
-    buildERC20({
-      name: 'MyToken',
-      symbol: 'MTK',
-      crossChainBridging: 'superchain',
-      upgradeable: 'transparent',
-    }),
-  );
-  t.is(
-    (error as OptionsError).messages.crossChainBridging,
-    'Upgradeability is not currently supported with Cross-Chain Bridging',
-  );
+testERC20('erc20 crossChainBridging superchain upgradeable', {
+  crossChainBridging: 'superchain',
+  upgradeable: 'transparent',
 });
 
 test('erc20 crossChainBridging superchain, premintChainId required', async t => {
@@ -249,7 +229,7 @@ testERC20('erc20 premint chainId crossChainBridging superchain', {
   crossChainBridging: 'superchain',
 });
 
-testERC20('erc20 full crossChainBridging custom non-upgradeable', {
+testERC20('erc20 full crossChainBridging custom upgradeable uups', {
   premint: '2000',
   access: 'roles',
   burnable: true,
@@ -261,6 +241,7 @@ testERC20('erc20 full crossChainBridging custom non-upgradeable', {
   flashmint: true,
   crossChainBridging: 'custom',
   premintChainId: '10',
+  upgradeable: 'uups',
 });
 
 testERC20('erc20 full upgradeable transparent', {
