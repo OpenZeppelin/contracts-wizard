@@ -8,7 +8,7 @@ export function injectHyperlinks(code: string) {
     /&quot;(@openzeppelin\/)(community-contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
   const compatibleCommunityContractsRegexSingle = /OpenZeppelin Community Contracts commit ([a-f0-9]{40})/;
-  const compatibleCommunityContractsRegexGlobal = new RegExp(compatibleCommunityContractsRegexSingle, 'g');
+  const compatibleCommunityContractsRegexGlobal = new RegExp(compatibleCommunityContractsRegexSingle.source, 'g');
 
   const compatibleCommunityContractsGitCommit = code.match(compatibleCommunityContractsRegexSingle)?.[1];
 
