@@ -2,11 +2,7 @@ export interface OpenZeppelinContracts {
   /**
    * Version of `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable`
    */
-  contractsVersion: string;
-  /**
-   * Version of `@openzeppelin/community-contracts`
-   */
-  communityContractsVersion: string;
+  version: string;
   /**
    * Map of source file path to source code.
    */

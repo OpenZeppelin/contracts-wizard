@@ -208,12 +208,12 @@ ${
   c.upgradeable
     ? `\
   # Install OpenZeppelin Contracts and Upgrades
-  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.contractsVersion} --quiet
+  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
   forge install OpenZeppelin/openzeppelin-foundry-upgrades --quiet\
 `
     : `\
   # Install OpenZeppelin Contracts
-  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.contractsVersion} --quiet\
+  forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
 }
 
