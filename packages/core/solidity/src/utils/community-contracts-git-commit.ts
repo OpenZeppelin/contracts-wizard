@@ -12,7 +12,7 @@ function extractGitCommitHash(dependencyName: string, dependencyVersion: string)
   const splitHash = dependencyVersion.split('#');
   if (!dependencyVersion.startsWith('git+') || splitHash.length !== 2) {
     throw new Error(
-      `Expected git dependency for ${dependencyName} in format git+<url>#<commit-hash>, but got ${dependencyVersion}`,
+      `Expected package dependency for ${dependencyName} in format git+<url>#<commit-hash>, but got ${dependencyVersion}`,
     );
   }
   return splitHash[1]!;
