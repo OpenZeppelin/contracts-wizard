@@ -76,6 +76,7 @@ export function addVotesComponent(c: ContractBuilder, name: string, version: str
   c.addImplToComponent(components.VotesComponent, {
     name: 'VotesImpl',
     value: `VotesComponent::VotesImpl<ContractState>`,
+    section,
   });
   c.addUseClause('openzeppelin::utils::contract_clock', 'ERC6372TimestampClock');
 }
