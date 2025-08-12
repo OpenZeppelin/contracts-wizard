@@ -77,6 +77,7 @@ export function addVotesComponent(c: ContractBuilder, name: string, version: str
     name: 'VotesImpl',
     value: `VotesComponent::VotesImpl<ContractState>`,
   });
+  c.addUseClause('openzeppelin::utils::contract_clock', 'ERC6372TimestampClock');
 }
 
 export function addSNIP12Metadata(c: ContractBuilder, name: string, version: string, section?: string) {
