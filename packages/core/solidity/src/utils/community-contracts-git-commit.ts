@@ -1,5 +1,9 @@
 import { devDependencies } from '../../package.json';
 
+/**
+ * @returns The git commit hash of the @openzeppelin/community-contracts package dependency.
+ * @throws Error if the @openzeppelin/community-contracts package dependency is not found in devDependencies.
+ */
 export function getCommunityContractsGitCommit(): string {
   const communityContractsVersion = devDependencies['@openzeppelin/community-contracts'];
   if (!communityContractsVersion) {
@@ -8,7 +12,16 @@ export function getCommunityContractsGitCommit(): string {
   return extractGitCommitHash('@openzeppelin/community-contracts', communityContractsVersion);
 }
 
-function extractGitCommitHash(dependencyName: string, dependencyVersion: string): string {
+/**
+ * Extracts the git commit hash from a package dependency version string.
+ * The expected format is `git+<url>#<commit-hash>`.
+ *
+ * @param dependencyName The name of the package dependency.
+ * @param dependencyVersion The version string of the package dependency.
+ * @returns The git commit hash.
+ * @throws Error if the version string or commit hash is not in the expected format.
+ */
+export function extractGitCommitHash(dependencyName: string, dependencyVersion: string): string {
   const split = dependencyVersion.split('#');
   if (!dependencyVersion.startsWith('git+') || split.length !== 2) {
     throw new Error(
