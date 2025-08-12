@@ -40,6 +40,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
+          printUsing(contract, helpers),
           contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
@@ -259,4 +260,21 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   });
 
   return lines;
+}
+
+function printUsing(contract: Contract, { transformName }: Helpers): string[] {
+  if (!contract.using || contract.using.length === 0) {
+    return [];
+  }
+
+  // Emit in stable order by library then type to keep output deterministic
+  const entries = [...contract.using].sort((a, b) => {
+    if (a.library.name < b.library.name) return -1;
+    if (a.library.name > b.library.name) return 1;
+    if (a.usingFor < b.usingFor) return -1;
+    if (a.usingFor > b.usingFor) return 1;
+    return 0;
+  });
+
+  return entries.map(u => `using ${transformName(u.library)} for ${u.usingFor};`);
 }

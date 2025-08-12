@@ -1,5 +1,4 @@
 import type { Contract } from '@openzeppelin/wizard/src/contract';
-
 import type { HooksOptions } from './hooks';
 import { buildHooks } from './hooks';
 

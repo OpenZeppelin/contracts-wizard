@@ -5,6 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
+  using: Using[];
   imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
@@ -131,6 +132,15 @@ export class ContractBuilder implements Contract {
       importOnly: true,
     });
     return !present;
+  }
+
+  addUsing(library: ImportContract, usingFor: string): boolean {
+    const exists = this.using.some(u => u.library.name === library.name && u.usingFor === usingFor);
+    if (!exists) {
+      this.using.push({ library, usingFor });
+      return true;
+    }
+    return false;
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
