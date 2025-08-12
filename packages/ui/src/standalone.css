@@ -144,7 +144,7 @@ body {
 }
 
 .nav .switch.switch-uniswap-hooks.active {
-  --color-2: #f50eb4;
+  --color-2: var(--uniswap-pink);
 }
 
 .nav-row {

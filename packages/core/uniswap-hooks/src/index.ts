@@ -5,6 +5,7 @@ export type { Kind } from './kind';
 export { sanitizeKind } from './kind';
 
 export { hooks } from './api';
+export { ALL_HOOKS } from './hooks';
 
 export { compatibleContractsSemver } from './utils/version';
 

@@ -219,7 +219,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--solidity-blue-2);
+    background-color: var(--uniswap-pink);
     color: white;
     order: -1;
   }

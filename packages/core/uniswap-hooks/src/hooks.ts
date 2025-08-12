@@ -6,11 +6,37 @@ import { setInfo } from '@openzeppelin/wizard/src/set-info';
 import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
 import { printContract } from '@openzeppelin/wizard/src/print';
+import type { Value } from '@openzeppelin/wizard/src/contract';
 
-type BaseHook = 'BaseHook' | 'BaseAsyncSwap' | 'BaseCustomAccounting' | 'BaseCustomCurve';
-type FeeHook = 'BaseDynamicFee' | 'BaseOverrideFee' | 'BaseDynamicAfterFee' | 'BaseHookFee';
-type GeneralHook = 'AntiSandwichHook' | 'LimitOrderHook' | 'LiquidityPenaltyHook';
-type Hook = BaseHook | FeeHook | GeneralHook;
+export type BaseHook = 'BaseHook' | 'BaseAsyncSwap' | 'BaseCustomAccounting' | 'BaseCustomCurve';
+export type FeeHook = 'BaseDynamicFee' | 'BaseOverrideFee' | 'BaseDynamicAfterFee' | 'BaseHookFee';
+export type GeneralHook = 'AntiSandwichHook' | 'LimitOrderHook' | 'LiquidityPenaltyHook';
+export type Hook = BaseHook | FeeHook | GeneralHook;
+
+export const ALL_HOOKS: Hook[] = [
+  // Base
+  'BaseHook',
+  'BaseAsyncSwap',
+  'BaseCustomAccounting',
+  'BaseCustomCurve',
+  // Fee
+  'BaseDynamicFee',
+  'BaseOverrideFee',
+  'BaseDynamicAfterFee',
+  'BaseHookFee',
+  // General
+  'AntiSandwichHook',
+  'LimitOrderHook',
+  'LiquidityPenaltyHook',
+];
+
+export const sharesOptions = [false, 'ERC20', 'ERC6909'] as const;
+
+export type Shares = {
+  options: (typeof sharesOptions)[number];
+  name: string;
+  symbol: string;
+};
 
 export interface HooksOptions extends CommonOptions {
   hook: Hook;
@@ -19,6 +45,7 @@ export interface HooksOptions extends CommonOptions {
   currencySettler?: boolean;
   safeCast?: boolean;
   transientStorage?: boolean;
+  shares?: Shares;
 }
 
 export const defaults: Required<HooksOptions> = {
@@ -31,6 +58,11 @@ export const defaults: Required<HooksOptions> = {
   currencySettler: false,
   safeCast: false,
   transientStorage: false,
+  shares: {
+    options: false,
+    name: 'MyShares',
+    symbol: 'MSH',
+  },
 } as const;
 
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
@@ -41,6 +73,7 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
     currencySettler: opts.currencySettler ?? defaults.currencySettler,
     safeCast: opts.safeCast ?? defaults.safeCast,
     transientStorage: opts.transientStorage ?? defaults.transientStorage,
+    shares: opts.shares ?? defaults.shares,
   };
 }
 
@@ -85,11 +118,29 @@ export function buildHooks(opts: HooksOptions): Contract {
     addTransientStorage(c, allOpts);
   }
 
+  if (allOpts.shares.options) {
+    if (allOpts.shares.options === 'ERC20') {
+      addERC20Shares(c, allOpts);
+    }
+    if (allOpts.shares.options === 'ERC6909') {
+      addERC6909Shares(c, allOpts);
+    }
+  }
+
   return c;
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   let path = '';
+
+  c.addImportOnly({
+    name: 'IPoolManager',
+    path: `@uniswap/v4-core/contracts/interfaces/IPoolManager.sol`,
+  });
+  c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
+
+  const params: Value[] = [];
+  params.push({ lit: '_poolManager' });
 
   switch (allOpts.hook) {
     case 'BaseHook':
@@ -106,20 +157,26 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'AntiSandwichHook':
     case 'LimitOrderHook':
+      path = `@openzeppelin/uniswap-hooks/src/general/${allOpts.hook}.sol`;
+      break;
     case 'LiquidityPenaltyHook':
       path = `@openzeppelin/uniswap-hooks/src/general/${allOpts.hook}.sol`;
+      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
+      params.push({ lit: '_blockNumberOffset' });
       break;
     default:
       throw new Error(`Unknown hook: ${allOpts.hook}`);
   }
 
-  c.addParent({
+  const hook = {
     name: allOpts.hook,
     path,
-  });
+  };
+
+  c.addParent(hook, params);
 }
 
-function addCurrencySettler(c: ContractBuilder, opts: HooksOptions) {
+function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addUsing(
     {
       name: 'CurrencySettler',
@@ -129,7 +186,7 @@ function addCurrencySettler(c: ContractBuilder, opts: HooksOptions) {
   );
 }
 
-function addSafeCast(c: ContractBuilder, opts: HooksOptions) {
+function addSafeCast(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addUsing(
     {
       name: 'SafeCast',
@@ -139,7 +196,7 @@ function addSafeCast(c: ContractBuilder, opts: HooksOptions) {
   );
 }
 
-function addTransientStorage(c: ContractBuilder, opts: HooksOptions) {
+function addTransientStorage(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addUsing(
     {
       name: 'TransientSlot',
@@ -153,5 +210,24 @@ function addTransientStorage(c: ContractBuilder, opts: HooksOptions) {
       path: `@openzeppelin/contracts/utils/SlotDerivation.sol`,
     },
     '*',
+  );
+}
+
+function addERC20Shares(c: ContractBuilder, _allOpts: HooksOptions) {
+  c.addParent(
+    {
+      name: 'ERC20',
+      path: `@openzeppelin/contracts/token/ERC20/ERC20.sol`,
+    },
+    [_allOpts.shares!.name, _allOpts.shares!.symbol],
+  );
+}
+function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
+  c.addParent(
+    {
+      name: 'ERC6909',
+      path: `@openzeppelin/contracts/token/ERC6909/draft-ERC6909.sol`,
+    },
+    [_allOpts.shares!.name, _allOpts.shares!.symbol],
   );
 }
