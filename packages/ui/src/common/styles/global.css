@@ -146,6 +146,10 @@ input.input-inline {
   color: inherit;
 }
 
+.comment-link {
+  color: #7d828d;
+}
+
 .glimmery {
   background: conic-gradient(rgb(196, 181, 253), rgb(110, 231, 183), rgb(249, 168, 212));
 }

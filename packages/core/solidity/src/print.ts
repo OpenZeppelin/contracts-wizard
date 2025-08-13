@@ -17,6 +17,8 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
+import { importsCommunityContracts } from './utils/imports-libraries';
+import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -29,7 +31,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
+        printCompatibleLibraryVersions(contract),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
@@ -52,6 +54,19 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printCompatibleLibraryVersions(contract: Contract): string {
+  let result = `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`;
+  if (importsCommunityContracts(contract)) {
+    try {
+      const commit = getCommunityContractsGitCommit();
+      result += ` and Community Contracts commit ${commit}`;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return result;
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
