@@ -1,9 +1,9 @@
-mod download_scaffold;
-mod health;
+pub mod health;
+pub mod upgrade_scaffold;
 
 use actix_web::web;
 
 pub fn configure_routes(cfg: &mut web::ServiceConfig) {
     cfg.configure(health::init)
-        .configure(download_scaffold::init);
+        .configure(upgrade_scaffold::init);
 }

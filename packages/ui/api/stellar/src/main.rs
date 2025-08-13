@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
     let host = config.host.clone();
     let port = config.port;
 
-    info!("Starting server on {}:{}", host, port);
+    info!("Starting server on {host}:{port}");
 
     HttpServer::new(move || {
         let cors = {

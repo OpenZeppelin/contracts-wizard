@@ -34,6 +34,7 @@
   import ZipIcon from '../common/icons/ZipIcon.svelte';
   import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
+  import { zipRustProject } from '@openzeppelin/wizard-stellar/zip-env-rust';
 
   const fargateHost = process.env.FARGATE_HOST;
 
@@ -81,19 +82,18 @@
 
   $: showButtons = getButtonVisibilities(opts);
 
-  const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
-
   const downloadScaffoldHandler = async () => {
+    if (!opts) return;
+
+    const { zipRustProjectBlob } = await zipRustModule;
+
     try {
-      await fetch(`${fargateHost}/stellar/download-scaffold`, {
+      await fetch(`${fargateHost}/stellar/upgrade-scaffold`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          contract,
-          opts,
-        }),
+        body: await zipRustProjectBlob(contract, opts),
       });
     } catch (error) {
       //TODO handle error (display message)

@@ -2,19 +2,33 @@ FROM rust:latest
 
 WORKDIR /usr/src/stellar-api
 
+# //TODO add dep to production container
 RUN apt-get update && apt-get install -y \
-    gdb lldb build-essential pkg-config libssl-dev curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libdbus-1-dev \
+    libudev-dev \
+    libusb-1.0-0-dev \
+    curl \
+    gdb\
+    lldb \
     && rm -rf /var/lib/apt/lists/*
+
+ENV CFLAGS=-g0 \
+    CXXFLAGS=-g0
+
+RUN cargo install cargo-watch
 
 RUN rustup update stable \
     && rustup default stable \
     && rustup component add --toolchain stable rustfmt clippy
 
 COPY Cargo.toml Cargo.lock ./
+# Update stellar dependency versions in Cargo.toml
+RUN cargo install --locked stellar-cli
+RUN cargo install --locked stellar-scaffold-cli
 RUN cargo fetch
-COPY . .
-
-RUN cargo install cargo-watch
 
 EXPOSE 8888
 

@@ -1,19 +1,52 @@
-FROM rust:1.88-slim-bullseye AS builder
+FROM rust:bookworm AS builder
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /usr/src/stellar-api
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  pkg-config \
+  libssl-dev \
+  libdbus-1-dev \
+  libudev-dev \
+  libusb-1.0-0-dev \
+  ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV RUSTFLAGS="-C target-cpu=native"
+
 COPY Cargo.toml Cargo.lock ./
-RUN cargo fetch --locked
+RUN cargo install --locked stellar-cli \
+  && cargo install --locked stellar-scaffold-cli
+RUN cargo fetch
 
-COPY src/ src/
-RUN cargo build --release --locked
+COPY . .
 
-FROM gcr.io/distroless/cc-debian12:nonroot AS runtime
+RUN cargo build --release
 
-COPY --from=builder --chown=65532:65532 /usr/src/stellar-api/target/release/stellar-api /app/stellar-api
-
+FROM debian:bookworm-slim AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
-COPY --from=builder /usr/src/stellar-api/target/release/stellar-api .
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates \ 
+  libssl3 \ 
+  libdbus-1-3 \ 
+  libudev1 \ 
+  libusb-1.0-0 \
+  && rm -rf /var/lib/apt/lists/*
 
+RUN useradd -u 10001 -m appuser
+
+COPY --from=builder /usr/src/stellar-api/target/release/stellar-api /usr/local/bin/stellar-api
+
+COPY --from=builder /usr/local/cargo/bin/stellar /usr/local/bin/stellar
+COPY --from=builder /usr/local/cargo/bin/stellar-scaffold-cli /usr/local/bin/stellar-scaffold-cli
+
+RUN chmod +x /usr/local/bin/stellar /usr/local/bin/stellar-scaffold-cli /usr/local/bin/stellar-api
+
+USER appuser
 EXPOSE 8888
-CMD ["/app/stellar-api"]
+
+ENV RUST_LOG=info
+
+CMD ["stellar-api"]
