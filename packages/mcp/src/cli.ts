@@ -3,9 +3,14 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createServer } from './server';
 
-// Start receiving messages on stdin and sending messages on stdout
-const transport = new StdioServerTransport();
-(async () => {
+async function main() {
+  const transport = new StdioServerTransport();
   const server = createServer();
   await server.connect(transport);
-})();
+  console.log("OpenZeppelin Contracts MCP Server is running...");
+}
+
+main().catch((error) => {
+  console.error("Failed to start OpenZeppelin Contracts MCP Server:", error);
+  process.exit(1);
+});
