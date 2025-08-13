@@ -33,63 +33,73 @@ export const Hooks: HookInfo[] = [
   {
     name: 'BaseHook',
     category: 'Base',
-    tooltipText: 'BaseHook',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Base hook implementation providing standard entry points, permission checks, and validation utilities for building hooks.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
   },
   {
     name: 'BaseAsyncSwap',
     category: 'Base',
-    tooltipText: 'BaseAsyncSwap',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Base implementation for asynchronous swaps that bypasses the default swap flow by netting the specified amount to zero, enabling custom execution and settlement.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseAsyncSwap',
   },
   {
     name: 'BaseCustomAccounting',
-    tooltipText: 'BaseCustomAccounting',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Base for custom accounting and hook-owned liquidity; implement how liquidity changes are computed and how shares are minted/burned. Intended for a single pool key per instance.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
     category: 'Base',
   },
   {
     name: 'BaseCustomCurve',
-    tooltipText: 'BaseCustomCurve',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Base for custom swap curves overriding default pricing; define the unspecified amount during swaps. Builds on the custom accounting base.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomCurve',
     category: 'Base',
   },
   // Fee
   {
     name: 'BaseDynamicFee',
-    tooltipText: 'BaseDynamicFee',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Applies a dynamic LP fee via the PoolManager; lets you update the fee over time based on your own logic.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
     category: 'Fee',
   },
   {
     name: 'BaseOverrideFee',
-    tooltipText: 'BaseOverrideFee',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Automatically sets a dynamic fee before each swap, computed per trade according to your fee function.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseOverrideFee',
     category: 'Fee',
   },
   {
     name: 'BaseDynamicAfterFee',
-    tooltipText: 'BaseDynamicAfterFee',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Enforces a post-swap target and captures any positive difference as a hook fee, then lets you handle or distribute it.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
     category: 'Fee',
   },
   // General
   {
     name: 'AntiSandwichHook',
-    tooltipText: 'AntiSandwichHook',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Sandwich‑resistant; constrains swaps to beginning‑of‑block pricing on one side to reduce intra‑block price manipulation.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#AntiSandwichHook',
     category: 'General',
   },
   {
     name: 'LimitOrderHook',
-    tooltipText: 'LimitOrderHook',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'Limit orders at specific ticks; adds out‑of‑range liquidity that fills when price crosses, with cancel and withdraw support.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LimitOrderHook',
     category: 'General',
   },
   {
     name: 'LiquidityPenaltyHook',
-    tooltipText: 'LiquidityPenaltyHook',
-    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    tooltipText:
+      'JIT-resistant; withholds and penalizes LP fees when liquidity is added then removed within a block window, donating penalties to in-range LPs.',
+    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LiquidityPenaltyHook',
     category: 'General',
   },
 ];
