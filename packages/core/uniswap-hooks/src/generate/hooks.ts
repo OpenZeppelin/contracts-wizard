@@ -1,29 +1,31 @@
-import type { HooksOptions } from '../hooks';
-import { ALL_HOOKS } from '../hooks';
+import type { HookName, HooksOptions } from '../hooks';
+import { Hooks } from '../hooks';
 import { accessOptions } from '@openzeppelin/wizard/src/set-access-control';
 import { infoOptions } from '@openzeppelin/wizard/src/set-info';
 import { generateAlternatives } from '@openzeppelin/wizard/src/generate/alternatives';
 
-const booleans = [true, false];
+const booleanOptions = [true, false];
 
-const sharesVariants = [
+const sharesOptions = [
   { options: false, name: 'MyShares', symbol: 'MSH' },
   { options: 'ERC20', name: 'MyShares', symbol: 'MSH' },
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
 ] as const;
 
+const hooksOptions: HookName[] = Hooks.map(hook => hook.name);
+
 const blueprint = {
-  hook: ALL_HOOKS as readonly HooksOptions['hook'][],
+  hook: hooksOptions as readonly HookName[],
   name: ['MyHook'] as const,
-  pausable: booleans,
-  currencySettler: booleans,
-  safeCast: booleans,
-  transientStorage: booleans,
+  pausable: booleanOptions,
+  currencySettler: booleanOptions,
+  safeCast: booleanOptions,
+  transientStorage: booleanOptions,
   access: accessOptions,
   // Hooks are not upgradeable yet; fix to false
   upgradeable: [false] as const,
   info: infoOptions,
-  shares: sharesVariants,
+  shares: sharesOptions,
 };
 
 export function* generateHooksOptions(): Generator<Required<HooksOptions>> {

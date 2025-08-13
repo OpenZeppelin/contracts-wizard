@@ -9,7 +9,7 @@ import { printContract } from '@openzeppelin/wizard/src/print';
 import type { Value } from '@openzeppelin/wizard/src/contract';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
-export type Hook =
+export type HookName =
   | 'BaseHook'
   | 'BaseAsyncSwap'
   | 'BaseCustomAccounting'
@@ -21,14 +21,14 @@ export type Hook =
   | 'AntiSandwichHook'
   | 'LimitOrderHook'
   | 'LiquidityPenaltyHook';
-export type HookInfo = {
-  name: Hook;
+export type Hook = {
+  name: HookName;
   category: HookCategory;
   tooltipText: string;
   tooltipLink: string;
 };
 
-export const Hooks: HookInfo[] = [
+export const Hooks: Hook[] = [
   // Base
   {
     name: 'BaseHook',
@@ -112,7 +112,7 @@ export type Shares = {
 };
 
 export interface HooksOptions extends CommonOptions {
-  hook: Hook;
+  hook: HookName;
   name: string;
   pausable?: boolean;
   currencySettler?: boolean;
