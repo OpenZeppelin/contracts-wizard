@@ -83,22 +83,21 @@ export const Hooks: Hook[] = [
   // General
   {
     name: 'AntiSandwichHook',
-    tooltipText:
-      'Sandwich‑resistant; constrains swaps to beginning‑of‑block pricing on one side to reduce intra‑block price manipulation.',
+    tooltipText: 'Anchors swap pricing to the beginning-of-block state to deter intra-block sandwich manipulation.',
     tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#AntiSandwichHook',
     category: 'General',
   },
   {
     name: 'LimitOrderHook',
     tooltipText:
-      'Limit orders at specific ticks; adds out‑of‑range liquidity that fills when price crosses, with cancel and withdraw support.',
+      'Out‑of‑range limit orders that execute on tick cross; adds one currency, accrue fees to the order, and support cancel/withdraw.',
     tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LimitOrderHook',
     category: 'General',
   },
   {
     name: 'LiquidityPenaltyHook',
     tooltipText:
-      'JIT-resistant; withholds and penalizes LP fees when liquidity is added then removed within a block window, donating penalties to in-range LPs.',
+      'JIT‑resistant: withholds and penalizes LP fees when liquidity is added then removed within a block window; penalties are donated to in‑range LPs.',
     tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LiquidityPenaltyHook',
     category: 'General',
   },
