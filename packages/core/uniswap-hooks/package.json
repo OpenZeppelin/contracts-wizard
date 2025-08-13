@@ -21,8 +21,10 @@
     "test:watch": "ava --watch"
   },
   "devDependencies": {
-    "@openzeppelin/uniswap-hooks": "https://github.com/OpenZeppelin/uniswap-hooks",
     "@openzeppelin/contracts": "^5.3.0",
+    "@openzeppelin/uniswap-hooks": "https://github.com/OpenZeppelin/uniswap-hooks",
+    "@uniswap/v4-core": "^1.0.2",
+    "@uniswap/v4-periphery": "^1.0.3",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",
     "ava": "^6.0.0",
