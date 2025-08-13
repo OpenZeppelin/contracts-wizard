@@ -9,14 +9,6 @@
   "bin": {
     "contracts-mcp": "dist/cli.js"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
-  },
   "ts:main": "src/index.ts",
   "files": [
     "LICENSE",
