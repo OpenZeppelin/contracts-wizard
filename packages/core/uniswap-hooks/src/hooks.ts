@@ -8,30 +8,93 @@ import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
 import { printContract } from '@openzeppelin/wizard/src/print';
 import type { Value } from '@openzeppelin/wizard/src/contract';
 
-export type BaseHook = 'BaseHook' | 'BaseAsyncSwap' | 'BaseCustomAccounting' | 'BaseCustomCurve';
-export type FeeHook = 'BaseDynamicFee' | 'BaseOverrideFee' | 'BaseDynamicAfterFee' | 'BaseHookFee';
-export type GeneralHook = 'AntiSandwichHook' | 'LimitOrderHook' | 'LiquidityPenaltyHook';
-export type Hook = BaseHook | FeeHook | GeneralHook;
+export type HookCategory = 'Base' | 'Fee' | 'General';
+export type Hook =
+  | 'BaseHook'
+  | 'BaseAsyncSwap'
+  | 'BaseCustomAccounting'
+  | 'BaseCustomCurve'
+  | 'BaseDynamicFee'
+  | 'BaseOverrideFee'
+  | 'BaseDynamicAfterFee'
+  | 'BaseHookFee'
+  | 'AntiSandwichHook'
+  | 'LimitOrderHook'
+  | 'LiquidityPenaltyHook';
+export type HookInfo = {
+  name: Hook;
+  category: HookCategory;
+  tooltipText: string;
+  tooltipLink: string;
+};
 
-export const ALL_HOOKS: Hook[] = [
+export const Hooks: HookInfo[] = [
   // Base
-  'BaseHook',
-  'BaseAsyncSwap',
-  'BaseCustomAccounting',
-  'BaseCustomCurve',
+  {
+    name: 'BaseHook',
+    category: 'Base',
+    tooltipText: 'BaseHook',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+  },
+  {
+    name: 'BaseAsyncSwap',
+    category: 'Base',
+    tooltipText: 'BaseAsyncSwap',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+  },
+  {
+    name: 'BaseCustomAccounting',
+    tooltipText: 'BaseCustomAccounting',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'Base',
+  },
+  {
+    name: 'BaseCustomCurve',
+    tooltipText: 'BaseCustomCurve',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'Base',
+  },
   // Fee
-  'BaseDynamicFee',
-  'BaseOverrideFee',
-  'BaseDynamicAfterFee',
-  'BaseHookFee',
+  {
+    name: 'BaseDynamicFee',
+    tooltipText: 'BaseDynamicFee',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'Fee',
+  },
+  {
+    name: 'BaseOverrideFee',
+    tooltipText: 'BaseOverrideFee',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'Fee',
+  },
+  {
+    name: 'BaseDynamicAfterFee',
+    tooltipText: 'BaseDynamicAfterFee',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'Fee',
+  },
   // General
-  'AntiSandwichHook',
-  'LimitOrderHook',
-  'LiquidityPenaltyHook',
+  {
+    name: 'AntiSandwichHook',
+    tooltipText: 'AntiSandwichHook',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'General',
+  },
+  {
+    name: 'LimitOrderHook',
+    tooltipText: 'LimitOrderHook',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'General',
+  },
+  {
+    name: 'LiquidityPenaltyHook',
+    tooltipText: 'LiquidityPenaltyHook',
+    tooltipLink: 'https://docs.openzeppelin.com/contracts/api/utils#Pausable',
+    category: 'General',
+  },
 ];
 
 export const sharesOptions = [false, 'ERC20', 'ERC6909'] as const;
-
 export type Shares = {
   options: (typeof sharesOptions)[number];
   name: string;
@@ -138,26 +201,19 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   const params: Value[] = [];
   params.push({ lit: '_poolManager' });
 
-  let category = '';
   switch (allOpts.hook) {
     case 'BaseHook':
     case 'BaseAsyncSwap':
     case 'BaseCustomAccounting':
     case 'BaseCustomCurve':
-      category = 'base';
-      break;
     case 'BaseDynamicFee':
     case 'BaseOverrideFee':
     case 'BaseDynamicAfterFee':
     case 'BaseHookFee':
-      category = 'fee';
-      break;
     case 'AntiSandwichHook':
     case 'LimitOrderHook':
-      category = 'general';
       break;
     case 'LiquidityPenaltyHook':
-      category = 'general';
       c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
       params.push({ lit: '_blockNumberOffset' });
       break;
@@ -165,9 +221,11 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       throw new Error(`Unknown hook: ${allOpts.hook}`);
   }
 
+  const hookCategory = Hooks.find(hook => hook.name === allOpts.hook)!.category;
+
   const hook = {
     name: allOpts.hook,
-    path: `@openzeppelin/uniswap-hooks/src/${category}/${allOpts.hook}.sol`,
+    path: `@openzeppelin/uniswap-hooks/src/${hookCategory.toLowerCase()}/${allOpts.hook}.sol`,
   };
 
   c.addParent(hook, params);

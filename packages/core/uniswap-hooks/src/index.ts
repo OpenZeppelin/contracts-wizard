@@ -1,12 +1,10 @@
-export type { GenericOptions, KindedOptions } from './build-generic';
-export { buildGeneric } from './build-generic';
+export { buildGeneric, type GenericOptions, type KindedOptions } from './build-generic';
 
-export type { Kind } from './kind';
-export { sanitizeKind } from './kind';
+export { sanitizeKind, type Kind } from './kind';
 
 export { hooks } from './api';
-export { ALL_HOOKS } from './hooks';
+
+export { Hooks } from './hooks';
+export type { Hook, HookInfo, HooksOptions, HookCategory, Shares } from './hooks';
 
 export { compatibleContractsSemver } from './utils/version';
-
-export type { HooksOptions } from './hooks';
