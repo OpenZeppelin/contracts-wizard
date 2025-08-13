@@ -92,18 +92,16 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
-  const { access, info } = allOpts;
-
   addHook(c, allOpts);
 
-  setInfo(c, info);
+  setInfo(c, allOpts.info);
 
-  if (access) {
-    setAccessControl(c, access);
+  if (allOpts.access) {
+    setAccessControl(c, allOpts.access);
   }
 
   if (allOpts.pausable) {
-    addPausable(c, access, []);
+    addPausable(c, allOpts.access, []);
   }
 
   if (allOpts.currencySettler) {
@@ -131,8 +129,6 @@ export function buildHooks(opts: HooksOptions): Contract {
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
-  let path = '';
-
   c.addImportOnly({
     name: 'IPoolManager',
     path: `@uniswap/v4-core/contracts/interfaces/IPoolManager.sol`,
@@ -142,25 +138,26 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   const params: Value[] = [];
   params.push({ lit: '_poolManager' });
 
+  let category = '';
   switch (allOpts.hook) {
     case 'BaseHook':
     case 'BaseAsyncSwap':
     case 'BaseCustomAccounting':
     case 'BaseCustomCurve':
-      path = `@openzeppelin/uniswap-hooks/src/base/${allOpts.hook}.sol`;
+      category = 'base';
       break;
     case 'BaseDynamicFee':
     case 'BaseOverrideFee':
     case 'BaseDynamicAfterFee':
     case 'BaseHookFee':
-      path = `@openzeppelin/uniswap-hooks/src/fee/${allOpts.hook}.sol`;
+      category = 'fee';
       break;
     case 'AntiSandwichHook':
     case 'LimitOrderHook':
-      path = `@openzeppelin/uniswap-hooks/src/general/${allOpts.hook}.sol`;
+      category = 'general';
       break;
     case 'LiquidityPenaltyHook':
-      path = `@openzeppelin/uniswap-hooks/src/general/${allOpts.hook}.sol`;
+      category = 'general';
       c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
       params.push({ lit: '_blockNumberOffset' });
       break;
@@ -170,7 +167,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 
   const hook = {
     name: allOpts.hook,
-    path,
+    path: `@openzeppelin/uniswap-hooks/src/${category}/${allOpts.hook}.sol`,
   };
 
   c.addParent(hook, params);
@@ -202,14 +199,14 @@ function addTransientStorage(c: ContractBuilder, _allOpts: HooksOptions) {
       name: 'TransientSlot',
       path: `@openzeppelin/contracts/utils/TransientSlot.sol`,
     },
-    '*',
+    'bytes32',
   );
   c.addUsing(
     {
       name: 'SlotDerivation',
       path: `@openzeppelin/contracts/utils/SlotDerivation.sol`,
     },
-    '*',
+    'bytes32',
   );
 }
 
