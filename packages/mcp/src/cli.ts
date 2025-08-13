@@ -9,7 +9,7 @@ async function main() {
   await server.connect(transport);
 }
 
-main().catch((error) => {
-  console.error("Failed to start OpenZeppelin Contracts MCP Server:", error);
+main().catch(error => {
+  console.error('Failed to start OpenZeppelin Contracts MCP Server:', error);
   process.exit(1);
 });
