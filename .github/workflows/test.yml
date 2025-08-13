@@ -9,7 +9,7 @@ jobs:
   format-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Set up environment
         uses: ./.github/actions/setup
       - name: Check formatting
@@ -20,7 +20,7 @@ jobs:
   deno-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
         with:
@@ -33,7 +33,7 @@ jobs:
   mcp:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Set up environment
         uses: ./.github/actions/setup
       - name: Run tests
@@ -65,7 +65,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
             fetch-depth: 0
       - name: Set up environment
