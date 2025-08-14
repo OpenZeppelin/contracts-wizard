@@ -45,7 +45,6 @@ body {
 
 .banner {
   text-align: left;
-  /* padding: 0px 0px; */
   font-family: 'inter', Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: row;
