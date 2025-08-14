@@ -47,7 +47,7 @@ export const Hooks: Hook[] = [
   {
     name: 'BaseCustomAccounting',
     tooltipText:
-      'Base for custom accounting and hook-owned liquidity; implement how liquidity changes are computed and how shares are minted/burned. Intended for a single pool key per instance.',
+      'Base for custom accounting and hook-owned liquidity; implement how liquidity changes are computed and how liquidiy positions shares are minted/burned. Intended for a single pool key per instance.',
     tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
     category: 'Base',
   },
