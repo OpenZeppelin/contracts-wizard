@@ -1,0 +1,138 @@
+<script lang="ts">
+  import HelpTooltip from '../common/HelpTooltip.svelte';
+
+  import { infoDefaults } from '@openzeppelin/wizard';
+  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import type { HookCategory, Hook, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks/src';
+
+  import AccessControlSection from './AccessControlSection.svelte';
+  import InfoSection from './InfoSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+
+  export let opts: Required<KindedOptions['Hooks']> = {
+    kind: 'Hooks',
+    ...hooks.defaults,
+    info: { ...infoDefaults }, // create new object since Info is nested
+  };
+
+  $: requireAccessControl = hooks.isAccessControlRequired(opts);
+
+  // Keep a stable order and titles
+  const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General'];
+  const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [] };
+  for (const h of Hooks) hooksByCategory[h.category].push(h);
+</script>
+
+<section class="controls-section">
+  <h1>Settings</h1>
+
+  <label class="labeled-input">
+    <span>Name</span>
+    <input bind:value={opts.name} />
+  </label>
+</section>
+
+{#each CATEGORY_ORDER as category}
+  <section class="controls-section">
+    <h1>{category + ' Hooks'}</h1>
+    <div class="checkbox-group">
+      {#each hooksByCategory[category] as hook}
+        <label class:checked={opts.hook === hook.name}>
+          <input type="radio" bind:group={opts.hook} value={hook.name} />
+          {hook.name}
+          <HelpTooltip link={hook.tooltipLink}>
+            {hook.tooltipText}
+          </HelpTooltip>
+        </label>
+      {/each}
+    </div>
+  </section>
+{/each}
+
+<section class="controls-section">
+  <h1>Features</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
+      Pausable
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
+        emergency response.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<ExpandableToggleRadio
+  label="Shares"
+  bind:value={opts.shares.options}
+  defaultValue="ERC20"
+  helpContent="Shares are useful to account for the ownership of a portion of a liquidity position or pending credit."
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20"
+>
+  <div class="checkbox-group">
+    <label class:checked={opts.shares.options === 'ERC20'}>
+      <input type="radio" bind:group={opts.shares.options} value="ERC20" />
+      ERC-20
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20">
+        ERC-20 shares are useful for single-token accounting.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.shares.options === 'ERC6909'}>
+      <input type="radio" bind:group={opts.shares.options} value="ERC6909" />
+      ERC-6909
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc6909">
+        ERC-6909 shares are useful for multi-token accounting.
+      </HelpTooltip>
+    </label>
+  </div>
+  <div style="height: 0.5rem;"></div>
+  <div class="grid grid-cols-[2fr,1fr] gap-2">
+    <label class="labeled-input">
+      <span>Name</span>
+      <input bind:value={opts.shares.name} />
+    </label>
+
+    <label class="labeled-input">
+      <span>Symbol</span>
+      <input bind:value={opts.shares.symbol} />
+    </label>
+  </div>
+</ExpandableToggleRadio>
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<section class="controls-section">
+  <h1>Utilities</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.currencySettler}>
+      <input type="checkbox" bind:checked={opts.currencySettler} />
+      CurrencySettler
+      <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/utils#CurrencySettler">
+        Utility library used to settle and take any open deltas with an unlocked `PoolManager` during flash accounting.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.safeCast}>
+      <input type="checkbox" bind:checked={opts.safeCast} />
+      SafeCast
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#SafeCast">
+        Utility library to safely cast between numeric types.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.transientStorage}>
+      <input type="checkbox" bind:checked={opts.transientStorage} />
+      Transient Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
+        Utility library for simplyfing the usage of Transient Storage, which is discarded after the transaction ends and
+        whose gas costs are drastically reduced in comparison to regular storage.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<InfoSection bind:info={opts.info} />
