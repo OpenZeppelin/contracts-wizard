@@ -4,7 +4,8 @@ export type Kind = GenericOptions['kind'];
 
 export function sanitizeKind(kind: unknown): Kind {
   if (typeof kind === 'string') {
-    const sanitized = kind.trim().toLowerCase().charAt(0).toUpperCase();
+    const lowered = kind.trim().toLowerCase();
+    const sanitized = lowered.charAt(0).toUpperCase() + lowered.slice(1);
     if (isKind(sanitized)) {
       return sanitized;
     }
