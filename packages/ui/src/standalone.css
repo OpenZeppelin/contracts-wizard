@@ -45,6 +45,7 @@ body {
 
 .banner {
   text-align: left;
+  padding: 0px 20px;
   font-family: 'inter', Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: row;
@@ -53,6 +54,12 @@ body {
   align-items: center;
   background-color: #f5f6ff;
   min-width: 800px;
+}
+
+@media (min-width: 800px) {
+  .banner {
+    box-sizing: border-box;
+  }
 }
 
 /* Navigation */
