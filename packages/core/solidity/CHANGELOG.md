@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.7.1 (2025-08-15)
+
+- Add compatible git commit in comments when importing OpenZeppelin Community Contracts ([#627](https://github.com/OpenZeppelin/contracts-wizard/pull/627))
+
 ## 0.7.0 (2025-08-12)
 
 - **Breaking change**: Use ERC20Bridgeable from OpenZeppelin Contracts 5.4.0 instead of Community Contracts ([#619](https://github.com/OpenZeppelin/contracts-wizard/pull/619))
