@@ -6,6 +6,7 @@
   import { account } from '@openzeppelin/wizard';
 
   import InfoSection from './InfoSection.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
 
   export let opts: Required<KindedOptions['Account']> = {
     kind: 'Account',
@@ -178,7 +179,7 @@
     </label>
     <label class:checked={opts.signer === 'Multisig'}>
       <input type="radio" bind:group={opts.signer} value="Multisig" />
-      Multisig*
+      Multisig
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig">
         ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
         maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
@@ -187,7 +188,7 @@
     </label>
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
-      Multisig Weighted*
+      Multisig Weighted
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig#multisignererc7913weighted">
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
@@ -211,5 +212,11 @@
     </label>
   </div>
 </ExpandableToggleRadio>
+
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  disabled={!!errors?.upgradeable}
+  disabledReason={errors?.upgradeable}
+/>
 
 <InfoSection bind:info={opts.info} />

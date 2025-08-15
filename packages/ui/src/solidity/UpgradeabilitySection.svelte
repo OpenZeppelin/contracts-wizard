@@ -1,15 +1,19 @@
 <script lang="ts">
-  import type { Upgradeable } from '@openzeppelin/wizard';
+  import type { OptionsErrorMessages, Upgradeable } from '@openzeppelin/wizard';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
+  export let disabled: boolean = false;
+  export let disabledReason: string | undefined = undefined;
 </script>
 
 <ExpandableToggleRadio
   label="Upgradeability"
   bind:value={upgradeable}
+  {disabled}
+  {disabledReason}
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
   helpLink="https://docs.openzeppelin.com/openzeppelin/upgrades"

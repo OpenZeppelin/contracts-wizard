@@ -224,7 +224,7 @@
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
         </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>

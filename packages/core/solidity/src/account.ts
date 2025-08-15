@@ -4,7 +4,8 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
-import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
+import { addSigner, signerArgs, signerFunctions, signers, type SignerOptions } from './signer';
+import { setUpgradeableAccount } from './set-upgradeable';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -53,13 +54,13 @@ export function printAccount(opts: AccountOptions = defaults): string {
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for the community contracts
   allOpts.access = false; // Access control options are not used for Account
 
   const c = new ContractBuilder(allOpts.name);
 
   addParents(c, allOpts);
   overrideRawSignatureValidation(c, allOpts);
+  setUpgradeableAccount(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
   if (opts.ERC7579Modules) {
@@ -85,7 +86,8 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Extensions
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
-  addSigner(c, opts.signer ?? false);
+  addSigner(c, opts.signer ?? false, opts.upgradeable ?? false);
+  if (!opts.upgradeable) addSignerInitializer(c, opts);
   addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
@@ -150,18 +152,21 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
+  const accountName = opts.upgradeable ? `${opts.ERC7579Modules}Upgradeable` : opts.ERC7579Modules;
+  const erc7579AccountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
+  const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
   c.addParent({
-    name: opts.ERC7579Modules,
-    path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
+    name: accountName,
+    path: `@openzeppelin/${packageName}/account/extensions/${accountName}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
-      name: 'AccountERC7579',
-      path: `@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol`,
+      name: erc7579AccountName,
+      path: `@openzeppelin/${packageName}/account/extensions/draft-${erc7579AccountName}.sol`,
     });
   }
-  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
-  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+  c.addOverride({ name: erc7579AccountName }, functions.isValidSignature);
+  c.addOverride({ name: erc7579AccountName }, functions._validateUserOp);
 
   if (opts.signatureValidation !== 'ERC7739') return;
   c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
@@ -174,6 +179,42 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
     ],
     functions.isValidSignature,
   );
+}
+
+function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
+  if (!opts.signer || opts.signer === 'ERC7702') return;
+
+  c.addParent({
+    name: 'Initializable',
+    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
+  });
+
+  // Add locking constructor
+  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+  c.addConstructorCode(`_disableInitializers();`);
+
+  const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[opts.signer] };
+  c.addModifier('initializer', fn);
+
+  switch (opts.signer) {
+    case 'Multisig':
+      c.addFunctionCode(`_addSigners(${signerArgs[opts.signer][0]!.name});`, fn);
+      c.addFunctionCode(`_setThreshold(${signerArgs[opts.signer][1]!.name});`, fn);
+      break;
+    case 'MultisigWeighted':
+      c.addFunctionCode(`_addSigners(${signerArgs[opts.signer][0]!.name});`, fn);
+      c.addFunctionCode(
+        `_setSignerWeights(${signerArgs[opts.signer][0]!.name}, ${signerArgs[opts.signer][1]!.name});`,
+        fn,
+      );
+      c.addFunctionCode(`_setThreshold(${signerArgs[opts.signer][2]!.name});`, fn);
+      break;
+    case 'ECDSA':
+    case 'P256':
+    case 'RSA':
+      c.addFunctionCode(`_setSigner(${signerArgs[opts.signer].map(({ name }) => name).join(', ')});`, fn);
+      break;
+  }
 }
 
 function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
@@ -222,24 +263,34 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
 
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
+    const signerName = opts.upgradeable ? `Signer${opts.signer}Upgradeable` : `Signer${opts.signer}`;
+    const abstractSigner = opts.upgradeable ? 'AbstractSignerUpgradeable' : 'AbstractSigner';
+    const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
     c.addImportOnly({
-      name: 'AbstractSigner',
-      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+      name: abstractSigner,
+      path: `@openzeppelin/${packageName}/utils/cryptography/signers/${abstractSigner}.sol`,
     });
-    c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
-    c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
+    const accountERC7579 = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
+    c.addOverride({ name: abstractSigner }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: accountERC7579 }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [
-        `// IMPORTANT: Make sure Signer${opts.signer} is most derived than AccountERC7579`,
-        `// in the inheritance chain (i.e. contract ... is AccountERC7579, ..., Signer${opts.signer})`,
+        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountERC7579}`,
+        `// in the inheritance chain (i.e. contract ... is ${accountERC7579}, ..., ${signerName})`,
         '// to ensure the correct order of function resolution.',
-        '// AccountERC7579 returns false for `_rawSignatureValidation`',
+        `// ${accountERC7579} returns false for _rawSignatureValidation`,
       ],
       signerFunctions._rawSignatureValidation,
     );
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
-      c.addImportOnly(signers.Multisig);
+      c.addImportOnly({
+        ...signers.Multisig,
+        name: opts.upgradeable ? `${signers.Multisig.name}Upgradeable` : signers.Multisig.name,
+        path: opts.upgradeable
+          ? signers.Multisig.path.replace('.sol', 'Upgradeable.sol').replace(`/contracts/`, `/${packageName}/`)
+          : signers.Multisig.path,
+      });
     }
   }
 }

@@ -1,10 +1,12 @@
 import type { ContractBuilder } from './contract';
+import { OptionsError } from './error';
+import type { Upgradeable } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 
 export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
-export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
+export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
   if (!signer) return;
 
   c.addOverride(
@@ -15,26 +17,46 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
   switch (signer) {
     case 'ERC7702':
       c.addParent(signers[signer]);
+      if (upgradeable) {
+        throw new OptionsError({
+          upgradeable: 'EOAs can upgrade by redelegating to a new account',
+        });
+      }
       break;
     case 'ECDSA':
     case 'P256':
     case 'RSA':
     case 'Multisig':
-    case 'MultisigWeighted':
-      c.addParent({
-        name: 'Initializable',
-        path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
-      });
-      // Add locking constructor
-      c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
-      c.addConstructorCode(`_disableInitializers();`);
+    case 'MultisigWeighted': {
+      if (upgradeable) {
+        c.addParent({
+          name: 'Initializable',
+          path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
+        });
+        // Add locking constructor
+        c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+        c.addConstructorCode(`_disableInitializers();`);
 
-      signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
-      c.addParent(
-        signers[signer],
-        signerArgs[signer].map(arg => ({ lit: arg.name })),
-      );
+        signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+        const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
+        c.addModifier('initializer', fn);
+        c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
+        c.addParent({
+          name: `${signers[signer].name}Upgradeable`,
+          path: signers[signer].path
+            .replace('.sol', 'Upgradeable.sol')
+            .replace('/contracts/', '/contracts-upgradeable/'),
+        });
+      } else {
+        signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+        c.addParent(
+          signers[signer],
+          signerArgs[signer].map(arg => ({ lit: arg.name })),
+        );
+      }
+
       break;
+    }
   }
 }
 
@@ -65,7 +87,7 @@ export const signers = {
   },
 };
 
-const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { name: string; type: string }[]> = {
+export const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { name: string; type: string }[]> = {
   ECDSA: [{ name: 'signer', type: 'address' }],
   P256: [
     { name: 'qx', type: 'bytes32' },
