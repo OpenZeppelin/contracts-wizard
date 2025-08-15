@@ -153,20 +153,20 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
   const accountName = opts.upgradeable ? `${opts.ERC7579Modules}Upgradeable` : opts.ERC7579Modules;
-  const erc7579AccountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
+  const baseERC7579AccountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
   const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
   c.addParent({
     name: accountName,
-    path: `@openzeppelin/${packageName}/account/extensions/${accountName}.sol`,
+    path: `@openzeppelin/${packageName}/account/extensions/draft-${accountName}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
-      name: erc7579AccountName,
-      path: `@openzeppelin/${packageName}/account/extensions/draft-${erc7579AccountName}.sol`,
+      name: baseERC7579AccountName,
+      path: `@openzeppelin/${packageName}/account/extensions/draft-${baseERC7579AccountName}.sol`,
     });
   }
-  c.addOverride({ name: erc7579AccountName }, functions.isValidSignature);
-  c.addOverride({ name: erc7579AccountName }, functions._validateUserOp);
+  c.addOverride({ name: baseERC7579AccountName }, functions.isValidSignature);
+  c.addOverride({ name: baseERC7579AccountName }, functions._validateUserOp);
 
   if (opts.signatureValidation !== 'ERC7739') return;
   c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
