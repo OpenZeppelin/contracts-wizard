@@ -80,6 +80,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         case 'ERC1155':
           return ['function testUri() public view {', [`assertEq(instance.uri(0), "${opts.uri}");`], '}'];
 
+          case 'Account':
         case 'Governor':
         case 'Custom':
           return ['function testSomething() public {', ['// Add your test here'], '}'];

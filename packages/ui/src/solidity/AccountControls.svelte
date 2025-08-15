@@ -157,7 +157,7 @@
     <label class:checked={opts.signer === 'ECDSA'}>
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#ECDSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#ECDSA">
         Standard Ethereum signature validation using secp256k1. Validates signatures against a specified owner address,
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
@@ -190,7 +190,7 @@
     <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#P256">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#P256">
         Signature validation using the NIST P-256 curve (secp256r1). Useful for integrating with external systems and
         hardware that use this standardized curve, such as Apple's Passkeys or certain HSMs.
       </HelpTooltip>
@@ -198,7 +198,7 @@
     <label class:checked={opts.signer === 'RSA'}>
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#RSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#RSA">
         RSA PKCS#1 v1.5 signature validation following RFC8017. Enables integration with traditional PKI systems and
         hardware security modules that use RSA keys.
       </HelpTooltip>

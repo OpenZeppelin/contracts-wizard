@@ -87,6 +87,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         case 'ERC1155':
           return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
 
+        case 'Account':
         case 'Governor':
         case 'Custom':
           break;
