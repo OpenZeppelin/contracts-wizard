@@ -37,7 +37,6 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
         c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
         c.addConstructorCode(`_disableInitializers();`);
 
-        signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
         const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
         c.addModifier('initializer', fn);
         c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
