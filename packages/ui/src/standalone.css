@@ -56,6 +56,12 @@ body {
   min-width: 800px;
 }
 
+@media (min-width: 800px) {
+  .banner {
+    box-sizing: border-box;
+  }
+}
+
 /* Navigation */
 .nav {
   text-align: left;
