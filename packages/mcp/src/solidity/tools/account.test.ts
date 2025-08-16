@@ -51,6 +51,7 @@ test('all', async t => {
       license: 'MIT',
       securityContact: 'security@example.com',
     },
+    upgradeable: 'transparent',
   };
   assertHasAllSupportedFields(t, params);
   await assertAPIEquivalence(t, params, account.print);
