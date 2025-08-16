@@ -38,7 +38,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
         c.addConstructorCode(`_disableInitializers();`);
 
         const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
-        c.addModifier('initializer', fn);
+        // c.addModifier('initializer', fn);
         c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
         c.addParent({
           name: `${signers[signer].name}Upgradeable`,
