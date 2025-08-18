@@ -832,9 +832,9 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.3.0.tgz#0a90ce16f5c855e3c8239691f1722cd4999ae741"
   integrity sha512-zj/KGoW7zxWUE8qOI++rUM18v+VeLTTzKs/DJFkSzHpQFPD/jKKF0TrMxBfGLl3kpdELCNccvB3zmofSzm4nlA==
 
-"@openzeppelin/uniswap-hooks@https://github.com/OpenZeppelin/uniswap-hooks":
+"@openzeppelin/uniswap-hooks@github:OpenZeppelin/uniswap-hooks#update-remappings":
   version "1.1.0"
-  resolved "https://github.com/OpenZeppelin/uniswap-hooks#99bda078a036fbe5acb1dfa6d00d6b7a3941ea1f"
+  resolved "https://codeload.github.com/OpenZeppelin/uniswap-hooks/tar.gz/59647ab3432c12e4b157ae8defa3cc1db1735182"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"

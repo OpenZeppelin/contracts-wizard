@@ -203,7 +203,7 @@ export function buildHooks(opts: HooksOptions): Contract {
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   c.addImportOnly({
     name: 'IPoolManager',
-    path: `@uniswap/v4-core/contracts/interfaces/IPoolManager.sol`,
+    path: `@uniswap/v4-core/src/interfaces/IPoolManager.sol`,
   });
   c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
@@ -234,7 +234,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 
   const hook = {
     name: allOpts.hook,
-    path: `@openzeppelin/uniswap-hooks/src/${hookCategory.toLowerCase()}/${allOpts.hook}.sol`,
+    path: `@openzeppelin/uniswap-hooks/${hookCategory.toLowerCase()}/${allOpts.hook}.sol`,
   };
 
   c.addParent(hook, params);
@@ -244,7 +244,7 @@ function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addUsing(
     {
       name: 'CurrencySettler',
-      path: `@openzeppelin/uniswap-hooks/src/utils/CurrencySettler.sol`,
+      path: `@openzeppelin/uniswap-hooks/utils/CurrencySettler.sol`,
     },
     'Currency',
   );

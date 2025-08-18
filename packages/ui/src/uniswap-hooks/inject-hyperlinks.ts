@@ -5,8 +5,8 @@ export function injectHyperlinks(code: string) {
   const contractsRegex =
     /&quot;(@openzeppelin\/)(contracts-upgradeable\/|contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
   const communityContractsRegex = /&quot;(@openzeppelin\/)(community-contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
-  const uniswapV4CoreRegex = /&quot;(@uniswap\/)(v4-core\/contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
-  const ozUniswapHooksRegex = /&quot;(@openzeppelin\/)(uniswap-hooks\/src\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const ozUniswapHooksRegex = /&quot;(@openzeppelin\/)(uniswap-hooks\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const uniswapV4CoreRegex = /&quot;(@uniswap\/)(v4-core\/src\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
   return code
     .replace(
