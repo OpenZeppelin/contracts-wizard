@@ -110,6 +110,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
     c.addImplementedTrait(hooksTrait);
 
     if (allOpts.pausable) {
+      c.addUseClause('starknet', 'ContractAddress');
       const beforeUpdateFn = c.addFunction(hooksTrait, {
         name: 'before_update',
         args: [
@@ -150,6 +151,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
         'SNIP12 Metadata',
       );
 
+      c.addUseClause('starknet', 'ContractAddress');
       const afterUpdateFn = c.addFunction(hooksTrait, {
         name: 'after_update',
         args: [
