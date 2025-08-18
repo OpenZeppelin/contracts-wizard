@@ -1,12 +1,13 @@
 {
   "name": "@openzeppelin/contracts-mcp",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "OpenZeppelin Contracts MCP Server",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "contracts-mcp": "dist/index.js"
+    "contracts-mcp": "dist/cli.js"
   },
   "ts:main": "src/index.ts",
   "files": [
@@ -25,8 +26,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.1",
-    "@openzeppelin/wizard-common": "^0.0.2",
-    "@openzeppelin/wizard": "^0.6.0",
+    "@openzeppelin/wizard-common": "^0.1.0",
+    "@openzeppelin/wizard": "^0.7.1",
     "@openzeppelin/wizard-stylus": "^0.2.0",
     "@openzeppelin/wizard-stellar": "^0.4.2",
     "@openzeppelin/wizard-cairo": "^2.0.0"
