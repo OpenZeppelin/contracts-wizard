@@ -248,6 +248,10 @@ function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
     },
     'Currency',
   );
+  c.addImportOnly({
+    name: 'Currency',
+    path: `@uniswap/v4-core/src/types/Currency.sol`,
+  });
 }
 
 function addSafeCast(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -292,6 +296,6 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
       name: 'ERC6909',
       path: `@openzeppelin/contracts/token/ERC6909/draft-ERC6909.sol`,
     },
-    [_allOpts.shares!.name, _allOpts.shares!.symbol],
+    [],
   );
 }
