@@ -11,7 +11,6 @@ import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 
 import { compatibleContractsSemver } from './utils/version';
 import { Hooks, type HookName } from './hooks/';
-import { BaseHook } from './hooks/BaseHook';
 
 export const sharesOptions = [false, 'ERC20', 'ERC6909', 'ERC1155'] as const;
 export type Shares = {
@@ -150,50 +149,91 @@ export function buildHooks(opts: HooksOptions): Contract {
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
+  // Add required Hook imports
   c.addImportOnly({
     name: 'IPoolManager',
     path: `@uniswap/v4-core/src/interfaces/IPoolManager.sol`,
   });
-  c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
-
   c.addImportOnly({
     name: 'Hooks',
     path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
   });
 
-  const params: Value[] = [];
-  params.push({ lit: '_poolManager' });
+  c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
+  // Add Constructor Params (default)
+  const constructorParams: Value[] = [];
+  constructorParams.push({ lit: '_poolManager' });
+
+  // Add Constructor Params specific to the hook
+  switch (allOpts.hook) {
+    case 'LiquidityPenaltyHook':
+      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
+      constructorParams.push({ lit: '_blockNumberOffset' });
+      break;
+    default:
+      break;
+  }
+
+  // Add Parent (Hook)
+  c.addParent(
+    {
+      name: allOpts.hook,
+      path: `@openzeppelin/uniswap-hooks/${Hooks[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
+    },
+    constructorParams,
+  );
+
+  // Add Overrides
+  switch (allOpts.hook) {
+    case 'BaseCustomAccounting':
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.setFunctionBody([`// Override _getAddLiquidity`], Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
+      c.setFunctionBody([`// Override _getRemoveLiquidity`], Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Override _mint`], Hooks.BaseCustomAccounting.functions._mint!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Override _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.addImportOnly({
+        name: 'BalanceDelta',
+        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
+      });
+      break;
+    case 'BaseCustomCurve':
+      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.setFunctionBody([`// Override _getUnspecifiedAmount`], Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.setFunctionBody([`// Override _getSwapFeeAmount`], Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountOut!);
+      c.setFunctionBody([`// Override _getAmountOut`], Hooks.BaseCustomCurve.functions._getAmountOut!);
+      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountIn!);
+      c.setFunctionBody([`// Override _getAmountIn`], Hooks.BaseCustomCurve.functions._getAmountIn!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Override _mint`], Hooks.BaseCustomAccounting.functions._mint!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Override _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.addImportOnly({
+        name: 'BalanceDelta',
+        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
+      });
+      c.addImportOnly({
+        name: 'SwapParams',
+        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+      });
+      break;
+    default:
+      break;
+  }
+
+  // Add Hook Permissions
   switch (allOpts.hook) {
     case 'BaseHook':
       addDefaultHookPermissions(c, allOpts);
       break;
-    case 'BaseAsyncSwap':
-    case 'BaseCustomAccounting':
-    case 'BaseCustomCurve':
-    case 'BaseDynamicFee':
-    case 'BaseOverrideFee':
-    case 'BaseDynamicAfterFee':
-    case 'BaseHookFee':
-    case 'AntiSandwichHook':
-    case 'LimitOrderHook':
-      break;
-    case 'LiquidityPenaltyHook':
-      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
-      params.push({ lit: '_blockNumberOffset' });
-      break;
     default:
-      throw new Error(`Unknown hook: ${allOpts.hook}`);
+      break;
   }
-
-  const hookCategory = Hooks.find(hook => hook.name === allOpts.hook)!.category;
-
-  const hook = {
-    name: allOpts.hook,
-    path: `@openzeppelin/uniswap-hooks/${hookCategory.toLowerCase()}/${allOpts.hook}.sol`,
-  };
-
-  c.addParent(hook, params);
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -274,6 +314,9 @@ function addDefaultHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
   const permissionLines = entries.map(
     ([key, value], idx) => `    ${key}: ${value}${idx === entries.length - 1 ? '' : ','}`,
   );
-  c.addOverride({ name: 'BaseHook' }, BaseHook.functions.getHookPermissions!);
-  c.setFunctionBody(['return Hooks.Permissions({', ...permissionLines, '});'], BaseHook.functions.getHookPermissions!);
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions.getHookPermissions!);
+  c.setFunctionBody(
+    ['return Hooks.Permissions({', ...permissionLines, '});'],
+    Hooks.BaseHook.functions.getHookPermissions!,
+  );
 }

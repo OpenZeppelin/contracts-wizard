@@ -18,7 +18,8 @@ function testHooks(title: string, opts: Partial<HooksOptions>) {
 }
 
 // test all hooks
-for (const hook of Hooks) {
+for (const key in Hooks) {
+  const hook = Hooks[key as keyof typeof Hooks];
   testHooks(`basic ${hook.name}`, { hook: hook.name });
 }
 

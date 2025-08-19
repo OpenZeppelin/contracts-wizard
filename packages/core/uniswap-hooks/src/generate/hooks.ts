@@ -14,7 +14,13 @@ const sharesOptions = [
 
 // Enable one by one until fixing all overrides
 // const hooksOptions: HookName[] = Hooks.map(hook => hook.name);
-const hooksOptions: HookName[] = ['BaseHook'];
+const hooksOptions: HookName[] = [
+  // 'BaseHook',
+  // 'BaseAsyncSwap',
+  // 'BaseCustomAccounting',
+  // 'BaseCustomCurve',
+  'BaseDynamicFee',
+];
 
 const blueprint = {
   hook: hooksOptions as readonly HookName[],

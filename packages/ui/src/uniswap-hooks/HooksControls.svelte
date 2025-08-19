@@ -2,8 +2,8 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import type { HookCategory, Hook, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { hooks, Hooks} from '@openzeppelin/wizard-uniswap-hooks/src';
+  import type { HookCategory, Hook, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
@@ -20,7 +20,16 @@
   // Keep a stable order and titles
   const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General'];
   const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [] };
-  for (const h of Hooks) hooksByCategory[h.category].push(h);
+  console.log("HooksDict:", Hooks);
+  for (const key in Hooks) {
+    const hook = Hooks[key as keyof typeof Hooks];
+    console.log('hook:', hook);
+    hooksByCategory[hook.category].push(hook);
+  }
+  $: console.log("hooksByCategory:", hooksByCategory);
+
+  // Debug: Log opts changes
+  $: console.log('opts changed:', opts);
 </script>
 
 <section class="controls-section">

@@ -21,7 +21,6 @@ export type HookName =
   | 'BaseDynamicFee'
   | 'BaseOverrideFee'
   | 'BaseDynamicAfterFee'
-  | 'BaseHookFee'
   | 'AntiSandwichHook'
   | 'LimitOrderHook'
   | 'LiquidityPenaltyHook';
@@ -34,7 +33,9 @@ export type Hook = {
   tooltipLink: string;
 };
 
-export const Hooks: Hook[] = [
+export type HookDictionary = Record<HookName, Hook>;
+
+export const Hooks: HookDictionary = {
   BaseHook,
   BaseAsyncSwap,
   BaseCustomAccounting,
@@ -45,4 +46,4 @@ export const Hooks: Hook[] = [
   AntiSandwichHook,
   LimitOrderHook,
   LiquidityPenaltyHook,
-];
+};
