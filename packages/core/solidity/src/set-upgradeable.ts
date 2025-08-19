@@ -11,6 +11,7 @@ function setUpgradeableBase(
   c: ContractBuilder,
   upgradeable: Upgradeable,
   restrictAuthorizeUpgradeWhenUUPS: () => void,
+  initializableUpgradeable: boolean = false,
 ) {
   if (upgradeable === false) {
     return;
@@ -20,7 +21,7 @@ function setUpgradeableBase(
 
   c.addParent({
     name: 'Initializable',
-    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
+    path: `@openzeppelin/${initializableUpgradeable ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
   });
 
   switch (upgradeable) {
@@ -59,9 +60,14 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
 }
 
 export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeable) {
-  setUpgradeableBase(c, upgradeable, () => {
-    c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
-  });
+  setUpgradeableBase(
+    c,
+    upgradeable,
+    () => {
+      c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
+    },
+    true,
+  );
   c.upgradeable = false;
 }
 
