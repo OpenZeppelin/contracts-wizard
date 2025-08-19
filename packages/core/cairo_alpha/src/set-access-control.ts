@@ -2,7 +2,7 @@ import type { BaseFunction, BaseImplementedTrait, ContractBuilder } from './cont
 import { defineComponents } from './utils/define-components';
 import { addSRC5Component } from './common-components';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = [false, 'ownable', 'roles', 'roles-default-admin-rules'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
 export type Access = (typeof accessOptions)[number];
@@ -55,6 +55,41 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       }
       break;
     }
+    case 'roles-default-admin-rules': {
+      const initParams = [{ lit: 'INITIAL_DELAY' }, { lit: 'initial_default_admin' }];
+      if (c.addComponent(components.AccessControlDefaultAdminRulesComponent, initParams, true)) {
+        if (c.interfaceFlags.has('ISRC5')) {
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlDefaultAdminRulesImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlDefaultAdminRulesImpl<ContractState>',
+          });
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlImpl<ContractState>',
+          });
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlCamelImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlCamelImpl<ContractState>',
+          });
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlWithDelayImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlWithDelayImpl<ContractState>',
+          });
+        } else {
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlMixinImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlMixinImpl<ContractState>',
+          });
+          c.addInterfaceFlag('ISRC5');
+        }
+        addSRC5Component(c);
+
+        c.addUseClause('starknet', 'ContractAddress');
+        c.addConstructorArgument({ name: 'initial_default_admin', type: 'ContractAddress' });
+
+      }
+      break;
+    }
   }
 }
 
@@ -79,22 +114,26 @@ export function requireAccessControl(
       c.addFunctionCodeBefore(trait, fn, 'self.ownable.assert_only_owner()');
       break;
     }
-    case 'roles': {
+    case 'roles':
+    case 'roles-default-admin-rules': {
       const roleId = roleIdPrefix + '_ROLE';
       const addedSuper = c.addSuperVariable({
         name: roleId,
         type: 'felt252',
         value: `selector!("${roleId}")`,
       });
+      const substorageName = access === 'roles-default-admin-rules' 
+        ? components.AccessControlDefaultAdminRulesComponent.substorage.name 
+        : components.AccessControlComponent.substorage.name;
       if (roleOwner !== undefined) {
         c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress' });
         if (addedSuper) {
-          c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
+          c.addConstructorCode(`self.${substorageName}._grant_role(${roleId}, ${roleOwner})`);
         }
       }
 
-      c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
+      c.addFunctionCodeBefore(trait, fn, `self.${substorageName}.assert_only_role(${roleId})`);
 
       break;
     }
@@ -142,4 +181,26 @@ const components = defineComponents({
       },
     ],
   },
+  AccessControlDefaultAdminRulesComponent: {
+    path: 'openzeppelin_access::accesscontrol::extensions',
+    substorage: {
+      name: 'accesscontrol_DAR',
+      type: 'AccessControlDefaultAdminRulesComponent::Storage',
+    },
+    event: {
+      name: 'AccessControlDefaultAdminRulesEvent',
+      type: 'AccessControlDefaultAdminRulesComponent::Event',
+    },
+    impls: [
+      {
+        name: 'AccessControlMixinImpl',
+        value: 'AccessControlDefaultAdminRulesComponent::AccessControlMixinImpl<ContractState>',
+      },
+      {
+        name: 'AccessControlDefaultAdminRulesInternalImpl',
+        embed: false,
+        value: 'AccessControlDefaultAdminRulesComponent::InternalImpl<ContractState>',
+      },
+    ],
+  }
 });
