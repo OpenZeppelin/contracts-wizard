@@ -103,21 +103,22 @@ export const Hooks: Hook[] = [
   },
 ];
 
-export const sharesOptions = [false, 'ERC20', 'ERC6909'] as const;
+export const sharesOptions = [false, 'ERC20', 'ERC6909', 'ERC1155'] as const;
 export type Shares = {
   options: (typeof sharesOptions)[number];
-  name: string;
-  symbol: string;
+  name?: string;
+  symbol?: string;
+  uri?: string;
 };
 
 export interface HooksOptions extends CommonOptions {
   hook: HookName;
   name: string;
-  pausable?: boolean;
-  currencySettler?: boolean;
-  safeCast?: boolean;
-  transientStorage?: boolean;
-  shares?: Shares;
+  pausable: boolean;
+  currencySettler: boolean;
+  safeCast: boolean;
+  transientStorage: boolean;
+  shares: Shares;
 }
 
 export const defaults: Required<HooksOptions> = {
@@ -134,6 +135,7 @@ export const defaults: Required<HooksOptions> = {
     options: false,
     name: 'MyShares',
     symbol: 'MSH',
+    uri: '',
   },
 } as const;
 
@@ -191,6 +193,9 @@ export function buildHooks(opts: HooksOptions): Contract {
   if (allOpts.shares.options) {
     if (allOpts.shares.options === 'ERC20') {
       addERC20Shares(c, allOpts);
+    }
+    if (allOpts.shares.options === 'ERC1155') {
+      addERC1155Shares(c, allOpts);
     }
     if (allOpts.shares.options === 'ERC6909') {
       addERC6909Shares(c, allOpts);
@@ -287,9 +292,20 @@ function addERC20Shares(c: ContractBuilder, _allOpts: HooksOptions) {
       name: 'ERC20',
       path: `@openzeppelin/contracts/token/ERC20/ERC20.sol`,
     },
-    [_allOpts.shares!.name, _allOpts.shares!.symbol],
+    [_allOpts.shares.name || '', _allOpts.shares.symbol || ''],
   );
 }
+
+function addERC1155Shares(c: ContractBuilder, _allOpts: HooksOptions) {
+  c.addParent(
+    {
+      name: 'ERC1155',
+      path: `@openzeppelin/contracts/token/ERC1155/ERC1155.sol`,
+    },
+    [_allOpts.shares.uri || ''],
+  );
+}
+
 function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addParent(
     {
