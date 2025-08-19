@@ -6,7 +6,7 @@
 
   export let access: Access;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  let defaultValueWhenEnabled: 'ownable' | 'roles' | 'roles-default-admin-rules' = 'ownable';
 
   let wasRequired = required;
   let wasAccess = access;
@@ -44,12 +44,19 @@
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
-    <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles" />
-      Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
-        Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
-      </HelpTooltip>
-    </label>
+      <label class:checked={access === 'roles'}>
+        <input type="radio" bind:group={access} value="roles" />
+        Roles
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+          Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
+        </HelpTooltip>
+      </label>
+      <label class:checked={access === 'roles-default-admin-rules'}>
+        <input type="radio" bind:group={access} value="roles-default-admin-rules" />
+        Roles (Default Admin Rules)
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+          Provides additional enforced security measures on top of standard Roles mechanism for managing the most privileged role: default admin.
+        </HelpTooltip>
+      </label>
   </div>
 </ExpandableToggleRadio>
