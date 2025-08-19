@@ -175,7 +175,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
       '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
       '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
       'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-      'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
+      `return erc7739magic == bytes4(0xffffffff) ? ${baseERC7579AccountName}.isValidSignature(hash, signature) : erc7739magic;`,
     ],
     functions.isValidSignature,
   );
@@ -186,7 +186,7 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
 
   c.addParent({
     name: 'Initializable',
-    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
+    path: `@openzeppelin/${opts.upgradeable ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
   });
 
   // Add locking constructor
@@ -264,14 +264,13 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     const signerName = opts.upgradeable ? `Signer${opts.signer}Upgradeable` : `Signer${opts.signer}`;
-    const abstractSigner = opts.upgradeable ? 'AbstractSignerUpgradeable' : 'AbstractSigner';
     const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
     c.addImportOnly({
-      name: abstractSigner,
-      path: `@openzeppelin/${packageName}/utils/cryptography/signers/${abstractSigner}.sol`,
+      name: 'AbstractSigner',
+      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
     });
     const accountERC7579 = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
-    c.addOverride({ name: abstractSigner }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: accountERC7579 }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [

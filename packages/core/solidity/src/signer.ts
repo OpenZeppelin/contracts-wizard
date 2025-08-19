@@ -9,8 +9,9 @@ export type SignerOptions = (typeof SignerOptions)[number];
 export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
   if (!signer) return;
 
+  const signerName = signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name;
   c.addOverride(
-    { name: signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name },
+    { name: upgradeable ? `${signerName}Upgradeable` : signerName },
     signerFunctions._rawSignatureValidation,
   );
 
