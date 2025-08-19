@@ -7,6 +7,8 @@ import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
 import { printContract } from '@openzeppelin/wizard/';
 import type { Value } from '@openzeppelin/wizard/src/contract';
+import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
+
 import { compatibleContractsSemver } from './utils/version';
 import { Hooks, type HookName } from './hooks/';
 import { BaseHook } from './hooks/BaseHook';
@@ -253,6 +255,7 @@ function addERC1155Shares(c: ContractBuilder, _allOpts: HooksOptions) {
     },
     [_allOpts.shares.uri || ''],
   );
+  c.addOverride({ name: 'ERC1155' }, supportsInterface);
 }
 
 function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -263,6 +266,7 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
     },
     [],
   );
+  c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
 function addDefaultHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {

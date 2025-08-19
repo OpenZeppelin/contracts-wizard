@@ -23,9 +23,7 @@ const blueprint = {
   currencySettler: booleanOptions,
   safeCast: booleanOptions,
   transientStorage: booleanOptions,
-  // re-enable access control
-  // access: accessOptions,
-  access: [false] as const,
+  access: accessOptions,
   // Hooks are not upgradeable yet; fix to false
   upgradeable: [false] as const,
   info: infoOptions,
