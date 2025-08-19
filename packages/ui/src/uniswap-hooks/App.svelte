@@ -22,6 +22,7 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
+  import { compatibleContractsSemver } from '@openzeppelin/wizard-uniswap-hooks/src/utils/version';
 
   const dispatch = createEventDispatcher();
 
@@ -75,7 +76,7 @@
     }
   }
 
-  $: code = printContract(contract);
+  $: code = printContract(contract, { compatibleSemver: compatibleContractsSemver });
   $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
   $: hasErrors = errors[tab] !== undefined;

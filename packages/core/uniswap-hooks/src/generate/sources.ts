@@ -11,6 +11,8 @@ import { generateHooksOptions } from './hooks';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 
+import { compatibleContractsSemver } from '../utils/version';
+
 type Subset = 'all' | 'minimal-cover';
 
 type Kind = keyof KindedOptions;
@@ -70,7 +72,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
 
 export function* generateSources(subset: Subset, kind?: Kind): Generator<GeneratedSource> {
   for (const c of generateContractSubset(subset, kind)) {
-    const source = printContract(c.contract);
+    const source = printContract(c.contract, { compatibleSemver: compatibleContractsSemver });
     yield { ...c, source };
   }
 }

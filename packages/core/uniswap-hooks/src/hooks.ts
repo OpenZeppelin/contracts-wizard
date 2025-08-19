@@ -6,6 +6,7 @@ import { setInfo } from '@openzeppelin/wizard/src/set-info';
 import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
 import { printContract } from '@openzeppelin/wizard/src/print';
+import { compatibleContractsSemver } from './utils/version';
 import type { Value } from '@openzeppelin/wizard/src/contract';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
@@ -152,7 +153,7 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
 }
 
 export function printHooks(opts: HooksOptions = defaults): string {
-  return printContract(buildHooks(opts));
+  return printContract(buildHooks(opts), { compatibleSemver: compatibleContractsSemver });
 }
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {

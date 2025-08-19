@@ -15,11 +15,12 @@ import { formatLines, spaceBetween } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
-import { compatibleContractsSemver } from './utils/version';
+import { compatibleContractsSemver as defaultCompatibleSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
+  const compatibleSemver = opts?.compatibleSemver ?? defaultCompatibleSemver;
 
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
 
@@ -29,7 +30,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
+        `// Compatible with ${compatibleSemver}`,
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
