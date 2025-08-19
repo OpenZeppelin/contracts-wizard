@@ -10,6 +10,7 @@ export interface Contract {
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
   variables: string[];
+  useTranspiledImports: boolean;
   upgradeable: boolean;
 }
 
@@ -75,7 +76,8 @@ export interface NatspecTag {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
-  upgradeable = false;
+  useTranspiledImports: boolean = false;
+  upgradeable: boolean = false;
 
   readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];

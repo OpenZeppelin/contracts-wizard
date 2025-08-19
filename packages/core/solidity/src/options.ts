@@ -30,19 +30,19 @@ export interface Options {
 }
 
 export interface Helpers extends Required<Options> {
-  upgradeable: boolean;
+  shouldUseInitializers: boolean;
   transformName: (name: ReferencedContract) => string;
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
-  const contractUpgradeable = contract.upgradeable;
+  const contractUsesTranspiledImports = contract.useTranspiledImports;
   const transformName = (n: ReferencedContract) =>
-    contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
+    contractUsesTranspiledImports && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
   return {
-    upgradeable: contractUpgradeable,
+    shouldUseInitializers: contractUsesTranspiledImports,
     transformName,
     transformImport: p1 => {
-      const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
+      const p2 = contractUsesTranspiledImports && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
   };

@@ -17,6 +17,7 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
+import { buildAccount } from './account';
 
 interface Context {
   tempFolder: string;
@@ -90,6 +91,18 @@ test.serial('erc1155 basic', async t => {
   };
   const c = buildERC1155(opts);
   await runIgnitionTest(c, t, opts);
+});
+
+test.serial('account ecdsa', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA' };
+  const c = buildAccount(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('account ecdsa uups', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
+  const c = buildAccount(opts);
+  await runDeployScriptTest(c, t, opts);
 });
 
 test.serial('custom basic', async t => {

@@ -18,6 +18,7 @@ function setUpgradeableBase(
   }
 
   c.upgradeable = true;
+  c.useTranspiledImports = true;
 
   c.addParent({
     name: 'Initializable',
@@ -68,7 +69,10 @@ export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeab
     },
     true,
   );
-  c.upgradeable = false;
+  if (upgradeable !== false) {
+    c.upgradeable = true;
+  }
+  c.useTranspiledImports = false; // account.ts handles usage of transpiled imports (when needed) rather than using helpers
 }
 
 const functions = defineFunctions({
