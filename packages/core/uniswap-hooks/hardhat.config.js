@@ -14,7 +14,8 @@ const SOLIDITY_VERSION = require('./src/.solidity-version.json');
 // Keep parity with solidity package: treat warnings as errors except these codes.
 const WARN_UNUSED_PARAMETER = '5667';
 const WARN_CODE_SIZE = '5574';
-const IGNORED_WARNINGS = [WARN_UNUSED_PARAMETER, WARN_CODE_SIZE];
+const WARN_TRANSIENT_STORAGE = '2394';
+const IGNORED_WARNINGS = [WARN_UNUSED_PARAMETER, WARN_CODE_SIZE, WARN_TRANSIENT_STORAGE];
 
 // Overriding this task so that warnings are considered errors.
 task(TASK_COMPILE_SOLIDITY_CHECK_ERRORS, async ({ output, quiet }, { run }) => {

@@ -5,104 +5,11 @@ import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wi
 import { setInfo } from '@openzeppelin/wizard/src/set-info';
 import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
-import { printContract } from '@openzeppelin/wizard/src/print';
-import { compatibleContractsSemver } from './utils/version';
+import { printContract } from '@openzeppelin/wizard/';
 import type { Value } from '@openzeppelin/wizard/src/contract';
-
-export type HookCategory = 'Base' | 'Fee' | 'General';
-export type HookName =
-  | 'BaseHook'
-  | 'BaseAsyncSwap'
-  | 'BaseCustomAccounting'
-  | 'BaseCustomCurve'
-  | 'BaseDynamicFee'
-  | 'BaseOverrideFee'
-  | 'BaseDynamicAfterFee'
-  | 'BaseHookFee'
-  | 'AntiSandwichHook'
-  | 'LimitOrderHook'
-  | 'LiquidityPenaltyHook';
-export type Hook = {
-  name: HookName;
-  category: HookCategory;
-  tooltipText: string;
-  tooltipLink: string;
-};
-
-export const Hooks: Hook[] = [
-  // Base
-  {
-    name: 'BaseHook',
-    category: 'Base',
-    tooltipText:
-      'Base hook implementation providing standard entry points, permission checks, and validation utilities for building hooks.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
-  },
-  {
-    name: 'BaseAsyncSwap',
-    category: 'Base',
-    tooltipText:
-      'Base implementation for asynchronous swaps that bypasses the default swap flow by netting the specified amount to zero, enabling custom execution and settlement.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseAsyncSwap',
-  },
-  {
-    name: 'BaseCustomAccounting',
-    tooltipText:
-      'Base for custom accounting and hook-owned liquidity; implement how liquidity changes are computed and how liquidiy positions shares are minted/burned. Intended for a single pool key per instance.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
-    category: 'Base',
-  },
-  {
-    name: 'BaseCustomCurve',
-    tooltipText:
-      'Base for custom swap curves overriding default pricing; define the unspecified amount during swaps. Builds on the custom accounting base.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomCurve',
-    category: 'Base',
-  },
-  // Fee
-  {
-    name: 'BaseDynamicFee',
-    tooltipText:
-      'Applies a dynamic LP fee via the PoolManager; lets you update the fee over time based on your own logic.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
-    category: 'Fee',
-  },
-  {
-    name: 'BaseOverrideFee',
-    tooltipText:
-      'Automatically sets a dynamic fee before each swap, computed per trade according to your fee function.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseOverrideFee',
-    category: 'Fee',
-  },
-  {
-    name: 'BaseDynamicAfterFee',
-    tooltipText:
-      'Enforces a post-swap target and captures any positive difference as a hook fee, then lets you handle or distribute it.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
-    category: 'Fee',
-  },
-  // General
-  {
-    name: 'AntiSandwichHook',
-    tooltipText: 'Anchors swap pricing to the beginning-of-block state to deter intra-block sandwich manipulation.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#AntiSandwichHook',
-    category: 'General',
-  },
-  {
-    name: 'LimitOrderHook',
-    tooltipText:
-      'Out‑of‑range limit orders that execute on tick cross; adds one currency, accrue fees to the order, and support cancel/withdraw.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LimitOrderHook',
-    category: 'General',
-  },
-  {
-    name: 'LiquidityPenaltyHook',
-    tooltipText:
-      'JIT‑resistant: withholds and penalizes LP fees when liquidity is added then removed within a block window; penalties are donated to in‑range LPs.',
-    tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LiquidityPenaltyHook',
-    category: 'General',
-  },
-];
+import { compatibleContractsSemver } from './utils/version';
+import { Hooks, type HookName } from './hooks/';
+import { BaseHook } from './hooks/BaseHook';
 
 export const sharesOptions = [false, 'ERC20', 'ERC6909', 'ERC1155'] as const;
 export type Shares = {
@@ -138,7 +45,41 @@ export const defaults: Required<HooksOptions> = {
     symbol: 'MSH',
     uri: '',
   },
-} as const;
+};
+
+type Permissions = {
+  beforeInitialize: boolean;
+  afterInitialize: boolean;
+  beforeAddLiquidity: boolean;
+  beforeRemoveLiquidity: boolean;
+  afterAddLiquidity: boolean;
+  afterRemoveLiquidity: boolean;
+  beforeSwap: boolean;
+  afterSwap: boolean;
+  beforeDonate: boolean;
+  afterDonate: boolean;
+  beforeSwapReturnDelta: boolean;
+  afterSwapReturnDelta: boolean;
+  afterAddLiquidityReturnDelta: boolean;
+  afterRemoveLiquidityReturnDelta: boolean;
+};
+
+const defaultPermissions: Permissions = {
+  beforeInitialize: false,
+  afterInitialize: false,
+  beforeAddLiquidity: false,
+  beforeRemoveLiquidity: false,
+  afterAddLiquidity: false,
+  afterRemoveLiquidity: false,
+  beforeSwap: false,
+  afterSwap: false,
+  beforeDonate: false,
+  afterDonate: false,
+  beforeSwapReturnDelta: false,
+  afterSwapReturnDelta: false,
+  afterAddLiquidityReturnDelta: false,
+  afterRemoveLiquidityReturnDelta: false,
+};
 
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
   return {
@@ -213,11 +154,18 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   });
   c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
+  c.addImportOnly({
+    name: 'Hooks',
+    path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
+  });
+
   const params: Value[] = [];
   params.push({ lit: '_poolManager' });
 
   switch (allOpts.hook) {
     case 'BaseHook':
+      addDefaultHookPermissions(c, allOpts);
+      break;
     case 'BaseAsyncSwap':
     case 'BaseCustomAccounting':
     case 'BaseCustomCurve':
@@ -315,4 +263,13 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
     },
     [],
   );
+}
+
+function addDefaultHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
+  const entries = Object.entries(defaultPermissions);
+  const permissionLines = entries.map(
+    ([key, value], idx) => `    ${key}: ${value}${idx === entries.length - 1 ? '' : ','}`,
+  );
+  c.addOverride({ name: 'BaseHook' }, BaseHook.functions.getHookPermissions!);
+  c.setFunctionBody(['return Hooks.Permissions({', ...permissionLines, '});'], BaseHook.functions.getHookPermissions!);
 }

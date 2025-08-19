@@ -2,8 +2,8 @@ import test from 'ava';
 // import type { OptionsError } from '@openzeppelin/wizard/src/error';
 import { hooks } from './api';
 
-import type { HooksOptions } from './hooks';
-import { buildHooks, Hooks } from './hooks';
+import { buildHooks, type HooksOptions } from './hooks';
+import { Hooks } from './hooks/';
 import { printContract } from '@openzeppelin/wizard/src/print';
 import { compatibleContractsSemver } from './utils/version';
 
