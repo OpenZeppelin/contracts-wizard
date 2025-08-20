@@ -22,6 +22,18 @@
     wasERC7579Modules = !!opts.ERC7579Modules;
   }
 
+  let upgradeNotSupported = false;
+  let upgradeNotSupportedReason = '';
+  $: {
+    if (opts.signer === 'ERC7702') {
+      upgradeNotSupported = true;
+      upgradeNotSupportedReason = 'EOAs can upgrade by redelegating to a new account';
+    } else {
+      upgradeNotSupported = false;
+      upgradeNotSupportedReason = '';
+    }
+  }
+
   export let errors: undefined | OptionsErrorMessages;
 </script>
 
@@ -207,6 +219,11 @@
   </div>
 </ExpandableToggleRadio>
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} upgradeableError={errors?.upgradeable} />
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  disabled={upgradeNotSupported}
+  disabledReason={upgradeNotSupportedReason}
+  upgradeableError={errors?.upgradeable}
+/>
 
 <InfoSection bind:info={opts.info} />
