@@ -3,12 +3,10 @@
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import { error } from '../common/error-tooltip';
 
   export let upgradeable: Upgradeable;
   export let disabled: boolean = false;
   export let disabledReason: string | undefined = undefined;
-  export let upgradeableError: string | undefined = undefined;
 
   let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
   let wasDisabled = disabled;
@@ -34,20 +32,13 @@
   bind:value={upgradeable}
   {disabled}
   {disabledReason}
-  error={upgradeableError}
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
   helpLink="https://docs.openzeppelin.com/openzeppelin/upgrades"
 >
   <div class="checkbox-group">
     <label class:checked={upgradeable === 'transparent'}>
-      <input
-        type="radio"
-        bind:group={upgradeable}
-        value="transparent"
-        {disabled}
-        use:error={upgradeable === 'transparent' ? upgradeableError : undefined}
-      />
+      <input type="radio" bind:group={upgradeable} value="transparent" {disabled} />
       Transparent
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#TransparentUpgradeableProxy">
         Uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with
@@ -55,13 +46,7 @@
       </HelpTooltip>
     </label>
     <label class:checked={upgradeable === 'uups'}>
-      <input
-        type="radio"
-        bind:group={upgradeable}
-        value="uups"
-        {disabled}
-        use:error={upgradeable === 'uups' ? upgradeableError : undefined}
-      />
+      <input type="radio" bind:group={upgradeable} value="uups" {disabled} />
       UUPS
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#UUPSUpgradeable">
         Uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for

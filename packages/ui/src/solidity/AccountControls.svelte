@@ -223,7 +223,6 @@
   bind:upgradeable={opts.upgradeable}
   disabled={upgradeNotSupported}
   disabledReason={upgradeNotSupportedReason}
-  upgradeableError={errors?.upgradeable}
 />
 
 <InfoSection bind:info={opts.info} />
