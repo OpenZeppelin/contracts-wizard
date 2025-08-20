@@ -22,7 +22,7 @@
   "regexManagers": [
     {
       "fileMatch": [
-        "^packages/ui/api/ai/import_map\\.json$"
+        "(^|/)import_map\\.json$"
       ],
       "matchStrings": [
         "\"[^\"]+\"\\s*:\\s*\"https://esm\\.sh/(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
