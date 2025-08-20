@@ -16,7 +16,7 @@
       "matchManagers": [
         "regex"
       ],
-      "groupName": "import_map (esm.sh)"
+      "groupName": "import_map (regex)"
     }
   ],
   "regexManagers": [
@@ -25,7 +25,7 @@
         "(^|/)import_map\\.json$"
       ],
       "matchStrings": [
-        "\"[^\"]+\"\\s*:\\s*\"https://esm\\.sh/(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+        "\"[^\"]+\"\\s*:\\s*\"https://esm\\.sh/(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
       ],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
@@ -35,7 +35,7 @@
         "(^|/)import_map\\.json$"
       ],
       "matchStrings": [
-        "\"[^\"]+\"\\s*:\\s*\"npm:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+        "\"[^\"]+\"\\s*:\\s*\"npm:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
       ],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
@@ -45,7 +45,7 @@
         "(^|/)import_map\\.json$"
       ],
       "matchStrings": [
-        "\"[^\"]+\"\\s*:\\s*\"jsr:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+        "\"[^\"]+\"\\s*:\\s*\"jsr:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
       ],
       "datasourceTemplate": "jsr"
     },
@@ -54,7 +54,7 @@
         "(^|/)import_map\\.json$"
       ],
       "matchStrings": [
-        "\"[^\"]+\"\\s*:\\s*\"https://deno\\.land/x/(?<depName>[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+        "\"[^\"]+\"\\s*:\\s*\"https://deno\\.land/x/(?<depName>[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
       ],
       "datasourceTemplate": "deno"
     }

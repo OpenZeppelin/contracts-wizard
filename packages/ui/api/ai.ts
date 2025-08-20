@@ -94,6 +94,9 @@ const processOpenAIStream = (openAiStream: ChatCompletionStream, aiChatMessages:
         await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalToolCall));
       }
     },
+    cancel() {
+      openAiStream.controller?.abort?.();
+    },
   });
 
 export default async (req: Request): Promise<Response> => {
@@ -115,7 +118,7 @@ export default async (req: Request): Promise<Response> => {
     return new Response(processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId), {
       headers: new Headers({
         ...Cors,
-        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Type': 'text/plain',
       }),
     });
   } catch (e) {
