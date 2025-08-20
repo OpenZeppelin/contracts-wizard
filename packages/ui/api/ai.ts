@@ -13,12 +13,11 @@ import type {
   SimpleAiFunctionDefinition,
 } from './ai-assistant/types/function-definition.ts';
 import { Cors } from './utils/cors.ts';
-import type { ChatCompletionChunk } from 'openai/resources/chat/index.mjs';
-import type { Stream } from 'openai/streaming.mjs';
+import type { ChatCompletionStream, FunctionToolCallArgumentsDeltaEvent } from 'openai/lib/ChatCompletionStream.mjs';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,
-): SimpleAiFunctionDefinition[] => {
+): { type: 'function'; function: SimpleAiFunctionDefinition }[] => {
   const functionPerLanguages: AllContractsAIFunctionDefinitions = {
     solidity: solidityFunctions,
     cairo: cairoFunctions,
@@ -27,7 +26,12 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     stylus: stylusFunctions,
   };
 
-  return Object.values(functionPerLanguages[language] ?? {});
+  return (Object.values(functionPerLanguages[language] ?? {}) as SimpleAiFunctionDefinition[]).map(
+    functionDefinition => ({
+      type: 'function',
+      function: functionDefinition,
+    }),
+  );
 };
 
 const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
@@ -49,30 +53,35 @@ const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
   ];
 };
 
-const processOpenAIStream = (openAiStream: Stream<ChatCompletionChunk>, aiChatMessages: Chat[], chatId: string) =>
+const processOpenAIStream = (openAiStream: ChatCompletionStream, aiChatMessages: Chat[], chatId: string) =>
   new ReadableStream({
     async pull(controller: ReadableStreamDefaultController<Uint8Array>) {
       const textEncoder = new TextEncoder();
       let finalResponse = '';
-      const finalFunctionCall = { name: '', arguments: '' };
+      const finalToolCall: Pick<FunctionToolCallArgumentsDeltaEvent, 'arguments' | 'name'> = {
+        name: '',
+        arguments: '',
+      };
 
       try {
         for await (const chunk of openAiStream) {
+          console.log(JSON.stringify(chunk, undefined, 2));
+
           const delta = chunk?.choices?.[0]?.delta;
-          const isFunctionCallBuilding = Boolean(delta?.function_call);
-          const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'function_call');
+          const isToolCallBuilding = Boolean(delta?.tool_calls);
+          const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'tool_calls');
 
           if (delta.content) {
             finalResponse += delta.content;
             controller.enqueue(textEncoder.encode(delta.content));
-          } else if (isFunctionCallBuilding) {
-            finalFunctionCall.name += delta.function_call?.name || '';
-            finalFunctionCall.arguments += delta.function_call?.arguments || '';
+          } else if (isToolCallBuilding) {
+            finalToolCall.name += delta.tool_calls?.[0]?.function?.name || '';
+            finalToolCall.arguments += delta.tool_calls?.[0]?.function?.arguments || '';
           } else if (isFunctionCallFinished)
             controller.enqueue(
               textEncoder.encode(
                 JSON.stringify({
-                  function_call: finalFunctionCall,
+                  function_call: finalToolCall,
                 }),
               ),
             );
@@ -84,7 +93,7 @@ const processOpenAIStream = (openAiStream: Stream<ChatCompletionChunk>, aiChatMe
         controller.error(error);
         return;
       } finally {
-        await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalFunctionCall));
+        await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalToolCall));
       }
     },
   });
@@ -97,13 +106,23 @@ export default async (req: Request): Promise<Response> => {
 
     const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
-    const openAiStream = await openai.chat.completions.create({
+    const openAiStream = openai.chat.completions.stream({
       model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
       messages: aiChatMessages,
-      functions: getFunctionsContext(aiChatBodyRequest.language),
+      tools: getFunctionsContext(aiChatBodyRequest.language),
       temperature: 0.7,
       stream: true,
     });
+
+    // console.log(await openAiStream.finalMessage());
+
+    // console.log(await openAiStream.finalFunctionToolCallResult());
+
+    // console.log(await openAiStream.finalFunctionToolCall());
+
+    // console.log(await openAiStream.finalChatCompletion());
+
+    // console.log(await openAiStream.finalContent());
 
     return new Response(processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId), {
       headers: new Headers({
