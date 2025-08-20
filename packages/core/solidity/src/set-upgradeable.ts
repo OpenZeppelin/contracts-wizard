@@ -11,22 +11,20 @@ function setUpgradeableBase(
   c: ContractBuilder,
   upgradeable: Upgradeable,
   restrictAuthorizeUpgradeWhenUUPS: () => void,
-  skipInitializable: boolean = false,
+  onlyUseUpgradeableInitializableAndUUPS: boolean = false,
 ) {
   if (upgradeable === false) {
     return;
   }
 
-  c.shouldAutoTranspileImports = true;
+  c.shouldAutoTranspileImports = !onlyUseUpgradeableInitializableAndUUPS;
   c.shouldInstallContractsUpgradeable = true;
   c.shouldUseUpgradesPluginsForProxyDeployment = true;
 
-  if (!skipInitializable) {
-    c.addParent({
-      name: 'Initializable',
-      path: `@openzeppelin/contracts/proxy/utils/Initializable.sol`,
-    });
-  }
+  c.addParent({
+    name: 'Initializable',
+    path: `@openzeppelin/${onlyUseUpgradeableInitializableAndUUPS ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
+  });
 
   switch (upgradeable) {
     case 'transparent':
@@ -36,7 +34,7 @@ function setUpgradeableBase(
       restrictAuthorizeUpgradeWhenUUPS();
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
-        path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
+        path: `@openzeppelin/${onlyUseUpgradeableInitializableAndUUPS ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/UUPSUpgradeable.sol`,
       };
       c.addParent(UUPSUpgradeable);
       c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);
@@ -67,22 +65,15 @@ export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeab
   if (upgradeable === false) {
     return;
   }
-
-  // Directly import upgradeable Initializable since we are skipping auto transpile below
-  c.addParent({
-    name: 'Initializable',
-    path: `@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol`,
-  });
   setUpgradeableBase(
     c,
     upgradeable,
     () => {
       c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
     },
-    true, // already added upgradeable Initializable above
+    true, // account.ts handles usage of transpiled imports (when needed) rather than using helpers.
   );
   c.shouldInstallContractsUpgradeable = true;
-  c.shouldAutoTranspileImports = false; // account.ts handles usage of transpiled imports (when needed) rather than using helpers
   c.shouldUseUpgradesPluginsForProxyDeployment = false; // this will eventually use a factory to deploy proxies
 }
 
