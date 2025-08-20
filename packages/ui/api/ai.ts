@@ -65,8 +65,6 @@ const processOpenAIStream = (openAiStream: ChatCompletionStream, aiChatMessages:
 
       try {
         for await (const chunk of openAiStream) {
-          console.log(JSON.stringify(chunk, undefined, 2));
-
           const delta = chunk?.choices?.[0]?.delta;
           const isToolCallBuilding = Boolean(delta?.tool_calls);
           const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'tool_calls');
