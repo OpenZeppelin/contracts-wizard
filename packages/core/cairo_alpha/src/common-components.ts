@@ -69,14 +69,15 @@ export function addSRC5Component(c: ContractBuilder, section?: string) {
   }
 }
 
-export function addVotesComponent(c: ContractBuilder, name: string, version: string, section?: string) {
-  addSNIP12Metadata(c, name, version, section);
+export function addVotesComponent(c: ContractBuilder, name: string, version: string, snip12MetadataSection?: string) {
+  addSNIP12Metadata(c, name, version, snip12MetadataSection);
   c.addComponent(components.NoncesComponent, [], false);
   c.addComponent(components.VotesComponent, [], false);
   c.addImplToComponent(components.VotesComponent, {
     name: 'VotesImpl',
     value: `VotesComponent::VotesImpl<ContractState>`,
   });
+  c.addUseClause('openzeppelin::utils::contract_clock', 'ERC6372TimestampClock');
 }
 
 export function addSNIP12Metadata(c: ContractBuilder, name: string, version: string, section?: string) {
