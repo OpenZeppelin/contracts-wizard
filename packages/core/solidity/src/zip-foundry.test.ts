@@ -50,6 +50,27 @@ test.serial('erc20 full', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('erc20 ownable, uups, crossChainBridging custom', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'ownable',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    votes: true,
+    flashmint: true,
+    crossChainBridging: 'custom',
+    premintChainId: '10',
+    upgradeable: 'uups',
+  };
+  const c = buildERC20(opts);
+  await runTest(c, t, opts);
+});
+
 test.serial('erc20 uups, roles', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',

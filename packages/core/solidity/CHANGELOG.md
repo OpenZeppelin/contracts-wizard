@@ -1,9 +1,18 @@
 # Changelog
 
 
+## 0.7.1 (2025-08-15)
+
+- Add compatible git commit in comments when importing OpenZeppelin Community Contracts ([#627](https://github.com/OpenZeppelin/contracts-wizard/pull/627))
+
+## 0.7.0 (2025-08-12)
+
+- **Breaking change**: Use ERC20Bridgeable from OpenZeppelin Contracts 5.4.0 instead of Community Contracts ([#619](https://github.com/OpenZeppelin/contracts-wizard/pull/619))
+
 ## 0.6.0 (2025-06-20)
 
 - Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
+
   - **Possibly breaking changes**:
     - `Governor`: Remove usage of `access` option. This option now has no effect.
 
