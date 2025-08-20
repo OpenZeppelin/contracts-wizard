@@ -88,9 +88,9 @@
   }
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
-      return {
-        openInRemix: true,
-      };
+    return {
+      openInRemix: true,
+    };
   };
 
   const language = 'solidity';
@@ -142,17 +142,8 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip
-            let:trigger
-            theme="light-red border"
-            hideOnClick={false}
-            interactive
-          >
-            <button
-              use:trigger
-              class="action-button with-text"
-              on:click={remixHandler}
-            >
+          <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+            <button use:trigger class="action-button with-text" on:click={remixHandler}>
               <RemixIcon />
               Open in Remix
             </button>
@@ -243,9 +234,7 @@
       background-color: var(--gray-2);
     }
 
-    &:active
-
-    :global(.icon) {
+    &:active :global(.icon) {
       margin: 0 var(--size-1);
     }
   }

@@ -1,5 +1,4 @@
 import test from 'ava';
-// import type { OptionsError } from '@openzeppelin/wizard/src/error';
 import { hooks } from './api';
 
 import { buildHooks, type HooksOptions } from './hooks';

@@ -2,7 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { hooks, Hooks} from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
   import type { HookCategory, Hook, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';
@@ -103,24 +103,24 @@
   <div style="height: 0.5rem;"></div>
 
   {#if opts.shares.options === 'ERC1155'}
-  <label class="labeled-input">
-    <span>URI</span>
-    <input bind:value={opts.shares.uri} />
-  </label>
+    <label class="labeled-input">
+      <span>URI</span>
+      <input bind:value={opts.shares.uri} />
+    </label>
   {/if}
-  
-  {#if opts.shares.options === 'ERC20'}
-  <div class="grid grid-cols-[2fr,1fr] gap-2">
-    <label class="labeled-input">
-      <span>Name</span>
-      <input bind:value={opts.shares.name} />
-    </label>
 
-    <label class="labeled-input">
-      <span>Symbol</span>
-      <input bind:value={opts.shares.symbol} />
-    </label>
-  </div>
+  {#if opts.shares.options === 'ERC20'}
+    <div class="grid grid-cols-[2fr,1fr] gap-2">
+      <label class="labeled-input">
+        <span>Name</span>
+        <input bind:value={opts.shares.name} />
+      </label>
+
+      <label class="labeled-input">
+        <span>Symbol</span>
+        <input bind:value={opts.shares.symbol} />
+      </label>
+    </div>
   {/if}
 </ExpandableToggleRadio>
 
