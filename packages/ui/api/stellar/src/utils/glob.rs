@@ -19,7 +19,7 @@ pub fn build_globset(patterns: &[&str]) -> Result<GlobSet, GlobError> {
         .build()
 }
 
-pub fn check_glob_match(matchers: &GlobSet, glob: &str) -> Result<usize, MatchError> {
+pub fn is_glob_match(matchers: &GlobSet, glob: &str) -> Result<usize, MatchError> {
     matchers
         .matches(glob)
         .first()

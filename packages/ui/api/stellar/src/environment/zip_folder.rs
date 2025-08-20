@@ -1,9 +1,6 @@
-use crate::utils::{
-    build_globset, canonicalize_existing_dir, check_glob_match, sanitize_destination_path,
-    to_zip_io_error,
-};
-use std::fs::{read, File};
-use std::io::{self, Cursor, Read, Seek, Write};
+use crate::utils::{build_globset, canonicalize_existing_dir, is_glob_match, to_zip_io_error};
+use std::fs::{create_dir_all, read, File};
+use std::io::{self, copy, Cursor, Read, Seek, Write};
 use std::path::Path;
 use tempfile::{NamedTempFile, TempDir};
 use walkdir::WalkDir;
@@ -27,7 +24,7 @@ pub fn unzip_in_temporary_folder(
 
     let mut archive = ZipArchive::new(file).map_err(to_zip_io_error)?;
 
-    secure_zip_extract(&mut archive, temp_dir.path(), expected_files).map_err(to_zip_io_error)?;
+    secure_zip_extract(&mut archive, temp_dir.path(), expected_files)?;
 
     Ok(temp_dir)
 }
@@ -37,30 +34,18 @@ fn secure_zip_extract<R: Read + io::Seek>(
     destination_path: &Path,
     expected_files: &[&str],
 ) -> Result<(), ZipError> {
-    let zip_destination = canonicalize_existing_dir(destination_path).map_err(to_zip_io_error)?;
+    // let zip_destination = canonicalize_existing_dir(destination_path).map_err(to_zip_io_error)?;
 
     let expected_globset = build_globset(expected_files).map_err(to_zip_io_error)?;
 
-    if archive.len() > expected_files.len() {
+    if archive.len() != expected_files.len() {
         return Err(zip::result::ZipError::UnsupportedArchive(
             "Unexpected zip content",
         ));
     }
 
     for i in 0..archive.len() {
-        let entry = archive.by_index(i).map_err(to_zip_io_error)?;
-
-        let entry_path = entry
-            .enclosed_name()
-            .ok_or("Unsafe path")
-            .map_err(to_zip_io_error)?;
-
-        let path_str = entry_path
-            .to_str()
-            .ok_or("Invalid entry Path")
-            .map_err(to_zip_io_error)?;
-
-        check_glob_match(&expected_globset, path_str).map_err(to_zip_io_error)?;
+        let mut entry = archive.by_index(i).map_err(to_zip_io_error)?;
 
         if entry.encrypted() {
             return Err(ZipError::UnsupportedArchive(
@@ -74,10 +59,75 @@ fn secure_zip_extract<R: Read + io::Seek>(
             ));
         }
 
-        sanitize_destination_path(&zip_destination, &entry_path).map_err(to_zip_io_error)?;
+        match entry.compression() {
+            CompressionMethod::Stored | CompressionMethod::Deflated => {}
+            _ => {
+                return Err(ZipError::UnsupportedArchive(
+                    "Unsupported compression method",
+                ))
+            }
+        }
+
+        let entry_path = entry
+            .enclosed_name()
+            .ok_or("Unsafe path")
+            .map_err(to_zip_io_error)?;
+
+        let entry_path_str = entry_path
+            .to_str()
+            .ok_or("Non-UTF8 path")
+            .map_err(to_zip_io_error)?;
+
+        if is_glob_match(&expected_globset, entry_path_str).is_err() {
+            return Err(ZipError::UnsupportedArchive("Unexpected zip content"));
+        }
+
+        // let destination_path =
+        //     sanitize_destination_path(&zip_destination, &entry_path).map_err(to_zip_io_error)?;
+
+        // if entry.is_dir() {
+        //     create_dir_all(&out_path).map_err(to_zip_io_error)?;
+        //     continue;
+        // }
+
+        // // Size caps (uncompressed)
+        // let sz = entry.size();
+        // if sz > MAX_FILE_UNCOMPRESSED {
+        //     return Err(ZipError::UnsupportedArchive("File too large"));
+        // }
+        // if total_uncompressed.saturating_add(sz) > MAX_TOTAL_UNCOMPRESSED {
+        //     return Err(ZipError::UnsupportedArchive("Archive too large"));
+        // }
+
+        // if let Some(parent) = out_path.parent() {
+        //     create_dir_all(parent).map_err(to_zip_io_error)?;
+        // }
+
+        // // Create new file (no overwrite); write with a hard read limit
+        // let mut out = OpenOptions::new()
+        //     .write(true)
+        //     .create_new(true)
+        //     .open(&out_path)
+        //     .map_err(to_zip_io_error)?;
+
+        // copy_with_limit(&mut entry, &mut out, MAX_FILE_UNCOMPRESSED).map_err(to_zip_io_error)?;
+        // total_uncompressed += sz;
+
+        if let Some(path) = entry.enclosed_name() {
+            let target = destination_path.join(path);
+            if entry.name().ends_with('/') {
+                create_dir_all(&target)?;
+            } else {
+                if let Some(parent) = target.parent() {
+                    create_dir_all(parent)?;
+                }
+                let mut outfile = File::create(&target)?;
+                copy(&mut entry, &mut outfile)?;
+            }
+        }
     }
 
-    archive.extract(destination_path).map_err(to_zip_io_error)?;
+    // archive.extract(destination_path).map_err(to_zip_io_error)?;
 
     Ok(())
 }

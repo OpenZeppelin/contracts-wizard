@@ -15,19 +15,18 @@ pub fn canonicalize_existing_dir(dir: &Path) -> Result<PathBuf, IoError> {
     Err(IoError::other("Directory does not exist"))
 }
 
-pub fn sanitize_destination_path(
-    root_path: &Path,
-    entry_path: &Path,
-) -> Result<PathBuf, std::io::Error> {
-    let destination_path = root_path.join(entry_path);
+// fn deny_abs(p: &Path) -> Result<(), IoError> {
+//     if p.is_absolute() {
+//         Err(IoError::other("absolute path rejected"))
+//     } else {
+//         Ok(())
+//     }
+// }
 
-    let canonical_root = root_path.canonicalize()?;
-    let canonical_destination_path = destination_path.canonicalize()?;
-
-    if !canonical_destination_path.starts_with(&canonical_root) {
-        return Err(IoError::other(
-            "Invalid destination path outside of root directory",
-        ));
-    }
-    Ok(canonical_destination_path)
-}
+// pub fn sanitize_destination_path(root_path: &Path, entry_path: &Path) -> Result<PathBuf, IoError> {
+//     if !root_path.is_absolute() {
+//         return Err(IoError::other("root must be absolute"));
+//     }
+//     deny_abs(entry_path)?;
+//     scoped_join(root_path, entry_path).map_err(|e| IoError::other(format!("unsafe path: {e}")))
+// }
