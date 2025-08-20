@@ -60,14 +60,12 @@ export function printContract(contract: Contract, opts?: Options): string {
 function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
   const libraries: string[] = [];
   if (importsLibrary(contract, '@openzeppelin/contracts')) {
-    console.log('pushing', `OpenZeppelin Contracts ${compatibleContractsSemver}`);
     libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
   }
   if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
       libraries.push(`Community Contracts commit ${commit}`);
-      console.log('pushing', `Community Contracts commit ${commit}`);
     } catch (e) {
       console.error(e);
     }
@@ -75,7 +73,6 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   if (opts?.additionalCompatibleLibraries) {
     for (const library of opts.additionalCompatibleLibraries) {
       if (importsLibrary(contract, library.path)) {
-        console.log('pushing', `${library.name} ${library.version}`);
         libraries.push(`${library.name} ${library.version}`);
       }
     }
