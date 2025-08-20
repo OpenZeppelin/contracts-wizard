@@ -20,6 +20,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       c.addParent(signers[signer]);
       if (upgradeable) {
         throw new OptionsError({
+          erc7702: 'EOAs can upgrade by redelegating to a new account',
           upgradeable: 'EOAs can upgrade by redelegating to a new account',
         });
       }

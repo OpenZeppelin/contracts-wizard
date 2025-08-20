@@ -4,6 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { account } from '@openzeppelin/wizard';
+  import { error } from '../common/error-tooltip';
 
   import InfoSection from './InfoSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
@@ -163,7 +164,7 @@
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'ERC7702'}>
-      <input type="radio" bind:group={opts.signer} value="ERC7702" />
+      <input type="radio" bind:group={opts.signer} value="ERC7702" use:error={errors?.erc7702} />
       EOA Delegation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
@@ -206,10 +207,6 @@
   </div>
 </ExpandableToggleRadio>
 
-<UpgradeabilitySection
-  bind:upgradeable={opts.upgradeable}
-  disabled={!!errors?.upgradeable}
-  disabledReason={errors?.upgradeable}
-/>
+<UpgradeabilitySection bind:upgradeable={opts.upgradeable} upgradeableError={errors?.upgradeable} />
 
 <InfoSection bind:info={opts.info} />
