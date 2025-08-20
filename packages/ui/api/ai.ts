@@ -4,16 +4,15 @@ import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
-import { getOpenAiInstance } from './services/open-ai.ts';
-import { getEnvironmentVariableOr } from './utils/env.ts';
-import type { AiChatBodyRequest, Chat } from './ai-assistant/types/assistant.ts';
+import { createOpenAiCompletionStream } from './services/open-ai.ts';
+import type { AiChatBodyRequest } from './ai-assistant/types/assistant.ts';
 import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
 import type {
   AllContractsAIFunctionDefinitions,
   SimpleAiFunctionDefinition,
 } from './ai-assistant/types/function-definition.ts';
 import { Cors } from './utils/cors.ts';
-import type { ChatCompletionStream } from 'openai/resources/chat/completions.mjs';
+import type { ChatCompletionStreamParams } from 'openai/lib/ChatCompletionStream.mjs';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,
@@ -34,7 +33,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
   );
 };
 
-const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
+const buildAiChatMessages = (request: AiChatBodyRequest): ChatCompletionStreamParams['messages'] => {
   const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
     return message.content.length < 500;
   });
@@ -53,69 +52,23 @@ const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
   ];
 };
 
-const processOpenAIStream = (openAiStream: ChatCompletionStream, aiChatMessages: Chat[], chatId: string) =>
-  new ReadableStream({
-    async pull(controller: ReadableStreamDefaultController<Uint8Array>) {
-      const textEncoder = new TextEncoder();
-      let finalResponse = '';
-      const finalToolCall = {
-        name: '',
-        arguments: '',
-      };
-
-      try {
-        for await (const chunk of openAiStream) {
-          const delta = chunk?.choices?.[0]?.delta;
-          const isToolCallBuilding = Boolean(delta?.tool_calls);
-          const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'tool_calls');
-
-          if (delta.content) {
-            finalResponse += delta.content;
-            controller.enqueue(textEncoder.encode(delta.content));
-          } else if (isToolCallBuilding) {
-            finalToolCall.name += delta.tool_calls?.[0]?.function?.name || '';
-            finalToolCall.arguments += delta.tool_calls?.[0]?.function?.arguments || '';
-          } else if (isFunctionCallFinished)
-            controller.enqueue(
-              textEncoder.encode(
-                JSON.stringify({
-                  function_call: finalToolCall,
-                }),
-              ),
-            );
-        }
-
-        controller.close();
-      } catch (error) {
-        console.error('OpenAI streaming error:', error);
-        controller.error(error);
-        return;
-      } finally {
-        await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalToolCall));
-      }
-    },
-    cancel() {
-      openAiStream.controller?.abort?.();
-    },
-  });
-
 export default async (req: Request): Promise<Response> => {
   try {
     const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
-    const openai = getOpenAiInstance();
+    const chatMessages = buildAiChatMessages(aiChatBodyRequest);
 
-    const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
-
-    const openAiStream = openai.chat.completions.stream({
-      model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
-      messages: aiChatMessages,
-      tools: getFunctionsContext(aiChatBodyRequest.language),
-      temperature: 0.7,
-      stream: true,
+    const openAiStream = createOpenAiCompletionStream({
+      streamParams: {
+        messages: chatMessages,
+        tools: getFunctionsContext(aiChatBodyRequest.language),
+      },
+      chatId: aiChatBodyRequest.chatId,
+      onAiStreamCompletion: ({ chatId, chatMessages }, finalStreamResult) =>
+        saveChatInRedisIfDoesNotExist(chatId, chatMessages)(finalStreamResult),
     });
 
-    return new Response(processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId), {
+    return new Response(openAiStream, {
       headers: new Headers({
         ...Cors,
         'Content-Type': 'text/plain',
