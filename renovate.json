@@ -29,6 +29,34 @@
       ],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"npm:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"jsr:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+      ],
+      "datasourceTemplate": "jsr"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"https://deno\\.land/x/(?<depName>[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+      ],
+      "datasourceTemplate": "deno"
     }
   ]
 }
