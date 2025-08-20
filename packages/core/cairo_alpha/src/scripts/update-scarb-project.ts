@@ -47,10 +47,10 @@ export async function updateScarbProject() {
   });
 
   // Generate lib.cairo file
-  writeLibCairo(contractNames);
+  await writeLibCairo(contractNames);
 
   // Update Scarb.toml
-  updateScarbToml();
+  await updateScarbToml();
 }
 
 async function writeLibCairo(contractNames: string[]) {
