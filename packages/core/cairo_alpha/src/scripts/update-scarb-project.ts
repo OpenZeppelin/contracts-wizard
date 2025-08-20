@@ -60,15 +60,21 @@ async function writeLibCairo(contractNames: string[]) {
 }
 
 async function updateScarbToml() {
+  console.log('Updating Scarb.toml...');
   const scarbTomlPath = path.join('test_project', 'Scarb.toml');
 
   const currentContent = await fs.readFile(scarbTomlPath, 'utf8');
-  const updatedContent = currentContent
+
+  // Update the version numbers from the version.ts file
+  let updatedContent = currentContent
     .replace(/edition = "\w+"/, `edition = "${edition}"`)
     .replace(/cairo-version = "\d+\.\d+\.\d+"/, `cairo-version = "${cairoVersion}"`)
     .replace(/scarb-version = "\d+\.\d+\.\d+"/, `scarb-version = "${scarbVersion}"`)
     .replace(/starknet = "\d+\.\d+\.\d+"/, `starknet = "${cairoVersion}"`)
     .replace(/openzeppelin = "\d+\.\d+\.\d+"/, `openzeppelin = "${contractsVersion}"`);
+
+  // In alphas, we add dependencies directly from the Github repo, and not from the registry.
+  updatedContent = updatedContent.replace(/(openzeppelin = {[^}]*tag = )"[^"]+"/, `$1"v${contractsVersion}"`);
 
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
