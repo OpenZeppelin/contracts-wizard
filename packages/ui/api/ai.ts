@@ -114,16 +114,6 @@ export default async (req: Request): Promise<Response> => {
       stream: true,
     });
 
-    // console.log(await openAiStream.finalMessage());
-
-    // console.log(await openAiStream.finalFunctionToolCallResult());
-
-    // console.log(await openAiStream.finalFunctionToolCall());
-
-    // console.log(await openAiStream.finalChatCompletion());
-
-    // console.log(await openAiStream.finalContent());
-
     return new Response(processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId), {
       headers: new Headers({
         ...Cors,
