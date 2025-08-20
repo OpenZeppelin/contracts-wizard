@@ -187,8 +187,8 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
   const setup = 'bash setup.sh';
-  const test = 'forge test' + (c.upgradeable ? ' --force' : '');
-  const script = `forge script script/${c.name}.s.sol` + (c.upgradeable ? ' --force' : '');
+  const test = 'forge test' + (c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : '');
+  const script = `forge script script/${c.name}.s.sol` + (c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : '');
 
   const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
 
