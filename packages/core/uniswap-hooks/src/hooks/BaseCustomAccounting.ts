@@ -23,7 +23,6 @@ const BaseCustomAccounting: Hook = {
         args: [{ name: 'params', type: 'RemoveLiquidityParams memory' }],
         returns: ['bytes memory', 'uint256'],
       },
-
       // Shares accounting (required)
       _mint: {
         kind: 'internal',

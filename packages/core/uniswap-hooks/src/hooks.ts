@@ -154,18 +154,25 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     name: 'IPoolManager',
     path: `@uniswap/v4-core/src/interfaces/IPoolManager.sol`,
   });
-  c.addImportOnly({
-    name: 'Hooks',
-    path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
-  });
-
   c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
+
+  // @TODO: super calls to BaseHook are broken since it is reverting each internal hook function.
+  // // If the hook is not BaseHook, inherit from it.
+  // if (allOpts.hook !== 'BaseHook') {
+  //   c.addParent(
+  //     {
+  //       name: 'BaseHook',
+  //       path: `@openzeppelin/uniswap-hooks/BaseHook.sol`,
+  //     },
+  //     [],
+  //   );
+  // }
 
   // Add Constructor Params (default)
   const constructorParams: Value[] = [];
   constructorParams.push({ lit: '_poolManager' });
 
-  // Add Constructor Params specific to the hook
+  // Add Constructor Params specific to each hook
   switch (allOpts.hook) {
     case 'LiquidityPenaltyHook':
       c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
@@ -222,6 +229,65 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
         path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
       });
       break;
+    case 'BaseDynamicFee':
+      c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions._getFee!);
+      c.setFunctionBody([`// Override _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
+      c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions.poke!);
+      c.setFunctionBody([`// Override poke`], Hooks.BaseDynamicFee.functions.poke!);
+      c.addImportOnly({
+        name: 'PoolKey',
+        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+      });
+      break;
+    case 'BaseDynamicAfterFee':
+      c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!);
+      c.setFunctionBody(
+        [`// Override _getTargetUnspecified`],
+        Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!,
+      );
+      c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Override _afterSwapHandler`], Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.addImportOnly({
+        name: 'PoolKey',
+        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+      });
+      c.addImportOnly({
+        name: 'SwapParams',
+        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+      });
+      c.addImportOnly({
+        name: 'BalanceDelta',
+        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
+      });
+      break;
+    case 'BaseOverrideFee':
+      c.addOverride({ name: 'BaseOverrideFee' }, Hooks.BaseOverrideFee.functions._getFee!);
+      c.setFunctionBody([`// Override _getFee`], Hooks.BaseOverrideFee.functions._getFee!);
+      c.addImportOnly({
+        name: 'PoolKey',
+        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+      });
+      c.addImportOnly({
+        name: 'SwapParams',
+        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+      });
+      break;
+    case 'AntiSandwichHook':
+      c.addOverride({ name: 'AntiSandwichHook' }, Hooks.AntiSandwichHook.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Override _afterSwapHandler`], Hooks.AntiSandwichHook.functions._afterSwapHandler!);
+      c.addImportOnly({
+        name: 'PoolKey',
+        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+      });
+      c.addImportOnly({
+        name: 'SwapParams',
+        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+      });
+      c.addImportOnly({
+        name: 'BalanceDelta',
+        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
+      });
+      break;
     default:
       break;
   }
@@ -230,6 +296,10 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   switch (allOpts.hook) {
     case 'BaseHook':
       addDefaultHookPermissions(c, allOpts);
+      c.addImportOnly({
+        name: 'Hooks',
+        path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
+      });
       break;
     default:
       break;

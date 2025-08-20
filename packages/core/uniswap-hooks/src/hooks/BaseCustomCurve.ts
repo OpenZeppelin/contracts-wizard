@@ -15,7 +15,6 @@ const BaseCustomCurve: Hook = {
         args: [{ name: 'params', type: 'SwapParams calldata' }],
         returns: ['uint256'],
       },
-
       // Calculate the total LP fees to be paid for the swap (required)
       _getSwapFeeAmount: {
         kind: 'internal',
@@ -25,14 +24,12 @@ const BaseCustomCurve: Hook = {
         ],
         returns: ['uint256'],
       },
-
       // Amounts used and shares burned on remove liquidity (required)
       _getAmountOut: {
         kind: 'internal',
         args: [{ name: 'params', type: 'RemoveLiquidityParams memory' }],
         returns: ['uint256', 'uint256', 'uint256'],
       },
-
       // Amounts used and shares minted on add liquidity (required)
       _getAmountIn: {
         kind: 'internal',

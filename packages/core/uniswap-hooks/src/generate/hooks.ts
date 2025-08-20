@@ -12,15 +12,21 @@ const sharesOptions = [
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
 ] as const;
 
-// Enable one by one until fixing all overrides
-// const hooksOptions: HookName[] = Hooks.map(hook => hook.name);
-const hooksOptions: HookName[] = [
-  // 'BaseHook',
-  // 'BaseAsyncSwap',
-  // 'BaseCustomAccounting',
-  // 'BaseCustomCurve',
-  'BaseDynamicFee',
-];
+const hooksOptions: HookName[] = Object.keys(Hooks) as HookName[];
+
+// @TODO: remove, faster to test compilation one by one.
+// const hooksOptions: HookName[] = [
+//   'BaseHook',
+//   'BaseAsyncSwap',
+//   'BaseCustomAccounting',
+//   'BaseCustomCurve',
+//   'BaseDynamicAfterFee',
+//   'BaseDynamicFee',
+//   'BaseOverrideFee',
+//   'AntiSandwichHook',
+//   'LiquidityPenaltyHook',
+//   'LimitOrderHook',
+// ];
 
 const blueprint = {
   hook: hooksOptions as readonly HookName[],

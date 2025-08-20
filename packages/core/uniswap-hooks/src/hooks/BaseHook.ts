@@ -9,14 +9,13 @@ const BaseHook: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
   functions: {
     ...defineFunctions({
-      // Permissions descriptor that inheritors must implement
+      // Permissions descriptor that inheritors must implement (required)
       getHookPermissions: {
         kind: 'public',
         mutability: 'pure',
         args: [],
         returns: ['Hooks.Permissions memory'],
       },
-
       // Initialize
       _beforeInitialize: {
         kind: 'internal',
@@ -37,7 +36,6 @@ const BaseHook: Hook = {
         ],
         returns: ['bytes4'],
       },
-
       // Liquidity add/remove
       _beforeAddLiquidity: {
         kind: 'internal',
@@ -83,7 +81,6 @@ const BaseHook: Hook = {
         ],
         returns: ['bytes4', 'BalanceDelta'],
       },
-
       // Swap
       _beforeSwap: {
         kind: 'internal',
@@ -106,7 +103,6 @@ const BaseHook: Hook = {
         ],
         returns: ['bytes4', 'int128'],
       },
-
       // Donate
       _beforeDonate: {
         kind: 'internal',
