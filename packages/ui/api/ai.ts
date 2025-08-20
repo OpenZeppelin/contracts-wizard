@@ -49,44 +49,45 @@ const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
   ];
 };
 
-const processOpenAIStream =
-  (openAiStream: Stream<ChatCompletionChunk>, aiChatMessages: Chat[], chatId: string) =>
-  async (controller: ReadableStreamDefaultController<Uint8Array>) => {
-    const textEncoder = new TextEncoder();
-    let finalResponse = '';
-    const finalFunctionCall = { name: '', arguments: '' };
+const processOpenAIStream = (openAiStream: Stream<ChatCompletionChunk>, aiChatMessages: Chat[], chatId: string) =>
+  new ReadableStream({
+    async pull(controller: ReadableStreamDefaultController<Uint8Array>) {
+      const textEncoder = new TextEncoder();
+      let finalResponse = '';
+      const finalFunctionCall = { name: '', arguments: '' };
 
-    try {
-      for await (const chunk of openAiStream) {
-        const delta = chunk?.choices?.[0]?.delta;
-        const isFunctionCallBuilding = Boolean(delta?.function_call);
-        const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'function_call');
+      try {
+        for await (const chunk of openAiStream) {
+          const delta = chunk?.choices?.[0]?.delta;
+          const isFunctionCallBuilding = Boolean(delta?.function_call);
+          const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'function_call');
 
-        if (delta.content) {
-          finalResponse += delta.content;
-          controller.enqueue(textEncoder.encode(delta.content));
-        } else if (isFunctionCallBuilding) {
-          finalFunctionCall.name += delta.function_call?.name || '';
-          finalFunctionCall.arguments += delta.function_call?.arguments || '';
-        } else if (isFunctionCallFinished)
-          controller.enqueue(
-            textEncoder.encode(
-              JSON.stringify({
-                function_call: finalFunctionCall,
-              }),
-            ),
-          );
+          if (delta.content) {
+            finalResponse += delta.content;
+            controller.enqueue(textEncoder.encode(delta.content));
+          } else if (isFunctionCallBuilding) {
+            finalFunctionCall.name += delta.function_call?.name || '';
+            finalFunctionCall.arguments += delta.function_call?.arguments || '';
+          } else if (isFunctionCallFinished)
+            controller.enqueue(
+              textEncoder.encode(
+                JSON.stringify({
+                  function_call: finalFunctionCall,
+                }),
+              ),
+            );
+        }
+
+        controller.close();
+      } catch (error) {
+        console.error('OpenAI streaming error:', error);
+        controller.error(error);
+        return;
+      } finally {
+        await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalFunctionCall));
       }
-
-      controller.close();
-    } catch (error) {
-      console.error('OpenAI streaming error:', error);
-      controller.error(error);
-      return;
-    } finally {
-      await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalFunctionCall));
-    }
-  };
+    },
+  });
 
 export default async (req: Request): Promise<Response> => {
   try {
@@ -104,11 +105,7 @@ export default async (req: Request): Promise<Response> => {
       stream: true,
     });
 
-    const stream = new ReadableStream({
-      pull: processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId),
-    });
-
-    return new Response(stream, {
+    return new Response(processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId), {
       headers: new Headers({
         ...Cors,
         'Content-Type': 'text/html; charset=utf-8',
