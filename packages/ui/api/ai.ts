@@ -52,33 +52,39 @@ const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
 const processOpenAIStream =
   (openAiStream: Stream<ChatCompletionChunk>, aiChatMessages: Chat[], chatId: string) =>
   async (controller: ReadableStreamDefaultController<Uint8Array>) => {
+    const textEncoder = new TextEncoder();
     let finalResponse = '';
     const finalFunctionCall = { name: '', arguments: '' };
 
     try {
       for await (const chunk of openAiStream) {
         const delta = chunk?.choices?.[0]?.delta;
-        const isFunctionCallBuilding = delta?.function_call;
+        const isFunctionCallBuilding = Boolean(delta?.function_call);
         const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'function_call');
 
         if (delta.content) {
           finalResponse += delta.content;
-          controller.enqueue(new TextEncoder().encode(delta.content));
+          controller.enqueue(textEncoder.encode(delta.content));
         } else if (isFunctionCallBuilding) {
           finalFunctionCall.name += delta.function_call?.name || '';
-          finalFunctionCall.arguments += delta.function_call?.arguments;
+          finalFunctionCall.arguments += delta.function_call?.arguments || '';
         } else if (isFunctionCallFinished)
           controller.enqueue(
-            new TextEncoder().encode(
+            textEncoder.encode(
               JSON.stringify({
                 function_call: finalFunctionCall,
               }),
             ),
           );
       }
+
+      controller.close();
+    } catch (error) {
+      console.error('OpenAI streaming error:', error);
+      controller.error(error);
+      return;
     } finally {
       await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalFunctionCall));
-      controller.close();
     }
   };
 
