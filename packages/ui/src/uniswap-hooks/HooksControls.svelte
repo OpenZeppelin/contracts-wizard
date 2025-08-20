@@ -20,16 +20,10 @@
   // Keep a stable order and titles
   const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General'];
   const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [] };
-  console.log("HooksDict:", Hooks);
   for (const key in Hooks) {
     const hook = Hooks[key as keyof typeof Hooks];
-    console.log('hook:', hook);
     hooksByCategory[hook.category].push(hook);
   }
-  $: console.log("hooksByCategory:", hooksByCategory);
-
-  // Debug: Log opts changes
-  $: console.log('opts changed:', opts);
 </script>
 
 <section class="controls-section">

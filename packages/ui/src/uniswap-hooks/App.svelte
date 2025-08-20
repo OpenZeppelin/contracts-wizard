@@ -14,7 +14,7 @@
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
   import { sanitizeKind } from '@openzeppelin/wizard-uniswap-hooks/src';
 
-  import { ContractBuilder, printContract, OptionsError } from '@openzeppelin/wizard';
+  import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import { buildGeneric } from '@openzeppelin/wizard-uniswap-hooks/src';
   import { postConfig } from '../common/post-config';
   import { remixURL } from './remix';
@@ -22,7 +22,7 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
-  import { compatibleContractsSemver } from '@openzeppelin/wizard-uniswap-hooks/src/utils/version';
+  import { printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
 
   const dispatch = createEventDispatcher();
 
@@ -76,7 +76,7 @@
     }
   }
 
-  $: code = printContract(contract, { compatibleSemver: compatibleContractsSemver });
+  $: code = printContract(contract);
   $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
   $: hasErrors = errors[tab] !== undefined;

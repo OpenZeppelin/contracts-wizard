@@ -28,10 +28,9 @@ const upgradeableImport = (p: ImportContract): ImportContract => {
 export interface Options {
   transformImport?: (parent: ImportContract) => ImportContract;
   /**
-   * Optional override for the compatibility banner printed at the top of the contract.
-   * If not provided, the default from this package will be used. (OpenZeppelin Contracts ^X.Y.Z)
+   * Add additional libraries to the compatibility banner printed at the top of the contract.
    */
-  compatibleSemver?: string;
+  additionalCompatibleLibraries?: { name: string; path: string; version: string }[];
 }
 
 export interface Helpers extends Required<Options> {
@@ -50,6 +49,6 @@ export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
       const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
-    compatibleSemver: opts.compatibleSemver ?? '',
+    additionalCompatibleLibraries: opts.additionalCompatibleLibraries ?? [],
   };
 }

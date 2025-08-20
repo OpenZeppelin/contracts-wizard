@@ -11,8 +11,6 @@ import { generateHooksOptions } from './hooks';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 
-import { compatibleContractsSemver } from '../utils/version';
-
 type Subset = 'all' | 'minimal-cover';
 
 type Kind = keyof KindedOptions;

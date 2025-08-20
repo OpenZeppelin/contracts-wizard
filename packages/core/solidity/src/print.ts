@@ -15,12 +15,13 @@ import { formatLines, spaceBetween } from './utils/format-lines';
 import { mapValues } from './utils/map-values';
 import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
-import { compatibleContractsSemver as defaultCompatibleSemver } from './utils/version';
+import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
+import { importsLibrary } from './utils/imports-libraries';
+import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
-  const compatibleSemver = opts?.compatibleSemver ?? defaultCompatibleSemver;
 
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
 
@@ -30,7 +31,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        `// Compatible with ${compatibleSemver}`,
+        printCompatibleLibraryVersions(contract, opts),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
@@ -54,6 +55,35 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
+  const libraries: string[] = [];
+  if (importsLibrary(contract, '@openzeppelin/contracts')) {
+    console.log('pushing', `OpenZeppelin Contracts ${compatibleContractsSemver}`);
+    libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
+  }
+  if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
+    try {
+      const commit = getCommunityContractsGitCommit();
+      libraries.push(`Community Contracts commit ${commit}`);
+      console.log('pushing', `Community Contracts commit ${commit}`);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  if (opts?.additionalCompatibleLibraries) {
+    for (const library of opts.additionalCompatibleLibraries) {
+      if (importsLibrary(contract, library.path)) {
+        console.log('pushing', `${library.name} ${library.version}`);
+        libraries.push(`${library.name} ${library.version}`);
+      }
+    }
+  }
+
+  if (libraries.length === 0) return '';
+  if (libraries.length === 1) return `// Compatible with ${libraries[0]}`;
+  return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {

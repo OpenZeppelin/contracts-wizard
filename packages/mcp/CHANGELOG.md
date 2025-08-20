@@ -1,6 +1,19 @@
 # Changelog
 
 
+## 0.1.0 (2025-08-15)
+
+- Export functions to register MCP tools ([#631](https://github.com/OpenZeppelin/contracts-wizard/pull/631))
+- Updated dependencies [[`2bb2a16`](https://github.com/OpenZeppelin/contracts-wizard/commit/2bb2a166616ac5005ee2bed643b10f24b5d9f086), [`c65acb7`](https://github.com/OpenZeppelin/contracts-wizard/commit/c65acb71bc10a77d7629ebfe30cc8dba397b09b1)]:
+  - @openzeppelin/wizard@0.7.1
+  - @openzeppelin/wizard-common@0.1.0
+
+## 0.0.7 (2025-08-12)
+
+- Updated dependencies [[`f39adfd`](https://github.com/OpenZeppelin/contracts-wizard/commit/f39adfdafa0fe772e292f48f5182e488c096132c)]:
+  - @openzeppelin/wizard@0.7.0
+  - @openzeppelin/wizard-common@0.0.3
+
 ## 0.0.6 (2025-07-29)
 
 - Update Wizard API dependencies ([#612](https://github.com/OpenZeppelin/contracts-wizard/pull/612))
