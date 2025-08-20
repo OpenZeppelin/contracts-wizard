@@ -59,7 +59,7 @@ export function buildAccount(opts: AccountOptions): Contract {
       c.addComponent(components.AccountComponent, [{ lit: 'public_key' }], true);
       break;
     case 'eth':
-      c.addUseClause('openzeppelin::account::interface', 'EthPublicKey');
+      c.addUseClause('openzeppelin::interfaces::accounts', 'EthPublicKey');
       c.addConstructorArgument({ name: 'public_key', type: 'EthPublicKey' });
       c.addComponent(components.EthAccountComponent, [{ lit: 'public_key' }], true);
       break;
