@@ -13,7 +13,7 @@ import type {
   SimpleAiFunctionDefinition,
 } from './ai-assistant/types/function-definition.ts';
 import { Cors } from './utils/cors.ts';
-import type { ChatCompletionStream, FunctionToolCallArgumentsDeltaEvent } from 'openai/lib/ChatCompletionStream.mjs';
+import type { ChatCompletionStream } from 'openai/resources/chat/completions.mjs';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,
@@ -58,7 +58,7 @@ const processOpenAIStream = (openAiStream: ChatCompletionStream, aiChatMessages:
     async pull(controller: ReadableStreamDefaultController<Uint8Array>) {
       const textEncoder = new TextEncoder();
       let finalResponse = '';
-      const finalToolCall: Pick<FunctionToolCallArgumentsDeltaEvent, 'arguments' | 'name'> = {
+      const finalToolCall = {
         name: '',
         arguments: '',
       };
