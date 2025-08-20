@@ -1,4 +1,3 @@
-import { OpenAIStream } from 'ai';
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
 import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
 import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
@@ -13,6 +12,9 @@ import type {
   AllContractsAIFunctionDefinitions,
   SimpleAiFunctionDefinition,
 } from './ai-assistant/types/function-definition.ts';
+import { Cors } from './utils/cors.ts';
+import type { ChatCompletionChunk } from 'openai/resources/chat/index.mjs';
+import type { Stream } from 'openai/streaming.mjs';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,
@@ -47,6 +49,39 @@ const buildAiChatMessages = (request: AiChatBodyRequest): Chat[] => {
   ];
 };
 
+const processOpenAIStream =
+  (openAiStream: Stream<ChatCompletionChunk>, aiChatMessages: Chat[], chatId: string) =>
+  async (controller: ReadableStreamDefaultController<Uint8Array>) => {
+    let finalResponse = '';
+    const finalFunctionCall = { name: '', arguments: '' };
+
+    try {
+      for await (const chunk of openAiStream) {
+        const delta = chunk?.choices?.[0]?.delta;
+        const isFunctionCallBuilding = delta?.function_call;
+        const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'function_call');
+
+        if (delta.content) {
+          finalResponse += delta.content;
+          controller.enqueue(new TextEncoder().encode(delta.content));
+        } else if (isFunctionCallBuilding) {
+          finalFunctionCall.name += delta.function_call?.name || '';
+          finalFunctionCall.arguments += delta.function_call?.arguments;
+        } else if (isFunctionCallFinished)
+          controller.enqueue(
+            new TextEncoder().encode(
+              JSON.stringify({
+                function_call: finalFunctionCall,
+              }),
+            ),
+          );
+      }
+    } finally {
+      await saveChatInRedisIfDoesNotExist(chatId, aiChatMessages)(finalResponse || JSON.stringify(finalFunctionCall));
+      controller.close();
+    }
+  };
+
 export default async (req: Request): Promise<Response> => {
   try {
     const aiChatBodyRequest: AiChatBodyRequest = await req.json();
@@ -55,7 +90,7 @@ export default async (req: Request): Promise<Response> => {
 
     const aiChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
-    const response = await openai.chat.completions.create({
+    const openAiStream = await openai.chat.completions.create({
       model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
       messages: aiChatMessages,
       functions: getFunctionsContext(aiChatBodyRequest.language),
@@ -63,14 +98,13 @@ export default async (req: Request): Promise<Response> => {
       stream: true,
     });
 
-    const stream = OpenAIStream(response, {
-      onCompletion: saveChatInRedisIfDoesNotExist(aiChatBodyRequest.chatId, aiChatMessages),
+    const stream = new ReadableStream({
+      pull: processOpenAIStream(openAiStream, aiChatMessages, aiChatBodyRequest.chatId),
     });
 
     return new Response(stream, {
       headers: new Headers({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        ...Cors,
         'Content-Type': 'text/html; charset=utf-8',
       }),
     });
