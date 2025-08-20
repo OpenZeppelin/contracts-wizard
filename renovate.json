@@ -4,9 +4,31 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["@openzeppelin/"],
-      "schedule": ["at any time"],
+      "matchPackagePrefixes": [
+        "@openzeppelin/"
+      ],
+      "schedule": [
+        "at any time"
+      ],
       "rangeStrategy": "update-lockfile"
+    },
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "groupName": "import_map (esm.sh)"
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^packages/ui/api/ai/import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"https://esm\\.sh/(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)"
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
     }
   ]
 }
