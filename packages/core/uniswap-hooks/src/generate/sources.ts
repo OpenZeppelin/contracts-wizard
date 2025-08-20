@@ -72,7 +72,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
 
 export function* generateSources(subset: Subset, kind?: Kind): Generator<GeneratedSource> {
   for (const c of generateContractSubset(subset, kind)) {
-    const source = printContract(c.contract, { compatibleSemver: compatibleContractsSemver });
+    const source = printContract(c.contract);
     yield { ...c, source };
   }
 }

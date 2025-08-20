@@ -12,21 +12,21 @@ const sharesOptions = [
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
 ] as const;
 
-const hooksOptions: HookName[] = Object.keys(Hooks) as HookName[];
+// const hooksOptions: HookName[] = Object.keys(Hooks) as HookName[];
 
 // @TODO: remove, faster to test compilation one by one.
-// const hooksOptions: HookName[] = [
-//   'BaseHook',
-//   'BaseAsyncSwap',
-//   'BaseCustomAccounting',
-//   'BaseCustomCurve',
-//   'BaseDynamicAfterFee',
-//   'BaseDynamicFee',
-//   'BaseOverrideFee',
-//   'AntiSandwichHook',
-//   'LiquidityPenaltyHook',
-//   'LimitOrderHook',
-// ];
+const hooksOptions: HookName[] = [
+  'BaseHook',
+  'BaseAsyncSwap',
+  // 'BaseCustomAccounting',
+  // 'BaseCustomCurve',
+  // 'BaseDynamicAfterFee',
+  // 'BaseDynamicFee',
+  // 'BaseOverrideFee',
+  // 'AntiSandwichHook',
+  // 'LiquidityPenaltyHook',
+  // 'LimitOrderHook',
+];
 
 const blueprint = {
   hook: hooksOptions as readonly HookName[],

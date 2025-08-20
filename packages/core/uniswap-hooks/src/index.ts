@@ -9,3 +9,5 @@ export { Hooks, type Hook, type HookName, type HookCategory } from './hooks/';
 export { type HooksOptions, type Shares } from './hooks';
 
 export { compatibleContractsSemver } from './utils/version';
+
+export { printContract } from './print';

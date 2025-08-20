@@ -5,11 +5,10 @@ import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wi
 import { setInfo } from '@openzeppelin/wizard/src/set-info';
 import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
-import { printContract } from '@openzeppelin/wizard/';
 import type { Value } from '@openzeppelin/wizard/src/contract';
 import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 
-import { compatibleContractsSemver } from './utils/version';
+import { printContract } from './print';
 import { Hooks, type HookName } from './hooks/';
 
 export const sharesOptions = [false, 'ERC20', 'ERC6909', 'ERC1155'] as const;
@@ -95,7 +94,7 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
 }
 
 export function printHooks(opts: HooksOptions = defaults): string {
-  return printContract(buildHooks(opts), { compatibleSemver: compatibleContractsSemver });
+  return printContract(buildHooks(opts));
 }
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {

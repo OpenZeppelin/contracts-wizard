@@ -4,8 +4,7 @@ import { hooks } from './api';
 
 import { buildHooks, type HooksOptions } from './hooks';
 import { Hooks } from './hooks/';
-import { printContract } from '@openzeppelin/wizard/src/print';
-import { compatibleContractsSemver } from './utils/version';
+import { printContract } from './print';
 
 function testHooks(title: string, opts: Partial<HooksOptions>) {
   test(title, t => {
@@ -13,7 +12,7 @@ function testHooks(title: string, opts: Partial<HooksOptions>) {
       ...hooks.defaults,
       ...opts,
     });
-    t.snapshot(printContract(c, { compatibleSemver: compatibleContractsSemver }));
+    t.snapshot(printContract(c));
   });
 }
 
