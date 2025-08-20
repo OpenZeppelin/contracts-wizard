@@ -11,7 +11,7 @@ function setUpgradeableBase(
   c: ContractBuilder,
   upgradeable: Upgradeable,
   restrictAuthorizeUpgradeWhenUUPS: () => void,
-  initializableUpgradeable: boolean = false,
+  skipInitializable: boolean = false,
 ) {
   if (upgradeable === false) {
     return;
@@ -21,10 +21,12 @@ function setUpgradeableBase(
   c.shouldInstallContractsUpgradeable = true;
   c.shouldUseUpgradesPluginsForProxyDeployment = true;
 
-  c.addParent({
-    name: 'Initializable',
-    path: `@openzeppelin/${initializableUpgradeable ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
-  });
+  if (!skipInitializable) {
+    c.addParent({
+      name: 'Initializable',
+      path: `@openzeppelin/contracts/proxy/utils/Initializable.sol`,
+    });
+  }
 
   switch (upgradeable) {
     case 'transparent':
@@ -62,17 +64,24 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
 }
 
 export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeable) {
+  if (upgradeable === false) {
+    return;
+  }
+
+  // Directly import upgradeable Initializable since we are skipping auto transpile below
+  c.addParent({
+    name: 'Initializable',
+    path: `@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol`,
+  });
   setUpgradeableBase(
     c,
     upgradeable,
     () => {
       c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
     },
-    true,
+    true, // already added upgradeable Initializable above
   );
-  if (upgradeable !== false) {
-    c.shouldInstallContractsUpgradeable = true;
-  }
+  c.shouldInstallContractsUpgradeable = true;
   c.shouldAutoTranspileImports = false; // account.ts handles usage of transpiled imports (when needed) rather than using helpers
   c.shouldUseUpgradesPluginsForProxyDeployment = false; // this will eventually use a factory to deploy proxies
 }
