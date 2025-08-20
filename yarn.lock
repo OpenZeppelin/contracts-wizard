@@ -1329,12 +1329,12 @@
     "@typescript-eslint/types" "8.39.1"
     eslint-visitor-keys "^4.2.1"
 
-"@upstash/redis@1.25.2":
-  version "1.25.2"
-  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.25.2.tgz#c400caced6e05a4931823c4eb57eda6b73963db3"
-  integrity sha512-iI3jgvmDIbe4Px0PskB8lrn1NXz7ZQyGpW9Ehmonk6SEFqhqssqIB04VmlNh8zZUXwzy6G9DaIa5gIUM6B7DwA==
+"@upstash/redis@1.35.3":
+  version "1.35.3"
+  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.35.3.tgz#7b383b6a8af57e619c054bdccdb7a6159860cdf5"
+  integrity sha512-hSjv66NOuahW3MisRGlSgoszU2uONAY2l5Qo3Sae8OT3/Tng9K+2/cBRuyPBX8egwEGcNNCF9+r0V6grNnhL+w==
   dependencies:
-    crypto-js "^4.2.0"
+    uncrypto "^0.1.3"
 
 "@vercel/nft@^0.29.4":
   version "0.29.4"
@@ -2147,11 +2147,6 @@ crypt@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
-
-crypto-js@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
-  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 css-declaration-sorter@^6.3.1:
   version "6.4.1"
@@ -6226,6 +6221,11 @@ typescript@^5.0.0, typescript@^5.0.3, typescript@^5.7.3:
   version "5.9.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.2.tgz#d93450cddec5154a2d5cabe3b8102b83316fb2a6"
   integrity sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==
+
+uncrypto@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/uncrypto/-/uncrypto-0.1.3.tgz#e1288d609226f2d02d8d69ee861fa20d8348ef2b"
+  integrity sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==
 
 undici-types@~5.26.4:
   version "5.26.5"
