@@ -10,8 +10,9 @@ export interface Contract {
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
   variables: string[];
-  useTranspiledImports: boolean;
-  upgradeable: boolean;
+  shouldAutoTranspileImports: boolean;
+  shouldInstallContractsUpgradeable: boolean;
+  shouldUseUpgradesPluginsForProxyDeployment: boolean;
 }
 
 export type Value = string | number | { lit: string } | { note: string; value: Value };
@@ -76,8 +77,10 @@ export interface NatspecTag {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
-  useTranspiledImports: boolean = false;
-  upgradeable: boolean = false;
+
+  shouldAutoTranspileImports: boolean = false;
+  shouldInstallContractsUpgradeable: boolean = false;
+  shouldUseUpgradesPluginsForProxyDeployment: boolean = false;
 
   readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];

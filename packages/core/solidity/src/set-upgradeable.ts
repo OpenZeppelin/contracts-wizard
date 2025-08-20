@@ -17,8 +17,9 @@ function setUpgradeableBase(
     return;
   }
 
-  c.upgradeable = true;
-  c.useTranspiledImports = true;
+  c.shouldAutoTranspileImports = true;
+  c.shouldInstallContractsUpgradeable = true;
+  c.shouldUseUpgradesPluginsForProxyDeployment = true;
 
   c.addParent({
     name: 'Initializable',
@@ -70,9 +71,10 @@ export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeab
     true,
   );
   if (upgradeable !== false) {
-    c.upgradeable = true;
+    c.shouldInstallContractsUpgradeable = true;
   }
-  c.useTranspiledImports = false; // account.ts handles usage of transpiled imports (when needed) rather than using helpers
+  c.shouldAutoTranspileImports = false; // account.ts handles usage of transpiled imports (when needed) rather than using helpers
+  c.shouldUseUpgradesPluginsForProxyDeployment = false; // this will eventually use a factory to deploy proxies
 }
 
 const functions = defineFunctions({

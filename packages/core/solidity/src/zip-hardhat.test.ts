@@ -102,7 +102,7 @@ test.serial('account ecdsa', async t => {
 test.serial('account ecdsa uups', async t => {
   const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
   const c = buildAccount(opts);
-  await runDeployScriptTest(c, t, opts);
+  await runIgnitionTest(c, t, opts); // Account does not use proxies for deployment, until factories are added
 });
 
 test.serial('custom basic', async t => {

@@ -35,14 +35,14 @@ export interface Helpers extends Required<Options> {
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
-  const contractUsesTranspiledImports = contract.useTranspiledImports;
+  const shouldAutoTranspileImports = contract.shouldAutoTranspileImports;
   const transformName = (n: ReferencedContract) =>
-    contractUsesTranspiledImports && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
+    shouldAutoTranspileImports && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
   return {
-    shouldUseInitializers: contractUsesTranspiledImports,
+    shouldUseInitializers: shouldAutoTranspileImports,
     transformName,
     transformImport: p1 => {
-      const p2 = contractUsesTranspiledImports && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
+      const p2 = shouldAutoTranspileImports && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
   };
