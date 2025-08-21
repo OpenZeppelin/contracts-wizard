@@ -182,14 +182,14 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 }
 
 function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
-  if (
-    // No initialization required
-    !opts.signer ||
-    opts.signer === 'ERC7702' ||
-    // Initializer added in signer.ts
-    opts.upgradeable
-  )
-    return;
+  if (opts.upgradeable) {
+    if (!opts.signer) {
+      c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
+      c.addConstructorCode(`_disableInitializers();`);
+    }
+    return; // Initializer added in signer.ts
+  }
+  if (!opts.signer || opts.signer === 'ERC7702') return; // No initialization required
 
   c.addParent({
     name: 'Initializable',
