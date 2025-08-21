@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2.0.1 (2025-08-20)
+
+- Fix missing use clause in hooks for ERC20 votes ([#637](https://github.com/OpenZeppelin/contracts-wizard/pull/637))
+
 ## 2.0.0 (2025-06-20)
 
 - Add AccessControlWithDelay. ([#506](https://github.com/OpenZeppelin/contracts-wizard/pull/506))
