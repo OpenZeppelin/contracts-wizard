@@ -193,13 +193,13 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   switch (allOpts.hook) {
     case 'BaseCustomAccounting':
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
-      c.setFunctionBody([`// Override _getAddLiquidity`], Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.setFunctionBody([`// Implement _getAddLiquidity`], Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
-      c.setFunctionBody([`// Override _getRemoveLiquidity`], Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
+      c.setFunctionBody([`// Implement _getRemoveLiquidity`], Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Override _mint`], Hooks.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Override _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
       c.addImportOnly({
         name: 'BalanceDelta',
         path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
@@ -207,17 +207,17 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'BaseCustomCurve':
       c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
-      c.setFunctionBody([`// Override _getUnspecifiedAmount`], Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.setFunctionBody([`// Implement _getUnspecifiedAmount`], Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
       c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
-      c.setFunctionBody([`// Override _getSwapFeeAmount`], Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.setFunctionBody([`// Implement _getSwapFeeAmount`], Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
       c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountOut!);
-      c.setFunctionBody([`// Override _getAmountOut`], Hooks.BaseCustomCurve.functions._getAmountOut!);
+      c.setFunctionBody([`// Implement _getAmountOut`], Hooks.BaseCustomCurve.functions._getAmountOut!);
       c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountIn!);
-      c.setFunctionBody([`// Override _getAmountIn`], Hooks.BaseCustomCurve.functions._getAmountIn!);
+      c.setFunctionBody([`// Implement _getAmountIn`], Hooks.BaseCustomCurve.functions._getAmountIn!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Override _mint`], Hooks.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Override _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
       c.addImportOnly({
         name: 'BalanceDelta',
         path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
@@ -229,9 +229,9 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'BaseDynamicFee':
       c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions._getFee!);
-      c.setFunctionBody([`// Override _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
+      c.setFunctionBody([`// Implement _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
       c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions.poke!);
-      c.setFunctionBody([`// Override poke`], Hooks.BaseDynamicFee.functions.poke!);
+      c.setFunctionBody([`// Implement poke`], Hooks.BaseDynamicFee.functions.poke!);
       c.addImportOnly({
         name: 'PoolKey',
         path: `@uniswap/v4-core/src/types/PoolKey.sol`,
@@ -240,11 +240,11 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     case 'BaseDynamicAfterFee':
       c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
-        [`// Override _getTargetUnspecified`],
+        [`// Implement _getTargetUnspecified`],
         Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!,
       );
       c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Override _afterSwapHandler`], Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
       c.addImportOnly({
         name: 'PoolKey',
         path: `@uniswap/v4-core/src/types/PoolKey.sol`,
@@ -260,7 +260,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'BaseOverrideFee':
       c.addOverride({ name: 'BaseOverrideFee' }, Hooks.BaseOverrideFee.functions._getFee!);
-      c.setFunctionBody([`// Override _getFee`], Hooks.BaseOverrideFee.functions._getFee!);
+      c.setFunctionBody([`// Implement _getFee`], Hooks.BaseOverrideFee.functions._getFee!);
       c.addImportOnly({
         name: 'PoolKey',
         path: `@uniswap/v4-core/src/types/PoolKey.sol`,
@@ -272,7 +272,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'AntiSandwichHook':
       c.addOverride({ name: 'AntiSandwichHook' }, Hooks.AntiSandwichHook.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Override _afterSwapHandler`], Hooks.AntiSandwichHook.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.AntiSandwichHook.functions._afterSwapHandler!);
       c.addImportOnly({
         name: 'PoolKey',
         path: `@uniswap/v4-core/src/types/PoolKey.sol`,
