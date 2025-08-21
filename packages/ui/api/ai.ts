@@ -4,6 +4,7 @@ import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
+import type { ChatMessage } from './services/open-ai.ts';
 import { createOpenAiCompletionStream } from './services/open-ai.ts';
 import type { AiChatBodyRequest } from './ai-assistant/types/assistant.ts';
 import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
@@ -12,7 +13,6 @@ import type {
   SimpleAiFunctionDefinition,
 } from './ai-assistant/types/function-definition.ts';
 import { Cors } from './utils/cors.ts';
-import type { ChatCompletionStreamParams } from 'openai/lib/ChatCompletionStream.mjs';
 
 const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLanguage>(
   language: TLanguage,
@@ -33,7 +33,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
   );
 };
 
-const buildAiChatMessages = (request: AiChatBodyRequest): ChatCompletionStreamParams['messages'] => {
+const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessage => {
   const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
     return message.content.length < 500;
   });

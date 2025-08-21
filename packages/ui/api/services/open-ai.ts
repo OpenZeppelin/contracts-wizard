@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import { getEnvironmentVariableOr, getEnvironmentVariablesOrFail } from '../utils/env.ts';
-import type { ChatCompletionStream, ChatCompletionStreamParams } from 'openai/lib/ChatCompletionStream.mjs';
 
 export const getOpenAiInstance = () => {
   const { OPENAI_API_KEY } = getEnvironmentVariablesOrFail('OPENAI_API_KEY');
@@ -10,9 +9,11 @@ export const getOpenAiInstance = () => {
   });
 };
 
+export type ChatMessage = OpenAI.Chat.ChatCompletionCreateParams['messages'];
+
 type ProcessOpenAiStreamParams = {
-  openAiStream: ChatCompletionStream;
-  chatMessages: ChatCompletionStreamParams['messages'];
+  openAiStream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk> & { controller?: AbortController };
+  chatMessages: OpenAI.Chat.ChatCompletionCreateParams['messages'];
   chatId: string;
 };
 type OnAiStreamCompletion = (
@@ -78,7 +79,7 @@ export const createOpenAiCompletionStream = ({
   chatId,
   onAiStreamCompletion,
 }: {
-  streamParams: Omit<ChatCompletionStreamParams, 'model'>;
+  streamParams: Omit<OpenAI.Chat.ChatCompletionCreateParams, 'model' | 'stream'>;
   chatId: string;
   onAiStreamCompletion?: OnAiStreamCompletion;
 }) => {
