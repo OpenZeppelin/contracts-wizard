@@ -188,6 +188,11 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorComment(comment: string) {
+    if (this.shouldAutoTranspileImports) {
+      throw new Error(
+        'Constructor comments are not supported when `shouldAutoTranspileImports` is true, since constructor will be transformed into an initializer',
+      );
+    }
     this.constructorComments.push(comment);
   }
 
