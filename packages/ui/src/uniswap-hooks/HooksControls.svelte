@@ -168,7 +168,7 @@
 
 <section class="controls-section">
   <h1>Hook Permissions</h1>
-
+  
   <div class="checkbox-group">
     {#each permissionKeys as permission}
       <label class:checked={opts.permissions[permission]}>
