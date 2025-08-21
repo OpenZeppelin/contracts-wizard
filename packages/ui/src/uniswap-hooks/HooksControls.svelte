@@ -30,8 +30,7 @@
 
   let lastHook: HookName;
   $: if (opts.hook !== lastHook) {
-    const nextPermissions = { ...hooks.defaults.permissions, ...Hooks[opts.hook].permissions };
-    opts = { ...opts, permissions: nextPermissions };
+    opts = { ...opts, permissions: { ...Hooks[opts.hook].permissions } };
     lastHook = opts.hook;
   }
 </script>
@@ -168,15 +167,19 @@
 </section>
 
 <section class="controls-section">
-  <h1>Permissions</h1>
+  <h1>Hook Permissions</h1>
 
   <div class="checkbox-group">
     {#each permissionKeys as permission}
       <label class:checked={opts.permissions[permission]}>
         <input type="checkbox" bind:checked={opts.permissions[permission]} disabled={!!Hooks[opts.hook].permissions[permission]} />
         {permission}
-        <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/permissions">
-          {Hooks[opts.hook].permissions[permission] ? 'Required by selected hook' : 'Optional'}
+        <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
+          {#if Hooks[opts.hook].permissions[permission]}
+            The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
+          {:else}
+            Optionally enable the <code>{permission}</code> permission.
+          {/if}
         </HelpTooltip>
       </label>
     {/each}

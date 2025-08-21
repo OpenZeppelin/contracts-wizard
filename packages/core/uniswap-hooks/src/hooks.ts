@@ -53,7 +53,7 @@ export const defaults: Required<HooksOptions> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
-  currencySettler: false,
+  currencySettler: true,
   safeCast: false,
   transientStorage: false,
   shares: {
