@@ -38,6 +38,22 @@ const BaseCustomCurve: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: true,
+    afterInitialize: false,
+    beforeAddLiquidity: true,
+    beforeRemoveLiquidity: true,
+    afterAddLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: true,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: true,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseCustomCurve };

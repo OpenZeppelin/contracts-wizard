@@ -12,6 +12,22 @@ const BaseAsyncSwap: Hook = {
       // no required overrides.
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: false,
+    beforeAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterAddLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: true,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: true,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseAsyncSwap };

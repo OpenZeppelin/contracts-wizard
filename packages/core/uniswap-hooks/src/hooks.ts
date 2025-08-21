@@ -11,9 +11,25 @@ import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 import { printContract } from './print';
 import { Hooks, type HookName } from './hooks/';
 
-export const sharesOptions = [false, 'ERC20', 'ERC6909', 'ERC1155'] as const;
+export type Permissions = {
+  beforeInitialize: boolean;
+  afterInitialize: boolean;
+  beforeAddLiquidity: boolean;
+  beforeRemoveLiquidity: boolean;
+  afterAddLiquidity: boolean;
+  afterRemoveLiquidity: boolean;
+  beforeSwap: boolean;
+  afterSwap: boolean;
+  beforeDonate: boolean;
+  afterDonate: boolean;
+  beforeSwapReturnDelta: boolean;
+  afterSwapReturnDelta: boolean;
+  afterAddLiquidityReturnDelta: boolean;
+  afterRemoveLiquidityReturnDelta: boolean;
+};
+
 export type Shares = {
-  options: (typeof sharesOptions)[number];
+  options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
   name?: string;
   symbol?: string;
   uri?: string;
@@ -27,6 +43,7 @@ export interface HooksOptions extends CommonOptions {
   safeCast: boolean;
   transientStorage: boolean;
   shares: Shares;
+  permissions: Permissions;
 }
 
 export const defaults: Required<HooksOptions> = {
@@ -45,40 +62,22 @@ export const defaults: Required<HooksOptions> = {
     symbol: 'MSH',
     uri: '',
   },
-};
-
-type Permissions = {
-  beforeInitialize: boolean;
-  afterInitialize: boolean;
-  beforeAddLiquidity: boolean;
-  beforeRemoveLiquidity: boolean;
-  afterAddLiquidity: boolean;
-  afterRemoveLiquidity: boolean;
-  beforeSwap: boolean;
-  afterSwap: boolean;
-  beforeDonate: boolean;
-  afterDonate: boolean;
-  beforeSwapReturnDelta: boolean;
-  afterSwapReturnDelta: boolean;
-  afterAddLiquidityReturnDelta: boolean;
-  afterRemoveLiquidityReturnDelta: boolean;
-};
-
-const defaultPermissions: Permissions = {
-  beforeInitialize: false,
-  afterInitialize: false,
-  beforeAddLiquidity: false,
-  beforeRemoveLiquidity: false,
-  afterAddLiquidity: false,
-  afterRemoveLiquidity: false,
-  beforeSwap: false,
-  afterSwap: false,
-  beforeDonate: false,
-  afterDonate: false,
-  beforeSwapReturnDelta: false,
-  afterSwapReturnDelta: false,
-  afterAddLiquidityReturnDelta: false,
-  afterRemoveLiquidityReturnDelta: false,
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: false,
+    beforeAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterAddLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: false,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
@@ -293,14 +292,14 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 
   // Add Hook Permissions
   switch (allOpts.hook) {
-    case 'BaseHook':
-      addDefaultHookPermissions(c, allOpts);
+    // case 'BaseHook':
+    // break;
+    default:
+      addHookPermissions(c, allOpts);
       c.addImportOnly({
         name: 'Hooks',
         path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
       });
-      break;
-    default:
       break;
   }
 }
@@ -378,8 +377,8 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
-function addDefaultHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
-  const entries = Object.entries(defaultPermissions);
+function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
+  const entries = Object.entries(_allOpts.permissions);
   const permissionLines = entries.map(
     ([key, value], idx) => `    ${key}: ${value}${idx === entries.length - 1 ? '' : ','}`,
   );

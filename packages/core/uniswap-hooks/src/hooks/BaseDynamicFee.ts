@@ -22,6 +22,22 @@ const BaseDynamicFee: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: true,
+    beforeAddLiquidity: false,
+    afterAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: false,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseDynamicFee };

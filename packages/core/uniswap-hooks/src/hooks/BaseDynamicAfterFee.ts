@@ -33,6 +33,22 @@ const BaseDynamicAfterFee: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: false,
+    beforeAddLiquidity: false,
+    afterAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: true,
+    afterSwap: true,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: true,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseDynamicAfterFee };

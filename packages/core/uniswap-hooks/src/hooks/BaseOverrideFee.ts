@@ -21,6 +21,22 @@ const BaseOverrideFee: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: false,
+    beforeAddLiquidity: false,
+    afterAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: false,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseOverrideFee };

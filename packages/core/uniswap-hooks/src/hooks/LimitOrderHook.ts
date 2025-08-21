@@ -108,6 +108,22 @@ const LimitOrderHook: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: true,
+    beforeAddLiquidity: false,
+    beforeRemoveLiquidity: false,
+    afterAddLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: false,
+    afterSwap: true,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { LimitOrderHook };

@@ -10,6 +10,7 @@ import { BaseDynamicAfterFee } from './BaseDynamicAfterFee';
 import { AntiSandwichHook } from './AntiSandwichHook';
 import { LimitOrderHook } from './LimitOrderHook';
 import { LiquidityPenaltyHook } from './LiquidityPenaltyHook';
+import type { Permissions } from '../hooks';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
 
@@ -31,6 +32,7 @@ export type Hook = {
   functions: Record<string, BaseFunction>;
   tooltipText: string;
   tooltipLink: string;
+  permissions: Permissions;
 };
 
 export type HookDictionary = Record<HookName, Hook>;

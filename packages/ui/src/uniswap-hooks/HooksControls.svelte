@@ -3,7 +3,7 @@
 
   import { infoDefaults } from '@openzeppelin/wizard';
   import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import type { HookCategory, Hook, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
+  import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
@@ -23,6 +23,16 @@
   for (const key in Hooks) {
     const hook = Hooks[key as keyof typeof Hooks];
     hooksByCategory[hook.category].push(hook);
+  }
+
+  type PermissionKey = keyof typeof hooks.defaults.permissions;
+  const permissionKeys = Object.keys(hooks.defaults.permissions) as PermissionKey[];
+
+  let lastHook: HookName;
+  $: if (opts.hook !== lastHook) {
+    const nextPermissions = { ...hooks.defaults.permissions, ...Hooks[opts.hook].permissions };
+    opts = { ...opts, permissions: nextPermissions };
+    lastHook = opts.hook;
   }
 </script>
 
@@ -154,6 +164,22 @@
         whose gas costs are drastically reduced in comparison to regular storage.
       </HelpTooltip>
     </label>
+  </div>
+</section>
+
+<section class="controls-section">
+  <h1>Permissions</h1>
+
+  <div class="checkbox-group">
+    {#each permissionKeys as permission}
+      <label class:checked={opts.permissions[permission]}>
+        <input type="checkbox" bind:checked={opts.permissions[permission]} disabled={!!Hooks[opts.hook].permissions[permission]} />
+        {permission}
+        <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/permissions">
+          {Hooks[opts.hook].permissions[permission] ? 'Required by selected hook' : 'Optional'}
+        </HelpTooltip>
+      </label>
+    {/each}
   </div>
 </section>
 

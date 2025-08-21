@@ -46,6 +46,22 @@ const BaseCustomAccounting: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: true,
+    afterInitialize: false,
+    beforeAddLiquidity: true,
+    beforeRemoveLiquidity: true,
+    afterAddLiquidity: false,
+    afterRemoveLiquidity: false,
+    beforeSwap: false,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: false,
+    afterRemoveLiquidityReturnDelta: false,
+  },
 };
 
 export { BaseCustomAccounting };

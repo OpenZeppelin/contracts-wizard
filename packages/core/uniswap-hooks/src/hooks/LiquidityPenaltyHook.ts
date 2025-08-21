@@ -96,6 +96,22 @@ const LiquidityPenaltyHook: Hook = {
       },
     }),
   },
+  permissions: {
+    beforeInitialize: false,
+    afterInitialize: false,
+    beforeAddLiquidity: false,
+    afterAddLiquidity: true,
+    beforeRemoveLiquidity: false,
+    afterRemoveLiquidity: true,
+    beforeSwap: false,
+    afterSwap: false,
+    beforeDonate: false,
+    afterDonate: false,
+    beforeSwapReturnDelta: false,
+    afterSwapReturnDelta: false,
+    afterAddLiquidityReturnDelta: true,
+    afterRemoveLiquidityReturnDelta: true,
+  },
 };
 
 export { LiquidityPenaltyHook };
