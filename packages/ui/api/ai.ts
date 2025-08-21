@@ -64,8 +64,8 @@ export default async (req: Request): Promise<Response> => {
         tools: getFunctionsContext(aiChatBodyRequest.language),
       },
       chatId: aiChatBodyRequest.chatId,
-      onAiStreamCompletion: ({ chatId, chatMessages }, finalStreamResult) =>
-        saveChatInRedisIfDoesNotExist(chatId, chatMessages)(finalStreamResult),
+      onAiStreamCompletion: async ({ chatId, chatMessages }, finalStreamResult) =>
+        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, chatMessages)(finalStreamResult)),
     });
 
     return new Response(openAiStream, {

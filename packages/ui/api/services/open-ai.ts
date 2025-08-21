@@ -19,7 +19,7 @@ type ProcessOpenAiStreamParams = {
 type OnAiStreamCompletion = (
   processOpenAiStreamParams: ProcessOpenAiStreamParams,
   processOpenAiStreamResults: string,
-) => Promise<void>;
+) => Promise<unknown>;
 
 const processOpenAIStream = (
   { openAiStream, chatMessages, chatId }: ProcessOpenAiStreamParams,
