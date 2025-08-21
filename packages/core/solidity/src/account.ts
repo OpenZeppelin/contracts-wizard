@@ -4,7 +4,7 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
-import { addSigner, signerArgs, signerFunctions, signers, type SignerOptions } from './signer';
+import { addLockingConstructorAllowReachable, addSigner, signerArgs, signerFunctions, signers, type SignerOptions } from './signer';
 import { setUpgradeableAccount } from './set-upgradeable';
 
 export const defaults: Required<AccountOptions> = {
@@ -184,8 +184,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
   if (opts.upgradeable) {
     if (!opts.signer) {
-      c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
-      c.addConstructorCode(`_disableInitializers();`);
+      addLockingConstructorAllowReachable(c);
     }
     return; // Initializer added in signer.ts
   }
@@ -196,11 +195,10 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
     path: `@openzeppelin/${opts.upgradeable ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
   });
 
-  // Add locking constructor
-  c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
-  c.addConstructorCode('// Accounts are typically deployed and initialized as clones during their first user op,');
-  c.addConstructorCode('// therefore, initializers are disabled for the implementation contract');
-  c.addConstructorCode(`_disableInitializers();`);
+  addLockingConstructorAllowReachable(c, [
+    '// Accounts are typically deployed and initialized as clones during their first user op,',
+    '// therefore, initializers are disabled for the implementation contract'
+  ]);
 
   const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[opts.signer] };
   c.addModifier('initializer', fn);

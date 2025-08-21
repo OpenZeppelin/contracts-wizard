@@ -35,9 +35,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
           name: 'Initializable',
           path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
         });
-        // Add locking constructor
-        c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
-        c.addConstructorCode(`_disableInitializers();`);
+        addLockingConstructorAllowReachable(c);
 
         const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
         c.addModifier('initializer', fn);
@@ -59,6 +57,19 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       break;
     }
   }
+}
+
+/**
+ * Adds a locking constructor that disables initializers and annotates it to allow reachable constructors during Upgrades Plugins validations,
+ * which includes constructors in parent contracts.
+ *
+ * @param c The contract builder.
+ * @param bodyComments Optional comments to add to the constructor body, before disabling initializers.
+ */
+export function addLockingConstructorAllowReachable(c: ContractBuilder, bodyComments?: string[]): void {
+  c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
+  bodyComments?.forEach(comment => c.addConstructorCode(comment));
+  c.addConstructorCode(`_disableInitializers();`);
 }
 
 export const signers = {
