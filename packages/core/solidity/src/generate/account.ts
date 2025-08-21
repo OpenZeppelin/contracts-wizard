@@ -1,5 +1,6 @@
 import type { AccountOptions } from '../account';
 import { infoOptions } from '../set-info';
+import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
 const account = {
@@ -11,7 +12,7 @@ const account = {
   batchedExecution: [false, true] as const,
   ERC7579Modules: [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const,
   access: [false] as const,
-  upgradeable: [false] as const,
+  upgradeable: upgradeableOptions,
   info: infoOptions,
 };
 

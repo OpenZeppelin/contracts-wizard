@@ -9,8 +9,11 @@ export interface Contract {
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
+  constructorComments: string[];
   variables: string[];
-  upgradeable: boolean;
+  shouldAutoTranspileImports: boolean;
+  shouldInstallContractsUpgradeable: boolean;
+  shouldUseUpgradesPluginsForProxyDeployment: boolean;
 }
 
 export type Value = string | number | { lit: string } | { note: string; value: Value };
@@ -75,13 +78,17 @@ export interface NatspecTag {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
-  upgradeable = false;
+
+  shouldAutoTranspileImports: boolean = false;
+  shouldInstallContractsUpgradeable: boolean = false;
+  shouldUseUpgradesPluginsForProxyDeployment: boolean = false;
 
   readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
+  readonly constructorComments: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
@@ -178,6 +185,15 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
+  }
+
+  addConstructorComment(comment: string) {
+    if (this.shouldAutoTranspileImports) {
+      throw new Error(
+        'Constructor comments are not supported when `shouldAutoTranspileImports` is true, since constructor will be transformed into an initializer',
+      );
+    }
+    this.constructorComments.push(comment);
   }
 
   addFunctionCode(code: string, baseFn: BaseFunction, mutability?: FunctionMutability) {

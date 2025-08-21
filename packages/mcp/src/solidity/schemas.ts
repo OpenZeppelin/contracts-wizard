@@ -139,6 +139,7 @@ export const accountSchema = {
     .optional()
     .describe(solidityAccountDescriptions.ERC7579Modules),
   info: commonSchema.info,
+  upgradeable: commonSchema.upgradeable,
 } as const satisfies z.ZodRawShape;
 
 export const governorSchema = {
