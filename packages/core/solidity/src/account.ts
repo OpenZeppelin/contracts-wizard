@@ -87,7 +87,7 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
   addSigner(c, opts.signer ?? false, opts.upgradeable ?? false);
-  if (!opts.upgradeable) addSignerInitializer(c, opts);
+  addSignerInitializer(c, opts);
   addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
@@ -182,7 +182,14 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 }
 
 function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
-  if (!opts.signer || opts.signer === 'ERC7702') return;
+  if (
+    // No initialization required
+    !opts.signer ||
+    opts.signer === 'ERC7702' ||
+    // Initializer added in signer.ts
+    opts.upgradeable
+  )
+    return;
 
   c.addParent({
     name: 'Initializable',
@@ -190,7 +197,9 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
   });
 
   // Add locking constructor
-  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+  c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
+  c.addConstructorCode('// Accounts are typically deployed and initialized as clones during their first user op,');
+  c.addConstructorCode('// therefore, initializers are disabled for the implementation contract');
   c.addConstructorCode(`_disableInitializers();`);
 
   const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[opts.signer] };

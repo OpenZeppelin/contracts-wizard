@@ -36,7 +36,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
           path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
         });
         // Add locking constructor
-        c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
+        c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow constructor');
         c.addConstructorCode(`_disableInitializers();`);
 
         const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };

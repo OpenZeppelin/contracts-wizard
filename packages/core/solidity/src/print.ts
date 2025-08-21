@@ -92,7 +92,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
         )
       : contract.constructorCode;
     const head = helpers.shouldUseInitializers ? 'function initialize' : 'constructor';
-    const constructor = printFunction2([], head, args, modifiers, body);
+    const constructor = printFunction2(contract.constructorComments, head, args, modifiers, body);
     if (!helpers.shouldUseInitializers) {
       return constructor;
     } else {

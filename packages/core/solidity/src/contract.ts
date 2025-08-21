@@ -9,6 +9,7 @@ export interface Contract {
   functions: ContractFunction[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
+  constructorComments: string[];
   variables: string[];
   shouldAutoTranspileImports: boolean;
   shouldInstallContractsUpgradeable: boolean;
@@ -87,6 +88,7 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
+  readonly constructorComments: string[] = [];
   readonly variableSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
@@ -183,6 +185,10 @@ export class ContractBuilder implements Contract {
 
   addConstructorCode(code: string) {
     this.constructorCode.push(code);
+  }
+
+  addConstructorComment(comment: string) {
+    this.constructorComments.push(comment);
   }
 
   addFunctionCode(code: string, baseFn: BaseFunction, mutability?: FunctionMutability) {
