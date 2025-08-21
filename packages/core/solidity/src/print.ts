@@ -92,11 +92,11 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
         )
       : contract.constructorCode;
     const head = helpers.shouldUseInitializers ? 'function initialize' : 'constructor';
-    const constructor = printFunction2(contract.constructorComments, head, args, modifiers, body);
+    const ctor = printFunction2(contract.constructorComments, head, args, modifiers, body);
     if (!helpers.shouldUseInitializers) {
-      return constructor;
+      return ctor;
     } else {
-      return spaceBetween(DISABLE_INITIALIZERS, constructor);
+      return spaceBetween(DISABLE_INITIALIZERS, ctor);
     }
   } else if (!helpers.shouldUseInitializers) {
     return [];
