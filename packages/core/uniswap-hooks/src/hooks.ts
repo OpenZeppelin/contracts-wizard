@@ -107,16 +107,12 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   const c = new ContractBuilder(allOpts.name);
 
-  addHook(c, allOpts);
-
   setInfo(c, allOpts.info);
+
+  addHook(c, allOpts);
 
   if (allOpts.access) {
     setAccessControl(c, allOpts.access);
-  }
-
-  if (allOpts.pausable) {
-    addPausable(c, allOpts.access, []);
   }
 
   if (allOpts.currencySettler) {
@@ -142,6 +138,13 @@ export function buildHooks(opts: HooksOptions): Contract {
       addERC6909Shares(c, allOpts);
     }
   }
+
+  if (allOpts.pausable) {
+    addPausable(c, allOpts.access, []);
+    addPausableHook(c, allOpts);
+  }
+
+  addHookPermissions(c, allOpts);
 
   return c;
 }
@@ -195,7 +198,10 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
       c.setFunctionBody([`// Implement _getAddLiquidity`], Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
-      c.setFunctionBody([`// Implement _getRemoveLiquidity`], Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
+      c.setFunctionBody(
+        [`// Implement _getRemoveLiquidity`],
+        Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!,
+      );
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
       c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
@@ -289,19 +295,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     default:
       break;
   }
-
-  // Add Hook Permissions
-  switch (allOpts.hook) {
-    // case 'BaseHook':
-    // break;
-    default:
-      addHookPermissions(c, allOpts);
-      c.addImportOnly({
-        name: 'Hooks',
-        path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
-      });
-      break;
-  }
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -377,7 +370,67 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
+// Makes the `before` hooks pausable by default.
+// Requires the `before` permissions to be set to true. @TBD
+function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeInitialize!);
+  c.setFunctionBody(
+    [`return super._beforeInitialize(sender, key, sqrtPriceX96);`],
+    Hooks.BaseHook.functions._beforeInitialize!,
+  );
+  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeInitialize!);
+  c.addImportOnly({
+    name: 'PoolKey',
+    path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+  });
+
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeAddLiquidity!);
+  c.setFunctionBody(
+    [`return super._beforeAddLiquidity(sender, key, params, hookData);`],
+    Hooks.BaseHook.functions._beforeAddLiquidity!,
+  );
+  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeAddLiquidity!);
+  c.addImportOnly({
+    name: 'ModifyLiquidityParams',
+    path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+  });
+
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeRemoveLiquidity!);
+  c.setFunctionBody(
+    [`return super._beforeRemoveLiquidity(sender, key, params, hookData);`],
+    Hooks.BaseHook.functions._beforeRemoveLiquidity!,
+  );
+  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeRemoveLiquidity!);
+
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeSwap!);
+  c.setFunctionBody(
+    [`return super._beforeSwap(sender, key, params, hookData);`],
+    Hooks.BaseHook.functions._beforeSwap!,
+  );
+  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeSwap!);
+  c.addImportOnly({
+    name: 'SwapParams',
+    path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+  });
+  c.addImportOnly({
+    name: 'BeforeSwapDelta',
+    path: `@uniswap/v4-core/src/types/BeforeSwapDelta.sol`,
+  });
+
+  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeDonate!);
+  c.setFunctionBody(
+    [`return super._beforeDonate(sender, key, amount0, amount1, hookData);`],
+    Hooks.BaseHook.functions._beforeDonate!,
+  );
+  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeDonate!);
+}
+
 function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
+  c.addImportOnly({
+    name: 'Hooks',
+    path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
+  });
+
   const entries = Object.entries(_allOpts.permissions);
   const permissionLines = entries.map(
     ([key, value], idx) => `    ${key}: ${value}${idx === entries.length - 1 ? '' : ','}`,
