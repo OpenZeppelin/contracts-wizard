@@ -4,7 +4,14 @@ import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
-import { addLockingConstructorAllowReachable, addSigner, signerArgs, signerFunctions, signers, type SignerOptions } from './signer';
+import {
+  addLockingConstructorAllowReachable,
+  addSigner,
+  signerArgs,
+  signerFunctions,
+  signers,
+  type SignerOptions,
+} from './signer';
 import { setUpgradeableAccount } from './set-upgradeable';
 
 export const defaults: Required<AccountOptions> = {
@@ -197,7 +204,7 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
 
   addLockingConstructorAllowReachable(c, [
     '// Accounts are typically deployed and initialized as clones during their first user op,',
-    '// therefore, initializers are disabled for the implementation contract'
+    '// therefore, initializers are disabled for the implementation contract',
   ]);
 
   const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[opts.signer] };
