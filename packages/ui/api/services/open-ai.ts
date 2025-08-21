@@ -13,7 +13,7 @@ export type ChatMessage = OpenAI.Chat.ChatCompletionCreateParams['messages'];
 
 type ProcessOpenAiStreamParams = {
   openAiStream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk> & { controller?: AbortController };
-  chatMessages: OpenAI.Chat.ChatCompletionCreateParams['messages'];
+  chatMessages: ChatMessage;
   chatId: string;
 };
 type OnAiStreamCompletion = (
