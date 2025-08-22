@@ -375,7 +375,7 @@ function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
 }
 
 function functionInvocation(f: BaseFunction): string {
-  return `${f.name}(${f.args.map(arg => arg.name).join(', ')})`;
+  return `${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
 }
 
 function returnSuperFunctionInvocation(f: BaseFunction): string {
@@ -423,6 +423,8 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
     if (isNativeSolidityType(type)) continue;
 
     const path = importPaths[type as keyof typeof importPaths] || 'add me to importPaths.json!';
+    if (path === 'parent') continue;
+
     c.addImportOnly({ name: type, path: path });
   }
 }

@@ -1,22 +1,23 @@
 {
-    "BaseHook": "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol",
-    "BaseAsyncSwap": "@openzeppelin/uniswap-hooks/src/base/BaseAsyncSwap.sol",
+    "BaseHook": "@openzeppelin/uniswap-hooks/base/BaseHook.sol",
+    "BaseAsyncSwap": "@openzeppelin/uniswap-hooks/base/BaseAsyncSwap.sol",
 
-    "BaseCustomAccounting": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
-    "AddLiquidityParams": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
-    "RemoveLiquidityParams": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
+    "BaseCustomAccounting": "@openzeppelin/uniswap-hooks/base/BaseCustomAccounting.sol",
 
-    "BaseCustomCurve": "@openzeppelin/uniswap-hooks/src/base/BaseCustomCurve.sol",
+    "AddLiquidityParams": "parent",
+    "RemoveLiquidityParams": "parent",
 
-    "BaseDynamicFee": "@openzeppelin/uniswap-hooks/src/fee/BaseDynamicFee.sol",
-    "BaseOverrideFee": "@openzeppelin/uniswap-hooks/src/fee/BaseOverrideFee.sol",
-    "BasedDynamicAfterFee": "@openzeppelin/uniswap-hooks/src/fee/BaseDynamicAfterFee.sol",
+    "BaseCustomCurve": "@openzeppelin/uniswap-hooks/base/BaseCustomCurve.sol",
 
-    "AntiSandwichHook": "@openzeppelin/uniswap-hooks/src/general/AntiSandwichHook.sol",
-    "LimitOrderHook": "@openzeppelin/uniswap-hooks/src/general/LimitOrderHook.sol",
-    
-    "LiquidityPenaltyHook": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
-    "OrderIdLibrary": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
+    "BaseDynamicFee": "@openzeppelin/uniswap-hooks/fee/BaseDynamicFee.sol",
+    "BaseOverrideFee": "@openzeppelin/uniswap-hooks/fee/BaseOverrideFee.sol",
+    "BasedDynamicAfterFee": "@openzeppelin/uniswap-hooks/fee/BaseDynamicAfterFee.sol",
+
+    "AntiSandwichHook": "@openzeppelin/uniswap-hooks/general/AntiSandwichHook.sol",
+    "LiquidityPenaltyHook": "@openzeppelin/uniswap-hooks/general/LiquidityPenaltyHook.sol",
+
+    "LimitOrderHook": "@openzeppelin/uniswap-hooks/general/LimitOrderHook.sol",
+    "OrderIdLibrary": "@openzeppelin/uniswap-hooks/general/LimitOrderHook.sol",
 
     "BeforeSwapDelta": "@uniswap/v4-core/src/types/BeforeSwapDelta.sol",
     "Hooks": "@uniswap/v4-core/src/libraries/Hooks.sol",

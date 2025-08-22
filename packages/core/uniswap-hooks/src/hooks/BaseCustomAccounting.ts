@@ -48,13 +48,14 @@ const BaseCustomAccounting: Hook = {
       },
       // optional overrides
       addLiquidity: {
-        kind: 'external',
-        args: [{ name: 'params', type: 'AddLiquidityParams memory' }],
+        kind: 'public',
+        mutability: 'payable',
+        args: [{ name: 'params', type: 'AddLiquidityParams calldata' }],
         returns: ['BalanceDelta'],
       },
       removeLiquidity: {
-        kind: 'external',
-        args: [{ name: 'params', type: 'RemoveLiquidityParams memory' }],
+        kind: 'public',
+        args: [{ name: 'params', type: 'RemoveLiquidityParams calldata' }],
         returns: ['BalanceDelta'],
       },
     }),
