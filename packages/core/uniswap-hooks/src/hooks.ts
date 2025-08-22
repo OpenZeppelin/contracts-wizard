@@ -161,9 +161,9 @@ export function buildHooks(opts: HooksOptions): Contract {
     addPausableHook(c, allOpts);
   }
 
-  addHookPermissions(c, allOpts);
-
   importRequiredTypes(c, allOpts);
+
+  addHookPermissions(c, allOpts);
 
   return c;
 }
@@ -183,7 +183,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   //   );
   // }
 
-  // Add Constructor Params (default)
+  // Add default constructor params
   const constructorParams: Value[] = [];
   constructorParams.push({ lit: '_poolManager' });
 
@@ -197,7 +197,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
   }
 
-  // Add Parent (Hook)
+  // Add the primary hook
   c.addParent(
     {
       name: allOpts.hook,
@@ -206,7 +206,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     constructorParams,
   );
 
-  // Add Overrides
+  // Add Overrides specific to each hook
   switch (allOpts.hook) {
     case 'BaseCustomAccounting':
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
@@ -332,14 +332,15 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
-// Makes the `before` hooks pausable by default. Requires the `before` permissions to be set to true.
+// Makes the `before` hooks functions pausable by adding the `whenNotPaused` modifier.
+// Requires the `before` permissions to be set to true, which is enforced by the {buildHooks} function.
 function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
   const selectedHook = Hooks[_allOpts.hook];
 
-  // Make elegible custom functions pausable. See {functionShouldBePausable} for criteria.
+  // Make custom functions pausable. See {functionShouldBePausable} for eligibility criteria.
   for (const f of Object.values(selectedHook.functions)) {
     if (functionShouldBePausable(f, _allOpts)) {
-      // override only if the function is not already overridden
+      // override only if the function is not already included or overridden
       const contractFn = c.functions.find(fn => fn.name === f.name);
       if (!contractFn || contractFn.override.size === 0) {
         c.addOverride({ name: c.name }, f);
@@ -349,7 +350,7 @@ function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
     }
   }
 
-  // Make common hook functions pausable. Note that disabled functions don't require pausability.
+  // Make common hook functions pausable. Note that disabled functions do not require pausability.
   const baseHookFunctions = Object.keys(Hooks.BaseHook.functions);
   for (const p of PAUSABLE_PERMISSIONS) {
     const funcName = baseHookFunctions.find(name => name.includes(p));
@@ -374,15 +375,18 @@ function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
   );
 }
 
+// Utility to return the function invocation as a string.
 function functionInvocation(f: BaseFunction): string {
   return `${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
 }
 
+// Utility to return the super function invocation as a string.
 function returnSuperFunctionInvocation(f: BaseFunction): string {
   return `return super.${functionInvocation(f)}`;
 }
 
-// Utility to make custom functions such as `addLiquidity` in CustomAccounting pausable.
+// Utility to determine if a custom function such as `addLiquidity` in CustomAccounting should be pausable.
+// The rationale is that by default we want to pausable all the public/external entrypoints to the hook.
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   const whitelist = ['unlockCallback', 'pause', 'unpause'];
   return (
@@ -394,20 +398,15 @@ function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
 }
 
 function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
-  // generate a list of types included in args and returns.
+  // Build a set of all required import types from constructor args, usingFor, and functions.
   const requiredTypes = new Set<string>();
 
-  // iterate over all constructor arguments
   for (const arg of c.constructorArgs) {
     requiredTypes.add(getRequiredType(arg.type));
   }
-
-  // iterate over all usingFor types
   for (const using of c.using) {
     requiredTypes.add(using.usingFor);
   }
-
-  // iterate over all functions,
   for (const f of Object.values(c.functions)) {
     for (const arg of f.args) {
       requiredTypes.add(getRequiredType(arg.type));
@@ -417,7 +416,6 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
     }
   }
 
-  // import required types
   for (const type of requiredTypes) {
     // Skip native solidity/builtin types
     if (isNativeSolidityType(type)) continue;
@@ -431,7 +429,7 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
 
 function getRequiredType(s: string | ReferencedContract): string {
   let type = '';
-  // if the type is string, return the first word until the first space.
+  // if the type is string, return the string up to the first space.
   if (typeof s === 'string') {
     if (s.includes(' ')) {
       type = s.split(' ')[0]!;
@@ -442,7 +440,7 @@ function getRequiredType(s: string | ReferencedContract): string {
   } else {
     type = s.name;
   }
-  // if the type has a ".", return the first word until the first ".".
+  // if the string includes a ".", return the first word until the first ".".
   if (type.includes('.')) {
     type = type.split('.')[0]!;
   }
