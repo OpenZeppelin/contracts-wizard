@@ -1,0 +1,27 @@
+{
+    "BaseHook": "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol",
+    "BaseAsyncSwap": "@openzeppelin/uniswap-hooks/src/base/BaseAsyncSwap.sol",
+    "BaseCustomAccounting": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
+    "BaseCustomCurve": "@openzeppelin/uniswap-hooks/src/base/BaseCustomCurve.sol",
+
+    "BaseDynamicFee": "@openzeppelin/uniswap-hooks/src/fee/BaseDynamicFee.sol",
+    "BaseOverrideFee": "@openzeppelin/uniswap-hooks/src/fee/BaseOverrideFee.sol",
+    "BasedDynamicAfterFee": "@openzeppelin/uniswap-hooks/src/fee/BaseDynamicAfterFee.sol",
+
+    "AntiSandwichHook": "@openzeppelin/uniswap-hooks/src/general/AntiSandwichHook.sol",
+    "LimitOrderHook": "@openzeppelin/uniswap-hooks/src/general/LimitOrderHook.sol",
+    "LiquidityPenaltyHook": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
+    "OrderIdLibrary": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
+
+    "BeforeSwapDelta": "@uniswap/v4-core/src/types/BeforeSwapDelta.sol",
+    "Hooks": "@uniswap/v4-core/src/libraries/Hooks.sol",
+    "IPoolManager": "@uniswap/v4-core/src/interfaces/IPoolManager.sol",
+    "PoolKey": "@uniswap/v4-core/src/types/PoolKey.sol",
+    "PoolId": "@uniswap/v4-core/src/types/PoolId.sol",
+    "Currency": "@uniswap/v4-core/src/types/Currency.sol",
+    "BalanceDelta": "@uniswap/v4-core/src/types/BalanceDelta.sol",
+    "SwapParams": "@uniswap/v4-core/src/types/PoolOperation.sol",
+    "ModifyLiquidityParams": "@uniswap/v4-core/src/types/PoolOperation.sol",
+
+    "CurrencySettler": "@openzeppelin/uniswap-hooks/utils/CurrencySettler.sol",
+}

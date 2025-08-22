@@ -10,6 +10,9 @@ import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 
 import { printContract } from './print';
 import { Hooks, type HookName } from './hooks/';
+import type { ReferencedContract } from '@openzeppelin/wizard/src/contract';
+
+import importPaths from './importPaths.json';
 
 export interface HooksOptions extends CommonOptions {
   hook: HookName;
@@ -160,15 +163,12 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   addHookPermissions(c, allOpts);
 
+  importRequiredTypes(c, allOpts);
+
   return c;
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
-  // Add required Hook imports
-  c.addImportOnly({
-    name: 'IPoolManager',
-    path: `@uniswap/v4-core/src/interfaces/IPoolManager.sol`,
-  });
   c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
   // @TODO: super calls to BaseHook are broken since it is reverting each internal hook function.
@@ -220,10 +220,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
       c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
-      c.addImportOnly({
-        name: 'BalanceDelta',
-        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
-      });
       break;
     case 'BaseCustomCurve':
       c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
@@ -238,24 +234,12 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
       c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
-      c.addImportOnly({
-        name: 'BalanceDelta',
-        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
-      });
-      c.addImportOnly({
-        name: 'SwapParams',
-        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-      });
       break;
     case 'BaseDynamicFee':
       c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions._getFee!);
       c.setFunctionBody([`// Implement _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
       c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions.poke!);
       c.setFunctionBody([`// Implement poke`], Hooks.BaseDynamicFee.functions.poke!);
-      c.addImportOnly({
-        name: 'PoolKey',
-        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-      });
       break;
     case 'BaseDynamicAfterFee':
       c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!);
@@ -265,46 +249,14 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
       c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
-      c.addImportOnly({
-        name: 'PoolKey',
-        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-      });
-      c.addImportOnly({
-        name: 'SwapParams',
-        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-      });
-      c.addImportOnly({
-        name: 'BalanceDelta',
-        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
-      });
       break;
     case 'BaseOverrideFee':
       c.addOverride({ name: 'BaseOverrideFee' }, Hooks.BaseOverrideFee.functions._getFee!);
       c.setFunctionBody([`// Implement _getFee`], Hooks.BaseOverrideFee.functions._getFee!);
-      c.addImportOnly({
-        name: 'PoolKey',
-        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-      });
-      c.addImportOnly({
-        name: 'SwapParams',
-        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-      });
       break;
     case 'AntiSandwichHook':
       c.addOverride({ name: 'AntiSandwichHook' }, Hooks.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.AntiSandwichHook.functions._afterSwapHandler!);
-      c.addImportOnly({
-        name: 'PoolKey',
-        path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-      });
-      c.addImportOnly({
-        name: 'SwapParams',
-        path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-      });
-      c.addImportOnly({
-        name: 'BalanceDelta',
-        path: `@uniswap/v4-core/src/types/BalanceDelta.sol`,
-      });
       break;
     default:
       break;
@@ -319,10 +271,6 @@ function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
     },
     'Currency',
   );
-  c.addImportOnly({
-    name: 'Currency',
-    path: `@uniswap/v4-core/src/types/Currency.sol`,
-  });
 }
 
 function addSafeCast(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -410,68 +358,11 @@ function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
       c.addOverride({ name: 'BaseHook' }, f);
       c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
       c.addModifier('whenNotPaused', f);
-      // c.addFunctionImports(f)
     }
   }
-
-  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeInitialize!);
-  // c.setFunctionBody(
-  //   [`return super._beforeInitialize(sender, key, sqrtPriceX96 );`],
-  //   Hooks.BaseHook.functions._beforeInitialize!,
-  // );
-  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeInitialize!);
-  // c.addImportOnly({
-  //   name: 'PoolKey',
-  //   path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-  // });
-
-  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeAddLiquidity!);
-  // c.setFunctionBody(
-  //   [`return super._beforeAddLiquidity(sender, key, params, hookData);`],
-  //   Hooks.BaseHook.functions._beforeAddLiquidity!,
-  // );
-  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeAddLiquidity!);
-  // c.addImportOnly({
-  //   name: 'ModifyLiquidityParams',
-  //   path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-  // });
-
-  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeRemoveLiquidity!);
-  // c.setFunctionBody(
-  //   [`return super._beforeRemoveLiquidity(sender, key, params, hookData);`],
-  //   Hooks.BaseHook.functions._beforeRemoveLiquidity!,
-  // );
-  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeRemoveLiquidity!);
-
-  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeSwap!);
-  // c.setFunctionBody(
-  //   [`return super._beforeSwap(sender, key, params, hookData);`],
-  //   Hooks.BaseHook.functions._beforeSwap!,
-  // );
-  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeSwap!);
-  // c.addImportOnly({
-  //   name: 'SwapParams',
-  //   path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-  // });
-  // c.addImportOnly({
-  //   name: 'BeforeSwapDelta',
-  //   path: `@uniswap/v4-core/src/types/BeforeSwapDelta.sol`,
-  // });
-
-  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeDonate!);
-  // c.setFunctionBody(
-  //   [`return super._beforeDonate(sender, key, amount0, amount1, hookData);`],
-  //   Hooks.BaseHook.functions._beforeDonate!,
-  // );
-  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeDonate!);
 }
 
 function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addImportOnly({
-    name: 'Hooks',
-    path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
-  });
-
   const permissions = Object.entries(_allOpts.permissions);
   const permissionLines = permissions.map(
     ([key, value], idx) => `    ${key}: ${value}${idx === permissions.length - 1 ? '' : ','}`,
@@ -491,7 +382,7 @@ function returnSuperFunctionInvocation(f: BaseFunction): string {
   return `return super.${functionInvocation(f)}`;
 }
 
-// Utility to pause custom functions such as `addLiquidity` in CustomAccounting hooks.
+// Utility to make custom functions such as `addLiquidity` in CustomAccounting pausable.
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   const whitelist = ['unlockCallback', 'pause', 'unpause'];
   return (
@@ -500,4 +391,91 @@ function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
     f.mutability !== 'view' &&
     !whitelist.includes(f.name)
   );
+}
+
+function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
+  // generate a list of types included in args and returns.
+  const requiredTypes = new Set<string>();
+
+  // iterate over all constructor arguments
+  for (const arg of c.constructorArgs) {
+    requiredTypes.add(getRequiredType(arg.type));
+  }
+
+  // iterate over all using (libraries)
+  for (const using of c.using) {
+    requiredTypes.add(using.library.name);
+    requiredTypes.add(using.usingFor);
+  }
+
+  // iterate over all functions,
+  for (const f of Object.values(c.functions)) {
+    for (const arg of f.args) {
+      requiredTypes.add(getRequiredType(arg.type));
+    }
+    for (const returnType of f.returns || []) {
+      requiredTypes.add(getRequiredType(returnType));
+    }
+  }
+
+  // import required types
+  for (const type of requiredTypes) {
+    // Skip native solidity/builtin types
+    if (isNativeSolidityType(type)) continue;
+
+    const path = importPaths[type as keyof typeof importPaths] || 'add me to importPaths.json!';
+    c.addImportOnly({ name: type, path: path });
+  }
+}
+
+function getRequiredType(s: string | ReferencedContract): string {
+  let type = '';
+  // if the type is string, return the first word until the first space.
+  if (typeof s === 'string') {
+    if (s.includes(' ')) {
+      type = s.split(' ')[0]!;
+    } else {
+      type = s;
+    }
+    // if the type is a referenced contract, return the name.
+  } else {
+    type = s.name;
+  }
+  // if the type has a ".", return the first word until the first ".".
+  if (type.includes('.')) {
+    type = type.split('.')[0]!;
+  }
+  // Normalize array types (e.g., uint256[], Foo[2]) to their base type
+  while (type.endsWith(']')) {
+    const idx = type.lastIndexOf('[');
+    if (idx === -1) break;
+    type = type.slice(0, idx);
+  }
+  // Normalize address payable → address
+  if (type.startsWith('address')) type = 'address';
+  return type;
+}
+
+function isNativeSolidityType(type: string): boolean {
+  const natives = new Set(['bool', 'address', 'string', 'bytes', 'byte', 'uint', 'int', 'fixed', 'ufixed', '*']);
+  if (natives.has(type)) return true;
+
+  // Sized ints/uints
+  if (
+    /^(u?int)(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)$/.test(
+      type,
+    )
+  ) {
+    return true;
+  }
+
+  // bytes1..bytes32
+  if (/^bytes(1|2|3|4|5|6|7|8|9|1[0-9]|2[0-9]|3[0-2])$/.test(type)) {
+    return true;
+  }
+
+  // mapping types
+  if (type.startsWith('mapping')) return true;
+
+  return false;
 }
