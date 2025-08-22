@@ -1,7 +1,11 @@
 {
     "BaseHook": "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol",
     "BaseAsyncSwap": "@openzeppelin/uniswap-hooks/src/base/BaseAsyncSwap.sol",
+
     "BaseCustomAccounting": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
+    "AddLiquidityParams": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
+    "RemoveLiquidityParams": "@openzeppelin/uniswap-hooks/src/base/BaseCustomAccounting.sol",
+
     "BaseCustomCurve": "@openzeppelin/uniswap-hooks/src/base/BaseCustomCurve.sol",
 
     "BaseDynamicFee": "@openzeppelin/uniswap-hooks/src/fee/BaseDynamicFee.sol",
@@ -10,6 +14,7 @@
 
     "AntiSandwichHook": "@openzeppelin/uniswap-hooks/src/general/AntiSandwichHook.sol",
     "LimitOrderHook": "@openzeppelin/uniswap-hooks/src/general/LimitOrderHook.sol",
+    
     "LiquidityPenaltyHook": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
     "OrderIdLibrary": "@openzeppelin/uniswap-hooks/src/general/LiquidityPenaltyHook.sol",
 
