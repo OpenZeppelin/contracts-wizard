@@ -1,3 +1,4 @@
+import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
@@ -9,6 +10,7 @@ const LimitOrderHook: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LimitOrderHook',
   functions: {
     ...defineFunctions({
+      ...BaseHook.functions,
       _afterInitialize: {
         kind: 'internal',
         args: [

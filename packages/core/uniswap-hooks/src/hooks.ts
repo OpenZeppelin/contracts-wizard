@@ -150,11 +150,10 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   if (allOpts.pausable) {
-    // Ensure required before-* permissions are enabled for pausability
+    // Mark before-* permissions as required for pausability
     for (const permission of PAUSABLE_PERMISSIONS) {
       allOpts.permissions[permission] = true;
     }
-
     addPausable(c, allOpts.access, []);
     addPausableHook(c, allOpts);
   }
@@ -392,8 +391,12 @@ function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
   // Make elegible custom functions pausable. See {functionShouldBePausable} for criteria.
   for (const f of Object.values(selectedHook.functions)) {
     if (functionShouldBePausable(f, _allOpts)) {
-      c.addOverride({ name: c.name }, f);
-      c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+      // override only if the function is not already overridden
+      const contractFn = c.functions.find(fn => fn.name === f.name);
+      if (!contractFn || contractFn.override.size === 0) {
+        c.addOverride({ name: c.name }, f);
+        c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+      }
       c.addModifier('whenNotPaused', f);
     }
   }

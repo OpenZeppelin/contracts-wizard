@@ -2,7 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks';
   import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';

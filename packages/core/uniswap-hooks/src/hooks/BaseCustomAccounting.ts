@@ -1,3 +1,4 @@
+import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
@@ -9,6 +10,7 @@ const BaseCustomAccounting: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
   functions: {
     ...defineFunctions({
+      ...BaseHook.functions,
       // Liquidity modification (required)
       _getAddLiquidity: {
         kind: 'internal',

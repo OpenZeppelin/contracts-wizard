@@ -1,3 +1,5 @@
+import { BaseCustomAccounting } from './BaseCustomAccounting';
+import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
@@ -9,6 +11,8 @@ const BaseCustomCurve: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomCurve',
   functions: {
     ...defineFunctions({
+      ...BaseHook.functions,
+      ...BaseCustomAccounting.functions,
       // Calculate the amount of the unspecified currency taken/settled during swap (required)
       _getUnspecifiedAmount: {
         kind: 'internal',

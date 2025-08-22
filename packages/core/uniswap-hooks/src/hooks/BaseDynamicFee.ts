@@ -1,3 +1,4 @@
+import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
@@ -9,6 +10,7 @@ const BaseDynamicFee: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
   functions: {
     ...defineFunctions({
+      ...BaseHook.functions,
       // dynamically override the fee (required)
       _getFee: {
         kind: 'internal',

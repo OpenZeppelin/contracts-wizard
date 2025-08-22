@@ -1,3 +1,4 @@
+import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
@@ -9,6 +10,7 @@ const BaseDynamicAfterFee: Hook = {
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
   functions: {
     ...defineFunctions({
+      ...BaseHook.functions,
       // determine the target unspecified amount (required)
       _getTargetUnspecified: {
         kind: 'internal',
