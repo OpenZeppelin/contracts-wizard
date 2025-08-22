@@ -38,6 +38,7 @@ const BaseCustomCurve: Hook = {
       },
     }),
   },
+  disabledFunctions: ['_beforeAddLiquidity', '_beforeRemoveLiquidity'],
   permissions: {
     beforeInitialize: true,
     afterInitialize: false,

@@ -29,10 +29,11 @@ export type HookName =
 export type Hook = {
   name: HookName;
   category: HookCategory;
-  functions: Record<string, BaseFunction>;
   tooltipText: string;
   tooltipLink: string;
   permissions: Permissions;
+  functions: Record<string, BaseFunction>;
+  disabledFunctions?: string[];
 };
 
 export type HookDictionary = Record<HookName, Hook>;

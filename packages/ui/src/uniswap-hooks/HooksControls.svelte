@@ -9,6 +9,8 @@
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
+  import { permissions, PAUSABLE_PERMISSIONS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks';
+
   export let opts: Required<KindedOptions['Hooks']> = {
     kind: 'Hooks',
     ...hooks.defaults,
@@ -25,13 +27,30 @@
     hooksByCategory[hook.category].push(hook);
   }
 
-  type PermissionKey = keyof typeof hooks.defaults.permissions;
-  const permissionKeys = Object.keys(hooks.defaults.permissions) as PermissionKey[];
-
+  // When the hook changes or pausable is disabled, reset the permissions to the default values
   let lastHook: HookName;
-  $: if (opts.hook !== lastHook) {
-    opts = { ...opts, permissions: { ...Hooks[opts.hook].permissions } };
+  let lastPausable: boolean = opts.pausable;
+  
+  $: {
+    const hookChanged = opts.hook !== lastHook;
+    const pausableTurnedOff = !opts.pausable && lastPausable;
+
+    if (hookChanged || pausableTurnedOff) {
+      opts = { ...opts, permissions: { ...Hooks[opts.hook].permissions } };
+    }
+
+    if (opts.pausable) {
+      const updated: Partial<typeof opts.permissions> = {};
+      for (const key of PAUSABLE_PERMISSIONS) {
+        if (!opts.permissions[key]) updated[key] = true;
+      }
+      if (Object.keys(updated).length) {
+        opts = { ...opts, permissions: { ...opts.permissions, ...updated } };
+      }
+    }
+
     lastHook = opts.hook;
+    lastPausable = opts.pausable;
   }
 </script>
 
@@ -170,13 +189,17 @@
   <h1>Hook Permissions</h1>
   
   <div class="checkbox-group">
-    {#each permissionKeys as permission}
+    {#each permissions as permission}
       <label class:checked={opts.permissions[permission]}>
-        <input type="checkbox" bind:checked={opts.permissions[permission]} disabled={!!Hooks[opts.hook].permissions[permission]} />
+        <input type="checkbox" 
+          bind:checked={opts.permissions[permission]}
+          disabled={Hooks[opts.hook].permissions[permission] || (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))} />
         {permission}
         <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
           {#if Hooks[opts.hook].permissions[permission]}
             The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
+          {:else if opts.pausable && PAUSABLE_PERMISSIONS.includes(permission)}
+            The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
           {:else}
             Optionally enable the <code>{permission}</code> permission.
           {/if}

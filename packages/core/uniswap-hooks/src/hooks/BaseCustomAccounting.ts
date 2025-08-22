@@ -44,8 +44,20 @@ const BaseCustomAccounting: Hook = {
         ],
         returns: [],
       },
+      // optional overrides
+      addLiquidity: {
+        kind: 'external',
+        args: [{ name: 'params', type: 'AddLiquidityParams memory' }],
+        returns: ['BalanceDelta'],
+      },
+      removeLiquidity: {
+        kind: 'external',
+        args: [{ name: 'params', type: 'RemoveLiquidityParams memory' }],
+        returns: ['BalanceDelta'],
+      },
     }),
   },
+  disabledFunctions: ['_beforeAddLiquidity', '_beforeRemoveLiquidity'],
   permissions: {
     beforeInitialize: true,
     afterInitialize: false,

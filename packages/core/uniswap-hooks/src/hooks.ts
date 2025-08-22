@@ -1,4 +1,4 @@
-import type { Contract } from '@openzeppelin/wizard/src/contract';
+import type { BaseFunction, Contract } from '@openzeppelin/wizard/src/contract';
 import { ContractBuilder } from '@openzeppelin/wizard/src/contract';
 import type { CommonOptions } from '@openzeppelin/wizard/src/common-options';
 import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wizard/src/common-options';
@@ -11,6 +11,18 @@ import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 import { printContract } from './print';
 import { Hooks, type HookName } from './hooks/';
 
+export interface HooksOptions extends CommonOptions {
+  hook: HookName;
+  name: string;
+  pausable: boolean;
+  currencySettler: boolean;
+  safeCast: boolean;
+  transientStorage: boolean;
+  shares: Shares;
+  permissions: Permissions;
+}
+
+export type Permission = keyof Permissions;
 export type Permissions = {
   beforeInitialize: boolean;
   afterInitialize: boolean;
@@ -28,23 +40,19 @@ export type Permissions = {
   afterRemoveLiquidityReturnDelta: boolean;
 };
 
+export const PAUSABLE_PERMISSIONS: Permission[] = [
+  'beforeSwap',
+  'beforeAddLiquidity',
+  'beforeRemoveLiquidity',
+  'beforeDonate',
+];
+
 export type Shares = {
   options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
   name?: string;
   symbol?: string;
   uri?: string;
 };
-
-export interface HooksOptions extends CommonOptions {
-  hook: HookName;
-  name: string;
-  pausable: boolean;
-  currencySettler: boolean;
-  safeCast: boolean;
-  transientStorage: boolean;
-  shares: Shares;
-  permissions: Permissions;
-}
 
 export const defaults: Required<HooksOptions> = {
   hook: 'BaseHook',
@@ -79,6 +87,8 @@ export const defaults: Required<HooksOptions> = {
     afterRemoveLiquidityReturnDelta: false,
   },
 };
+
+export const permissions = Object.keys(defaults.permissions) as Permission[];
 
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
   return {
@@ -140,6 +150,11 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   if (allOpts.pausable) {
+    // Ensure required before-* permissions are enabled for pausability
+    for (const permission of PAUSABLE_PERMISSIONS) {
+      allOpts.permissions[permission] = true;
+    }
+
     addPausable(c, allOpts.access, []);
     addPausableHook(c, allOpts);
   }
@@ -370,59 +385,82 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
-// Makes the `before` hooks pausable by default.
-// Requires the `before` permissions to be set to true. @TBD
+// Makes the `before` hooks pausable by default. Requires the `before` permissions to be set to true.
 function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeInitialize!);
-  c.setFunctionBody(
-    [`return super._beforeInitialize(sender, key, sqrtPriceX96);`],
-    Hooks.BaseHook.functions._beforeInitialize!,
-  );
-  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeInitialize!);
-  c.addImportOnly({
-    name: 'PoolKey',
-    path: `@uniswap/v4-core/src/types/PoolKey.sol`,
-  });
+  const selectedHook = Hooks[_allOpts.hook];
 
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeAddLiquidity!);
-  c.setFunctionBody(
-    [`return super._beforeAddLiquidity(sender, key, params, hookData);`],
-    Hooks.BaseHook.functions._beforeAddLiquidity!,
-  );
-  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeAddLiquidity!);
-  c.addImportOnly({
-    name: 'ModifyLiquidityParams',
-    path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-  });
+  // Make elegible custom functions pausable. See {functionShouldBePausable} for criteria.
+  for (const f of Object.values(selectedHook.functions)) {
+    if (functionShouldBePausable(f, _allOpts)) {
+      c.addOverride({ name: c.name }, f);
+      c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+      c.addModifier('whenNotPaused', f);
+    }
+  }
 
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeRemoveLiquidity!);
-  c.setFunctionBody(
-    [`return super._beforeRemoveLiquidity(sender, key, params, hookData);`],
-    Hooks.BaseHook.functions._beforeRemoveLiquidity!,
-  );
-  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeRemoveLiquidity!);
+  // Make common hook functions pausable. Note that disabled functions don't require pausability.
+  const baseHookFunctions = Object.keys(Hooks.BaseHook.functions);
+  for (const p of PAUSABLE_PERMISSIONS) {
+    const funcName = baseHookFunctions.find(name => name.includes(p));
+    if (funcName && !selectedHook.disabledFunctions?.includes(funcName)) {
+      const f = Hooks.BaseHook.functions[funcName]!;
+      c.addOverride({ name: 'BaseHook' }, f);
+      c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+      c.addModifier('whenNotPaused', f);
+      // c.addFunctionImports(f)
+    }
+  }
 
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeSwap!);
-  c.setFunctionBody(
-    [`return super._beforeSwap(sender, key, params, hookData);`],
-    Hooks.BaseHook.functions._beforeSwap!,
-  );
-  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeSwap!);
-  c.addImportOnly({
-    name: 'SwapParams',
-    path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
-  });
-  c.addImportOnly({
-    name: 'BeforeSwapDelta',
-    path: `@uniswap/v4-core/src/types/BeforeSwapDelta.sol`,
-  });
+  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeInitialize!);
+  // c.setFunctionBody(
+  //   [`return super._beforeInitialize(sender, key, sqrtPriceX96 );`],
+  //   Hooks.BaseHook.functions._beforeInitialize!,
+  // );
+  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeInitialize!);
+  // c.addImportOnly({
+  //   name: 'PoolKey',
+  //   path: `@uniswap/v4-core/src/types/PoolKey.sol`,
+  // });
 
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeDonate!);
-  c.setFunctionBody(
-    [`return super._beforeDonate(sender, key, amount0, amount1, hookData);`],
-    Hooks.BaseHook.functions._beforeDonate!,
-  );
-  c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeDonate!);
+  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeAddLiquidity!);
+  // c.setFunctionBody(
+  //   [`return super._beforeAddLiquidity(sender, key, params, hookData);`],
+  //   Hooks.BaseHook.functions._beforeAddLiquidity!,
+  // );
+  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeAddLiquidity!);
+  // c.addImportOnly({
+  //   name: 'ModifyLiquidityParams',
+  //   path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+  // });
+
+  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeRemoveLiquidity!);
+  // c.setFunctionBody(
+  //   [`return super._beforeRemoveLiquidity(sender, key, params, hookData);`],
+  //   Hooks.BaseHook.functions._beforeRemoveLiquidity!,
+  // );
+  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeRemoveLiquidity!);
+
+  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeSwap!);
+  // c.setFunctionBody(
+  //   [`return super._beforeSwap(sender, key, params, hookData);`],
+  //   Hooks.BaseHook.functions._beforeSwap!,
+  // );
+  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeSwap!);
+  // c.addImportOnly({
+  //   name: 'SwapParams',
+  //   path: `@uniswap/v4-core/src/types/PoolOperation.sol`,
+  // });
+  // c.addImportOnly({
+  //   name: 'BeforeSwapDelta',
+  //   path: `@uniswap/v4-core/src/types/BeforeSwapDelta.sol`,
+  // });
+
+  // c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions._beforeDonate!);
+  // c.setFunctionBody(
+  //   [`return super._beforeDonate(sender, key, amount0, amount1, hookData);`],
+  //   Hooks.BaseHook.functions._beforeDonate!,
+  // );
+  // c.addModifier('whenNotPaused', Hooks.BaseHook.functions._beforeDonate!);
 }
 
 function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -431,13 +469,32 @@ function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
     path: `@uniswap/v4-core/src/libraries/Hooks.sol`,
   });
 
-  const entries = Object.entries(_allOpts.permissions);
-  const permissionLines = entries.map(
-    ([key, value], idx) => `    ${key}: ${value}${idx === entries.length - 1 ? '' : ','}`,
+  const permissions = Object.entries(_allOpts.permissions);
+  const permissionLines = permissions.map(
+    ([key, value], idx) => `    ${key}: ${value}${idx === permissions.length - 1 ? '' : ','}`,
   );
   c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions.getHookPermissions!);
   c.setFunctionBody(
     ['return Hooks.Permissions({', ...permissionLines, '});'],
     Hooks.BaseHook.functions.getHookPermissions!,
+  );
+}
+
+function functionInvocation(f: BaseFunction): string {
+  return `${f.name}(${f.args.map(arg => arg.name).join(', ')})`;
+}
+
+function returnSuperFunctionInvocation(f: BaseFunction): string {
+  return `return super.${functionInvocation(f)}`;
+}
+
+// Utility to pause custom functions such as `addLiquidity` in CustomAccounting hooks.
+function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
+  const whitelist = ['unlockCallback', 'pause', 'unpause'];
+  return (
+    (f.kind === 'external' || f.kind === 'public') &&
+    f.mutability !== 'pure' &&
+    f.mutability !== 'view' &&
+    !whitelist.includes(f.name)
   );
 }
