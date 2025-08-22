@@ -161,9 +161,10 @@ export function buildHooks(opts: HooksOptions): Contract {
     addPausableHook(c, allOpts);
   }
 
-  importRequiredTypes(c, allOpts);
-
   addHookPermissions(c, allOpts);
+
+  // Note: `importRequiredTypes` must be called last since it depends on all other additions.
+  importRequiredTypes(c, allOpts);
 
   return c;
 }
@@ -386,7 +387,7 @@ function returnSuperFunctionInvocation(f: BaseFunction): string {
 }
 
 // Utility to determine if a custom function such as `addLiquidity` in CustomAccounting should be pausable.
-// The rationale is that by default we want to pausable all the public/external entrypoints to the hook.
+// The rationale is that by default we want to pausable all the entrypoints to the
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   const whitelist = ['unlockCallback', 'pause', 'unpause'];
   return (
@@ -398,26 +399,25 @@ function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
 }
 
 function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
-  // Build a set of all required import types from constructor args, usingFor, and functions.
+  // generate a list of required types from constructor args, usingFor, and functions args/returns.
   const requiredTypes = new Set<string>();
 
   for (const arg of c.constructorArgs) {
-    requiredTypes.add(getRequiredType(arg.type));
+    requiredTypes.add(normalizeType(arg.type));
   }
   for (const using of c.using) {
     requiredTypes.add(using.usingFor);
   }
   for (const f of Object.values(c.functions)) {
     for (const arg of f.args) {
-      requiredTypes.add(getRequiredType(arg.type));
+      requiredTypes.add(normalizeType(arg.type));
     }
     for (const returnType of f.returns || []) {
-      requiredTypes.add(getRequiredType(returnType));
+      requiredTypes.add(normalizeType(returnType));
     }
   }
 
   for (const type of requiredTypes) {
-    // Skip native solidity/builtin types
     if (isNativeSolidityType(type)) continue;
 
     const path = importPaths[type as keyof typeof importPaths] || 'add me to importPaths.json!';
@@ -427,9 +427,10 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
   }
 }
 
-function getRequiredType(s: string | ReferencedContract): string {
+// Utility to normalize the type (string | ReferencedContract) to a type string.
+function normalizeType(s: string | ReferencedContract): string {
   let type = '';
-  // if the type is string, return the string up to the first space.
+  // if the type is string, return the first word until the first space.
   if (typeof s === 'string') {
     if (s.includes(' ')) {
       type = s.split(' ')[0]!;
@@ -440,7 +441,7 @@ function getRequiredType(s: string | ReferencedContract): string {
   } else {
     type = s.name;
   }
-  // if the string includes a ".", return the first word until the first ".".
+  // if the type has a ".", return the first word until the first ".".
   if (type.includes('.')) {
     type = type.split('.')[0]!;
   }
@@ -456,25 +457,16 @@ function getRequiredType(s: string | ReferencedContract): string {
 }
 
 function isNativeSolidityType(type: string): boolean {
-  const natives = new Set(['bool', 'address', 'string', 'bytes', 'byte', 'uint', 'int', 'fixed', 'ufixed', '*']);
-  if (natives.has(type)) return true;
+  const base = new Set(['bool', 'address', 'string', 'bytes', 'byte', 'uint', 'int', 'fixed', 'ufixed', '*']);
+  if (base.has(type)) return true;
 
-  // Sized ints/uints
-  if (
-    /^(u?int)(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)$/.test(
-      type,
-    )
-  ) {
-    return true;
+  const intMatch = type.match(/^(u?int)(\d+)$/);
+  if (intMatch) {
+    const bits = Number(intMatch[2]);
+    return bits >= 8 && bits <= 256 && bits % 8 === 0;
   }
 
-  // bytes1..bytes32
-  if (/^bytes(1|2|3|4|5|6|7|8|9|1[0-9]|2[0-9]|3[0-2])$/.test(type)) {
-    return true;
-  }
+  if (/^bytes([1-9]|[12]\d|3[0-2])$/.test(type)) return true;
 
-  // mapping types
-  if (type.startsWith('mapping')) return true;
-
-  return false;
+  return type.startsWith('mapping');
 }
