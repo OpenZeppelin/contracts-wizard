@@ -81,15 +81,56 @@
 {/each}
 
 <section class="controls-section">
-  <h1>Features</h1>
+  <h1>Hook Permissions</h1>
+  
+  <div class="checkbox-group">
+    {#each permissions as permission}
+      <label class:checked={opts.permissions[permission]}>
+        <input type="checkbox" 
+          bind:checked={opts.permissions[permission]}
+          disabled={Hooks[opts.hook].permissions[permission] || (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))} />
+        {permission}
+        <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
+          {#if Hooks[opts.hook].permissions[permission]}
+            The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
+          {:else if opts.pausable && PAUSABLE_PERMISSIONS.includes(permission)}
+            The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
+          {:else}
+            Optionally enable the <code>{permission}</code> permission.
+          {/if}
+        </HelpTooltip>
+      </label>
+    {/each}
+  </div>
+</section>
+
+
+<section class="controls-section">
+  <h1>Utilities</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable} />
-      Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
-        emergency response.
+    <label class:checked={opts.currencySettler}>
+      <input type="checkbox" bind:checked={opts.currencySettler} />
+      CurrencySettler
+      <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/utils#CurrencySettler">
+        Utility library used to settle and take any open deltas with an unlocked `PoolManager` during flash accounting.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.safeCast}>
+      <input type="checkbox" bind:checked={opts.safeCast} />
+      SafeCast
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#SafeCast">
+        Utility library to safely cast between numeric types.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.transientStorage}>
+      <input type="checkbox" bind:checked={opts.transientStorage} />
+      Transient Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
+        Utility library for simplyfing the usage of Transient Storage, which is discarded after the transaction ends and
+        whose gas costs are drastically reduced in comparison to regular storage.
       </HelpTooltip>
     </label>
   </div>
@@ -152,61 +193,21 @@
   {/if}
 </ExpandableToggleRadio>
 
+<section class="controls-section">
+  <h1>Features</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.pausable}>
+      <input type="checkbox" bind:checked={opts.pausable} />
+      Pausable
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
+        emergency response.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<section class="controls-section">
-  <h1>Utilities</h1>
-
-  <div class="checkbox-group">
-    <label class:checked={opts.currencySettler}>
-      <input type="checkbox" bind:checked={opts.currencySettler} />
-      CurrencySettler
-      <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/utils#CurrencySettler">
-        Utility library used to settle and take any open deltas with an unlocked `PoolManager` during flash accounting.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.safeCast}>
-      <input type="checkbox" bind:checked={opts.safeCast} />
-      SafeCast
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#SafeCast">
-        Utility library to safely cast between numeric types.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.transientStorage}>
-      <input type="checkbox" bind:checked={opts.transientStorage} />
-      Transient Storage
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
-        Utility library for simplyfing the usage of Transient Storage, which is discarded after the transaction ends and
-        whose gas costs are drastically reduced in comparison to regular storage.
-      </HelpTooltip>
-    </label>
-  </div>
-</section>
-
-<section class="controls-section">
-  <h1>Hook Permissions</h1>
-  
-  <div class="checkbox-group">
-    {#each permissions as permission}
-      <label class:checked={opts.permissions[permission]}>
-        <input type="checkbox" 
-          bind:checked={opts.permissions[permission]}
-          disabled={Hooks[opts.hook].permissions[permission] || (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))} />
-        {permission}
-        <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
-          {#if Hooks[opts.hook].permissions[permission]}
-            The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
-          {:else if opts.pausable && PAUSABLE_PERMISSIONS.includes(permission)}
-            The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
-          {:else}
-            Optionally enable the <code>{permission}</code> permission.
-          {/if}
-        </HelpTooltip>
-      </label>
-    {/each}
-  </div>
-</section>
 
 <InfoSection bind:info={opts.info} />
