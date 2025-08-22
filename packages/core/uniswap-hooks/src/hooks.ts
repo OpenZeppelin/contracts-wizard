@@ -402,9 +402,8 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
     requiredTypes.add(getRequiredType(arg.type));
   }
 
-  // iterate over all using (libraries)
+  // iterate over all usingFor types
   for (const using of c.using) {
-    requiredTypes.add(using.library.name);
     requiredTypes.add(using.usingFor);
   }
 

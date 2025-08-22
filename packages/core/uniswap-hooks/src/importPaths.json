@@ -23,5 +23,5 @@
     "SwapParams": "@uniswap/v4-core/src/types/PoolOperation.sol",
     "ModifyLiquidityParams": "@uniswap/v4-core/src/types/PoolOperation.sol",
 
-    "CurrencySettler": "@openzeppelin/uniswap-hooks/utils/CurrencySettler.sol",
+    "CurrencySettler": "@openzeppelin/uniswap-hooks/utils/CurrencySettler.sol"
 }
