@@ -96,7 +96,7 @@ jobs:
 
       - name: Set up rust toolchain
         if: matrix.package == 'stellar' && matrix.variant == 'compile'
-        uses: actions-rust-lang/setup-rust-toolchain@fb51252c7ba57d633bc668f941da052e410add48 #v1.13.0
+        uses: actions-rust-lang/setup-rust-toolchain@ab6845274e2ff01cd4462007e1a9d9df1ab49f42 # v1.14.0
         with:
           toolchain: stable, nightly
           components: clippy, rustfmt, llvm-tools-preview
