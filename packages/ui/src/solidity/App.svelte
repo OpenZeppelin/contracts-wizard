@@ -60,6 +60,7 @@
   export let overrides: Overrides = {
     omitTabs: [],
     omitFeatures: new Map(),
+    omitZipFoundry: false,
     remix: undefined,
   };
 
@@ -112,7 +113,13 @@
 
   $: hasErrors = errors[tab] !== undefined;
 
-  $: showButtons = getButtonVisibilities(opts);
+  let showButtons: ButtonVisibilities;
+  $: {
+    showButtons = getButtonVisibilities(opts);
+    if (overrides.omitZipFoundry) {
+      showButtons.downloadFoundry = false;
+    }
+  }
 
   interface ButtonVisibilities {
     openInRemix: boolean;

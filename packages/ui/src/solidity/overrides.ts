@@ -6,5 +6,6 @@ import type { Kind } from "@openzeppelin/wizard";
 export interface Overrides {
     omitTabs: Kind[];
     omitFeatures: Map<Kind, string[]>;
+    omitZipFoundry: boolean;
     remix: { label: string; url: string } | undefined;
 }

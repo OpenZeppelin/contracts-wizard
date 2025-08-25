@@ -7,26 +7,24 @@
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
 
-  const omitTabs: Kind[] = ['Account'];
-
   const omitFeatures: Map<Kind, string[]> = new Map();
   omitFeatures.set('ERC20', ['superchain']);
   omitFeatures.set('Stablecoin', ['superchain']);
   omitFeatures.set('RealWorldAsset', ['superchain']);
 
-  const remix = {
-    label: 'Open in Polkadot Remix',
-    url: 'https://remix.polkadot.io',
-  };
-
   let overrides: Overrides = {
-    omitTabs,
+    omitTabs: ['Account'],
     omitFeatures,
-    remix,
+    omitZipFoundry: true,
+    remix: {
+      label: 'Open in Polkadot Remix',
+      url: 'https://remix.polkadot.io',
+    },
   };
 </script>
 
 <div class="polkadot-app">
+  <!-- TODO: override Wiz, override hardhat -->
   <SolidityApp {initialTab} {initialOpts} {overrides} />
 </div>
 
