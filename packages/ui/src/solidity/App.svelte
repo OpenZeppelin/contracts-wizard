@@ -58,6 +58,7 @@
   // For ecosystem apps that inherit the Solidity app, they can omit specific tabs and features from the UI
   export let omitTabs: Kind[] = [];
   export let omitFeatures: Map<Kind, string[]> = new Map();
+  export let overrideRemix: { label: string; url: string } | undefined = undefined;
 
   let initialValuesSet = false;
 
@@ -165,7 +166,11 @@
     const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
 
     const versionedCode = printContractVersioned(contract);
-    window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    window.open(
+      remixURL(versionedCode, !!opts?.upgradeable, overrideRemix?.url).toString(),
+      '_blank',
+      'noopener,noreferrer',
+    );
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -264,7 +269,7 @@
               on:click={remixHandler}
             >
               <RemixIcon />
-              Open in Remix
+              {overrideRemix?.label ?? 'Open in Remix'}
             </button>
             <div slot="content">
               Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or

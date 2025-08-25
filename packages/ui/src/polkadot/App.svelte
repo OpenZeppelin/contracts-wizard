@@ -12,10 +12,15 @@
   omitFeatures.set('ERC20', ['superchain']);
   omitFeatures.set('Stablecoin', ['superchain']);
   omitFeatures.set('RealWorldAsset', ['superchain']);
+
+  const overrideRemix = {
+    label: 'Open in Polkadot Remix',
+    url: 'https://remix.polkadot.io',
+  };
 </script>
 
 <div class="polkadot-app">
-  <SolidityApp {initialTab} {initialOpts} {omitTabs} {omitFeatures} />
+  <SolidityApp {initialTab} {initialOpts} {omitTabs} {omitFeatures} {overrideRemix} />
 </div>
 
 <style lang="postcss">
