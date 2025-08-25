@@ -57,6 +57,11 @@
     if (name === 'BaseHook') return name;
     return name.replace('Hook', '').replace('Base', '');
   }
+
+  function shortcutPermissionName(name: string): string {
+    if (name.length > 20) return name.replace('Liquidity', 'Liq');
+    return name;
+  }
 </script>
 
 <section class="controls-section">
@@ -97,7 +102,7 @@
           disabled={Hooks[opts.hook].permissions[permission] ||
             (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))}
         />
-        {permission}
+        {shortcutPermissionName(permission)}
         <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
           {#if Hooks[opts.hook].permissions[permission]}
             The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
