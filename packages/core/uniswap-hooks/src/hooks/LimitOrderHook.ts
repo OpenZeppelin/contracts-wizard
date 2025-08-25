@@ -6,7 +6,7 @@ const LimitOrderHook: Hook = {
   name: 'LimitOrderHook',
   category: 'General',
   tooltipText:
-    'Out‑of‑range single-currency limit orders that execute on tick cross, accrue fees to the order and support cancel/withdraw.',
+    'Out‑of‑range single-currency limit orders that get executed when the price is reached, accruing fees to the order and supporting place/cancel/withdraw.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LimitOrderHook',
   functions: {
     ...defineFunctions({

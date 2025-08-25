@@ -239,8 +239,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     case 'BaseDynamicFee':
       c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions._getFee!);
       c.setFunctionBody([`// Implement _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
-      c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions.poke!);
-      // c.setFunctionBody([`// Implement poke`], Hooks.BaseDynamicFee.functions.poke!);
       break;
     case 'BaseDynamicAfterFee':
       c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!);
