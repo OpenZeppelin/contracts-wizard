@@ -109,8 +109,7 @@ export class ContractBuilder implements Contract {
   get imports(): ImportContract[] {
     const parents = [...this.parentMap.values()].map(p => p.contract);
     const libraries = [...this.libraryMap.values()].map(l => l.library);
-    const imports = [...parents, ...libraries];
-    return imports;
+    return [...parents, ...libraries];
   }
 
   get libraries(): Library[] {
