@@ -2,6 +2,7 @@
   import SolidityApp from '../solidity/App.svelte';
   import type { InitialOptions } from '../common/initial-options';
   import type { Kind } from '@openzeppelin/wizard';
+  import type { Overrides } from '../solidity/overrides';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
@@ -18,7 +19,7 @@
     url: 'https://remix.polkadot.io',
   };
 
-  let overrides = {
+  let overrides: Overrides = {
     omitTabs,
     omitFeatures,
     remix,

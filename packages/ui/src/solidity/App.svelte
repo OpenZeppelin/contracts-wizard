@@ -3,6 +3,8 @@
 
   import hljs from './highlightjs';
 
+  import type { Overrides } from './overrides';
+
   import ERC20Controls from './ERC20Controls.svelte';
   import ERC721Controls from './ERC721Controls.svelte';
   import ERC1155Controls from './ERC1155Controls.svelte';
@@ -55,12 +57,7 @@
 
   export let initialOpts: InitialOptions = {};
 
-  // For ecosystem apps that inherit the Solidity app, they can override specific features in the UI
-  export let overrides: {
-    omitTabs: Kind[];
-    omitFeatures: Map<Kind, string[]>;
-    remix: { label: string; url: string } | undefined;
-  } = {
+  export let overrides: Overrides = {
     omitTabs: [],
     omitFeatures: new Map(),
     remix: undefined,
