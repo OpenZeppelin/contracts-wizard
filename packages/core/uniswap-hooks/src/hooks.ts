@@ -263,39 +263,39 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addUsing(
+  c.addLibrary(
     {
       name: 'CurrencySettler',
       path: `@openzeppelin/uniswap-hooks/utils/CurrencySettler.sol`,
     },
-    'Currency',
+    ['Currency'],
   );
 }
 
 function addSafeCast(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addUsing(
+  c.addLibrary(
     {
       name: 'SafeCast',
       path: `@openzeppelin/contracts/utils/math/SafeCast.sol`,
     },
-    '*',
+    ['*'],
   );
 }
 
 function addTransientStorage(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addUsing(
+  c.addLibrary(
     {
       name: 'TransientSlot',
       path: `@openzeppelin/contracts/utils/TransientSlot.sol`,
     },
-    'bytes32',
+    ['bytes32'],
   );
-  c.addUsing(
+  c.addLibrary(
     {
       name: 'SlotDerivation',
       path: `@openzeppelin/contracts/utils/SlotDerivation.sol`,
     },
-    'bytes32',
+    ['bytes32'],
   );
 }
 
@@ -403,8 +403,10 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
   for (const arg of c.constructorArgs) {
     requiredTypes.add(normalizeType(arg.type));
   }
-  for (const using of c.using) {
-    requiredTypes.add(using.usingFor);
+  for (const library of c.libraries) {
+    for (const type of library.usingFor) {
+      requiredTypes.add(normalizeType(type));
+    }
   }
   for (const f of Object.values(c.functions)) {
     for (const arg of f.args) {

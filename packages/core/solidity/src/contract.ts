@@ -5,7 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
-  using: Using[];
+  libraries: Library[];
   imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
@@ -31,9 +31,9 @@ export interface ReferencedContract {
   transpiled?: boolean;
 }
 
-export interface Using {
+export interface Library {
   library: ImportContract;
-  usingFor: string;
+  usingFor: Set<string>;
 }
 
 export interface BaseFunction {
@@ -78,7 +78,6 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly using: Using[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -86,7 +85,8 @@ export class ContractBuilder implements Contract {
   readonly variableSet: Set<string> = new Set();
 
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
-  private functionMap: Map<string, ContractFunction> = new Map();
+  private functionMap: Map<string, ContractFunction> = new Map<string, ContractFunction>();
+  private libraryMap: Map<string, Library> = new Map<string, Library>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -107,7 +107,14 @@ export class ContractBuilder implements Contract {
   }
 
   get imports(): ImportContract[] {
-    return [...[...this.parentMap.values()].map(p => p.contract), ...this.using.map(u => u.library)];
+    const parents = [...this.parentMap.values()].map(p => p.contract);
+    const libraries = [...this.libraryMap.values()].map(l => l.library);
+    const imports = [...parents, ...libraries];
+    return imports;
+  }
+
+  get libraries(): Library[] {
+    return [...this.libraryMap.values()];
   }
 
   get functions(): ContractFunction[] {
@@ -134,13 +141,19 @@ export class ContractBuilder implements Contract {
     return !present;
   }
 
-  addUsing(library: ImportContract, usingFor: string): boolean {
-    const exists = this.using.some(u => u.library.name === library.name && u.usingFor === usingFor);
-    if (!exists) {
-      this.using.push({ library, usingFor });
-      return true;
+  addLibrary(library: ImportContract, usingFor: string[]): boolean {
+    let modified = false;
+    if (this.libraryMap.has(library.name)) {
+      const existing = this.libraryMap.get(library.name)!;
+      const initialSize = existing.usingFor.size;
+      usingFor.forEach(type => existing.usingFor.add(type));
+      modified = existing.usingFor.size > initialSize;
+    } else {
+      this.libraryMap.set(library.name, { library, usingFor: new Set(usingFor) });
+      modified = true;
     }
-    return false;
+
+    return modified;
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

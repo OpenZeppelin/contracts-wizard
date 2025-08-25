@@ -42,7 +42,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          printUsing(contract, helpers),
+          printLibraries(contract, helpers),
           contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
@@ -290,19 +290,13 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   return lines;
 }
 
-function printUsing(contract: Contract, { transformName }: Helpers): string[] {
-  if (!contract.using || contract.using.length === 0) {
-    return [];
-  }
+function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
+  if (!contract.libraries || contract.libraries.length === 0) return [];
 
-  // Emit in stable order by library then type to keep output deterministic
-  const entries = [...contract.using].sort((a, b) => {
-    if (a.library.name < b.library.name) return -1;
-    if (a.library.name > b.library.name) return 1;
-    if (a.usingFor < b.usingFor) return -1;
-    if (a.usingFor > b.usingFor) return 1;
-    return 0;
-  });
-
-  return entries.map(u => `using ${transformName(u.library)} for ${u.usingFor};`);
+  return contract.libraries
+    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by library name
+    .map(lib => {
+      const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b)); // Sort types
+      return `using ${transformName(lib.library)} for ${sortedTypes.join(', ')};`;
+    });
 }
