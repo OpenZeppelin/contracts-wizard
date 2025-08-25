@@ -6,7 +6,7 @@ pub enum MatchError {
     NoMatch(String),
 }
 
-pub fn build_globset(patterns: &[&str]) -> Result<GlobSet, GlobError> {
+pub fn build_globset(patterns: Vec<String>) -> Result<GlobSet, GlobError> {
     patterns
         .iter()
         .map(|p| Glob::new(p))

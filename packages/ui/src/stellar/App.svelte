@@ -32,9 +32,7 @@
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
-  import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
-  import { zipRustProject } from '@openzeppelin/wizard-stellar/zip-env-rust';
 
   const fargateHost = process.env.FARGATE_HOST;
 
@@ -82,12 +80,15 @@
 
   $: showButtons = getButtonVisibilities(opts);
 
+  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
+
   const downloadScaffoldHandler = async () => {
     if (!opts) return;
 
     const { zipRustProjectBlob } = await zipRustModule;
 
     try {
+      // todo add loader?
       await fetch(`${fargateHost}/stellar/upgrade-scaffold`, {
         method: 'POST',
         headers: {
@@ -100,8 +101,6 @@
       console.log(error);
     }
   };
-
-  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
 
   const downloadRustHandler = async () => {
     const { zipRustProject } = await zipRustModule;

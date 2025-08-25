@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-ENV RUSTFLAGS="-C target-cpu=native"
+RUN rustup update stable \
+  && && rustup target add wasm32v1-none \
+  && rustup default stable
 
 COPY Cargo.toml Cargo.lock ./
 RUN cargo install --locked stellar-cli \

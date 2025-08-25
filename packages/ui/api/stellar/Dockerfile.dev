@@ -20,9 +20,8 @@ ENV CFLAGS=-g0 \
 
 RUN cargo install cargo-watch
 
-RUN rustup update stable \
-    && rustup default stable \
-    && rustup component add --toolchain stable rustfmt clippy
+RUN rustup update \
+    && rustup target add wasm32v1-none
 
 COPY Cargo.toml Cargo.lock ./
 # Update stellar dependency versions in Cargo.toml

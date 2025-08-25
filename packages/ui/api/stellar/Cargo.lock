@@ -5666,6 +5666,7 @@ dependencies = [
  "dotenvy",
  "env_logger",
  "globset",
+ "libc",
  "log",
  "serde",
  "serde_json",
