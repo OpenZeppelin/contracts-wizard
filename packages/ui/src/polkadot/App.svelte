@@ -1,5 +1,5 @@
 <script lang="ts">
-  import App from '../solidity/App.svelte';
+  import SolidityApp from '../solidity/App.svelte';
   import type { InitialOptions } from '../common/initial-options';
   import type { Kind } from '@openzeppelin/wizard';
 
@@ -14,4 +14,14 @@
   omitFeatures.set('RealWorldAsset', ['superchain']);
 </script>
 
-<App {initialTab} {initialOpts} {omitTabs} {omitFeatures} />
+<div class="polkadot-app">
+  <SolidityApp {initialTab} {initialOpts} {omitTabs} {omitFeatures} />
+</div>
+
+<style lang="postcss">
+  .polkadot-app :global(.tab button.selected) {
+    background-color: var(--polkadot-pink) !important;
+    color: white;
+    order: -1;
+  }
+</style>
