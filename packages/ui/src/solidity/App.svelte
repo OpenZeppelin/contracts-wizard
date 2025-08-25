@@ -55,10 +55,16 @@
 
   export let initialOpts: InitialOptions = {};
 
-  // For ecosystem apps that inherit the Solidity app, they can omit specific tabs and features from the UI
-  export let omitTabs: Kind[] = [];
-  export let omitFeatures: Map<Kind, string[]> = new Map();
-  export let overrideRemix: { label: string; url: string } | undefined = undefined;
+  // For ecosystem apps that inherit the Solidity app, they can override specific features in the UI
+  export let overrides: {
+    omitTabs: Kind[];
+    omitFeatures: Map<Kind, string[]>;
+    remix: { label: string; url: string } | undefined;
+  } = {
+    omitTabs: [],
+    omitFeatures: new Map(),
+    remix: undefined,
+  };
 
   let initialValuesSet = false;
 
@@ -167,7 +173,7 @@
 
     const versionedCode = printContractVersioned(contract);
     window.open(
-      remixURL(versionedCode, !!opts?.upgradeable, overrideRemix?.url).toString(),
+      remixURL(versionedCode, !!opts?.upgradeable, overrides?.remix?.url).toString(),
       '_blank',
       'noopener,noreferrer',
     );
@@ -234,7 +240,7 @@
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
         </button>
-        {#if !omitTabs.includes('Account')}
+        {#if !overrides.omitTabs.includes('Account')}
           <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
         {/if}
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
@@ -269,7 +275,7 @@
               on:click={remixHandler}
             >
               <RemixIcon />
-              {overrideRemix?.label ?? 'Open in Remix'}
+              {overrides?.remix?.label ?? 'Open in Remix'}
             </button>
             <div slot="content">
               Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
@@ -328,7 +334,11 @@
       class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} omitFeatures={omitFeatures.get('ERC20')} />
+        <ERC20Controls
+          bind:opts={allOpts.ERC20}
+          errors={errors.ERC20}
+          omitFeatures={overrides.omitFeatures.get('ERC20')}
+        />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
@@ -340,14 +350,14 @@
         <StablecoinControls
           bind:opts={allOpts.Stablecoin}
           errors={errors.Stablecoin}
-          omitFeatures={omitFeatures.get('Stablecoin')}
+          omitFeatures={overrides.omitFeatures.get('Stablecoin')}
         />
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
         <RealWorldAssetControls
           bind:opts={allOpts.RealWorldAsset}
           errors={errors.RealWorldAsset}
-          omitFeatures={omitFeatures.get('RealWorldAsset')}
+          omitFeatures={overrides.omitFeatures.get('RealWorldAsset')}
         />
       </div>
       <div class:hidden={tab !== 'Account'}>
