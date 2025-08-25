@@ -3,6 +3,7 @@ import './common/styles/global.css';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
+import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
@@ -79,6 +80,14 @@ function evaluateSelection(
         return { compatible: false, compatibleVersionsSemver: `${cairoAlphaSemver} || ${cairoSemver}` };
       }
     }
+    case 'polkadot': {
+      // Use Solidity Contracts semver
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
+        return { compatible: true, appType: 'polkadot' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: soliditySemver };
+      }
+    }
     case 'stellar': {
       if (requestedVersion === undefined || semver.satisfies(requestedVersion, stellarSemver)) {
         return { compatible: true, appType: 'stellar' };
@@ -94,7 +103,6 @@ function evaluateSelection(
       }
     }
     case 'solidity':
-    case 'polkadot':
     case undefined:
     default: {
       if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
@@ -147,7 +155,7 @@ if (!selection.compatible) {
       });
       break;
     case 'polkadot':
-      app = new SolidityApp({ target: document.body, props: { initialTab, initialOpts } });
+      app = new PolkadotApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'stellar':
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });

@@ -19,6 +19,8 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
+  export let omitFeatures: string[] = [];
+
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
@@ -217,14 +219,16 @@
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
-      SuperchainERC20 &nbsp;<OPIcon />
-      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
-        chains in the Superchain.
-      </HelpTooltip>
-    </label>
+    {#if !omitFeatures.includes('superchain')}
+      <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
+        <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
+        SuperchainERC20 &nbsp;<OPIcon />
+        <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+          Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available
+          on chains in the Superchain.
+        </HelpTooltip>
+      </label>
+    {/if}
   </div>
 </ExpandableToggleRadio>
 

@@ -54,6 +54,11 @@
   }
 
   export let initialOpts: InitialOptions = {};
+
+  // For ecosystem apps that inherit the Solidity app, they can omit specific tabs and features from the UI
+  export let omitTabs: Kind[] = [];
+  export let omitFeatures: Map<Kind, string[]> = new Map();
+
   let initialValuesSet = false;
 
   let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
@@ -224,7 +229,9 @@
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
         </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+        {#if !omitTabs.includes('Account')}
+          <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+        {/if}
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
@@ -316,7 +323,7 @@
       class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
+        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} omitFeatures={omitFeatures.get('ERC20')} />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
@@ -325,10 +332,18 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
+        <StablecoinControls
+          bind:opts={allOpts.Stablecoin}
+          errors={errors.Stablecoin}
+          omitFeatures={omitFeatures.get('Stablecoin')}
+        />
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
-        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
+        <RealWorldAssetControls
+          bind:opts={allOpts.RealWorldAsset}
+          errors={errors.RealWorldAsset}
+          omitFeatures={omitFeatures.get('RealWorldAsset')}
+        />
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
