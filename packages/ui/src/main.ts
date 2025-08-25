@@ -43,7 +43,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'polkadot' | 'stellar' | 'stylus';
 }
 
 interface IncompatibleSelection {
@@ -94,6 +94,7 @@ function evaluateSelection(
       }
     }
     case 'solidity':
+    case 'polkadot':
     case undefined:
     default: {
       if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
@@ -144,6 +145,9 @@ if (!selection.compatible) {
           initialOpts,
         },
       });
+      break;
+    case 'polkadot':
+      app = new SolidityApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'stellar':
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });

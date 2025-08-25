@@ -65,21 +65,21 @@
   <div class="nav-row flex flex-row items-center justify-between">
     <div class="nav">
       <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
-      <div class="switch switch-cairo active with-version" id="cairo-switch">
-        <img src="/icons/cairo.svg" alt="cairo">
-        Cairo
-        <select class="switch switch-cairo active version" id="version-dropdown">
+      <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
+      <div class="switch switch-polkadot active with-version" id="polkadot-switch">
+        <img src="/icons/polkadot_active.svg" alt="polkadot">
+        Polkadot
+        <select class="switch switch-polkadot active version" id="version-dropdown">
           <option value="stable" />
           <option value="alpha" />
         </select>
       </div>
-      <a class="switch switch-polkadot" href="/polkadot"><img src="/icons/polkadot.svg" alt="polkadot">Polkadot</a>
       <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
       <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
     </div>
   </div>
   <div class="wizard-container">
-    <oz-wizard class="wizard" data-sync-url="fragment" data-lang="cairo"></oz-wizard>
+    <oz-wizard class="wizard" data-sync-url="fragment" data-lang="polkadot"></oz-wizard>
   </div>
 
   <footer>
@@ -91,8 +91,8 @@
 
     function populateLabels() {
       const options = dropdown.querySelectorAll('option');
-      options[0].label = contractsVersions.cairo;
-      options[1].label = contractsVersions.cairoAlpha;
+      options[0].label = contractsVersions.polkadot;
+      options[1].label = contractsVersions.polkadotAlpha;
     }
 
     function resizeDropdown() {
@@ -102,7 +102,7 @@
 
     function onchangeVersion() {
       resizeDropdown();
-      window.location = "cairo#version=" + dropdown.value;
+      window.location = "polkadot#version=" + dropdown.value;
       window.location.reload();
     }
 
@@ -112,7 +112,7 @@
       if (version) {
         if (!dropdown.querySelector(`option[value="${version}"]`)) {
           // If version does not exist in dropdown options, use the default
-          window.location = "cairo#version=stable";
+          window.location = "polkadot#version=stable";
           window.location.reload();
         } else {
           // Set the selected version in the dropdown
@@ -123,12 +123,12 @@
 
     function onStartup() {
       // Hide version dropdown if both versions are the same
-      if (contractsVersions.cairo === contractsVersions.cairoAlpha) {
+      if (contractsVersions.polkadot === contractsVersions.polkadotAlpha) {
         dropdown.style.display = 'none';
 
-        // Revert Cairo switch to non-versioned style
-        const cairoSwitch = document.getElementById('cairo-switch');
-        cairoSwitch.classList.remove('with-version');
+        // Revert Polkadot switch to non-versioned style
+        const polkadotSwitch = document.getElementById('polkadot-switch');
+        polkadotSwitch.classList.remove('with-version');
 
         return;
       }
