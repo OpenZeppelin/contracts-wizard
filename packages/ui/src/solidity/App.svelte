@@ -113,13 +113,7 @@
 
   $: hasErrors = errors[tab] !== undefined;
 
-  let showButtons: ButtonVisibilities;
-  $: {
-    showButtons = getButtonVisibilities(opts);
-    if (overrides.omitZipFoundry) {
-      showButtons.downloadFoundry = false;
-    }
-  }
+  $: showButtons = getButtonVisibilities(overrides, opts);
 
   interface ButtonVisibilities {
     openInRemix: boolean;
@@ -127,26 +121,29 @@
     downloadFoundry: boolean;
   }
 
-  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
-    if (opts?.kind === 'Governor') {
-      return {
-        openInRemix: true,
-        downloadHardhat: false,
-        downloadFoundry: false,
-      };
-    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset' || opts?.kind === 'Account') {
-      return {
-        openInRemix: false,
-        downloadHardhat: false,
-        downloadFoundry: false,
-      };
-    } else {
-      return {
-        openInRemix: true,
-        downloadHardhat: true,
-        downloadFoundry: true,
-      };
+  const getButtonVisibilities = (overrides: Overrides, opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    const result = {
+      openInRemix: true,
+      downloadHardhat: true,
+      downloadFoundry: true,
+    };
+    switch (opts?.kind) {
+      case 'Governor':
+        result.downloadHardhat = false;
+        result.downloadFoundry = false;
+        break;
+      case 'Stablecoin':
+      case 'RealWorldAsset':
+      case 'Account':
+        result.openInRemix = false;
+        result.downloadHardhat = false;
+        result.downloadFoundry = false;
+        break;
     }
+    if (overrides.omitZipFoundry) {
+      result.downloadFoundry = false;
+    }
+    return result;
   };
 
   const getSolcSources = (contract: Contract) => {
