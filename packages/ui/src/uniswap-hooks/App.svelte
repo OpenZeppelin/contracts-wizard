@@ -12,6 +12,7 @@
   import Dropdown from '../common/Dropdown.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
@@ -27,6 +28,7 @@
   import type { InitialOptions } from '../common/initial-options';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { zipFoundry } from '@openzeppelin/wizard/zip-env-foundry';
 
   const dispatch = createEventDispatcher();
 
@@ -96,8 +98,8 @@
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     return {
       openInRemix: false,
-      downloadHardhat: true,
-      downloadFoundry: true,
+      downloadHardhat: false,
+      downloadFoundry: false,
     };
   };
 
@@ -134,6 +136,18 @@
       saveAs(blob, opts.name + '.sol');
       await postConfig(opts, 'download-file', language);
     }
+  };
+
+  const zipFoundryModule = import('@openzeppelin/wizard/zip-env-foundry');
+
+  const downloadFoundryHandler = async () => {
+    // const { zipFoundry } = await zipFoundryModule;
+    // const zip = await zipFoundry(contract, opts);
+    // const blob = await zip.generateAsync({ type: 'blob' });
+    // saveAs(blob, 'project.zip');
+    // if (opts) {
+    //   await postConfig(opts, 'download-foundry', language);
+    // }
   };
 
 </script>
@@ -203,6 +217,17 @@
             <p>Simple to receive updates.</p>
           </div>
         </button>
+
+        {#if showButtons.downloadFoundry}
+        <button class="download-option" on:click={downloadFoundryHandler}>
+          <ZipIcon />
+          <div class="download-option-content">
+            <p>Development Package (Foundry)</p>
+            <p>Sample Foundry project to get started with development and testing.</p>
+          </div>
+        </button>
+      {/if}
+
       </Dropdown>
       </div>
     {/if}
