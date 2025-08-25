@@ -9,6 +9,9 @@
   import RemixIcon from '../common/icons/RemixIcon.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
+  import Dropdown from '../common/Dropdown.svelte';
+  import DownloadIcon from '../common/icons/DownloadIcon.svelte';
+  import FileIcon from '../common/icons/FileIcon.svelte';
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
@@ -19,6 +22,7 @@
   import { postConfig } from '../common/post-config';
   import { remixURL } from './remix';
 
+  import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
@@ -85,11 +89,15 @@
 
   interface ButtonVisibilities {
     openInRemix: boolean;
+    downloadHardhat: boolean;
+    downloadFoundry: boolean;
   }
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     return {
-      openInRemix: true,
+      openInRemix: false,
+      downloadHardhat: true,
+      downloadFoundry: true,
     };
   };
 
@@ -119,9 +127,19 @@
       await postConfig(opts, 'remix', language);
     }
   };
+
+  const downloadSingleFileHandler = async () => {
+    const blob = new Blob([code], { type: 'text/plain' });
+    if (opts) {
+      saveAs(blob, opts.name + '.sol');
+      await postConfig(opts, 'download-file', language);
+    }
+  };
+
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
+  <!-- Introduce Wiz -->
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
@@ -142,20 +160,57 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
-            <button use:trigger class="action-button with-text" on:click={remixHandler}>
-              <RemixIcon />
-              Open in Remix
-            </button>
-          </Tooltip>
-        {/if}
+        <Tooltip
+          let:trigger
+          disabled={!(opts?.upgradeable === 'transparent')}
+          theme="light-red border"
+          hideOnClick={false}
+          interactive
+        >
+          <button
+            use:trigger
+            class="action-button with-text"
+            class:disabled={opts?.upgradeable === 'transparent'}
+            on:click={remixHandler}
+          >
+            <RemixIcon />
+            Open in Remix
+          </button>
+          <div slot="content">
+            Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
+            use Hardhat or Foundry with
+            <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
+              >OpenZeppelin Upgrades</a
+            >.
+            <br />
+            <!-- svelte-ignore a11y-invalid-attribute -->
+            <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+          </div>
+        </Tooltip>
+      {/if}
+
+      <Dropdown let:active>
+        <button class="action-button with-text" class:active slot="button">
+          <DownloadIcon />
+          Download
+        </button>
+
+        <button class="download-option" on:click={downloadSingleFileHandler}>
+          <FileIcon />
+          <div class="download-option-content">
+            <p>Single file</p>
+            <p>Requires installation of foundry package (<code>@openzeppelin/uniswap-hooks</code>).</p>
+            <p>Simple to receive updates.</p>
+          </div>
+        </button>
+      </Dropdown>
       </div>
     {/if}
   </div>
 
   <div class="flex flex-row grow">
     <div
-      class="controls rounded-l-3xl min-w-74 w-74 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'Hooks'}>
         <HooksControls bind:opts={allOpts.Hooks} />
@@ -173,8 +228,25 @@
     </div>
   </div>
 </div>
-
 <style lang="postcss">
+  .button-bg:hover {
+    transform: translateX(-2px);
+    transition: transform 300ms;
+  }
+
+  .hide-deploy {
+    transform: translateX(-320px);
+    transition: transform 0.45s;
+  }
+  .hide-deploy button {
+    background-color: white;
+    border: 1px solid white;
+  }
+
+  .hide-deploy:hover {
+    transform: translatex(-318px);
+  }
+
   .container {
     background-color: var(--gray-1);
     min-width: 32rem;
@@ -234,7 +306,12 @@
       background-color: var(--gray-2);
     }
 
-    &:active :global(.icon) {
+    &:active,
+    &.active {
+      background-color: var(--gray-2);
+    }
+
+    :global(.icon) {
       margin: 0 var(--size-1);
     }
   }
@@ -250,5 +327,77 @@
   .controls {
     background-color: white;
     padding: var(--size-4);
+  }
+
+  .controls-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    color: var(--gray-5);
+    margin-top: var(--size-3);
+    padding: 0 var(--size-2);
+    font-size: var(--text-small);
+
+    & > * + * {
+      margin-left: var(--size-3);
+    }
+
+    :global(.icon) {
+      margin-right: 0.2em;
+      opacity: 0.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .download-option {
+    display: flex;
+    padding: var(--size-2);
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+
+    :global(.icon) {
+      margin-top: var(--icon-adjust);
+    }
+
+    :not(:hover) + & {
+      border-top: 1px solid var(--gray-2);
+    }
+
+    &:hover,
+    &:focus {
+      background-color: var(--gray-1);
+      border: 1px solid var(--gray-3);
+    }
+
+    & div {
+      display: block;
+    }
+  }
+
+  .download-option-content {
+    margin-left: var(--size-3);
+    font-size: var(--text-small);
+
+    & > :first-child {
+      margin-bottom: var(--size-2);
+      color: var(--gray-6);
+      font-weight: bold;
+    }
+
+    & > :not(:first-child) {
+      margin-top: var(--size-1);
+      color: var(--gray-5);
+    }
   }
 </style>

@@ -59,7 +59,7 @@
   }
 
   function shortcutPermissionName(name: string): string {
-    if (name.length > 20) return name.replace('Liquidity', 'Liq');
+    if (name.length > 20) return name.replace('Return', '');
     return name;
   }
 </script>
