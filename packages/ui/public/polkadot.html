@@ -66,14 +66,7 @@
     <div class="nav">
       <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
       <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
-      <div class="switch switch-polkadot active with-version" id="polkadot-switch">
-        <img src="/icons/polkadot_active.svg" alt="polkadot">
-        Polkadot
-        <select class="switch switch-polkadot active version" id="version-dropdown">
-          <option value="stable" />
-          <option value="alpha" />
-        </select>
-      </div>
+      <a class="switch switch-polkadot active" href="#"><img src="/icons/polkadot_active.svg" alt="polkadot">Polkadot</a>
       <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
       <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
     </div>
@@ -85,61 +78,6 @@
   <footer>
     <p>© <a href="https://openzeppelin.com" target="_blank" rel="noopener noreferrer">OpenZeppelin</a> 2017-<span id="copyright-date"></span> |&nbsp;<a href="https://openzeppelin.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> |&nbsp;<a href="https://openzeppelin.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a></p>
   </footer>
-
-  <script>
-    const dropdown = document.getElementById('version-dropdown');
-
-    function populateLabels() {
-      const options = dropdown.querySelectorAll('option');
-      options[0].label = contractsVersions.polkadot;
-      options[1].label = contractsVersions.polkadotAlpha;
-    }
-
-    function resizeDropdown() {
-      const selectedOption = dropdown.children[dropdown.selectedIndex];
-      dropdown.style.width = selectedOption.label.length + 1 + 'ch';
-    }
-
-    function onchangeVersion() {
-      resizeDropdown();
-      window.location = "polkadot#version=" + dropdown.value;
-      window.location.reload();
-    }
-
-    function preselectFromParam() {
-      const urlParams = new URLSearchParams(window.location.hash.substring(1));
-      const version = urlParams.get('version');
-      if (version) {
-        if (!dropdown.querySelector(`option[value="${version}"]`)) {
-          // If version does not exist in dropdown options, use the default
-          window.location = "polkadot#version=stable";
-          window.location.reload();
-        } else {
-          // Set the selected version in the dropdown
-          dropdown.value = version;
-        }
-      }
-    }
-
-    function onStartup() {
-      // Hide version dropdown if both versions are the same
-      if (contractsVersions.polkadot === contractsVersions.polkadotAlpha) {
-        dropdown.style.display = 'none';
-
-        // Revert Polkadot switch to non-versioned style
-        const polkadotSwitch = document.getElementById('polkadot-switch');
-        polkadotSwitch.classList.remove('with-version');
-
-        return;
-      }
-      populateLabels();
-      dropdown.addEventListener('change', onchangeVersion);
-      preselectFromParam();
-      resizeDropdown();
-    }
-
-    onStartup();
-  </script>
 
 <!-- Set current year -->
 <script>document.getElementById('copyright-date').innerHTML = new Date().getFullYear();</script>
