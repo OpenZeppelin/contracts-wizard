@@ -30,7 +30,7 @@
   // When the hook changes or pausable is disabled, reset the permissions to the default values
   let lastHook: HookName;
   let lastPausable: boolean = opts.pausable;
-  
+
   $: {
     const hookChanged = opts.hook !== lastHook;
     const pausableTurnedOff = !opts.pausable && lastPausable;
@@ -52,6 +52,11 @@
     lastHook = opts.hook;
     lastPausable = opts.pausable;
   }
+
+  function normalizeHookName(name: string): string {
+    if (name === 'BaseHook') return name;
+    return name.replace('Hook', '').replace('Base', '');
+  }
 </script>
 
 <section class="controls-section">
@@ -70,9 +75,9 @@
       {#each hooksByCategory[category] as hook}
         <label class:checked={opts.hook === hook.name}>
           <input type="radio" bind:group={opts.hook} value={hook.name} />
-          {hook.name}
+          {normalizeHookName(hook.name)}
           <HelpTooltip link={hook.tooltipLink}>
-            {hook.tooltipText}
+            {@html hook.tooltipText}
           </HelpTooltip>
         </label>
       {/each}
@@ -82,13 +87,16 @@
 
 <section class="controls-section">
   <h1>Hook Permissions</h1>
-  
+
   <div class="checkbox-group">
     {#each permissions as permission}
       <label class:checked={opts.permissions[permission]}>
-        <input type="checkbox" 
+        <input
+          type="checkbox"
           bind:checked={opts.permissions[permission]}
-          disabled={Hooks[opts.hook].permissions[permission] || (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))} />
+          disabled={Hooks[opts.hook].permissions[permission] ||
+            (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))}
+        />
         {permission}
         <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
           {#if Hooks[opts.hook].permissions[permission]}
@@ -103,7 +111,6 @@
     {/each}
   </div>
 </section>
-
 
 <section class="controls-section">
   <h1>Utilities</h1>
