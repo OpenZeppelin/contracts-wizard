@@ -6,7 +6,7 @@ const LiquidityPenaltyHook: Hook = {
   name: 'LiquidityPenaltyHook',
   category: 'General',
   tooltipText:
-    'JIT‑resistant: withholds and penalizes LP fees when liquidity is added then removed within a block window; penalties are donated to in‑range LPs.',
+    'Just-in-Time (JIT) resistance; penalizes LP fee collection when liquidity is added/removed before <code>_blockNumberOffset</code> blocks, donating penalties to in‑range LPs.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LiquidityPenaltyHook',
   functions: {
     ...defineFunctions({

@@ -5,7 +5,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 const BaseOverrideFee: Hook = {
   name: 'BaseOverrideFee',
   category: 'Fee',
-  tooltipText: 'Automatically sets a dynamic fee before each swap, computed per trade according to your fee function.',
+  tooltipText: 'Applies a dynamic fee in a per-swap basis, determined by the <code>_getFee</code> function.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseOverrideFee',
   functions: {
     ...defineFunctions({

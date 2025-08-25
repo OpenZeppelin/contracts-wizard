@@ -6,7 +6,7 @@ const BaseAsyncSwap: Hook = {
   name: 'BaseAsyncSwap',
   category: 'Base',
   tooltipText:
-    'Base implementation for asynchronous swaps that bypasses the default swap flow by netting the specified amount to zero, enabling custom execution and settlement.',
+    'Asynchronous swaps; override the default swap flow enabling custom execution and settlement, such as swap queuing and/or reordering.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseAsyncSwap',
   functions: {
     ...defineFunctions({

@@ -6,7 +6,7 @@ const BaseDynamicFee: Hook = {
   name: 'BaseDynamicFee',
   category: 'Fee',
   tooltipText:
-    'Applies a dynamic LP fee via the PoolManager; lets you update the fee over time based on your own logic.',
+    'Applies a dynamic fee in a per-pool basis; determined by <code>_getFee</code> and applied upon calling <code>poke</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
   functions: {
     ...defineFunctions({
@@ -17,7 +17,7 @@ const BaseDynamicFee: Hook = {
         args: [{ name: 'key', type: 'PoolKey calldata' }],
         returns: ['uint24'],
       },
-      // poke the fee (required)
+      // poke the fee (optional override)
       poke: {
         kind: 'public', // external/public for our generator purposes
         args: [{ name: 'key', type: 'PoolKey calldata' }],

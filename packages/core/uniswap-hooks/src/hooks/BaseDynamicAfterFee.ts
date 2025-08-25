@@ -6,7 +6,7 @@ const BaseDynamicAfterFee: Hook = {
   name: 'BaseDynamicAfterFee',
   category: 'Fee',
   tooltipText:
-    'Enforces a post-swap target and captures any positive difference as a hook fee, then lets you handle or distribute it.',
+    'Enforces an after-swap target and captures any positive difference as a hook fee, then allows for handling or distributing it.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
   functions: {
     ...defineFunctions({
