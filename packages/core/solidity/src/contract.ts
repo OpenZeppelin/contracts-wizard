@@ -5,6 +5,7 @@ export interface Contract {
   license: string;
   parents: Parent[];
   natspecTags: NatspecTag[];
+  using: Using[];
   imports: ImportContract[];
   functions: ContractFunction[];
   constructorCode: string[];
@@ -52,7 +53,7 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
-export type FunctionKind = 'internal' | 'public';
+export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
@@ -131,6 +132,15 @@ export class ContractBuilder implements Contract {
       importOnly: true,
     });
     return !present;
+  }
+
+  addUsing(library: ImportContract, usingFor: string): boolean {
+    const exists = this.using.some(u => u.library.name === library.name && u.usingFor === usingFor);
+    if (!exists) {
+      this.using.push({ library, usingFor });
+      return true;
+    }
+    return false;
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

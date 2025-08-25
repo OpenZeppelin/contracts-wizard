@@ -17,7 +17,7 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
-import { importsCommunityContracts } from './utils/imports-libraries';
+import { importsLibrary } from './utils/imports-libraries';
 import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
 export function printContract(contract: Contract, opts?: Options): string {
@@ -31,7 +31,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        printCompatibleLibraryVersions(contract),
+        printCompatibleLibraryVersions(contract, opts),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
@@ -42,6 +42,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
+          printUsing(contract, helpers),
           contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
@@ -56,17 +57,30 @@ export function printContract(contract: Contract, opts?: Options): string {
   );
 }
 
-function printCompatibleLibraryVersions(contract: Contract): string {
-  let result = `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`;
-  if (importsCommunityContracts(contract)) {
+function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
+  const libraries: string[] = [];
+  if (importsLibrary(contract, '@openzeppelin/contracts')) {
+    libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
+  }
+  if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
-      result += ` and Community Contracts commit ${commit}`;
+      libraries.push(`Community Contracts commit ${commit}`);
     } catch (e) {
       console.error(e);
     }
   }
-  return result;
+  if (opts?.additionalCompatibleLibraries) {
+    for (const library of opts.additionalCompatibleLibraries) {
+      if (importsLibrary(contract, library.path)) {
+        libraries.push(`${library.name} ${library.version}`);
+      }
+    }
+  }
+
+  if (libraries.length === 0) return '';
+  if (libraries.length === 1) return `// Compatible with ${libraries[0]}`;
+  return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -274,4 +288,21 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   });
 
   return lines;
+}
+
+function printUsing(contract: Contract, { transformName }: Helpers): string[] {
+  if (!contract.using || contract.using.length === 0) {
+    return [];
+  }
+
+  // Emit in stable order by library then type to keep output deterministic
+  const entries = [...contract.using].sort((a, b) => {
+    if (a.library.name < b.library.name) return -1;
+    if (a.library.name > b.library.name) return 1;
+    if (a.usingFor < b.usingFor) return -1;
+    if (a.usingFor > b.usingFor) return 1;
+    return 0;
+  });
+
+  return entries.map(u => `using ${transformName(u.library)} for ${u.usingFor};`);
 }
