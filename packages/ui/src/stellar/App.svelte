@@ -82,23 +82,40 @@
 
   const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
 
+  let isDownloadingScaffold = false;
+  let downloadScaffoldError = false;
+
   const downloadScaffoldHandler = async () => {
     if (!opts) return;
 
     const { zipRustProjectBlob } = await zipRustModule;
 
     try {
-      // todo add loader?
-      await fetch(`${fargateHost}/stellar/upgrade-scaffold`, {
+      isDownloadingScaffold = true;
+
+      const {
+        ok,
+        status,
+        body: scaffoldProject,
+      } = await fetch(`${fargateHost}/stellar/upgrade-scaffold`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: await zipRustProjectBlob(contract, opts),
       });
+
+      if (!ok) throw new Error(`HTTP ${status}`);
+
+      saveAs(await new Response(scaffoldProject).blob(), 'scaffold-project.zip');
+      await postConfig(opts, 'download-file', language);
+
+      isDownloadingScaffold = false;
     } catch (error) {
-      //TODO handle error (display message)
       console.log(error);
+
+      downloadScaffoldError = true;
+      isDownloadingScaffold = false;
     }
   };
 
@@ -240,7 +257,13 @@
               <ZipIcon />
               <div class="download-option-content">
                 <p>Scaffold Stellar Package</p>
-                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
+                <p>
+                  {downloadScaffoldError
+                    ? 'Could not download Scaffold'
+                    : isDownloadingScaffold
+                      ? 'Please wait while we build scaffold project...'
+                      : 'Sample Scaffold Stellar project to get started with development and testing.'}
+                </p>
               </div>
             </button>
           {/if}
