@@ -14,12 +14,6 @@
       "options": {
         "parser": "sh"
       }
-    },
-    {
-      "files": "remappings.txt",
-      "options": {
-        "parser": "markdown"
-      }
     }
   ]
 }
