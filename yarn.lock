@@ -839,6 +839,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
+"@reteps/dockerfmt@^0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@reteps/dockerfmt/-/dockerfmt-0.3.6.tgz#055be8a367c4b5316d3aa9c10c4c62eab2a4fce2"
+  integrity sha512-Tb5wIMvBf/nLejTQ61krK644/CEMB/cpiaIFXqGApfGqO3GwcR3qnI0DbmkFVCl2OyEp8LnLX3EkucoL0+tbFg==
+
 "@rollup/plugin-alias@^5.0.0":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-alias/-/plugin-alias-5.1.1.tgz#53601d88cda8b1577aa130b4a6e452283605bf26"
@@ -5226,6 +5231,14 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
+prettier-plugin-sh@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-sh/-/prettier-plugin-sh-0.18.0.tgz#3221878f00a4d7263dea2e39aa0e377e5b07ee2c"
+  integrity sha512-cW1XL27FOJQ/qGHOW6IHwdCiNWQsAgK+feA8V6+xUTaH0cD3Mh+tFAtBvEEWvuY6hTDzRV943Fzeii+qMOh7nQ==
+  dependencies:
+    "@reteps/dockerfmt" "^0.3.6"
+    sh-syntax "^0.5.8"
+
 prettier-plugin-svelte@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/prettier-plugin-svelte/-/prettier-plugin-svelte-3.3.3.tgz#49d5c025a1516063ac7ef026806f880caa310424"
@@ -5666,6 +5679,13 @@ setprototypeof@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
+
+sh-syntax@^0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/sh-syntax/-/sh-syntax-0.5.8.tgz#a2f46a1456c05005c6640bb2e11fbcaf12c67150"
+  integrity sha512-JfVoxf4FxQI5qpsPbkHhZo+n6N9YMJobyl4oGEUBb/31oQYlgTjkXQD8PBiafS2UbWoxrTO0Z5PJUBXEPAG1Zw==
+  dependencies:
+    tslib "^2.8.1"
 
 sha.js@^2.4.0, sha.js@^2.4.8:
   version "2.4.11"

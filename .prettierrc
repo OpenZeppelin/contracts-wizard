@@ -1,10 +1,25 @@
 {
   "plugins": [
-    "prettier-plugin-svelte"
+    "prettier-plugin-svelte",
+    "prettier-plugin-sh"    
   ],
   "singleQuote": true,
   "arrowParens": "avoid",
   "trailingComma": "all",
   "printWidth": 120,
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "overrides": [
+    {
+      "files": "*.sh",
+      "options": {
+        "parser": "sh"
+      }
+    },
+    {
+      "files": "remappings.txt",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
 }
