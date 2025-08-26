@@ -20,6 +20,8 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
+  export let omitFeatures: string[] | undefined = undefined;
+
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
@@ -29,15 +31,17 @@
   import { onMount } from 'svelte';
 
   let superchainLabel: HTMLElement;
-  let superchainTooltip: TippyInstance;
+  let superchainTooltip: TippyInstance | undefined;
   onMount(() => {
-    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
+    superchainTooltip = !omitFeatures?.includes('superchain')
+      ? tippy(superchainLabel, superchainTooltipProps)
+      : undefined;
   });
 
   let wasSuperchain = false;
   $: {
     if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
-      superchainTooltip.show();
+      superchainTooltip?.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
   }
@@ -125,13 +129,15 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.permit || opts.votes}>
-      <input type="checkbox" bind:checked={opts.permit} />
-      Permit
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
-        Without paying gas, token holders will be able to allow third parties to transfer from their account.
-      </HelpTooltip>
-    </label>
+    {#if !omitFeatures?.includes('permit')}
+      <label class:checked={opts.permit || opts.votes}>
+        <input type="checkbox" bind:checked={opts.permit} />
+        Permit
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
+          Without paying gas, token holders will be able to allow third parties to transfer from their account.
+        </HelpTooltip>
+      </label>
+    {/if}
 
     <label class:checked={opts.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint} />
@@ -144,30 +150,32 @@
   </div>
 </section>
 
-<ExpandableToggleRadio
-  label="Votes"
-  bind:value={opts.votes}
-  defaultValue="blocknumber"
-  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
->
-  <div class="checkbox-group">
-    <label class:checked={opts.votes === 'blocknumber'}>
-      <input type="radio" bind:group={opts.votes} value="blocknumber" />
-      Block Number
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
-        Uses voting durations expressed as block numbers.
-      </HelpTooltip>
-    </label>
-    <label class:checked={opts.votes === 'timestamp'}>
-      <input type="radio" bind:group={opts.votes} value="timestamp" />
-      Timestamp
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
-        Uses voting durations expressed as timestamps.
-      </HelpTooltip>
-    </label>
-  </div>
-</ExpandableToggleRadio>
+{#if !omitFeatures?.includes('votes')}
+  <ExpandableToggleRadio
+    label="Votes"
+    bind:value={opts.votes}
+    defaultValue="blocknumber"
+    helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+    helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+  >
+    <div class="checkbox-group">
+      <label class:checked={opts.votes === 'blocknumber'}>
+        <input type="radio" bind:group={opts.votes} value="blocknumber" />
+        Block Number
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+          Uses voting durations expressed as block numbers.
+        </HelpTooltip>
+      </label>
+      <label class:checked={opts.votes === 'timestamp'}>
+        <input type="radio" bind:group={opts.votes} value="timestamp" />
+        Timestamp
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+          Uses voting durations expressed as timestamps.
+        </HelpTooltip>
+      </label>
+    </div>
+  </ExpandableToggleRadio>
+{/if}
 
 <ExpandableToggleRadio
   label="Cross-Chain Bridging"
@@ -183,14 +191,16 @@
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
-      SuperchainERC20 &nbsp;<OPIcon />
-      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
-        chains in the Superchain.
-      </HelpTooltip>
-    </label>
+    {#if !omitFeatures?.includes('superchain')}
+      <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
+        <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
+        SuperchainERC20 &nbsp;<OPIcon />
+        <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+          Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available
+          on chains in the Superchain.
+        </HelpTooltip>
+      </label>
+    {/if}
   </div>
 </ExpandableToggleRadio>
 
