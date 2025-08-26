@@ -388,16 +388,6 @@ function addSuperchainERC20(c: ContractBuilder) {
     functions._checkTokenBridge,
     'pure',
   );
-  c.setFunctionComments(
-    [
-      '/**',
-      ' * @dev Checks if the caller is the predeployed SuperchainTokenBridge. Reverts otherwise.',
-      ' *',
-      ' * IMPORTANT: The predeployed SuperchainTokenBridge is only available on chains in the Superchain.',
-      ' */',
-    ],
-    functions._checkTokenBridge,
-  );
 }
 
 export const functions = defineFunctions({
