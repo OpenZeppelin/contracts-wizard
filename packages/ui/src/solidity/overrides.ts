@@ -9,3 +9,10 @@ export interface Overrides {
     omitZipFoundry: boolean;
     remix: { label: string; url: string } | undefined;
 }
+
+export const defaultOverrides: Overrides = {
+    omitTabs: [],
+    omitFeatures: new Map(),
+    omitZipFoundry: false,
+    remix: undefined,
+};

@@ -3,7 +3,7 @@
 
   import hljs from './highlightjs';
 
-  import type { Overrides } from './overrides';
+  import { defaultOverrides, type Overrides } from './overrides';
 
   import ERC20Controls from './ERC20Controls.svelte';
   import ERC721Controls from './ERC721Controls.svelte';
@@ -57,12 +57,7 @@
 
   export let initialOpts: InitialOptions = {};
 
-  export let overrides: Overrides = {
-    omitTabs: [],
-    omitFeatures: new Map(),
-    omitZipFoundry: false,
-    remix: undefined,
-  };
+  export let overrides: Overrides = defaultOverrides;
 
   let initialValuesSet = false;
 
