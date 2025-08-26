@@ -12,8 +12,8 @@ const functions = defineFunctions({
     returns: ['uint48'],
     mutability: 'view' as const,
     comments: [
-      '/// @dev Returns the current timestamp as a uint48.',
-      '/// Used for time-based operations in the contract.',
+      '/// @dev Returns the current timepoint as a uint48 (either block number or timestamp).',
+      '/// Used for time-based operations in the contract. The specific mode depends on the clock configuration.',
     ],
   },
 
