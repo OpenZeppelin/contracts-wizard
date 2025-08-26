@@ -363,9 +363,22 @@ function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
 }
 
 function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
-  const permissions = Object.entries(_allOpts.permissions);
+  const permissions = Object.keys(_allOpts.permissions);
+  const enabledPermissions = Object.keys(_allOpts.permissions).filter(key => _allOpts.permissions[key as Permission]);
+  const selectedHookPermissions = Object.keys(Hooks[_allOpts.hook].permissions).filter(
+    key => Hooks[_allOpts.hook].permissions[key as Permission],
+  );
+  const extraEnabledPermissions = enabledPermissions.filter(key => !selectedHookPermissions.includes(key));
+
+  for (const key of extraEnabledPermissions) {
+    if (!key.includes('Delta')) {
+      c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions[`_${key}`]!);
+      c.setFunctionBody([`// Implement _${key}`], Hooks.BaseHook.functions[`_${key}`]!);
+    }
+  }
+
   const permissionLines = permissions.map(
-    ([key, value], idx) => `    ${key}: ${value}${idx === permissions.length - 1 ? '' : ','}`,
+    (key, idx) => `    ${key}: ${_allOpts.permissions[key as Permission]}${idx === permissions.length - 1 ? '' : ','}`,
   );
   c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions.getHookPermissions!);
   c.setFunctionBody(
