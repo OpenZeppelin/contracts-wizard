@@ -15,7 +15,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  export let omitFeatures: string[] = [];
+  export let omitFeatures: string[] | undefined = undefined;
 
   let wasMintable = opts.mintable;
   let wasIncremental = opts.incremental;
@@ -104,7 +104,7 @@
   </div>
 </section>
 
-{#if !omitFeatures.includes('votes')}
+{#if !omitFeatures?.includes('votes')}
   <ExpandableToggleRadio
     label="Votes"
     bind:value={opts.votes}

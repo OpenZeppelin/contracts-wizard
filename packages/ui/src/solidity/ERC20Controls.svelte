@@ -20,7 +20,7 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
-  export let omitFeatures: string[] = [];
+  export let omitFeatures: string[] | undefined = undefined;
 
   export let errors: undefined | OptionsErrorMessages;
 
@@ -33,7 +33,7 @@
   let superchainLabel: HTMLElement;
   let superchainTooltip: TippyInstance | undefined;
   onMount(() => {
-    superchainTooltip = !omitFeatures.includes('superchain')
+    superchainTooltip = !omitFeatures?.includes('superchain')
       ? tippy(superchainLabel, superchainTooltipProps)
       : undefined;
   });
@@ -129,7 +129,7 @@
       </HelpTooltip>
     </label>
 
-    {#if !omitFeatures.includes('permit')}
+    {#if !omitFeatures?.includes('permit')}
       <label class:checked={opts.permit || opts.votes}>
         <input type="checkbox" bind:checked={opts.permit} />
         Permit
@@ -150,7 +150,7 @@
   </div>
 </section>
 
-{#if !omitFeatures.includes('votes')}
+{#if !omitFeatures?.includes('votes')}
   <ExpandableToggleRadio
     label="Votes"
     bind:value={opts.votes}
@@ -191,7 +191,7 @@
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    {#if !omitFeatures.includes('superchain')}
+    {#if !omitFeatures?.includes('superchain')}
       <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
         <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
         SuperchainERC20 &nbsp;<OPIcon />
