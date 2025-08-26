@@ -138,25 +138,33 @@ const functions = {
       args: [{ name: 'user', type: 'address' }],
       returns: ['bool'],
       mutability: 'view' as const,
-      comments: ['/// @dev Determines if an address has custodian privileges. Custodians can perform special operations on behalf of users.'],
+      comments: [
+        '/// @dev Determines if an address has custodian privileges. Custodians can perform special operations on behalf of users.',
+      ],
     },
 
     allowUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: ['/// @dev Grants permission for a user to interact with the contract. This is part of the allowlist mechanism for controlled access.'],
+      comments: [
+        '/// @dev Grants permission for a user to interact with the contract. This is part of the allowlist mechanism for controlled access.',
+      ],
     },
 
     disallowUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: ['/// @dev Revokes a user\'s permission to interact with the contract. This is part of the allowlist mechanism for controlled access.'],
+      comments: [
+        "/// @dev Revokes a user's permission to interact with the contract. This is part of the allowlist mechanism for controlled access.",
+      ],
     },
 
     blockUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
-      comments: ['/// @dev Blocks a user from interacting with the contract. This is part of the blocklist mechanism for controlled access.'],
+      comments: [
+        '/// @dev Blocks a user from interacting with the contract. This is part of the blocklist mechanism for controlled access.',
+      ],
     },
 
     unblockUser: {
