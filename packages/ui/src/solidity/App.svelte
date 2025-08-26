@@ -90,7 +90,7 @@
         initialValuesSet = true;
       }
       try {
-        contract = buildGeneric(opts);
+        contract = buildGeneric(overrides.removeOmittedFeatures(opts));
         errors[tab] = undefined;
       } catch (e: unknown) {
         if (e instanceof OptionsError) {
