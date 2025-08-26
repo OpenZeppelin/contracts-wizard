@@ -7,13 +7,17 @@
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
 
+  // Governor, permit, and votes are disabled for now, due to requirement on ECDSA.
+  // These require further investigation for use with Polkadot's native account abstraction.
+
   const omitFeatures: Map<Kind, string[]> = new Map();
-  omitFeatures.set('ERC20', ['superchain']);
-  omitFeatures.set('Stablecoin', ['superchain']);
-  omitFeatures.set('RealWorldAsset', ['superchain']);
+  omitFeatures.set('ERC20', ['superchain', 'permit', 'votes']);
+  omitFeatures.set('ERC721', ['votes']);
+  omitFeatures.set('Stablecoin', ['superchain', 'permit', 'votes']);
+  omitFeatures.set('RealWorldAsset', ['superchain', 'permit', 'votes']);
 
   let overrides: Overrides = {
-    omitTabs: ['Account'],
+    omitTabs: ['Account', 'Governor'],
     omitFeatures,
     omitZipFoundry: true,
     remix: {

@@ -15,6 +15,8 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
+  export let omitFeatures: string[] = [];
+
   let wasMintable = opts.mintable;
   let wasIncremental = opts.incremental;
 
@@ -102,30 +104,32 @@
   </div>
 </section>
 
-<ExpandableToggleRadio
-  label="Votes"
-  bind:value={opts.votes}
-  defaultValue="blocknumber"
-  helpContent="Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes"
->
-  <div class="checkbox-group">
-    <label class:checked={opts.votes === 'blocknumber'}>
-      <input type="radio" bind:group={opts.votes} value="blocknumber" />
-      Block Number
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
-        Uses voting durations expressed as block numbers.
-      </HelpTooltip>
-    </label>
-    <label class:checked={opts.votes === 'timestamp'}>
-      <input type="radio" bind:group={opts.votes} value="timestamp" />
-      Timestamp
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
-        Uses voting durations expressed as timestamps.
-      </HelpTooltip>
-    </label>
-  </div>
-</ExpandableToggleRadio>
+{#if !omitFeatures.includes('votes')}
+  <ExpandableToggleRadio
+    label="Votes"
+    bind:value={opts.votes}
+    defaultValue="blocknumber"
+    helpContent="Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+    helpLink="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes"
+  >
+    <div class="checkbox-group">
+      <label class:checked={opts.votes === 'blocknumber'}>
+        <input type="radio" bind:group={opts.votes} value="blocknumber" />
+        Block Number
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+          Uses voting durations expressed as block numbers.
+        </HelpTooltip>
+      </label>
+      <label class:checked={opts.votes === 'timestamp'}>
+        <input type="radio" bind:group={opts.votes} value="timestamp" />
+        Timestamp
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+          Uses voting durations expressed as timestamps.
+        </HelpTooltip>
+      </label>
+    </div>
+  </ExpandableToggleRadio>
+{/if}
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

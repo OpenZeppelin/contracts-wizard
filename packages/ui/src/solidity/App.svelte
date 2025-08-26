@@ -244,7 +244,9 @@
         {#if !overrides.omitTabs.includes('Account')}
           <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
         {/if}
-        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
+        {#if !overrides.omitTabs.includes('Governor')}
+          <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
+        {/if}
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
     </div>
@@ -342,7 +344,7 @@
         />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} />
+        <ERC721Controls bind:opts={allOpts.ERC721} omitFeatures={overrides.omitFeatures.get('ERC721')} />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
