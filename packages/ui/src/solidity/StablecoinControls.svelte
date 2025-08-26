@@ -30,15 +30,17 @@
   import { onMount } from 'svelte';
 
   let superchainLabel: HTMLElement;
-  let superchainTooltip: TippyInstance;
+  let superchainTooltip: TippyInstance | undefined;
   onMount(() => {
-    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
+    superchainTooltip = !omitFeatures.includes('superchain')
+      ? tippy(superchainLabel, superchainTooltipProps)
+      : undefined;
   });
 
   let wasSuperchain = false;
   $: {
     if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
-      superchainTooltip.show();
+      superchainTooltip?.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
   }
