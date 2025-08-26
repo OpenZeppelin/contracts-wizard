@@ -47,7 +47,7 @@ const functions = defineFunctions({
     kind: 'internal',
     args: [{ name: 'newImplementation', type: 'address' }],
     comments: [
-      '/// @dev Authorizes the upgrade to a new implementation. This function should be overridden to implement access control for upgrades.',
+      '/// @dev Authorizes the upgrade to a new implementation. This function must be overridden to implement access control for upgrades. Failure to override this function will allow anyone to upgrade the contract, posing a serious security risk.',
     ],
   },
 });
