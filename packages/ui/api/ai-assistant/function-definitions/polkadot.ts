@@ -1,0 +1,8 @@
+import { solidityERC20AIFunctionDefinition, solidityERC721AIFunctionDefinition, solidityERC1155AIFunctionDefinition, solidityStablecoinAIFunctionDefinition, solidityRealWorldAssetAIFunctionDefinition, solidityCustomAIFunctionDefinition } from './solidity.ts';
+
+export const polkadotERC20AIFunctionDefinition = solidityERC20AIFunctionDefinition;
+export const polkadotERC721AIFunctionDefinition = solidityERC721AIFunctionDefinition;
+export const polkadotERC1155AIFunctionDefinition = solidityERC1155AIFunctionDefinition;
+export const polkadotStablecoinAIFunctionDefinition = solidityStablecoinAIFunctionDefinition;
+export const polkadotRealWorldAssetAIFunctionDefinition = solidityRealWorldAssetAIFunctionDefinition;
+export const polkadotCustomAIFunctionDefinition = solidityCustomAIFunctionDefinition;

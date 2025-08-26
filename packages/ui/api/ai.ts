@@ -1,5 +1,6 @@
 import { OpenAIStream } from 'ai';
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as polkadotFunctions from './ai-assistant/function-definitions/polkadot.ts';
 import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
 import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
@@ -21,6 +22,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     solidity: solidityFunctions,
     cairo: cairoFunctions,
     cairoAlpha: cairoAlphaFunctions,
+    polkadot: polkadotFunctions,
     stellar: stellarFunctions,
     stylus: stylusFunctions,
   };

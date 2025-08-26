@@ -38,8 +38,6 @@
 
   const dispatch = createEventDispatcher();
 
-  const WizSolidity = createWiz<'solidity'>();
-
   async function allowRendering() {
     showCode = false;
     await tick();
@@ -58,6 +56,8 @@
   export let initialOpts: InitialOptions = {};
 
   export let overrides: Overrides = defaultOverrides;
+
+  const WizSolidity = overrides.aiAssistant?.svelteComponent ?? createWiz<'solidity'>();
 
   let initialValuesSet = false;
 
@@ -214,16 +214,22 @@
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
+
+  $: wizLanguage = (overrides.aiAssistant?.language ?? 'solidity') as 'solidity';
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <WizSolidity
-    language="solidity"
+    language={wizLanguage}
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
     experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
-    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
+    sampleMessages={overrides.aiAssistant?.sampleMessages ?? [
+      'Make a token with supply of 10 million',
+      'What does mintable do?',
+      'Make a contract for a DAO',
+    ]}
   />
 
   <div class="header flex flex-row justify-between">

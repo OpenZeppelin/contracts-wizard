@@ -3,6 +3,7 @@
   import type { InitialOptions } from '../common/initial-options';
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, removeOmittedFeatures } from './remove-unsupported-features';
+  import { createWiz } from '../common/Wiz.svelte';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
@@ -19,6 +20,11 @@
       url: 'https://remix.polkadot.io',
     },
     removeOmittedFeatures,
+    aiAssistant: {
+      svelteComponent: createWiz<'polkadot'>(),
+      language: 'polkadot',
+      sampleMessages: ['Make a token with supply of 10 million', 'What does mintable do?'],
+    },
   };
 </script>
 
