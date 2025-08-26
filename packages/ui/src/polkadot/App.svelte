@@ -28,7 +28,7 @@
 </script>
 
 <div class="polkadot-app">
-  <!-- TODO: override Wiz, override hardhat -->
+  <!-- TODO: override available options and contracts for Wiz, override hardhat, override default options (e.g. no permit) -->
   <SolidityApp {initialTab} {initialOpts} {overrides} />
 </div>
 
