@@ -19,7 +19,7 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
 
   c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addUseClause('openzeppelin::upgrades::interface', 'IUpgradeable');
+  c.addUseClause('openzeppelin::interfaces::upgrades', 'IUpgradeable');
   c.addUseClause('starknet', 'ClassHash');
 
   const t: BaseImplementedTrait = {

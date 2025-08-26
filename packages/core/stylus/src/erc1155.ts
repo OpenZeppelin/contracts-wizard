@@ -1,24 +1,27 @@
-import type { BaseImplementedTrait, Contract } from './contract';
+import type { Contract, ContractTrait, StoredContractTrait } from './contract';
 import { ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
+import { defineFunctions } from './utils/define-functions';
+
+const ERC1155_SUPPLY_STORAGE_NAME = 'erc1155_supply';
+const ERC1155_STORAGE_NAME = 'erc1155';
+
+type StorageName = typeof ERC1155_SUPPLY_STORAGE_NAME | typeof ERC1155_STORAGE_NAME;
 
 export interface ERC1155Options extends CommonContractOptions {
   name: string;
   burnable?: boolean;
-  // pausable?: boolean;
   supply?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
   name: 'MyToken',
   burnable: false,
-  // pausable: false,
   supply: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
@@ -33,7 +36,6 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
-    // pausable: opts.pausable ?? defaults.pausable,
     supply: opts.supply ?? defaults.supply,
   };
 }
@@ -48,23 +50,17 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  // Erc1155Supply reexports Erc1155 functionality
-  const baseTrait = allOpts.supply ? erc1155SupplyTrait : erc1155Trait;
+  // Erc1155Supply reexports Erc1155 functionality, so it's used as inherited storage
+  const storageName = allOpts.supply ? ERC1155_SUPPLY_STORAGE_NAME : ERC1155_STORAGE_NAME;
 
-  addBase(c, baseTrait);
+  addBase(c, storageName);
 
   if (allOpts.supply) {
-    addSupply(c, baseTrait);
+    addSupply(c);
   }
 
-  // c.addImplementedTrait(erc1155MetadataTrait);
-
-  // if (allOpts.pausable) {
-  //   addPausable(c, allOpts.access);
-  // }
-
   if (allOpts.burnable) {
-    addBurnable(c, baseTrait);
+    addBurnable(c, storageName);
   }
 
   setAccessControl(c, allOpts.access);
@@ -73,142 +69,177 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
-  c.addImplementedTrait(baseTrait);
-
-  // the trait necessary to access Erc1155 functions within custom functions of the child contract
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'IErc1155');
-
-  // Override IErc65 from Erc1155
-  c.addUseClause('openzeppelin_stylus::utils', 'introspection::erc165::IErc165');
-  // need this to expose the `Erc1155::supports_interface` function (Erc1155Supply does not override this function)
-  c.addUseClause('openzeppelin_stylus::token::erc1155', 'Erc1155');
-  c.addUseClause('alloy_primitives', 'FixedBytes');
-  c.addFunction(baseTrait, functions(baseTrait).supports_interface); // TODO: This is currently hardcoded to call Erc1155. If other overrides are needed, consider a more generic solution. See Solidity's addOverride function in `packages/core/solidity/src/contract.ts` for example
-
-  // if (pausable) {
-  // Add transfer functions with pause checks
-  // c.addUseClause('alloc::vec', 'Vec');
-  // c.addUseClause('alloy_primitives', 'Address');
-  // c.addUseClause('alloy_primitives', 'U256');
-
-  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_transfer_from, ['self.pausable.when_not_paused()?;']);
-  // c.addFunctionCodeBefore(baseTrait, functions(baseTrait).safe_batch_transfer_from, ['self.pausable.when_not_paused()?;']);
-  // }
+function addBase(c: ContractBuilder, storageName: StorageName) {
+  c.addImplementedTrait(getErc1155WithStorageName(storageName));
+  c.addImplementedTrait(getIErc165Trait(storageName));
 }
 
-// This adds supply-related parts without re-adding the contract structure,
-// as it was already added in `addBase`.
-function addSupply(c: ContractBuilder, baseTrait: BaseImplementedTrait) {
-  if (baseTrait !== erc1155SupplyTrait) {
-    throw new Error('Base trait must be of type `Erc1155Supply`');
-  }
-
-  c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Supply');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  const fns = functions(baseTrait);
-  c.addFunction(baseTrait, fns.total_supply);
-  c.addFunction(baseTrait, fns.total_supply_all);
-  c.addFunction(baseTrait, fns.exists);
-
-  // if (pausable) {
-  //   // Add pausable checks to appropriate functions
-  // }
+function addSupply(c: ContractBuilder) {
+  c.addImplementedTrait(erc1155SupplyTrait);
 }
 
-function addBurnable(c: ContractBuilder, trait: BaseImplementedTrait) {
-  c.addUseClause('openzeppelin_stylus::token::erc1155::extensions', 'IErc1155Burnable');
-
-  c.addUseClause('alloc::vec', 'Vec');
-  c.addUseClause('alloy_primitives', 'Address');
-  c.addUseClause('alloy_primitives', 'U256');
-
-  const fns = functions(trait);
-
-  c.addFunction(trait, fns.burn);
-  c.addFunction(trait, fns.burn_batch);
-
-  // if (pausable) {
-  //   c.addFunctionCodeBefore(trait, fns.burn, ['self.pausable.when_not_paused()?;']);
-  //   c.addFunctionCodeBefore(trait, fns.burn_batch, ['self.pausable.when_not_paused()?;']);
-  // }
+function addBurnable(c: ContractBuilder, storageName: StorageName) {
+  c.addImplementedTrait(getIErc1155BurnableTrait(storageName));
 }
 
-const erc1155Trait: BaseImplementedTrait = {
-  name: 'Erc1155',
-  storage: {
-    name: 'erc1155',
-    type: 'Erc1155',
-  },
-  modulePath: 'openzeppelin_stylus::token::erc1155',
-};
-
-const erc1155SupplyTrait: BaseImplementedTrait = {
-  name: 'Erc1155Supply',
-  storage: {
-    name: 'erc1155_supply',
-    type: 'Erc1155Supply',
-  },
-  modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
-};
-
-// const erc1155MetadataTrait: BaseImplementedTrait = {
-//   name: 'Erc1155Metadata',
-//   storage: {
-//     name: 'metadata',
-//     type: 'Erc1155Metadata',
-//   }
-//   modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
-// }
-
-const functions = (trait: BaseImplementedTrait) =>
-  defineFunctions({
-    // Token Functions
-
-    // Overrides
-    supports_interface: {
-      args: [{ name: 'interface_id', type: 'FixedBytes<4>' }],
-      returns: 'bool',
-      code: [`${erc1155Trait.storage.type}::supports_interface(interface_id)`],
-    },
-
-    // Extensions
-    burn: {
-      args: [
-        getSelfArg(),
-        { name: 'account', type: 'Address' },
-        { name: 'token_id', type: 'U256' },
-        { name: 'value', type: 'U256' },
-      ],
-      returns: 'Result<(), Vec<u8>>',
-      code: [`self.${trait.storage.name}.burn(account, token_id, value).map_err(|e| e.into())`],
-    },
-    burn_batch: {
-      args: [
-        getSelfArg(),
-        { name: 'account', type: 'Address' },
-        { name: 'token_ids', type: 'Vec<U256>' },
-        { name: 'values', type: 'Vec<U256>' },
-      ],
-      returns: 'Result<(), Vec<u8>>',
-      code: [`self.${trait.storage.name}.burn_batch(account, token_ids, values).map_err(|e| e.into())`],
-    },
-
+const functions = {
+  erc1155: (storageName: StorageName) =>
+    defineFunctions({
+      balance_of: {
+        args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'id', type: 'U256' }],
+        returns: 'U256',
+        code: `self.${storageName}.balance_of(account, id)`,
+      },
+      balance_of_batch: {
+        args: [getSelfArg('immutable'), { name: 'accounts', type: 'Vec<Address>' }, { name: 'ids', type: 'Vec<U256>' }],
+        returns: { ok: 'Vec<U256>', err: 'Self::Error' },
+        code: `self.${storageName}.balance_of_batch(accounts, ids)?`,
+      },
+      set_approval_for_all: {
+        args: [getSelfArg(), { name: 'operator', type: 'Address' }, { name: 'approved', type: 'bool' }],
+        returns: { ok: '()', err: 'Self::Error' },
+        code: `self.${storageName}.set_approval_for_all(operator, approved)?`,
+      },
+      is_approved_for_all: {
+        args: [getSelfArg('immutable'), { name: 'account', type: 'Address' }, { name: 'operator', type: 'Address' }],
+        returns: 'bool',
+        code: `self.${storageName}.is_approved_for_all(account, operator)`,
+      },
+      safe_transfer_from: {
+        args: [
+          getSelfArg(),
+          { name: 'from', type: 'Address' },
+          { name: 'to', type: 'Address' },
+          { name: 'id', type: 'U256' },
+          { name: 'value', type: 'U256' },
+          { name: 'data', type: 'Bytes' },
+        ],
+        returns: { ok: '()', err: 'Self::Error' },
+        code: `self.${storageName}.safe_transfer_from(from, to, id, value, data)?`,
+      },
+      safe_batch_transfer_from: {
+        args: [
+          getSelfArg(),
+          { name: 'from', type: 'Address' },
+          { name: 'to', type: 'Address' },
+          { name: 'ids', type: 'Vec<U256>' },
+          { name: 'values', type: 'Vec<U256>' },
+          { name: 'data', type: 'Bytes' },
+        ],
+        returns: { ok: '()', err: 'Self::Error' },
+        code: `self.${storageName}.safe_batch_transfer_from(from, to, ids, values, data)?`,
+      },
+    }),
+  erc165: (storageName: StorageName) =>
+    defineFunctions({
+      supports_interface: {
+        args: [getSelfArg('immutable'), { name: 'interface_id', type: 'FixedBytes<4>' }],
+        returns: 'bool',
+        code: `self.${storageName}.supports_interface(interface_id)`,
+      },
+    }),
+  burnable: (storageName: StorageName) =>
+    defineFunctions({
+      burn: {
+        args: [
+          getSelfArg(),
+          { name: 'account', type: 'Address' },
+          { name: 'token_id', type: 'U256' },
+          { name: 'value', type: 'U256' },
+        ],
+        returns: { ok: '()', err: 'Self::Error' },
+        code:
+          storageName === 'erc1155'
+            ? `self.${storageName}.burn(account, token_id, value)?`
+            : `self.${storageName}._burn(account, token_id, value)?`,
+      },
+      burn_batch: {
+        args: [
+          getSelfArg(),
+          { name: 'account', type: 'Address' },
+          { name: 'token_ids', type: 'Vec<U256>' },
+          { name: 'values', type: 'Vec<U256>' },
+        ],
+        returns: { ok: '()', err: 'Self::Error' },
+        code:
+          storageName === 'erc1155'
+            ? `self.${storageName}.burn_batch(account, token_ids, values)?`
+            : `self.${storageName}._burn_batch(account, token_ids, values)?`,
+      },
+    }),
+  erc1155Supply: defineFunctions({
     total_supply: {
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'U256',
-      code: [`self.${trait.storage.name}.total_supply(id)`],
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply(id)`,
     },
     total_supply_all: {
       attribute: 'selector(name = "totalSupply")',
       args: [getSelfArg('immutable')],
       returns: 'U256',
-      code: [`self.${trait.storage.name}.total_supply_all()`],
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.total_supply_all()`,
     },
     exists: {
       args: [getSelfArg('immutable'), { name: 'id', type: 'U256' }],
       returns: 'bool',
-      code: [`self.${trait.storage.name}.exists(id)`],
+      code: `self.${ERC1155_SUPPLY_STORAGE_NAME}.exists(id)`,
     },
-  });
+  }),
+};
+
+function getErc1155WithStorageName(storageName: StorageName): ContractTrait {
+  const erc1155: ContractTrait = {
+    name: 'IErc1155',
+    associatedError: true,
+    errors: [
+      { variant: 'InsufficientBalance', value: { module: 'erc1155', error: 'ERC1155InsufficientBalance' } },
+      { variant: 'InvalidSender', value: { module: 'erc1155', error: 'ERC1155InvalidSender' } },
+      { variant: 'InvalidReceiver', value: { module: 'erc1155', error: 'ERC1155InvalidReceiver' } },
+      { variant: 'InvalidReceiverWithReason', value: { module: 'erc1155', error: 'InvalidReceiverWithReason' } },
+      { variant: 'MissingApprovalForAll', value: { module: 'erc1155', error: 'ERC1155MissingApprovalForAll' } },
+      { variant: 'InvalidApprover', value: { module: 'erc1155', error: 'ERC1155InvalidApprover' } },
+      { variant: 'InvalidOperator', value: { module: 'erc1155', error: 'ERC1155InvalidOperator' } },
+      { variant: 'InvalidArrayLength', value: { module: 'erc1155', error: 'ERC1155InvalidArrayLength' } },
+    ],
+    modulePath: 'openzeppelin_stylus::token::erc1155',
+    requiredImports: [
+      { containerPath: 'alloc::vec', name: 'Vec' },
+      { containerPath: 'stylus_sdk::abi', name: 'Bytes' },
+      { containerPath: 'stylus_sdk::alloy_primitives', name: 'Address' },
+      { containerPath: 'stylus_sdk::alloy_primitives', name: 'U256' },
+    ],
+    functions: Object.values(functions.erc1155(storageName)),
+  };
+  // if `Erc1155Supply` is used as storage, then storage will be set by the supply trait
+  return storageName === 'erc1155'
+    ? <StoredContractTrait>{ ...erc1155, storage: { name: 'erc1155', type: 'Erc1155' } }
+    : erc1155;
+}
+
+function getIErc165Trait(storageName: StorageName): ContractTrait {
+  return {
+    name: 'IErc165',
+    modulePath: 'openzeppelin_stylus::utils::introspection::erc165',
+    requiredImports: [{ containerPath: 'stylus_sdk::alloy_primitives', name: 'FixedBytes' }],
+    functions: Object.values(functions.erc165(storageName)),
+  };
+}
+
+function getIErc1155BurnableTrait(storageName: StorageName): ContractTrait {
+  return {
+    name: 'IErc1155Burnable',
+    associatedError: true,
+    modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
+    functions: Object.values(functions.burnable(storageName)),
+  };
+}
+
+const erc1155SupplyTrait: StoredContractTrait = {
+  name: 'IErc1155Supply',
+  storage: {
+    name: ERC1155_SUPPLY_STORAGE_NAME,
+    type: 'Erc1155Supply',
+  },
+  modulePath: 'openzeppelin_stylus::token::erc1155::extensions',
+  functions: Object.values(functions.erc1155Supply),
+};

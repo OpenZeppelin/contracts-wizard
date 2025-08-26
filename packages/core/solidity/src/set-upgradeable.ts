@@ -7,7 +7,11 @@ export const upgradeableOptions = [false, 'transparent', 'uups'] as const;
 
 export type Upgradeable = (typeof upgradeableOptions)[number];
 
-export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
+function setUpgradeableBase(
+  c: ContractBuilder,
+  upgradeable: Upgradeable,
+  restrictAuthorizeUpgradeWhenUUPS: () => void,
+) {
   if (upgradeable === false) {
     return;
   }
@@ -24,7 +28,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
       break;
 
     case 'uups': {
-      requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
+      restrictAuthorizeUpgradeWhenUUPS();
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
@@ -40,6 +44,18 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
       throw new Error('Unknown value for `upgradeable`');
     }
   }
+}
+
+export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, access: Access) {
+  setUpgradeableBase(c, upgradeable, () => {
+    requireAccessControl(c, functions._authorizeUpgrade, access, 'UPGRADER', 'upgrader');
+  });
+}
+
+export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable) {
+  setUpgradeableBase(c, upgradeable, () => {
+    c.addModifier('onlyGovernance', functions._authorizeUpgrade);
+  });
 }
 
 const functions = defineFunctions({

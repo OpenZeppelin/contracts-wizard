@@ -2,6 +2,8 @@ import { toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   license: string;
+  securityContact: string;
+  documentations: string[];
   name: string;
   useClauses: UseClause[];
   constructorCode: string[];
@@ -54,8 +56,8 @@ export interface BaseFunction {
 }
 
 export interface ContractFunction extends BaseFunction {
+  tags: string[];
   codeBefore?: string[];
-  tag?: string;
 }
 
 export interface Variable {
@@ -72,7 +74,10 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
+  securityContact = '';
   ownable = false;
+
+  readonly documentations: string[] = [];
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
@@ -172,6 +177,7 @@ export class ContractBuilder implements Contract {
       const contractFn: ContractFunction = {
         ...fn,
         pub: true,
+        tags: [],
         codeBefore: [],
       };
       this.freeFunctionsMap.set(signature, contractFn);
@@ -196,6 +202,7 @@ export class ContractBuilder implements Contract {
     // Otherwise, add the function
     const contractFn: ContractFunction = {
       ...fn,
+      tags: [],
       codeBefore: [],
     };
     t.functions.push(contractFn);
@@ -231,7 +238,7 @@ export class ContractBuilder implements Contract {
 
   addFunctionTag(fn: BaseFunction, tag: string, baseTrait?: BaseTraitImplBlock): void {
     const existingFn = this.getOrCreateFunction(fn, baseTrait);
-    existingFn.tag = tag;
+    existingFn.tags = [...(existingFn.tags ?? []), tag];
   }
 
   addConstructorArgument(arg: Argument): void {
@@ -244,10 +251,23 @@ export class ContractBuilder implements Contract {
   }
 
   addConstructorCode(code: string): void {
+    for (const existingCode of this.constructorCode) {
+      if (existingCode === code) {
+        return;
+      }
+    }
     this.constructorCode.push(code);
   }
 
   addDerives(derive: string): void {
     this.derivesSet.add(derive);
+  }
+
+  addDocumentation(description: string) {
+    this.documentations.push(description);
+  }
+
+  addSecurityTag(securityContact: string) {
+    this.securityContact = securityContact;
   }
 }

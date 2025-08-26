@@ -5,27 +5,6 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let upgradeable: Upgradeable;
-  export let disabled: boolean = false;
-  let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
-
-  let wasDisabled = disabled;
-  let wasUpgradeable = upgradeable;
-
-  $: {
-    if (wasDisabled && !disabled) {
-      upgradeable = wasUpgradeable;
-    } else {
-      wasUpgradeable = upgradeable;
-      if (upgradeable !== false && disabled) {
-        upgradeable = false;
-      }
-    }
-
-    wasDisabled = disabled;
-    if (upgradeable !== false) {
-      defaultValueWhenEnabled = upgradeable;
-    }
-  }
 </script>
 
 <ExpandableToggleRadio
@@ -34,12 +13,10 @@
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
   helpLink="https://docs.openzeppelin.com/openzeppelin/upgrades"
-  {disabled}
-  disabledReason="Upgradeability is not currently supported with Cross-Chain Bridging."
 >
   <div class="checkbox-group">
     <label class:checked={upgradeable === 'transparent'}>
-      <input type="radio" bind:group={upgradeable} value="transparent" {disabled} />
+      <input type="radio" bind:group={upgradeable} value="transparent" />
       Transparent
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#TransparentUpgradeableProxy">
         Uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with
@@ -47,7 +24,7 @@
       </HelpTooltip>
     </label>
     <label class:checked={upgradeable === 'uups'}>
-      <input type="radio" bind:group={upgradeable} value="uups" {disabled} />
+      <input type="radio" bind:group={upgradeable} value="uups" />
       UUPS
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/proxy#UUPSUpgradeable">
         Uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for

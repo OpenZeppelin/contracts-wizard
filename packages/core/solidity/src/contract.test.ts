@@ -22,6 +22,11 @@ test('contract basics', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('contract name is unicodeSafe', t => {
+  const Foo = new ContractBuilder('Footeć');
+  t.snapshot(printContract(Foo));
+});
+
 test('contract with a parent', t => {
   const Foo = new ContractBuilder('Foo');
   const Bar = toParentContract('Bar', './Bar.sol');

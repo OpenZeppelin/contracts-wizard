@@ -43,10 +43,29 @@ body {
   margin-right: 20px;
 }
 
+.banner {
+  text-align: left;
+  padding: 0px 20px;
+  font-family: 'inter', Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: row;
+  min-height: 36px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f6ff;
+  min-width: 800px;
+}
+
+@media (min-width: 800px) {
+  .banner {
+    box-sizing: border-box;
+  }
+}
+
 /* Navigation */
 .nav {
   text-align: left;
-  margin: 1rem auto;
+  margin: 1rem 0;
   font-family: 'silka', Arial, Helvetica, sans-serif;
   background: var(--gray-1);
   display: flex;
@@ -114,6 +133,7 @@ body {
   font-size: smaller;
   font-weight: 400;
   padding: 0.25rem 0rem;
+  min-width: 70px;
   cursor: pointer;
 }
 
@@ -126,6 +146,24 @@ body {
 }
 .nav .switch.switch-stellar.active img {
   filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
+}
+
+.nav-row {
+  padding: 0 1rem 0;
+  max-width: 100%;
+  margin: 0 auto 0;
+  min-width: 800px;
+  max-width: 1500px;
+  margin: auto;
+}
+
+.arrow-gray {
+  filter: brightness(0) saturate(100%) invert(40%) sepia(8%) saturate(872%) hue-rotate(169deg) brightness(80%)
+    contrast(90%);
+}
+.arrow-white {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(100%)
     contrast(100%);
 }
 
@@ -168,19 +206,6 @@ footer a:hover,
 footer a:focus {
   color: #4e5de4;
   text-decoration: underline;
-}
-
-@media screen and (max-width: 768px) {
-  .defender {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    padding: 3rem;
-    text-align: left;
-  }
-  .defender a {
-    margin: 0 auto 0 0;
-    width: max-content;
-  }
 }
 
 /* To reset HubSpot Popup Banner's default animation effect */

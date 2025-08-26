@@ -162,6 +162,6 @@ test('API assert defaults', async t => {
 });
 
 test('API isAccessControlRequired', async t => {
-  t.is(governor.isAccessControlRequired({ upgradeable: 'uups' }), true);
+  t.is(governor.isAccessControlRequired({ upgradeable: 'uups' }), false);
   t.is(governor.isAccessControlRequired({}), false);
 });

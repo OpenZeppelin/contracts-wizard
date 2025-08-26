@@ -1,5 +1,21 @@
 # Changelog
 
+
+## 2.0.1 (2025-08-20)
+
+- Fix missing use clause in hooks for ERC20 votes ([#637](https://github.com/OpenZeppelin/contracts-wizard/pull/637))
+
+## 2.0.0 (2025-06-20)
+
+- Add AccessControlWithDelay. ([#506](https://github.com/OpenZeppelin/contracts-wizard/pull/506))
+- Add security contact in contract info. ([#558](https://github.com/OpenZeppelin/contracts-wizard/pull/558))
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v2.0.0. ([#574](https://github.com/OpenZeppelin/contracts-wizard/pull/574))
+  - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.1. ([#533](https://github.com/OpenZeppelin/contracts-wizard/pull/533))
+  - Use OpenZeppelin Contracts for Cairo v2.0.0-alpha.0. ([#491](https://github.com/OpenZeppelin/contracts-wizard/pull/491))
+
 ## 1.1.0 (2025-04-01)
 
 - Add Multisig tab. ([#433](https://github.com/OpenZeppelin/contracts-wizard/pull/433))
