@@ -2,7 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
-  import { erc20, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard-zama';
+  import { confidentialFungible, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard-zama';
 
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
@@ -11,9 +11,9 @@
   import { resizeToFit } from '../common/resize-to-fit';
   import { superchainTooltipProps } from './superchain-tooltip';
 
-  export let opts: Required<KindedOptions['ERC20']> = {
-    kind: 'ERC20',
-    ...erc20.defaults,
+  export let opts: Required<KindedOptions['ConfidentialFungible']> = {
+    kind: 'ConfidentialFungible',
+    ...confidentialFungible.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };
@@ -57,7 +57,6 @@
       </label>
     </div>
   </div>
-
 </section>
 
 <section class="controls-section">
@@ -77,7 +76,7 @@
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/confidentialFungible#ConfidentialFungibleVotes"
 >
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
