@@ -1,6 +1,7 @@
 import type { ContractBuilder } from './contract';
 import { OptionsError } from './error';
 import type { Upgradeable } from './set-upgradeable';
+import { makeUpgradeable } from './helpers';
 import { defineFunctions } from './utils/define-functions';
 
 export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
@@ -11,7 +12,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
 
   const signerName = signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name;
   c.addOverride(
-    { name: upgradeable ? `${signerName}Upgradeable` : signerName },
+    { name: makeUpgradeable(signerName, upgradeable) },
     signerFunctions._rawSignatureValidation,
   );
 
@@ -42,9 +43,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
         c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
         c.addParent({
           name: `${signers[signer].name}Upgradeable`,
-          path: signers[signer].path
-            .replace('.sol', 'Upgradeable.sol')
-            .replace('/contracts/', '/contracts-upgradeable/'),
+          path: makeUpgradeable(signers[signer].path, upgradeable),
         });
       } else {
         signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));

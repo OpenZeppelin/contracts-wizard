@@ -2,6 +2,7 @@ import { ContractBuilder } from './contract';
 import type { Contract } from './contract';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
+import { makeUpgradeable } from './helpers';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { setInfo } from './set-info';
 import {
@@ -160,18 +161,17 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
 
-  const baseERC7579AccountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
-  const fullERC7579AccountName = opts.upgradeable ? `${opts.ERC7579Modules}Upgradeable` : opts.ERC7579Modules;
-  const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
+  // Base AccountERC7579 account (upgradeable or not)
+  const name = makeUpgradeable('AccountERC7579', opts.upgradeable);
 
   c.addParent({
-    name: fullERC7579AccountName,
-    path: `@openzeppelin/${packageName}/account/extensions/draft-${fullERC7579AccountName}.sol`,
+    name: makeUpgradeable(opts.ERC7579Modules, opts.upgradeable),
+    path: makeUpgradeable(`@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`, opts.upgradeable),
   });
-  if (baseERC7579AccountName !== fullERC7579AccountName) {
+  if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
-      name: baseERC7579AccountName,
-      path: `@openzeppelin/${packageName}/account/extensions/draft-${baseERC7579AccountName}.sol`,
+      name: makeUpgradeable('AccountERC7579', opts.upgradeable),
+      path: makeUpgradeable('@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol', opts.upgradeable),
     });
   }
 
@@ -203,7 +203,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   }
 
   // isValidSignature override
-  c.addOverride({ name: baseERC7579AccountName }, functions.isValidSignature);
+  c.addOverride({ name }, functions.isValidSignature);
   if (opts.signatureValidation === 'ERC7739') {
     c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
     c.setFunctionBody(
@@ -211,14 +211,14 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
         '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
         '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
         'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-        `return erc7739magic == bytes4(0xffffffff) ? ${baseERC7579AccountName}.isValidSignature(hash, signature) : erc7739magic;`,
+        `return erc7739magic == bytes4(0xffffffff) ? ${name}.isValidSignature(hash, signature) : erc7739magic;`,
       ],
       functions.isValidSignature,
     );
   }
 
   // _validateUserOp override
-  c.addOverride({ name: baseERC7579AccountName }, functions._validateUserOp);
+  c.addOverride({ name }, functions._validateUserOp);
 }
 
 function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
@@ -312,8 +312,8 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
 
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
-    const accountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
-    const signerName = opts.upgradeable ? `Signer${opts.signer}Upgradeable` : `Signer${opts.signer}`;
+    const accountName = makeUpgradeable('AccountERC7579', opts.upgradeable);
+    const signerName = makeUpgradeable(`Signer${opts.signer}`, opts.upgradeable);
 
     c.addImportOnly({
       name: 'AbstractSigner',
@@ -334,10 +334,8 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
       c.addImportOnly({
-        name: opts.upgradeable ? `${signers.Multisig.name}Upgradeable` : `${signers.Multisig.name}`,
-        path: opts.upgradeable
-          ? signers.Multisig.path.replace('.sol', 'Upgradeable.sol').replace(`/contracts/`, `/contracts-upgradeable/`)
-          : signers.Multisig.path,
+        name: makeUpgradeable(signers.Multisig.name, opts.upgradeable),
+        path: makeUpgradeable(signers.Multisig.path, opts.upgradeable),
       });
     }
   }
