@@ -94,50 +94,8 @@
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable} />
-      Mintable
-      <HelpTooltip>Privileged accounts will be able to create more supply.</HelpTooltip>
-    </label>
-
-    <label class:checked={opts.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable} />
-      Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Burnable">
-        Token holders will be able to destroy their tokens.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.pausable}>
-      <input type="checkbox" bind:checked={opts.pausable} />
-      Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
-        Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
-        emergency response.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.callback}>
-      <input type="checkbox" bind:checked={opts.callback} />
-      Callback
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC1363">
-        Supports code execution after transfers and approvals on recipient contracts in a single transaction.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.permit || opts.votes}>
-      <input type="checkbox" bind:checked={opts.permit} />
-      Permit
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
-        Without paying gas, token holders will be able to allow third parties to transfer from their account.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.flashmint}>
-      <input type="checkbox" bind:checked={opts.flashmint} />
-      Flash Minting
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20FlashMint">
-        Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same
-        transaction.
-      </HelpTooltip>
+      Wrappable
+      <HelpTooltip>TBD</HelpTooltip>
     </label>
   </div>
 </section>
