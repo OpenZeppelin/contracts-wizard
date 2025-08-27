@@ -2,14 +2,11 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
-  import { confidentialFungible, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard-zama';
+  import { confidentialFungible, premintPattern, infoDefaults } from '@openzeppelin/wizard-zama';
 
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
-  import OPIcon from '../common/icons/OPIcon.svelte';
   import { error } from '../common/error-tooltip';
-  import { resizeToFit } from '../common/resize-to-fit';
-  import { superchainTooltipProps } from './superchain-tooltip';
 
   export let opts: Required<KindedOptions['ConfidentialFungible']> = {
     kind: 'ConfidentialFungible',
