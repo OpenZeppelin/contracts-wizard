@@ -1,4 +1,5 @@
-import path from 'path';
+// Use posix to ensure forward slashes on all platforms
+import { posix as path } from 'path';
 import type { CommonOptions } from './common-options';
 
 // If upgradeable is true-ish, translate a contract name or contract path into its corresponding upgradeable variant.
