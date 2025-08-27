@@ -11,10 +11,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
   if (!signer) return;
 
   const signerName = signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name;
-  c.addOverride(
-    { name: makeUpgradeable(signerName, upgradeable) },
-    signerFunctions._rawSignatureValidation,
-  );
+  c.addOverride({ name: makeUpgradeable(signerName, upgradeable) }, signerFunctions._rawSignatureValidation);
 
   switch (signer) {
     case 'ERC7702':

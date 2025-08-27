@@ -166,7 +166,10 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 
   c.addParent({
     name: makeUpgradeable(opts.ERC7579Modules, opts.upgradeable),
-    path: makeUpgradeable(`@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`, opts.upgradeable),
+    path: makeUpgradeable(
+      `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
+      opts.upgradeable,
+    ),
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
@@ -184,7 +187,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
     ];
     const body = [
       'require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);',
-      '_installModule(moduleTypeId, module, initData)',
+      '_installModule(moduleTypeId, module, initData);',
     ];
     if (opts.upgradeable) {
       c.addParent({
