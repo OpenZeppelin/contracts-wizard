@@ -68,10 +68,10 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
   //   addMintable(c);
   // }
 
-  // if (allOpts.votes) {
-  //   const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-  //   addVotes(c, clockMode);
-  // }
+  if (allOpts.votes) {
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, allOpts.name, clockMode);
+  }
 
   setInfo(c, info);
 
@@ -163,7 +163,13 @@ function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) 
 //   c.addFunctionCode('_mint(to, amount);', functions.mint);
 // }
 
-function addVotes(c: ContractBuilder, clockMode: ClockMode) {
+function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
+  const EIP712 = {
+    name: 'EIP712',
+    path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+  };
+  c.addParent(EIP712, [name, '1']);
+
   const ConfidentialFungibleTokenVotes = {
     name: 'ConfidentialFungibleTokenVotes',
     path: '@openzeppelin/confidential-contracts/token/extensions/ConfidentialFungibleTokenVotes.sol',
@@ -171,6 +177,10 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   c.addParent(ConfidentialFungibleTokenVotes);
   c.addOverride(ConfidentialFungibleTokenVotes, functions._update);
   c.addOverride(ConfidentialFungibleTokenVotes, functions.confidentialTotalSupply);
+
+  // TODO Should this have some functional default implementation?
+  c.addModifier('override', functions._validateHandleAllowance);
+  c.addFunctionCode('// TODO', functions._validateHandleAllowance);
 
   setClockMode(c, ConfidentialFungibleTokenVotes, clockMode);
 }
@@ -183,6 +193,7 @@ export const functions = defineFunctions({
       { name: 'to', type: 'address' },
       { name: 'amount', type: 'euint64' },
     ],
+    returns: ['euint64 transferred'],
   },
   confidentialTotalSupply: {
     kind: 'public' as const,
@@ -190,4 +201,11 @@ export const functions = defineFunctions({
     args: [],
     returns: ['euint64'],
   },
+  _validateHandleAllowance: {
+    kind: 'internal' as const,
+    mutability: 'view' as const,
+    args: [
+      { name: 'handle', type: 'bytes32' },
+    ],
+  }
 });
