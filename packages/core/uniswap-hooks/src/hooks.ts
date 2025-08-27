@@ -161,8 +161,8 @@ export function buildHooks(opts: HooksOptions): Contract {
     addPausableHook(c, allOpts);
   }
 
-  // Mark enabled *-ReturnDelta permission dependencies as required.
-  // As an example, the beforeSwapReturnDelta permission requires beforeSwap.
+  // If permissions of the type *-ReturnDelta are enabled, the respective permission dependencies
+  // are also required, i.e. the beforeSwapReturnDelta permission also requires the beforeSwap permission.
   for (const permission of getAllPermissions(allOpts)) {
     if (permissionRequiredByAnother(allOpts, permission)) {
       allOpts.permissions[permission] = true;
@@ -373,8 +373,12 @@ function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
   const allPermissions = getAllPermissions(_allOpts);
   const enabledPermissions = getEnabledPermissions(_allOpts);
   const selectedHookPermissions = getHookPermissions(Hooks[_allOpts.hook]);
-  const additionallySelectedPermissions = enabledPermissions.filter(key => !selectedHookPermissions.includes(key));
+  const pausablePermissions = getPausablePermissions(_allOpts);
+  const additionallySelectedPermissions = enabledPermissions.filter(
+    key => !selectedHookPermissions.includes(key) && !(_allOpts.pausable && pausablePermissions.includes(key)),
+  );
 
+  // For additionally selected permissions, add the respective function to the build
   for (const key of additionallySelectedPermissions) {
     // Permissions of the type `*-ReturnDelta` doesn't require a standalone function.
     if (!key.includes('ReturnDelta')) {
@@ -501,6 +505,10 @@ export function isPermissionEnabled(opts: HooksOptions, permission: Permission):
 
 function getEnabledPermissions(opts: HooksOptions): Permission[] {
   return getAllPermissions(opts).filter(permission => isPermissionEnabled(opts, permission));
+}
+
+function getPausablePermissions(opts: HooksOptions): Permission[] {
+  return getAllPermissions(opts).filter(permission => PAUSABLE_PERMISSIONS.includes(permission));
 }
 
 export function permissionRequiredByHook(hook: HookName, permission: Permission): boolean {

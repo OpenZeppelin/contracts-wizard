@@ -120,7 +120,7 @@
           {:else if permissionRequiredByPausable(opts, permission)}
             The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
           {:else if permissionRequiredByAnother(opts, permission)}
-            The <code>{permission}</code> permission is required when <code>{returnDeltaPermissionExtension(permission)}</code> is enabled.
+            The <code>{permission}</code> permission is required when the <code>{returnDeltaPermissionExtension(permission)}</code> permission is enabled.
           {:else}
             Optionally enable the <code>{permission}</code> permission.
           {/if}
