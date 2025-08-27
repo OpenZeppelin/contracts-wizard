@@ -4,13 +4,6 @@
   import hljs from './highlightjs';
 
   import ERC20Controls from './ERC20Controls.svelte';
-  import ERC721Controls from './ERC721Controls.svelte';
-  import ERC1155Controls from './ERC1155Controls.svelte';
-  import StablecoinControls from './StablecoinControls.svelte';
-  import RealWorldAssetControls from './RealWorldAssetControls.svelte';
-  import AccountControls from './AccountControls.svelte';
-  import GovernorControls from './GovernorControls.svelte';
-  import CustomControls from './CustomControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import RemixIcon from '../common/icons/RemixIcon.svelte';
@@ -72,15 +65,6 @@
         switch (opts.kind) {
           case 'ERC20':
             opts.premint = initialOpts.premint ?? opts.premint;
-          case 'ERC721':
-            opts.symbol = initialOpts.symbol ?? opts.symbol;
-            break;
-          case 'ERC1155':
-          case 'Stablecoin':
-          case 'RealWorldAsset':
-          case 'Account':
-          case 'Governor':
-          case 'Custom':
         }
         initialValuesSet = true;
       }
