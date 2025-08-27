@@ -59,6 +59,8 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
  * Adds a locking constructor that disables initializers and annotates it to allow reachable constructors during Upgrades Plugins validations,
  * which includes constructors in parent contracts.
  *
+ * IMPORTANT: If a locking constructor is already present, it will not be added again, even if the body comments are different.
+ *
  * @param c The contract builder.
  * @param bodyComments Optional comments to add to the constructor body, before disabling initializers.
  */
