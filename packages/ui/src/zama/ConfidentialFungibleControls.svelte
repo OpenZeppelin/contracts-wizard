@@ -34,6 +34,11 @@
   </div>
 
   <label class="labeled-input">
+    <span class="flex justify-between pr-2">Token URI</span>
+    <input bind:value={opts.tokenURI} placeholder="https://..." />
+  </label>
+
+  <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Premint
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
@@ -63,7 +68,7 @@
     <label class:checked={opts.wrappable}>
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
-      <HelpTooltip>TBD</HelpTooltip>
+      <HelpTooltip>Allows wrapping an ERC20 token into a confidential fungible token.</HelpTooltip>
     </label>
   </div>
 </section>
@@ -73,7 +78,6 @@
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/confidentialFungible#ConfidentialFungibleVotes"
 >
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
