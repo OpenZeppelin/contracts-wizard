@@ -4,8 +4,6 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
   import { erc20, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard-zama';
 
-  import AccessControlSection from './AccessControlSection.svelte';
-  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import OPIcon from '../common/icons/OPIcon.svelte';
@@ -168,34 +166,5 @@
     </label>
   </div>
 </ExpandableToggleRadio>
-
-<ExpandableToggleRadio
-  label="Cross-Chain Bridging"
-  bind:value={opts.crossChainBridging}
-  defaultValue="custom"
-  helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Bridgeable"
->
-  <div class="checkbox-group">
-    <label class:checked={opts.crossChainBridging === 'custom'}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="custom" />
-      Custom
-      <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
-    </label>
-
-    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
-      SuperchainERC20 &nbsp;<OPIcon />
-      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
-        chains in the Superchain.
-      </HelpTooltip>
-    </label>
-  </div>
-</ExpandableToggleRadio>
-
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
-
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
 <InfoSection bind:info={opts.info} />
