@@ -218,15 +218,6 @@
     <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
         <button class:selected={tab === 'ERC20'} on:click={() => (tab = 'ERC20')}> ERC20 </button>
-        <button class:selected={tab === 'ERC721'} on:click={() => (tab = 'ERC721')}> ERC721 </button>
-        <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}> ERC1155 </button>
-        <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin* </button>
-        <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
-          Real-World Asset*
-        </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
-        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
-        <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
     </div>
 
@@ -318,27 +309,6 @@
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
       </div>
-      <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} />
-      </div>
-      <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} />
-      </div>
-      <div class:hidden={tab !== 'Stablecoin'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
-      </div>
-      <div class:hidden={tab !== 'RealWorldAsset'}>
-        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
-      </div>
-      <div class:hidden={tab !== 'Account'}>
-        <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
-      </div>
-      <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
-      </div>
-      <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} />
-      </div>
     </div>
 
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
@@ -408,8 +378,8 @@
   }
 
   .tab button.selected {
-    background-color: var(--solidity-blue-2);
-    color: white;
+    background-color: var(--zama-yellow);
+    color: black;
     order: -1;
   }
 
