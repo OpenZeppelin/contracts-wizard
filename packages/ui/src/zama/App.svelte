@@ -108,7 +108,6 @@
   interface ButtonVisibilities {
     openInRemix: boolean;
     downloadHardhat: boolean;
-    downloadFoundry: boolean;
   }
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
@@ -116,19 +115,16 @@
       return {
         openInRemix: true,
         downloadHardhat: false,
-        downloadFoundry: false,
       };
     } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset' || opts?.kind === 'Account') {
       return {
         openInRemix: false,
         downloadHardhat: false,
-        downloadFoundry: false,
       };
     } else {
       return {
         openInRemix: true,
         downloadHardhat: true,
-        downloadFoundry: true,
       };
     }
   };
@@ -183,18 +179,6 @@
     saveAs(blob, 'project.zip');
     if (opts) {
       await postConfig(opts, 'download-hardhat', language);
-    }
-  };
-
-  const zipFoundryModule = import('@openzeppelin/wizard-zama/zip-env-foundry');
-
-  const downloadFoundryHandler = async () => {
-    const { zipFoundry } = await zipFoundryModule;
-    const zip = await zipFoundry(contract, opts);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    saveAs(blob, 'project.zip');
-    if (opts) {
-      await postConfig(opts, 'download-foundry', language);
     }
   };
 
@@ -284,16 +268,6 @@
               <div class="download-option-content">
                 <p>Development Package (Hardhat)</p>
                 <p>Sample Hardhat project to get started with development and testing.</p>
-              </div>
-            </button>
-          {/if}
-
-          {#if showButtons.downloadFoundry}
-            <button class="download-option" on:click={downloadFoundryHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Development Package (Foundry)</p>
-                <p>Sample Foundry project to get started with development and testing.</p>
               </div>
             </button>
           {/if}
