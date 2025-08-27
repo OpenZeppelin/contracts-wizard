@@ -67,9 +67,13 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
  * @param bodyComments Optional comments to add to the constructor body, before disabling initializers.
  */
 export function addLockingConstructorAllowReachable(c: ContractBuilder, bodyComments?: string[]): void {
-  c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
-  bodyComments?.forEach(comment => c.addConstructorCode(comment));
-  c.addConstructorCode(`_disableInitializers();`);
+  const disableInitializers = '_disableInitializers();';
+
+  if (!c.constructorCode.includes(disableInitializers)) {
+    c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
+    bodyComments?.forEach(comment => c.addConstructorCode(comment));
+    c.addConstructorCode(disableInitializers);
+  }
 }
 
 export const signers = {

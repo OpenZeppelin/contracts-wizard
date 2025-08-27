@@ -159,33 +159,66 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
-  const accountName = opts.upgradeable ? `${opts.ERC7579Modules}Upgradeable` : opts.ERC7579Modules;
+
   const baseERC7579AccountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
+  const fullERC7579AccountName = opts.upgradeable ? `${opts.ERC7579Modules}Upgradeable` : opts.ERC7579Modules;
   const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
+
   c.addParent({
-    name: accountName,
-    path: `@openzeppelin/${packageName}/account/extensions/draft-${accountName}.sol`,
+    name: fullERC7579AccountName,
+    path: `@openzeppelin/${packageName}/account/extensions/draft-${fullERC7579AccountName}.sol`,
   });
-  if (opts.ERC7579Modules !== 'AccountERC7579') {
+  if (baseERC7579AccountName !== fullERC7579AccountName) {
     c.addImportOnly({
       name: baseERC7579AccountName,
       path: `@openzeppelin/${packageName}/account/extensions/draft-${baseERC7579AccountName}.sol`,
     });
   }
-  c.addOverride({ name: baseERC7579AccountName }, functions.isValidSignature);
-  c.addOverride({ name: baseERC7579AccountName }, functions._validateUserOp);
 
-  if (opts.signatureValidation !== 'ERC7739') return;
-  c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
-  c.setFunctionBody(
-    [
-      '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
-      '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
-      'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-      `return erc7739magic == bytes4(0xffffffff) ? ${baseERC7579AccountName}.isValidSignature(hash, signature) : erc7739magic;`,
-    ],
-    functions.isValidSignature,
-  );
+  // Accounts that use ERC7579 without a signer must be constructed with at least one module (executor of validation)
+  if (!opts.signer) {
+    const args = [
+      { type: 'uint256', name: 'moduleTypeId' },
+      { type: 'address', name: 'module' },
+      { type: 'bytes calldata', name: 'initData' },
+    ];
+    const body = [
+      'require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);',
+      '_installModule(moduleTypeId, module, initData)',
+    ];
+    if (opts.upgradeable) {
+      c.addParent({
+        name: 'Initializable',
+        path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
+      });
+      addLockingConstructorAllowReachable(c);
+
+      const fn = { name: 'initialize', kind: 'public' as const, args };
+      c.addModifier('initializer', fn);
+      c.setFunctionBody(body, fn);
+    } else {
+      for (const arg of args) c.addConstructorArgument(arg);
+      for (const line of body) c.addConstructorCode(line);
+    }
+  }
+
+  // isValidSignature override
+  c.addOverride({ name: baseERC7579AccountName }, functions.isValidSignature);
+  if (opts.signatureValidation === 'ERC7739') {
+    c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
+    c.setFunctionBody(
+      [
+        '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
+        '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
+        'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
+        `return erc7739magic == bytes4(0xffffffff) ? ${baseERC7579AccountName}.isValidSignature(hash, signature) : erc7739magic;`,
+      ],
+      functions.isValidSignature,
+    );
+  }
+
+  // _validateUserOp override
+  c.addOverride({ name: baseERC7579AccountName }, functions._validateUserOp);
 }
 
 function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
@@ -199,7 +232,9 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
 
   c.addParent({
     name: 'Initializable',
-    path: `@openzeppelin/${opts.upgradeable ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
+    path: opts.upgradeable
+      ? '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol'
+      : '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
 
   addLockingConstructorAllowReachable(c, [
@@ -277,31 +312,31 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
 
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
+    const accountName = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
     const signerName = opts.upgradeable ? `Signer${opts.signer}Upgradeable` : `Signer${opts.signer}`;
-    const packageName = opts.upgradeable ? 'contracts-upgradeable' : 'contracts';
+
     c.addImportOnly({
       name: 'AbstractSigner',
       path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
     });
-    const accountERC7579 = opts.upgradeable ? 'AccountERC7579Upgradeable' : 'AccountERC7579';
     c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
-    c.addOverride({ name: accountERC7579 }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: accountName }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [
-        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountERC7579}`,
-        `// in the inheritance chain (i.e. contract ... is ${accountERC7579}, ..., ${signerName})`,
+        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountName}`,
+        `// in the inheritance chain (i.e. contract ... is ${accountName}, ..., ${signerName})`,
         '// to ensure the correct order of function resolution.',
-        `// ${accountERC7579} returns false for _rawSignatureValidation`,
+        `// ${accountName} returns false for _rawSignatureValidation`,
       ],
       signerFunctions._rawSignatureValidation,
     );
+
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
       c.addImportOnly({
-        ...signers.Multisig,
-        name: opts.upgradeable ? `${signers.Multisig.name}Upgradeable` : signers.Multisig.name,
+        name: opts.upgradeable ? `${signers.Multisig.name}Upgradeable` : `${signers.Multisig.name}`,
         path: opts.upgradeable
-          ? signers.Multisig.path.replace('.sol', 'Upgradeable.sol').replace(`/contracts/`, `/${packageName}/`)
+          ? signers.Multisig.path.replace('.sol', 'Upgradeable.sol').replace(`/contracts/`, `/contracts-upgradeable/`)
           : signers.Multisig.path,
       });
     }
