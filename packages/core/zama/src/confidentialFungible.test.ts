@@ -12,6 +12,7 @@ function testConfidentialFungible(title: string, opts: Partial<ConfidentialFungi
       name: 'MyToken',
       symbol: 'MTK',
       tokenURI: '',
+      networkConfig: 'zama-sepolia',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -30,6 +31,7 @@ function testAPIEquivalence(title: string, opts?: ConfidentialFungibleOptions) {
           name: 'MyToken',
           symbol: 'MTK',
           tokenURI: '',
+          networkConfig: 'zama-sepolia',
           ...opts,
         }),
       ),
@@ -57,6 +59,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
           name: 'MyToken',
           symbol: 'MTK',
           tokenURI: '',
+          networkConfig: 'zama-sepolia',
           premint,
         }),
       );
@@ -66,6 +69,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
         name: 'MyToken',
         symbol: 'MTK',
         tokenURI: '',
+        networkConfig: 'zama-sepolia',
         premint,
       });
       t.snapshot(printContract(c));
@@ -136,6 +140,7 @@ testAPIEquivalence('confidentialFungible API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
   tokenURI: 'http://example.com',
+  networkConfig: 'zama-ethereum',
   premint: '2000',
   access: 'roles',
   wrappable: true,

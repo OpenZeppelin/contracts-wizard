@@ -9,13 +9,14 @@ import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
 
-export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
-export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
+export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
+export type NetworkConfig = (typeof networkConfigOptions)[number];
 
 export interface ConfidentialFungibleOptions extends CommonOptions {
   name: string;
   symbol: string;
   tokenURI: string;
+  networkConfig: NetworkConfig;
   premint?: string;
   wrappable?: boolean;
   /**
@@ -29,6 +30,7 @@ export const defaults: Required<ConfidentialFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
   tokenURI: '',
+  networkConfig: 'zama-sepolia',
   premint: '0',
   wrappable: false,
   votes: false,
@@ -59,6 +61,7 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
   const { info } = allOpts;
 
   addBase(c, allOpts.name, allOpts.symbol, allOpts.tokenURI);
+  addNetworkConfig(c, allOpts.networkConfig);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -96,6 +99,20 @@ function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: str
   c.addOverride(ConfidentialFungibleToken, functions._update);
   c.addOverride(ConfidentialFungibleToken, functions.confidentialTotalSupply);
   c.addOverride(ConfidentialFungibleToken, functions.decimals);
+}
+
+function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
+  if (network === 'zama-sepolia') {
+    c.addParent({
+      name: 'SepoliaConfig',
+      path: '@fhevm/solidity/config/ZamaConfig.sol',
+    });
+  } else if (network === 'zama-ethereum') {
+    c.addParent({
+      name: 'EthereumConfig',
+      path: '@fhevm/solidity/config/ZamaConfig.sol',
+    });
+  }
 }
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;

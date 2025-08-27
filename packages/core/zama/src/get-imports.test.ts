@@ -6,7 +6,7 @@ import { generateSources } from './generate/sources';
 import { buildGeneric } from './build-generic';
 
 test('confidential fungible basic', t => {
-  const c = buildConfidentialFungible({ name: 'MyToken', symbol: 'MTK', tokenURI: '' });
+  const c = buildConfidentialFungible({ name: 'MyToken', symbol: 'MTK', tokenURI: '', networkConfig: 'zama-sepolia' });
   const sources = getImports(c);
   const files = Object.keys(sources).sort();
 

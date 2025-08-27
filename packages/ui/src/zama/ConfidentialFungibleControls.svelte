@@ -47,14 +47,17 @@
   </label>
 
   <div class="labeled-input">
-    <span>Network</span>
+    <span class="flex justify-between pr-2">
+      Network Configuration
+      <HelpTooltip>Adds configuration to use FHEVM contracts provided by Zama on the specified network.</HelpTooltip>
+    </span>
     <div class="checkbox-group">
-      <label class:checked={opts.network === 'sepolia'}>
-        <input type="radio" bind:group={opts.network} value="sepolia" />
+      <label class:checked={opts.networkConfig === 'zama-sepolia'}>
+        <input type="radio" bind:group={opts.networkConfig} value="zama-sepolia" />
         Sepolia
       </label>
-      <label class:checked={opts.network === 'ethereum'}>
-        <input type="radio" bind:group={opts.network} value="ethereum" />
+      <label class:checked={opts.networkConfig === 'zama-ethereum'}>
+        <input type="radio" bind:group={opts.networkConfig} value="zama-ethereum" />
         Ethereum
       </label>
     </div>
