@@ -8,6 +8,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+  import ExpandableSection from '../common/ExpandableSection.svelte';
 
   import { 
     permissions, 
@@ -69,6 +70,7 @@
     return name;
   }
 
+  let showAdvancedPermissions = false;
 
 </script>
 
@@ -98,9 +100,12 @@
   </section>
 {/each}
 
-<section class="controls-section">
-  <h1>Hook Permissions</h1>
-
+<ExpandableSection
+  label="Configure Hook Permissions (optional)"
+  bind:checked={showAdvancedPermissions}
+  helpContent="Fine-tune which core hook function permissions are enabled."
+  helpLink="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions"
+>
   <div class="checkbox-group">
     {#each permissions as permission}
       <label class:checked={opts.permissions[permission]}>
@@ -128,7 +133,7 @@
       </label>
     {/each}
   </div>
-</section>
+</ExpandableSection>
 
 <section class="controls-section">
   <h1>Utilities</h1>
