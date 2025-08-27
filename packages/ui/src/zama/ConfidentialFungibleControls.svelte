@@ -63,8 +63,8 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable} />
+    <label class:checked={opts.wrappable}>
+      <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
       <HelpTooltip>TBD</HelpTooltip>
     </label>

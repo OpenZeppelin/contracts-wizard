@@ -36,7 +36,7 @@ test.serial('erc20 full', async t => {
     tokenURI: 'https://example.com',
     symbol: 'MTK',
     premint: '2000',
-    mintable: true,
+    wrappable: true,
     votes: true,
   };
   const c = buildConfidentialFungible(opts);

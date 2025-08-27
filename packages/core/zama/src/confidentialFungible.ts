@@ -17,7 +17,7 @@ export interface ConfidentialFungibleOptions extends CommonOptions {
   symbol: string;
   tokenURI: string;
   premint?: string;
-  mintable?: boolean;
+  wrappable?: boolean;
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
@@ -30,7 +30,7 @@ export const defaults: Required<ConfidentialFungibleOptions> = {
   symbol: 'MTK',
   tokenURI: '',
   premint: '0',
-  mintable: false,
+  wrappable: false,
   votes: false,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
@@ -42,7 +42,7 @@ export function withDefaults(opts: ConfidentialFungibleOptions): Required<Confid
     ...opts,
     ...withCommonDefaults(opts),
     premint: opts.premint || defaults.premint,
-    mintable: opts.mintable ?? defaults.mintable,
+    wrappable: opts.wrappable ?? defaults.wrappable,
     votes: opts.votes ?? defaults.votes,
   };
 }
@@ -64,7 +64,7 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
     addPremint(c, allOpts.premint);
   }
 
-  if (allOpts.mintable) {
+  if (allOpts.wrappable) {
     addWrappable(c);
   }
 

@@ -88,13 +88,13 @@ testPremint(
 testPremint('e notation', '1e59');
 testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
 
-testConfidentialFungible('confidentialFungible mintable', {
-  mintable: true,
+testConfidentialFungible('confidentialFungible wrappable', {
+  wrappable: true,
   access: 'ownable',
 });
 
-testConfidentialFungible('confidentialFungible mintable with roles', {
-  mintable: true,
+testConfidentialFungible('confidentialFungible wrappable with roles', {
+  wrappable: true,
   access: 'roles',
 });
 
@@ -138,7 +138,7 @@ testAPIEquivalence('confidentialFungible API full upgradeable', {
   tokenURI: 'http://example.com',
   premint: '2000',
   access: 'roles',
-  mintable: true,
+  wrappable: true,
   votes: true,
 });
 
