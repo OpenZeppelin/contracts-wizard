@@ -4,7 +4,7 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
   import { confidentialFungible, premintPattern, infoDefaults } from '@openzeppelin/wizard-zama';
 
-  import InfoSection from './InfoSection.svelte';
+  import InfoSection from '../solidity/InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { error } from '../common/error-tooltip';
 

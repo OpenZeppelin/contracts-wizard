@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, tick } from 'svelte';
 
-  import hljs from './highlightjs';
+  import hljs from '../solidity/highlightjs';
 
   import ConfidentialFungibleControls from './ConfidentialFungibleControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -18,7 +18,7 @@
   import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-zama';
   import { getImports } from '@openzeppelin/wizard-zama/get-imports';
   import { postConfig } from '../common/post-config';
-  import { remixURL } from './remix';
+  import { remixURL } from '../solidity/remix';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
