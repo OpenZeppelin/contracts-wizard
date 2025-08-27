@@ -43,7 +43,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus' | 'zama';
 }
 
 interface IncompatibleSelection {
