@@ -7,8 +7,8 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import ExpandableSection from '../common/ExpandableSection.svelte';
+  import SharesControlsSection from './SharesControlsSection.svelte';
 
   import { 
     permissions, 
@@ -71,7 +71,7 @@
   }
 
   let showAdvancedPermissions = false;
-
+  let showUtilities = false;
 </script>
 
 <section class="controls-section">
@@ -101,7 +101,7 @@
 {/each}
 
 <ExpandableSection
-  label="Configure Hook Permissions (optional)"
+  label="Configure Hook Permissions"
   bind:checked={showAdvancedPermissions}
   helpContent="Fine-tune which core hook function permissions are enabled."
   helpLink="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions"
@@ -135,9 +135,11 @@
   </div>
 </ExpandableSection>
 
-<section class="controls-section">
-  <h1>Utilities</h1>
-
+<ExpandableSection
+  label="Utilities"
+  bind:checked={showUtilities}
+  helpContent="Utilities are optional libraries that can used to enhance the functionality or security of the hook."
+>
   <div class="checkbox-group">
     <label class:checked={opts.currencySettler}>
       <input type="checkbox" bind:checked={opts.currencySettler} />
@@ -164,64 +166,9 @@
       </HelpTooltip>
     </label>
   </div>
-</section>
+</ExpandableSection>  
 
-<ExpandableToggleRadio
-  label="Shares"
-  bind:value={opts.shares.options}
-  defaultValue="ERC20"
-  helpContent="Shares are useful to account for the ownership of a portion of a liquidity position or pending credit."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20"
->
-  <div class="checkbox-group">
-    <label class:checked={opts.shares.options === 'ERC20'}>
-      <input type="radio" bind:group={opts.shares.options} value="ERC20" />
-      ERC-20
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20">
-        ERC-20 shares are useful for single-token accounting.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.shares.options === 'ERC1155'}>
-      <input type="radio" bind:group={opts.shares.options} value="ERC1155" />
-      ERC-1155
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155">
-        ERC-1155 shares are useful for multi-token accounting.
-      </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.shares.options === 'ERC6909'}>
-      <input type="radio" bind:group={opts.shares.options} value="ERC6909" />
-      ERC-6909
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc6909">
-        ERC-6909 shares are useful for optimized multi-token accounting.
-      </HelpTooltip>
-    </label>
-  </div>
-
-  <div style="height: 0.5rem;"></div>
-
-  {#if opts.shares.options === 'ERC1155'}
-    <label class="labeled-input">
-      <span>URI</span>
-      <input bind:value={opts.shares.uri} />
-    </label>
-  {/if}
-
-  {#if opts.shares.options === 'ERC20'}
-    <div class="grid grid-cols-[2fr,1fr] gap-2">
-      <label class="labeled-input">
-        <span>Name</span>
-        <input bind:value={opts.shares.name} />
-      </label>
-
-      <label class="labeled-input">
-        <span>Symbol</span>
-        <input bind:value={opts.shares.symbol} />
-      </label>
-    </div>
-  {/if}
-</ExpandableToggleRadio>
+<SharesControlsSection bind:opts />
 
 <section class="controls-section">
   <h1>Features</h1>
