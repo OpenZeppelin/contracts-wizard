@@ -4,9 +4,6 @@ import _test from 'ava';
 import { zipHardhat } from './zip-hardhat';
 
 import { buildERC20 } from './erc20';
-import { buildERC721 } from './erc721';
-import { buildERC1155 } from './erc1155';
-import { buildCustom } from './custom';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -38,83 +35,12 @@ test.serial('erc20 full', async t => {
     name: 'My Token',
     symbol: 'MTK',
     premint: '2000',
-    access: 'roles',
-    burnable: true,
     mintable: true,
-    pausable: true,
-    permit: true,
     votes: true,
-    flashmint: true,
   };
   const c = buildERC20(opts);
   await runIgnitionTest(c, t, opts);
 });
-
-test.serial('erc20 ownable, uups, crossChainBridging custom', async t => {
-  const opts: GenericOptions = {
-    kind: 'ERC20',
-    name: 'My Token',
-    symbol: 'MTK',
-    premint: '2000',
-    access: 'ownable',
-    burnable: true,
-    mintable: true,
-    pausable: true,
-    permit: true,
-    votes: true,
-    flashmint: true,
-    crossChainBridging: 'custom',
-    premintChainId: '10',
-    upgradeable: 'uups',
-  };
-  const c = buildERC20(opts);
-  await runDeployScriptTest(c, t, opts);
-});
-
-test.serial('erc721 upgradeable', async t => {
-  const opts: GenericOptions = {
-    kind: 'ERC721',
-    name: 'My Token',
-    symbol: 'MTK',
-    upgradeable: 'uups',
-  };
-  const c = buildERC721(opts);
-  await runDeployScriptTest(c, t, opts);
-});
-
-test.serial('erc1155 basic', async t => {
-  const opts: GenericOptions = {
-    kind: 'ERC1155',
-    name: 'My Token',
-    uri: 'https://myuri/{id}',
-  };
-  const c = buildERC1155(opts);
-  await runIgnitionTest(c, t, opts);
-});
-
-test.serial('custom basic', async t => {
-  const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
-  const c = buildCustom(opts);
-  await runIgnitionTest(c, t, opts);
-});
-
-test.serial('custom upgradeable', async t => {
-  const opts: GenericOptions = {
-    kind: 'Custom',
-    name: 'My Contract',
-    upgradeable: 'transparent',
-  };
-  const c = buildCustom(opts);
-  await runDeployScriptTest(c, t, opts);
-});
-
-async function runDeployScriptTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
-  const zip = await zipHardhat(c, opts);
-
-  assertDeployScriptLayout(zip, c, t);
-  await extractAndRunDeployScriptPackage(zip, c, t);
-  await assertDeployScriptContents(zip, c, t);
-}
 
 async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
@@ -122,26 +48,6 @@ async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: 
   assertIgnitionLayout(zip, c, t);
   await extractAndRunIgnitionPackage(zip, c, t);
   await assertIgnitionContents(zip, c, t);
-}
-
-function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
-  t.deepEqual(sorted, [
-    '.gitignore',
-    'README.md',
-    'contracts/',
-    `contracts/${c.name}.sol`,
-    'hardhat.config.ts',
-    'package-lock.json',
-    'package.json',
-    'scripts/',
-    'scripts/deploy.ts',
-    'test/',
-    'test/test.ts',
-    'tsconfig.json',
-  ]);
 }
 
 function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {

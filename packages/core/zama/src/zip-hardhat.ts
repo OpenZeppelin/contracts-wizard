@@ -81,18 +81,10 @@ const test = (c: Contract, opts?: GenericOptions) => {
     if (opts !== undefined) {
       switch (opts.kind) {
         case 'ERC20':
-        case 'ERC721':
-          return [`expect(await instance.name()).to.equal("${opts.name}");`];
-
-        case 'ERC1155':
-          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
-
-        case 'Governor':
-        case 'Custom':
           break;
 
         default:
-          throw new Error('Unknown ERC');
+          throw new Error('Unknown contract kind');
       }
     }
     return [];

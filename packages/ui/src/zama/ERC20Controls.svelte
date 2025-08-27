@@ -19,31 +19,6 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
-
-  $: requireAccessControl = erc20.isAccessControlRequired(opts);
-
-  // Show notice when SuperchainERC20 is enabled
-  import tippy, { type Instance as TippyInstance } from 'tippy.js';
-  import { onMount } from 'svelte';
-
-  let superchainLabel: HTMLElement;
-  let superchainTooltip: TippyInstance;
-  onMount(() => {
-    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
-  });
-
-  let wasSuperchain = false;
-  $: {
-    if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
-      superchainTooltip.show();
-    }
-    wasSuperchain = opts.crossChainBridging === 'superchain';
-  }
-
-  let showChainId = false;
-  $: {
-    showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
-  }
 </script>
 
 <section class="controls-section">
@@ -69,23 +44,20 @@
     <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint} />
   </label>
 
-  {#if showChainId}
-    <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
-      <label class="text-sm flex-1">
-        &nbsp;Chain ID:
-        <input
-          type="number"
-          bind:value={opts.premintChainId}
-          placeholder={''}
-          pattern={chainIdPattern.source}
-          class="input-inline"
-          use:resizeToFit
-          use:error={errors?.premintChainId}
-        />
+  <div class="labeled-input">
+    <span>Network</span>
+    <div class="checkbox-group">
+      <label class:checked={opts.network === 'sepolia'}>
+        <input type="radio" bind:group={opts.network} value="sepolia" />
+        Sepolia
       </label>
-      <HelpTooltip>Chain ID of the network on which to premint tokens.</HelpTooltip>
-    </p>
-  {/if}
+      <label class:checked={opts.network === 'ethereum'}>
+        <input type="radio" bind:group={opts.network} value="ethereum" />
+        Ethereum
+      </label>
+    </div>
+  </div>
+
 </section>
 
 <section class="controls-section">
