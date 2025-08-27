@@ -64,9 +64,9 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
     addPremint(c, allOpts.premint);
   }
 
-  // if (allOpts.mintable) {
-  //   addMintable(c);
-  // }
+  if (allOpts.mintable) {
+    addWrappable(c);
+  }
 
   if (allOpts.votes) {
     const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
@@ -95,6 +95,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: str
   });
   c.addOverride(ConfidentialFungibleToken, functions._update);
   c.addOverride(ConfidentialFungibleToken, functions.confidentialTotalSupply);
+  c.addOverride(ConfidentialFungibleToken, functions.decimals);
 }
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
@@ -159,9 +160,25 @@ function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) 
   }
 }
 
-// function addMintable(c: ContractBuilder) { // TODO change to wrappable
-//   c.addFunctionCode('_mint(to, amount);', functions.mint);
-// }
+function addWrappable(c: ContractBuilder) {
+  const underlyingArg = 'underlying';
+
+  c.addImportOnly({
+    name: 'IERC20',
+    path: '@openzeppelin/contracts/interfaces/IERC20.sol',
+  });
+  c.addConstructorArgument({
+    type: 'IERC20',
+    name: underlyingArg,
+  });
+
+  const ConfidentialFungibleTokenERC20Wrapper = {
+    name: 'ConfidentialFungibleTokenERC20Wrapper',
+    path: '@openzeppelin/confidential-contracts/token/extensions/ConfidentialFungibleTokenERC20Wrapper.sol',
+  };
+  c.addParent(ConfidentialFungibleTokenERC20Wrapper, [{ lit: underlyingArg }]);
+  c.addOverride(ConfidentialFungibleTokenERC20Wrapper, functions.decimals);
+}
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   const EIP712 = {
@@ -207,5 +224,11 @@ export const functions = defineFunctions({
     args: [
       { name: 'handle', type: 'bytes32' },
     ],
-  }
+  },
+  decimals: {
+    kind: 'public' as const,
+    mutability: 'view',
+    args: [],
+    returns: ['uint8'],
+  },
 });
