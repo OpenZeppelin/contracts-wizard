@@ -22,5 +22,9 @@ export function makeUpgradeable(input: string, upgradeable: CommonOptions['upgra
         ext,
       });
     }
+    default: {
+      const _: never = upgradeable;
+      throw new Error('Unknown upgradeable option');
+    }
   }
 }
