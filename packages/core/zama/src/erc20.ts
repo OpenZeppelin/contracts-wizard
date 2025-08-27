@@ -58,9 +58,9 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   addBase(c, allOpts.name, allOpts.symbol);
 
-  // if (allOpts.premint) {
-  //   addPremint(c, allOpts.premint);
-  // }
+  if (allOpts.premint) {
+    addPremint(c, allOpts.premint);
+  }
 
   // if (allOpts.mintable) {
   //   addMintable(c);
