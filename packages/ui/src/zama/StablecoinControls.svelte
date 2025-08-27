@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { stablecoin, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
+  import { stablecoin, premintPattern, chainIdPattern, infoDefaults } from '@openzeppelin/wizard-zama';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';

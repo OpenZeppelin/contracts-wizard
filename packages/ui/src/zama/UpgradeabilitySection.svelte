@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Upgradeable } from '@openzeppelin/wizard';
+  import type { Upgradeable } from '@openzeppelin/wizard-zama';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';

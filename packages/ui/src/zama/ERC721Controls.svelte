@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
-  import { erc721, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions } from '@openzeppelin/wizard-zama';
+  import { erc721, infoDefaults } from '@openzeppelin/wizard-zama';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';

@@ -1,8 +1,8 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { governor, infoDefaults } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
+  import { governor, infoDefaults } from '@openzeppelin/wizard-zama';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
