@@ -66,10 +66,10 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   //   addMintable(c);
   // }
 
-  // if (allOpts.votes) {
-  //   const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-  //   addVotes(c, clockMode);
-  // }
+  if (allOpts.votes) {
+    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+    addVotes(c, clockMode);
+  }
 
   setInfo(c, info);
 
@@ -84,7 +84,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string) {
   c.addParent(ERC20, [name, symbol]);
 
   c.addOverride(ERC20, functions._update);
-  c.addOverride(ERC20, functions._approve); // allows override from stablecoin
 }
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
@@ -147,35 +146,19 @@ function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) 
   }
 }
 
-function addMintable(c: ContractBuilder) { // TODO change to wrappable
-  c.addFunctionCode('_mint(to, amount);', functions.mint);
-}
+// function addMintable(c: ContractBuilder) { // TODO change to wrappable
+//   c.addFunctionCode('_mint(to, amount);', functions.mint);
+// }
 
 function addVotes(c: ContractBuilder, clockMode: ClockMode) {
-  // TODO: Is Permit required?
-  // if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
-  //   throw new Error('Missing ERC20Permit requirement for ERC20Votes');
-  // }
-
-  const ERC20Votes = {
-    name: 'ERC20Votes',
-    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
+  const ConfidentialFungibleTokenVotes = {
+    name: 'ConfidentialFungibleTokenVotes',
+    path: '@openzeppelin/confidential-contracts/token/extensions/ConfidentialFungibleTokenVotes.sol',
   };
-  c.addParent(ERC20Votes);
-  c.addOverride(ERC20Votes, functions._update);
+  c.addParent(ConfidentialFungibleTokenVotes);
+  c.addOverride(ConfidentialFungibleTokenVotes, functions._update);
 
-  c.addImportOnly({
-    name: 'Nonces',
-    path: '@openzeppelin/contracts/utils/Nonces.sol',
-  });
-  c.addOverride(
-    {
-      name: 'Nonces',
-    },
-    functions.nonces,
-  );
-
-  setClockMode(c, ERC20Votes, clockMode);
+  setClockMode(c, ConfidentialFungibleTokenVotes, clockMode);
 }
 
 export const functions = defineFunctions({
@@ -184,48 +167,8 @@ export const functions = defineFunctions({
     args: [
       { name: 'from', type: 'address' },
       { name: 'to', type: 'address' },
-      { name: 'value', type: 'uint256' },
+      { name: 'amount', type: 'euint64' },
     ],
-  },
-
-  _approve: {
-    kind: 'internal' as const,
-    args: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'emitEvent', type: 'bool' },
-    ],
-  },
-
-  mint: {
-    kind: 'public' as const,
-    args: [
-      { name: 'to', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-  },
-
-  pause: {
-    kind: 'public' as const,
-    args: [],
-  },
-
-  unpause: {
-    kind: 'public' as const,
-    args: [],
-  },
-
-  snapshot: {
-    kind: 'public' as const,
-    args: [],
-  },
-
-  nonces: {
-    kind: 'public' as const,
-    args: [{ name: 'owner', type: 'address' }],
-    returns: ['uint256'],
-    mutability: 'view' as const,
   },
 
 });
