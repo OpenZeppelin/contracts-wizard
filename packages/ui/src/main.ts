@@ -5,6 +5,7 @@ import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
+import ZamaApp from './zama/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
@@ -17,6 +18,7 @@ import {
 } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
+import { compatibleContractsSemver as zamaSemver } from '@openzeppelin/wizard-zama';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -93,6 +95,13 @@ function evaluateSelection(
         return { compatible: false, compatibleVersionsSemver: stylusSemver };
       }
     }
+    case 'zama': {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, zamaSemver)) {
+        return { compatible: true, appType: 'zama' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: zamaSemver };
+      }
+    }
     case 'solidity':
     case undefined:
     default: {
@@ -150,6 +159,9 @@ if (!selection.compatible) {
       break;
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+    case 'zama':
+      app = new ZamaApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
       app = new SolidityApp({
