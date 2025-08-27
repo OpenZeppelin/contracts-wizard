@@ -4,9 +4,8 @@ import _test from 'ava';
 import hre from 'hardhat';
 import path from 'path';
 
-import { generateSources, writeGeneratedSources } from './generate/sources';
-import type { GenericOptions, KindedOptions } from './build-generic';
-import { erc20 } from './api';
+import { writeGeneratedSources } from './generate/sources';
+import type { KindedOptions } from './build-generic';
 
 interface Context {
   generatedSourcesPath: string;
@@ -14,8 +13,8 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('erc20 result compiles', async t => {
-  await testCompile(t, 'ERC20');
+test.serial('confidentialFungible result compiles', async t => {
+  await testCompile(t, 'ConfidentialFungible');
 });
 
 async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptions) {

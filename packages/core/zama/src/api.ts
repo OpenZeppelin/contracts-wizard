@@ -1,9 +1,9 @@
 import type { CommonOptions } from './common-options';
-import type { ERC20Options } from './erc20';
+import type { ConfidentialFungibleOptions } from './confidentialFungible';
 import {
-  printERC20,
-  defaults as erc20defaults,
-} from './erc20';
+  printConfidentialFungible,
+  defaults as confidentialFungibleDefaults,
+} from './confidentialFungible';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
@@ -17,9 +17,9 @@ export interface WizardContractAPI<Options extends CommonOptions> {
   defaults: Required<Options>;
 }
 
-export type ERC20 = WizardContractAPI<ERC20Options>;
+export type ConfidentialFungible = WizardContractAPI<ConfidentialFungibleOptions>;
 
-export const erc20: ERC20 = {
-  print: printERC20,
-  defaults: erc20defaults,
+export const confidentialFungible: ConfidentialFungible = {
+  print: printConfidentialFungible,
+  defaults: confidentialFungibleDefaults,
 };

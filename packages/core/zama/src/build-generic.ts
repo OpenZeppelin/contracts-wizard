@@ -1,17 +1,17 @@
-import type { ERC20Options } from './erc20';
-import { buildERC20 } from './erc20';
+import type { ConfidentialFungibleOptions } from './confidentialFungible';
+import { buildConfidentialFungible } from './confidentialFungible';
 import type { Contract } from './contract';
 
 export interface KindedOptions {
-  ERC20: { kind: 'ERC20' } & ERC20Options;
+  ConfidentialFungible: { kind: 'ConfidentialFungible' } & ConfidentialFungibleOptions;
 }
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];
 
 export function buildGeneric(opts: GenericOptions): Contract {
   switch (opts.kind) {
-    case 'ERC20':
-      return buildERC20(opts);
+    case 'ConfidentialFungible':
+      return buildConfidentialFungible(opts);
 
     default: {
       // TODO: When other contract kinds are available, change the below to:

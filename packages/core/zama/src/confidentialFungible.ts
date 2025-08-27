@@ -12,9 +12,10 @@ import { toUint256, UINT256_MAX } from './utils/convert-strings';
 export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
-export interface ERC20Options extends CommonOptions {
+export interface ConfidentialFungibleOptions extends CommonOptions {
   name: string;
   symbol: string;
+  tokenURI: string;
   premint?: string;
   mintable?: boolean;
   /**
@@ -24,9 +25,10 @@ export interface ERC20Options extends CommonOptions {
   votes?: boolean | ClockMode;
 }
 
-export const defaults: Required<ERC20Options> = {
+export const defaults: Required<ConfidentialFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
+  tokenURI: '',
   premint: '0',
   mintable: false,
   votes: false,
@@ -35,7 +37,7 @@ export const defaults: Required<ERC20Options> = {
   info: commonDefaults.info,
 } as const;
 
-export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+export function withDefaults(opts: ConfidentialFungibleOptions): Required<ConfidentialFungibleOptions> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -45,18 +47,18 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   };
 }
 
-export function printERC20(opts: ERC20Options = defaults): string {
-  return printContract(buildERC20(opts));
+export function printConfidentialFungible(opts: ConfidentialFungibleOptions = defaults): string {
+  return printContract(buildConfidentialFungible(opts));
 }
 
-export function buildERC20(opts: ERC20Options): ContractBuilder {
+export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): ContractBuilder {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);
 
   const { info } = allOpts;
 
-  addBase(c, allOpts.name, allOpts.symbol);
+  addBase(c, allOpts.name, allOpts.symbol, allOpts.tokenURI);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
@@ -66,24 +68,33 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   //   addMintable(c);
   // }
 
-  if (allOpts.votes) {
-    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-    addVotes(c, clockMode);
-  }
+  // if (allOpts.votes) {
+  //   const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
+  //   addVotes(c, clockMode);
+  // }
 
   setInfo(c, info);
 
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
-  const ERC20 = {
-    name: 'ERC20',
-    path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
+function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: string) {
+  const ConfidentialFungibleToken = {
+    name: 'ConfidentialFungibleToken',
+    path: '@openzeppelin/confidential-contracts/token/ConfidentialFungibleToken.sol',
   };
-  c.addParent(ERC20, [name, symbol]);
+  c.addParent(ConfidentialFungibleToken, [name, symbol, tokenURI]);
 
-  c.addOverride(ERC20, functions._update);
+  c.addImportOnly({
+    name: 'euint64',
+    path: '@fhevm/solidity/lib/FHE.sol',
+  });
+  c.addImportOnly({
+    name: 'FHE',
+    path: '@fhevm/solidity/lib/FHE.sol',
+  });
+  c.addOverride(ConfidentialFungibleToken, functions._update);
+  c.addOverride(ConfidentialFungibleToken, functions.confidentialTotalSupply);
 }
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
@@ -117,7 +128,9 @@ function addPremint(
 
       c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
-      const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
+      // TODO need to include decimals in the euint64. How?
+      // const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
+      const mintLine = `_mint(recipient, FHE.asEuint64(${units}));`;
 
       c.addConstructorCode(mintLine);
     }
@@ -157,6 +170,7 @@ function addVotes(c: ContractBuilder, clockMode: ClockMode) {
   };
   c.addParent(ConfidentialFungibleTokenVotes);
   c.addOverride(ConfidentialFungibleTokenVotes, functions._update);
+  c.addOverride(ConfidentialFungibleTokenVotes, functions.confidentialTotalSupply);
 
   setClockMode(c, ConfidentialFungibleTokenVotes, clockMode);
 }
@@ -170,5 +184,10 @@ export const functions = defineFunctions({
       { name: 'amount', type: 'euint64' },
     ],
   },
-
+  confidentialTotalSupply: {
+    kind: 'public' as const,
+    mutability: 'view',
+    args: [],
+    returns: ['euint64'],
+  },
 });

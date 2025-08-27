@@ -507,6 +507,16 @@
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
   integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
 
+"@fhevm/solidity@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@fhevm/solidity/-/solidity-0.7.0.tgz#782e206646d0c077d1f4c4f41fd49ff0283bc0fc"
+  integrity sha512-WCS/QEA9qQSzISUfDm/jq24ZGykXq1OTzsT3flEkrO69MPoXOf0EufmrbKC6D6TeHw3KqOxlQY3XsXW4mtVc8w==
+  dependencies:
+    encrypted-types "^0.0.4"
+  optionalDependencies:
+    solidity-comments-darwin-arm64 "0.1.1"
+    solidity-comments-linux-x64-gnu "0.1.1"
+
 "@humanfs/core@^0.19.1":
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/@humanfs/core/-/core-0.19.1.tgz#17c55ca7d426733fe3c561906b8173c336b40a77"
@@ -808,6 +818,11 @@
 "@openzeppelin/community-contracts@git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#de17c8e":
   version "0.0.1"
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#de17c8ee4b0329867f7219fbc401707be9518ff1"
+
+"@openzeppelin/confidential-contracts@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.2.0.tgz#434f768c251b568362e3f43f77326d128d6246b3"
+  integrity sha512-IU4k9+59CDy3MrYWQAJeSMo3MrIgJhDzHeWe7DIGZwf/+PR63GCdn9cbXVt/76uXRTpijZ7dBu8RP+JEg++slQ==
 
 "@openzeppelin/contracts-upgradeable@^5.4.0":
   version "5.4.0"
@@ -2567,6 +2582,11 @@ encodeurl@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-2.0.0.tgz#7b8ea898077d7e409d3ac45474ea38eaf0857a58"
   integrity sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==
+
+encrypted-types@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/encrypted-types/-/encrypted-types-0.0.4.tgz#6df80d7917d02f3946b21caf2dd77ba91ac22971"
+  integrity sha512-f55ccBBUwvqWqr3ymAVOLZ6bzjsSQZlDN0GcKFmzkvTpml4Vm3Y6BCaHhCuW/ctrabTJJ3DFnUsjtFOpokJUaQ==
 
 enquirer@^2.3.0, enquirer@^2.4.1:
   version "2.4.1"
@@ -5673,6 +5693,16 @@ solidity-ast@^0.4.18:
   version "0.4.60"
   resolved "https://registry.yarnpkg.com/solidity-ast/-/solidity-ast-0.4.60.tgz#7c0324eace040034d6a40edbd85475e4773cbbe8"
   integrity sha512-UwhasmQ37ji1ul8cIp0XlrQ/+SVQhy09gGqJH4jnwdo2TgI6YIByzi0PI5QvIGcIdFOs1pbSmJW1pnWB7AVh2w==
+
+solidity-comments-darwin-arm64@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/solidity-comments-darwin-arm64/-/solidity-comments-darwin-arm64-0.1.1.tgz#9fc53a617229d942e091f6365d7715c6d7ddf19e"
+  integrity sha512-ze1+YboHm8tRJXCoFEsxtU1gpvQ3rCH55xMtBH6dtyh1/gz4qrKCOUBaAP+IHplbzCacZBn+Pz3UmMDOoGshRw==
+
+solidity-comments-linux-x64-gnu@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/solidity-comments-linux-x64-gnu/-/solidity-comments-linux-x64-gnu-0.1.1.tgz#be9d8c2e861db2ee3f9b8b8402ce600dec0fde72"
+  integrity sha512-oiU4yhh1Q9SeGXQ+/sogfTNoOkU8I8IvlIeotBQziTOonUHrxQk4E63kNiYGPDn5ZbB3BhKFmGHNRNrkufsxcQ==
 
 sorcery@^0.11.0:
   version "0.11.1"

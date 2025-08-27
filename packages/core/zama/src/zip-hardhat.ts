@@ -80,7 +80,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   function getExpects(): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
-        case 'ERC20':
+        case 'ConfidentialFungible':
           break;
 
         default:

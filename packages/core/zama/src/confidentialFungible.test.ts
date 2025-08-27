@@ -1,16 +1,17 @@
 import test from 'ava';
 import type { OptionsError } from '.';
-import { erc20 } from '.';
+import { confidentialFungible } from '.';
 
-import type { ERC20Options } from './erc20';
-import { buildERC20 } from './erc20';
+import type { ConfidentialFungibleOptions } from './confidentialFungible';
+import { buildConfidentialFungible } from './confidentialFungible';
 import { printContract } from './print';
 
-function testERC20(title: string, opts: Partial<ERC20Options>) {
+function testConfidentialFungible(title: string, opts: Partial<ConfidentialFungibleOptions>) {
   test(title, t => {
-    const c = buildERC20({
+    const c = buildConfidentialFungible({
       name: 'MyToken',
       symbol: 'MTK',
+      tokenURI: '',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -20,14 +21,15 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
 /**
  * Tests external API for equivalence with internal API
  */
-function testAPIEquivalence(title: string, opts?: ERC20Options) {
+function testAPIEquivalence(title: string, opts?: ConfidentialFungibleOptions) {
   test(title, t => {
     t.is(
-      erc20.print(opts),
+      confidentialFungible.print(opts),
       printContract(
-        buildERC20({
+        buildConfidentialFungible({
           name: 'MyToken',
           symbol: 'MTK',
+          tokenURI: '',
           ...opts,
         }),
       ),
@@ -35,33 +37,35 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   });
 }
 
-testERC20('basic erc20', {});
+testConfidentialFungible('basic confidentialFungible', {});
 
-testERC20('erc20 name is unicodeSafe', { name: 'MyTokeć' });
+testConfidentialFungible('confidentialFungible name is unicodeSafe', { name: 'MyTokeć' });
 
-testERC20('erc20 preminted', {
+testConfidentialFungible('confidentialFungible preminted', {
   premint: '1000',
 });
 
-testERC20('erc20 premint of 0', {
+testConfidentialFungible('confidentialFungible premint of 0', {
   premint: '0',
 });
 
 function testPremint(scenario: string, premint: string, expectedError?: string) {
-  test(`erc20 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
+  test(`confidentialFungible premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {
       const error = t.throws(() =>
-        buildERC20({
+        buildConfidentialFungible({
           name: 'MyToken',
           symbol: 'MTK',
+          tokenURI: '',
           premint,
         }),
       );
       t.is((error as OptionsError).messages.premint, expectedError);
     } else {
-      const c = buildERC20({
+      const c = buildConfidentialFungible({
         name: 'MyToken',
         symbol: 'MTK',
+        tokenURI: '',
         premint,
       });
       t.snapshot(printContract(c));
@@ -84,32 +88,32 @@ testPremint(
 testPremint('e notation', '1e59');
 testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
 
-testERC20('erc20 mintable', {
+testConfidentialFungible('confidentialFungible mintable', {
   mintable: true,
   access: 'ownable',
 });
 
-testERC20('erc20 mintable with roles', {
+testConfidentialFungible('confidentialFungible mintable with roles', {
   mintable: true,
   access: 'roles',
 });
 
-testERC20('erc20 votes', {
+testConfidentialFungible('confidentialFungible votes', {
   votes: true,
 });
 
-testERC20('erc20 votes + blocknumber', {
+testConfidentialFungible('confidentialFungible votes + blocknumber', {
   votes: 'blocknumber',
 });
 
-testERC20('erc20 votes + timestamp', {
+testConfidentialFungible('confidentialFungible votes + timestamp', {
   votes: 'timestamp',
 });
 
 
 // TODO test full
 /**
-testERC20('erc20 full', {
+testConfidentialFungible('confidentialFungible full', {
   premint: '2000',
   access: 'roles',
   burnable: true,
@@ -124,19 +128,20 @@ testERC20('erc20 full', {
 */
 
 
-testAPIEquivalence('erc20 API default');
+testAPIEquivalence('confidentialFungible API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('confidentialFungible API basic', { name: 'CustomToken', symbol: 'CTK', tokenURI: '' });
 
-testAPIEquivalence('erc20 API full upgradeable', {
+testAPIEquivalence('confidentialFungible API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
+  tokenURI: 'http://example.com',
   premint: '2000',
   access: 'roles',
   mintable: true,
   votes: true,
 });
 
-test('erc20 API assert defaults', async t => {
-  t.is(erc20.print(erc20.defaults), erc20.print());
+test('confidentialFungible API assert defaults', async t => {
+  t.is(confidentialFungible.print(confidentialFungible.defaults), confidentialFungible.print());
 });

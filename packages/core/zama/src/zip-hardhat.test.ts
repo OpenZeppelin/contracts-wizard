@@ -3,7 +3,7 @@ import _test from 'ava';
 
 import { zipHardhat } from './zip-hardhat';
 
-import { buildERC20 } from './erc20';
+import { buildConfidentialFungible } from './confidentialFungible';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -31,14 +31,15 @@ test.afterEach.always(async t => {
 
 test.serial('erc20 full', async t => {
   const opts: GenericOptions = {
-    kind: 'ERC20',
+    kind: 'ConfidentialFungible',
     name: 'My Token',
+    tokenURI: 'https://example.com',
     symbol: 'MTK',
     premint: '2000',
     mintable: true,
     votes: true,
   };
-  const c = buildERC20(opts);
+  const c = buildConfidentialFungible(opts);
   await runIgnitionTest(c, t, opts);
 });
 

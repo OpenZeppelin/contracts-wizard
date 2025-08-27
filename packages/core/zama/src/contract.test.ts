@@ -70,23 +70,23 @@ test('contract with one override', t => {
       { name: 'amount', type: 'uint256' },
     ],
   };
-  Foo.addOverride(toContractReference('ERC20'), _beforeTokenTransfer);
+  Foo.addOverride(toContractReference('ConfidentialFungible'), _beforeTokenTransfer);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with two overrides', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addOverride(toContractReference('ERC20'), _beforeTokenTransfer);
-  Foo.addOverride(toContractReference('ERC20Snapshot'), _beforeTokenTransfer);
+  Foo.addOverride(toContractReference('ConfidentialFungible'), _beforeTokenTransfer);
+  Foo.addOverride(toContractReference('ConfidentialFungibleSnapshot'), _beforeTokenTransfer);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with two different overrides', t => {
   const Foo = new ContractBuilder('Foo');
 
-  Foo.addOverride(toContractReference('ERC20'), _beforeTokenTransfer);
+  Foo.addOverride(toContractReference('ConfidentialFungible'), _beforeTokenTransfer);
   Foo.addOverride(toContractReference('OtherParent'), _beforeTokenTransfer);
-  Foo.addOverride(toContractReference('ERC20'), _otherFunction);
+  Foo.addOverride(toContractReference('ConfidentialFungible'), _otherFunction);
   Foo.addOverride(toContractReference('OtherParent'), _otherFunction);
   t.snapshot(printContract(Foo));
 });
@@ -101,7 +101,7 @@ test('contract with a modifier and override', t => {
   const Foo = new ContractBuilder('Foo');
   Foo.addModifier('whenNotPaused', _otherFunction);
 
-  Foo.addOverride(toContractReference('ERC20'), _otherFunction);
+  Foo.addOverride(toContractReference('ConfidentialFungible'), _otherFunction);
   Foo.addOverride(toContractReference('OtherParent'), _otherFunction);
   t.snapshot(printContract(Foo));
 });

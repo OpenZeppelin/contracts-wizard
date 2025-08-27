@@ -1,4 +1,4 @@
-import { type ERC20Options } from '../erc20';
+import { type ConfidentialFungibleOptions } from '../confidentialFungible';
 import { clockModeOptions } from '../set-clock-mode';
 import { accessOptions } from '../set-access-control';
 import { upgradeableOptions } from '../set-upgradeable';
@@ -10,6 +10,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  tokenURI: ['http://example.com'],
   mintable: booleans,
   votes: [...booleans, ...clockModeOptions] as const,
   premint: ['1'],
@@ -18,6 +19,6 @@ const blueprint = {
   info: infoOptions,
 };
 
-export function* generateERC20Options(): Generator<Required<ERC20Options>> {
+export function* generateConfidentialFungibleOptions(): Generator<Required<ConfidentialFungibleOptions>> {
   yield* generateAlternatives(blueprint);
 }
