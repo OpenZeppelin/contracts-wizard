@@ -9,7 +9,14 @@
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
-  import { permissions, PAUSABLE_PERMISSIONS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks';
+  import { 
+    permissions, 
+    PAUSABLE_PERMISSIONS, 
+    permissionRequiredByHook, 
+    permissionRequiredByPausable, 
+    permissionRequiredByAnother, 
+    returnDeltaPermissionExtension,
+  } from '@openzeppelin/wizard-uniswap-hooks/src/hooks';
 
   export let opts: Required<KindedOptions['Hooks']> = {
     kind: 'Hooks',
@@ -30,7 +37,6 @@
   // When the hook changes or pausable is disabled, reset the permissions to the default values
   let lastHook: HookName;
   let lastPausable: boolean = opts.pausable;
-
   $: {
     const hookChanged = opts.hook !== lastHook;
     const pausableTurnedOff = !opts.pausable && lastPausable;
@@ -59,9 +65,11 @@
   }
 
   function shortcutPermissionName(name: string): string {
-    if (name.length > 20) return name.replace('Return', '');
+    if (name.length > 25) return name.replace('Return', '');
     return name;
   }
+
+
 </script>
 
 <section class="controls-section">
@@ -99,15 +107,20 @@
         <input
           type="checkbox"
           bind:checked={opts.permissions[permission]}
-          disabled={Hooks[opts.hook].permissions[permission] ||
-            (opts.pausable && PAUSABLE_PERMISSIONS.includes(permission))}
+          disabled={
+            permissionRequiredByHook(opts.hook, permission) ||
+            permissionRequiredByPausable(opts, permission) ||
+            permissionRequiredByAnother(opts, permission)
+          }
         />
         {shortcutPermissionName(permission)}
         <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
-          {#if Hooks[opts.hook].permissions[permission]}
+          {#if permissionRequiredByHook(opts.hook, permission)}
             The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
-          {:else if opts.pausable && PAUSABLE_PERMISSIONS.includes(permission)}
+          {:else if permissionRequiredByPausable(opts, permission)}
             The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
+          {:else if permissionRequiredByAnother(opts, permission)}
+            The <code>{permission}</code> permission is required when <code>{returnDeltaPermissionExtension(permission)}</code> is enabled.
           {:else}
             Optionally enable the <code>{permission}</code> permission.
           {/if}

@@ -7,10 +7,10 @@ import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
 import type { Value } from '@openzeppelin/wizard/src/contract';
 import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
+import type { ReferencedContract } from '@openzeppelin/wizard/src/contract';
 
 import { printContract } from './print';
-import { Hooks, type HookName } from './hooks/';
-import type { ReferencedContract } from '@openzeppelin/wizard/src/contract';
+import { Hooks, type Hook, type HookName } from './hooks/';
 
 import importPaths from './importPaths.json';
 
@@ -64,7 +64,7 @@ export const defaults: Required<HooksOptions> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
-  currencySettler: true,
+  currencySettler: false,
   safeCast: false,
   transientStorage: false,
   shares: {
@@ -161,10 +161,18 @@ export function buildHooks(opts: HooksOptions): Contract {
     addPausableHook(c, allOpts);
   }
 
+  // Mark enabled *-ReturnDelta permission dependencies as required.
+  // As an example, the beforeSwapReturnDelta permission requires beforeSwap.
+  for (const permission of getAllPermissions(allOpts)) {
+    if (permissionRequiredByAnother(allOpts, permission)) {
+      allOpts.permissions[permission] = true;
+    }
+  }
+
   addHookPermissions(c, allOpts);
 
   // Note: `importRequiredTypes` must be called last since it depends on all other additions.
-  importRequiredTypes(c, allOpts);
+  importRequiredTypes(c);
 
   return c;
 }
@@ -198,7 +206,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
   }
 
-  // Add the primary hook
   c.addParent(
     {
       name: allOpts.hook,
@@ -331,15 +338,15 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addOverride({ name: 'ERC6909' }, supportsInterface);
 }
 
-// Makes the `before` hooks functions pausable by adding the `whenNotPaused` modifier.
-// Requires the `before` permissions to be set to true, which is enforced by the {buildHooks} function.
+// Makes the `before-*` hook functions pausable by adding the `whenNotPaused` modifier.
+// Requires the `before-*` permissions to be set to true, which is enforced by the {buildHooks} function.
 function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
   const selectedHook = Hooks[_allOpts.hook];
 
-  // Make custom functions pausable. See {functionShouldBePausable} for eligibility criteria.
+  // Make custom eligible functions pausable. See {functionShouldBePausable} for eligibility criteria.
   for (const f of Object.values(selectedHook.functions)) {
     if (functionShouldBePausable(f, _allOpts)) {
-      // override only if the function is not already included or overridden
+      // override only if the function is not already included or not overridden in ContractBuilder instance
       const contractFn = c.functions.find(fn => fn.name === f.name);
       if (!contractFn || contractFn.override.size === 0) {
         c.addOverride({ name: c.name }, f);
@@ -363,22 +370,22 @@ function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
 }
 
 function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
-  const permissions = Object.keys(_allOpts.permissions);
-  const enabledPermissions = Object.keys(_allOpts.permissions).filter(key => _allOpts.permissions[key as Permission]);
-  const selectedHookPermissions = Object.keys(Hooks[_allOpts.hook].permissions).filter(
-    key => Hooks[_allOpts.hook].permissions[key as Permission],
-  );
-  const extraEnabledPermissions = enabledPermissions.filter(key => !selectedHookPermissions.includes(key));
+  const allPermissions = getAllPermissions(_allOpts);
+  const enabledPermissions = getEnabledPermissions(_allOpts);
+  const selectedHookPermissions = getHookPermissions(Hooks[_allOpts.hook]);
+  const additionallySelectedPermissions = enabledPermissions.filter(key => !selectedHookPermissions.includes(key));
 
-  for (const key of extraEnabledPermissions) {
-    if (!key.includes('Delta')) {
+  for (const key of additionallySelectedPermissions) {
+    // Permissions of the type `*-ReturnDelta` doesn't require a standalone function.
+    if (!key.includes('ReturnDelta')) {
       c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions[`_${key}`]!);
       c.setFunctionBody([`// Implement _${key}`], Hooks.BaseHook.functions[`_${key}`]!);
     }
   }
 
-  const permissionLines = permissions.map(
-    (key, idx) => `    ${key}: ${_allOpts.permissions[key as Permission]}${idx === permissions.length - 1 ? '' : ','}`,
+  const permissionLines = allPermissions.map(
+    (key, idx) =>
+      `    ${key}: ${_allOpts.permissions[key as Permission]}${idx === allPermissions.length - 1 ? '' : ','}`,
   );
   c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions.getHookPermissions!);
   c.setFunctionBody(
@@ -387,18 +394,13 @@ function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
   );
 }
 
-// Utility to return the function invocation as a string.
-function functionInvocation(f: BaseFunction): string {
-  return `${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
-}
-
 // Utility to return the super function invocation as a string.
 function returnSuperFunctionInvocation(f: BaseFunction): string {
-  return `return super.${functionInvocation(f)}`;
+  return `return super.${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
 }
 
 // Utility to determine if a custom function such as `addLiquidity` in CustomAccounting should be pausable.
-// The rationale is that by default we want to pausable all the entrypoints to the
+// By default, we want to make pausable all the possible public/external entrypoints to the hook.
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   const whitelist = ['unlockCallback', 'pause', 'unpause'];
   return (
@@ -409,8 +411,8 @@ function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   );
 }
 
-function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
-  // generate a list of required types from constructor args, usingFor, and functions args/returns.
+// Import all the required types from the contract, including constructor args, libraries, functions args/returns.
+function importRequiredTypes(c: ContractBuilder) {
   const requiredTypes = new Set<string>();
 
   for (const arg of c.constructorArgs) {
@@ -429,7 +431,6 @@ function importRequiredTypes(c: ContractBuilder, _opts: HooksOptions) {
       requiredTypes.add(normalizeType(returnType));
     }
   }
-
   for (const type of requiredTypes) {
     if (isNativeSolidityType(type)) continue;
 
@@ -482,4 +483,39 @@ function isNativeSolidityType(type: string): boolean {
   if (/^bytes([1-9]|[12]\d|3[0-2])$/.test(type)) return true;
 
   return type.startsWith('mapping');
+}
+
+export function getAllPermissions(opts: HooksOptions): Permission[] {
+  return Object.keys(opts.permissions) as Permission[];
+}
+
+function getHookPermissions(hook: Hook): Permission[] {
+  return Object.entries(hook.permissions)
+    .filter(([_, value]) => value)
+    .map(([key]) => key as Permission);
+}
+
+export function isPermissionEnabled(opts: HooksOptions, permission: Permission): boolean {
+  return opts.permissions[permission];
+}
+
+function getEnabledPermissions(opts: HooksOptions): Permission[] {
+  return getAllPermissions(opts).filter(permission => isPermissionEnabled(opts, permission));
+}
+
+export function permissionRequiredByHook(hook: HookName, permission: Permission): boolean {
+  return Hooks[hook].permissions[permission as Permission];
+}
+
+export function permissionRequiredByPausable(opts: HooksOptions, permission: Permission): boolean {
+  return opts.pausable && PAUSABLE_PERMISSIONS.includes(permission);
+}
+
+export function returnDeltaPermissionExtension(permission: Permission): Permission {
+  return permission.concat('ReturnDelta') as Permission;
+}
+
+export function permissionRequiredByAnother(opts: HooksOptions, permission: Permission): boolean {
+  const deltaExtensionPermission = returnDeltaPermissionExtension(permission);
+  return isPermissionEnabled(opts, deltaExtensionPermission);
 }
