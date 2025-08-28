@@ -247,7 +247,7 @@
             <FileIcon />
             <div class="download-option-content">
               <p>Single file</p>
-              <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+              <p>Requires installation of npm packages.</p>
               <p>Simple to receive updates.</p>
             </div>
           </button>
