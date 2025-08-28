@@ -144,9 +144,11 @@ function addPremint(
 
       c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
-      // TODO need to include decimals in the euint64. How?
-      // const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
-      const mintLine = `_mint(recipient, FHE.asEuint64(${units}));`;
+      c.addImportOnly({
+        name: 'SafeCast',
+        path: '@openzeppelin/contracts/utils/math/SafeCast.sol',
+      });
+      const mintLine = `_mint(recipient, FHE.asEuint64(SafeCast.toUint64(${units} * 10 ** ${exp})));`;
 
       c.addConstructorCode(mintLine);
     }
