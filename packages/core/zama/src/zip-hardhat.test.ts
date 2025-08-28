@@ -9,7 +9,7 @@ import path from 'path';
 import os from 'os';
 import util from 'util';
 import child from 'child_process';
-import type { Contract } from './contract';
+import type { Contract } from '@openzeppelin/wizard/src/contract';
 import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
@@ -29,11 +29,12 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('erc20 full', async t => {
+test.serial('confidentialFungible full', async t => {
   const opts: GenericOptions = {
     kind: 'ConfidentialFungible',
     name: 'My Token',
     tokenURI: 'https://example.com',
+    networkConfig: 'zama-sepolia',
     symbol: 'MTK',
     premint: '2000',
     wrappable: true,

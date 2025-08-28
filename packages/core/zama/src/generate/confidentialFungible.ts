@@ -1,9 +1,7 @@
 import { type ConfidentialFungibleOptions } from '../confidentialFungible';
-import { clockModeOptions } from '../set-clock-mode';
-import { accessOptions } from '../set-access-control';
-import { upgradeableOptions } from '../set-upgradeable';
-import { infoOptions } from '../set-info';
-import { generateAlternatives } from './alternatives';
+import { clockModeOptions } from '@openzeppelin/wizard/src/set-clock-mode';
+import { infoOptions } from '@openzeppelin/wizard/src/set-info';
+import { generateAlternatives } from '@openzeppelin/wizard/src/generate/alternatives';
 
 const booleans = [true, false];
 
@@ -11,12 +9,11 @@ const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   tokenURI: ['http://example.com'],
-  mintable: booleans,
   votes: [...booleans, ...clockModeOptions] as const,
   premint: ['1'],
-  access: accessOptions,
-  upgradeable: upgradeableOptions,
   info: infoOptions,
+  networkConfig: ['zama-sepolia', 'zama-ethereum'] as const,
+  wrappable: booleans,
 };
 
 export function* generateConfidentialFungibleOptions(): Generator<Required<ConfidentialFungibleOptions>> {

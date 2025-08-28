@@ -1,10 +1,10 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract } from './contract';
+import type { Contract } from '@openzeppelin/wizard/src/contract';
 import { printContract } from './print';
-import SOLIDITY_VERSION from './solidity-version.json';
-import type { Lines } from './utils/format-lines';
-import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
+import type { Lines } from '@openzeppelin/wizard/src/utils/format-lines';
+import { formatLinesWithSpaces, spaceBetween } from '@openzeppelin/wizard/src/utils/format-lines';
 
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";

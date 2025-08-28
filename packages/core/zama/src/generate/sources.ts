@@ -7,8 +7,8 @@ import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
-import { findCover } from '../utils/find-cover';
-import type { Contract } from '../contract';
+import { findCover } from '@openzeppelin/wizard/src/utils/find-cover';
+import type { Contract } from '@openzeppelin/wizard/src/contract';
 
 type Subset = 'all' | 'minimal-cover';
 

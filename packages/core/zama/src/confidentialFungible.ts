@@ -1,13 +1,13 @@
-import { ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
+import { ContractBuilder } from '@openzeppelin/wizard/src/contract';
+import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 import type { CommonOptions } from './common-options';
-import { withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setInfo } from './set-info';
+import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wizard/src/common-options';
+import { setInfo } from '@openzeppelin/wizard/src/set-info';
 import { printContract } from './print';
-import type { ClockMode } from './set-clock-mode';
-import { clockModeDefault, setClockMode } from './set-clock-mode';
-import { OptionsError } from './error';
-import { toUint256, UINT256_MAX } from './utils/convert-strings';
+import type { ClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
+import { clockModeDefault, setClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
+import { OptionsError } from '@openzeppelin/wizard/src/error';
+import { toUint256, UINT256_MAX } from '@openzeppelin/wizard/src/utils/convert-strings';
 
 export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
@@ -34,8 +34,6 @@ export const defaults: Required<ConfidentialFungibleOptions> = {
   premint: '0',
   wrappable: false,
   votes: false,
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
 } as const;
 

@@ -94,12 +94,6 @@ testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uin
 
 testConfidentialFungible('confidentialFungible wrappable', {
   wrappable: true,
-  access: 'ownable',
-});
-
-testConfidentialFungible('confidentialFungible wrappable with roles', {
-  wrappable: true,
-  access: 'roles',
 });
 
 testConfidentialFungible('confidentialFungible votes', {
@@ -134,7 +128,7 @@ testConfidentialFungible('confidentialFungible full', {
 
 testAPIEquivalence('confidentialFungible API default');
 
-testAPIEquivalence('confidentialFungible API basic', { name: 'CustomToken', symbol: 'CTK', tokenURI: '' });
+testAPIEquivalence('confidentialFungible API basic', { name: 'CustomToken', symbol: 'CTK', tokenURI: '', networkConfig: 'zama-sepolia' });
 
 testAPIEquivalence('confidentialFungible API full upgradeable', {
   name: 'CustomToken',
@@ -142,7 +136,6 @@ testAPIEquivalence('confidentialFungible API full upgradeable', {
   tokenURI: 'http://example.com',
   networkConfig: 'zama-ethereum',
   premint: '2000',
-  access: 'roles',
   wrappable: true,
   votes: true,
 });
