@@ -149,6 +149,16 @@ body {
     contrast(100%);
 }
 
+.nav .switch.switch-zama.active {
+  --color-2: #000000;
+}
+.nav .switch.switch-zama img {
+  filter: grayscale(100%);
+}
+.nav .switch.switch-zama.active img {
+  filter: grayscale(0);
+}
+
 .nav-row {
   padding: 0 1rem 0;
   max-width: 100%;

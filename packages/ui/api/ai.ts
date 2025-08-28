@@ -4,6 +4,7 @@ import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
 import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
+import * as zamaFunctions from './ai-assistant/function-definitions/zama.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import { getOpenAiInstance } from './services/open-ai.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
@@ -23,6 +24,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     cairoAlpha: cairoAlphaFunctions,
     stellar: stellarFunctions,
     stylus: stylusFunctions,
+    zama: zamaFunctions,
   };
 
   return Object.values(functionPerLanguages[language] ?? {});
