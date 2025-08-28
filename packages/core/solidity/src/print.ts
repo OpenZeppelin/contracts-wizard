@@ -95,24 +95,24 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   const parentsWithInitializers = contract.parents.filter(hasInitializer);
-  if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
+  if (hasParentParams || hasConstructorCode || (helpers.shouldUseInitializers && parentsWithInitializers.length > 0)) {
     const parents = parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
+    const modifiers = helpers.shouldUseInitializers ? ['public initializer'] : parents;
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
-    const body = helpers.upgradeable
+    const body = helpers.shouldUseInitializers
       ? spaceBetween(
         parents.map(p => p + ';'),
         contract.constructorCode,
       )
       : contract.constructorCode;
-    const head = helpers.upgradeable ? 'function initialize' : 'constructor';
-    const constructor = printFunction2([], head, args, modifiers, body);
-    if (!helpers.upgradeable) {
-      return constructor;
+    const head = helpers.shouldUseInitializers ? 'function initialize' : 'constructor';
+    const ctor = printFunction2(contract.constructorComments, head, args, modifiers, body);
+    if (!helpers.shouldUseInitializers) {
+      return ctor;
     } else {
-      return spaceBetween(DISABLE_INITIALIZERS, constructor);
+      return spaceBetween(DISABLE_INITIALIZERS, ctor);
     }
-  } else if (!helpers.upgradeable) {
+  } else if (!helpers.shouldUseInitializers) {
     return [];
   } else {
     return DISABLE_INITIALIZERS;
@@ -153,7 +153,7 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
+  const useTranspiled = helpers.shouldUseInitializers && inferTranspiled(contract);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
   if (useTranspiled || params.length > 0) {
     return [fn + '(' + params.map(printValue).join(', ') + ')'];

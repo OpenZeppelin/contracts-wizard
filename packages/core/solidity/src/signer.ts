@@ -1,112 +1,128 @@
 import type { ContractBuilder } from './contract';
+import { OptionsError } from './error';
+import type { Upgradeable } from './set-upgradeable';
+import { makeUpgradeable } from './helpers';
 import { defineFunctions } from './utils/define-functions';
 
 export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
-export function addSigner(c: ContractBuilder, signer: SignerOptions): void {
+export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
   if (!signer) return;
 
-  c.addParent(signers[signer]);
-  c.addOverride(
-    { name: signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name },
-    signerFunctions._rawSignatureValidation,
-  );
-
-  // ERC-7702 doesn't require initialization
-  if (signer === 'ERC7702') return;
-
-  c.addParent({
-    name: 'Initializable',
-    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
-  });
-
-  // Add locking constructor
-  c.addNatspecTag('@custom:oz-upgrades-unsafe-allow', 'constructor');
-  c.addConstructorCode(`_disableInitializers();`);
-
-  // Add initializer
-  const fn = signerFunctions[`initialize${signer}`];
-  c.addModifier('initializer', fn);
+  const signerName = signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name;
+  c.addOverride({ name: makeUpgradeable(signerName, upgradeable) }, signerFunctions._rawSignatureValidation);
 
   switch (signer) {
-    case 'Multisig':
-      c.addFunctionCode(`_addSigners(${fn.args[0]!.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${fn.args[1]!.name});`, fn);
-      break;
-    case 'MultisigWeighted':
-      c.addFunctionCode(`_addSigners(${fn.args[0]!.name});`, fn);
-      c.addFunctionCode(`_setSignerWeights(${fn.args[0]!.name}, ${fn.args[1]!.name});`, fn);
-      c.addFunctionCode(`_setThreshold(${fn.args[2]!.name});`, fn);
+    case 'ERC7702':
+      c.addParent(signers[signer]);
+      if (upgradeable) {
+        throw new OptionsError({
+          erc7702: 'EOAs can upgrade by redelegating to a new account',
+          upgradeable: 'EOAs can upgrade by redelegating to a new account',
+        });
+      }
       break;
     case 'ECDSA':
     case 'P256':
     case 'RSA':
-      c.addFunctionCode(`_setSigner(${fn.args.map(({ name }) => name).join(', ')});`, fn);
+    case 'Multisig':
+    case 'MultisigWeighted': {
+      if (upgradeable) {
+        c.addParent({
+          name: 'Initializable',
+          path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
+        });
+        addLockingConstructorAllowReachable(c);
+
+        const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
+        c.addModifier('initializer', fn);
+        c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
+        c.addParent({
+          name: `${signers[signer].name}Upgradeable`,
+          path: makeUpgradeable(signers[signer].path, upgradeable),
+        });
+      } else {
+        signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+        c.addParent(
+          signers[signer],
+          signerArgs[signer].map(arg => ({ lit: arg.name })),
+        );
+      }
+
+      break;
+    }
+  }
+}
+
+/**
+ * Adds a locking constructor that disables initializers and annotates it to allow reachable constructors during Upgrades Plugins validations,
+ * which includes constructors in parent contracts.
+ *
+ * IMPORTANT: If a locking constructor is already present, it will not be added again, even if the body comments are different.
+ *
+ * @param c The contract builder.
+ * @param bodyComments Optional comments to add to the constructor body, before disabling initializers.
+ */
+export function addLockingConstructorAllowReachable(c: ContractBuilder, bodyComments?: string[]): void {
+  const disableInitializers = '_disableInitializers();';
+
+  if (!c.constructorCode.includes(disableInitializers)) {
+    c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
+    bodyComments?.forEach(comment => c.addConstructorCode(comment));
+    c.addConstructorCode(disableInitializers);
   }
 }
 
 export const signers = {
   ERC7702: {
     name: 'SignerERC7702',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerERC7702.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerERC7702.sol',
   },
   ECDSA: {
     name: 'SignerECDSA',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerECDSA.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerECDSA.sol',
   },
   P256: {
     name: 'SignerP256',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerP256.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerP256.sol',
   },
   RSA: {
     name: 'SignerRSA',
-    path: '@openzeppelin/community-contracts/utils/cryptography/SignerRSA.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerRSA.sol',
   },
   Multisig: {
     name: 'MultiSignerERC7913',
-    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913.sol',
   },
   MultisigWeighted: {
     name: 'MultiSignerERC7913Weighted',
-    path: '@openzeppelin/community-contracts/utils/cryptography/MultiSignerERC7913Weighted.sol',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913Weighted.sol',
   },
 };
 
+export const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { name: string; type: string }[]> = {
+  ECDSA: [{ name: 'signer', type: 'address' }],
+  P256: [
+    { name: 'qx', type: 'bytes32' },
+    { name: 'qy', type: 'bytes32' },
+  ],
+  RSA: [
+    { name: 'e', type: 'bytes memory' },
+    { name: 'n', type: 'bytes memory' },
+  ],
+  Multisig: [
+    { name: 'signers', type: 'bytes[] memory' },
+    { name: 'threshold', type: 'uint64' },
+  ],
+  MultisigWeighted: [
+    { name: 'signers', type: 'bytes[] memory' },
+    { name: 'weights', type: 'uint64[] memory' },
+    { name: 'threshold', type: 'uint64' },
+  ],
+};
+
 export const signerFunctions = defineFunctions({
-  initializeECDSA: {
-    kind: 'public' as const,
-    args: [{ name: 'signer', type: 'address' }],
-  },
-  initializeP256: {
-    kind: 'public' as const,
-    args: [
-      { name: 'qx', type: 'bytes32' },
-      { name: 'qy', type: 'bytes32' },
-    ],
-  },
-  initializeRSA: {
-    kind: 'public' as const,
-    args: [
-      { name: 'e', type: 'bytes memory' },
-      { name: 'n', type: 'bytes memory' },
-    ],
-  },
-  initializeMultisig: {
-    kind: 'public' as const,
-    args: [
-      { name: 'signers', type: 'bytes[] memory' },
-      { name: 'threshold', type: 'uint256' },
-    ],
-  },
-  initializeMultisigWeighted: {
-    kind: 'public' as const,
-    args: [
-      { name: 'signers', type: 'bytes[] memory' },
-      { name: 'weights', type: 'uint256[] memory' },
-      { name: 'threshold', type: 'uint256' },
-    ],
-  },
   _rawSignatureValidation: {
     kind: 'internal' as const,
     args: [
