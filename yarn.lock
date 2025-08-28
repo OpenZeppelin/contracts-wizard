@@ -535,7 +535,7 @@
 
 "@fhevm/mock-utils@^0.0.1-6":
   version "0.0.1-6"
-  resolved "https://registry.npmjs.org/@fhevm/mock-utils/-/mock-utils-0.0.1-6.tgz"
+  resolved "https://registry.yarnpkg.com/@fhevm/mock-utils/-/mock-utils-0.0.1-6.tgz#778082b490063ad6a158ead356960c40f72d68fe"
   integrity sha512-6ohiheNq6yKZ5vtMfuPfujUT+dx2VQnKS0xKHKY1/szVBPH4q23CfSi66S0TGn+eIF5K3UiYYjIGetTj9g97XQ==
 
 "@fhevm/solidity@0.7.0":
@@ -810,10 +810,13 @@
     "@nomicfoundation/edr-linux-x64-musl" "0.11.3"
     "@nomicfoundation/edr-win32-x64-msvc" "0.11.3"
 
-"@nomicfoundation/hardhat-toolbox@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@nomicfoundation/hardhat-toolbox/-/hardhat-toolbox-6.1.0.tgz"
-  integrity sha512-iAIl6pIK3F4R3JXeq+b6tiShXUrp1sQRiPfqoCMUE7QLUzoFifzGV97IDRL6e73pWsMKpUQBsHBvTCsqn+ZdpA==
+"@nomicfoundation/hardhat-ethers@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-ethers/-/hardhat-ethers-3.1.0.tgz#d33595e85cdb53e802391de64ee35910c078dbb0"
+  integrity sha512-jx6fw3Ms7QBwFGT2MU6ICG292z0P81u6g54JjSV105+FbTZOF4FJqPksLfDybxkkOeq28eDxbqq7vpxRYyIlxA==
+  dependencies:
+    debug "^4.1.1"
+    lodash.isequal "^4.5.0"
 
 "@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.2":
   version "0.1.2"
@@ -1419,7 +1422,7 @@
 
 "@zama-fhe/oracle-solidity@^0.1.0":
   version "0.1.0"
-  resolved "https://registry.npmjs.org/@zama-fhe/oracle-solidity/-/oracle-solidity-0.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/@zama-fhe/oracle-solidity/-/oracle-solidity-0.1.0.tgz#1bce165d00a1568a50e3ab929c0e7f03b50c09e2"
   integrity sha512-phRego2FW7SWgneQOES/iQ99c97ZCb+KZk5m+lT474dSNrsgEDh96W9T1+Owhc9C6VKtCpMLM43dHXwKHDIw6g==
   dependencies:
     "@openzeppelin/contracts-upgradeable" "^5.0.2"
@@ -4013,6 +4016,11 @@ locate-path@^6.0.0:
   integrity sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
   dependencies:
     p-locate "^5.0.0"
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
 
 lodash.memoize@^4.1.2:
   version "4.1.2"
