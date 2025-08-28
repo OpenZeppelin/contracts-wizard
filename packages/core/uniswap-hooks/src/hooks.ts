@@ -123,7 +123,6 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   // Add required permissions given the current options.
-  console.log('CORE: allOpts', allOpts);
   for (const permission of PERMISSIONS) {
     if (
       permissionRequiredByHook(allOpts.hook, permission) ||
