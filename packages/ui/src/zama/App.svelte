@@ -163,7 +163,7 @@
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?']}
+    sampleMessages={['Make a token with supply of 10 million', 'What does wrappable do?']}
   />
 
   <div class="header flex flex-row justify-between">
