@@ -14,9 +14,9 @@
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
 
-  import { ContractBuilder, printContract, OptionsError } from '@openzeppelin/wizard';
+  import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { sanitizeKind, buildGeneric } from '@openzeppelin/wizard-zama';
+  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-zama';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-zama';
   import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
@@ -139,10 +139,10 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    // TODO avoid versioned so vanilla and confidential's imported vanilla don't conflict?
-    const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
+    // TODO check if this should indeed avoid versioned so vanilla and confidential's imported vanilla don't conflict
+    const { printContract } = await import('@openzeppelin/wizard-zama');
 
-    const versionedCode = printContractVersioned(contract);
+    const versionedCode = printContract(contract);
     window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
