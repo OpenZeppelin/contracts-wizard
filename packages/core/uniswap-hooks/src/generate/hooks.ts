@@ -1,9 +1,8 @@
 import type { HooksOptions } from '../hooks';
-import { Hooks, type HookName } from '../hooks/index';
+import { HOOKS, type HookName, type Shares, type Permissions } from '../hooks/index';
 import { accessOptions } from '@openzeppelin/wizard/src/set-access-control';
 import { infoOptions } from '@openzeppelin/wizard/src/set-info';
 import { generateAlternatives } from '@openzeppelin/wizard/src/generate/alternatives';
-import type { Shares, Permissions } from '../hooks';
 
 const booleanOptions = [true, false];
 
@@ -33,7 +32,7 @@ const permissionsOptions: Permissions[] = [
   },
 ] as const;
 
-const hooksOptions: HookName[] = Object.keys(Hooks) as HookName[];
+const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
 
 // @TODO: remove, faster to test compilation one by one.
 // const hooksOptions: HookName[] = [

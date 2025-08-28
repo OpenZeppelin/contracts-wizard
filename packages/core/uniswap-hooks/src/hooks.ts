@@ -10,7 +10,8 @@ import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
 import type { ReferencedContract } from '@openzeppelin/wizard/src/contract';
 
 import { printContract } from './print';
-import { Hooks, type Hook, type HookName } from './hooks/';
+import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS } from './hooks/';
+import type { HookName, Shares, Permissions, Permission } from './hooks/';
 
 import importPaths from './importPaths.json';
 
@@ -24,38 +25,6 @@ export interface HooksOptions extends CommonOptions {
   shares: Shares;
   permissions: Permissions;
 }
-
-export type Permission = keyof Permissions;
-export type Permissions = {
-  beforeInitialize: boolean;
-  afterInitialize: boolean;
-  beforeAddLiquidity: boolean;
-  beforeRemoveLiquidity: boolean;
-  afterAddLiquidity: boolean;
-  afterRemoveLiquidity: boolean;
-  beforeSwap: boolean;
-  afterSwap: boolean;
-  beforeDonate: boolean;
-  afterDonate: boolean;
-  beforeSwapReturnDelta: boolean;
-  afterSwapReturnDelta: boolean;
-  afterAddLiquidityReturnDelta: boolean;
-  afterRemoveLiquidityReturnDelta: boolean;
-};
-
-export const PAUSABLE_PERMISSIONS: Permission[] = [
-  'beforeSwap',
-  'beforeAddLiquidity',
-  'beforeRemoveLiquidity',
-  'beforeDonate',
-];
-
-export type Shares = {
-  options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
-  name?: string;
-  symbol?: string;
-  uri?: string;
-};
 
 export const defaults: Required<HooksOptions> = {
   hook: 'BaseHook',
@@ -91,8 +60,6 @@ export const defaults: Required<HooksOptions> = {
   },
 };
 
-export const permissions = Object.keys(defaults.permissions) as Permission[];
-
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
   return {
     ...opts,
@@ -109,14 +76,10 @@ export function printHooks(opts: HooksOptions = defaults): string {
   return printContract(buildHooks(opts));
 }
 
-export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
-  return !!opts.pausable;
-}
-
 export function buildHooks(opts: HooksOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for Hooks
+  allOpts.upgradeable = false; // Upgradeability is not yet available for hooks
 
   const c = new ContractBuilder(allOpts.name);
 
@@ -140,6 +103,12 @@ export function buildHooks(opts: HooksOptions): Contract {
     addTransientStorage(c, allOpts);
   }
 
+  if (areSharesRequired(allOpts)) {
+    if (!allOpts.shares.options) {
+      allOpts.shares.options = 'ERC20';
+    }
+  }
+
   if (allOpts.shares.options) {
     if (allOpts.shares.options === 'ERC20') {
       addERC20Shares(c, allOpts);
@@ -152,24 +121,25 @@ export function buildHooks(opts: HooksOptions): Contract {
     }
   }
 
+  // Add required permissions given the current options.
+  for (const permission of PERMISSIONS) {
+    if (
+      permissionRequiredByHook(allOpts.hook, permission) ||
+      permissionRequiredByAnotherPermission(allOpts, permission) ||
+      (allOpts.pausable && permissionRequiredByPausable(allOpts, permission))
+    ) {
+      allOpts.permissions[permission] = true;
+    }
+  }
+
   if (allOpts.pausable) {
-    // Mark before-* permissions as required for pausability
-    for (const permission of PAUSABLE_PERMISSIONS) {
-      allOpts.permissions[permission] = true;
-    }
     addPausable(c, allOpts.access, []);
-    addPausableHook(c, allOpts);
+    addPausableFunctions(c, allOpts);
   }
 
-  // If permissions of the type *-ReturnDelta are enabled, the respective permission dependencies
-  // are also required, i.e. the beforeSwapReturnDelta permission also requires the beforeSwap permission.
-  for (const permission of getAllPermissions(allOpts)) {
-    if (permissionRequiredByAnother(allOpts, permission)) {
-      allOpts.permissions[permission] = true;
-    }
-  }
+  addAdditionalPermissionFunctions(c, allOpts);
 
-  addHookPermissions(c, allOpts);
+  addGetHookPermissions(c, allOpts);
 
   // Note: `importRequiredTypes` must be called last since it depends on all other additions.
   importRequiredTypes(c);
@@ -209,7 +179,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   c.addParent(
     {
       name: allOpts.hook,
-      path: `@openzeppelin/uniswap-hooks/${Hooks[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
+      path: `@openzeppelin/uniswap-hooks/${HOOKS[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
     },
     constructorParams,
   );
@@ -217,56 +187,64 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   // Add Overrides specific to each hook
   switch (allOpts.hook) {
     case 'BaseCustomAccounting':
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
-      c.setFunctionBody([`// Implement _getAddLiquidity`], Hooks.BaseCustomAccounting.functions._getAddLiquidity!);
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.setFunctionBody([`// Implement _getAddLiquidity`], HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getRemoveLiquidity!);
       c.setFunctionBody(
         [`// Implement _getRemoveLiquidity`],
-        Hooks.BaseCustomAccounting.functions._getRemoveLiquidity!,
+        HOOKS.BaseCustomAccounting.functions._getRemoveLiquidity!,
       );
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement _mint`], HOOKS.BaseCustomAccounting.functions._mint!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement _burn`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseCustomCurve':
-      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
-      c.setFunctionBody([`// Implement _getUnspecifiedAmount`], Hooks.BaseCustomCurve.functions._getUnspecifiedAmount!);
-      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
-      c.setFunctionBody([`// Implement _getSwapFeeAmount`], Hooks.BaseCustomCurve.functions._getSwapFeeAmount!);
-      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountOut!);
-      c.setFunctionBody([`// Implement _getAmountOut`], Hooks.BaseCustomCurve.functions._getAmountOut!);
-      c.addOverride({ name: 'BaseCustomCurve' }, Hooks.BaseCustomCurve.functions._getAmountIn!);
-      c.setFunctionBody([`// Implement _getAmountIn`], Hooks.BaseCustomCurve.functions._getAmountIn!);
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Implement _mint`], Hooks.BaseCustomAccounting.functions._mint!);
-      c.addOverride({ name: 'BaseCustomAccounting' }, Hooks.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Implement _burn`], Hooks.BaseCustomAccounting.functions._burn!);
+      c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.setFunctionBody([`// Implement _getUnspecifiedAmount`], HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.setFunctionBody([`// Implement _getSwapFeeAmount`], HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountOut!);
+      c.setFunctionBody([`// Implement _getAmountOut`], HOOKS.BaseCustomCurve.functions._getAmountOut!);
+      c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountIn!);
+      c.setFunctionBody([`// Implement _getAmountIn`], HOOKS.BaseCustomCurve.functions._getAmountIn!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement _mint`], HOOKS.BaseCustomAccounting.functions._mint!);
+      c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement _burn`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseDynamicFee':
-      c.addOverride({ name: 'BaseDynamicFee' }, Hooks.BaseDynamicFee.functions._getFee!);
-      c.setFunctionBody([`// Implement _getFee`], Hooks.BaseDynamicFee.functions._getFee!);
+      c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
+      c.setFunctionBody([`// Implement _getFee`], HOOKS.BaseDynamicFee.functions._getFee!);
       break;
     case 'BaseDynamicAfterFee':
-      c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!);
+      c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
         [`// Implement _getTargetUnspecified`],
-        Hooks.BaseDynamicAfterFee.functions._getTargetUnspecified!,
+        HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!,
       );
-      c.addOverride({ name: 'BaseDynamicAfterFee' }, Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
       break;
     case 'BaseOverrideFee':
-      c.addOverride({ name: 'BaseOverrideFee' }, Hooks.BaseOverrideFee.functions._getFee!);
-      c.setFunctionBody([`// Implement _getFee`], Hooks.BaseOverrideFee.functions._getFee!);
+      c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
+      c.setFunctionBody([`// Implement _getFee`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
     case 'AntiSandwichHook':
-      c.addOverride({ name: 'AntiSandwichHook' }, Hooks.AntiSandwichHook.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Implement _afterSwapHandler`], Hooks.AntiSandwichHook.functions._afterSwapHandler!);
+      c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
+      c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       break;
     default:
       break;
   }
+}
+
+export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
+  return !!opts.pausable;
+}
+
+export function areSharesRequired(opts: HooksOptions): boolean {
+  return opts.hook === 'BaseCustomAccounting' || opts.hook === 'BaseCustomCurve';
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -340,79 +318,74 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
 
 // Makes the `before-*` hook functions pausable by adding the `whenNotPaused` modifier.
 // Requires the `before-*` permissions to be set to true, which is enforced by the {buildHooks} function.
-function addPausableHook(c: ContractBuilder, _allOpts: HooksOptions) {
-  const selectedHook = Hooks[_allOpts.hook];
-
+function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
   // Make custom eligible functions pausable. See {functionShouldBePausable} for eligibility criteria.
-  for (const f of Object.values(selectedHook.functions)) {
+  for (const f of Object.values(HOOKS[_allOpts.hook].functions)) {
     if (functionShouldBePausable(f, _allOpts)) {
-      // override only if the function is not already included or not overridden in ContractBuilder instance
-      const contractFn = c.functions.find(fn => fn.name === f.name);
-      if (!contractFn || contractFn.override.size === 0) {
-        c.addOverride({ name: c.name }, f);
+      // add a super function invocation return if the function has not been set yet.
+      if (!c.functions.find(fn => fn.name === f.name)) {
         c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
       }
-      c.addModifier('whenNotPaused', f);
-    }
-  }
-
-  // Make common hook functions pausable. Note that disabled functions do not require pausability.
-  const baseHookFunctions = Object.keys(Hooks.BaseHook.functions);
-  for (const p of PAUSABLE_PERMISSIONS) {
-    const funcName = baseHookFunctions.find(name => name.includes(p));
-    if (funcName && !selectedHook.disabledFunctions?.includes(funcName)) {
-      const f = Hooks.BaseHook.functions[funcName]!;
-      c.addOverride({ name: 'BaseHook' }, f);
-      c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+      c.addOverride({ name: c.name }, f);
       c.addModifier('whenNotPaused', f);
     }
   }
 }
 
-function addHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
-  const allPermissions = getAllPermissions(_allOpts);
-  const enabledPermissions = getEnabledPermissions(_allOpts);
-  const selectedHookPermissions = getHookPermissions(Hooks[_allOpts.hook]);
-  const pausablePermissions = getPausablePermissions(_allOpts);
-  const additionallySelectedPermissions = enabledPermissions.filter(
-    key => !selectedHookPermissions.includes(key) && !(_allOpts.pausable && pausablePermissions.includes(key)),
+function addGetHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
+  const permissionLines = PERMISSIONS.map(
+    (key, idx) => `    ${key}: ${_allOpts.permissions[key]}${idx === PERMISSIONS.length - 1 ? '' : ','}`,
   );
 
-  // For additionally selected permissions, add the respective function to the build
-  for (const key of additionallySelectedPermissions) {
-    // Permissions of the type `*-ReturnDelta` doesn't require a standalone function.
-    if (!key.includes('ReturnDelta')) {
-      c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions[`_${key}`]!);
-      c.setFunctionBody([`// Implement _${key}`], Hooks.BaseHook.functions[`_${key}`]!);
-    }
-  }
-
-  const permissionLines = allPermissions.map(
-    (key, idx) =>
-      `    ${key}: ${_allOpts.permissions[key as Permission]}${idx === allPermissions.length - 1 ? '' : ','}`,
-  );
-  c.addOverride({ name: 'BaseHook' }, Hooks.BaseHook.functions.getHookPermissions!);
+  c.addOverride({ name: 'BaseHook' }, HOOKS.BaseHook.functions.getHookPermissions!);
   c.setFunctionBody(
     ['return Hooks.Permissions({', ...permissionLines, '});'],
-    Hooks.BaseHook.functions.getHookPermissions!,
+    HOOKS.BaseHook.functions.getHookPermissions!,
   );
 }
 
-// Utility to return the super function invocation as a string.
+// Print hook permission functions associated with additionally enabled permissions.
+function addAdditionalPermissionFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
+  // Print each enabled permission associated function that has not been printed yet.
+  for (const permission of getEnabledPermissions(_allOpts)) {
+    const isAdditionalPermission =
+      !permissionRequiredByHook(_allOpts.hook, permission) &&
+      !(_allOpts.pausable && permissionRequiredByPausable(_allOpts, permission));
+
+    if (isAdditionalPermission) {
+      const functionName = `_${permission}`;
+      const permissionFunction = HOOKS.BaseHook.functions[functionName]!;
+      // Permissions of the type `*-ReturnDelta` doesn't have a permission associated function.
+      if (!permission.includes('ReturnDelta') && !c.functions.some(f => f.name === permissionFunction?.name)) {
+        c.addOverride({ name: 'BaseHook' }, permissionFunction);
+        c.setFunctionBody([`// Implement _${functionName}`], permissionFunction);
+      }
+    }
+  }
+}
+
 function returnSuperFunctionInvocation(f: BaseFunction): string {
   return `return super.${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
 }
 
-// Utility to determine if a custom function such as `addLiquidity` in CustomAccounting should be pausable.
-// By default, we want to make pausable all the possible public/external entrypoints to the hook.
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
+  // Should be pausable if it is a pausable permission function.
+  for (const p of PAUSABLE_PERMISSIONS) {
+    if (f.name === `_${p}`) return true;
+  }
+
+  // Should also be pausable by default if it is a public/external non-pure/view entrypoint to the hook.
   const whitelist = ['unlockCallback', 'pause', 'unpause'];
-  return (
+  if (
     (f.kind === 'external' || f.kind === 'public') &&
     f.mutability !== 'pure' &&
     f.mutability !== 'view' &&
     !whitelist.includes(f.name)
-  );
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 // Import all the required types from the contract, including constructor args, libraries, functions args/returns.
@@ -489,30 +462,12 @@ function isNativeSolidityType(type: string): boolean {
   return type.startsWith('mapping');
 }
 
-export function getAllPermissions(opts: HooksOptions): Permission[] {
-  return Object.keys(opts.permissions) as Permission[];
-}
-
-function getHookPermissions(hook: Hook): Permission[] {
-  return Object.entries(hook.permissions)
-    .filter(([_, value]) => value)
-    .map(([key]) => key as Permission);
-}
-
 export function isPermissionEnabled(opts: HooksOptions, permission: Permission): boolean {
   return opts.permissions[permission];
 }
 
-function getEnabledPermissions(opts: HooksOptions): Permission[] {
-  return getAllPermissions(opts).filter(permission => isPermissionEnabled(opts, permission));
-}
-
-function getPausablePermissions(opts: HooksOptions): Permission[] {
-  return getAllPermissions(opts).filter(permission => PAUSABLE_PERMISSIONS.includes(permission));
-}
-
 export function permissionRequiredByHook(hook: HookName, permission: Permission): boolean {
-  return Hooks[hook].permissions[permission as Permission];
+  return HOOKS[hook].permissions[permission as Permission];
 }
 
 export function permissionRequiredByPausable(opts: HooksOptions, permission: Permission): boolean {
@@ -523,7 +478,15 @@ export function returnDeltaPermissionExtension(permission: Permission): Permissi
   return permission.concat('ReturnDelta') as Permission;
 }
 
-export function permissionRequiredByAnother(opts: HooksOptions, permission: Permission): boolean {
+// If permissions of the type *-ReturnDelta are enabled, the respective permission dependencies
+// are also required, i.e. the beforeSwapReturnDelta permission also requires the beforeSwap permission.
+export function permissionRequiredByAnotherPermission(opts: HooksOptions, permission: Permission): boolean {
   const deltaExtensionPermission = returnDeltaPermissionExtension(permission);
   return isPermissionEnabled(opts, deltaExtensionPermission);
+}
+
+export function getEnabledPermissions(opts: HooksOptions): Permission[] {
+  return Object.entries(opts.permissions)
+    .filter(([_, value]) => value)
+    .map(([key]) => key as Permission);
 }

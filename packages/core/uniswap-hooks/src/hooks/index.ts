@@ -10,21 +10,8 @@ import { BaseDynamicAfterFee } from './BaseDynamicAfterFee';
 import { AntiSandwichHook } from './AntiSandwichHook';
 import { LimitOrderHook } from './LimitOrderHook';
 import { LiquidityPenaltyHook } from './LiquidityPenaltyHook';
-import type { Permissions } from '../hooks';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
-
-export type HookName =
-  | 'BaseHook'
-  | 'BaseAsyncSwap'
-  | 'BaseCustomAccounting'
-  | 'BaseCustomCurve'
-  | 'BaseDynamicFee'
-  | 'BaseOverrideFee'
-  | 'BaseDynamicAfterFee'
-  | 'AntiSandwichHook'
-  | 'LimitOrderHook'
-  | 'LiquidityPenaltyHook';
 
 export type Hook = {
   name: HookName;
@@ -36,9 +23,7 @@ export type Hook = {
   disabledFunctions?: string[];
 };
 
-export type HookDictionary = Record<HookName, Hook>;
-
-export const Hooks: HookDictionary = {
+export const HOOKS = {
   BaseHook,
   BaseAsyncSwap,
   BaseCustomAccounting,
@@ -49,4 +34,41 @@ export const Hooks: HookDictionary = {
   AntiSandwichHook,
   LimitOrderHook,
   LiquidityPenaltyHook,
+} as const;
+
+export type HookName = keyof typeof HOOKS;
+export type HookDictionary = Record<HookName, Hook>;
+
+export const PERMISSIONS = [
+  'beforeInitialize',
+  'afterInitialize',
+  'beforeAddLiquidity',
+  'beforeRemoveLiquidity',
+  'afterAddLiquidity',
+  'afterRemoveLiquidity',
+  'beforeSwap',
+  'afterSwap',
+  'beforeDonate',
+  'afterDonate',
+  'beforeSwapReturnDelta',
+  'afterSwapReturnDelta',
+  'afterAddLiquidityReturnDelta',
+  'afterRemoveLiquidityReturnDelta',
+] as const;
+
+export type Permission = (typeof PERMISSIONS)[number];
+export type Permissions = Record<Permission, boolean>;
+
+export const PAUSABLE_PERMISSIONS: Permission[] = [
+  'beforeSwap',
+  'beforeAddLiquidity',
+  'beforeRemoveLiquidity',
+  'beforeDonate',
+];
+
+export type Shares = {
+  options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
+  name?: string;
+  symbol?: string;
+  uri?: string;
 };

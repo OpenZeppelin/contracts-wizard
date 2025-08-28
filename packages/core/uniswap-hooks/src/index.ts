@@ -4,9 +4,9 @@ export { sanitizeKind, type Kind } from './kind';
 
 export { hooks } from './api';
 
-export { Hooks, type Hook, type HookName, type HookCategory } from './hooks/';
+export { HOOKS, type Hook, type HookName, type HookCategory, type Shares, type Permissions, type Permission } from './hooks/';
 
-export { type HooksOptions, type Shares } from './hooks';
+export { type HooksOptions } from './hooks';
 
 export { compatibleContractsSemver } from './utils/version';
 

@@ -4,8 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 const BaseHook: Hook = {
   name: 'BaseHook',
   category: 'Base',
-  tooltipText:
-    'Base hook implementation providing standard entry points, permission checks, and validation utilities for building hooks.',
+  tooltipText: 'Provides standard entry points, permission checks, and validation utilities for building hooks.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
   functions: {
     ...defineFunctions({

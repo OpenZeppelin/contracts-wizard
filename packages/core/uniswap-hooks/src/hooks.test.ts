@@ -2,7 +2,7 @@ import test from 'ava';
 import { hooks } from './api';
 
 import { buildHooks, type HooksOptions } from './hooks';
-import { Hooks } from './hooks/';
+import { HOOKS } from './hooks/';
 import { printContract } from './print';
 
 function testHooks(title: string, opts: Partial<HooksOptions>) {
@@ -16,8 +16,8 @@ function testHooks(title: string, opts: Partial<HooksOptions>) {
 }
 
 // test all hooks
-for (const key in Hooks) {
-  const hook = Hooks[key as keyof typeof Hooks];
+for (const key in HOOKS) {
+  const hook = HOOKS[key as keyof typeof HOOKS];
   testHooks(`basic ${hook.name}`, { hook: hook.name });
 }
 
