@@ -55,7 +55,7 @@ artifacts
 `;
 
 const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(2, ...spaceBetween(getImports(c), getTestCase(c)));
+  return formatLinesWithSpaces(2, ...spaceBetween(getImports(), getTestCase(c)));
 
   function getTestCase(c: Contract) {
     const args = getAddressArgs(c);
@@ -76,8 +76,8 @@ const test = (c: Contract, opts?: GenericOptions) => {
     ];
   }
 
-  function getImports(c: Contract) {
-    return ['import { expect } from "chai";', `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`];
+  function getImports() {
+    return ['import { expect } from "chai";', `import { ${getHardhatPlugins().join(', ')} } from "hardhat";`];
   }
 
   function getExpects(): Lines[] {
@@ -164,7 +164,7 @@ npx hardhat ignition deploy ignition/modules/${c.name}.ts --network <network-nam
 \`\`\`
 `;
 
-function getHardhatPlugins(c: Contract) {
+function getHardhatPlugins() {
   const plugins = ['ethers'];
   return plugins;
 }

@@ -104,20 +104,7 @@ function extractAndRun(makeDeployCommand: (c: Contract) => string | null) {
   };
 }
 
-const extractAndRunDeployScriptPackage = extractAndRun(() => 'npx hardhat run scripts/deploy.ts');
 const extractAndRunIgnitionPackage = extractAndRun(c => `npx hardhat ignition deploy ignition/modules/${c.name}.ts`);
-
-async function assertDeployScriptContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const contentComparison = [
-    await getItemString(zip, `contracts/${c.name}.sol`),
-    await getItemString(zip, 'hardhat.config.ts'),
-    await getItemString(zip, 'package.json'),
-    await getItemString(zip, 'scripts/deploy.ts'),
-    await getItemString(zip, 'test/test.ts'),
-  ];
-
-  t.snapshot(contentComparison);
-}
 
 async function assertIgnitionContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
