@@ -69,6 +69,7 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
     safeCast: opts.safeCast ?? defaults.safeCast,
     transientStorage: opts.transientStorage ?? defaults.transientStorage,
     shares: opts.shares ?? defaults.shares,
+    permissions: opts.permissions ?? defaults.permissions,
   };
 }
 
@@ -122,6 +123,7 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   // Add required permissions given the current options.
+  console.log('CORE: allOpts', allOpts);
   for (const permission of PERMISSIONS) {
     if (
       permissionRequiredByHook(allOpts.hook, permission) ||
@@ -141,7 +143,6 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   addGetHookPermissions(c, allOpts);
 
-  // Note: `importRequiredTypes` must be called last since it depends on all other additions.
   importRequiredTypes(c);
 
   return c;
@@ -150,41 +151,10 @@ export function buildHooks(opts: HooksOptions): Contract {
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
-  // @TODO: super calls to BaseHook are broken since it is reverting each internal hook function.
-  // // If the hook is not BaseHook, inherit from it.
-  // if (allOpts.hook !== 'BaseHook') {
-  //   c.addParent(
-  //     {
-  //       name: 'BaseHook',
-  //       path: `@openzeppelin/uniswap-hooks/BaseHook.sol`,
-  //     },
-  //     [],
-  //   );
-  // }
-
-  // Add default constructor params
   const constructorParams: Value[] = [];
   constructorParams.push({ lit: '_poolManager' });
 
-  // Add Constructor Params specific to each hook
-  switch (allOpts.hook) {
-    case 'LiquidityPenaltyHook':
-      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
-      constructorParams.push({ lit: '_blockNumberOffset' });
-      break;
-    default:
-      break;
-  }
-
-  c.addParent(
-    {
-      name: allOpts.hook,
-      path: `@openzeppelin/uniswap-hooks/${HOOKS[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
-    },
-    constructorParams,
-  );
-
-  // Add Overrides specific to each hook
+  // Add Overrides & Constructor Params specific to each hook
   switch (allOpts.hook) {
     case 'BaseCustomAccounting':
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
@@ -234,9 +204,21 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       break;
+    case 'LiquidityPenaltyHook':
+      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
+      constructorParams.push({ lit: '_blockNumberOffset' });
+      break;
     default:
       break;
   }
+
+  c.addParent(
+    {
+      name: allOpts.hook,
+      path: `@openzeppelin/uniswap-hooks/${HOOKS[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
+    },
+    constructorParams,
+  );
 }
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
