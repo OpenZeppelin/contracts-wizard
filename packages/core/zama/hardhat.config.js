@@ -10,7 +10,7 @@ const {
 } = require('hardhat/builtin-tasks/task-names');
 const SOLIDITY_VERSION = require('@openzeppelin/wizard/src/solidity-version.json');
 
-require("@fhevm/hardhat-plugin");
+require('@fhevm/hardhat-plugin');
 
 // Unused parameter warnings are caused by OpenZeppelin Upgradeable Contracts.
 const WARN_UNUSED_PARAMETER = '5667';

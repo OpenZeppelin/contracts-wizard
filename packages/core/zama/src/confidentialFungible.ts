@@ -123,10 +123,7 @@ function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
   }
 }
 
-function addPremint(
-  c: ContractBuilder,
-  amount: string,
-) {
+function addPremint(c: ContractBuilder, amount: string) {
   const m = amount.match(premintPattern);
   if (m) {
     const integer = m[1]?.replace(/^0+/, '') ?? '';
@@ -238,9 +235,7 @@ export const functions = defineFunctions({
   _validateHandleAllowance: {
     kind: 'internal' as const,
     mutability: 'view' as const,
-    args: [
-      { name: 'handle', type: 'bytes32' },
-    ],
+    args: [{ name: 'handle', type: 'bytes32' }],
   },
   decimals: {
     kind: 'public' as const,

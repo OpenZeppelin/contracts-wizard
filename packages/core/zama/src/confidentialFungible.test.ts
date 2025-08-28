@@ -108,7 +108,6 @@ testConfidentialFungible('confidentialFungible votes + timestamp', {
   votes: 'timestamp',
 });
 
-
 // TODO test full
 /**
 testConfidentialFungible('confidentialFungible full', {
@@ -125,10 +124,14 @@ testConfidentialFungible('confidentialFungible full', {
 });
 */
 
-
 testAPIEquivalence('confidentialFungible API default');
 
-testAPIEquivalence('confidentialFungible API basic', { name: 'CustomToken', symbol: 'CTK', tokenURI: '', networkConfig: 'zama-sepolia' });
+testAPIEquivalence('confidentialFungible API basic', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  tokenURI: '',
+  networkConfig: 'zama-sepolia',
+});
 
 testAPIEquivalence('confidentialFungible API full upgradeable', {
   name: 'CustomToken',

@@ -16,4 +16,3 @@ export { confidentialFungible } from './api';
 export { compatibleContractsSemver } from './utils/version';
 
 export type { ConfidentialFungibleOptions } from './confidentialFungible';
-

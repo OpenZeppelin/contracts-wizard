@@ -101,9 +101,9 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     const args = contract.constructorArgs.map(a => printArgument(a, helpers));
     const body = helpers.shouldUseInitializers
       ? spaceBetween(
-        parents.map(p => p + ';'),
-        contract.constructorCode,
-      )
+          parents.map(p => p + ';'),
+          contract.constructorCode,
+        )
       : contract.constructorCode;
     const head = helpers.shouldUseInitializers ? 'function initialize' : 'constructor';
     const ctor = printFunction2(contract.constructorComments, head, args, modifiers, body);

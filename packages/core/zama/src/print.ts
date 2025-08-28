@@ -7,7 +7,11 @@ export function printContract(contract: Contract, opts?: ConfidentialFungibleOpt
   return printSolidityContract(contract, {
     ...opts,
     additionalCompatibleLibraries: [
-      { name: 'OpenZeppelin Confidential Contracts', path: '@openzeppelin/confidential-contracts', version: compatibleContractsSemver },
+      {
+        name: 'OpenZeppelin Confidential Contracts',
+        path: '@openzeppelin/confidential-contracts',
+        version: compatibleContractsSemver,
+      },
     ],
   });
 }

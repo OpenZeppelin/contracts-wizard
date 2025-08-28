@@ -1,9 +1,6 @@
 import type { CommonOptions } from './common-options';
 import type { ConfidentialFungibleOptions } from './confidentialFungible';
-import {
-  printConfidentialFungible,
-  defaults as confidentialFungibleDefaults,
-} from './confidentialFungible';
+import { printConfidentialFungible, defaults as confidentialFungibleDefaults } from './confidentialFungible';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
