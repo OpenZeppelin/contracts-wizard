@@ -30,7 +30,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const WizSolidity = createWiz<'solidity'>();
+  const WizZama = createWiz<'zama'>();
 
   async function allowRendering() {
     showCode = false;
@@ -102,7 +102,7 @@
     };
   };
 
-  const language = 'solidity';
+  const language = 'zama';
 
   let copied = false;
   const copyHandler = async () => {
@@ -124,7 +124,7 @@
     const { printContract } = await import('@openzeppelin/wizard-zama');
 
     const versionedCode = printContract(contract);
-    window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    window.open(remixURL(versionedCode, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -151,20 +151,19 @@
     }
   };
 
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'solidity'>>) => {
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'zama'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <WizSolidity
-    language="solidity"
+  <WizZama
+    language="zama"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
-    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
+    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?']}
   />
 
   <div class="header flex flex-row justify-between">
