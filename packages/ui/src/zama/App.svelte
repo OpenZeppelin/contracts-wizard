@@ -158,7 +158,7 @@
   };
 
   // TODO override?
-  const zipHardhatModule = import('@openzeppelin/wizard/zip-env-hardhat');
+  const zipHardhatModule = import('@openzeppelin/wizard-zama/zip-env-hardhat');
 
   const downloadHardhatHandler = async () => {
     const { zipHardhat } = await zipHardhatModule;
