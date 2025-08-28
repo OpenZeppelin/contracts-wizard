@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.2.0 (2025-08-28)
+
+- Add constructors for `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913` and `MultiSignerERC7913Weighted` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Enable upgradeability for `AccountERC7579`, `AccountERC7579Hooked`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913` and `MultiSignerERC7913` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- **Breaking change**: Use `Account`, `AccountERC7579`, `AccountERC7579Hooked`, `ERC7812`, `ERC7739Utils`, `ERC7913Utils`, `AbstractSigner`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913`, and `MultiSignerERC7913Weighted` from OpenZeppelin Contracts 5.4.0 instead of Community Contracts ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Updated dependencies [[`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20)]:
+  - @openzeppelin/wizard-common@0.1.1
+  - @openzeppelin/wizard@0.8.0
+
 ## 0.1.0 (2025-08-15)
 
 - Export functions to register MCP tools ([#631](https://github.com/OpenZeppelin/contracts-wizard/pull/631))
