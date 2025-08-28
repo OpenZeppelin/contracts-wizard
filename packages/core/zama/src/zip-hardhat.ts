@@ -6,9 +6,11 @@ import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
 import type { Lines } from '@openzeppelin/wizard/src/utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from '@openzeppelin/wizard/src/utils/format-lines';
 
+// NOTE: fhevm was added (compared to solidity)
 const hardhatConfig = (upgradeable: boolean) => `\
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@fhevm/hardhat-plugin";
 ${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
@@ -64,6 +66,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
           getAddressVariables(args),
+          // TODO if wrappable, add an ERC20 token address, or add arg placeholder then comment out the deployment line
           [`const instance = await ${getDeploymentCall(c, args)};`, 'await instance.waitForDeployment();'],
           getExpects(),
         ),
@@ -194,14 +197,11 @@ function getHardhatPlugins(c: Contract) {
 export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   const zip = new JSZip();
 
-  const { default: packageJson } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package.json')
-    : await import('./environments/hardhat/package.json');
+  // NOTE: removed upgradeable
+  const { default: packageJson } = await import('./environments/hardhat/package.json');
   packageJson.license = c.license;
 
-  const { default: packageLock } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package-lock.json')
-    : await import('./environments/hardhat/package-lock.json');
+  const { default: packageLock } = await import('./environments/hardhat/package-lock.json');
   packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));

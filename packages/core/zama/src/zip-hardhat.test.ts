@@ -29,7 +29,7 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('confidentialFungible full', async t => {
+test.serial('confidentialFungible no wrappable', async t => {
   const opts: GenericOptions = {
     kind: 'ConfidentialFungible',
     name: 'My Token',
@@ -37,7 +37,7 @@ test.serial('confidentialFungible full', async t => {
     networkConfig: 'zama-sepolia',
     symbol: 'MTK',
     premint: '2000',
-    wrappable: true,
+    wrappable: false,
     votes: true,
   };
   const c = buildConfidentialFungible(opts);

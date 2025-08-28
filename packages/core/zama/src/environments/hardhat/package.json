@@ -10,6 +10,11 @@
   "license": "ISC",
   "devDependencies": {
     "@openzeppelin/contracts": "^5.4.0",
+    "@openzeppelin/confidential-contracts": "^0.2.0",
+    "@fhevm/core-contracts": "0.7.0-12",
+    "@fhevm/hardhat-plugin": "0.0.1-6",
+    "@fhevm/solidity": "0.7.0",
+    "@zama-fhe/relayer-sdk": "^0.1.0-5",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "hardhat": "^2.16.1"
   }
