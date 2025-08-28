@@ -101,7 +101,7 @@
 {/each}
 
 <ExpandableSection
-  label="Configure Hook Permissions"
+  label="Additional Hook Permissions"
   bind:checked={showAdvancedPermissions}
   helpContent="Fine-tune which core hook function permissions are enabled."
   helpLink="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions"
@@ -168,8 +168,6 @@
   </div>
 </ExpandableSection>  
 
-<SharesControlsSection bind:opts />
-
 <section class="controls-section">
   <h1>Features</h1>
 
@@ -183,8 +181,28 @@
       </HelpTooltip>
     </label>
   </div>
+
+  <div class="shares-section">
+    <SharesControlsSection bind:opts />
+  </div>
 </section>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
 <InfoSection bind:info={opts.info} />
+
+<style>
+  /* Target the controls-section inside this specific component */
+
+  .shares-section {
+    margin-left: 0.5rem;
+  }
+
+  .shares-section :global(.controls-section h1) {
+    color: var(--text-color);
+    font-size: var(--size-4);
+    font-weight: 400;
+    text-transform: none;
+    font-variant: none;
+  }
+</style>
