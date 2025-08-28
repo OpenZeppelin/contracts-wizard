@@ -18,7 +18,6 @@
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-zama';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-zama';
-  import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
 
@@ -89,36 +88,18 @@
 
   $: hasErrors = errors[tab] !== undefined;
 
-  $: showButtons = getButtonVisibilities(opts);
+  $: showButtons = getButtonVisibilities();
 
   interface ButtonVisibilities {
     openInRemix: boolean;
     downloadHardhat: boolean;
   }
 
-  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
-    if (opts?.kind === 'Governor') {
-      return {
-        openInRemix: true,
-        downloadHardhat: false,
-      };
-    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset' || opts?.kind === 'Account') {
-      return {
-        openInRemix: false,
-        downloadHardhat: false,
-      };
-    } else {
-      return {
-        openInRemix: true,
-        downloadHardhat: true,
-      };
-    }
-  };
-
-  const getSolcSources = (contract: Contract) => {
-    const sources = getImports(contract);
-    sources[contract.name] = { content: code };
-    return sources;
+  const getButtonVisibilities = (): ButtonVisibilities => {
+    return {
+      openInRemix: true,
+      downloadHardhat: true,
+    };
   };
 
   const language = 'solidity';
@@ -208,32 +189,11 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip
-            let:trigger
-            disabled={!(opts?.upgradeable === 'transparent')}
-            theme="light-red border"
-            hideOnClick={false}
-            interactive
-          >
-            <button
-              use:trigger
-              class="action-button with-text"
-              class:disabled={opts?.upgradeable === 'transparent'}
-              on:click={remixHandler}
-            >
+          <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+            <button use:trigger class="action-button with-text" on:click={remixHandler}>
               <RemixIcon />
               Open in Remix
             </button>
-            <div slot="content">
-              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
-              use Hardhat or Foundry with
-              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
-                >OpenZeppelin Upgrades</a
-              >.
-              <br />
-              <!-- svelte-ignore a11y-invalid-attribute -->
-              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-            </div>
           </Tooltip>
         {/if}
 
