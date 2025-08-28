@@ -14,9 +14,11 @@
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
 
-  import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
-  import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-zama';
-  import { getImports } from '@openzeppelin/wizard-zama/get-imports';
+  import { ContractBuilder, printContract, OptionsError } from '@openzeppelin/wizard';
+  import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import { sanitizeKind, buildGeneric } from '@openzeppelin/wizard-zama';
+  import type { KindedOptions, Kind } from '@openzeppelin/wizard-zama';
+  import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
 
@@ -137,7 +139,8 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const { printContractVersioned } = await import('@openzeppelin/wizard-zama/print-versioned');
+    // TODO avoid versioned so vanilla and confidential's imported vanilla don't conflict?
+    const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
 
     const versionedCode = printContractVersioned(contract);
     window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
@@ -154,7 +157,8 @@
     }
   };
 
-  const zipHardhatModule = import('@openzeppelin/wizard-zama/zip-env-hardhat');
+  // TODO override?
+  const zipHardhatModule = import('@openzeppelin/wizard/zip-env-hardhat');
 
   const downloadHardhatHandler = async () => {
     const { zipHardhat } = await zipHardhatModule;

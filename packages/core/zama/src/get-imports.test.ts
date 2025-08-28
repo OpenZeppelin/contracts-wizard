@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { getImports } from './get-imports';
+import { getImports } from '@openzeppelin/wizard/src/get-imports';
 import { buildConfidentialFungible } from './confidentialFungible';
 import { generateSources } from './generate/sources';
 import { buildGeneric } from './build-generic';

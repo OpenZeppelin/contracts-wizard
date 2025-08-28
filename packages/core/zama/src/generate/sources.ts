@@ -54,16 +54,7 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     return contracts;
   } else {
     const getParents = (c: GeneratedContract) => c.contract.parents.map(p => p.contract.path);
-    return [
-      ...findCover(
-        contracts.filter(c => c.options.upgradeable),
-        getParents,
-      ),
-      ...findCover(
-        contracts.filter(c => !c.options.upgradeable),
-        getParents,
-      ),
-    ];
+    return findCover(contracts, getParents);
   }
 }
 
