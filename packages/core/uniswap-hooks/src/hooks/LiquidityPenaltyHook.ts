@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const LiquidityPenaltyHook: Hook = {
   name: 'LiquidityPenaltyHook',
+  displayName: 'JIT Liquidity Resistance',
   category: 'General',
   tooltipText:
     'Just-in-Time (JIT) resistance; penalizes LP fee collection when liquidity is added/removed before <code>_blockNumberOffset</code> blocks, donating penalties to in‑range LPs.',

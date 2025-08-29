@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const BaseCustomAccounting: Hook = {
   name: 'BaseCustomAccounting',
+  displayName: 'Custom Accounting',
   category: 'Base',
   tooltipText:
     'Custom accounting and hook-owned liquidity overrides how liquidity modifications are computed and how liquidiy shares are minted/burned.',

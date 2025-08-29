@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const BaseAsyncSwap: Hook = {
   name: 'BaseAsyncSwap',
+  displayName: 'Async Swaps',
   category: 'Base',
   tooltipText:
     'Overrides the default swap flow, enabling custom execution and settlement, such as swap queuing and/or reordering.',

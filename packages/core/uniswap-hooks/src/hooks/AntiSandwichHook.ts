@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const AntiSandwichHook: Hook = {
   name: 'AntiSandwichHook',
+  displayName: 'Sandwich Resistance',
   category: 'General',
   tooltipText:
     'Anchors swap pricing to the beginning-of-block state in the <code>zeroForOne</code> direction, deterring intra-block sandwich manipulation.',

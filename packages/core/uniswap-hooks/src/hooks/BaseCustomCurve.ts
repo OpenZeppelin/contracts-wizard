@@ -5,6 +5,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const BaseCustomCurve: Hook = {
   name: 'BaseCustomCurve',
+  displayName: 'Custom Curve',
   category: 'Base',
   tooltipText:
     'Custom swap curves allows for custom pricing logic and swap amount calculations. Builds on the custom accounting base.',

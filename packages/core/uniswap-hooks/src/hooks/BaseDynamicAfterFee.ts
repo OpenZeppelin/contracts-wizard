@@ -4,9 +4,10 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const BaseDynamicAfterFee: Hook = {
   name: 'BaseDynamicAfterFee',
+  displayName: 'Swap Target Enforcer',
   category: 'Fee',
   tooltipText:
-    'Enforces an after-swap target and captures any positive difference as a hook fee, then allows for handling or distributing it.',
+    'Enforces a dynamic target for swap outcomes, capturing any better-than-expected results as hook fees that can be handled or distributed via <code>_afterSwapHandler</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
   functions: {
     ...defineFunctions({

@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const BaseDynamicFee: Hook = {
   name: 'BaseDynamicFee',
+  displayName: 'Dynamic Pool Fee',
   category: 'Fee',
   tooltipText:
     'Applies a dynamic fee in a per-pool basis; determined by <code>_getFee</code> and applied upon calling <code>poke</code>.',

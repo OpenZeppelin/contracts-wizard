@@ -2,7 +2,8 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { hooks, Hooks } from '@openzeppelin/wizard-uniswap-hooks';
+  import { hooks } from '@openzeppelin/wizard-uniswap-hooks/';
+  import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
   import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';
@@ -11,59 +12,45 @@
   import SharesControlsSection from './SharesControlsSection.svelte';
 
   import { 
-    permissions, 
-    PAUSABLE_PERMISSIONS, 
+    areSharesRequired,
     permissionRequiredByHook, 
     permissionRequiredByPausable, 
-    permissionRequiredByAnother, 
+    permissionRequiredByAnotherPermission, 
     returnDeltaPermissionExtension,
   } from '@openzeppelin/wizard-uniswap-hooks/src/hooks';
+  import { PERMISSIONS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
 
   export let opts: Required<KindedOptions['Hooks']> = {
     kind: 'Hooks',
     ...hooks.defaults,
-    info: { ...infoDefaults }, // create new object since Info is nested
   };
 
   $: requireAccessControl = hooks.isAccessControlRequired(opts);
 
+  let lastHook: HookName | undefined = undefined;
+  $: if (opts.hook !== lastHook) {
+    opts = {
+      ...opts,
+      ...hooks.defaults,
+      hook: opts.hook,
+      permissions: { ...hooks.defaults.permissions },
+      shares: { ...hooks.defaults.shares },
+    };
+    lastHook = opts.hook;
+  }
+
   // Keep a stable order and titles
   const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General'];
   const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [] };
-  for (const key in Hooks) {
-    const hook = Hooks[key as keyof typeof Hooks];
+  for (const key in HOOKS) {
+    const hook = HOOKS[key as HookName];
     hooksByCategory[hook.category].push(hook);
   }
 
-  // When the hook changes or pausable is disabled, reset the permissions to the default values
-  let lastHook: HookName;
-  let lastPausable: boolean = opts.pausable;
-  $: {
-    const hookChanged = opts.hook !== lastHook;
-    const pausableTurnedOff = !opts.pausable && lastPausable;
-
-    if (hookChanged || pausableTurnedOff) {
-      opts = { ...opts, permissions: { ...Hooks[opts.hook].permissions } };
-    }
-
-    if (opts.pausable) {
-      const updated: Partial<typeof opts.permissions> = {};
-      for (const key of PAUSABLE_PERMISSIONS) {
-        if (!opts.permissions[key]) updated[key] = true;
-      }
-      if (Object.keys(updated).length) {
-        opts = { ...opts, permissions: { ...opts.permissions, ...updated } };
-      }
-    }
-
-    lastHook = opts.hook;
-    lastPausable = opts.pausable;
-  }
-
-  function normalizeHookName(name: string): string {
-    if (name === 'BaseHook') return name;
-    return name.replace('Hook', '').replace('Base', '');
-  }
+  // function normalizeHookName(name: string): string {
+  //   if (name === 'BaseHook') return name;
+  //   return name.replace('Hook', '').replace('Base', '');
+  // }
 
   function shortcutPermissionName(name: string): string {
     if (name.length > 25) return name.replace('Return', '');
@@ -90,7 +77,7 @@
       {#each hooksByCategory[category] as hook}
         <label class:checked={opts.hook === hook.name}>
           <input type="radio" bind:group={opts.hook} value={hook.name} />
-          {normalizeHookName(hook.name)}
+          {hook.displayName}
           <HelpTooltip link={hook.tooltipLink}>
             {@html hook.tooltipText}
           </HelpTooltip>
@@ -107,7 +94,7 @@
   helpLink="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions"
 >
   <div class="checkbox-group">
-    {#each permissions as permission}
+    {#each PERMISSIONS as permission}
       <label class:checked={opts.permissions[permission]}>
         <input
           type="checkbox"
@@ -115,7 +102,7 @@
           disabled={
             permissionRequiredByHook(opts.hook, permission) ||
             permissionRequiredByPausable(opts, permission) ||
-            permissionRequiredByAnother(opts, permission)
+            permissionRequiredByAnotherPermission(opts, permission)
           }
         />
         {shortcutPermissionName(permission)}
@@ -124,7 +111,7 @@
             The <code>{permission}</code> permission is required by <code>{opts.hook}</code>.
           {:else if permissionRequiredByPausable(opts, permission)}
             The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
-          {:else if permissionRequiredByAnother(opts, permission)}
+          {:else if permissionRequiredByAnotherPermission(opts, permission)}
             The <code>{permission}</code> permission is required when the <code>{returnDeltaPermissionExtension(permission)}</code> permission is enabled.
           {:else}
             Optionally enable the <code>{permission}</code> permission.
@@ -145,7 +132,7 @@
       <input type="checkbox" bind:checked={opts.currencySettler} />
       CurrencySettler
       <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/utils#CurrencySettler">
-        Utility library used to settle and take any open deltas with an unlocked `PoolManager` during flash accounting.
+        Utility library used to settle and take any pending deltas with an unlocked `PoolManager` during flash accounting.
       </HelpTooltip>
     </label>
 
@@ -153,7 +140,7 @@
       <input type="checkbox" bind:checked={opts.safeCast} />
       SafeCast
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#SafeCast">
-        Utility library to safely cast between numeric types.
+        Utility library to safely cast between numeric types, i.e. casting an uint256 fee to an uint128 BalanceDelta.
       </HelpTooltip>
     </label>
 
@@ -183,7 +170,9 @@
   </div>
 
   <div class="shares-section">
-    <SharesControlsSection bind:opts />
+    <SharesControlsSection bind:opts 
+    disabled={areSharesRequired(opts)} 
+    helpContent={areSharesRequired(opts) ? `Shares are required by <code>${opts.hook}</code>` : undefined} />
   </div>
 </section>
 

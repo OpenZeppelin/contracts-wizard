@@ -4,6 +4,7 @@ import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions
 
 const LimitOrderHook: Hook = {
   name: 'LimitOrderHook',
+  displayName: 'Limit Orders',
   category: 'General',
   tooltipText:
     'Out‑of‑range single-currency limit orders that get executed when the price is reached, accruing fees to the order and supporting place/cancel/withdraw.',

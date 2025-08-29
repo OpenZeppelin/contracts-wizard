@@ -5,13 +5,20 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let opts: HooksOptions;
+
+  export let disabled: boolean = false;
+  export let disabledReason: string | undefined = undefined;
+
+  export let helpContent: string | undefined = undefined;
 </script>
 
 <ExpandableToggleRadio
   label="Shares"
   bind:value={opts.shares.options}
+  {disabled}
+  {disabledReason}
   defaultValue="ERC20"
-  helpContent="Shares are useful to account for the ownership of a portion of a liquidity position or pending credit."
+  helpContent={helpContent || "Shares are useful to account for the ownership of a portion of a liquidity position or pending credit."}
   helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20"
 
 >

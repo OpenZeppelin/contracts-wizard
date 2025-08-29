@@ -15,6 +15,7 @@ export type HookCategory = 'Base' | 'Fee' | 'General';
 
 export type Hook = {
   name: HookName;
+  displayName: string;
   category: HookCategory;
   tooltipText: string;
   tooltipLink: string;
@@ -32,8 +33,8 @@ export const HOOKS = {
   BaseOverrideFee,
   BaseDynamicAfterFee,
   AntiSandwichHook,
-  LimitOrderHook,
   LiquidityPenaltyHook,
+  LimitOrderHook,
 } as const;
 
 export type HookName = keyof typeof HOOKS;
