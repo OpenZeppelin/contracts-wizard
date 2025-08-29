@@ -70,7 +70,7 @@ export function addLockingConstructorAllowReachable(c: ContractBuilder, bodyComm
   if (!c.constructorCode.includes(disableInitializers)) {
     c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
     bodyComments?.forEach(comment => c.addConstructorCode(comment));
-    c.addConstructorCode(disableInitializers);
+    c.addConstructorCode(`_disableInitializers();`);
   }
 }
 

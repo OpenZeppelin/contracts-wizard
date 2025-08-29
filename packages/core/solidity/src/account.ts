@@ -189,20 +189,15 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
       'require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);',
       '_installModule(moduleTypeId, module, initData);',
     ];
-    if (opts.upgradeable) {
-      c.addParent({
-        name: 'Initializable',
-        path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
-      });
-      addLockingConstructorAllowReachable(c);
+    c.addParent({
+      name: 'Initializable',
+      path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
+    });
+    addLockingConstructorAllowReachableAccountFactory(c);
 
-      const fn = { name: 'initialize', kind: 'public' as const, args };
-      c.addModifier('initializer', fn);
-      c.setFunctionBody(body, fn);
-    } else {
-      for (const arg of args) c.addConstructorArgument(arg);
-      for (const line of body) c.addConstructorCode(line);
-    }
+    const fn = { name: 'initialize', kind: 'public' as const, args };
+    c.addModifier('initializer', fn);
+    c.setFunctionBody(body, fn);
   }
 
   // isValidSignature override
@@ -240,10 +235,7 @@ function addSignerInitializer(c: ContractBuilder, opts: AccountOptions): void {
       : '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
 
-  addLockingConstructorAllowReachable(c, [
-    '// Accounts are typically deployed and initialized as clones during their first user op,',
-    '// therefore, initializers are disabled for the implementation contract',
-  ]);
+  addLockingConstructorAllowReachableAccountFactory(c);
 
   const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[opts.signer] };
   c.addModifier('initializer', fn);
@@ -342,6 +334,13 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
       });
     }
   }
+}
+
+function addLockingConstructorAllowReachableAccountFactory(c: ContractBuilder): void {
+  addLockingConstructorAllowReachable(c, [
+    '// Accounts are typically deployed and initialized as clones during their first user op,',
+    '// therefore, initializers are disabled for the implementation contract',
+  ]);
 }
 
 const functions = {
