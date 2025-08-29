@@ -158,7 +158,7 @@ const functions = defineFunctions({
     kind: 'public' as const,
     args: [{ name: 'newuri', type: 'string memory' }],
     comments: [
-      '/// @dev Sets a new URI for all token types. This function can only be called by the contract owner and should be used to update the metadata location.',
+      '/// @dev Sets a new URI for all token types. This function should be called with proper access control to restrict who can update the metadata location.',
     ],
   },
 
