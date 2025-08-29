@@ -313,7 +313,7 @@ function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
 
 function addGetHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
   const permissionLines = PERMISSIONS.map(
-    (key, idx) => `    ${key}: ${_allOpts.permissions[key]}${idx === PERMISSIONS.length - 1 ? '' : ','}`,
+    (key, idx) => `    ${key}: ${_allOpts.permissions[key] ?? false}${idx === PERMISSIONS.length - 1 ? '' : ','}`,
   );
 
   c.addOverride({ name: 'BaseHook' }, HOOKS.BaseHook.functions.getHookPermissions!);

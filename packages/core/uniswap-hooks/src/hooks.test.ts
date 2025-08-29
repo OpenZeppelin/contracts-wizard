@@ -3,6 +3,7 @@ import { hooks } from './api';
 import { buildHooks, type HooksOptions } from './hooks';
 import { HOOKS } from './hooks/';
 import { printContract } from './print';
+import { generateAllPermissions, generateInversedMixedPermissions, generateMixedPermissions } from './generate/hooks';
 
 function testHooks(title: string, opts: Partial<HooksOptions>) {
   test(title, t => {
@@ -14,26 +15,45 @@ function testHooks(title: string, opts: Partial<HooksOptions>) {
   });
 }
 
-// test all hooks
 for (const key in HOOKS) {
   const hook = HOOKS[key as keyof typeof HOOKS];
   testHooks(`basic ${hook.name}`, { hook: hook.name });
+
+  testHooks(`mixed permissions ${hook.name}`, { hook: hook.name, permissions: generateMixedPermissions() });
+
+  testHooks(`inversed mixed permissions ${hook.name}`, {
+    hook: hook.name,
+    permissions: generateInversedMixedPermissions(),
+  });
+
+  testHooks(`all permissions ${hook.name}`, { hook: hook.name, permissions: generateAllPermissions() });
+
+  testHooks(`currency settler ${hook.name}`, { hook: hook.name, currencySettler: true });
+
+  testHooks(`safeCast ${hook.name}`, { hook: hook.name, safeCast: true });
+
+  testHooks(`transient storage ${hook.name}`, { hook: hook.name, transientStorage: true });
+
+  testHooks(`access control (ownable) ${hook.name}`, { hook: hook.name, access: 'ownable' });
+
+  testHooks(`access control (roles) ${hook.name}`, { hook: hook.name, access: 'roles' });
+
+  testHooks(`access control (managed) ${hook.name}`, { hook: hook.name, access: 'managed' });
+
+  testHooks(`pausable ${hook.name}`, { hook: hook.name, pausable: true });
+
+  testHooks(`shares erc20 ${hook.name}`, {
+    hook: hook.name,
+    shares: { options: 'ERC20', name: 'MyShares', symbol: 'MSH' },
+  });
+
+  testHooks(`shares erc1155 ${hook.name}`, {
+    hook: hook.name,
+    shares: { options: 'ERC1155', uri: 'https://example.com/metadata/{id}.json' },
+  });
+
+  testHooks(`shares erc6909 ${hook.name}`, {
+    hook: hook.name,
+    shares: { options: 'ERC6909' },
+  });
 }
-
-testHooks('access control (ownable)', { access: 'ownable' });
-
-testHooks('access control (roles)', { access: 'roles' });
-
-testHooks('access control (managed)', { access: 'managed' });
-
-testHooks('pausable', { pausable: true });
-
-testHooks('currency settler', { currencySettler: true });
-
-testHooks('safeCast', { safeCast: true });
-
-testHooks('transient storage', { transientStorage: true });
-
-testHooks('shares erc20', { shares: { options: 'ERC20', name: 'MyShares', symbol: 'MSH' } });
-
-testHooks('shares erc6909', { shares: { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' } });
