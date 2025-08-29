@@ -118,7 +118,7 @@
         downloadHardhat: false,
         downloadFoundry: false,
       };
-    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset' || opts?.kind === 'Account') {
+    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset') {
       return {
         openInRemix: false,
         downloadHardhat: false,
@@ -210,7 +210,7 @@
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset']}
     sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
   />
 
@@ -224,7 +224,7 @@
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
         </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
