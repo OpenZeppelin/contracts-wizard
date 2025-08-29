@@ -408,7 +408,6 @@ const functions = {
         '/// @dev Sets the threshold for required signatures.',
         '/// Consider implementing validation to ensure the threshold is reasonable.',
       ],
-
     },
     setSignerWeights: {
       kind: 'public' as const,
