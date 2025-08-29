@@ -7,7 +7,7 @@ const BaseDynamicAfterFee: Hook = {
   displayName: 'Swap Target Enforcer',
   category: 'Fee',
   tooltipText:
-    'Enforces a dynamic target for swap outcomes, capturing any better-than-expected results as hook fees that can be handled or distributed via <code>_afterSwapHandler</code>.',
+    'Enforces a target for swap outcomes determined by <code>_getTargetUnspecified</code>, capturing any better-than-expected results as hook fees that can be handled or distributed via <code>_afterSwapHandler</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
   functions: {
     ...defineFunctions({

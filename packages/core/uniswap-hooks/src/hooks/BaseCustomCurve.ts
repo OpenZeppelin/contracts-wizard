@@ -7,8 +7,7 @@ const BaseCustomCurve: Hook = {
   name: 'BaseCustomCurve',
   displayName: 'Custom Curve',
   category: 'Base',
-  tooltipText:
-    'Custom swap curves allows for custom pricing logic and swap amount calculations. Builds on the custom accounting base.',
+  tooltipText: 'Allows for custom pricing logic and swap amount calculations, useful to implement a custom curve.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomCurve',
   functions: {
     ...defineFunctions({

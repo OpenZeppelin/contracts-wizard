@@ -7,7 +7,7 @@ const AntiSandwichHook: Hook = {
   displayName: 'Sandwich Resistance',
   category: 'General',
   tooltipText:
-    'Anchors swap pricing to the beginning-of-block state in the <code>zeroForOne</code> direction, deterring intra-block sandwich manipulation.',
+    'Maintains the swap pricing in the zeroForOne direction anchored to the beginning-of-block price, nullifying the profitability of sandwich attacks.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#AntiSandwichHook',
   functions: {
     ...defineFunctions({
