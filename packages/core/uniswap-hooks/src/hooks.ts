@@ -1,18 +1,16 @@
-import type { BaseFunction, Contract } from '@openzeppelin/wizard/src/contract';
-import { ContractBuilder } from '@openzeppelin/wizard/src/contract';
-import type { CommonOptions } from '@openzeppelin/wizard/src/common-options';
-import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wizard/src/common-options';
-import { setInfo } from '@openzeppelin/wizard/src/set-info';
-import { setAccessControl } from '@openzeppelin/wizard/src/set-access-control';
-import { addPausable } from '@openzeppelin/wizard/src/add-pausable';
-import type { Value } from '@openzeppelin/wizard/src/contract';
-import { supportsInterface } from '@openzeppelin/wizard/src/common-functions';
-import type { ReferencedContract } from '@openzeppelin/wizard/src/contract';
-
+import {
+  withCommonDefaults,
+  commonDefaults,
+  setInfo,
+  setAccessControl,
+  addPausable,
+  supportsInterface,
+  ContractBuilder,
+} from '@openzeppelin/wizard';
+import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
 import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS } from './hooks/';
 import type { HookName, Shares, Permissions, Permission } from './hooks/';
-
 import importPaths from './importPaths.json';
 
 export interface HooksOptions extends CommonOptions {

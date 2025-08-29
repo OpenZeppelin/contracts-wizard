@@ -1,7 +1,7 @@
+import { defineFunctions } from '@openzeppelin/wizard';
 import { BaseCustomAccounting } from './BaseCustomAccounting';
 import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
-import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
 const BaseCustomCurve: Hook = {
   name: 'BaseCustomCurve',

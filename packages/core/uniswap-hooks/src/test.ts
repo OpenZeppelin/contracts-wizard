@@ -3,7 +3,6 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import hre from 'hardhat';
 import path from 'path';
-
 import { writeGeneratedSources } from './generate/sources';
 import type { KindedOptions } from './build-generic';
 

@@ -1,7 +1,6 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import { infoDefaults } from '@openzeppelin/wizard';
   import { hooks } from '@openzeppelin/wizard-uniswap-hooks/';
   import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
   import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';

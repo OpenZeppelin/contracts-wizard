@@ -1,6 +1,5 @@
 import test from 'ava';
 import { hooks } from './api';
-
 import { buildHooks, type HooksOptions } from './hooks';
 import { HOOKS } from './hooks/';
 import { printContract } from './print';

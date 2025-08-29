@@ -1,7 +1,6 @@
-import { printContract as printSolidityContract } from '@openzeppelin/wizard/';
+import { printContract as printSolidityContract, type Contract } from '@openzeppelin/wizard';
 import type { HooksOptions } from './hooks';
 import { compatibleContractsSemver } from './utils/version';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
 
 export function printContract(contract: Contract, opts?: HooksOptions): string {
   return printSolidityContract(contract, {

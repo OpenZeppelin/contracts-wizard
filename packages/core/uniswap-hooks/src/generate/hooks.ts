@@ -1,8 +1,6 @@
+import { infoOptions, accessOptions, generateAlternatives } from '@openzeppelin/wizard';
 import type { HooksOptions } from '../hooks';
 import { HOOKS, type HookName, type Shares, type Permissions } from '../hooks/index';
-import { accessOptions } from '@openzeppelin/wizard/src/set-access-control';
-import { infoOptions } from '@openzeppelin/wizard/src/set-info';
-import { generateAlternatives } from '@openzeppelin/wizard/src/generate/alternatives';
 
 const booleanOptions = [true, false];
 
@@ -12,7 +10,7 @@ const sharesOptions: Shares[] = [
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
 ] as const;
 
-// Is not needed to generate all permutations, just the default one.
+// Is not needed to generate all permutations, default to false.
 const permissionsOptions: Permissions[] = [
   {
     beforeInitialize: false,
@@ -33,20 +31,6 @@ const permissionsOptions: Permissions[] = [
 ] as const;
 
 const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
-
-// @TODO: remove, faster to test compilation one by one.
-// const hooksOptions: HookName[] = [
-// 'BaseHook',
-// 'BaseAsyncSwap',
-// 'BaseCustomAccounting',
-// 'BaseCustomCurve',
-// 'BaseDynamicAfterFee',
-// 'BaseDynamicFee',
-// 'BaseOverrideFee',
-// 'AntiSandwichHook',
-// 'LiquidityPenaltyHook',
-// 'LimitOrderHook',
-// ];
 
 const blueprint = {
   hook: hooksOptions as readonly HookName[],

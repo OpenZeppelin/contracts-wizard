@@ -1,4 +1,4 @@
-import type { BaseFunction } from '@openzeppelin/wizard/src/contract';
+import type { BaseFunction } from '@openzeppelin/wizard';
 
 import { BaseHook } from './BaseHook';
 import { BaseAsyncSwap } from './BaseAsyncSwap';

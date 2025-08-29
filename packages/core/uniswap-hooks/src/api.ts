@@ -1,11 +1,11 @@
-import type { WizardContractAPI, AccessControlAPI } from '@openzeppelin/wizard/src/api';
+import type { WizardContractAPI, AccessControlAPI } from '@openzeppelin/wizard';
 
 import {
   printHooks,
   defaults as hooksDefaults,
   isAccessControlRequired as hooksIsAccessControlRequired,
+  type HooksOptions,
 } from './hooks';
-import type { HooksOptions } from './hooks';
 
 export type Hooks = WizardContractAPI<HooksOptions> & AccessControlAPI<HooksOptions>;
 

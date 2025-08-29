@@ -1,5 +1,5 @@
+import { defineFunctions } from '@openzeppelin/wizard';
 import type { Hook } from './index';
-import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
 
 const BaseHook: Hook = {
   name: 'BaseHook',

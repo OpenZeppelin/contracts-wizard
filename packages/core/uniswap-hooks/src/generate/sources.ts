@@ -1,15 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-
-import { printContract } from '@openzeppelin/wizard/src/print';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
-import { OptionsError } from '@openzeppelin/wizard/src/error';
-import { findCover } from '@openzeppelin/wizard/src/utils/find-cover';
-
+import { printContract, OptionsError, findCover, type Contract } from '@openzeppelin/wizard';
 import { generateHooksOptions } from './hooks';
-import type { GenericOptions, KindedOptions } from '../build-generic';
-import { buildGeneric } from '../build-generic';
+import { buildGeneric, type GenericOptions, type KindedOptions } from '../build-generic';
 
 type Subset = 'all' | 'minimal-cover';
 

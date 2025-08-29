@@ -1,6 +1,5 @@
-import type { Contract } from '@openzeppelin/wizard/src/contract';
-import type { HooksOptions } from './hooks';
-import { buildHooks } from './hooks';
+import type { Contract } from '@openzeppelin/wizard';
+import { buildHooks, type HooksOptions } from './hooks';
 
 export interface KindedOptions {
   Hooks: { kind: 'Hooks' } & HooksOptions;
