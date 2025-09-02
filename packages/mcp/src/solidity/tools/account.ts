@@ -19,6 +19,7 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
       batchedExecution,
       ERC7579Modules,
       info,
+      upgradeable,
     }) => {
       const opts: AccountOptions = {
         name,
@@ -29,6 +30,7 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
         batchedExecution,
         ERC7579Modules,
         info,
+        upgradeable,
       };
       return {
         content: [
