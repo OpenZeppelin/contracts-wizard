@@ -1,11 +1,10 @@
 import { Redis } from '@upstash/redis';
 import RedisMock from './dev-mocks/redis.ts';
 import { getEnvironmentVariableOr, getEnvironmentVariablesOrFail } from '../utils/env.ts';
-import type { Chat } from '../ai-assistant/types/assistant.ts';
 
 type RedisChat = {
   id: string;
-  messages: Chat[];
+  messages: unknown[];
   updatedAt: number;
   createdAt?: number;
 };
@@ -21,25 +20,26 @@ export const getRedisInstance = () => {
   });
 };
 
-export const saveChatInRedisIfDoesNotExist = (chatId: string, chatMessages: Chat[]) => async (completion: string) => {
-  const redis = getRedisInstance();
+export const saveChatInRedisIfDoesNotExist =
+  (chatId: string, chatMessages: unknown[]) => async (completion: string) => {
+    const redis = getRedisInstance();
 
-  const updatedAt = Date.now();
-  const payload: RedisChat = {
-    id: chatId,
-    updatedAt,
-    messages: [
-      ...chatMessages,
-      {
-        content: completion,
-        role: 'assistant',
-      },
-    ],
+    const updatedAt = Date.now();
+    const payload: RedisChat = {
+      id: chatId,
+      updatedAt,
+      messages: [
+        ...chatMessages,
+        {
+          content: completion,
+          role: 'assistant',
+        },
+      ],
+    };
+
+    const exists = await redis.exists(`chat:${chatId}`);
+
+    if (!exists) payload.createdAt = updatedAt;
+
+    await redis.hset(`chat:${chatId}`, payload);
   };
-
-  const exists = await redis.exists(`chat:${chatId}`);
-
-  if (!exists) payload.createdAt = updatedAt;
-
-  await redis.hset(`chat:${chatId}`, payload);
-};
