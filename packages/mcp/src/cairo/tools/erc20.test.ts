@@ -34,6 +34,7 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyToken',
     symbol: 'MTK',
+    decimals: '18',
   };
   await assertAPIEquivalence(t, params, erc20.print);
 });
@@ -42,6 +43,7 @@ test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyToken',
     symbol: 'MTK',
+    decimals: '18',
     burnable: true,
     pausable: true,
     premint: '1000000',

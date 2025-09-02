@@ -47,6 +47,7 @@ export const commonSchema = {
 export const erc20Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
+  decimals: z.string().describe(cairoERC20Descriptions.decimals),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(cairoERC20Descriptions.premint),
