@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0 (2025-09-02)
+
+- Support ERC20 decimals customization ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
 
 ## 2.0.1 (2025-08-20)
 

@@ -29,6 +29,10 @@ export const cairoERC20AIFunctionDefinition = {
         'appName',
         'appVersion',
       ]),
+      decimals: {
+        type: 'string',
+        description: cairoERC20Descriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: cairoERC20Descriptions.premint,
@@ -38,7 +42,7 @@ export const cairoERC20AIFunctionDefinition = {
         description: cairoERC20Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: ['name', 'symbol', 'decimals'],
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC20'>;
