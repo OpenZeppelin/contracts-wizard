@@ -12,6 +12,7 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
     const c = buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
+      decimals: '18',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -29,6 +30,7 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
         buildERC20({
           name: 'MyToken',
           symbol: 'MTK',
+          decimals: '18',
           ...opts,
         }),
       ),
@@ -69,6 +71,21 @@ testERC20('erc20 premint of 0', {
   premint: '0',
 });
 
+testERC20('erc20 votes, custom decimals', {
+  decimals: '6',
+});
+
+test('erc20 votes, decimals too high', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '256',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than u8 max value');
+});
+
 testERC20('erc20 mintable', {
   mintable: true,
   access: 'ownable',
@@ -95,6 +112,7 @@ test('erc20 votes, no name', async t => {
     buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
+      decimals: '18',
       votes: true,
     }),
   );
@@ -106,6 +124,7 @@ test('erc20 votes, empty version', async t => {
     buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
+      decimals: '18',
       votes: true,
       appName: 'MY_DAPP_NAME',
       appVersion: '', // avoids default value of v1
@@ -158,11 +177,12 @@ testERC20('erc20 full upgradeable with roles', {
 
 testAPIEquivalence('erc20 API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK', decimals: '6' });
 
 testAPIEquivalence('erc20 API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
+  decimals: '6',
   premint: '2000',
   access: 'roles',
   burnable: true,
