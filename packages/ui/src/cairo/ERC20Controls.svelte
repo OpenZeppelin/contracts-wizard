@@ -39,6 +39,14 @@
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
+      Decimals
+      <HelpTooltip>The number of decimals the token uses.</HelpTooltip>
+    </span>
+    <input bind:value={opts.decimals} use:error={errors?.decimals} />
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
       Premint
       <HelpTooltip>Create an initial amount of tokens for the recipient.</HelpTooltip>
     </span>
