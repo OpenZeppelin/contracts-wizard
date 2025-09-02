@@ -1,4 +1,4 @@
-import type { Contract } from './contract';
+import type { BaseImplementedTrait, Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
@@ -19,6 +19,7 @@ import { addVotesComponent } from './common-components';
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
+  decimals: '18',
   burnable: false,
   pausable: false,
   premint: '0',
@@ -38,6 +39,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 export interface ERC20Options extends CommonContractOptions {
   name: string;
   symbol: string;
+  decimals: string;
   burnable?: boolean;
   pausable?: boolean;
   premint?: string;
@@ -70,7 +72,8 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol));
+  const decimals = toUint(opts.decimals, 'decimals', 'u8');
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
   addERC20Mixin(c);
 
   if (allOpts.premint) {
@@ -183,9 +186,22 @@ function addERC20Mixin(c: ContractBuilder) {
   });
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string) {
-  c.addUseClause('openzeppelin::token::erc20', 'DefaultConfig');
+function addBase(c: ContractBuilder, name: string, symbol: string, decimals: bigint) {
+  // Add ERC20 component
   c.addComponent(components.ERC20Component, [name, symbol], true);
+
+  // Add immutable config with decimals
+  const trait: BaseImplementedTrait = {
+    name: 'ERC20ImmutableConfig',
+    of: 'ERC20Component::ImmutableConfig',
+    tags: [],
+  };
+  c.addImplementedTrait(trait);
+  c.addSuperVariableToTrait(trait, {
+    name: 'DECIMALS',
+    type: 'u8',
+    value: decimals.toString(),
+  });
 }
 
 function addBurnable(c: ContractBuilder) {
