@@ -72,7 +72,7 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   const allOpts = withDefaults(opts);
 
-  const decimals = toUint(opts.decimals, 'decimals', 'u8');
+  const decimals = toUint(allOpts.decimals, 'decimals', 'u8');
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
 
   addERC20Mixin(c);
