@@ -77,7 +77,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   addERC20Mixin(c);
 
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
+    addPremint(c, allOpts.premint, decimals);
   }
 
   if (allOpts.pausable) {
@@ -211,7 +211,7 @@ function addBurnable(c: ContractBuilder) {
 
 export const premintPattern = /^(\d*\.?\d*)$/;
 
-function addPremint(c: ContractBuilder, amount: string) {
+function addPremint(c: ContractBuilder, amount: string, decimals: bigint) {
   if (amount !== undefined && amount !== '0') {
     if (!premintPattern.test(amount)) {
       throw new OptionsError({
@@ -219,7 +219,7 @@ function addPremint(c: ContractBuilder, amount: string) {
       });
     }
 
-    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u256');
+    const premintAbsolute = toUint(getInitialSupply(amount, Number(decimals)), 'premint', 'u256');
 
     c.addUseClause('starknet', 'ContractAddress');
     c.addConstructorArgument({ name: 'recipient', type: 'ContractAddress' });
