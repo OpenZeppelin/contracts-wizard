@@ -1,14 +1,14 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
-import { commonFunctionDescription } from './zama-shared.ts';
+import { commonFunctionDescription } from './confidential-shared.ts';
 import {
-  zamaPrompts,
-  zamaConfidentialFungibleDescriptions,
-} from '../../../../common/src/ai/descriptions/zama.ts';
+  confidentialPrompts,
+  confidentialConfidentialFungibleDescriptions,
+} from '../../../../common/src/ai/descriptions/confidential.ts';
 
-export const zamaConfidentialFungibleAIFunctionDefinition = {
+export const confidentialConfidentialFungibleAIFunctionDefinition = {
   name: 'ConfidentialFungible',
-  description: zamaPrompts.ConfidentialFungible,
+  description: confidentialPrompts.ConfidentialFungible,
   parameters: {
     type: 'object',
     properties: {
@@ -19,32 +19,32 @@ export const zamaConfidentialFungibleAIFunctionDefinition = {
       ]),
       tokenURI: {
         type: 'string',
-        description: zamaConfidentialFungibleDescriptions.tokenURI,
+        description: confidentialConfidentialFungibleDescriptions.tokenURI,
       },
       premint: {
         type: 'string',
-        description: zamaConfidentialFungibleDescriptions.premint,
+        description: confidentialConfidentialFungibleDescriptions.premint,
       },
       networkConfig: {
         anyOf: [
           { type: 'string', enum: ['zama-sepolia', 'zama-ethereum'] },
         ],
-        description: zamaConfidentialFungibleDescriptions.networkConfig,
+        description: confidentialConfidentialFungibleDescriptions.networkConfig,
       },
       wrappable: {
         type: 'boolean',
-        description: zamaConfidentialFungibleDescriptions.wrappable,
+        description: confidentialConfidentialFungibleDescriptions.wrappable,
       },
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false, true] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description: zamaConfidentialFungibleDescriptions.votes,
+        description: confidentialConfidentialFungibleDescriptions.votes,
       },
 
     },
     required: ['name', 'symbol', 'tokenURI', 'networkConfig'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'zama', 'ConfidentialFungible'>;
+} as const satisfies AiFunctionDefinition<'confidential', 'ConfidentialFungible'>;

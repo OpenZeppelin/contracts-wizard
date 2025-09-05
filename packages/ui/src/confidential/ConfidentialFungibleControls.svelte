@@ -1,9 +1,9 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-zama';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-confidential';
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { confidentialFungible, premintPattern } from '@openzeppelin/wizard-zama';
+  import { confidentialFungible, premintPattern } from '@openzeppelin/wizard-confidential';
 
   import InfoSection from '../solidity/InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
@@ -50,16 +50,16 @@
   <div class="labeled-input">
     <span class="flex justify-between pr-2">
       Network Configuration
-      <HelpTooltip>Adds configuration to use FHEVM contracts provided by Zama on the specified network.</HelpTooltip>
+      <HelpTooltip>Adds configuration to use FHEVM contracts from a provider on the specified network.</HelpTooltip>
     </span>
     <div class="checkbox-group">
       <label class:checked={opts.networkConfig === 'zama-sepolia'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-sepolia" />
-        Sepolia
+        Sepolia (Zama)
       </label>
       <label class:checked={opts.networkConfig === 'zama-ethereum'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-ethereum" />
-        Ethereum
+        Ethereum (Zama)
       </label>
     </div>
   </div>

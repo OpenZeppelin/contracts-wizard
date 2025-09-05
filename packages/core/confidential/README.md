@@ -1,6 +1,6 @@
-# OpenZeppelin Contracts Wizard for Zama
+# OpenZeppelin Contracts Wizard for Confidential Contracts
 
-[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-zama?color=%234e5de4)](https://www.npmjs.com/package/@openzeppelin/wizard-zama)
+[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-confidential?color=%234e5de4)](https://www.npmjs.com/package/@openzeppelin/wizard-confidential)
 
 Interactively build a contract out of components from OpenZeppelin Confidential Contracts. Provide parameters and desired features for the kind of contract that you want, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
@@ -8,12 +8,12 @@ This package provides a programmatic API. For a web interface, see https://wizar
 
 ### Installation
 
-`npm install @openzeppelin/wizard-zama`
+`npm install @openzeppelin/wizard-confidential`
 
 ### Contract types
 
 The following contract types are supported:
-- `erc20`
+- `confidentialFungible`
 
 Each contract type has functions/constants as defined below.
 
@@ -21,34 +21,34 @@ Each contract type has functions/constants as defined below.
 
 #### `print`
 ```js
-function print(opts?: ERC20Options): string
+function print(opts?: ConfidentialFungibleOptions): string
 ```
 
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
 #### `defaults`
 ```js
-const defaults: Required<ERC20Options>
+const defaults: Required<ConfidentialFungibleOptions>
 ```
 
 The default options that are used for [`print`](#print).
 
 ### Examples
 
-Import the contract type(s) that you want to use from the `@openzeppelin/wizard-zama` package:
+Import the contract type(s) that you want to use from the `@openzeppelin/wizard-confidential` package:
 
 ```js
-import { erc20 } from '@openzeppelin/wizard-zama';
+import { confidentialFungible } from '@openzeppelin/wizard-confidential';
 ```
 
-To generate the source code for an ERC20 contract with all of the default settings:
+To generate the source code for a confidential fungible contract with all of the default settings:
 ```js
-const contract = erc20.print();
+const contract = confidentialFungible.print();
 ```
 
-To generate the source code for an ERC20 contract with a custom name and symbol, along with some custom settings:
+To generate the source code for a confidential fungible contract with a custom name and symbol, along with some custom settings:
 ```js
-const contract = erc20.print({
+const contract = confidentialFungible.print({
   name: 'ExampleToken',
   symbol: 'ETK',
   burnable: true,

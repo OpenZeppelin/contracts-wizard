@@ -16,8 +16,8 @@
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-zama';
-  import type { KindedOptions, Kind } from '@openzeppelin/wizard-zama';
+  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-confidential';
+  import type { KindedOptions, Kind } from '@openzeppelin/wizard-confidential';
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
 
@@ -30,7 +30,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const WizZama = createWiz<'zama'>();
+  const WizConfidential = createWiz<'confidential'>();
 
   async function allowRendering() {
     showCode = false;
@@ -102,7 +102,7 @@
     };
   };
 
-  const language = 'zama';
+  const language = 'confidential';
 
   let copied = false;
   const copyHandler = async () => {
@@ -121,7 +121,7 @@
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
     // TODO check if this should indeed avoid versioned so vanilla and confidential's imported vanilla don't conflict
-    const { printContract } = await import('@openzeppelin/wizard-zama');
+    const { printContract } = await import('@openzeppelin/wizard-confidential');
 
     const versionedCode = printContract(contract);
     window.open(remixURL(versionedCode, false).toString(), '_blank', 'noopener,noreferrer');
@@ -139,7 +139,7 @@
   };
 
   // TODO override?
-  const zipHardhatModule = import('@openzeppelin/wizard-zama/zip-env-hardhat');
+  const zipHardhatModule = import('@openzeppelin/wizard-confidential/zip-env-hardhat');
 
   const downloadHardhatHandler = async () => {
     const { zipHardhat } = await zipHardhatModule;
@@ -151,15 +151,15 @@
     }
   };
 
-  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'zama'>>) => {
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'confidential'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <WizZama
-    language="zama"
+  <WizConfidential
+    language="confidential"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
@@ -301,7 +301,7 @@
   }
 
   .tab button.selected {
-    background-color: var(--zama-yellow);
+    background-color: var(--confidential-yellow);
     color: black;
     order: -1;
   }

@@ -149,13 +149,13 @@ body {
     contrast(100%);
 }
 
-.nav .switch.switch-zama.active {
+.nav .switch.switch-confidential.active {
   --color-2: #000000;
 }
-.nav .switch.switch-zama img {
+.nav .switch.switch-confidential img {
   filter: grayscale(100%);
 }
-.nav .switch.switch-zama.active img {
+.nav .switch.switch-confidential.active img {
   filter: grayscale(0);
 }
 

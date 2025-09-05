@@ -5,7 +5,7 @@ import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
-import ZamaApp from './zama/App.svelte';
+import ConfidentialApp from './confidential/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
@@ -16,9 +16,9 @@ import {
   compatibleContractsSemver as cairoAlphaSemver,
   contractsVersion as cairoAlphaVersion,
 } from '@openzeppelin/wizard-cairo-alpha';
+import { compatibleContractsSemver as confidentialSemver } from '@openzeppelin/wizard-confidential';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
-import { compatibleContractsSemver as zamaSemver } from '@openzeppelin/wizard-zama';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -45,7 +45,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus' | 'zama';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'confidential' | 'stellar' | 'stylus';
 }
 
 interface IncompatibleSelection {
@@ -81,6 +81,13 @@ function evaluateSelection(
         return { compatible: false, compatibleVersionsSemver: `${cairoAlphaSemver} || ${cairoSemver}` };
       }
     }
+    case 'confidential': {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, confidentialSemver)) {
+        return { compatible: true, appType: 'confidential' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: confidentialSemver };
+      }
+    }
     case 'stellar': {
       if (requestedVersion === undefined || semver.satisfies(requestedVersion, stellarSemver)) {
         return { compatible: true, appType: 'stellar' };
@@ -93,13 +100,6 @@ function evaluateSelection(
         return { compatible: true, appType: 'stylus' };
       } else {
         return { compatible: false, compatibleVersionsSemver: stylusSemver };
-      }
-    }
-    case 'zama': {
-      if (requestedVersion === undefined || semver.satisfies(requestedVersion, zamaSemver)) {
-        return { compatible: true, appType: 'zama' };
-      } else {
-        return { compatible: false, compatibleVersionsSemver: zamaSemver };
       }
     }
     case 'solidity':
@@ -160,8 +160,8 @@ if (!selection.compatible) {
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
-    case 'zama':
-      app = new ZamaApp({ target: document.body, props: { initialTab, initialOpts } });
+    case 'confidential':
+      app = new ConfidentialApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
       app = new SolidityApp({

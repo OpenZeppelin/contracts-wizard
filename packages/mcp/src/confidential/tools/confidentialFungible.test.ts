@@ -2,11 +2,11 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerZamaConfidentialFungible } from './confidentialFungible';
+import { registerConfidentialConfidentialFungible } from './confidentialFungible';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
-import type { ConfidentialFungibleOptions } from '@openzeppelin/wizard-zama';
-import { confidentialFungible } from '@openzeppelin/wizard-zama';
+import type { ConfidentialFungibleOptions } from '@openzeppelin/wizard-confidential';
+import { confidentialFungible } from '@openzeppelin/wizard-confidential';
 import { confidentialFungibleSchema } from '../schemas';
 import { z } from 'zod';
 
@@ -18,7 +18,7 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.before(t => {
-  t.context.tool = registerZamaConfidentialFungible(new McpServer(testMcpInfo));
+  t.context.tool = registerConfidentialConfidentialFungible(new McpServer(testMcpInfo));
   t.context.schema = z.object(confidentialFungibleSchema);
 });
 

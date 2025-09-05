@@ -1,5 +1,5 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
-import type { ZamaCommonOptions } from '../types/languages.ts';
+import type { ConfidentialCommonOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 
 export const commonFunctionDescription = {
@@ -17,4 +17,4 @@ export const commonFunctionDescription = {
       },
     },
   },
-} as const satisfies AiFunctionPropertyDefinition<ZamaCommonOptions>['properties'];
+} as const satisfies AiFunctionPropertyDefinition<ConfidentialCommonOptions>['properties'];

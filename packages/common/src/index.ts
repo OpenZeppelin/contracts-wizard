@@ -3,4 +3,4 @@ export * from './ai/descriptions/cairo';
 export * from './ai/descriptions/solidity';
 export * from './ai/descriptions/stellar';
 export * from './ai/descriptions/stylus';
-export * from './ai/descriptions/zama';
+export * from './ai/descriptions/confidential';

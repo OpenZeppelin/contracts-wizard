@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerZamaConfidentialFungible } from './tools/confidentialFungible.js';
-import type { KindedOptions } from '@openzeppelin/wizard-zama';
+import { registerConfidentialConfidentialFungible } from './tools/confidentialFungible.js';
+import type { KindedOptions } from '@openzeppelin/wizard-confidential';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 type SolidityToolRegisterFunctions = {
@@ -9,7 +9,7 @@ type SolidityToolRegisterFunctions = {
 
 function getRegisterFunctions(server: McpServer): SolidityToolRegisterFunctions {
   return {
-    ConfidentialFungible: () => registerZamaConfidentialFungible(server),
+    ConfidentialFungible: () => registerConfidentialConfidentialFungible(server),
   };
 }
 
