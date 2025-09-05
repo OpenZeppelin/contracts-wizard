@@ -19,6 +19,9 @@ export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
 export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
+// Confidential
+import type { KindedOptions as ConfidentialKindedOptions } from '../../../../core/confidential/dist';
+export type { CommonOptions as ConfidentialCommonOptions } from '../../../../core/confidential/dist/common-options';
 
 // Add supported language here
 export type LanguagesContractsOptions = {
@@ -40,14 +43,15 @@ export type LanguagesContractsOptions = {
     ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
     ERC1155: StylusKindedOptions['ERC1155'] & StylusCommonContractOptions;
   };
+  confidential: ConfidentialKindedOptions;
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['confidential'] &
   LanguagesContractsOptions['stellar'] &
   LanguagesContractsOptions['stylus'];
-//
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 

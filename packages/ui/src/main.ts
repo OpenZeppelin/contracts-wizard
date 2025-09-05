@@ -5,6 +5,7 @@ import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
+import ConfidentialApp from './confidential/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
@@ -15,6 +16,7 @@ import {
   compatibleContractsSemver as cairoAlphaSemver,
   contractsVersion as cairoAlphaVersion,
 } from '@openzeppelin/wizard-cairo-alpha';
+import { compatibleContractsSemver as confidentialSemver } from '@openzeppelin/wizard-confidential';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import type { InitialOptions } from './common/initial-options';
@@ -43,7 +45,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'stellar' | 'stylus';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'confidential' | 'stellar' | 'stylus';
 }
 
 interface IncompatibleSelection {
@@ -77,6 +79,13 @@ function evaluateSelection(
         return { compatible: true, appType: 'cairo' };
       } else {
         return { compatible: false, compatibleVersionsSemver: `${cairoAlphaSemver} || ${cairoSemver}` };
+      }
+    }
+    case 'confidential': {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, confidentialSemver)) {
+        return { compatible: true, appType: 'confidential' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: confidentialSemver };
       }
     }
     case 'stellar': {
@@ -150,6 +159,9 @@ if (!selection.compatible) {
       break;
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+    case 'confidential':
+      app = new ConfidentialApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
       app = new SolidityApp({
