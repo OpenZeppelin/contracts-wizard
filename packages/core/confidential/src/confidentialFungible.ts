@@ -8,6 +8,7 @@ import type { ClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
 import { clockModeDefault, setClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
 import { OptionsError } from '@openzeppelin/wizard/src/error';
 import { toUint256, UINT256_MAX } from '@openzeppelin/wizard/src/utils/convert-strings';
+import { requireAccessControl } from '@openzeppelin/wizard/src/set-access-control';
 
 export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
@@ -209,9 +210,8 @@ function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   c.addOverride(ConfidentialFungibleTokenVotes, functions._update);
   c.addOverride(ConfidentialFungibleTokenVotes, functions.confidentialTotalSupply);
 
-  // TODO Should this have some functional default implementation?
   c.addModifier('override', functions._validateHandleAllowance);
-  c.addFunctionCode('// TODO', functions._validateHandleAllowance);
+  requireAccessControl(c, functions._validateHandleAllowance, 'roles', 'HANDLE_VIEWER', 'handleViewer');
 
   setClockMode(c, ConfidentialFungibleTokenVotes, clockMode);
 }
