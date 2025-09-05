@@ -152,11 +152,8 @@ body {
 .nav .switch.switch-confidential.active {
   --color-2: #000000;
 }
-.nav .switch.switch-confidential img {
-  filter: grayscale(100%);
-}
 .nav .switch.switch-confidential.active img {
-  filter: grayscale(0);
+  filter: brightness(0);
 }
 
 .nav-row {
