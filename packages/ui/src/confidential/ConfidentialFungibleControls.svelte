@@ -50,16 +50,16 @@
   <div class="labeled-input">
     <span class="flex justify-between pr-2">
       Network Configuration
-      <HelpTooltip>Adds configuration to use FHEVM contracts from a provider on the specified network.</HelpTooltip>
+      <HelpTooltip>Specify the network configuration and provider to use for FHEVM contracts.</HelpTooltip>
     </span>
     <div class="checkbox-group">
       <label class:checked={opts.networkConfig === 'zama-sepolia'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-sepolia" />
-        Sepolia (Zama)
+        Sepolia - Zama &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
       </label>
       <label class:checked={opts.networkConfig === 'zama-ethereum'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-ethereum" />
-        Ethereum (Zama)
+        Ethereum - Zama &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
       </label>
     </div>
   </div>
