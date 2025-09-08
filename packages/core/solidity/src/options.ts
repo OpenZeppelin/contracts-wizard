@@ -3,7 +3,7 @@ import path from 'path';
 import type { Contract, ReferencedContract, ImportContract } from './contract';
 import { inferTranspiled } from './infer-transpiled';
 
-const upgradeableName = (n: string) => {
+export function upgradeableName(n: string) {
   if (n === 'Initializable') {
     return n;
   } else {
@@ -11,7 +11,7 @@ const upgradeableName = (n: string) => {
   }
 };
 
-const upgradeableImport = (p: ImportContract): ImportContract => {
+export function upgradeableImport(p: ImportContract): ImportContract {
   const { dir, ext, name } = path.parse(p.path);
   // Use path.posix to get forward slashes
   return {
@@ -30,19 +30,19 @@ export interface Options {
 }
 
 export interface Helpers extends Required<Options> {
-  shouldUseInitializers: boolean;
+  upgradeable: boolean;
   transformName: (name: ReferencedContract) => string;
+  transformImport: (name: ImportContract) => ImportContract;
 }
 
 export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
-  const shouldAutoTranspileImports = contract.shouldAutoTranspileImports;
-  const transformName = (n: ReferencedContract) =>
-    shouldAutoTranspileImports && inferTranspiled(n) ? upgradeableName(n.name) : n.name;
+  const contractUpgradeable = contract.upgradeable;
   return {
-    shouldUseInitializers: shouldAutoTranspileImports,
-    transformName,
-    transformImport: p1 => {
-      const p2 = shouldAutoTranspileImports && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
+    upgradeable: contractUpgradeable,
+    transformName: (n: ReferencedContract) =>
+      contractUpgradeable && inferTranspiled(n) ? upgradeableName(n.name) : n.name,
+    transformImport: (p1: ImportContract) => {
+      const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
   };

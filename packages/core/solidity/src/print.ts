@@ -81,24 +81,48 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasParentParams = contract.parents.some(p => p.params.length > 0);
   const hasConstructorCode = contract.constructorCode.length > 0;
   const parentsWithInitializers = contract.parents.filter(hasInitializer);
-  if (hasParentParams || hasConstructorCode || (helpers.shouldUseInitializers && parentsWithInitializers.length > 0)) {
-    const parents = parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.shouldUseInitializers ? ['public initializer'] : parents;
-    const args = contract.constructorArgs.map(a => printArgument(a, helpers));
-    const body = helpers.shouldUseInitializers
-      ? spaceBetween(
-          parents.map(p => p + ';'),
-          contract.constructorCode,
-        )
-      : contract.constructorCode;
-    const head = helpers.shouldUseInitializers ? 'function initialize' : 'constructor';
-    const ctor = printFunction2(contract.constructorComments, head, args, modifiers, body);
-    if (!helpers.shouldUseInitializers) {
-      return ctor;
+  if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
+    if (helpers.upgradeable) {
+      const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
+      const nonUpgradeableParents = parentsWithInitializers.filter(p => !inferTranspiled(p.contract));
+
+      return spaceBetween(
+        // constructor
+        printFunction2(
+          [
+            nonUpgradeableParents.length > 0
+            ? '/// @custom:oz-upgrades-unsafe-allow-reachable constructor'
+            : '/// @custom:oz-upgrades-unsafe-allow constructor',
+          ],
+          'constructor',
+          [],
+          nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
+          ['_disableInitializers();']
+        ),
+        // initializer
+        upgradeableParents.length > 0
+          ? printFunction2(
+            [],
+            'function initialize',
+            contract.constructorArgs.map(a => printArgument(a, helpers)),
+            [ 'public', 'initializer' ],
+            spaceBetween(
+              upgradeableParents.flatMap(p => printParentConstructor(p, helpers)).map(p => p + ';'),
+              contract.constructorCode,
+            )
+          )
+          : [],
+      );
     } else {
-      return spaceBetween(DISABLE_INITIALIZERS, ctor);
+      return printFunction2(
+        [],
+        'constructor',
+        contract.constructorArgs.map(a => printArgument(a, helpers)),
+        parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers)),
+        contract.constructorCode
+      );
     }
-  } else if (!helpers.shouldUseInitializers) {
+  } else if (!helpers.upgradeable) {
     return [];
   } else {
     return DISABLE_INITIALIZERS;
@@ -139,7 +163,7 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 }
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
-  const useTranspiled = helpers.shouldUseInitializers && inferTranspiled(contract);
+  const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
   const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
   if (useTranspiled || params.length > 0) {
     return [fn + '(' + params.map(printValue).join(', ') + ')'];

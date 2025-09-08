@@ -11,19 +11,16 @@ function setUpgradeableBase(
   c: ContractBuilder,
   upgradeable: Upgradeable,
   restrictAuthorizeUpgradeWhenUUPS: () => void,
-  onlyUseUpgradeableInitializableAndUUPS: boolean = false,
 ) {
   if (upgradeable === false) {
     return;
   }
 
-  c.shouldAutoTranspileImports = !onlyUseUpgradeableInitializableAndUUPS;
-  c.shouldInstallContractsUpgradeable = true;
-  c.shouldUseUpgradesPluginsForProxyDeployment = true;
+  c.upgradeable = true;
 
   c.addParent({
     name: 'Initializable',
-    path: `@openzeppelin/${onlyUseUpgradeableInitializableAndUUPS ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/Initializable.sol`,
+    path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
   });
 
   switch (upgradeable) {
@@ -34,7 +31,7 @@ function setUpgradeableBase(
       restrictAuthorizeUpgradeWhenUUPS();
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
-        path: `@openzeppelin/${onlyUseUpgradeableInitializableAndUUPS ? 'contracts-upgradeable' : 'contracts'}/proxy/utils/UUPSUpgradeable.sol`,
+        path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
       };
       c.addParent(UUPSUpgradeable);
       c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);
@@ -62,19 +59,9 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
 }
 
 export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeable) {
-  if (upgradeable === false) {
-    return;
-  }
-  setUpgradeableBase(
-    c,
-    upgradeable,
-    () => {
+  setUpgradeableBase(c, upgradeable, () => {
       c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
-    },
-    true, // account.ts handles usage of transpiled imports (when needed) rather than using helpers.
-  );
-  c.shouldInstallContractsUpgradeable = true;
-  c.shouldUseUpgradesPluginsForProxyDeployment = false; // this will eventually use a factory to deploy proxies
+  });
 }
 
 const functions = defineFunctions({
