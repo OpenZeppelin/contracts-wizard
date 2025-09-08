@@ -13,15 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN rustup update stable && rustup target add wasm32v1-none
 
 COPY Cargo.toml Cargo.lock ./
-RUN cargo fetch
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/local/cargo/git \
+  cargo fetch
 
 # Install CLI tools with versions pinned from Cargo metadata
 RUN set -eux; \
-  STELLAR_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '(.workspace_metadata.tools["stellar-cli"] // (.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_cli))'); \
+  STELLAR_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_cli'); \
   TMPDIR=/opt/tmp cargo install --locked stellar-cli --version "${STELLAR_CLI_VERSION}" -j 1
 
 RUN set -eux; \
-  STELLAR_SCAFFOLD_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '(.workspace_metadata.tools["stellar-scaffold-cli"] // (.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_scaffold_cli))'); \
+  STELLAR_SCAFFOLD_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_scaffold_cli'); \
   TMPDIR=/opt/tmp cargo install --locked stellar-scaffold-cli --version "${STELLAR_SCAFFOLD_CLI_VERSION}" -j 1
 
 COPY . .
@@ -50,6 +52,8 @@ ENV RUSTUP_HOME=/usr/local/rustup
 ENV PATH=/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 COPY --from=builder /usr/local/cargo/ $CARGO_HOME
 COPY --from=builder /usr/local/rustup/ $RUSTUP_HOME
+
+RUN rm -rf /usr/local/cargo/registry /usr/local/cargo/git
 
 
 USER appuser

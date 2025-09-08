@@ -17,9 +17,9 @@ tempfile = "^3.21.0"
 globset = "^0.4.16"
 libc = "^0.2.175"
 
-[workspace.metadata.tools]
-stellar-cli = "23.0.1"
-stellar-scaffold-cli = "0.0.8"
+[package.metadata.tools]
+stellar_cli = "23.0.1"
+stellar_scaffold_cli = "0.0.8"
 
 [[bin]]
 name = "stellar-api"

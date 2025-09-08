@@ -3,13 +3,14 @@ services:
     container_name: stellar-api
     build:
       context: ./stellar
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./stellar:/usr/src/stellar-api
-      - stellar-cargo-target:/usr/src/stellar-api/target
-      - stellar-cargo-cache:/usr/local/cargo/registry
-      - stellar-cargo-git:/usr/local/cargo/git
-      - stellar-tmp:/tmp
+      # TODO revert to .dev
+      dockerfile: Dockerfile.prod
+    # volumes:
+    #   - ./stellar:/usr/src/stellar-api
+    #   - stellar-cargo-target:/usr/src/stellar-api/target
+    #   - stellar-cargo-cache:/usr/local/cargo/registry
+    #   - stellar-cargo-git:/usr/local/cargo/git
+    #   - stellar-tmp:/tmp
     environment:
       - RUSTFLAGS=-C debuginfo=0
       - CFLAGS=-g0
@@ -18,7 +19,7 @@ services:
       - ./stellar/.env
     ports:
       - '8888:8888'
-    command: ['cargo', 'watch', '-x', 'run']
+    # command: ['cargo', 'watch', '-x', 'run']
     tty: true
     stdin_open: true
 

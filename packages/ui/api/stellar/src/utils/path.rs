@@ -4,16 +4,19 @@ use std::io::{Error as IoError, ErrorKind as IoErrorKind, Result as IoResult};
 use std::path::{Component, Path, PathBuf};
 
 pub fn canonicalize_existing_dir(dir: &Path) -> Result<PathBuf, IoError> {
-    if dir.exists() {
-        let can_path = canonicalize(dir)?;
-        if !can_path.is_dir() {
-            return Err(IoError::other("destination is not a directory"));
+    let can_path = canonicalize(dir).map_err(|e| {
+        if e.kind() == IoErrorKind::NotFound {
+            IoError::other("Directory does not exist")
+        } else {
+            e
         }
+    })?;
 
-        return Ok(can_path);
+    if !can_path.is_dir() {
+        return Err(IoError::other("destination is not a directory"));
     }
 
-    Err(IoError::other("Directory does not exist"))
+    Ok(can_path)
 }
 
 fn norm(s: &str) -> String {

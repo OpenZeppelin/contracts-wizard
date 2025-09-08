@@ -26,7 +26,7 @@ impl ServerConfig {
             port: env::var("APP_PORT")
                 .unwrap_or_else(|_| "8888".to_string())
                 .parse()
-                .unwrap_or(8080),
+                .unwrap_or(8888),
             rate_limit_requests_per_second: env::var("RATE_LIMIT_REQUESTS_PER_SECOND")
                 .unwrap_or_else(|_| "100".to_string())
                 .parse()

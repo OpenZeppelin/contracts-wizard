@@ -31,6 +31,6 @@ pub async fn upgrade_to_scaffold(rust_contract_zip: web::Bytes) -> Result<Vec<u8
 
     let zipped_env = zip_directory(contracts_dir.path()).map_err(to_http_hidden_error)?;
 
-    contracts_dir.close()?;
+    contracts_dir.close().map_err(to_http_hidden_error)?;
     Ok(zipped_env)
 }

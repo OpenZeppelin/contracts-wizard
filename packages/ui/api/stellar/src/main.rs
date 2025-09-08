@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
     let rate_limit_config = GovernorConfigBuilder::default()
         .requests_per_second(config.rate_limit_requests_per_second)
         .finish()
-        .unwrap();
+        .expect("Invalid rate limiter config: ensure rate_limit_requests_per_second is a positive integer");
 
     let host = config.host.clone();
     let port = config.port;
