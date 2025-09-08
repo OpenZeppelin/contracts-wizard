@@ -110,7 +110,6 @@ test('erc20 votes, no name', async t => {
     buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
-      decimals: '18',
       votes: true,
     }),
   );
@@ -122,7 +121,6 @@ test('erc20 votes, empty version', async t => {
     buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
-      decimals: '18',
       votes: true,
       appName: 'MY_DAPP_NAME',
       appVersion: '', // avoids default value of v1
