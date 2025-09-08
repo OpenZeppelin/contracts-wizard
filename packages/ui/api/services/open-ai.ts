@@ -37,13 +37,13 @@ const processOpenAIStream = (
       try {
         for await (const chunk of openAiStream) {
           const delta = chunk?.choices?.[0]?.delta;
-          const isToolCallBuilding = Boolean(delta?.tool_calls);
+          const isToolCallBuilding = Boolean(delta.tool_calls?.[0]?.index === 0);
           const isFunctionCallFinished = Boolean(chunk?.choices?.[0]?.finish_reason === 'tool_calls');
 
           if (delta.content) {
             finalResponse += delta.content;
             controller.enqueue(textEncoder.encode(delta.content));
-          } else if (isToolCallBuilding) {
+          } else if (isToolCallBuilding && !isFunctionCallFinished) {
             finalToolCall.name += delta.tool_calls?.[0]?.function?.name || '';
             finalToolCall.arguments += delta.tool_calls?.[0]?.function?.arguments || '';
           } else if (isFunctionCallFinished)
