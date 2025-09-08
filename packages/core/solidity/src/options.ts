@@ -9,7 +9,7 @@ export function upgradeableName(n: string) {
   } else {
     return n.replace(/(Upgradeable)?(?=\.|$)/, 'Upgradeable');
   }
-};
+}
 
 export function upgradeableImport(p: ImportContract): ImportContract {
   const { dir, ext, name } = path.parse(p.path);
@@ -23,7 +23,7 @@ export function upgradeableImport(p: ImportContract): ImportContract {
       name: upgradeableName(name), // Solidity file name
     }),
   };
-};
+}
 
 export interface Options {
   transformImport?: (parent: ImportContract) => ImportContract;

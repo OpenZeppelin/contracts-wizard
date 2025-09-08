@@ -85,41 +85,35 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     if (helpers.upgradeable) {
       const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
       const nonUpgradeableParents = parentsWithInitializers.filter(p => !inferTranspiled(p.contract));
-
-      return spaceBetween(
-        // constructor
-        printFunction2(
-          [
-            nonUpgradeableParents.length > 0
+      const constructor = printFunction2(
+        [
+          nonUpgradeableParents.length > 0
             ? '/// @custom:oz-upgrades-unsafe-allow-reachable constructor'
             : '/// @custom:oz-upgrades-unsafe-allow constructor',
-          ],
-          'constructor',
-          [],
-          nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
-          ['_disableInitializers();']
-        ),
-        // initializer
-        upgradeableParents.length > 0
-          ? printFunction2(
-            [],
-            'function initialize',
-            contract.constructorArgs.map(a => printArgument(a, helpers)),
-            [ 'public', 'initializer' ],
-            spaceBetween(
-              upgradeableParents.flatMap(p => printParentConstructor(p, helpers)).map(p => p + ';'),
-              contract.constructorCode,
-            )
-          )
-          : [],
+        ],
+        'constructor',
+        [],
+        nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
+        ['_disableInitializers();'],
       );
+      const initializer = printFunction2(
+        [],
+        'function initialize',
+        contract.constructorArgs.map(a => printArgument(a, helpers)),
+        ['public', 'initializer'],
+        spaceBetween(
+          upgradeableParents.flatMap(p => printParentConstructor(p, helpers)).map(p => p + ';'),
+          contract.constructorCode,
+        ),
+      );
+      return spaceBetween(constructor, upgradeableParents.length > 0 ? initializer : []);
     } else {
       return printFunction2(
         [],
         'constructor',
         contract.constructorArgs.map(a => printArgument(a, helpers)),
         parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers)),
-        contract.constructorCode
+        contract.constructorCode,
       );
     }
   } else if (!helpers.upgradeable) {

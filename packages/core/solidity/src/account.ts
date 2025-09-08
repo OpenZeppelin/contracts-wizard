@@ -5,12 +5,7 @@ import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
 import { upgradeableName } from './options';
 import { setInfo } from './set-info';
-import {
-  addSigner,
-  signerFunctions,
-  signers,
-  type SignerOptions,
-} from './signer';
+import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 import { setUpgradeableAccount } from './set-upgradeable';
 
 export const defaults: Required<AccountOptions> = {
