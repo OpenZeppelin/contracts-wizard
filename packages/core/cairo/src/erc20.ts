@@ -16,10 +16,12 @@ import { externalTrait } from './external-trait';
 import { toByteArray, toFelt252, toUint } from './utils/convert-strings';
 import { addVotesComponent } from './common-components';
 
+const DEFAULT_DECIMALS = BigInt(18);
+
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
-  decimals: '18',
+  decimals: DEFAULT_DECIMALS.toString(),
   burnable: false,
   pausable: false,
   premint: '0',
@@ -190,18 +192,22 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: big
   // Add ERC20 component
   c.addComponent(components.ERC20Component, [name, symbol], true);
 
-  // Add immutable config with decimals
-  const trait: BaseImplementedTrait = {
-    name: 'ERC20ImmutableConfig',
-    of: 'ERC20Component::ImmutableConfig',
-    tags: [],
-  };
-  c.addImplementedTrait(trait);
-  c.addSuperVariableToTrait(trait, {
-    name: 'DECIMALS',
-    type: 'u8',
-    value: decimals.toString(),
-  });
+  // Add config with decimals
+  if (decimals === DEFAULT_DECIMALS) {
+    c.addUseClause('openzeppelin::token::erc20', 'DefaultConfig', { alias: 'ERC20DefaultConfig' });
+  } else {
+    const trait: BaseImplementedTrait = {
+      name: 'ERC20ImmutableConfig',
+      of: 'ERC20Component::ImmutableConfig',
+      tags: [],
+    };
+    c.addImplementedTrait(trait);
+    c.addSuperVariableToTrait(trait, {
+      name: 'DECIMALS',
+      type: 'u8',
+      value: decimals.toString(),
+    });
+  }
 }
 
 function addBurnable(c: ContractBuilder) {
