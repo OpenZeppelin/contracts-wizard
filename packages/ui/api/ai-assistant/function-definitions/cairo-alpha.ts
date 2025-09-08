@@ -43,7 +43,7 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         description: cairoERC20Descriptions.votes,
       },
     },
-    required: ['name', 'symbol', 'decimals'],
+    required: ['name', 'symbol'],
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC20'>;

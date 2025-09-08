@@ -12,7 +12,6 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
     const c = buildERC20({
       name: 'MyToken',
       symbol: 'MTK',
-      decimals: '18',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -30,7 +29,6 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
         buildERC20({
           name: 'MyToken',
           symbol: 'MTK',
-          decimals: '18',
           ...opts,
         }),
       ),

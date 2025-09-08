@@ -39,7 +39,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 export interface ERC20Options extends CommonContractOptions {
   name: string;
   symbol: string;
-  decimals: string;
+  decimals?: string;
   burnable?: boolean;
   pausable?: boolean;
   premint?: string;
@@ -53,6 +53,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
+    decimals: opts.decimals ?? defaults.decimals,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
@@ -69,10 +70,9 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
 
 export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(opts.name);
-
   const allOpts = withDefaults(opts);
-
   const decimals = toUint(allOpts.decimals, 'decimals', 'u8');
+  
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
   addERC20Mixin(c);
 

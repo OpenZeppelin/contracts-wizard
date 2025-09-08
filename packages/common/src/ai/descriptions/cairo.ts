@@ -36,7 +36,7 @@ export const cairoRoyaltyInfoDescriptions = {
 
 export const cairoERC20Descriptions = {
   premint: 'The number of tokens to premint for the deployer.',
-  decimals: 'The number of decimals to use for the contract.',
+  decimals: 'The number of decimals to use for the contract. Defaults to 18.',
   votes:
     "Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.",
 };

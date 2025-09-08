@@ -40,7 +40,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Decimals
-      <HelpTooltip>The number of decimals to use for the contract.</HelpTooltip>
+      <HelpTooltip>The number of decimals to use for the contract. Defaults to 18.</HelpTooltip>
     </span>
     <input bind:value={opts.decimals} use:error={errors?.decimals} />
   </label>
