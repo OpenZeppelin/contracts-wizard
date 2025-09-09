@@ -159,9 +159,6 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
 
-  // Base AccountERC7579 account (upgradeable or not)
-  const name = 'AccountERC7579';
-
   c.addParent({
     name: opts.ERC7579Modules,
     path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
@@ -182,8 +179,9 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
     c.addConstructorCode('_installModule(moduleTypeId, module, initData);');
   }
 
-  // isValidSignature override
-  c.addOverride({ name }, functions.isValidSignature);
+  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
+
   if (opts.signatureValidation === 'ERC7739') {
     c.addOverride({ name: 'ERC7739', transpiled: false }, functions.isValidSignature);
     c.setFunctionBody(
@@ -191,14 +189,11 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
         '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
         '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
         'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-        `return erc7739magic == bytes4(0xffffffff) ? ${opts.upgradeable ? upgradeableName(name) : name}.isValidSignature(hash, signature) : erc7739magic;`,
+        `return erc7739magic == bytes4(0xffffffff) ? ${opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579'}.isValidSignature(hash, signature) : erc7739magic;`,
       ],
       functions.isValidSignature,
     );
   }
-
-  // _validateUserOp override
-  c.addOverride({ name }, functions._validateUserOp);
 }
 
 function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
