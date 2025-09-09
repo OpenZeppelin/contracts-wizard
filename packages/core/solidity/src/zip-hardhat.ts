@@ -125,8 +125,8 @@ function getDeploymentCall(c: Contract, args: string[]): string {
   return !c.upgradeable
     ? `ContractFactory.deploy(${args.join(', ')})`
     : useUpgradePlugin
-    ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`
-    : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`
+      ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`
+      : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`;
 }
 
 const script = (c: Contract) => {

@@ -18,14 +18,12 @@ const test = (c: Contract, opts?: GenericOptions) => {
     const result = ['import {Test} from "forge-std/Test.sol";'];
     if (c.upgradeable) {
       // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-      const useUpgradePlugin = c.parents.find(p => ['EIP712'].includes(p.contract.name)) == undefined;
+      const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
       result.push(
-        useUpgradePlugin
-          ? 'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";'
-          : opts?.upgradeable == 'transparent'
-            ? 'import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";'
-            : 'import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";',
+        unsafeAllowConstructor
+          ? 'import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";'
+          : 'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";',
       );
     }
     result.push(`import {${c.name}} from "src/${c.name}.sol";`);
@@ -47,55 +45,42 @@ const test = (c: Contract, opts?: GenericOptions) => {
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-    const useUpgradePlugin = c.parents.find(p => ['EIP712'].includes(p.contract.name)) == undefined;
+    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
     switch (opts?.upgradeable) {
       case 'transparent':
-        return useUpgradePlugin
-          ? [
-              `address proxy = Upgrades.deployTransparentProxy(`,
-              [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              ');',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `instance = ${c.name}(payable(proxy));`
-                : `instance = ${c.name}(proxy);`,
-            ]
-          : [
-              `${c.name} implementation = new ${c.name}();`,
-              `address proxy = address(new TransparentUpgradeableProxy(`,
-              [
-                `address(implementation),`,
-                `initialOwner,`,
-                `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`,
-              ],
-              '));',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `instance = ${c.name}(payable(proxy));`
-                : `instance = ${c.name}(proxy);`,
-            ];
+        return [
+          unsafeAllowConstructor && 'Options memory opts;',
+          unsafeAllowConstructor && 'opts.unsafeAllow = "constructor";',
+          `address proxy = Upgrades.deployTransparentProxy(`,
+          unsafeAllowConstructor
+            ? [
+                `"${c.name}.sol",`,
+                'initialOwner,',
+                `abi.encodeCall(${c.name}.initialize, (${args.join(', ')})),`,
+                'opts',
+              ]
+            : [`"${c.name}.sol",`, 'initialOwner,', `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
+          // Account has a receive function, this requires a payable address
+          c.parents.find(p => ['Account'].includes(p.contract.name))
+            ? `instance = ${c.name}(payable(proxy));`
+            : `instance = ${c.name}(proxy);`,
+        ].filter(line => line !== false);
       case 'uups':
-        return useUpgradePlugin
-          ? [
-              `address proxy = Upgrades.deployUUPSProxy(`,
-              [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              ');',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `instance = ${c.name}(payable(proxy));`
-                : `instance = ${c.name}(proxy);`,
-            ]
-          : [
-              `${c.name} implementation = new ${c.name}();`,
-              `address proxy = address(new ERC1967Proxy(`,
-              [`address(implementation),`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              '));',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `instance = ${c.name}(payable(proxy));`
-                : `${c.name} instance = ${c.name}(proxy);`,
-            ];
+        return [
+          unsafeAllowConstructor && 'Options memory opts;',
+          unsafeAllowConstructor && 'opts.unsafeAllow = "constructor";',
+          `address proxy = Upgrades.deployUUPSProxy(`,
+          unsafeAllowConstructor
+            ? [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')})),`, 'opts']
+            : [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
+          // Account has a receive function, this requires a payable address
+          c.parents.find(p => ['Account'].includes(p.contract.name))
+            ? `instance = ${c.name}(payable(proxy));`
+            : `instance = ${c.name}(proxy);`,
+        ].filter(line => line !== false);
       default:
         return [`instance = new ${c.name}(${args.join(', ')});`];
     }
@@ -153,14 +138,12 @@ const script = (c: Contract, opts?: GenericOptions) => {
     const result = ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";'];
     if (c.upgradeable) {
       // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-      const useUpgradePlugin = c.parents.find(p => ['EIP712'].includes(p.contract.name)) == undefined;
+      const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
       result.push(
-        useUpgradePlugin
-          ? 'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";'
-          : opts?.upgradeable == 'transparent'
-            ? 'import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";'
-            : 'import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";',
+        unsafeAllowConstructor
+          ? 'import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";'
+          : 'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";',
       );
     }
     result.push(`import {${c.name}} from "src/${c.name}.sol";`);
@@ -188,55 +171,42 @@ const script = (c: Contract, opts?: GenericOptions) => {
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
     // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-    const useUpgradePlugin = c.parents.find(p => ['EIP712'].includes(p.contract.name)) == undefined;
+    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
     switch (opts?.upgradeable) {
       case 'transparent':
-        return useUpgradePlugin
-          ? [
-              `address proxy = Upgrades.deployTransparentProxy(`,
-              [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              ');',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `${c.name} instance = ${c.name}(payable(proxy));`
-                : `${c.name} instance = ${c.name}(proxy);`,
-            ]
-          : [
-              `${c.name} implementation = new ${c.name}();`,
-              `address proxy = address(new TransparentUpgradeableProxy(`,
-              [
-                `address(implementation),`,
-                `initialOwner,`,
-                `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`,
-              ],
-              '));',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `${c.name} instance = ${c.name}(payable(proxy));`
-                : `${c.name} instance = ${c.name}(proxy);`,
-            ];
+        return [
+          unsafeAllowConstructor && 'Options memory opts;',
+          unsafeAllowConstructor && 'opts.unsafeAllow = "constructor";',
+          `address proxy = Upgrades.deployTransparentProxy(`,
+          unsafeAllowConstructor
+            ? [
+                `"${c.name}.sol",`,
+                'initialOwner,',
+                `abi.encodeCall(${c.name}.initialize, (${args.join(', ')})),`,
+                'opts',
+              ]
+            : [`"${c.name}.sol",`, 'initialOwner,', `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
+          // Account has a receive function, this requires a payable address
+          c.parents.find(p => ['Account'].includes(p.contract.name))
+            ? `${c.name} instance = ${c.name}(payable(proxy));`
+            : `${c.name} instance = ${c.name}(proxy);`,
+        ].filter(line => line !== false);
       case 'uups':
-        return useUpgradePlugin
-          ? [
-              `address proxy = Upgrades.deployUUPSProxy(`,
-              [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              ');',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `${c.name} instance = ${c.name}(payable(proxy));`
-                : `${c.name} instance = ${c.name}(proxy);`,
-            ]
-          : [
-              `${c.name} implementation = new ${c.name}();`,
-              `address proxy = address(new ERC1967Proxy(`,
-              [`address(implementation),`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-              '));',
-              // Account has a receive function, this requires a payable address
-              c.parents.find(p => ['Account'].includes(p.contract.name))
-                ? `${c.name} instance = ${c.name}(payable(proxy));`
-                : `${c.name} instance = ${c.name}(proxy);`,
-            ];
+        return [
+          unsafeAllowConstructor && 'Options memory opts;',
+          unsafeAllowConstructor && 'opts.unsafeAllow = "constructor";',
+          `address proxy = Upgrades.deployUUPSProxy(`,
+          unsafeAllowConstructor
+            ? [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')})),`, 'opts']
+            : [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
+          ');',
+          // Account has a receive function, this requires a payable address
+          c.parents.find(p => ['Account'].includes(p.contract.name))
+            ? `${c.name} instance = ${c.name}(payable(proxy));`
+            : `${c.name} instance = ${c.name}(proxy);`,
+        ].filter(line => line !== false);
       default:
         return [`${c.name} instance = new ${c.name}(${args.join(', ')});`];
     }
