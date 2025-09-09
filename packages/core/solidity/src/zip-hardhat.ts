@@ -120,13 +120,13 @@ function getAddressArgs(c: Contract): string[] {
 
 function getDeploymentCall(c: Contract, args: string[]): string {
   // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-  const useUpgradePlugin = c.parents.find(p => ['EIP712'].includes(p.contract.name)) == undefined;
+  const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
   return !c.upgradeable
     ? `ContractFactory.deploy(${args.join(', ')})`
-    : useUpgradePlugin
-      ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`
-      : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`;
+    : unsafeAllowConstructor
+      ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`
+      : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`;
 }
 
 const script = (c: Contract) => {
