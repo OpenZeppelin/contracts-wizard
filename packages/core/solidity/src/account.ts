@@ -265,10 +265,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
 
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
-      c.addImportOnly({
-        name: signers.Multisig.name,
-        path: signers.Multisig.path,
-      });
+      c.addImportOnly(signers.Multisig);
     }
   }
 }
