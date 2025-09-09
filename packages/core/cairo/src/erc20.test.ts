@@ -69,6 +69,21 @@ testERC20('erc20 premint of 0', {
   premint: '0',
 });
 
+testERC20('erc20 votes, custom decimals', {
+  decimals: '6',
+});
+
+test('erc20 votes, decimals too high', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '256',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than u8 max value');
+});
+
 testERC20('erc20 mintable', {
   mintable: true,
   access: 'ownable',
@@ -158,11 +173,12 @@ testERC20('erc20 full upgradeable with roles', {
 
 testAPIEquivalence('erc20 API default');
 
-testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK' });
+testAPIEquivalence('erc20 API basic', { name: 'CustomToken', symbol: 'CTK', decimals: '6' });
 
 testAPIEquivalence('erc20 API full upgradeable', {
   name: 'CustomToken',
   symbol: 'CTK',
+  decimals: '6',
   premint: '2000',
   access: 'roles',
   burnable: true,
