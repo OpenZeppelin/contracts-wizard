@@ -84,7 +84,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     if (helpers.upgradeable) {
       const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
-      const nonUpgradeableParents = parentsWithInitializers.filter(p => !inferTranspiled(p.contract));
+      const nonUpgradeableParents = contract.parents.filter(p => !inferTranspiled(p.contract));
       const constructor = printFunction2(
         [
           nonUpgradeableParents.length > 0
@@ -112,7 +112,7 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
         [],
         'constructor',
         contract.constructorArgs.map(a => printArgument(a, helpers)),
-        parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers)),
+        contract.parents.flatMap(p => printParentConstructor(p, helpers)),
         contract.constructorCode,
       );
     }
