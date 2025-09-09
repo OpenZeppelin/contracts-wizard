@@ -11,14 +11,18 @@ function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
 }
 
+function shouldUseUnsafeAllowConstructor(c: Contract): boolean {
+  // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
+  return c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+}
+
 const test = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)));
 
   function getImports(c: Contract) {
     const result = ['import {Test} from "forge-std/Test.sol";'];
     if (c.upgradeable) {
-      // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-      const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+      const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
 
       result.push(
         unsafeAllowConstructor
@@ -44,8 +48,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
   }
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
-    // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+    const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
 
     switch (opts?.upgradeable) {
       case 'transparent':
@@ -137,8 +140,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
   function getImports(c: Contract) {
     const result = ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";'];
     if (c.upgradeable) {
-      // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-      const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+      const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
 
       result.push(
         unsafeAllowConstructor
@@ -170,8 +172,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
   }
 
   function getDeploymentCode(c: Contract, args: string[]): Lines[] {
-    // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+    const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
 
     switch (opts?.upgradeable) {
       case 'transparent':
