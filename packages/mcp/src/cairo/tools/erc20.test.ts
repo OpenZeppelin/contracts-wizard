@@ -34,7 +34,6 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyToken',
     symbol: 'MTK',
-    decimals: '18',
   };
   await assertAPIEquivalence(t, params, erc20.print);
 });
