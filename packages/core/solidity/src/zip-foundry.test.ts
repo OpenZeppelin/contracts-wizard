@@ -156,9 +156,7 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 }
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     'README.md',
     'script/',
