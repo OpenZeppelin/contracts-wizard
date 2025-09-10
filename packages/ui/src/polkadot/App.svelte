@@ -12,6 +12,7 @@
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
+    omitZipHardhat: true, // Disabled until Polkadot-specific config is added for the download package
     remix: {
       label: 'Open in Polkadot Remix',
       url: 'https://remix.polkadot.io',
@@ -26,7 +27,6 @@
 </script>
 
 <div class="polkadot-app">
-  <!-- TODO: override available options and contracts for Wiz, override hardhat, override default options (e.g. no permit) -->
   <SolidityApp {initialTab} {initialOpts} {overrides} />
 </div>
 

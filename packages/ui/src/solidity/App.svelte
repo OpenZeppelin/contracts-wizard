@@ -134,6 +134,9 @@
         result.downloadFoundry = false;
         break;
     }
+    if (overrides.omitZipHardhat) {
+      result.downloadHardhat = false;
+    }
     if (overrides.omitZipFoundry) {
       result.downloadFoundry = false;
     }

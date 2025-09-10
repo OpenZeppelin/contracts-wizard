@@ -17,6 +17,11 @@ export interface Overrides {
   omitFeatures: Map<Kind, string[]>;
 
   /**
+   * Whether to omit the Download Hardhat package feature
+   */
+  omitZipHardhat: boolean;
+
+  /**
    * Whether to omit the Download Foundry package feature
    */
   omitZipFoundry: boolean;
@@ -45,6 +50,7 @@ export interface Overrides {
 export const defaultOverrides: Overrides = {
   omitTabs: [],
   omitFeatures: new Map(),
+  omitZipHardhat: false,
   omitZipFoundry: false,
   remix: undefined,
   sanitizeOmittedFeatures: (opts: GenericOptions) => opts,
