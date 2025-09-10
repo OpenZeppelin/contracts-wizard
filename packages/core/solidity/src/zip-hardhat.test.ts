@@ -17,6 +17,7 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
+import { buildAccount, buildFactory } from './account';
 
 interface Context {
   tempFolder: string;
@@ -50,6 +51,27 @@ test.serial('erc20 full', async t => {
   await runIgnitionTest(c, t, opts);
 });
 
+test.serial('erc20 ownable, uups, crossChainBridging custom', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    premint: '2000',
+    access: 'ownable',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    votes: true,
+    flashmint: true,
+    crossChainBridging: 'custom',
+    premintChainId: '10',
+    upgradeable: 'uups',
+  };
+  const c = buildERC20(opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
 test.serial('erc721 upgradeable', async t => {
   const opts: GenericOptions = {
     kind: 'ERC721',
@@ -71,6 +93,25 @@ test.serial('erc1155 basic', async t => {
   await runIgnitionTest(c, t, opts);
 });
 
+test.serial('account ecdsa', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA' };
+  const c = buildAccount(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('account ecdsa uups', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
+  const c = buildAccount(opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
+test.skip('account P256 transparent with factory', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'P256', upgradeable: 'transparent', factory: true };
+  const c = buildAccount(opts);
+  const f = buildFactory(c, opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
 test.serial('custom basic', async t => {
   const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
@@ -87,7 +128,7 @@ test.serial('custom upgradeable', async t => {
   await runDeployScriptTest(c, t, opts);
 });
 
-async function runDeployScriptTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
+async function runDeployScriptTest(c: Contract | Contract[], t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
   assertDeployScriptLayout(zip, c, t);
@@ -104,9 +145,7 @@ async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: 
 }
 
 function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
@@ -124,9 +163,7 @@ function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<C
 }
 
 function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',

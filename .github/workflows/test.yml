@@ -9,7 +9,7 @@ jobs:
   format-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Set up environment
         uses: ./.github/actions/setup
       - name: Check formatting
@@ -20,7 +20,7 @@ jobs:
   deno-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
         with:
@@ -30,7 +30,18 @@ jobs:
       - name: Deno check API
         run: yarn type:check:api
 
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Run tests
+        run: yarn test
+        working-directory: packages/mcp
+
   build:
+    name: build (${{ matrix.package }}, ${{ matrix.variant }})
     timeout-minutes: 90
     strategy:
       matrix:
@@ -39,10 +50,24 @@ jobs:
           - cairo
           - stellar
           - stylus
+        # This variant config creates 2 branches of the matrix a default and a compile one to run the compile tests in their own job
+        variant:
+          - default
+          - compile
+        exclude:
+          - package: solidity
+            variant: compile
+          - package: cairo
+            variant: compile
+          - package: stylus
+            variant: compile
+        
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+            fetch-depth: 0
       - name: Set up environment
         uses: ./.github/actions/setup
 
@@ -53,66 +78,29 @@ jobs:
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de #v1.4.0
 
       # ----------------------------
-      # Stellar setup
+      # Stellar compile setup
 
-      - name: Free up disk space
-        if: matrix.package == 'stellar'
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
-          df -h
-      
-      # - name: Get scaffold-stellar latest commit SHA
-      #   if: matrix.package == 'stellar'
-      #   id: get-scaffold-sha
-      #   run: |
-      #     echo "sha=$(git ls-remote https://github.com/ahalabs/scaffold-stellar HEAD | cut -f1)" >> $GITHUB_OUTPUT
-
-      # - name: Cache Scaffold CLIs
-      #   if: matrix.package == 'stellar'
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ~/.cargo/bin/
-      #       ~/.cargo/registry/index/
-      #       ~/.cargo/registry/cache/
-      #       ~/.cargo/git/db/
-      #     key: cargo-scaffold-${{ matrix.package }}-${{ steps.get-scaffold-sha.outputs.sha }}
-      #     restore-keys: |
-      #       cargo-scaffold-${{ matrix.package }}-
-      #       cargo-scaffold-
-      #       cargo-scaffold-
-
-      - name: Set up Rust
-        if: matrix.package == 'stellar'
-        uses: actions-rs/toolchain@v1
+      - name: Cache Rust dependencies
+        if: matrix.package == 'stellar' && matrix.variant == 'compile'
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
-          toolchain: 1.86.0
-          profile: minimal
-          override: true
-      - name: Add wasm32v1 target
-        if: matrix.package == 'stellar'
-        run: |
-          if ! rustup target list --installed | grep -q wasm32v1-none; then
-            rustup target add wasm32v1-none
-          fi
+          path: |
+            ~/.cargo/bin/
+            runner/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ matrix.package }}
 
-      - name: Set up Stellar CLI
-        if: matrix.package == 'stellar'
-        uses: stellar/stellar-cli@v22.5.0
 
-      - name: Install Scaffold & Registry CLIs
-        if: matrix.package == 'stellar'
-        run: |
-          rebuildIfNotFoundInCache() {
-            local binary_name="$1"
-
-            if ! [ -x "$HOME/.cargo/bin/$binary_name" ]; then
-              cargo install --git "https://github.com/ahalabs/scaffold-stellar" "$binary_name"
-            fi
-          }
-
-          rebuildIfNotFoundInCache stellar-scaffold-cli
-          rebuildIfNotFoundInCache stellar-registry-cli
+      - name: Set up rust toolchain
+        if: matrix.package == 'stellar' && matrix.variant == 'compile'
+        uses: actions-rust-lang/setup-rust-toolchain@fb51252c7ba57d633bc668f941da052e410add48 #v1.13.0
+        with:
+          toolchain: stable, nightly
+          components: clippy, rustfmt, llvm-tools-preview
+          target: wasm32v1-none
 
       # ----------------------------
       - name: Compile TypeScript
@@ -122,5 +110,27 @@ jobs:
         run: yarn svelte-check
         working-directory: packages/ui
       - name: Run tests
-        run: yarn test
+        if: matrix.variant == 'default'
+        run: yarn test '**/*.test.ts' '**/test.ts' '!**/*.compile.test.ts'
+        working-directory: packages/core/${{matrix.package}}
+
+      - name: Get list of changed files
+        id: filter
+        if: matrix.variant == 'compile'
+        run: |
+          BASE=${{ github.event.pull_request.base.sha || github.event.before }}
+          echo "changes=$(git diff --name-only $BASE ${{ github.sha }} | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Run tests
+        if: matrix.variant == 'compile' && contains(steps.filter.outputs.changes, format('packages/core/{0}/', matrix.package))
+        env:
+          RUSTFLAGS: ""
+        run: |
+          FILES=$(find ./ -type f -name '*.compile.test.ts')
+          if [ -z "$FILES" ]; then
+            echo "No compile tests found. Skipping."
+            exit 0
+          else
+            yarn test '**/*.compile.test.ts'
+          fi
         working-directory: packages/core/${{matrix.package}}

@@ -1,6 +1,5 @@
 import './common/styles/global.css';
 
-import type {} from 'svelte';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
@@ -11,8 +10,11 @@ import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
 import { compatibleContractsSemver as soliditySemver } from '@openzeppelin/wizard';
-import { compatibleContractsSemver as cairoSemver } from '@openzeppelin/wizard-cairo';
-import { compatibleContractsSemver as cairoAlphaSemver } from '@openzeppelin/wizard-cairo-alpha';
+import { compatibleContractsSemver as cairoSemver, contractsVersion as cairoVersion } from '@openzeppelin/wizard-cairo';
+import {
+  compatibleContractsSemver as cairoAlphaSemver,
+  contractsVersion as cairoAlphaVersion,
+} from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import type { InitialOptions } from './common/initial-options';
@@ -66,7 +68,10 @@ function evaluateSelection(
     case 'cairo': {
       if (requestedVersion === undefined) {
         return { compatible: true, appType: 'cairo' };
-      } else if (requestedVersion === 'alpha' || semver.satisfies(requestedVersion, cairoAlphaSemver)) {
+      } else if (
+        requestedVersion === 'alpha' ||
+        (semver.satisfies(requestedVersion, cairoAlphaSemver) && semver.compare(cairoVersion, cairoAlphaVersion) !== 0)
+      ) {
         return { compatible: true, appType: 'cairo_alpha' };
       } else if (requestedVersion === 'stable' || semver.satisfies(requestedVersion, cairoSemver)) {
         return { compatible: true, appType: 'cairo' };

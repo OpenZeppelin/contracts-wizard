@@ -1,0 +1,41 @@
+{
+  "name": "@openzeppelin/contracts-mcp",
+  "version": "0.1.0",
+  "description": "OpenZeppelin Contracts MCP Server",
+  "license": "AGPL-3.0-only",
+  "repository": "https://github.com/OpenZeppelin/contracts-wizard",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "contracts-mcp": "dist/cli.js"
+  },
+  "ts:main": "src/index.ts",
+  "files": [
+    "LICENSE",
+    "NOTICE",
+    "/dist",
+    "/src",
+    "!**/*.test.*"
+  ],
+  "scripts": {
+    "prepare": "tsc",
+    "watch": "tsc --watch",
+    "test": "ava",
+    "test:update-snapshots": "ava --update-snapshots",
+    "test:watch": "ava --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.1",
+    "@openzeppelin/wizard-common": "^0.1.0",
+    "@openzeppelin/wizard": "^0.7.1",
+    "@openzeppelin/wizard-stylus": "^0.2.0",
+    "@openzeppelin/wizard-stellar": "^0.4.2",
+    "@openzeppelin/wizard-cairo": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ava": "^6.0.0",
+    "ts-node": "^10.4.0"
+  }
+}

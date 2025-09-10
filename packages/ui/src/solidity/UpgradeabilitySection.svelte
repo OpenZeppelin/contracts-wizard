@@ -6,11 +6,11 @@
 
   export let upgradeable: Upgradeable;
   export let disabled: boolean = false;
-  let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
+  export let disabledReason: string | undefined = undefined;
 
+  let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
   let wasDisabled = disabled;
   let wasUpgradeable = upgradeable;
-
   $: {
     if (wasDisabled && !disabled) {
       upgradeable = wasUpgradeable;
@@ -20,7 +20,6 @@
         upgradeable = false;
       }
     }
-
     wasDisabled = disabled;
     if (upgradeable !== false) {
       defaultValueWhenEnabled = upgradeable;
@@ -31,11 +30,11 @@
 <ExpandableToggleRadio
   label="Upgradeability"
   bind:value={upgradeable}
+  {disabled}
+  {disabledReason}
   defaultValue="transparent"
   helpContent="Smart contracts are immutable by default unless deployed behind an upgradeable proxy."
   helpLink="https://docs.openzeppelin.com/openzeppelin/upgrades"
-  {disabled}
-  disabledReason="Upgradeability is not currently supported with Cross-Chain Bridging."
 >
   <div class="checkbox-group">
     <label class:checked={upgradeable === 'transparent'}>

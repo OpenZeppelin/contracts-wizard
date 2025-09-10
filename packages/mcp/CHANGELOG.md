@@ -1,0 +1,49 @@
+# Changelog
+
+## 0.1.1 (2025-09-02)
+- Cairo: Support decimals value added to ERC-20 scheme ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+
+## 0.1.0 (2025-08-15)
+
+- Export functions to register MCP tools ([#631](https://github.com/OpenZeppelin/contracts-wizard/pull/631))
+- Updated dependencies [[`2bb2a16`](https://github.com/OpenZeppelin/contracts-wizard/commit/2bb2a166616ac5005ee2bed643b10f24b5d9f086), [`c65acb7`](https://github.com/OpenZeppelin/contracts-wizard/commit/c65acb71bc10a77d7629ebfe30cc8dba397b09b1)]:
+  - @openzeppelin/wizard@0.7.1
+  - @openzeppelin/wizard-common@0.1.0
+
+## 0.0.7 (2025-08-12)
+
+- Updated dependencies [[`f39adfd`](https://github.com/OpenZeppelin/contracts-wizard/commit/f39adfdafa0fe772e292f48f5182e488c096132c)]:
+  - @openzeppelin/wizard@0.7.0
+  - @openzeppelin/wizard-common@0.0.3
+
+## 0.0.6 (2025-07-29)
+
+- Update Wizard API dependencies ([#612](https://github.com/OpenZeppelin/contracts-wizard/pull/612))
+
+## 0.0.5 (2025-07-25)
+
+- **Breaking changes**: Renamed package from `@openzeppelin/wizard-mcp` to `@openzeppelin/contracts-mcp` ([#607](https://github.com/OpenZeppelin/contracts-wizard/pull/607))
+
+## 0.0.4 (2025-07-22)
+
+- Updated dependencies [[`9e61c0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/9e61c0ff0553bbba5e723495bfc5ee963174fc16)]:
+  - @openzeppelin/wizard-stellar@0.4.1
+
+## 0.0.3 (2025-07-03)
+
+- Stellar: Add Stablecoin with Limitations and Access Control (ownable and roles). ([#575](https://github.com/OpenZeppelin/contracts-wizard/pull/575))
+  - **Potentially breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.3.0
+- Updated dependencies [[`4b86b07`](https://github.com/OpenZeppelin/contracts-wizard/commit/4b86b076214b6aa9b62e472b431d5d2ffdd96ffb), [`4b86b07`](https://github.com/OpenZeppelin/contracts-wizard/commit/4b86b076214b6aa9b62e472b431d5d2ffdd96ffb)]:
+  - @openzeppelin/wizard-stellar@0.3.0
+  - @openzeppelin/wizard-common@0.0.2
+
+## 0.0.2 (2025-06-27)
+
+- Add security contact for stellar ([#585](https://github.com/OpenZeppelin/contracts-wizard/pull/585))
+- Updated dependencies [[`8997a89`](https://github.com/OpenZeppelin/contracts-wizard/commit/8997a891415512606bc97df6d8c7c0df7b4d2127)]:
+  - @openzeppelin/wizard-stellar@0.2.3
+
+## 0.0.1 (2025-06-20)
+
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))

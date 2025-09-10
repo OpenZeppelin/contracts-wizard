@@ -81,14 +81,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a class="link" href="https://x.com/OpenZeppelin" target="_blank" rel="noopener noreferrer"><img src="/icons/x-logo.svg" width="20" alt="Twitter/X"></a>
     </div>
   </div>
-  <div class="nav">
-    <a class="switch switch-solidity active" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
-    <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
-    <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
-    <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
+  <div class="banner flex w-full gap-2">
+    <div class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md text-sm font-medium">New</div>
+    <div>
+      Build secure, OpenZeppelin-standard smart contracts with your favorite AI using the
+      <a
+        href="https://mcp.openzeppelin.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-gray-600 hover:underline">Contracts MCP</a
+      >.
+    </div>
+  </div>
+  <div class="nav-row flex flex-row items-center justify-between">
+    <div class="nav nav-switches flex flex-row">
+      <a class="switch switch-solidity active" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
+      <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
+      <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
+      <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
+    </div>
+
+    <div class="flex flex-row gap-2">
+      <div class="text-sm text-gray-600 leading-tight text-right">
+        <div>After deploying a contract, use the new</div>
+        <div>Contracts UI Builder to spin up a quick UI</div>
+      </div>
+
+      <div class="flex items-center">
+        <img src="/icons/arrow-right.svg" alt="arrow-right" class="arrow-gray">
+      </div>
+
+      <div class="flex items-center">
+        <a href="http://builder.openzeppelin.com" target="_blank" rel="noopener noreferrer" class="bg-[#3d3b5d] text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#4a4872] transition-colors no-underline whitespace-nowrap">
+          <span>Try the UI Builder</span>
+          <img src="/icons/up-right-from-square.svg" alt="up-right-from-square" class="arrow-white">
+        </a>
+      </div>
+    </div>
   </div>
   <div class="wizard-container">
-
     <oz-wizard class="wizard" data-sync-url="fragment"></oz-wizard>
   </div>
 

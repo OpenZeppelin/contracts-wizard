@@ -1,10 +1,17 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
+import {
+  stellarPrompts,
+  stellarCommonDescriptions,
+  stellarFungibleDescriptions,
+  stellarNonFungibleDescriptions,
+  stellarStablecoinDescriptions,
+} from '../../../../common/src/ai/descriptions/stellar.ts';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
-  description: 'Fungible Token Standard, compatible with SEP-41, similar to ERC-20',
+  description: stellarPrompts.Fungible,
   parameters: {
     type: 'object',
     properties: {
@@ -13,17 +20,14 @@ export const stellarFungibleAIFunctionDefinition = {
         'symbol',
         'burnable',
         'pausable',
+        'upgradeable',
         'mintable',
         'access',
         'info',
       ]),
       premint: {
         type: 'string',
-        description: 'The number of tokens to premint for the deployer.',
-      },
-      upgradeable: {
-        type: 'boolean',
-        description: 'Whether the contract can be upgraded.',
+        description: stellarFungibleDescriptions.premint,
       },
     },
     required: ['name', 'symbol'],
@@ -31,9 +35,9 @@ export const stellarFungibleAIFunctionDefinition = {
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
 
-export const stellarNonFungibleAIFunctionDefinition = {
-  name: 'NonFungible',
-  description: 'Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721',
+export const stellarStablecoinAIFunctionDefinition = {
+  name: 'Stablecoin',
+  description: stellarPrompts.Stablecoin,
   parameters: {
     type: 'object',
     properties: {
@@ -46,21 +50,58 @@ export const stellarNonFungibleAIFunctionDefinition = {
         'access',
         'info',
       ]),
-      enumerable: {
-        type: 'boolean',
-        description: 'Whether the NFTs are enumerable (can be iterated over).',
+      limitations: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['allowlist', 'blocklist'] },
+        ],
+        description: stellarStablecoinDescriptions.limitations,
       },
-      consecutive: {
-        type: 'boolean',
-        description: 'To batch mint NFTs instead of minting them individually (sequential minting is mandatory).',
-      },
-      sequential: {
-        type: 'boolean',
-        description: 'Whether the IDs of the minted NFTs will be sequential.',
+      premint: {
+        type: 'string',
+        description: stellarStablecoinDescriptions.premint,
       },
       upgradeable: {
         type: 'boolean',
-        description: 'Whether the contract can be upgraded.',
+        description: stellarCommonDescriptions.upgradeable,
+      },
+    },
+    required: ['name', 'symbol'],
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Stablecoin'>;
+
+export const stellarNonFungibleAIFunctionDefinition = {
+  name: 'NonFungible',
+  description: stellarPrompts.NonFungible,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'symbol',
+        'burnable',
+        'pausable',
+        'upgradeable',
+        'mintable',
+        'access',
+        'info',
+      ]),
+      enumerable: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.enumerable,
+      },
+      consecutive: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.consecutive,
+      },
+      sequential: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.sequential,
+      },
+      upgradeable: {
+        type: 'boolean',
+        description: stellarCommonDescriptions.upgradeable,
       },
     },
     required: ['name', 'symbol'],

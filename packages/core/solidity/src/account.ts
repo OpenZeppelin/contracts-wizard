@@ -3,10 +3,12 @@ import type { Contract } from './contract';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import { defaults as commonDefaults, withCommonDefaults, type CommonOptions } from './common-options';
+import { OptionsError } from './error';
+import { upgradeableName } from './options';
 import { setInfo } from './set-info';
-import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
+import { addSigner, signers, signerFunctions, type SignerOptions } from './signer';
+import { setUpgradeableAccount } from './set-upgradeable';
 import { formatLines } from './utils/format-lines';
-import { toIdentifier } from './utils/to-identifier';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -17,6 +19,7 @@ export const defaults: Required<AccountOptions> = {
   signer: 'ECDSA',
   batchedExecution: false,
   ERC7579Modules: false,
+  factory: false,
 } as const;
 
 export const SignatureValidationOptions = [false, 'ERC1271', 'ERC7739'] as const;
@@ -33,6 +36,7 @@ export interface AccountOptions extends CommonOptions {
   signer?: SignerOptions;
   batchedExecution?: boolean;
   ERC7579Modules?: ERC7579ModulesOptions;
+  factory?: boolean;
 }
 
 function withDefaults(opts: AccountOptions): Required<AccountOptions> {
@@ -45,32 +49,37 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
     signer: opts.signer ?? defaults.signer,
     batchedExecution: opts.batchedExecution ?? defaults.batchedExecution,
     ERC7579Modules: opts.ERC7579Modules ?? defaults.ERC7579Modules,
+    factory: false,
   };
 }
 
 export function printAccount(opts: AccountOptions = defaults): string {
-  return printContract([
-    buildAccount(opts),
-    buildFactory(opts), // Todo: enable/disable factory from opts
-  ].filter(c => c !== null));
+  const account = buildAccount(opts);
+  if (opts.factory) {
+    const factory = buildFactory(account, opts);
+    return printContract([account, factory]);
+  } else {
+    return printContract(account);
+  }
 }
 
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for the accounts contracts
   allOpts.access = false; // Access control options are not used for Account
 
   const c = new ContractBuilder(allOpts.name);
 
   addParents(c, allOpts);
   overrideRawSignatureValidation(c, allOpts);
+  setUpgradeableAccount(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
 
   if (opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'PackedUserOperation',
       path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
+      transpiled: false, // PackedUserOperation doesn't start with "I" so its not recognized as an "interface object"
     });
   }
 
@@ -81,16 +90,17 @@ function addParents(c: ContractBuilder, opts: AccountOptions): void {
   // Base
   c.addParent({
     name: 'Account',
-    path: `@openzeppelin/community-contracts/account/Account.sol`,
+    path: `@openzeppelin/contracts/account/Account.sol`,
+    transpiled: false,
   });
-  c.addOverride({ name: 'Account' }, functions._validateUserOp);
+  c.addOverride({ name: 'Account', transpiled: false }, functions._validateUserOp);
 
   if (opts.signatureValidation === 'ERC7739') addEIP712(c, opts);
 
   // Extensions
   addSignatureValidation(c, opts);
   addERC7579Modules(c, opts);
-  addSigner(c, opts.signer ?? false);
+  addSigner(c, opts.signer ?? false, opts.upgradeable ?? false);
   addMultisigFunctions(c, opts);
   addBatchedExecution(c, opts);
   addERC721Holder(c, opts);
@@ -102,7 +112,8 @@ function addSignatureValidation(c: ContractBuilder, opts: AccountOptions) {
     case 'ERC7739':
       c.addParent({
         name: 'ERC7739',
-        path: '@openzeppelin/community-contracts/utils/cryptography/ERC7739.sol',
+        path: '@openzeppelin/contracts/utils/cryptography/signers/draft-ERC7739.sol',
+        transpiled: false,
       });
       break;
     case 'ERC1271':
@@ -128,6 +139,7 @@ function addERC721Holder(c: ContractBuilder, opts: AccountOptions): void {
   c.addParent({
     name: 'ERC721Holder',
     path: '@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol',
+    transpiled: false,
   });
 }
 
@@ -136,6 +148,7 @@ function addERC1155Holder(c: ContractBuilder, opts: AccountOptions): void {
   c.addParent({
     name: 'ERC1155Holder',
     path: '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol',
+    transpiled: false,
   });
 }
 
@@ -144,9 +157,10 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.batchedExecution || !!opts.ERC7579Modules) return;
   c.addParent({
     name: 'ERC7821',
-    path: '@openzeppelin/community-contracts/account/extensions/ERC7821.sol',
+    path: '@openzeppelin/contracts/account/extensions/draft-ERC7821.sol',
+    transpiled: false,
   });
-  c.addOverride({ name: 'ERC7821' }, functions._erc7821AuthorizedExecutor);
+  c.addOverride({ name: 'ERC7821', transpiled: false }, functions._erc7821AuthorizedExecutor);
   c.setFunctionBody(
     ['return caller == address(entryPoint()) || super._erc7821AuthorizedExecutor(caller, mode, executionData);'],
     functions._erc7821AuthorizedExecutor,
@@ -155,30 +169,42 @@ function addBatchedExecution(c: ContractBuilder, opts: AccountOptions): void {
 
 function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
   if (!opts.ERC7579Modules) return;
+
   c.addParent({
     name: opts.ERC7579Modules,
-    path: `@openzeppelin/community-contracts/account/extensions/${opts.ERC7579Modules}.sol`,
+    path: `@openzeppelin/contracts/account/extensions/draft-${opts.ERC7579Modules}.sol`,
   });
   if (opts.ERC7579Modules !== 'AccountERC7579') {
     c.addImportOnly({
       name: 'AccountERC7579',
-      path: `@openzeppelin/community-contracts/account/extensions/AccountERC7579.sol`,
+      path: '@openzeppelin/contracts/account/extensions/draft-AccountERC7579.sol',
     });
   }
-  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
-  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
 
-  if (opts.signatureValidation !== 'ERC7739') return;
-  c.addOverride({ name: 'ERC7739' }, functions.isValidSignature);
-  c.setFunctionBody(
-    [
-      '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
-      '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
-      'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
-      'return erc7739magic == bytes4(0xffffffff) ? AccountERC7579.isValidSignature(hash, signature) : erc7739magic;',
-    ],
-    functions.isValidSignature,
-  );
+  // Accounts that use ERC7579 without a signer must be constructed with at least one module (executor of validation)
+  if (!opts.signer) {
+    c.addConstructorArgument({ type: 'uint256', name: 'moduleTypeId' });
+    c.addConstructorArgument({ type: 'address', name: 'module' });
+    c.addConstructorArgument({ type: 'bytes calldata', name: 'initData' });
+    c.addConstructorCode('require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);');
+    c.addConstructorCode('_installModule(moduleTypeId, module, initData);');
+  }
+
+  c.addOverride({ name: 'AccountERC7579' }, functions._validateUserOp);
+  c.addOverride({ name: 'AccountERC7579' }, functions.isValidSignature);
+
+  if (opts.signatureValidation === 'ERC7739') {
+    c.addOverride({ name: 'ERC7739', transpiled: false }, functions.isValidSignature);
+    c.setFunctionBody(
+      [
+        '// ERC-7739 can return the ERC-1271 magic value, 0xffffffff (invalid) or 0x77390001 (detection).',
+        '// If the returned value is 0xffffffff, fallback to ERC-7579 validation.',
+        'bytes4 erc7739magic = ERC7739.isValidSignature(hash, signature);',
+        `return erc7739magic == bytes4(0xffffffff) ? ${opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579'}.isValidSignature(hash, signature) : erc7739magic;`,
+      ],
+      functions.isValidSignature,
+    );
+  }
 }
 
 function addMultisigFunctions(c: ContractBuilder, opts: AccountOptions): void {
@@ -208,6 +234,7 @@ function addEIP712(c: ContractBuilder, opts: AccountOptions): void {
     {
       name: 'EIP712',
       path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+      transpiled: false, // do not use the upgradeable variant for in Accounts
     },
     [opts.name, '1'],
   );
@@ -221,27 +248,32 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   // to provide a custom validation logic
   if (!opts.signer && !opts.ERC7579Modules) {
     // Custom validation logic
-    c.addOverride({ name: 'Account' }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: 'Account', transpiled: false }, signerFunctions._rawSignatureValidation);
     c.setFunctionBody(['// Custom validation logic', 'return false;'], signerFunctions._rawSignatureValidation);
   }
 
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
+    const accountName = opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579';
+    const signerName = opts.upgradeable ? upgradeableName(`Signer${opts.signer}`) : `Signer${opts.signer}`;
+
     c.addImportOnly({
       name: 'AbstractSigner',
-      path: '@openzeppelin/community-contracts/utils/cryptography/AbstractSigner.sol',
+      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+      transpiled: false,
     });
-    c.addOverride({ name: 'AbstractSigner' }, signerFunctions._rawSignatureValidation);
+    c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [
-        `// IMPORTANT: Make sure Signer${opts.signer} is most derived than AccountERC7579`,
-        `// in the inheritance chain (i.e. contract ... is AccountERC7579, ..., Signer${opts.signer})`,
+        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountName}`,
+        `// in the inheritance chain (i.e. contract ... is ${accountName}, ..., ${signerName})`,
         '// to ensure the correct order of function resolution.',
-        '// AccountERC7579 returns false for `_rawSignatureValidation`',
+        `// ${accountName} returns false for _rawSignatureValidation`,
       ],
       signerFunctions._rawSignatureValidation,
     );
+
     // Base override for `_rawSignatureValidation` given MultiSignerERC7913Weighted is MultiSignerERC7913
     if (opts.signer === 'MultisigWeighted') {
       c.addImportOnly(signers.Multisig);
@@ -249,58 +281,60 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   }
 }
 
-export function buildFactory(opts: AccountOptions): Contract | null {
-  const allOpts = withDefaults(opts);
+export function buildFactory(account: Contract, opts: AccountOptions): Contract {
+  // TODO: add UUPS support
+  if (opts.upgradeable !== 'transparent') {
+    throw new OptionsError({ factory: 'Factory requires the account to be transparent upgradeable' });
+  }
+  if (opts.signer === 'ERC7702') {
+    throw new OptionsError({ factory: 'Factory cannot deploy accounts with ERC-7702 signers' });
+  }
+  if (!opts.signer && !opts.ERC7579Modules) {
+    throw new OptionsError({ factory: 'Factory requires the account to have an initializable signer or module' });
+  }
 
-  if (!allOpts.signer || allOpts.signer === "ERC7702") return null;
+  const factory = new ContractBuilder(account.name + 'Factory');
+  const args = [...account.constructorArgs, { name: 'salt', type: 'bytes32' }];
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for the accounts contracts
-  allOpts.access = false; // Access control options are not used for Account
-
-  const c = new ContractBuilder(allOpts.name + 'Factory');
-
-  const accountName = toIdentifier(allOpts.name);
-  const accountInitializer = signerFunctions.initialize[allOpts.signer];
-  const args = [ ...accountInitializer.args, { name: 'salt', type: 'bytes32' }];
-
-  // Non upgradeable accounts
-  c.addImportOnly({
+  factory.addImportOnly({
     name: 'Clones',
     path: '@openzeppelin/contracts/proxy/Clones.sol',
   });
 
   // Implementation address
-  c.addVariable(`${accountName} public immutable implementation = new ${accountName}();`);
+  factory.addVariable(`${account.name} public immutable implementation = new ${account.name}();`);
 
   // Functions - create
-  c.setFunctionBody(
+  factory.setFunctionBody(
     formatLines([
       `bytes32 effectiveSalt = _salt(${args.map(arg => arg.name).join(', ')});`,
       `address instance = Clones.predictDeterministicAddress(address(implementation), effectiveSalt);`,
-      `if (instance.code.length) {`,
+      `if (instance.code.length == 0) {`,
       [
         `Clones.cloneDeterministic(address(implementation), effectiveSalt);`,
-        `${accountName}(instance).${accountInitializer.name}(${accountInitializer.args.map(arg => arg.name).join(', ')});`,
+        `${account.name}(instance).initialize(${account.constructorArgs.map(arg => arg.name).join(', ')});`,
       ],
       `}`,
       `return instance;`,
     ]).split('\n'),
-    { name: 'create', kind: 'public' as const, args, returns: [ 'address' ] },
+    { name: 'create', kind: 'public' as const, args, returns: ['address'] },
   );
 
   // Functions - predict
-  c.addFunctionCode(
+  factory.addFunctionCode(
     `return Clones.predictDeterministicAddress(address(implementation), _salt(${args.map(arg => arg.name).join(', ')}));`,
-    { name: 'predict', kind: 'public' as const, args, returns: [ 'address' ] },
+    { name: 'predict', kind: 'public' as const, args, returns: ['address'] },
   );
 
   // Functions - _salt
-  c.addFunctionCode(
-    `return keccak256(abi.encode(${args.map(arg => arg.name).join(', ')}));`,
-    { name: '_salt', kind: 'internal' as const, args, returns: [ 'bytes32' ] },
-  );
+  factory.addFunctionCode(`return keccak256(abi.encode(${args.map(arg => arg.name).join(', ')}));`, {
+    name: '_salt',
+    kind: 'internal' as const,
+    args,
+    returns: ['bytes32'],
+  });
 
-  return c;
+  return factory;
 }
 
 const functions = defineFunctions({
@@ -341,13 +375,13 @@ const functions = defineFunctions({
   },
   setThreshold: {
     kind: 'public' as const,
-    args: [{ name: 'threshold', type: 'uint256' }],
+    args: [{ name: 'threshold', type: 'uint64' }],
   },
   setSignerWeights: {
     kind: 'public' as const,
     args: [
       { name: 'signers', type: 'bytes[] memory' },
-      { name: 'weights', type: 'uint256[] memory' },
+      { name: 'weights', type: 'uint64[] memory' },
     ],
   },
 });

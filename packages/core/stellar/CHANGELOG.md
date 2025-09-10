@@ -1,6 +1,30 @@
 # Changelog
 
 
+## 0.4.2 (2025-07-25)
+
+- Fix access control dependency import to import from `stellar_access` instead of `stellar_contract_utils` ([#608](https://github.com/OpenZeppelin/contracts-wizard/pull/608))
+
+## 0.4.1 (2025-07-22)
+
+- Dependencies from crates.io and remove unused imports ([#602](https://github.com/OpenZeppelin/contracts-wizard/pull/602))
+  - **Breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.4.1
+
+## 0.3.0 (2025-07-03)
+
+- Add Stablecoin with Limitations and Access Control (ownable and roles). ([#575](https://github.com/OpenZeppelin/contracts-wizard/pull/575))
+  - **Breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.3.0
+
+## 0.2.3 (2025-06-27)
+
+- Add security contact in contract info ([#563](https://github.com/OpenZeppelin/contracts-wizard/pull/563))
+
+## 0.2.2 (2025-06-20)
+
+- Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
+
 ## 0.2.1 (2025-06-10)
 
 - Fix missing `ContractOverrides` import and rename `defaultimpl` to `default_impl`. ([#566](https://github.com/OpenZeppelin/contracts-wizard/pull/566))

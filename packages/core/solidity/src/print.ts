@@ -17,9 +17,11 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
+import { importsCommunityContracts } from './utils/imports-libraries';
+import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
-export function printContract(contracts: Contract | Contract [], opts?: Options): string {
-  contracts = Array.isArray(contracts) ? contracts : [ contracts ];
+export function printContract(contracts: Contract | Contract[], opts?: Options): string {
+  contracts = Array.isArray(contracts) ? contracts : [contracts];
   if (contracts.length == 0) throw new Error('no contract');
   if (contracts.some(c1 => contracts.some(c2 => c1.license != c2.license))) throw new Error('multiple licences');
 
@@ -27,13 +29,13 @@ export function printContract(contracts: Contract | Contract [], opts?: Options)
     ...spaceBetween(
       // Header
       [
-        `// SPDX-License-Identifier: ${contracts.at(0)!.license}`,
-        `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`,
+        `// SPDX-License-Identifier: ${contracts[0]!.license}`,
+        printCompatibleLibraryVersions(contracts[0]!),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
       // Imports
-      // TODO: consolidate imports from same file
+      // TODO: handle double imports & consolidate imports from same file
       contracts
         .flatMap(contract => printImports(contract.imports, withHelpers(contract, opts)))
         .filter((line, i, lines) => lines.indexOf(line) === i),
@@ -56,9 +58,22 @@ export function printContract(contracts: Contract | Contract [], opts?: Options)
           ),
           `}`,
         ];
-      })
-    )
+      }),
+    ),
   );
+}
+
+function printCompatibleLibraryVersions(contract: Contract): string {
+  let result = `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`;
+  if (importsCommunityContracts(contract)) {
+    try {
+      const commit = getCommunityContractsGitCommit();
+      result += ` and Community Contracts commit ${commit}`;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return result;
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -74,21 +89,39 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   const hasConstructorCode = contract.constructorCode.length > 0;
   const parentsWithInitializers = contract.parents.filter(hasInitializer);
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
-    const parents = parentsWithInitializers.flatMap(p => printParentConstructor(p, helpers));
-    const modifiers = helpers.upgradeable ? ['public initializer'] : parents;
-    const args = contract.constructorArgs.map(a => printArgument(a, helpers));
-    const body = helpers.upgradeable
-      ? spaceBetween(
-          parents.map(p => p + ';'),
+    if (helpers.upgradeable) {
+      const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
+      const nonUpgradeableParents = contract.parents.filter(p => !inferTranspiled(p.contract));
+      const constructor = printFunction2(
+        [
+          nonUpgradeableParents.length > 0
+            ? '/// @custom:oz-upgrades-unsafe-allow-reachable constructor'
+            : '/// @custom:oz-upgrades-unsafe-allow constructor',
+        ],
+        'constructor',
+        [],
+        nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
+        ['_disableInitializers();'],
+      );
+      const initializer = printFunction2(
+        [],
+        'function initialize',
+        contract.constructorArgs.map(a => printArgument(a, helpers)),
+        ['public', 'initializer'],
+        spaceBetween(
+          upgradeableParents.flatMap(p => printParentConstructor(p, helpers)).map(p => p + ';'),
           contract.constructorCode,
-        )
-      : contract.constructorCode;
-    const head = helpers.upgradeable ? 'function initialize' : 'constructor';
-    const constructor = printFunction2([], head, args, modifiers, body);
-    if (!helpers.upgradeable) {
-      return constructor;
+        ),
+      );
+      return spaceBetween(constructor, upgradeableParents.length > 0 ? initializer : []);
     } else {
-      return spaceBetween(DISABLE_INITIALIZERS, constructor);
+      return printFunction2(
+        [],
+        'constructor',
+        contract.constructorArgs.map(a => printArgument(a, helpers)),
+        contract.parents.flatMap(p => printParentConstructor(p, helpers)),
+        contract.constructorCode,
+      );
     }
   } else if (!helpers.upgradeable) {
     return [];
