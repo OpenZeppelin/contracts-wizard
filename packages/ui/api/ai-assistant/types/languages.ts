@@ -30,7 +30,7 @@ export type LanguagesContractsOptions = {
   };
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
-  polkadot: Omit<LanguagesContractsOptions['solidity'], 'Account' | 'Governor'>;
+  polkadot: Omit<LanguagesContractsOptions['solidity'], 'Account'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
