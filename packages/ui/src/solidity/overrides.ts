@@ -43,7 +43,6 @@ export interface Overrides {
   aiAssistant?: {
     svelteComponent: ComponentType;
     language: SupportedLanguage;
-    sampleMessages: string[];
   };
 }
 

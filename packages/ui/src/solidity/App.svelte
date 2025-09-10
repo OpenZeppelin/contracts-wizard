@@ -227,11 +227,7 @@
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
     experimentalContracts={['Stablecoin', 'RealWorldAsset']}
-    sampleMessages={overrides.aiAssistant?.sampleMessages ?? [
-      'Make a token with supply of 10 million',
-      'What does mintable do?',
-      'Make a contract for a DAO',
-    ]}
+    sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
   />
 
   <div class="header flex flex-row justify-between">

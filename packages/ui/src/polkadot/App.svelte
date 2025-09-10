@@ -21,7 +21,6 @@
     aiAssistant: {
       svelteComponent: createWiz<'polkadot'>(),
       language: 'polkadot',
-      sampleMessages: ['Make a token with supply of 10 million', 'What does mintable do?'],
     },
   };
 </script>
