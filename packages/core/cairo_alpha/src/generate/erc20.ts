@@ -9,6 +9,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  decimals: ['6', '18'],
   burnable: booleans,
   pausable: booleans,
   mintable: booleans,
