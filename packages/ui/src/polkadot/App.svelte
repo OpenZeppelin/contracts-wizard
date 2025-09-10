@@ -2,24 +2,21 @@
   import SolidityApp from '../solidity/App.svelte';
   import type { InitialOptions } from '../common/initial-options';
   import type { Overrides } from '../solidity/overrides';
-  import { defineOmitFeatures, removeOmittedFeatures } from './remove-unsupported-features';
+  import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
 
-  // Governor, permit, and votes are disabled for now, due to requirement on ECDSA.
-  // These require further investigation for use with Polkadot's native account abstraction.
-
   let overrides: Overrides = {
-    omitTabs: ['Account', 'Governor'],
+    omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
     remix: {
       label: 'Open in Polkadot Remix',
       url: 'https://remix.polkadot.io',
     },
-    removeOmittedFeatures,
+    sanitizeOmittedFeatures,
     aiAssistant: {
       svelteComponent: createWiz<'polkadot'>(),
       language: 'polkadot',

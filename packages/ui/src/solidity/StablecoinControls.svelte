@@ -135,15 +135,13 @@
       </HelpTooltip>
     </label>
 
-    {#if !omitFeatures?.includes('permit')}
-      <label class:checked={opts.permit || opts.votes}>
-        <input type="checkbox" bind:checked={opts.permit} />
-        Permit
-        <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
-          Without paying gas, token holders will be able to allow third parties to transfer from their account.
-        </HelpTooltip>
-      </label>
-    {/if}
+    <label class:checked={opts.permit || opts.votes}>
+      <input type="checkbox" bind:checked={opts.permit} />
+      Permit
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
+        Without paying gas, token holders will be able to allow third parties to transfer from their account.
+      </HelpTooltip>
+    </label>
 
     <label class:checked={opts.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint} />
@@ -184,32 +182,30 @@
   </div>
 </ExpandableToggleRadio>
 
-{#if !omitFeatures?.includes('votes')}
-  <ExpandableToggleRadio
-    label="Votes"
-    bind:value={opts.votes}
-    defaultValue="blocknumber"
-    helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-    helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
-  >
-    <div class="checkbox-group">
-      <label class:checked={opts.votes === 'blocknumber'}>
-        <input type="radio" bind:group={opts.votes} value="blocknumber" />
-        Block Number
-        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
-          Uses voting durations expressed as block numbers.
-        </HelpTooltip>
-      </label>
-      <label class:checked={opts.votes === 'timestamp'}>
-        <input type="radio" bind:group={opts.votes} value="timestamp" />
-        Timestamp
-        <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
-          Uses voting durations expressed as timestamps.
-        </HelpTooltip>
-      </label>
-    </div>
-  </ExpandableToggleRadio>
-{/if}
+<ExpandableToggleRadio
+  label="Votes"
+  bind:value={opts.votes}
+  defaultValue="blocknumber"
+  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
+  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+>
+  <div class="checkbox-group">
+    <label class:checked={opts.votes === 'blocknumber'}>
+      <input type="radio" bind:group={opts.votes} value="blocknumber" />
+      Block Number
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+        Uses voting durations expressed as block numbers.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.votes === 'timestamp'}>
+      <input type="radio" bind:group={opts.votes} value="timestamp" />
+      Timestamp
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+        Uses voting durations expressed as timestamps.
+      </HelpTooltip>
+    </label>
+  </div>
+</ExpandableToggleRadio>
 
 <ExpandableToggleRadio
   label="Cross-Chain Bridging"
