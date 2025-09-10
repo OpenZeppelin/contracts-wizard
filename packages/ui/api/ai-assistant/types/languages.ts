@@ -20,7 +20,10 @@ import type { KindedOptions as StylusKindedOptions } from '../../../../core/styl
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
 export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
 
-type SolidityContractsOptions = Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'> & {
+type SolidityContractsOptions = Omit<
+  SolidityKindedOptions,
+  'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'
+> & {
   Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
   RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
   Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
