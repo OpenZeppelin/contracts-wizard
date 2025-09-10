@@ -129,7 +129,6 @@
         break;
       case 'Stablecoin':
       case 'RealWorldAsset':
-      case 'Account':
         result.openInRemix = false;
         result.downloadHardhat = false;
         result.downloadFoundry = false;
@@ -224,7 +223,7 @@
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
-    experimentalContracts={['Stablecoin', 'RealWorldAsset', 'Account']}
+    experimentalContracts={['Stablecoin', 'RealWorldAsset']}
     sampleMessages={overrides.aiAssistant?.sampleMessages ?? [
       'Make a token with supply of 10 million',
       'What does mintable do?',
@@ -243,7 +242,7 @@
           Real-World Asset*
         </button>
         {#if !overrides.omitTabs.includes('Account')}
-          <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account* </button>
+          <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
         {/if}
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
