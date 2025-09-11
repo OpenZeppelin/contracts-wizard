@@ -6,22 +6,82 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import type { Upgradeable } from './set-upgradeable';
 
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
 }
 
-const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getTestCase(c)));
+function shouldUseUnsafeAllowConstructor(c: Contract): boolean {
+  // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
+  return c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+}
 
-  function getImports(c: Contract) {
-    const result = ['import {Test} from "forge-std/Test.sol";'];
-    if (c.shouldUseUpgradesPluginsForProxyDeployment) {
-      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
-    }
-    result.push(`import {${c.name}} from "src/${c.name}.sol";`);
-    return result;
+function getImports(c: Contract, prepopulateImports: string[]): string[] {
+  const result: string[] = [...prepopulateImports];
+  if (c.upgradeable) {
+    const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
+
+    result.push(
+      unsafeAllowConstructor
+        ? 'import {Upgrades, Options} from "openzeppelin-foundry-upgrades/Upgrades.sol";'
+        : 'import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";',
+    );
   }
+  result.push(`import {${c.name}} from "src/${c.name}.sol";`);
+  return result;
+}
+
+function getDeploymentCode(
+  c: Contract,
+  args: string[],
+  declareContractVariable: boolean,
+  upgradeable?: Upgradeable,
+): Lines[] {
+  const unsafeAllowConstructor = shouldUseUnsafeAllowConstructor(c);
+  const instanceDeclaration = declareContractVariable ? `${c.name} ` : '';
+
+  switch (upgradeable) {
+    case 'transparent':
+      return printDeployProxyAndAssignInstance('deployTransparentProxy', true);
+    case 'uups':
+      return printDeployProxyAndAssignInstance('deployUUPSProxy', false);
+    default:
+      return [`${instanceDeclaration}instance = new ${c.name}(${args.join(', ')});`];
+  }
+
+  function printDeployProxyAndAssignInstance(deployProxyFunctionName: string, includeInitialOwner: boolean) {
+    const deployProxyArgs = [`"${c.name}.sol"`];
+    if (includeInitialOwner) {
+      deployProxyArgs.push('initialOwner');
+    }
+    deployProxyArgs.push(`abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`);
+    if (unsafeAllowConstructor) {
+      deployProxyArgs.push('opts');
+    }
+    for (let i = 0; i < deployProxyArgs.length - 1; i++) {
+      deployProxyArgs[i] += ',';
+    }
+
+    return [
+      unsafeAllowConstructor && 'Options memory opts;',
+      unsafeAllowConstructor && 'opts.unsafeAllow = "constructor";',
+      `address proxy = Upgrades.${deployProxyFunctionName}(`,
+      deployProxyArgs,
+      ');',
+      // Account has a receive function, this requires a payable address
+      c.parents.find(p => ['Account'].includes(p.contract.name))
+        ? `${instanceDeclaration}instance = ${c.name}(payable(proxy));`
+        : `${instanceDeclaration}instance = ${c.name}(proxy);`,
+    ].filter(line => line !== false);
+  }
+}
+
+const test = (c: Contract, opts?: GenericOptions) => {
+  return formatLinesWithSpaces(
+    2,
+    ...spaceBetween(getHeader(c), getImports(c, ['import {Test} from "forge-std/Test.sol";']), getTestCase(c)),
+  );
 
   function getTestCase(c: Contract) {
     const args = getAddressArgs(c);
@@ -29,43 +89,22 @@ const test = (c: Contract, opts?: GenericOptions) => {
       `contract ${c.name}Test is Test {`,
       spaceBetween(
         [`${c.name} public instance;`],
-        ['function setUp() public {', getAddressVariables(c, args), getDeploymentCode(c, args), '}'],
+        [
+          'function setUp() public {',
+          getAddressVariables(c, args),
+          getDeploymentCode(c, args, false, opts?.upgradeable),
+          '}',
+        ],
         getContractSpecificTestFunction(),
       ),
       '}',
     ];
   }
 
-  function getDeploymentCode(c: Contract, args: string[]): Lines[] {
-    if (c.shouldUseUpgradesPluginsForProxyDeployment) {
-      if (opts?.upgradeable === 'transparent') {
-        return [
-          `address proxy = Upgrades.deployTransparentProxy(`,
-          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-          ');',
-          `instance = ${c.name}(proxy);`,
-        ];
-      } else {
-        return [
-          `address proxy = Upgrades.deployUUPSProxy(`,
-          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-          ');',
-          `instance = ${c.name}(proxy);`,
-        ];
-      }
-    } else {
-      return [`instance = new ${c.name}(${args.join(', ')});`];
-    }
-  }
-
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
     let i = 1; // private key index starts from 1 since it must be non-zero
-    if (
-      c.shouldUseUpgradesPluginsForProxyDeployment &&
-      opts?.upgradeable === 'transparent' &&
-      !args.includes('initialOwner')
-    ) {
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push(`address initialOwner = vm.addr(${i++});`);
     }
     for (const arg of args) {
@@ -108,24 +147,22 @@ function getAddressArgs(c: Contract): string[] {
 }
 
 const script = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(2, ...spaceBetween(getHeader(c), getImports(c), getScript(c)));
-
-  function getImports(c: Contract) {
-    const result = ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";'];
-    if (c.shouldUseUpgradesPluginsForProxyDeployment) {
-      result.push('import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";');
-    }
-    result.push(`import {${c.name}} from "src/${c.name}.sol";`);
-    return result;
-  }
+  return formatLinesWithSpaces(
+    2,
+    ...spaceBetween(
+      getHeader(c),
+      getImports(c, ['import {Script} from "forge-std/Script.sol";', 'import {console} from "forge-std/console.sol";']),
+      getScript(c),
+    ),
+  );
 
   function getScript(c: Contract) {
     const args = getAddressArgs(c);
     const deploymentLines = [
       'vm.startBroadcast();',
       ...getAddressVariables(c, args),
-      ...getDeploymentCode(c, args),
-      `console.log("${c.shouldUseUpgradesPluginsForProxyDeployment ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
+      ...getDeploymentCode(c, args, true, opts?.upgradeable),
+      `console.log("${c.upgradeable ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
       'vm.stopBroadcast();',
     ];
     return [
@@ -138,35 +175,9 @@ const script = (c: Contract, opts?: GenericOptions) => {
     ];
   }
 
-  function getDeploymentCode(c: Contract, args: string[]): Lines[] {
-    if (c.shouldUseUpgradesPluginsForProxyDeployment) {
-      if (opts?.upgradeable === 'transparent') {
-        return [
-          `address proxy = Upgrades.deployTransparentProxy(`,
-          [`"${c.name}.sol",`, `initialOwner,`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-          ');',
-          `${c.name} instance = ${c.name}(proxy);`,
-        ];
-      } else {
-        return [
-          `address proxy = Upgrades.deployUUPSProxy(`,
-          [`"${c.name}.sol",`, `abi.encodeCall(${c.name}.initialize, (${args.join(', ')}))`],
-          ');',
-          `${c.name} instance = ${c.name}(proxy);`,
-        ];
-      }
-    } else {
-      return [`${c.name} instance = new ${c.name}(${args.join(', ')});`];
-    }
-  }
-
   function getAddressVariables(c: Contract, args: string[]): Lines[] {
     const vars = [];
-    if (
-      c.shouldUseUpgradesPluginsForProxyDeployment &&
-      opts?.upgradeable === 'transparent' &&
-      !args.includes('initialOwner')
-    ) {
+    if (c.upgradeable && opts?.upgradeable === 'transparent' && !args.includes('initialOwner')) {
       vars.push('address initialOwner = <Set initialOwner address here>;');
     }
     for (const arg of args) {
@@ -214,23 +225,16 @@ then
   forge init --force --quiet
 
 ${
-  c.shouldInstallContractsUpgradeable
+  c.upgradeable
     ? `\
-  # Install OpenZeppelin Contracts
-  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet\
+  # Install OpenZeppelin Contracts and Upgrades
+  forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v${contracts.version} --quiet
+  forge install OpenZeppelin/openzeppelin-foundry-upgrades --quiet\
 `
     : `\
   # Install OpenZeppelin Contracts
   forge install OpenZeppelin/openzeppelin-contracts@v${contracts.version} --quiet\
 `
-}
-${
-  c.shouldUseUpgradesPluginsForProxyDeployment
-    ? `\
-  # Install OpenZeppelin Foundry Upgrades
-  forge install OpenZeppelin/openzeppelin-foundry-upgrades --quiet\
-`
-    : ''
 }
 
   # Remove unneeded Foundry template files
@@ -248,18 +252,11 @@ ${
     echo "" >> remappings.txt
   fi
 ${
-  c.shouldInstallContractsUpgradeable
+  c.upgradeable
     ? `\
   echo "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/" >> remappings.txt
-  echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt\
-`
-    : `\
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
-`
-}
-${
-  c.shouldUseUpgradesPluginsForProxyDeployment
-    ? `\
+  echo "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/" >> remappings.txt
+
   # Add settings in foundry.toml
   echo "" >> foundry.toml
   echo "ffi = true" >> foundry.toml
@@ -267,7 +264,9 @@ ${
   echo "build_info = true" >> foundry.toml
   echo "extra_output = [\\"storageLayout\\"]" >> foundry.toml\
 `
-    : ''
+    : `\
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" >> remappings.txt\
+`
 }
 
   # Perform initial git commit
@@ -298,7 +297,7 @@ bash setup.sh
 ## Testing the contract
 
 \`\`\`
-forge test${c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : ''}
+forge test${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 ## Deploying the contract
@@ -306,7 +305,7 @@ forge test${c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : ''}
 You can simulate a deployment by running the script:
 
 \`\`\`
-forge script script/${c.name}.s.sol${c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : ''}
+forge script script/${c.name}.s.sol${c.upgradeable ? ' --force' : ''}
 \`\`\`
 
 See [Solidity scripting guide](https://book.getfoundry.sh/guides/scripting-with-solidity) for more information.
