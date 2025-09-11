@@ -184,7 +184,7 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
     });
     c.addConstructorArgument({ type: 'uint256', name: 'moduleTypeId' });
     c.addConstructorArgument({ type: 'address', name: 'module' });
-    c.addConstructorArgument({ type: 'bytes calldata', name: 'initData' });
+    c.addConstructorArgument({ type: 'bytes memory', name: 'initData' });
     c.addConstructorCode('require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);');
     c.addConstructorCode('_installModule(moduleTypeId, module, initData);');
   }
