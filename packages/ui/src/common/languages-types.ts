@@ -9,4 +9,4 @@ export type LanguagesOptions =
   | Required<StellarOptions>
   | Required<StylusOptions>;
 
-export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar';
+export type Language = 'solidity' | 'cairo' | 'polkadot-solidity' | 'stylus' | 'stellar';
