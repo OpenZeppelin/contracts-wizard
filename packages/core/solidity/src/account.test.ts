@@ -48,7 +48,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
   testAPIEquivalence(`${title} - API equivalence`, { ...fullOpts, factory: false });
 
   if (
-    fullOpts.upgradeable == 'transparent' &&
+    (fullOpts.upgradeable == 'transparent' || fullOpts.upgradeable == 'uups') &&
     (fullOpts.signer || fullOpts.ERC7579Modules) &&
     fullOpts.signer !== 'ERC7702'
   ) {
