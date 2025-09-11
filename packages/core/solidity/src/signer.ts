@@ -1,7 +1,6 @@
 import type { ContractBuilder } from './contract';
 import { OptionsError } from './error';
 import type { Upgradeable } from './set-upgradeable';
-import { makeUpgradeable } from './helpers';
 import { defineFunctions } from './utils/define-functions';
 
 export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
@@ -11,7 +10,7 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
   if (!signer) return;
 
   const signerName = signer === 'MultisigWeighted' ? signers.Multisig.name : signers[signer].name;
-  c.addOverride({ name: makeUpgradeable(signerName, upgradeable) }, signerFunctions._rawSignatureValidation);
+  c.addOverride({ name: signerName }, signerFunctions._rawSignatureValidation);
 
   switch (signer) {
     case 'ERC7702':
@@ -28,49 +27,13 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
     case 'RSA':
     case 'Multisig':
     case 'MultisigWeighted': {
-      if (upgradeable) {
-        c.addParent({
-          name: 'Initializable',
-          path: '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol',
-        });
-        addLockingConstructorAllowReachable(c);
-
-        const fn = { name: 'initialize', kind: 'public' as const, args: signerArgs[signer] };
-        c.addModifier('initializer', fn);
-        c.addFunctionCode(`__${signers[signer].name}_init(${signerArgs[signer].map(arg => arg.name).join(', ')});`, fn);
-        c.addParent({
-          name: `${signers[signer].name}Upgradeable`,
-          path: makeUpgradeable(signers[signer].path, upgradeable),
-        });
-      } else {
-        signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
-        c.addParent(
-          signers[signer],
-          signerArgs[signer].map(arg => ({ lit: arg.name })),
-        );
-      }
-
+      signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+      c.addParent(
+        signers[signer],
+        signerArgs[signer].map(arg => ({ lit: arg.name })),
+      );
       break;
     }
-  }
-}
-
-/**
- * Adds a locking constructor that disables initializers and annotates it to allow reachable constructors during Upgrades Plugins validations,
- * which includes constructors in parent contracts.
- *
- * IMPORTANT: If a locking constructor is already present, it will not be added again, even if the body comments are different.
- *
- * @param c The contract builder.
- * @param bodyComments Optional comments to add to the constructor body, before disabling initializers.
- */
-export function addLockingConstructorAllowReachable(c: ContractBuilder, bodyComments?: string[]): void {
-  const disableInitializers = '_disableInitializers();';
-
-  if (!c.constructorCode.includes(disableInitializers)) {
-    c.addConstructorComment('/// @custom:oz-upgrades-unsafe-allow-reachable constructor');
-    bodyComments?.forEach(comment => c.addConstructorCode(comment));
-    c.addConstructorCode(disableInitializers);
   }
 }
 
