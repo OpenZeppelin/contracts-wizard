@@ -35,6 +35,7 @@
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { Language } from '../common/languages-types';
 
   const dispatch = createEventDispatcher();
 
@@ -149,7 +150,7 @@
     return sources;
   };
 
-  const language = 'solidity';
+  const language: Language = overrides.postConfigLanguage ?? 'solidity';
 
   let copied = false;
   const copyHandler = async () => {

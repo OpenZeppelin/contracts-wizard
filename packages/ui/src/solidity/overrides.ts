@@ -1,6 +1,7 @@
 import type { GenericOptions, Kind } from '@openzeppelin/wizard';
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
+import type { Language } from '../common/languages-types';
 
 /**
  * For ecosystem Wizard apps that inherit the Solidity Wizard, they can override specific features in the UI.
@@ -38,6 +39,11 @@ export interface Overrides {
   sanitizeOmittedFeatures: (opts: GenericOptions) => GenericOptions;
 
   /**
+   * Language identifier when posting the configuration
+   */
+  postConfigLanguage?: Language;
+
+  /**
    * AI Assistant overrides
    */
   aiAssistant?: {
@@ -53,5 +59,6 @@ export const defaultOverrides: Overrides = {
   omitZipFoundry: false,
   remix: undefined,
   sanitizeOmittedFeatures: (opts: GenericOptions) => opts,
+  postConfigLanguage: undefined,
   aiAssistant: undefined,
 };
