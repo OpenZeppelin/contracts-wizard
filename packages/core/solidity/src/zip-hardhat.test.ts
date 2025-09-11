@@ -106,9 +106,28 @@ test.serial('account ecdsa uups', async t => {
 });
 
 test.skip('account P256 transparent with factory', async t => {
-  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'P256', upgradeable: 'transparent', factory: true };
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    signer: 'P256',
+    upgradeable: 'transparent',
+    factory: true,
+  };
   const c = buildAccount(opts);
-  const f = buildFactory(c, opts);
+  const _ = buildFactory(c, opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
+test.skip('account modular uups with factory', async t => {
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    ERC7579Modules: 'AccountERC7579',
+    upgradeable: 'uups',
+    factory: true,
+  };
+  const c = buildAccount(opts);
+  const _ = buildFactory(c, opts);
   await runDeployScriptTest(c, t, opts);
 });
 
@@ -128,7 +147,7 @@ test.serial('custom upgradeable', async t => {
   await runDeployScriptTest(c, t, opts);
 });
 
-async function runDeployScriptTest(c: Contract | Contract[], t: ExecutionContext<Context>, opts: GenericOptions) {
+async function runDeployScriptTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 
   assertDeployScriptLayout(zip, c, t);

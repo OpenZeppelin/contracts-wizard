@@ -183,8 +183,16 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 
   // Accounts that use ERC7579 without a signer must be constructed with at least one module (executor of validation)
   if (!opts.signer) {
-    c.addImportOnly({name: 'MODULE_TYPE_VALIDATOR', path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol', transpiled: false});
-    c.addImportOnly({name: 'MODULE_TYPE_EXECUTOR', path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol', transpiled: false});
+    c.addImportOnly({
+      name: 'MODULE_TYPE_VALIDATOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+      transpiled: false,
+    });
+    c.addImportOnly({
+      name: 'MODULE_TYPE_EXECUTOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+      transpiled: false,
+    });
     c.addConstructorArgument({ type: 'uint256', name: 'moduleTypeId' });
     c.addConstructorArgument({ type: 'address', name: 'module' });
     c.addConstructorArgument({ type: 'bytes calldata', name: 'initData' });
@@ -297,8 +305,8 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
   // Implementation address
   factory.addVariable(`${account.name} public immutable implementation = new ${account.name}();`);
 
-  switch(opts.upgradeable) {
-    case 'transparent': {
+  switch (opts.upgradeable) {
+    case 'transparent':
       // Import helpers
       factory.addImportOnly({
         name: 'Clones',
@@ -323,7 +331,9 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
 
       // Functions - predict
       factory.setFunctionBody(
-        [`return Clones.predictDeterministicAddress(address(implementation), _salt(${args.map(arg => arg.name).join(', ')}));`],
+        [
+          `return Clones.predictDeterministicAddress(address(implementation), _salt(${args.map(arg => arg.name).join(', ')}));`,
+        ],
         { name: 'predict', kind: 'public' as const, args, returns: ['address'] },
         'view',
       );
@@ -335,9 +345,8 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
         'pure',
       );
       break;
-    }
 
-    case 'uups': {
+    case 'uups':
       // Import helpers
       factory.addImportOnly({
         name: 'ERC1967Proxy',
@@ -355,9 +364,7 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
           `bytes memory initcall = abi.encodeCall(${account.name}.initialize, (${account.constructorArgs.map(arg => arg.name).join(', ')}));`,
           'address instance = _predict(salt, initcall);',
           `if (instance.code.length == 0) {`,
-          [
-            `new ERC1967Proxy{salt: salt}(address(implementation), initcall);`,
-          ],
+          [`new ERC1967Proxy{salt: salt}(address(implementation), initcall);`],
           `}`,
           `return instance;`,
         ]).split('\n'),
@@ -366,26 +373,32 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
 
       // Functions - predict
       factory.setFunctionBody(
-        [`return _predict(salt, abi.encodeCall(${account.name}.initialize, (${account.constructorArgs.map(arg => arg.name).join(', ')})));`],
+        [
+          `return _predict(salt, abi.encodeCall(${account.name}.initialize, (${account.constructorArgs.map(arg => arg.name).join(', ')})));`,
+        ],
         { name: 'predict', kind: 'public' as const, args, returns: ['address'] },
         'view',
       );
 
       // Functions - _salt
       factory.setFunctionBody(
-        [ 'return Create2.computeAddress(salt, keccak256(bytes.concat(type(ERC1967Proxy).creationCode, abi.encode(implementation, initcall))));' ],
+        [
+          'return Create2.computeAddress(salt, keccak256(bytes.concat(type(ERC1967Proxy).creationCode, abi.encode(implementation, initcall))));',
+        ],
         {
           name: '_predict',
           kind: 'internal' as const,
-          args: [{name: 'salt', type: 'bytes32'}, {name: 'initcall', type: 'bytes memory'}],
+          args: [
+            { name: 'salt', type: 'bytes32' },
+            { name: 'initcall', type: 'bytes memory' },
+          ],
           returns: ['address'],
         },
         'view',
       );
       break;
-    }
 
-    defaults:
+    default:
       throw new OptionsError({ factory: 'Factory requires the account to be transparent upgradeable' });
   }
 

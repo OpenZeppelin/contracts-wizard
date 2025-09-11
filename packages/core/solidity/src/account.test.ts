@@ -53,7 +53,7 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
     fullOpts.signer !== 'ERC7702'
   ) {
     test(`${title} with factory`, t => {
-      t.snapshot(account.print({...fullOpts, factory: true }));
+      t.snapshot(account.print({ ...fullOpts, factory: true }));
     });
     testAPIEquivalence(`${title} with factory - API equivalence`, { ...fullOpts, factory: true });
   }
