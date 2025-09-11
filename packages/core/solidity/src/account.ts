@@ -317,7 +317,7 @@ export function buildFactory(account: Contract, opts: AccountOptions): Contract 
       `}`,
       `return instance;`,
     ]).split('\n'),
-    { name: 'create', kind: 'public' as const, args, returns: ['address'] },
+    { name: 'deploy', kind: 'public' as const, args, returns: ['address'] },
   );
 
   // Functions - predict
