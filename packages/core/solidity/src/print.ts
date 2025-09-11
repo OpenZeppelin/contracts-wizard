@@ -282,7 +282,7 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
 
   for (const p of imports) {
     const { name, path } = helpers.transformImport(p);
-    itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+    const _ = itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
   }
 
   return Array.from(itemByPath.keys())
