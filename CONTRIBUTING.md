@@ -48,8 +48,8 @@ If linting errors or warnings occur, run `yarn lint --fix` to attempt to auto-fi
 From the root directory:
 - ```yarn format:{check|write}```
 
-If formatting errors or warnings occurs when running `yarn format:check`, run `yarn format:write` to attempt to auto-fix issues.
-It is recommended to use automatic formatter in your code editor or run this command before making your merge request as formatting error will fail CI.
+If formatting errors or warnings occur when running `yarn format:check`, run `yarn format:write` to attempt to auto-fix issues.
+It is recommended to use an automatic formatter in your code editor or run this command before making your merge request as formatting errors will fail CI.
 
 ### Running the UI
 From the `packages/ui` directory:
