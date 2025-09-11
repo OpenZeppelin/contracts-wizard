@@ -25,4 +25,16 @@ test('infer transpiled', t => {
   t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/Foo.sol' }));
   t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/Foo.sol', transpiled: true }));
   t.false(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/Foo.sol', transpiled: false }));
+
+  t.false(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-IFoo.sol' }));
+  t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-IFoo.sol', transpiled: true }));
+  t.false(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-IFoo.sol', transpiled: false }));
+
+  t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Ifoo.sol' }));
+  t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Ifoo.sol', transpiled: true }));
+  t.false(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Ifoo.sol', transpiled: false }));
+
+  t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Foo.sol' }));
+  t.true(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Foo.sol', transpiled: true }));
+  t.false(inferTranspiled({ name: 'Foo', path: '@org/package/contracts/draft-Foo.sol', transpiled: false }));
 });
