@@ -7,6 +7,8 @@
 [![Contracts MCP NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-mcp?label=%40openzeppelin%2Fcontracts-mcp)](https://www.npmjs.com/package/@openzeppelin/contracts-mcp)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca9b53e1-44eb-410d-aac7-31b2f5399b68/deploy-status)](https://app.netlify.com/sites/openzeppelin-contracts-wizard/deploys)
 
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/OpenZeppelin/contracts-wizard)](https://archestra.ai/mcp-catalog/openzeppelin__contracts-wizard)
+
 Contracts Wizard is a web application to interactively build a contract out of components from OpenZeppelin Contracts. Select the kind of contract that you want, set your parameters and desired features, and the Wizard will generate all of the code necessary. The resulting code is ready to be compiled and deployed, or it can serve as a starting point and customized further with application specific logic.
 
 [![](./screenshot.png)](https://wizard.openzeppelin.com)
