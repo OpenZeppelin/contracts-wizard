@@ -278,14 +278,14 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  const itemByPath = new Map<string, string[]>;
+  const itemByPath = new Map<string, Set<string>>();
 
-  // populate itemByPath
-  imports
-    .map(p => helpers.transformImport(p))
-    .forEach(p => itemByPath.get(p.path)?.push(p.name) ?? itemByPath.set(p.path, [p.name]));
+  for (const p of imports) {
+    const { name, path } = helpers.transformImport(p);
+    itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+  }
 
   return Array.from(itemByPath.keys())
     .sort()
-    .map(path => `import {${itemByPath.get(path)?.sort().join(', ')}} from "${path}";`);
+    .map(path => `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`);
 }
