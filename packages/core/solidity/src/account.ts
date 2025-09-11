@@ -172,6 +172,16 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 
   // Accounts that use ERC7579 without a signer must be constructed with at least one module (executor of validation)
   if (!opts.signer) {
+    c.addImportOnly({
+      name: 'MODULE_TYPE_VALIDATOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+      transpiled: false, // name doesn't start with "I" so its not recognized as an "interface object"
+    });
+    c.addImportOnly({
+      name: 'MODULE_TYPE_EXECUTOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+      transpiled: false, // name doesn't start with "I" so its not recognized as an "interface object"
+    });
     c.addConstructorArgument({ type: 'uint256', name: 'moduleTypeId' });
     c.addConstructorArgument({ type: 'address', name: 'module' });
     c.addConstructorArgument({ type: 'bytes calldata', name: 'initData' });

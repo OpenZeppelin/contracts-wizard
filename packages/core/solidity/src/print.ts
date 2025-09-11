@@ -278,18 +278,17 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  // Sort imports by name
-  imports.sort((a, b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
+  const transformedImports = imports.map(p => helpers.transformImport(p));
 
-  const lines: string[] = [];
-  imports.map(p => {
-    const importContract = helpers.transformImport(p);
-    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
-  });
-
-  return lines;
+  return transformedImports
+    .map(p => p.path)
+    .filter((path, i, paths) => paths.indexOf(path) == i)
+    .sort()
+    .map(path => `import {${
+      transformedImports
+        .filter(p => p.path === path)
+        .map(p => p.name)
+        .sort()
+        .join(', ')
+    }} from "${path}";`);
 }
