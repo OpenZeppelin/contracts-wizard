@@ -65,7 +65,7 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
-      libraries.push(`Community Contracts commit ${commit}`);
+      libraries.push(`OpenZeppelin Community Contracts commit ${commit}`);
     } catch (e) {
       console.error(e);
     }
@@ -78,9 +78,21 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
     }
   }
 
-  if (libraries.length === 0) return '';
-  if (libraries.length === 1) return `// Compatible with ${libraries[0]}`;
-  return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
+  if (libraries.length === 0) {
+    return '';
+  } else if (libraries.length === 1) {
+    return `// Compatible with ${libraries[0]}`;
+  } else {
+    const OZ_PREFIX_WITH_SPACE = 'OpenZeppelin ';
+    if (libraries[0]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
+      for (let i = 1; i < libraries.length; i++) {
+        if (libraries[i]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
+          libraries[i] = libraries[i]!.slice(OZ_PREFIX_WITH_SPACE.length);
+        }
+      }
+    }
+    return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
+  }
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
