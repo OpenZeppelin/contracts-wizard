@@ -6,7 +6,7 @@ import { zipFoundry } from './zip-foundry';
 import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
-import { buildAccount } from './account';
+import { buildAccount, buildFactory } from './account';
 import { buildCustom } from './custom';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -127,6 +127,32 @@ test.serial('account ecdsa', async t => {
 test.serial('account ecdsa uups', async t => {
   const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
   const c = buildAccount(opts);
+  await runTest(c, t, opts);
+});
+
+test.skip('account P256 transparent with factory', async t => {
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    signer: 'P256',
+    upgradeable: 'transparent',
+    factory: true,
+  };
+  const c = buildAccount(opts);
+  const _ = buildFactory(c, opts);
+  await runTest(c, t, opts);
+});
+
+test.skip('account modular uups with factory', async t => {
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    ERC7579Modules: 'AccountERC7579',
+    upgradeable: 'uups',
+    factory: true,
+  };
+  const c = buildAccount(opts);
+  const _ = buildFactory(c, opts);
   await runTest(c, t, opts);
 });
 

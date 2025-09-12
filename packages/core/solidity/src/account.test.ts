@@ -2,7 +2,7 @@ import test from 'ava';
 import { account } from '.';
 
 import type { AccountOptions } from './account';
-import { buildAccount } from './account';
+import { buildAccount, buildFactory } from './account';
 import { printContract } from './print';
 
 /**
@@ -10,20 +10,24 @@ import { printContract } from './print';
  */
 function testAPIEquivalence(title: string, opts?: AccountOptions) {
   test(title, t => {
-    t.is(
-      account.print(opts),
-      printContract(
-        buildAccount({
-          name: 'MyAccount',
-          signatureValidation: 'ERC7739',
-          ERC721Holder: true,
-          ERC1155Holder: true,
-          batchedExecution: false,
-          ERC7579Modules: false,
-          ...opts,
-        }),
-      ),
-    );
+    const withDefaultOpts: AccountOptions = {
+      name: 'MyAccount',
+      signatureValidation: 'ERC7739',
+      ERC721Holder: true,
+      ERC1155Holder: true,
+      batchedExecution: false,
+      ERC7579Modules: false,
+      factory: false,
+      ...opts,
+    };
+    if (withDefaultOpts.factory) {
+      const accountContract = buildAccount(withDefaultOpts);
+      const factoryContract = buildFactory(accountContract, withDefaultOpts);
+      t.is(account.print(opts), printContract([accountContract, factoryContract]));
+    } else {
+      const accountContract = buildAccount(withDefaultOpts);
+      t.is(account.print(opts), printContract(accountContract));
+    }
   });
 }
 
@@ -37,11 +41,22 @@ function testAccount(title: string, opts: Partial<AccountOptions>) {
     ERC7579: false as const,
     ...opts,
   };
+
   test(title, t => {
-    const c = buildAccount(fullOpts);
-    t.snapshot(printContract(c));
+    t.snapshot(account.print({ ...fullOpts, factory: false }));
   });
-  testAPIEquivalence(`${title} API equivalence`, fullOpts);
+  testAPIEquivalence(`${title} - API equivalence`, { ...fullOpts, factory: false });
+
+  if (
+    (fullOpts.upgradeable == 'transparent' || fullOpts.upgradeable == 'uups') &&
+    (fullOpts.signer || fullOpts.ERC7579Modules) &&
+    fullOpts.signer !== 'ERC7702'
+  ) {
+    test(`${title} with factory`, t => {
+      t.snapshot(account.print({ ...fullOpts, factory: true }));
+    });
+    testAPIEquivalence(`${title} with factory - API equivalence`, { ...fullOpts, factory: true });
+  }
 }
 
 testAPIEquivalence('account API default');
