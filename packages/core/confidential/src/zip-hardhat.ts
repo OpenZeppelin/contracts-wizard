@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
+import type { Contract, FunctionArgument } from '@openzeppelin/wizard/src/contract';
 import { printContract } from './print';
 import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
 import type { Lines } from '@openzeppelin/wizard/src/utils/format-lines';
@@ -58,17 +58,14 @@ const test = (c: Contract, opts?: GenericOptions) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getImports(), getTestCase(c)));
 
   function getTestCase(c: Contract) {
-    const args = getAddressArgs(c);
     return [
       `describe("${c.name}", function () {`,
       [
         'it("Test contract", async function () {',
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-          getAddressVariables(args),
-          // TODO if wrappable, add an ERC20 token address, or add arg placeholder then comment out the deployment line
-          [`const instance = await ${getDeploymentCall(c, args)};`, 'await instance.waitForDeployment();'],
-          getExpects(),
+          declareTestVariables(c.constructorArgs),
+          getDeployInstanceLines(c, c.constructorArgs.map(a => a.name)),
         ),
         '});',
       ],
@@ -80,37 +77,38 @@ const test = (c: Contract, opts?: GenericOptions) => {
     return ['import { expect } from "chai";', `import { ${getHardhatPlugins().join(', ')} } from "hardhat";`];
   }
 
-  function getExpects(): Lines[] {
-    if (opts !== undefined) {
-      switch (opts.kind) {
-        case 'ConfidentialFungible':
-          break;
+  // deleted getExpects
 
-        default:
-          throw new Error('Unknown contract kind');
-      }
-    }
-    return [];
-  }
-
-  function getAddressVariables(args: string[]): Lines[] {
+  // modified from getAddressVariables
+  function declareTestVariables(args: FunctionArgument[]): Lines[] {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
-      vars.push(`const ${args[i]} = (await ethers.getSigners())[${i}].address;`);
+      if (args[i]!.type === 'address') {
+        vars.push(`const ${args[i]!.name} = (await ethers.getSigners())[${i}].address;`);
+      } else {
+        vars.push(`// TODO: Set the following constructor argument`);
+        vars.push(`// const ${args[i]!.name} = ...;`);
+      }
     }
     return vars;
   }
-};
 
-function getAddressArgs(c: Contract): string[] {
-  const args = [];
-  for (const constructorArg of c.constructorArgs) {
-    if (constructorArg.type === 'address') {
-      args.push(constructorArg.name);
+  // new, moved parts from getTestCase
+  function getDeployInstanceLines(c: Contract, argNames: string[]): Lines[] {
+    if (c.constructorArgs.some(a => a.type !== 'address')) {
+      return [
+        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
+        `// const instance = await ${getDeploymentCall(c, argNames)};`,
+        `// await instance.waitForDeployment();`,
+      ];
+    } else {
+      return [`const instance = await ${getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
     }
   }
-  return args;
-}
+
+};
+
+// NOTE removed getAddressArgs
 
 function getDeploymentCall(c: Contract, args: string[]): string {
   // NOTE removed upgradeable
@@ -122,14 +120,14 @@ function getDeploymentCall(c: Contract, args: string[]): string {
 const lowerFirstCharacter = (str: string) => str.charAt(0).toLowerCase() + str.slice(1);
 
 const ignitionModule = (c: Contract) => {
-  const deployArguments = getAddressArgs(c);
+  const deployArguments = c.constructorArgs.map(a => a.name);
   const contractVariableName = lowerFirstCharacter(c.name);
 
   return `import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 export default buildModule("${c.name}Module", (m) => {
 
-  ${deployArguments.length > 0 ? '// TODO: Set addresses for the contract arguments below' : ''}
+  ${deployArguments.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
   const ${contractVariableName} = m.contract("${c.name}", [${deployArguments.join(', ')}]);
 
   return { ${contractVariableName} };
