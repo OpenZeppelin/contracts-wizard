@@ -1,5 +1,4 @@
 import JSZip from 'jszip';
-import type { GenericOptions } from './build-generic';
 import type { Contract, FunctionArgument } from '@openzeppelin/wizard/src/contract';
 import { printContract } from './print';
 import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
@@ -54,7 +53,8 @@ cache
 artifacts
 `;
 
-const test = (c: Contract, opts?: GenericOptions) => {
+// removed opts
+const test = (c: Contract) => {
   return formatLinesWithSpaces(2, ...spaceBetween(getImports(), getTestCase(c)));
 
   function getTestCase(c: Contract) {
@@ -65,7 +65,10 @@ const test = (c: Contract, opts?: GenericOptions) => {
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
           declareTestVariables(c.constructorArgs),
-          getDeployInstanceLines(c, c.constructorArgs.map(a => a.name)),
+          getDeployInstanceLines(
+            c,
+            c.constructorArgs.map(a => a.name),
+          ),
         ),
         '});',
       ],
@@ -105,7 +108,6 @@ const test = (c: Contract, opts?: GenericOptions) => {
       return [`const instance = await ${getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
     }
   }
-
 };
 
 // NOTE removed getAddressArgs
@@ -167,7 +169,7 @@ function getHardhatPlugins() {
   return plugins;
 }
 
-export async function zipHardhat(c: Contract, opts?: GenericOptions) {
+export async function zipHardhat(c: Contract) {
   const zip = new JSZip();
 
   // NOTE: removed upgradeable
@@ -178,7 +180,7 @@ export async function zipHardhat(c: Contract, opts?: GenericOptions) {
   packageLock.packages[''].license = c.license;
 
   zip.file(`contracts/${c.name}.sol`, printContract(c));
-  zip.file('test/test.ts', test(c, opts));
+  zip.file('test/test.ts', test(c));
 
   // NOTE removed upgradeable
   zip.file(`ignition/modules/${c.name}.ts`, ignitionModule(c));

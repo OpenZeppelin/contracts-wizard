@@ -32,8 +32,15 @@ export const confidentialFungibleSchema = {
   symbol: z.string().describe(commonDescriptions.symbol),
   tokenURI: z.string().describe(confidentialConfidentialFungibleDescriptions.tokenURI),
   premint: z.string().optional().describe(confidentialConfidentialFungibleDescriptions.premint),
-  networkConfig: z.literal('zama-sepolia').or(z.literal('zama-ethereum')).describe(confidentialConfidentialFungibleDescriptions.networkConfig),
+  networkConfig: z
+    .literal('zama-sepolia')
+    .or(z.literal('zama-ethereum'))
+    .describe(confidentialConfidentialFungibleDescriptions.networkConfig),
   wrappable: z.boolean().optional().describe(confidentialConfidentialFungibleDescriptions.wrappable),
-  votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(confidentialConfidentialFungibleDescriptions.votes),
+  votes: z
+    .literal('blocknumber')
+    .or(z.literal('timestamp'))
+    .optional()
+    .describe(confidentialConfidentialFungibleDescriptions.votes),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;

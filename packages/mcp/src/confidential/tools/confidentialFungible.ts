@@ -10,16 +10,7 @@ export function registerConfidentialConfidentialFungible(server: McpServer): Reg
     'confidential-confidential-fungible',
     makeDetailedPrompt(confidentialPrompts.ConfidentialFungible),
     confidentialFungibleSchema,
-    async ({
-      name,
-      symbol,
-      tokenURI,
-      premint,
-      networkConfig,
-      wrappable,
-      votes,
-      info,
-    }) => {
+    async ({ name, symbol, tokenURI, premint, networkConfig, wrappable, votes, info }) => {
       const opts: ConfidentialFungibleOptions = {
         name,
         symbol,

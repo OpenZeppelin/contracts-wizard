@@ -12,11 +12,7 @@ export const confidentialConfidentialFungibleAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(commonFunctionDescription, [
-        'name',
-        'symbol',
-        'info',
-      ]),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'symbol', 'info']),
       tokenURI: {
         type: 'string',
         description: confidentialConfidentialFungibleDescriptions.tokenURI,
@@ -26,9 +22,7 @@ export const confidentialConfidentialFungibleAIFunctionDefinition = {
         description: confidentialConfidentialFungibleDescriptions.premint,
       },
       networkConfig: {
-        anyOf: [
-          { type: 'string', enum: ['zama-sepolia', 'zama-ethereum'] },
-        ],
+        anyOf: [{ type: 'string', enum: ['zama-sepolia', 'zama-ethereum'] }],
         description: confidentialConfidentialFungibleDescriptions.networkConfig,
       },
       wrappable: {
@@ -42,7 +36,6 @@ export const confidentialConfidentialFungibleAIFunctionDefinition = {
         ],
         description: confidentialConfidentialFungibleDescriptions.votes,
       },
-
     },
     required: ['name', 'symbol', 'tokenURI', 'networkConfig'],
     additionalProperties: false,

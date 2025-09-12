@@ -8,8 +8,8 @@ export function printContractVersioned(contract: Contract): string {
     transformImport: p => {
       return {
         ...p,
-        path: p.path.
-          replace(/^@openzeppelin\/contracts(-upgradeable)?/, `$&@${openzeppelinContracts.version}`)
+        path: p.path
+          .replace(/^@openzeppelin\/contracts(-upgradeable)?/, `$&@${openzeppelinContracts.version}`)
           .replace(/^@openzeppelin\/confidential-contracts/, `$&@${contractVersionPins.confidentialContractsVersion}`)
           .replace(/^@fhevm\/solidity/, `$&@${contractVersionPins.fhevmSolidityVersion}`),
       };
