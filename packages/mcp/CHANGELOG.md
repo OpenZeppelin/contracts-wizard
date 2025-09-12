@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.1 (2025-09-02)
+- Cairo: Support decimals value added to ERC-20 scheme ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
 
 ## 0.1.0 (2025-08-15)
 

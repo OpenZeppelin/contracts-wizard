@@ -1,7 +1,7 @@
 /**
  * The actual latest version to use in links.
  */
-export const contractsVersion = '3.0.0-alpha.0';
+export const contractsVersion = '3.0.0-alpha.2';
 export const contractsVersionTag = `v${contractsVersion}`;
 
 /**
@@ -16,4 +16,4 @@ export const scarbVersion = '2.12.0';
  * If this targets a stable version, it should use a range (e.g. ^2.0.0)
  * If this targets an alpha version, it should be pinned to the exact version (e.g. not using ^)
  */
-export const compatibleContractsSemver = '3.0.0-alpha.0';
+export const compatibleContractsSemver = '3.0.0-alpha.2';

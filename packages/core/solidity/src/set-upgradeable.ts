@@ -58,6 +58,12 @@ export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradea
   });
 }
 
+export function setUpgradeableAccount(c: ContractBuilder, upgradeable: Upgradeable) {
+  setUpgradeableBase(c, upgradeable, () => {
+    c.addModifier('onlyEntryPointOrSelf', functions._authorizeUpgrade);
+  });
+}
+
 const functions = defineFunctions({
   _authorizeUpgrade: {
     args: [{ name: 'newImplementation', type: 'address' }],

@@ -4,8 +4,10 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { account } from '@openzeppelin/wizard';
+  import { error } from '../common/error-tooltip';
 
   import InfoSection from './InfoSection.svelte';
+  import UpgradeabilitySection from './UpgradeabilitySection.svelte';
 
   export let opts: Required<KindedOptions['Account']> = {
     kind: 'Account',
@@ -20,15 +22,20 @@
     wasERC7579Modules = !!opts.ERC7579Modules;
   }
 
+  let upgradeNotSupported = false;
+  let upgradeNotSupportedReason = '';
+  $: {
+    if (opts.signer === 'ERC7702') {
+      upgradeNotSupported = true;
+      upgradeNotSupportedReason = 'EOAs can upgrade by redelegating to a new account';
+    } else {
+      upgradeNotSupported = false;
+      upgradeNotSupportedReason = '';
+    }
+  }
+
   export let errors: undefined | OptionsErrorMessages;
 </script>
-
-<section class="controls-section">
-  <div class="text-sm text-gray-500">
-    <strong>* Experimental:</strong>
-    <span class="italic">Some of the following features are not audited and are subject to change</span>
-  </div>
-</section>
 
 <section class="controls-section">
   <h1>Settings</h1>
@@ -54,7 +61,7 @@
         }}
       />
       Signature Validation
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#signature_validation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#signature_validation">
         Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
         (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic, making
         them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
@@ -70,7 +77,7 @@
         }}
       />
       Account Bound
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#erc_7739_signatures">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#erc_7739_signatures">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
         multiple smart accounts owned by the same private key. This preserves the readability of signed contents while
         ensuring each signature is uniquely bound to a specific account and chain.
@@ -112,7 +119,7 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/accounts#batched_execution">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#batched_execution">
         Enables atomic execution of multiple transactions in a single operation, reducing total transaction costs and
         latency.
       </HelpTooltip>
@@ -157,29 +164,29 @@
   bind:value={opts.signer}
   defaultValue="ECDSA"
   helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's <code>isValidSignature</code> to verify signatures on behalf of the account."
-  helpLink="https://docs.openzeppelin.com/community-contracts/accounts#selecting_a_signer"
+  helpLink="https://docs.openzeppelin.com/contracts/accounts#selecting_a_signer"
 >
   <div class="checkbox-group">
     <label class:checked={opts.signer === 'ECDSA'}>
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#ECDSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#ECDSA">
         Standard Ethereum signature validation using secp256k1. Validates signatures against a specified owner address,
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'ERC7702'}>
-      <input type="radio" bind:group={opts.signer} value="ERC7702" />
+      <input type="radio" bind:group={opts.signer} value="ERC7702" use:error={errors?.erc7702} />
       EOA Delegation
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/eoa-delegation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
     </label>
     <label class:checked={opts.signer === 'Multisig'}>
       <input type="radio" bind:group={opts.signer} value="Multisig" />
-      Multisig*
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig">
+      Multisig
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig">
         ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
         maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
         requirement.
@@ -187,8 +194,8 @@
     </label>
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
-      Multisig Weighted*
-      <HelpTooltip link="https://docs.openzeppelin.com/community-contracts/multisig#multisignererc7913weighted">
+      Multisig Weighted
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig#multisignererc7913weighted">
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
       </HelpTooltip>
@@ -196,7 +203,7 @@
     <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#P256">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#P256">
         Signature validation using the NIST P-256 curve (secp256r1). Useful for integrating with external systems and
         hardware that use this standardized curve, such as Apple's Passkeys or certain HSMs.
       </HelpTooltip>
@@ -204,12 +211,18 @@
     <label class:checked={opts.signer === 'RSA'}>
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#RSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#RSA">
         RSA PKCS#1 v1.5 signature validation following RFC8017. Enables integration with traditional PKI systems and
         hardware security modules that use RSA keys.
       </HelpTooltip>
     </label>
   </div>
 </ExpandableToggleRadio>
+
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  disabled={upgradeNotSupported}
+  disabledReason={upgradeNotSupportedReason}
+/>
 
 <InfoSection bind:info={opts.info} />

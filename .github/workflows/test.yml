@@ -111,7 +111,7 @@ jobs:
         working-directory: packages/ui
       - name: Run tests
         if: matrix.variant == 'default'
-        run: yarn test '**/*.test.ts' '!**/*.compile.test.ts'
+        run: yarn test '**/*.test.ts' '**/test.ts' '!**/*.compile.test.ts'
         working-directory: packages/core/${{matrix.package}}
 
       - name: Get list of changed files
