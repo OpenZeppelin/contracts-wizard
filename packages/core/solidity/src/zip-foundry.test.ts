@@ -156,9 +156,7 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 }
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     'README.md',
     'script/',
@@ -187,9 +185,8 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
 
   const setGitUser = 'git init && git config user.email "test@test.test" && git config user.name "Test"';
   const setup = 'bash setup.sh';
-  const test = 'forge test' + (c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : '');
-  const script =
-    `forge script script/${c.name}.s.sol` + (c.shouldUseUpgradesPluginsForProxyDeployment ? ' --force' : '');
+  const test = 'forge test' + (c.upgradeable ? ' --force' : '');
+  const script = `forge script script/${c.name}.s.sol` + (c.upgradeable ? ' --force' : '');
 
   const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
 

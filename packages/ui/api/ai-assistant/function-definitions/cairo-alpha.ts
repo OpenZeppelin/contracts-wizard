@@ -30,6 +30,10 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         'appName',
         'appVersion',
       ]),
+      decimals: {
+        type: 'string',
+        description: cairoERC20Descriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: cairoERC20Descriptions.premint,
