@@ -274,20 +274,16 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  // Sort imports by name
-  imports.sort((a, b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
+  const itemByPath = new Map<string, Set<string>>();
 
-  const lines: string[] = [];
-  imports.map(p => {
-    const importContract = helpers.transformImport(p);
-    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
-  });
+  for (const p of imports) {
+    const { name, path } = helpers.transformImport(p);
+    const _ = itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+  }
 
-  return lines;
+  return Array.from(itemByPath.keys())
+    .sort()
+    .map(path => `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`);
 }
 
 function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
