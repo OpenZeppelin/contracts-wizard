@@ -63,7 +63,10 @@ const test = (c: Contract, opts?: GenericOptions) => {
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
           declareTestVariables(c.constructorArgs),
-          getDeployInstanceLines(c, c.constructorArgs.map(a => a.name)),
+          getDeployInstanceLines(
+            c,
+            c.constructorArgs.map(a => a.name),
+          ),
           getExpects(),
         ),
         '});',
@@ -143,7 +146,10 @@ async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
   ${c.constructorArgs.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
-  const instance = await ${getDeploymentCall(c, c.constructorArgs.map(a => a.name))};
+  const instance = await ${getDeploymentCall(
+    c,
+    c.constructorArgs.map(a => a.name),
+  )};
   await instance.waitForDeployment();
 
   console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
