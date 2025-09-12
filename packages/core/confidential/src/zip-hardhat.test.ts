@@ -41,11 +41,11 @@ test.serial('confidentialFungible no wrappable', async t => {
     votes: true,
   };
   const c = buildConfidentialFungible(opts);
-  await runIgnitionTest(c, t, opts);
+  await runIgnitionTest(c, t);
 });
 
-async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
-  const zip = await zipHardhat(c, opts);
+async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>) {
+  const zip = await zipHardhat(c);
 
   assertIgnitionLayout(zip, c, t);
   await extractAndRunIgnitionPackage(zip, c, t);
