@@ -14,7 +14,7 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "prepare": "tsc",
+    "prepare": "tsc && node dist/scripts/prepare.js",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",

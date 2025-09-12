@@ -13,6 +13,6 @@ export { sanitizeKind } from './kind';
 
 export { confidentialFungible } from './api';
 
-export { compatibleContractsSemver } from './utils/version';
+export { compatibleConfidentialContractsSemver } from './utils/version';
 
 export type { ConfidentialFungibleOptions } from './confidentialFungible';
