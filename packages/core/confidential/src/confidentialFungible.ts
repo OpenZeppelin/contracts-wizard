@@ -91,10 +91,6 @@ function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: str
     name: 'euint64',
     path: '@fhevm/solidity/lib/FHE.sol',
   });
-  c.addImportOnly({
-    name: 'FHE',
-    path: '@fhevm/solidity/lib/FHE.sol',
-  });
   c.addOverride(ConfidentialFungibleToken, functions._update);
   c.addOverride(ConfidentialFungibleToken, functions.confidentialTotalSupply);
   c.addOverride(ConfidentialFungibleToken, functions.decimals);
@@ -145,6 +141,10 @@ function addPremint(c: ContractBuilder, amount: string) {
       c.addImportOnly({
         name: 'SafeCast',
         path: '@openzeppelin/contracts/utils/math/SafeCast.sol',
+      });
+      c.addImportOnly({
+        name: 'FHE',
+        path: '@fhevm/solidity/lib/FHE.sol',
       });
       const mintLine = `_mint(recipient, FHE.asEuint64(SafeCast.toUint64(${units} * 10 ** ${exp})));`;
 
