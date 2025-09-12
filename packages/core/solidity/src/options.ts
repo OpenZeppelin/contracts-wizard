@@ -27,6 +27,10 @@ export function upgradeableImport(p: ImportContract): ImportContract {
 
 export interface Options {
   transformImport?: (parent: ImportContract) => ImportContract;
+  /**
+   * Add additional libraries to the compatibility banner printed at the top of the contract.
+   */
+  additionalCompatibleLibraries?: { name: string; path: string; version: string }[];
 }
 
 export interface Helpers extends Required<Options> {
@@ -45,5 +49,6 @@ export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
       const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
+    additionalCompatibleLibraries: opts.additionalCompatibleLibraries ?? [],
   };
 }

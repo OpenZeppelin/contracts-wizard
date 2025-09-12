@@ -17,7 +17,7 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import { inferTranspiled } from './infer-transpiled';
 import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
-import { importsCommunityContracts } from './utils/imports-libraries';
+import { importsLibrary } from './utils/imports-libraries';
 import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
 export function printContract(contract: Contract, opts?: Options): string {
@@ -31,7 +31,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        printCompatibleLibraryVersions(contract),
+        printCompatibleLibraryVersions(contract, opts),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
@@ -42,6 +42,7 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
+          printLibraries(contract, helpers),
           contract.variables,
           printConstructor(contract, helpers),
           ...fns.code,
@@ -56,17 +57,42 @@ export function printContract(contract: Contract, opts?: Options): string {
   );
 }
 
-function printCompatibleLibraryVersions(contract: Contract): string {
-  let result = `// Compatible with OpenZeppelin Contracts ${compatibleContractsSemver}`;
-  if (importsCommunityContracts(contract)) {
+function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
+  const libraries: string[] = [];
+  if (importsLibrary(contract, '@openzeppelin/contracts')) {
+    libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
+  }
+  if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
-      result += ` and Community Contracts commit ${commit}`;
+      libraries.push(`OpenZeppelin Community Contracts commit ${commit}`);
     } catch (e) {
       console.error(e);
     }
   }
-  return result;
+  if (opts?.additionalCompatibleLibraries) {
+    for (const library of opts.additionalCompatibleLibraries) {
+      if (importsLibrary(contract, library.path)) {
+        libraries.push(`${library.name} ${library.version}`);
+      }
+    }
+  }
+
+  if (libraries.length === 0) {
+    return '';
+  } else if (libraries.length === 1) {
+    return `// Compatible with ${libraries[0]}`;
+  } else {
+    const OZ_PREFIX_WITH_SPACE = 'OpenZeppelin ';
+    if (libraries[0]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
+      for (let i = 1; i < libraries.length; i++) {
+        if (libraries[i]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
+          libraries[i] = libraries[i]!.slice(OZ_PREFIX_WITH_SPACE.length);
+        }
+      }
+    }
+    return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
+  }
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -278,18 +304,25 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  // Sort imports by name
-  imports.sort((a, b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
+  const itemByPath = new Map<string, Set<string>>();
 
-  const lines: string[] = [];
-  imports.map(p => {
-    const importContract = helpers.transformImport(p);
-    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
-  });
+  for (const p of imports) {
+    const { name, path } = helpers.transformImport(p);
+    const _ = itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+  }
 
-  return lines;
+  return Array.from(itemByPath.keys())
+    .sort()
+    .map(path => `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`);
+}
+
+function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
+  if (!contract.libraries || contract.libraries.length === 0) return [];
+
+  return contract.libraries
+    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by library name
+    .map(lib => {
+      const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b)); // Sort types
+      return `using ${transformName(lib.library)} for ${sortedTypes.join(', ')};`;
+    });
 }
