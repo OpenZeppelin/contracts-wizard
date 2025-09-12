@@ -71,7 +71,8 @@ export default async (req: Request): Promise<Response> => {
     return new Response(openAiStream, {
       headers: new Headers({
         ...Cors,
-        'Content-Type': 'text/plain',
+        'Content-Type': 'application/x-ndjson; charset=utf-8',
+        'Cache-Control': 'no-transform',
       }),
     });
   } catch (e) {
