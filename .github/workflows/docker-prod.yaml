@@ -40,8 +40,8 @@ jobs:
           token: ${{ steps.gh-app-token.outputs.token }}
           fetch-depth: 0
 
-      - name: Prepare pre-requisites
-        uses: ./.github/actions/prepare
+      - name: Setup pre-requisites
+        uses: ./.github/actions/setup
         with:
           token: ${{ steps.gh-app-token.outputs.token }}
 
