@@ -3,7 +3,9 @@ import test from 'ava';
 import semver from 'semver';
 
 import { compatibleConfidentialContractsSemver, compatibleFHEVMSolidityContractsSemver } from './version';
-import { confidentialContractsVersion, fhevmSolidityVersion } from '../../contract-version-pins.json';
+import contractVersionPins from '../../contract-version-pins';
+
+const { fhevmSolidityVersion, confidentialContractsVersion } = contractVersionPins;
 
 test('installed @fhevm/solidity satisfies compatible range', t => {
   t.true(
