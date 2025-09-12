@@ -16,7 +16,7 @@ import {
   compatibleContractsSemver as cairoAlphaSemver,
   contractsVersion as cairoAlphaVersion,
 } from '@openzeppelin/wizard-cairo-alpha';
-import { compatibleContractsSemver as confidentialSemver } from '@openzeppelin/wizard-confidential';
+import { compatibleConfidentialContractsSemver as confidentialSemver } from '@openzeppelin/wizard-confidential';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import type { InitialOptions } from './common/initial-options';
