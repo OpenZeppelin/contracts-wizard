@@ -21,7 +21,7 @@ export const getRedisInstance = () => {
 };
 
 export const saveChatInRedisIfDoesNotExist =
-  (chatId: string, chatMessages: unknown[]) => async (completion: string) => {
+  (chatId: string, ChatMessagess: unknown[]) => async (completion: string) => {
     const redis = getRedisInstance();
 
     const updatedAt = Date.now();
@@ -29,7 +29,7 @@ export const saveChatInRedisIfDoesNotExist =
       id: chatId,
       updatedAt,
       messages: [
-        ...chatMessages,
+        ...ChatMessagess,
         {
           content: completion,
           role: 'assistant',

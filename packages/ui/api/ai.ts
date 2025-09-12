@@ -4,7 +4,7 @@ import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
-import type { ChatMessage } from './services/open-ai.ts';
+import type { ChatMessages } from './services/open-ai.ts';
 import { createOpenAiCompletionStream } from './services/open-ai.ts';
 import type { AiChatBodyRequest } from './ai-assistant/types/assistant.ts';
 import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
@@ -33,7 +33,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
   );
 };
 
-const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessage => {
+const buildAiChatMessagess = (request: AiChatBodyRequest): ChatMessages => {
   const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
     return message.content.length < 500;
   });
@@ -56,16 +56,16 @@ export default async (req: Request): Promise<Response> => {
   try {
     const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
-    const chatMessages = buildAiChatMessages(aiChatBodyRequest);
+    const ChatMessagess = buildAiChatMessagess(aiChatBodyRequest);
 
     const openAiStream = createOpenAiCompletionStream({
       streamParams: {
-        messages: chatMessages,
+        messages: ChatMessagess,
         tools: getFunctionsContext(aiChatBodyRequest.language),
       },
       chatId: aiChatBodyRequest.chatId,
-      onAiStreamCompletion: async ({ chatId, chatMessages }, finalStreamResult) =>
-        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, chatMessages)(finalStreamResult)),
+      onAiStreamCompletion: async ({ chatId, ChatMessagess }, finalStreamResult) =>
+        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, ChatMessagess)(finalStreamResult)),
     });
 
     return new Response(openAiStream, {

@@ -7,7 +7,7 @@ import type {
 } from './languages.ts';
 
 export type Chat = {
-  role: 'user' | 'assistant' | 'system' | 'developer';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 };
 
