@@ -120,10 +120,9 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    // TODO check if this should indeed avoid versioned so vanilla and confidential's imported vanilla don't conflict
-    const { printContract } = await import('@openzeppelin/wizard-confidential');
+    const { printContractVersioned } = await import('@openzeppelin/wizard-confidential/print-versioned');
 
-    const versionedCode = printContract(contract);
+    const versionedCode = printContractVersioned(contract);
     window.open(remixURL(versionedCode, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);

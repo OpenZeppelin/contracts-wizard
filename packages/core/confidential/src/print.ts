@@ -1,9 +1,9 @@
 import { printContract as printSolidityContract } from '@openzeppelin/wizard/src/print';
-import type { ConfidentialFungibleOptions } from './confidentialFungible';
+import type { Options } from '@openzeppelin/wizard/src/options';
 import { compatibleConfidentialContractsSemver } from './utils/version';
 import type { Contract } from '@openzeppelin/wizard/src/contract';
 
-export function printContract(contract: Contract, opts?: ConfidentialFungibleOptions): string {
+export function printContract(contract: Contract, opts?: Options): string {
   return printSolidityContract(contract, {
     ...opts,
     additionalCompatibleLibraries: [
