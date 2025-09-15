@@ -1,7 +1,5 @@
 import { type ConfidentialFungibleOptions } from '../confidentialFungible';
-import { clockModeOptions } from '@openzeppelin/wizard';
-import { infoOptions } from '@openzeppelin/wizard';
-import { generateAlternatives } from '@openzeppelin/wizard';
+import { clockModeOptions, infoOptions, generateAlternatives } from '@openzeppelin/wizard';
 
 const booleans = [true, false];
 
