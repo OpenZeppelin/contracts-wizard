@@ -1,6 +1,6 @@
 import type { ConfidentialFungibleOptions } from './confidentialFungible';
 import { buildConfidentialFungible } from './confidentialFungible';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
+import type { Contract } from '@openzeppelin/wizard';
 
 export interface KindedOptions {
   ConfidentialFungible: { kind: 'ConfidentialFungible' } & ConfidentialFungibleOptions;

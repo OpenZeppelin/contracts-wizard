@@ -1,6 +1,6 @@
 import openzeppelinContracts from '../../solidity/openzeppelin-contracts';
 import contractVersionPins from '../contract-version-pins';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
+import type { Contract } from '@openzeppelin/wizard';
 import { printContract } from './print';
 
 export function printContractVersioned(contract: Contract): string {

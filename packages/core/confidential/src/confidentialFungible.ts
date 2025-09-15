@@ -1,14 +1,14 @@
-import { ContractBuilder } from '@openzeppelin/wizard/src/contract';
-import { defineFunctions } from '@openzeppelin/wizard/src/utils/define-functions';
+import { ContractBuilder } from '@openzeppelin/wizard';
+import { defineFunctions } from '@openzeppelin/wizard';
 import type { CommonOptions } from './common-options';
-import { withCommonDefaults, defaults as commonDefaults } from '@openzeppelin/wizard/src/common-options';
-import { setInfo } from '@openzeppelin/wizard/src/set-info';
+import { withCommonDefaults, commonDefaults } from '@openzeppelin/wizard';
+import { setInfo } from '@openzeppelin/wizard';
 import { printContract } from './print';
-import type { ClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
-import { clockModeDefault, setClockMode } from '@openzeppelin/wizard/src/set-clock-mode';
-import { OptionsError } from '@openzeppelin/wizard/src/error';
-import { toUint256, UINT256_MAX } from '@openzeppelin/wizard/src/utils/convert-strings';
-import { requireAccessControl } from '@openzeppelin/wizard/src/set-access-control';
+import type { ClockMode } from '@openzeppelin/wizard';
+import { clockModeDefault, setClockMode } from '@openzeppelin/wizard';
+import { OptionsError } from '@openzeppelin/wizard';
+import { toUint256, UINT256_MAX } from '@openzeppelin/wizard';
+import { requireAccessControl } from '@openzeppelin/wizard';
 
 export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];

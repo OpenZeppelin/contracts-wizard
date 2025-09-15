@@ -9,7 +9,7 @@ import path from 'path';
 import os from 'os';
 import util from 'util';
 import child from 'child_process';
-import type { Contract } from '@openzeppelin/wizard/src/contract';
+import type { Contract } from '@openzeppelin/wizard';
 import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';

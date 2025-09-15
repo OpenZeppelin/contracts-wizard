@@ -1,5 +1,5 @@
-import type { Info } from '@openzeppelin/wizard/src/set-info';
-import { defaults as infoDefaults } from '@openzeppelin/wizard/src/set-info';
+import type { Info } from '@openzeppelin/wizard';
+import { infoDefaults } from '@openzeppelin/wizard';
 
 export const defaults: Required<CommonOptions> = {
   info: infoDefaults,

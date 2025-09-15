@@ -30,3 +30,18 @@ export type { StablecoinOptions } from './stablecoin';
 export type { AccountOptions } from './account';
 export type { GovernorOptions } from './governor';
 export type { CustomOptions } from './custom';
+
+// Additional exports for confidential package
+export { defineFunctions } from './utils/define-functions';
+export { withCommonDefaults, defaults as commonDefaults } from './common-options';
+export { setInfo, infoOptions } from './set-info';
+export type { ClockMode } from './set-clock-mode';
+export { clockModeDefault, setClockMode, clockModeOptions } from './set-clock-mode';
+export { toUint256, UINT256_MAX } from './utils/convert-strings';
+export { requireAccessControl } from './set-access-control';
+export type { Options } from './options';
+export type { FunctionArgument } from './contract';
+export type { Lines } from './utils/format-lines';
+export { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+export { generateAlternatives } from './generate/alternatives';
+export { findCover } from './utils/find-cover';

@@ -1,9 +1,9 @@
 import JSZip from 'jszip';
-import type { Contract, FunctionArgument } from '@openzeppelin/wizard/src/contract';
+import type { Contract, FunctionArgument } from '@openzeppelin/wizard';
 import { printContract } from './print';
 import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
-import type { Lines } from '@openzeppelin/wizard/src/utils/format-lines';
-import { formatLinesWithSpaces, spaceBetween } from '@openzeppelin/wizard/src/utils/format-lines';
+import type { Lines } from '@openzeppelin/wizard';
+import { formatLinesWithSpaces, spaceBetween } from '@openzeppelin/wizard';
 
 // NOTE: fhevm was added (compared to solidity)
 const hardhatConfig = (upgradeable: boolean) => `\
