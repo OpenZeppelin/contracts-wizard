@@ -10,7 +10,7 @@ import {
   toUint256,
   UINT256_MAX,
   requireAccessControl,
-  type ClockMode
+  type ClockMode,
 } from '@openzeppelin/wizard';
 import type { CommonOptions } from './common-options';
 import { printContract } from './print';

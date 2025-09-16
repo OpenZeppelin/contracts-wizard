@@ -1,5 +1,11 @@
 import JSZip from 'jszip';
-import { formatLinesWithSpaces, spaceBetween, type Contract, type FunctionArgument, type Lines } from '@openzeppelin/wizard';
+import {
+  formatLinesWithSpaces,
+  spaceBetween,
+  type Contract,
+  type FunctionArgument,
+  type Lines,
+} from '@openzeppelin/wizard';
 import { printContract } from './print';
 import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
 
