@@ -6,10 +6,20 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
-const hardhatConfig = (upgradeable: boolean) => `\
+export class HardhatZipGenerator {
+  protected getAdditionalHardhatImports(): string[] {
+    return [];
+  }
+
+  protected getHardhatConfig(upgradeable: boolean): string {
+    const additionalImports = this.getAdditionalHardhatImports();
+    const importsSection =
+      additionalImports.length > 0 ? additionalImports.map(imp => `import "${imp}";`).join('\n') + '\n' : '';
+
+    return `\
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
+${importsSection}${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -24,8 +34,10 @@ const config: HardhatUserConfig = {
 
 export default config;
 `;
+  }
 
-const tsConfig = `\
+  protected getTsConfig(): string {
+    return `\
 {
   "compilerOptions": {
     "target": "es2020",
@@ -38,8 +50,10 @@ const tsConfig = `\
   }
 }
 `;
+  }
 
-const gitIgnore = `\
+  protected getGitIgnore(): string {
+    return `\
 node_modules
 .env
 coverage
@@ -51,23 +65,25 @@ typechain-types
 cache
 artifacts
 `;
+  }
 
-const test = (c: Contract, opts?: GenericOptions) => {
-  return formatLinesWithSpaces(2, ...spaceBetween(getImports(c), getTestCase(c)));
+  protected getTest(c: Contract, opts?: GenericOptions): string {
+    return formatLinesWithSpaces(2, ...spaceBetween(this.getTestImports(c), this.getTestCase(c, opts)));
+  }
 
-  function getTestCase(c: Contract) {
+  protected getTestCase(c: Contract, opts?: GenericOptions): Lines[] {
     return [
       `describe("${c.name}", function () {`,
       [
         'it("Test contract", async function () {',
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-          declareTestVariables(c.constructorArgs),
-          getDeployInstanceLines(
+          this.declareTestVariables(c.constructorArgs),
+          this.getDeployInstanceLines(
             c,
             c.constructorArgs.map(a => a.name),
           ),
-          getExpects(),
+          this.getExpects(opts),
         ),
         '});',
       ],
@@ -75,11 +91,11 @@ const test = (c: Contract, opts?: GenericOptions) => {
     ];
   }
 
-  function getImports(c: Contract) {
-    return ['import { expect } from "chai";', `import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";`];
+  protected getTestImports(c: Contract): Lines[] {
+    return ['import { expect } from "chai";', `import { ${this.getHardhatPlugins(c).join(', ')} } from "hardhat";`];
   }
 
-  function getExpects(): Lines[] {
+  protected getExpects(opts?: GenericOptions): Lines[] {
     if (opts !== undefined) {
       switch (opts.kind) {
         case 'ERC20':
@@ -101,7 +117,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
     return [];
   }
 
-  function declareTestVariables(args: FunctionArgument[]): Lines[] {
+  protected declareTestVariables(args: FunctionArgument[]): Lines[] {
     const vars = [];
     for (let i = 0; i < args.length; i++) {
       if (args[i]!.type === 'address') {
@@ -114,39 +130,38 @@ const test = (c: Contract, opts?: GenericOptions) => {
     return vars;
   }
 
-  function getDeployInstanceLines(c: Contract, argNames: string[]): Lines[] {
+  protected getDeployInstanceLines(c: Contract, argNames: string[]): Lines[] {
     if (c.constructorArgs.some(a => a.type !== 'address')) {
       return [
         `// TODO: Uncomment the below when the missing constructor arguments are set above`,
-        `// const instance = await ${getDeploymentCall(c, argNames)};`,
+        `// const instance = await ${this.getDeploymentCall(c, argNames)};`,
         `// await instance.waitForDeployment();`,
       ];
     } else {
-      return [`const instance = await ${getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
+      return [`const instance = await ${this.getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
     }
   }
-};
 
-function getDeploymentCall(c: Contract, args: string[]): string {
-  // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
-  const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+  protected getDeploymentCall(c: Contract, args: string[]): string {
+    // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
+    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
-  return !c.upgradeable
-    ? `ContractFactory.deploy(${args.join(', ')})`
-    : unsafeAllowConstructor
-      ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`
-      : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`;
-}
+    return !c.upgradeable
+      ? `ContractFactory.deploy(${args.join(', ')})`
+      : unsafeAllowConstructor
+        ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`
+        : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`;
+  }
 
-const script = (c: Contract) => {
-  return `\
-import { ${getHardhatPlugins(c).join(', ')} } from "hardhat";
+  protected getScript(c: Contract): string {
+    return `\
+import { ${this.getHardhatPlugins(c).join(', ')} } from "hardhat";
 
 async function main() {
   const ContractFactory = await ethers.getContractFactory("${c.name}");
 
   ${c.constructorArgs.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
-  const instance = await ${getDeploymentCall(
+  const instance = await ${this.getDeploymentCall(
     c,
     c.constructorArgs.map(a => a.name),
   )};
@@ -162,14 +177,16 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 `;
-};
+  }
 
-const lowerFirstCharacter = (str: string) => str.charAt(0).toLowerCase() + str.slice(1);
+  protected lowerFirstCharacter(str: string): string {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+  }
 
-const ignitionModule = (c: Contract) => {
-  const contractVariableName = lowerFirstCharacter(c.name);
+  protected getIgnitionModule(c: Contract): string {
+    const contractVariableName = this.lowerFirstCharacter(c.name);
 
-  return `import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+    return `import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 export default buildModule("${c.name}Module", (m) => {
 
@@ -179,9 +196,10 @@ export default buildModule("${c.name}Module", (m) => {
   return { ${contractVariableName} };
 });
 `;
-};
+  }
 
-const readme = (c: Contract) => `\
+  protected getReadme(c: Contract): string {
+    return `\
 # Sample Hardhat Project
 
 This project demonstrates a basic Hardhat use case. It comes with a contract generated by [OpenZeppelin Wizard](https://wizard.openzeppelin.com/), a test for that contract, ${c.upgradeable ? 'and a script that deploys that contract' : 'and a Hardhat Ignition module that deploys that contract'}.
@@ -206,43 +224,65 @@ You can target any network from your Hardhat config using:
 ${c.upgradeable ? 'npx hardhat run --network <network-name> scripts/deploy.ts' : `npx hardhat ignition deploy ignition/modules/${c.name}.ts --network <network-name>`}
 \`\`\`
 `;
-
-function getHardhatPlugins(c: Contract) {
-  const plugins = ['ethers'];
-  if (c.upgradeable) {
-    plugins.push('upgrades');
   }
-  return plugins;
+
+  protected getHardhatPlugins(c: Contract): string[] {
+    const plugins = ['ethers'];
+    if (c.upgradeable) {
+      plugins.push('upgrades');
+    }
+    return plugins;
+  }
+
+  protected async getPackageJson(c: Contract): Promise<unknown> {
+    const { default: packageJson } = c.upgradeable
+      ? await import('./environments/hardhat/upgradeable/package.json')
+      : await import('./environments/hardhat/package.json');
+    packageJson.license = c.license;
+    return packageJson;
+  }
+
+  protected async getPackageLock(c: Contract): Promise<unknown> {
+    const { default: packageLock } = c.upgradeable
+      ? await import('./environments/hardhat/upgradeable/package-lock.json')
+      : await import('./environments/hardhat/package-lock.json');
+    packageLock.packages[''].license = c.license;
+    return packageLock;
+  }
+
+  protected getPrintContract(c: Contract): string {
+    return printContract(c);
+  }
+
+  async zipHardhat(c: Contract, opts?: GenericOptions): Promise<JSZip> {
+    const zip = new JSZip();
+
+    const packageJson = await this.getPackageJson(c);
+    const packageLock = await this.getPackageLock(c);
+
+    zip.file(`contracts/${c.name}.sol`, this.getPrintContract(c));
+    zip.file('test/test.ts', this.getTest(c, opts));
+
+    if (c.upgradeable) {
+      zip.file('scripts/deploy.ts', this.getScript(c));
+    } else {
+      zip.file(`ignition/modules/${c.name}.ts`, this.getIgnitionModule(c));
+    }
+
+    zip.file('.gitignore', this.getGitIgnore());
+    zip.file('hardhat.config.ts', this.getHardhatConfig(c.upgradeable));
+    zip.file('package.json', JSON.stringify(packageJson, null, 2));
+    zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
+    zip.file('README.md', this.getReadme(c));
+    zip.file('tsconfig.json', this.getTsConfig());
+
+    return zip;
+  }
 }
 
-export async function zipHardhat(c: Contract, opts?: GenericOptions) {
-  const zip = new JSZip();
+// Create default instance for backward compatibility
+const defaultGenerator = new HardhatZipGenerator();
 
-  const { default: packageJson } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package.json')
-    : await import('./environments/hardhat/package.json');
-  packageJson.license = c.license;
-
-  const { default: packageLock } = c.upgradeable
-    ? await import('./environments/hardhat/upgradeable/package-lock.json')
-    : await import('./environments/hardhat/package-lock.json');
-  packageLock.packages[''].license = c.license;
-
-  zip.file(`contracts/${c.name}.sol`, printContract(c));
-  zip.file('test/test.ts', test(c, opts));
-
-  if (c.upgradeable) {
-    zip.file('scripts/deploy.ts', script(c));
-  } else {
-    zip.file(`ignition/modules/${c.name}.ts`, ignitionModule(c));
-  }
-
-  zip.file('.gitignore', gitIgnore);
-  zip.file('hardhat.config.ts', hardhatConfig(c.upgradeable));
-  zip.file('package.json', JSON.stringify(packageJson, null, 2));
-  zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
-  zip.file('README.md', readme(c));
-  zip.file('tsconfig.json', tsConfig);
-
-  return zip;
+export async function zipHardhat(c: Contract, opts?: GenericOptions): Promise<JSZip> {
+  return defaultGenerator.zipHardhat(c, opts);
 }

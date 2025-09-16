@@ -42,3 +42,4 @@ export type { Lines } from './utils/format-lines';
 export { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 export { generateAlternatives } from './generate/alternatives';
 export { findCover } from './utils/find-cover';
+export { HardhatZipGenerator } from './zip-hardhat';

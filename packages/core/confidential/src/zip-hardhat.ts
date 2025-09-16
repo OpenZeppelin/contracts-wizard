@@ -1,201 +1,48 @@
-import JSZip from 'jszip';
-import {
-  formatLinesWithSpaces,
-  spaceBetween,
-  type Contract,
-  type FunctionArgument,
-  type Lines,
-} from '@openzeppelin/wizard';
+import type JSZip from 'jszip';
+import type { Contract, Lines } from '@openzeppelin/wizard';
+import { HardhatZipGenerator } from '@openzeppelin/wizard';
 import { printContract } from './print';
-import SOLIDITY_VERSION from '@openzeppelin/wizard/src/solidity-version.json';
 
-// NOTE: fhevm was added (compared to solidity)
-const hardhatConfig = (upgradeable: boolean) => `\
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@fhevm/hardhat-plugin";
-${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
+class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {
+  protected getAdditionalHardhatImports(): string[] {
+    return ['@fhevm/hardhat-plugin'];
+  }
 
-const config: HardhatUserConfig = {
-  solidity: {
-    version: "${SOLIDITY_VERSION}",
-    settings: {
-      optimizer: {
-        enabled: true,
-      },
-    },
-  },
-};
+  protected getHardhatPlugins(_: Contract): string[] {
+    // Confidential contracts only use ethers, no upgrades support
+    return ['ethers'];
+  }
 
-export default config;
-`;
+  protected getDeploymentCall(_: Contract, args: string[]): string {
+    // Confidential contracts don't support upgradeable
+    return `ContractFactory.deploy(${args.join(', ')})`;
+  }
 
-const tsConfig = `\
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
+  protected getExpects(): Lines[] {
+    // Confidential contracts don't use the generic options expectations
+    return [];
+  }
+
+  protected async getPackageJson(c: Contract): Promise<unknown> {
+    const { default: packageJson } = await import('./environments/hardhat/package.json');
+    packageJson.license = c.license;
+    return packageJson;
+  }
+
+  protected async getPackageLock(c: Contract): Promise<unknown> {
+    const { default: packageLock } = await import('./environments/hardhat/package-lock.json');
+    packageLock.packages[''].license = c.license;
+    return packageLock;
+  }
+
+  protected getPrintContract(c: Contract): string {
+    return printContract(c);
   }
 }
-`;
 
-const gitIgnore = `\
-node_modules
-.env
-coverage
-coverage.json
-typechain
-typechain-types
+// Create confidential-specific instance
+const confidentialGenerator = new ConfidentialHardhatZipGenerator();
 
-# Hardhat files
-cache
-artifacts
-`;
-
-// removed opts
-const test = (c: Contract) => {
-  return formatLinesWithSpaces(2, ...spaceBetween(getImports(), getTestCase(c)));
-
-  function getTestCase(c: Contract) {
-    return [
-      `describe("${c.name}", function () {`,
-      [
-        'it("Test contract", async function () {',
-        spaceBetween(
-          [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-          declareTestVariables(c.constructorArgs),
-          getDeployInstanceLines(
-            c,
-            c.constructorArgs.map(a => a.name),
-          ),
-        ),
-        '});',
-      ],
-      '});',
-    ];
-  }
-
-  function getImports() {
-    return ['import { expect } from "chai";', `import { ${getHardhatPlugins().join(', ')} } from "hardhat";`];
-  }
-
-  // deleted getExpects
-
-  // modified from getAddressVariables
-  function declareTestVariables(args: FunctionArgument[]): Lines[] {
-    const vars = [];
-    for (let i = 0; i < args.length; i++) {
-      if (args[i]!.type === 'address') {
-        vars.push(`const ${args[i]!.name} = (await ethers.getSigners())[${i}].address;`);
-      } else {
-        vars.push(`// TODO: Set the following constructor argument`);
-        vars.push(`// const ${args[i]!.name} = ...;`);
-      }
-    }
-    return vars;
-  }
-
-  // new, moved parts from getTestCase
-  function getDeployInstanceLines(c: Contract, argNames: string[]): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
-      return [
-        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
-        `// const instance = await ${getDeploymentCall(c, argNames)};`,
-        `// await instance.waitForDeployment();`,
-      ];
-    } else {
-      return [`const instance = await ${getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
-    }
-  }
-};
-
-// NOTE removed getAddressArgs
-
-function getDeploymentCall(c: Contract, args: string[]): string {
-  // NOTE removed upgradeable
-  return `ContractFactory.deploy(${args.join(', ')})`;
-}
-
-// NOTE removed script
-
-const lowerFirstCharacter = (str: string) => str.charAt(0).toLowerCase() + str.slice(1);
-
-const ignitionModule = (c: Contract) => {
-  const deployArguments = c.constructorArgs.map(a => a.name);
-  const contractVariableName = lowerFirstCharacter(c.name);
-
-  return `import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-
-export default buildModule("${c.name}Module", (m) => {
-
-  ${deployArguments.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
-  const ${contractVariableName} = m.contract("${c.name}", [${deployArguments.join(', ')}]);
-
-  return { ${contractVariableName} };
-});
-`;
-};
-
-// NOTE removed upgradeable
-const readme = (c: Contract) => `\
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a contract generated by [OpenZeppelin Wizard](https://wizard.openzeppelin.com/), a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-## Installing dependencies
-
-\`\`\`
-npm install
-\`\`\`
-
-## Testing the contract
-
-\`\`\`
-npm test
-\`\`\`
-
-## Deploying the contract
-
-You can target any network from your Hardhat config using:
-
-\`\`\`
-npx hardhat ignition deploy ignition/modules/${c.name}.ts --network <network-name>
-\`\`\`
-`;
-
-function getHardhatPlugins() {
-  const plugins = ['ethers'];
-  return plugins;
-}
-
-export async function zipHardhat(c: Contract) {
-  const zip = new JSZip();
-
-  // NOTE: removed upgradeable
-  const { default: packageJson } = await import('./environments/hardhat/package.json');
-  packageJson.license = c.license;
-
-  const { default: packageLock } = await import('./environments/hardhat/package-lock.json');
-  packageLock.packages[''].license = c.license;
-
-  zip.file(`contracts/${c.name}.sol`, printContract(c));
-  zip.file('test/test.ts', test(c));
-
-  // NOTE removed upgradeable
-  zip.file(`ignition/modules/${c.name}.ts`, ignitionModule(c));
-
-  zip.file('.gitignore', gitIgnore);
-  // TODO: remove upgradeable flag
-  zip.file('hardhat.config.ts', hardhatConfig(false));
-  zip.file('package.json', JSON.stringify(packageJson, null, 2));
-  zip.file(`package-lock.json`, JSON.stringify(packageLock, null, 2));
-  zip.file('README.md', readme(c));
-  zip.file('tsconfig.json', tsConfig);
-
-  return zip;
+export async function zipHardhat(c: Contract): Promise<JSZip> {
+  return confidentialGenerator.zipHardhat(c);
 }
