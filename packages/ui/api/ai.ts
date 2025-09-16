@@ -33,7 +33,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
   );
 };
 
-const buildAiChatMessagess = (request: AiChatBodyRequest): ChatMessages => {
+const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessages => {
   const validatedMessages = request.messages.filter((message: { role: string; content: string }) => {
     return message.content.length < 500;
   });
@@ -56,16 +56,16 @@ export default async (req: Request): Promise<Response> => {
   try {
     const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
-    const ChatMessagess = buildAiChatMessagess(aiChatBodyRequest);
+    const ChatMessages = buildAiChatMessages(aiChatBodyRequest);
 
     const openAiStream = createOpenAiCompletionStream({
       streamParams: {
-        messages: ChatMessagess,
+        messages: ChatMessages,
         tools: getFunctionsContext(aiChatBodyRequest.language),
       },
       chatId: aiChatBodyRequest.chatId,
-      onAiStreamCompletion: async ({ chatId, ChatMessagess }, finalStreamResult) =>
-        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, ChatMessagess)(finalStreamResult)),
+      onAiStreamCompletion: async ({ chatId, ChatMessages }, finalStreamResult) =>
+        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, ChatMessages)(finalStreamResult)),
     });
 
     return new Response(openAiStream, {

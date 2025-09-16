@@ -13,7 +13,7 @@ export type ChatMessages = OpenAI.Chat.ChatCompletionCreateParams['messages'];
 
 type ProcessOpenAiStreamParams = {
   openAiStream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk> & { controller?: AbortController };
-  ChatMessagess: ChatMessages;
+  ChatMessages: ChatMessages;
   chatId: string;
 };
 type OnAiStreamCompletion = (
@@ -22,7 +22,7 @@ type OnAiStreamCompletion = (
 ) => Promise<unknown>;
 
 const processOpenAIStream = (
-  { openAiStream, ChatMessagess, chatId }: ProcessOpenAiStreamParams,
+  { openAiStream, ChatMessages, chatId }: ProcessOpenAiStreamParams,
   onAiStreamCompletion?: OnAiStreamCompletion,
 ) =>
   new ReadableStream({
@@ -64,7 +64,7 @@ const processOpenAIStream = (
       } finally {
         if (onAiStreamCompletion)
           await onAiStreamCompletion(
-            { openAiStream, chatId, ChatMessagess },
+            { openAiStream, chatId, ChatMessages },
             finalResponse || JSON.stringify(finalToolCall),
           );
       }
@@ -93,7 +93,7 @@ export const createOpenAiCompletionStream = ({
   });
 
   return processOpenAIStream(
-    { openAiStream, ChatMessagess: streamParams.messages, chatId: chatId },
+    { openAiStream, ChatMessages: streamParams.messages, chatId: chatId },
     onAiStreamCompletion,
   );
 };
