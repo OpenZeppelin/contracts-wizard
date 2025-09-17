@@ -7,7 +7,7 @@ import { confidentialPrompts } from '@openzeppelin/wizard-common';
 
 export function registerConfidentialConfidentialFungible(server: McpServer): RegisteredTool {
   return server.tool(
-    'confidential-confidential-fungible',
+    'confidential-fungible',
     makeDetailedPrompt(confidentialPrompts.ConfidentialFungible),
     confidentialFungibleSchema,
     async ({ name, symbol, tokenURI, premint, networkConfig, wrappable, votes, info }) => {
