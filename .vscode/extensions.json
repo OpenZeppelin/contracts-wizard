@@ -2,6 +2,7 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "denoland.vscode-deno"
-  ]
+    "denoland.vscode-deno",
+    "rust-lang.rust-analyzer"
+  ],
 }

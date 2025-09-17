@@ -27,7 +27,7 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
-  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
 
   const dispatch = createEventDispatcher();
 
