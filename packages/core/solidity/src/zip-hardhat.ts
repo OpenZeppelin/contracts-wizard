@@ -6,6 +6,88 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
+class TestGenerator {
+  constructor(private parent: HardhatZipGenerator) {}
+
+  getContent(c: Contract, opts?: GenericOptions): string {
+    return formatLinesWithSpaces(2, ...spaceBetween(this.getImports(c), this.getTestCase(c, opts)));
+  }
+
+  private getTestCase(c: Contract, opts?: GenericOptions): Lines[] {
+    return [
+      `describe("${c.name}", function () {`,
+      [
+        'it("Test contract", async function () {',
+        spaceBetween(
+          [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
+          this.declareVariables(c.constructorArgs),
+          this.getDeployLines(
+            c,
+            c.constructorArgs.map(a => a.name),
+          ),
+          this.getExpects(opts),
+        ),
+        '});',
+      ],
+      '});',
+    ];
+  }
+
+  private getImports(c: Contract): Lines[] {
+    return [
+      'import { expect } from "chai";',
+      `import { ${this.parent.getHardhatPlugins(c).join(', ')} } from "hardhat";`,
+    ];
+  }
+
+  private getExpects(opts?: GenericOptions): Lines[] {
+    if (opts !== undefined) {
+      switch (opts.kind) {
+        case 'ERC20':
+        case 'ERC721':
+          return [`expect(await instance.name()).to.equal("${opts.name}");`];
+        case 'ERC1155':
+          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
+        case 'Account':
+        case 'Governor':
+        case 'Custom':
+          break;
+        default:
+          throw new Error('Unknown ERC');
+      }
+    }
+    return [];
+  }
+
+  private declareVariables(args: FunctionArgument[]): Lines[] {
+    const vars = [];
+    for (let i = 0; i < args.length; i++) {
+      if (args[i]!.type === 'address') {
+        vars.push(`const ${args[i]!.name} = (await ethers.getSigners())[${i}].address;`);
+      } else {
+        vars.push(`// TODO: Set the following constructor argument`);
+        vars.push(`// const ${args[i]!.name} = ...;`);
+      }
+    }
+    return vars;
+  }
+
+  private getDeployLines(c: Contract, argNames: string[]): Lines[] {
+    if (c.constructorArgs.some(a => a.type !== 'address')) {
+      return [
+        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
+        `// const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
+        `// await instance.waitForDeployment();`,
+      ];
+    } else {
+      return [
+        `const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
+        'await instance.waitForDeployment();',
+      ];
+    }
+  }
+}
+
 export class HardhatZipGenerator {
   protected getAdditionalHardhatImports(): string[] {
     return [];
@@ -68,78 +150,7 @@ artifacts
   }
 
   protected getTest(c: Contract, opts?: GenericOptions): string {
-    return formatLinesWithSpaces(2, ...spaceBetween(this.getTestImports(c), this.getTestCase(c, opts)));
-  }
-
-  protected getTestCase(c: Contract, opts?: GenericOptions): Lines[] {
-    return [
-      `describe("${c.name}", function () {`,
-      [
-        'it("Test contract", async function () {',
-        spaceBetween(
-          [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-          this.declareTestVariables(c.constructorArgs),
-          this.getDeployInstanceLines(
-            c,
-            c.constructorArgs.map(a => a.name),
-          ),
-          this.getExpects(opts),
-        ),
-        '});',
-      ],
-      '});',
-    ];
-  }
-
-  protected getTestImports(c: Contract): Lines[] {
-    return ['import { expect } from "chai";', `import { ${this.getHardhatPlugins(c).join(', ')} } from "hardhat";`];
-  }
-
-  protected getExpects(opts?: GenericOptions): Lines[] {
-    if (opts !== undefined) {
-      switch (opts.kind) {
-        case 'ERC20':
-        case 'ERC721':
-          return [`expect(await instance.name()).to.equal("${opts.name}");`];
-
-        case 'ERC1155':
-          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
-
-        case 'Account':
-        case 'Governor':
-        case 'Custom':
-          break;
-
-        default:
-          throw new Error('Unknown ERC');
-      }
-    }
-    return [];
-  }
-
-  protected declareTestVariables(args: FunctionArgument[]): Lines[] {
-    const vars = [];
-    for (let i = 0; i < args.length; i++) {
-      if (args[i]!.type === 'address') {
-        vars.push(`const ${args[i]!.name} = (await ethers.getSigners())[${i}].address;`);
-      } else {
-        vars.push(`// TODO: Set the following constructor argument`);
-        vars.push(`// const ${args[i]!.name} = ...;`);
-      }
-    }
-    return vars;
-  }
-
-  protected getDeployInstanceLines(c: Contract, argNames: string[]): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
-      return [
-        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
-        `// const instance = await ${this.getDeploymentCall(c, argNames)};`,
-        `// await instance.waitForDeployment();`,
-      ];
-    } else {
-      return [`const instance = await ${this.getDeploymentCall(c, argNames)};`, 'await instance.waitForDeployment();'];
-    }
+    return new TestGenerator(this).getContent(c, opts);
   }
 
   protected getDeploymentCall(c: Contract, args: string[]): string {
@@ -179,13 +190,12 @@ main().catch((error) => {
 `;
   }
 
-  protected lowerFirstCharacter(str: string): string {
+  private lowerFirstCharacter(str: string): string {
     return str.charAt(0).toLowerCase() + str.slice(1);
   }
 
   protected getIgnitionModule(c: Contract): string {
     const contractVariableName = this.lowerFirstCharacter(c.name);
-
     return `import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 export default buildModule("${c.name}Module", (m) => {
@@ -280,9 +290,6 @@ ${c.upgradeable ? 'npx hardhat run --network <network-name> scripts/deploy.ts' :
   }
 }
 
-// Create default instance for backward compatibility
-const defaultGenerator = new HardhatZipGenerator();
-
 export async function zipHardhat(c: Contract, opts?: GenericOptions): Promise<JSZip> {
-  return defaultGenerator.zipHardhat(c, opts);
+  return new HardhatZipGenerator().zipHardhat(c, opts);
 }

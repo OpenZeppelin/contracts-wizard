@@ -1,26 +1,11 @@
 import type JSZip from 'jszip';
-import type { Contract, Lines } from '@openzeppelin/wizard';
+import type { Contract } from '@openzeppelin/wizard';
 import { HardhatZipGenerator } from '@openzeppelin/wizard';
 import { printContract } from './print';
 
 class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {
   protected getAdditionalHardhatImports(): string[] {
     return ['@fhevm/hardhat-plugin'];
-  }
-
-  protected getHardhatPlugins(_: Contract): string[] {
-    // Confidential contracts only use ethers, no upgrades support
-    return ['ethers'];
-  }
-
-  protected getDeploymentCall(_: Contract, args: string[]): string {
-    // Confidential contracts don't support upgradeable
-    return `ContractFactory.deploy(${args.join(', ')})`;
-  }
-
-  protected getExpects(): Lines[] {
-    // Confidential contracts don't use the generic options expectations
-    return [];
   }
 
   protected async getPackageJson(c: Contract): Promise<unknown> {
@@ -40,9 +25,6 @@ class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {
   }
 }
 
-// Create confidential-specific instance
-const confidentialGenerator = new ConfidentialHardhatZipGenerator();
-
 export async function zipHardhat(c: Contract): Promise<JSZip> {
-  return confidentialGenerator.zipHardhat(c);
+  return new ConfidentialHardhatZipGenerator().zipHardhat(c);
 }
