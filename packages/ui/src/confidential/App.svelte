@@ -137,7 +137,6 @@
     }
   };
 
-  // TODO override?
   const zipHardhatModule = import('@openzeppelin/wizard-confidential/zip-env-hardhat');
 
   const downloadHardhatHandler = async () => {
