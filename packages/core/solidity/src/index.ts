@@ -1,3 +1,17 @@
+// ===== Public API =====
+
+export { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from './api';
+
+export type { ERC20Options } from './erc20';
+export type { ERC721Options } from './erc721';
+export type { ERC1155Options } from './erc1155';
+export type { StablecoinOptions } from './stablecoin';
+export type { AccountOptions } from './account';
+export type { GovernorOptions } from './governor';
+export type { CustomOptions } from './custom';
+
+// ===== Internal API - Intended for use by other Wizard packages only =====
+
 export type { GenericOptions, KindedOptions } from './build-generic';
 export { buildGeneric } from './build-generic';
 
@@ -20,17 +34,7 @@ export { OptionsError } from './error';
 export type { Kind } from './kind';
 export { sanitizeKind } from './kind';
 
-export { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from './api';
-
 export { compatibleContractsSemver } from './utils/version';
-
-export type { ERC20Options } from './erc20';
-export type { ERC721Options } from './erc721';
-export type { ERC1155Options } from './erc1155';
-export type { StablecoinOptions } from './stablecoin';
-export type { AccountOptions } from './account';
-export type { GovernorOptions } from './governor';
-export type { CustomOptions } from './custom';
 
 export { defineFunctions } from './utils/define-functions';
 export { withCommonDefaults, defaults as commonDefaults } from './common-options';
