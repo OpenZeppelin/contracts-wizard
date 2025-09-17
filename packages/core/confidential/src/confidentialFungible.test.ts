@@ -43,7 +43,7 @@ testConfidentialFungible('basic confidentialFungible', {});
 
 testConfidentialFungible('confidentialFungible name is unicodeSafe', { name: 'MyTokeć' });
 
-testConfidentialFungible('confidentialFungible zama-ethereum network', {
+testConfidentialFungible('confidentialFungible zama-ethereum', {
   networkConfig: 'zama-ethereum',
 });
 
