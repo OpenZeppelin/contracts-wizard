@@ -3,17 +3,17 @@ import { registerConfidentialConfidentialFungible } from './tools/confidentialFu
 import type { KindedOptions } from '@openzeppelin/wizard-confidential';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-type SolidityToolRegisterFunctions = {
+type ConfidentialToolRegisterFunctions = {
   [kind in keyof KindedOptions]: (server: McpServer) => RegisteredTool;
 };
 
-function getRegisterFunctions(server: McpServer): SolidityToolRegisterFunctions {
+function getRegisterFunctions(server: McpServer): ConfidentialToolRegisterFunctions {
   return {
     ConfidentialFungible: () => registerConfidentialConfidentialFungible(server),
   };
 }
 
-export function registerSolidityTools(server: McpServer) {
+export function registerConfidentialTools(server: McpServer) {
   Object.values(getRegisterFunctions(server)).forEach(registerTool => {
     registerTool(server);
   });
