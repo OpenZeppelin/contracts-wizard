@@ -153,7 +153,7 @@ artifacts
     return new TestGenerator(this).getContent(c, opts);
   }
 
-  protected getDeploymentCall(c: Contract, args: string[]): string {
+  public getDeploymentCall(c: Contract, args: string[]): string {
     // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
     const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
 
@@ -236,7 +236,7 @@ ${c.upgradeable ? 'npx hardhat run --network <network-name> scripts/deploy.ts' :
 `;
   }
 
-  protected getHardhatPlugins(c: Contract): string[] {
+  public getHardhatPlugins(c: Contract): string[] {
     const plugins = ['ethers'];
     if (c.upgradeable) {
       plugins.push('upgrades');
