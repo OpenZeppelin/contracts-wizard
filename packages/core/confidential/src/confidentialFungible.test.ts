@@ -11,7 +11,7 @@ function testConfidentialFungible(title: string, opts: Partial<ConfidentialFungi
     const c = buildConfidentialFungible({
       name: 'MyToken',
       symbol: 'MTK',
-      tokenURI: '',
+      tokenURI: 'https://example.com/token',
       networkConfig: 'zama-sepolia',
       ...opts,
     });
@@ -39,26 +39,34 @@ function testAPIEquivalence(title: string, opts?: ConfidentialFungibleOptions) {
   });
 }
 
-testConfidentialFungible('basic confidentialFungible', {});
+testConfidentialFungible('basic confidential fungible', {});
 
-testConfidentialFungible('confidentialFungible name is unicodeSafe', { name: 'MyTokeć' });
+testConfidentialFungible('confidential fungible name is unicodeSafe', { name: 'MyTokeć' });
 
-testConfidentialFungible('confidentialFungible preminted', {
+testConfidentialFungible('confidential fungible with custom tokenURI', {
+  tokenURI: 'https://custom.example.com/metadata',
+});
+
+testConfidentialFungible('confidential fungible zama-ethereum network', {
+  networkConfig: 'zama-ethereum',
+});
+
+testConfidentialFungible('confidential fungible preminted', {
   premint: '1000',
 });
 
-testConfidentialFungible('confidentialFungible premint of 0', {
+testConfidentialFungible('confidential fungible premint of 0', {
   premint: '0',
 });
 
 function testPremint(scenario: string, premint: string, expectedError?: string) {
-  test(`confidentialFungible premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
+  test(`confidential fungible premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {
       const error = t.throws(() =>
         buildConfidentialFungible({
           name: 'MyToken',
           symbol: 'MTK',
-          tokenURI: '',
+          tokenURI: 'https://example.com/token',
           networkConfig: 'zama-sepolia',
           premint,
         }),
@@ -68,7 +76,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
       const c = buildConfidentialFungible({
         name: 'MyToken',
         symbol: 'MTK',
-        tokenURI: '',
+        tokenURI: 'https://example.com/token',
         networkConfig: 'zama-sepolia',
         premint,
       });
@@ -92,57 +100,62 @@ testPremint(
 testPremint('e notation', '1e59');
 testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
 
-testConfidentialFungible('confidentialFungible wrappable', {
+testConfidentialFungible('confidential fungible wrappable', {
   wrappable: true,
 });
 
-testConfidentialFungible('confidentialFungible votes', {
+testConfidentialFungible('confidential fungible votes', {
   votes: true,
 });
 
-testConfidentialFungible('confidentialFungible votes + blocknumber', {
+testConfidentialFungible('confidential fungible votes + blocknumber', {
   votes: 'blocknumber',
 });
 
-testConfidentialFungible('confidentialFungible votes + timestamp', {
+testConfidentialFungible('confidential fungible votes + timestamp', {
   votes: 'timestamp',
 });
 
-// TODO test full
-/**
-testConfidentialFungible('confidentialFungible full', {
+testConfidentialFungible('confidential fungible full features zama-sepolia', {
   premint: '2000',
-  access: 'roles',
-  burnable: true,
-  mintable: true,
-  pausable: true,
-  callback: true,
-  permit: true,
+  wrappable: true,
   votes: true,
-  flashmint: true,
-  upgradeable: 'uups',
-});
-*/
-
-testAPIEquivalence('confidentialFungible API default');
-
-testAPIEquivalence('confidentialFungible API basic', {
-  name: 'CustomToken',
-  symbol: 'CTK',
-  tokenURI: '',
   networkConfig: 'zama-sepolia',
 });
 
-testAPIEquivalence('confidentialFungible API full upgradeable', {
+testConfidentialFungible('confidential fungible full features zama-ethereum', {
+  premint: '2000',
+  wrappable: true,
+  votes: true,
+  networkConfig: 'zama-ethereum',
+});
+
+testConfidentialFungible('confidential fungible full features with timestamp votes', {
+  premint: '2000',
+  wrappable: true,
+  votes: 'timestamp',
+  networkConfig: 'zama-ethereum',
+});
+
+testAPIEquivalence('confidential fungible API default');
+
+testAPIEquivalence('confidential fungible API basic', { 
+  name: 'CustomToken', 
+  symbol: 'CTK',
+  tokenURI: 'https://custom.example.com/token',
+  networkConfig: 'zama-sepolia',
+});
+
+testAPIEquivalence('confidential fungible API full features', {
   name: 'CustomToken',
   symbol: 'CTK',
-  tokenURI: 'http://example.com',
+  tokenURI: 'https://custom.example.com/token',
   networkConfig: 'zama-ethereum',
   premint: '2000',
   wrappable: true,
   votes: true,
 });
 
-test('confidentialFungible API assert defaults', async t => {
+test('confidential fungible API assert defaults', async t => {
   t.is(confidentialFungible.print(confidentialFungible.defaults), confidentialFungible.print());
 });
