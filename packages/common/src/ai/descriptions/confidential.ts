@@ -7,7 +7,7 @@ export const confidentialPrompts = {
 };
 
 export const confidentialConfidentialFungibleDescriptions = {
-  tokenURI: 'The URI of the token.',
+  tokenURI: 'A URI related to the token.',
   premint: 'The number of tokens to premint for the deployer.',
   networkConfig: 'Specify the provider and network configuration to use for FHEVM contracts.',
   wrappable: 'Whether to allow wrapping an ERC20 token into a confidential fungible token.',

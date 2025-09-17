@@ -35,7 +35,10 @@
   </div>
 
   <label class="labeled-input">
-    <span class="flex justify-between pr-2">Token URI</span>
+    <span class="flex justify-between pr-2">
+      Token URI
+      <HelpTooltip>A URI related to the token.</HelpTooltip>
+    </span>
     <input bind:value={opts.tokenURI} placeholder="https://..." />
   </label>
 
