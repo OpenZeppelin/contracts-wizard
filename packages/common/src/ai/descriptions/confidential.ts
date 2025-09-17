@@ -3,7 +3,7 @@
 
 export const confidentialPrompts = {
   ConfidentialFungible:
-    'Make a confidential fungible token per the ERC-7984 standard, similar to ERC-20 but with confidentiality.',
+    'Make a confidential fungible token in Solidity according to the ERC-7984 standard, similar to ERC-20 but with confidentiality.',
 };
 
 export const confidentialConfidentialFungibleDescriptions = {
