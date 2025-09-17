@@ -19,7 +19,7 @@
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
-    "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable"
+    "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat"
   },
   "dependencies": {
     "@openzeppelin/wizard": "^0.8.0"
