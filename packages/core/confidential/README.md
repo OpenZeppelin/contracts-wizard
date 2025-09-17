@@ -46,12 +46,14 @@ To generate the source code for a confidential fungible contract with all of the
 const contract = confidentialFungible.print();
 ```
 
-To generate the source code for a confidential fungible contract with a custom name and symbol, along with some custom settings:
+To generate the source code for a confidential fungible contract with a custom name, symbol, URI, and network configuration, along with some custom settings:
 ```js
 const contract = confidentialFungible.print({
   name: 'ExampleToken',
   symbol: 'ETK',
-  burnable: true,
+  tokenURI: 'https://example.com',
+  networkConfig: 'zama-sepolia',
   premint: '1000000',
+  wrappable: true,
 });
 ```
