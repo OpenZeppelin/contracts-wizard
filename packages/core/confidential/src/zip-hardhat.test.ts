@@ -3,6 +3,7 @@ import _test from 'ava';
 
 import { zipHardhat } from './zip-hardhat';
 
+import type { ConfidentialFungibleOptions } from './confidentialFungible';
 import { buildConfidentialFungible } from './confidentialFungible';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -29,16 +30,34 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('confidentialFungible no wrappable', async t => {
+test.serial('confidentialFungible basic', async t => {
   const opts: GenericOptions = {
     kind: 'ConfidentialFungible',
     name: 'My Token',
     tokenURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
     symbol: 'MTK',
+  };
+  const c = buildConfidentialFungible(opts);
+  await runIgnitionTest(c, t);
+});
+
+test.serial('confidentialFungible full', async t => {
+  const fullOptions: Required<ConfidentialFungibleOptions> = {
+    name: 'My Token',
+    tokenURI: 'https://example.com',
+    networkConfig: 'zama-sepolia',
+    symbol: 'MTK',
     premint: '2000',
-    wrappable: false,
-    votes: true,
+    wrappable: true,
+    votes: 'timestamp',
+    info: {
+      license: 'AGPL-3.0-only',
+    },
+  };
+  const opts: GenericOptions = {
+    kind: 'ConfidentialFungible',
+    ...fullOptions,
   };
   const c = buildConfidentialFungible(opts);
   await runIgnitionTest(c, t);
