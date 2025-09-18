@@ -5,6 +5,7 @@ export function printContract(contract: Contract, opts?: Options): string {
   return printSolidityContract(contract, {
     ...opts,
     additionalCompatibleLibraries: [
+      ...(opts?.additionalCompatibleLibraries ?? []),
       {
         name: 'OpenZeppelin Confidential Contracts',
         path: '@openzeppelin/confidential-contracts',
