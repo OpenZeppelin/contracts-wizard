@@ -160,7 +160,7 @@ artifacts
     return !c.upgradeable
       ? `ContractFactory.deploy(${args.join(', ')})`
       : unsafeAllowConstructor
-        ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: 'constructor' })`
+        ? `upgrades.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: ['constructor'] })`
         : `upgrades.deployProxy(ContractFactory, [${args.join(', ')}])`;
   }
 
