@@ -19,6 +19,6 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   return {
     access: opts.access ?? false,
     upgradeable: opts.upgradeable ?? false,
-    info: opts.info ?? {},
+    info: { ...defaults.info, ...(opts.info ?? {}) },
   };
 }

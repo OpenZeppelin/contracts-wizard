@@ -11,6 +11,6 @@ export interface CommonOptions {
 
 export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
   return {
-    info: opts.info ?? {},
+    info: { ...defaults.info, ...(opts.info ?? {}) },
   };
 }
