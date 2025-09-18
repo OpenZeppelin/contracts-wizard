@@ -10,6 +10,7 @@ import {
   toUint256,
   UINT256_MAX,
   requireAccessControl,
+  calculateERC20Premint,
   type ClockMode,
 } from '@openzeppelin/wizard';
 import type { CommonOptions } from './common-options';
@@ -126,40 +127,29 @@ function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
 }
 
 function addPremint(c: ContractBuilder, amount: string) {
-  const m = amount.match(premintPattern);
-  if (m) {
-    const integer = m[1]?.replace(/^0+/, '') ?? '';
-    const decimals = m[2]?.replace(/0+$/, '') ?? '';
-    const exponent = Number(m[3] ?? 0);
-
-    if (Number(integer + decimals) > 0) {
-      const decimalPlace = decimals.length - exponent;
-      const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
-      const units = integer + decimals + zeroes;
-      const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
-
-      const validatedBaseUnits = toUint256(units, 'premint');
-      checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
-
-      c.addConstructorArgument({ type: 'address', name: 'recipient' });
-
-      c.addImportOnly({
-        name: 'SafeCast',
-        path: '@openzeppelin/contracts/utils/math/SafeCast.sol',
-      });
-      c.addImportOnly({
-        name: 'FHE',
-        path: '@fhevm/solidity/lib/FHE.sol',
-      });
-      const mintLine = `_mint(recipient, FHE.asEuint64(SafeCast.toUint64(${units} * 10 ** ${exp})));`;
-
-      c.addConstructorCode(mintLine);
-    }
-  } else {
-    throw new OptionsError({
-      premint: 'Not a valid number',
-    });
+  const premintCalculation = calculateERC20Premint(amount);
+  if (premintCalculation === undefined) {
+    return;
   }
+
+  const { units, exp, decimalPlace } = premintCalculation;
+
+  const validatedBaseUnits = toUint256(units, 'premint');
+  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
+
+  c.addConstructorArgument({ type: 'address', name: 'recipient' });
+
+  c.addImportOnly({
+    name: 'SafeCast',
+    path: '@openzeppelin/contracts/utils/math/SafeCast.sol',
+  });
+  c.addImportOnly({
+    name: 'FHE',
+    path: '@fhevm/solidity/lib/FHE.sol',
+  });
+  const mintLine = `_mint(recipient, FHE.asEuint64(SafeCast.toUint64(${units} * 10 ** ${exp})));`;
+
+  c.addConstructorCode(mintLine);
 }
 
 /**

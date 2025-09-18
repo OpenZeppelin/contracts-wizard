@@ -178,55 +178,74 @@ function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
   }
 }
 
+export interface PremintCalculation {
+  units: string;
+  exp: string;
+  decimalPlace: number;
+}
+
+export function calculatePremint(amount: string): PremintCalculation | undefined {
+  const m = amount.match(premintPattern);
+  if (!m) {
+    throw new OptionsError({
+      premint: 'Not a valid number',
+    });
+  }
+
+  const integer = m[1]?.replace(/^0+/, '') ?? '';
+  const decimals = m[2]?.replace(/0+$/, '') ?? '';
+  const exponent = Number(m[3] ?? 0);
+
+  if (Number(integer + decimals) > 0) {
+    const decimalPlace = decimals.length - exponent;
+    const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
+    const units = integer + decimals + zeroes;
+    const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+
+    return { units, exp, decimalPlace };
+  } else {
+    return undefined;
+  }
+}
+
 function addPremint(
   c: ContractBuilder,
   amount: string,
   premintChainId: string,
   crossChainBridging: CrossChainBridging,
 ) {
-  const m = amount.match(premintPattern);
-  if (m) {
-    const integer = m[1]?.replace(/^0+/, '') ?? '';
-    const decimals = m[2]?.replace(/0+$/, '') ?? '';
-    const exponent = Number(m[3] ?? 0);
+  const premintCalculation = calculatePremint(amount);
+  if (premintCalculation === undefined) {
+    return;
+  }
 
-    if (Number(integer + decimals) > 0) {
-      const decimalPlace = decimals.length - exponent;
-      const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
-      const units = integer + decimals + zeroes;
-      const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
+  const { units, exp, decimalPlace } = premintCalculation;
 
-      const validatedBaseUnits = toUint256(units, 'premint');
-      checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
+  const validatedBaseUnits = toUint256(units, 'premint');
+  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
 
-      c.addConstructorArgument({ type: 'address', name: 'recipient' });
+  c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
-      const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
+  const mintLine = `_mint(recipient, ${units} * 10 ** ${exp});`;
 
-      if (crossChainBridging) {
-        if (premintChainId === '') {
-          throw new OptionsError({
-            premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging',
-          });
-        }
-
-        if (!isValidChainId(premintChainId)) {
-          throw new OptionsError({
-            premintChainId: 'Not a valid chain ID',
-          });
-        }
-
-        c.addConstructorCode(`if (block.chainid == ${premintChainId}) {`);
-        c.addConstructorCode(`    ${mintLine}`);
-        c.addConstructorCode(`}`);
-      } else {
-        c.addConstructorCode(mintLine);
-      }
+  if (crossChainBridging) {
+    if (premintChainId === '') {
+      throw new OptionsError({
+        premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging',
+      });
     }
+
+    if (!isValidChainId(premintChainId)) {
+      throw new OptionsError({
+        premintChainId: 'Not a valid chain ID',
+      });
+    }
+
+    c.addConstructorCode(`if (block.chainid == ${premintChainId}) {`);
+    c.addConstructorCode(`    ${mintLine}`);
+    c.addConstructorCode(`}`);
   } else {
-    throw new OptionsError({
-      premint: 'Not a valid number',
-    });
+    c.addConstructorCode(mintLine);
   }
 }
 

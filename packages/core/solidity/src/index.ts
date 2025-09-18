@@ -47,3 +47,5 @@ export { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 export { generateAlternatives } from './generate/alternatives';
 export { findCover } from './utils/find-cover';
 export { HardhatZipGenerator } from './zip-hardhat';
+export type { PremintCalculation } from './erc20';
+export { calculatePremint as calculateERC20Premint } from './erc20';
