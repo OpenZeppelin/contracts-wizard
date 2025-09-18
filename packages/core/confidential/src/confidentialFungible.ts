@@ -7,10 +7,10 @@ import {
   clockModeDefault,
   setClockMode,
   OptionsError,
-  toUint256,
-  UINT256_MAX,
+  toBigInt,
   requireAccessControl,
   calculateERC20Premint,
+  scaleByPowerOfTen,
   type ClockMode,
 } from '@openzeppelin/wizard';
 import type { CommonOptions } from './common-options';
@@ -118,12 +118,15 @@ function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
 
 export const premintPattern = /^(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
-function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
-  if (exponent < 0) {
-    return base / BigInt(10) ** BigInt(-exponent);
-  } else {
-    return base * BigInt(10) ** BigInt(exponent);
+const UINT64_MAX = BigInt(2) ** BigInt(64) - BigInt(1);
+
+export function validateUint64(numValue: bigint, field: string): bigint {
+  if (numValue > UINT64_MAX) {
+    throw new OptionsError({
+      [field]: 'Value is greater than uint64 max value',
+    });
   }
+  return numValue;
 }
 
 function addPremint(c: ContractBuilder, amount: string) {
@@ -134,7 +137,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
   const { units, exp, decimalPlace } = premintCalculation;
 
-  const validatedBaseUnits = toUint256(units, 'premint');
+  const validatedBaseUnits = validateUint64(toBigInt(units, 'premint'), 'premint');
   checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
 
   c.addConstructorArgument({ type: 'address', name: 'recipient' });
@@ -157,15 +160,15 @@ function addPremint(c: ContractBuilder, amount: string) {
  *
  * @param baseUnits The base units of the token, before applying power of 10
  * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `validatedBaseUnits`. Ignored if <= 0.
- * @throws OptionsError if the calculated value would overflow uint256
+ * @throws OptionsError if the calculated value would overflow uint64
  */
 function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
   const assumedExp = decimalPlace <= 0 ? 18 : 18 - decimalPlace;
   const calculatedValue = scaleByPowerOfTen(baseUnits, assumedExp);
 
-  if (calculatedValue > UINT256_MAX) {
+  if (calculatedValue > UINT64_MAX) {
     throw new OptionsError({
-      premint: 'Amount would overflow uint256 after applying decimals',
+      premint: 'Amount would overflow uint64 after applying decimals',
     });
   }
 }

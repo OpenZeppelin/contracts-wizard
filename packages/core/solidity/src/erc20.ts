@@ -170,7 +170,7 @@ export function isValidChainId(str: string): boolean {
   return chainIdPattern.test(str);
 }
 
-function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
+export function scaleByPowerOfTen(base: bigint, exponent: number): bigint {
   if (exponent < 0) {
     return base / BigInt(10) ** BigInt(-exponent);
   } else {
