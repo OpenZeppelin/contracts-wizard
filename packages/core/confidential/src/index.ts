@@ -1,4 +1,4 @@
-export type { GenericOptions, KindedOptions } from './build-generic';
+export type { GenericOptions, KindedOptions } from './generic-options';
 export { buildGeneric } from './build-generic';
 
 export { printContract } from './print';

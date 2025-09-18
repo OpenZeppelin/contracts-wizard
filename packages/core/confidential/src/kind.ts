@@ -1,4 +1,4 @@
-import type { GenericOptions } from './build-generic';
+import type { GenericOptions } from './generic-options';
 
 export type Kind = GenericOptions['kind'];
 
