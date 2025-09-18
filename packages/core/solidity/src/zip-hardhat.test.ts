@@ -189,7 +189,7 @@ function extractAndRun(makeDeployCommand: (c: Contract) => string | null) {
       }
     }
 
-    let command = `cd "${tempFolder}" && npm install && npm test`;
+    let command = `cd "${tempFolder}" && npm ci && npm test`;
     if (c.constructorArgs === undefined) {
       // only test deploying the contract if there are no constructor args needed
       command += ` && ${makeDeployCommand(c)}`;
