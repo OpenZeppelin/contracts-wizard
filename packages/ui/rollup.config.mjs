@@ -100,7 +100,8 @@ export default [
     },
     plugins: [
       // Generate contract library data files
-      onStartRun(...'yarn --cwd ../core/solidity prepare && yarn --cwd ../core/confidential prepare'.split(' ')),
+      onStartRun(...'yarn --cwd ../core/solidity prepare'.split(' ')),
+      onStartRun(...'yarn --cwd ../core/confidential prepare'.split(' ')),
 
       svelte(await import('./svelte.config.js')),
 
