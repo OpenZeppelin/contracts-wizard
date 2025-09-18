@@ -1,5 +1,6 @@
 import type { ConfidentialFungibleOptions } from './confidentialFungible';
 import { buildConfidentialFungible } from './confidentialFungible';
+import type { Contract } from '@openzeppelin/wizard';
 
 export interface KindedOptions {
   ConfidentialFungible: { kind: 'ConfidentialFungible' } & ConfidentialFungibleOptions;
@@ -7,7 +8,7 @@ export interface KindedOptions {
 
 export type GenericOptions = KindedOptions[keyof KindedOptions];
 
-export function buildGeneric(opts: GenericOptions) {
+export function buildGeneric(opts: GenericOptions): Contract {
   switch (opts.kind) {
     case 'ConfidentialFungible':
       return buildConfidentialFungible(opts);
