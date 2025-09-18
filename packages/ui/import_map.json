@@ -2,6 +2,11 @@
   "imports": {
     "@upstash/redis": "https://esm.sh/@upstash/redis@1.25.2",
     "ai": "https://esm.sh/ai@2.2.16",
-    "openai": "https://esm.sh/openai@4.11.1"
+    "openai": "https://esm.sh/openai@4.11.1",
+    "jszip": "https://esm.sh/jszip@3.6.0",
+    "@openzeppelin/wizard": "../../node_modules/@openzeppelin/wizard/dist/",
+    "@openzeppelin/wizard/": "../../node_modules/@openzeppelin/wizard/",
+    "@openzeppelin/wizard-common": "../../node_modules/@openzeppelin/wizard-common/dist/",
+    "@openzeppelin/wizard-confidential": "../../node_modules/@openzeppelin/wizard-confidential/dist/"
   }
 }

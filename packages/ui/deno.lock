@@ -96,6 +96,7 @@
     "https://esm.sh/crypto-js@4.2.0/enc-hex?target=denonext": "e7bbfb366ad3cbea21a865f646e2dd1109398362c4779291bffb03bb6332310f",
     "https://esm.sh/crypto-js@4.2.0/sha1?target=denonext": "60b6e4ce5897826e9f61dcc2a0cbf11a9431ef81cad376f7f1f2810c615e4e68",
     "https://esm.sh/eventsource-parser@1.0.0/denonext/eventsource-parser.mjs": "2660662b264e8d174c3dfeb7c2e03a68a8c1ed5c664aa8f54f543f70dc276c77",
+    "https://esm.sh/jszip@3.6.0": "2085fb7d97864c4ce7ded0bba549d64f75bd452e08bf13e63cb2b1b328ee50f7",
     "https://esm.sh/nanoid@3.3.6/denonext/non-secure.mjs": "4286ba29d7bef3b89b97e6cc3838cee95d48fb667145a1029f8baa9d28a84baa",
     "https://esm.sh/openai@4.11.1": "a0b21bb1c749d72545a108b91be6da1d7757a87ec1da2d263a803ec86f2e88fb",
     "https://esm.sh/openai@4.11.1/denonext/_shims/MultipartBody.mjs": "f4f0697903d590601c05d906e1ee1046d4cd8ca4c2c0e24f946e0e98b7a2972f",
