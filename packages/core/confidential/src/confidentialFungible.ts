@@ -156,19 +156,19 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 /**
- * Check for potential premint overflow assuming the user's contract has decimals() = 18
+ * Check for potential premint overflow assuming the user's contract has decimals() = 6
  *
  * @param baseUnits The base units of the token, before applying power of 10
  * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `validatedBaseUnits`. Ignored if <= 0.
  * @throws OptionsError if the calculated value would overflow uint64
  */
 function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
-  const assumedExp = decimalPlace <= 0 ? 18 : 18 - decimalPlace;
+  const assumedExp = decimalPlace <= 0 ? 6 : 6 - decimalPlace;
   const calculatedValue = scaleByPowerOfTen(baseUnits, assumedExp);
 
   if (calculatedValue > UINT64_MAX) {
     throw new OptionsError({
-      premint: 'Amount would overflow uint64 after applying decimals',
+      premint: 'Amount would overflow uint64 after applying decimals, assuming 6 decimals',
     });
   }
 }
