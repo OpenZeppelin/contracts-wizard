@@ -56,16 +56,16 @@ export default async (req: Request): Promise<Response> => {
   try {
     const aiChatBodyRequest: AiChatBodyRequest = await req.json();
 
-    const ChatMessages = buildAiChatMessages(aiChatBodyRequest);
+    const chatMessages = buildAiChatMessages(aiChatBodyRequest);
 
     const openAiStream = createOpenAiCompletionStream({
       streamParams: {
-        messages: ChatMessages,
+        messages: chatMessages,
         tools: getFunctionsContext(aiChatBodyRequest.language),
       },
       chatId: aiChatBodyRequest.chatId,
-      onAiStreamCompletion: async ({ chatId, ChatMessages }, finalStreamResult) =>
-        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, ChatMessages)(finalStreamResult)),
+      onAiStreamCompletion: async ({ chatId, chatMessages }, finalStreamResult) =>
+        finalStreamResult && (await saveChatInRedisIfDoesNotExist(chatId, chatMessages)(finalStreamResult)),
     });
 
     return new Response(openAiStream, {
