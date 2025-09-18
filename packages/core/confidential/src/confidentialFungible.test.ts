@@ -81,20 +81,20 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
   });
 }
 
-testPremint('max literal', '115792089237316195423570985008687907853269984665640564039457.584007913129639935'); // 2^256 - 1, shifted by 18 decimals
+testPremint('max literal', '18.446744073709551615'); // 2^64 - 1, shifted by 18 decimals
 testPremint(
   'max literal + 1',
-  '115792089237316195423570985008687907853269984665640564039457.584007913129639936',
-  'Value is greater than uint256 max value',
+  '18.446744073709551616',
+  'Value is greater than uint64 max value',
 );
-testPremint('no arithmetic overflow', '115792089237316195423570985008687907853269984665640564039457'); // 2^256 - 1, truncated by 18 decimals
+testPremint('no arithmetic overflow', '18'); // 2^256 - 1, truncated by 18 decimals
 testPremint(
   'arithmetic overflow',
-  '115792089237316195423570985008687907853269984665640564039458',
-  'Amount would overflow uint256 after applying decimals',
+  '19',
+  'Amount would overflow uint64 after applying decimals',
 );
-testPremint('e notation', '1e59');
-testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
+testPremint('e notation', '1e1');
+testPremint('e notation arithmetic overflow', '1e2', 'Amount would overflow uint64 after applying decimals');
 
 testConfidentialFungible('confidentialFungible wrappable', {
   wrappable: true,
