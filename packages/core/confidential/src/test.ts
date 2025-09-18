@@ -5,7 +5,7 @@ import hre from 'hardhat';
 import path from 'path';
 
 import { writeGeneratedSources } from './generate/sources';
-import type { KindedOptions } from './generic-options';
+import type { KindedOptions } from './build-generic';
 
 interface Context {
   generatedSourcesPath: string;

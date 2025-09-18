@@ -14,7 +14,7 @@ import type { Contract } from '@openzeppelin/wizard';
 import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
-import type { GenericOptions } from './generic-options';
+import type { GenericOptions } from './build-generic';
 
 interface Context {
   tempFolder: string;

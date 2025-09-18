@@ -3,7 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateConfidentialFungibleOptions } from './confidentialFungible';
-import type { GenericOptions, KindedOptions } from '../generic-options';
+import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
