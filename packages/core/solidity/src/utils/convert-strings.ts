@@ -39,6 +39,7 @@ export function validateUint256(numValue: bigint, field: string): bigint {
 
 /**
  * Checks that a string is a valid number, and fits within `uint256`.
+ * Convenience function that calls `toBigInt` and `validateUint256`.
  *
  * @param value The value to check.
  * @param field The field name to use in the error if the value is invalid.
