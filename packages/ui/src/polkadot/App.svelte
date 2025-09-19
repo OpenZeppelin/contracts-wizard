@@ -8,7 +8,7 @@
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
 
-  let overrides: Overrides = {
+  const overrides: Overrides = {
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
