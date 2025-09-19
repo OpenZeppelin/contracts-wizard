@@ -8,6 +8,10 @@
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
 
+  /**
+   * Uses the Solidity Wizard with overrides specific to Polkadot.
+   * See @type Overrides for details.
+   */
   const overrides: Overrides = {
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),

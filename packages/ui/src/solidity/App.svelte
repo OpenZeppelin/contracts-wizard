@@ -56,6 +56,12 @@
 
   export let initialOpts: InitialOptions = {};
 
+  /**
+   * Allows ecosystem Wizard apps that inherit the Solidity Wizard UI to override specific features.
+   * See @type Overrides for details.
+   *
+   * For Solidity itself, defaultOverrides must be used.
+   */
   export let overrides: Overrides = defaultOverrides;
 
   const WizSolidity = overrides.aiAssistant?.svelteComponent ?? createWiz<'solidity'>();
