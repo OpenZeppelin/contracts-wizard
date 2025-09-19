@@ -34,9 +34,9 @@ export interface Overrides {
 
   /**
    * A function to sanitize omitted features from the Solidity Wizard options.
-   * Removes or modifies the options as appropriate.
+   * Removes or modifies the options as appropriate by mutating the input object.
    */
-  sanitizeOmittedFeatures: (opts: GenericOptions) => GenericOptions;
+  sanitizeOmittedFeatures: (opts: GenericOptions) => void;
 
   /**
    * Language identifier when posting the configuration
@@ -58,7 +58,7 @@ export const defaultOverrides: Overrides = {
   omitZipHardhat: false,
   omitZipFoundry: false,
   remix: undefined,
-  sanitizeOmittedFeatures: (opts: GenericOptions) => opts,
+  sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,
   aiAssistant: undefined,
 };

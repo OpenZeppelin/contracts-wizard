@@ -73,6 +73,8 @@
 
   $: {
     if (opts) {
+      overrides.sanitizeOmittedFeatures(opts);
+
       if (!initialValuesSet) {
         opts.name = initialOpts.name ?? opts.name;
         switch (opts.kind) {
@@ -91,7 +93,7 @@
         initialValuesSet = true;
       }
       try {
-        contract = buildGeneric(overrides.sanitizeOmittedFeatures(opts));
+        contract = buildGeneric(opts);
         errors[tab] = undefined;
       } catch (e: unknown) {
         if (e instanceof OptionsError) {

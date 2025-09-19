@@ -8,11 +8,10 @@ export function defineOmitFeatures(): Map<Kind, string[]> {
   return omitFeatures;
 }
 
-export function sanitizeOmittedFeatures(opts: GenericOptions): GenericOptions {
+export function sanitizeOmittedFeatures(opts: GenericOptions) {
   if (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') {
     if (opts.crossChainBridging === 'superchain') {
       opts.crossChainBridging = 'custom';
     }
   }
-  return opts;
 }
