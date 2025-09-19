@@ -11,6 +11,7 @@ const account = {
   signer: ['ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const,
   batchedExecution: [false, true] as const,
   ERC7579Modules: [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const,
+  factory: [false, true] as const,
   access: [false] as const,
   upgradeable: upgradeableOptions,
   info: infoOptions,
