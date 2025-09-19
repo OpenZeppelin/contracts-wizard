@@ -82,11 +82,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
 }
 
 testPremint('max literal', '18446744073709.551615'); // 2^64 - 1, shifted by 6 decimals
-testPremint(
-  'max literal + 1',
-  '18446744073709.551616',
-  'Value is greater than uint64 max value',
-);
+testPremint('max literal + 1', '18446744073709.551616', 'Value is greater than uint64 max value');
 testPremint('no arithmetic overflow', '18446744073709'); // 2^64 - 1, truncated by 6 decimals
 testPremint(
   'arithmetic overflow',
@@ -94,7 +90,11 @@ testPremint(
   'Amount would overflow uint64 after applying decimals, assuming 6 decimals',
 );
 testPremint('e notation', '1e13');
-testPremint('e notation arithmetic overflow', '1e14', 'Amount would overflow uint64 after applying decimals, assuming 6 decimals');
+testPremint(
+  'e notation arithmetic overflow',
+  '1e14',
+  'Amount would overflow uint64 after applying decimals, assuming 6 decimals',
+);
 
 testConfidentialFungible('confidentialFungible wrappable', {
   wrappable: true,
