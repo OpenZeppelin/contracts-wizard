@@ -48,6 +48,7 @@ jobs:
         package:
           - solidity
           - cairo
+          - confidential
           - stellar
           - stylus
         # This variant config creates 2 branches of the matrix a default and a compile one to run the compile tests in their own job
@@ -58,6 +59,8 @@ jobs:
           - package: solidity
             variant: compile
           - package: cairo
+            variant: compile
+          - package: confidential
             variant: compile
           - package: stylus
             variant: compile
