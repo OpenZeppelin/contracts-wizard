@@ -19,6 +19,9 @@ export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase
 import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
 export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
+// Confidential
+import type { KindedOptions as ConfidentialKindedOptions } from '../../../../core/confidential/dist';
+export type { CommonOptions as ConfidentialCommonOptions } from '../../../../core/confidential/dist/common-options';
 
 type SolidityContractsOptions = Omit<
   SolidityKindedOptions,
@@ -35,6 +38,7 @@ export type LanguagesContractsOptions = {
   solidity: SolidityContractsOptions;
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
+  confidential: ConfidentialKindedOptions;
   polkadot: Omit<SolidityContractsOptions, 'Account'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
@@ -51,10 +55,10 @@ export type LanguagesContractsOptions = {
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['confidential'] &
   LanguagesContractsOptions['polkadot'] &
   LanguagesContractsOptions['stellar'] &
   LanguagesContractsOptions['stylus'];
-//
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
 
