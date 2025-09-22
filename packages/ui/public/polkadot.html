@@ -4,37 +4,9 @@
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <title>OpenZeppelin Contracts Wizard</title>
-  <meta name="description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
-
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-PBBPJ9T');</script>
-  <!-- End Google Tag Manager -->
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BTMVCGVJ51"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-BTMVCGVJ51');
-  </script>
-
-  <!-- Facebook Meta Tags -->
-  <meta property="og:url" content="https://wizard.openzeppelin.com">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="OpenZeppelin Contracts Wizard">
-  <meta property="og:description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
-  <meta property="og:image" content="https://wizard.openzeppelin.com/tw-card.png">
 
   <!-- Twitter card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta property="twitter:domain" content="wizard.openzeppelin.com">
-  <meta property="twitter:url" content="https://wizard.openzeppelin.com">
   <meta name="twitter:creator" content="@OpenZeppelin">
   <meta name="twitter:title" content="OpenZeppelin Contracts Wizard">
   <meta name="twitter:description" content="An interactive smart contract generator based on OpenZeppelin Contracts.">
@@ -63,16 +35,13 @@
   <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/woff2" crossorigin>
   <link rel='stylesheet' href='/build/standalone.css'>
   <script async src='/build/embed.js'></script>
+  <script src="/build/versions.js"></script>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PBBPJ9T"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
   <div class="header container flex flex-row justify-between items-center overflow-auto">
-    <div class="flex flex-row">
-      <a href="https://www.openzeppelin.com/" target="_blank" rel="noopener noreferrer"><img src="/logo.svg" alt="OpenZeppelin" class="logo" width="160" ></a>
+    <div class="flex flex-row items-center">
+      <a href="https://www.openzeppelin.com/" target="_blank" rel="noopener noreferrer"><img src="/logo.svg" alt="OpenZeppelin" class="logo" width="160"></a>
     </div>
     <div class="flex flex-row items-center">
       <a class="link" href="https://forum.openzeppelin.com/" target="_blank" rel="noopener noreferrer">Forum</a>
@@ -94,35 +63,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
   <div class="nav-row flex flex-row items-center justify-between">
-    <div class="nav nav-switches flex flex-row">
-      <a class="switch switch-solidity active" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
+    <div class="nav">
+      <a class="switch switch-solidity" href="/"><img src="/icons/solidity.svg" alt="solidity">Solidity</a>
       <a class="switch switch-cairo" href="/cairo"><img src="/icons/cairo.svg" alt="cairo">Cairo</a>
       <a class="switch switch-confidential" href="/confidential"><img src="/icons/confidential.svg" alt="confidential">Confidential</a>
-      <a class="switch switch-polkadot" href="/polkadot"><img src="/icons/polkadot.svg" alt="polkadot">Polkadot</a>
+      <a class="switch switch-polkadot active" href="#"><img src="/icons/polkadot_active.svg" alt="polkadot">Polkadot</a>
       <a class="switch switch-stellar" href="/stellar"><img src="/icons/stellar.svg" alt="stellar">Stellar</a>
       <a class="switch switch-stylus" href="/stylus"><img src="/icons/stylus.svg" alt="stylus">Stylus</a>
     </div>
-
-    <div class="flex flex-row gap-2">
-      <div class="text-sm text-gray-600 leading-tight text-right">
-        <div>After deploying a contract, use the new</div>
-        <div>Contracts UI Builder to spin up a quick UI</div>
-      </div>
-
-      <div class="flex items-center">
-        <img src="/icons/arrow-right.svg" alt="arrow-right" class="arrow-gray">
-      </div>
-
-      <div class="flex items-center">
-        <a href="http://builder.openzeppelin.com" target="_blank" rel="noopener noreferrer" class="bg-[#3d3b5d] text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#4a4872] transition-colors no-underline whitespace-nowrap">
-          <span>Try the UI Builder</span>
-          <img src="/icons/up-right-from-square.svg" alt="up-right-from-square" class="arrow-white">
-        </a>
-      </div>
-    </div>
   </div>
   <div class="wizard-container">
-    <oz-wizard class="wizard" data-sync-url="fragment"></oz-wizard>
+    <oz-wizard class="wizard" data-sync-url="fragment" data-lang="polkadot"></oz-wizard>
   </div>
 
   <footer>
@@ -148,4 +99,3 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 </body>
 </html>
-

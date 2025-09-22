@@ -1,4 +1,5 @@
 import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as polkadotFunctions from './ai-assistant/function-definitions/polkadot.ts';
 import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
 import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
@@ -22,6 +23,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     solidity: solidityFunctions,
     cairo: cairoFunctions,
     cairoAlpha: cairoAlphaFunctions,
+    polkadot: polkadotFunctions,
     stellar: stellarFunctions,
     stylus: stylusFunctions,
     confidential: confidentialFunctions,
@@ -46,7 +48,7 @@ const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessages => {
       content: `
       You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
       The current options are ${JSON.stringify(request.currentOpts)}.
-      The current contract code is ${request.currentCode}, written in ${request.language}
+      The current contract code is ${request.currentCode}, written for the ${request.language} ecosystem.
       Please be kind and concise. Keep responses to <100 words.
     `.trim(),
     },

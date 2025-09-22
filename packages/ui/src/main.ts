@@ -3,6 +3,7 @@ import './common/styles/global.css';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
+import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
 import ConfidentialApp from './confidential/App.svelte';
@@ -45,7 +46,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'confidential' | 'stellar' | 'stylus';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'confidential' | 'polkadot' | 'stellar' | 'stylus';
 }
 
 interface IncompatibleSelection {
@@ -86,6 +87,14 @@ function evaluateSelection(
         return { compatible: true, appType: 'confidential' };
       } else {
         return { compatible: false, compatibleVersionsSemver: confidentialSemver };
+      }
+    }
+    case 'polkadot': {
+      // Use Solidity Contracts semver
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
+        return { compatible: true, appType: 'polkadot' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: soliditySemver };
       }
     }
     case 'stellar': {
@@ -153,6 +162,9 @@ if (!selection.compatible) {
           initialOpts,
         },
       });
+      break;
+    case 'polkadot':
+      app = new PolkadotApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'stellar':
       app = new StellarApp({ target: document.body, props: { initialTab, initialOpts } });

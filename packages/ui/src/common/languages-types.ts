@@ -11,4 +11,4 @@ export type LanguagesOptions =
   | Required<StylusOptions>
   | Required<ConfidentialOptions>;
 
-export type Language = 'solidity' | 'cairo' | 'stylus' | 'stellar' | 'confidential';
+export type Language = 'solidity' | 'cairo' | 'confidential' | 'polkadot-solidity' | 'stylus' | 'stellar';

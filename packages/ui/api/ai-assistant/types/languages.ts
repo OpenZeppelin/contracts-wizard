@@ -23,16 +23,23 @@ export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 
 import type { KindedOptions as ConfidentialKindedOptions } from '../../../../core/confidential/dist';
 export type { CommonOptions as ConfidentialCommonOptions } from '../../../../core/confidential/dist/common-options';
 
+type SolidityContractsOptions = Omit<
+  SolidityKindedOptions,
+  'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'
+> & {
+  Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
+  RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+  Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
+  Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
+};
+
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'> & {
-    Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
-    RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
-    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
-    Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
-  };
+  solidity: SolidityContractsOptions;
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
+  confidential: ConfidentialKindedOptions;
+  polkadot: Omit<SolidityContractsOptions, 'Account'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
@@ -43,13 +50,13 @@ export type LanguagesContractsOptions = {
     ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
     ERC1155: StylusKindedOptions['ERC1155'] & StylusCommonContractOptions;
   };
-  confidential: ConfidentialKindedOptions;
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
   LanguagesContractsOptions['confidential'] &
+  LanguagesContractsOptions['polkadot'] &
   LanguagesContractsOptions['stellar'] &
   LanguagesContractsOptions['stylus'];
 
