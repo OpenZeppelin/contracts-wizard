@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.1.1 (2025-09-16)
+
+- Update Solidity Account prompt ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+
 ## 0.1.0 (2025-08-15)
 
 - Bump minor version for semantic versioning stability ([#631](https://github.com/OpenZeppelin/contracts-wizard/pull/631))

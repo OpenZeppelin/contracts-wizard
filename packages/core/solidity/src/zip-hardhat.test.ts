@@ -102,7 +102,7 @@ test.serial('account ecdsa', async t => {
 test.serial('account ecdsa uups', async t => {
   const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
   const c = buildAccount(opts);
-  await runIgnitionTest(c, t, opts); // Account does not use proxies for deployment, until factories are added
+  await runDeployScriptTest(c, t, opts);
 });
 
 test.serial('custom basic', async t => {
@@ -138,9 +138,7 @@ async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: 
 }
 
 function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
@@ -158,9 +156,7 @@ function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<C
 }
 
 function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
