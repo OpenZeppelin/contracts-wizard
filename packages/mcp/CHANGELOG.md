@@ -1,6 +1,19 @@
 # Changelog
 
+
+## 0.2.0 (2025-09-16)
+
+- Add constructors for `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913` and `MultiSignerERC7913Weighted` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Enable upgradeability for `AccountERC7579`, `AccountERC7579Hooked`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913` and `MultiSignerERC7913` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- **Breaking change**: Use `Account`, `AccountERC7579`, `AccountERC7579Hooked`, `ERC7812`, `ERC7739Utils`, `ERC7913Utils`, `AbstractSigner`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913`, and `MultiSignerERC7913Weighted` from OpenZeppelin Contracts 5.4.0 instead of Community Contracts ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+- Updated dependencies [[`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`b9d58dc`](https://github.com/OpenZeppelin/contracts-wizard/commit/b9d58dcd8e38fb5ceca23b082b15d78d02dcb1cf), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`41d5c74`](https://github.com/OpenZeppelin/contracts-wizard/commit/41d5c74d3aa3734a02b7b88c959634bb42fa6d20), [`029790c`](https://github.com/OpenZeppelin/contracts-wizard/commit/029790c9134b0556b214a405488c1e26472857a7)]:
+  - @openzeppelin/wizard-common@0.1.1
+  - @openzeppelin/wizard@0.8.0
+  - @openzeppelin/wizard-cairo@2.1.0
+
 ## 0.1.1 (2025-09-02)
+
 - Cairo: Support decimals value added to ERC-20 scheme ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
 
 ## 0.1.0 (2025-08-15)

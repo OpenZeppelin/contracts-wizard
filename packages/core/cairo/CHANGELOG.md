@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2.1.0 (2025-09-16)
+
+- Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+
 ## 2.0.1 (2025-08-20)
 
 - Fix missing use clause in hooks for ERC20 votes ([#637](https://github.com/OpenZeppelin/contracts-wizard/pull/637))
