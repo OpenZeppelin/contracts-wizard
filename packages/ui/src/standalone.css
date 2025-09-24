@@ -114,6 +114,10 @@ body {
     contrast(92%);
 }
 
+.nav .switch.switch-polkadot.active {
+  --color-2: #000000;
+}
+
 .nav .switch.switch-cairo.active {
   --color-2: #eb5951;
 }

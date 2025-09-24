@@ -19,6 +19,8 @@
     info: { ...infoDefaults }, // create new object since Info is nested
   };
 
+  export let omitFeatures: string[] | undefined = undefined;
+
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
@@ -28,15 +30,17 @@
   import { onMount } from 'svelte';
 
   let superchainLabel: HTMLElement;
-  let superchainTooltip: TippyInstance;
+  let superchainTooltip: TippyInstance | undefined;
   onMount(() => {
-    superchainTooltip = tippy(superchainLabel, superchainTooltipProps);
+    superchainTooltip = !omitFeatures?.includes('superchain')
+      ? tippy(superchainLabel, superchainTooltipProps)
+      : undefined;
   });
 
   let wasSuperchain = false;
   $: {
     if (!wasSuperchain && opts.crossChainBridging === 'superchain') {
-      superchainTooltip.show();
+      superchainTooltip?.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
   }
@@ -217,14 +221,16 @@
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
-      SuperchainERC20 &nbsp;<OPIcon />
-      <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
-        Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available on
-        chains in the Superchain.
-      </HelpTooltip>
-    </label>
+    {#if !omitFeatures?.includes('superchain')}
+      <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
+        <input type="radio" bind:group={opts.crossChainBridging} value="superchain" />
+        SuperchainERC20 &nbsp;<OPIcon />
+        <HelpTooltip link="https://docs.optimism.io/stack/interop/superchain-erc20">
+          Uses the predeployed <code>SuperchainTokenBridge</code> contract as the authorized token bridge. Only available
+          on chains in the Superchain.
+        </HelpTooltip>
+      </label>
+    {/if}
   </div>
 </ExpandableToggleRadio>
 
