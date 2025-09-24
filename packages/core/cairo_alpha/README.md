@@ -137,7 +137,7 @@ const contract = erc20.print({
 });
 ```
 
-To generate the source code for an ERC20 contract with all of the defaults but is upgradeable:
+To generate the source code for an ERC20 contract with all of the defaults and is upgradeable:
 ```js
 const contract = erc20.print({
   ...erc20.defaults,
