@@ -143,7 +143,7 @@
         result.downloadFoundry = false;
         break;
     }
-    if (overrides.omitZipHardhat) {
+    if (overrides.omitZipHardhat(opts)) {
       result.downloadHardhat = false;
     }
     if (overrides.omitZipFoundry) {
@@ -201,7 +201,10 @@
 
   const downloadHardhatHandler = async () => {
     const { zipHardhat } = await zipHardhatModule;
-    const zip = await zipHardhat(contract, opts);
+    const zip =
+      overrides.overrideZipHardhat !== undefined
+        ? await overrides.overrideZipHardhat(contract, opts)
+        : await zipHardhat(contract, opts);
     const blob = await zip.generateAsync({ type: 'blob' });
     saveAs(blob, 'project.zip');
     if (opts) {
