@@ -15,7 +15,8 @@ export function setInfo(c: ContractBuilder, info: Info): void {
   const { securityContact, license } = info;
 
   if (securityContact) {
-    c.addSecurityTag(securityContact);
+    c.addUseClause('soroban_sdk', 'contact');
+    c.addContractMetadata({ key: '', value: securityContact });
   }
 
   if (license) {
