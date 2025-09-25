@@ -8,8 +8,7 @@ export const solidityPrompts = {
   Stablecoin:
     'Make a stablecoin token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
   RWA: 'Make a real-world asset token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
-  Account:
-    'Make an account contract that follows the ERC-4337 standard. Experimental, some features are not audited and are subject to change.',
+  Account: 'Make an account contract that follows the ERC-4337 standard.',
   Governor: 'Make a contract to implement governance, such as for a DAO.',
   Custom: 'Make a custom smart contract.',
 };

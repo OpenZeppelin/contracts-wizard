@@ -6,6 +6,7 @@ import { zipFoundry } from './zip-foundry';
 import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
+import { buildAccount } from './account';
 import { buildCustom } from './custom';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -117,6 +118,18 @@ test.serial('erc1155 transparent, ownable', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('account ecdsa', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA' };
+  const c = buildAccount(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('account ecdsa uups', async t => {
+  const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
+  const c = buildAccount(opts);
+  await runTest(c, t, opts);
+});
+
 test.serial('custom basic', async t => {
   const opts: GenericOptions = { kind: 'Custom', name: 'My Contract' };
   const c = buildCustom(opts);
@@ -143,9 +156,7 @@ async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericO
 }
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const sorted = Object.values(zip.files)
-    .map(f => f.name)
-    .sort();
+  const sorted = Object.keys(zip.files).sort();
   t.deepEqual(sorted, [
     'README.md',
     'script/',

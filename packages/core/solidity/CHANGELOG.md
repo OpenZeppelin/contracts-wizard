@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.8.0 (2025-09-16)
+
+- Add constructors for `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913` and `MultiSignerERC7913Weighted` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Enable upgradeability for `AccountERC7579`, `AccountERC7579Hooked`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913` and `MultiSignerERC7913` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- **Breaking change**: Use `Account`, `AccountERC7579`, `AccountERC7579Hooked`, `ERC7812`, `ERC7739Utils`, `ERC7913Utils`, `AbstractSigner`, `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913`, and `MultiSignerERC7913Weighted` from OpenZeppelin Contracts 5.4.0 instead of Community Contracts ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
+- Remove all initializers from non-upgradeable accounts. ([#658](https://github.com/OpenZeppelin/contracts-wizard/pull/658))
+
 ## 0.7.1 (2025-08-15)
 
 - Add compatible git commit in comments when importing OpenZeppelin Community Contracts ([#627](https://github.com/OpenZeppelin/contracts-wizard/pull/627))
@@ -12,7 +19,6 @@
 ## 0.6.0 (2025-06-20)
 
 - Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
-
   - **Possibly breaking changes**:
     - `Governor`: Remove usage of `access` option. This option now has no effect.
 

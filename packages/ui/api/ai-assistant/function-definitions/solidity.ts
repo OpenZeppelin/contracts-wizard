@@ -183,7 +183,7 @@ export const solidityAccountAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'info']),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'upgradeable', 'info']),
       signatureValidation: {
         anyOf: [
           { type: 'boolean', enum: [false] },
@@ -216,11 +216,6 @@ export const solidityAccountAIFunctionDefinition = {
           { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
         ],
         description: solidityAccountDescriptions.ERC7579Modules,
-      },
-      upgradeable: {
-        type: 'boolean',
-        enum: [false],
-        description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
       access: {
         type: 'boolean',

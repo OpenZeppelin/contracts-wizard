@@ -22,7 +22,7 @@ The following contract types are supported:
 - `governor`
 - `custom`
 
-Note that `stablecoin`, `realWorldAsset`, and `account` are experimental and may be subject to change.
+Note that `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 Each contract type has functions/constants as defined below.
 

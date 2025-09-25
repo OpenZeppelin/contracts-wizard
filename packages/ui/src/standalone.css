@@ -56,6 +56,12 @@ body {
   min-width: 800px;
 }
 
+@media (min-width: 800px) {
+  .banner {
+    box-sizing: border-box;
+  }
+}
+
 /* Navigation */
 .nav {
   text-align: left;
@@ -106,6 +112,10 @@ body {
 .nav .switch.switch-solidity.active img {
   filter: brightness(0) saturate(100%) invert(11%) sepia(51%) saturate(5259%) hue-rotate(243deg) brightness(80%)
     contrast(92%);
+}
+
+.nav .switch.switch-polkadot.active {
+  --color-2: #000000;
 }
 
 .nav .switch.switch-cairo.active {
