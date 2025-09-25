@@ -4,9 +4,13 @@
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
+  import type { Contract, GenericOptions } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
+
+  // Dynamic import so it only loads when needed
+  const zipHardhatPolkadotModule = import('@openzeppelin/wizard/zip-env-hardhat-polkadot');
 
   /**
    * Uses the Solidity Wizard with overrides specific to Polkadot.
@@ -16,7 +20,13 @@
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
-    omitZipHardhat: true, // Disabled until Polkadot-specific config is added for the download package
+    omitZipHardhat: (opts?: GenericOptions) => {
+      return !!opts?.upgradeable;
+    },
+    overrideZipHardhat: async (c: Contract, opts?: GenericOptions) => {
+      const { zipHardhatPolkadot } = await zipHardhatPolkadotModule;
+      return zipHardhatPolkadot(c, opts);
+    },
     remix: {
       label: 'Open in Polkadot Remix',
       url: 'https://remix.polkadot.io',

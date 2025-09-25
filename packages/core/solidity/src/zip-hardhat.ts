@@ -7,7 +7,7 @@ import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 
 class TestGenerator {
-  constructor(private parent: HardhatZipGenerator) { }
+  constructor(private parent: HardhatZipGenerator) {}
 
   getContent(c: Contract, opts?: GenericOptions): string {
     return formatLinesWithSpaces(2, ...spaceBetween(this.getImports(c), this.getTestCase(c, opts)));
@@ -93,6 +93,20 @@ export class HardhatZipGenerator {
     return [];
   }
 
+  protected getHardhatConfigJsonString(): string {
+    return `\
+{
+  solidity: {
+    version: "${SOLIDITY_VERSION}",
+    settings: {
+      optimizer: {
+        enabled: true,
+      },
+    },
+  },
+}`;
+  }
+
   protected getHardhatConfig(upgradeable: boolean): string {
     const additionalImports = this.getAdditionalHardhatImports();
     const importsSection =
@@ -103,16 +117,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 ${importsSection}${upgradeable ? `import "@openzeppelin/hardhat-upgrades";` : ''}
 
-const config: HardhatUserConfig = {
-  solidity: {
-    version: "${SOLIDITY_VERSION}",
-    settings: {
-      optimizer: {
-        enabled: true,
-      },
-    },
-  },
-};
+const config: HardhatUserConfig = ${this.getHardhatConfigJsonString()};
 
 export default config;
 `;
@@ -134,6 +139,13 @@ export default config;
 `;
   }
 
+  protected getGitIgnoreHardhatIgnition(): string {
+    return `
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+`;
+  }
+
   protected getGitIgnore(): string {
     return `\
 node_modules
@@ -146,7 +158,7 @@ typechain-types
 # Hardhat files
 cache
 artifacts
-`;
+${this.getGitIgnoreHardhatIgnition()}`;
   }
 
   protected getTest(c: Contract, opts?: GenericOptions): string {
@@ -173,9 +185,9 @@ async function main() {
 
   ${c.constructorArgs.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
   const instance = await ${this.getDeploymentCall(
-      c,
-      c.constructorArgs.map(a => a.name),
-    )};
+    c,
+    c.constructorArgs.map(a => a.name),
+  )};
   await instance.waitForDeployment();
 
   console.log(\`${c.upgradeable ? 'Proxy' : 'Contract'} deployed to \${await instance.getAddress()}\`);
@@ -208,6 +220,10 @@ export default buildModule("${c.name}Module", (m) => {
 `;
   }
 
+  protected getReadmeTestingEnvironmentSetupSection(): string {
+    return '';
+  }
+
   protected getReadme(c: Contract): string {
     return `\
 # Sample Hardhat Project
@@ -220,7 +236,7 @@ This project demonstrates a basic Hardhat use case. It comes with a contract gen
 npm install
 \`\`\`
 
-## Testing the contract
+${this.getReadmeTestingEnvironmentSetupSection()}## Testing the contract
 
 \`\`\`
 npm test
