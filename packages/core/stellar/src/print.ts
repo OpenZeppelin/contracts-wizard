@@ -24,11 +24,11 @@ export function printContract(contract: Contract): string {
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
         ...(contract.documentations.length ? ['', ...printDocumentations(contract.documentations)] : []),
-        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
         ...createLevelAttributes,
       ],
       spaceBetween(
         printUseClauses(contract),
+        printMetadata(contract),
         printVariables(contract),
         printContractStruct(contract),
         printContractErrors(contract),
@@ -367,6 +367,6 @@ function printDocumentations(documentations: string[]): string[] {
   return documentations.map(documentation => `//! ${documentation}`);
 }
 
-function printSecurityTag(securityContact: string) {
-  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
+function printMetadata(contract: Contract) {
+  return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
 }

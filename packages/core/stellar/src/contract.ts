@@ -269,5 +269,7 @@ export class ContractBuilder implements Contract {
 
   addContractMetadata(metadata: { key: string; value: string }[] | { key: string; value: string }) {
     (Array.isArray(metadata) ? metadata : [metadata]).forEach(({ key, value }) => this.metadata.set(key, value));
+
+    if (this.metadata.size > 0) this.addUseClause('soroban_sdk', 'contractmeta');
   }
 }

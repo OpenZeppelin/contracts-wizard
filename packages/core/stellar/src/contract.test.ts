@@ -89,15 +89,27 @@ test('contract with documentation', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with security info', t => {
+test('contract with security contact metadata', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addSecurityTag('security@example.com');
+  Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' });
   t.snapshot(printContract(Foo));
 });
 
-test('contract with security info and documentation', t => {
+test('contract with multiple metadata', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addSecurityTag('security@example.com');
+  Foo.addContractMetadata([
+    { key: 'contact', value: 'security@example.com' },
+    { key: 'meta', value: 'data' },
+  ]);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with multiple metadata and documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addContractMetadata([
+    { key: 'contact', value: 'security@example.com' },
+    { key: 'meta', value: 'data' },
+  ]);
   Foo.addDocumentation('Some documentation');
   t.snapshot(printContract(Foo));
 });
