@@ -18,7 +18,7 @@
     <span class="flex justify-between pr-2">
       Security Contact
       <HelpTooltip>
-        A contact point (email or URL) for reporting security issues. This will be added to the generated contract as documentation comments.
+        Where people can contact you to report security issues. Will only be visible if contract metadata is verified.
       </HelpTooltip>
     </span>
     <input bind:value={info.securityContact} placeholder="security@example.com" />
