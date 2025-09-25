@@ -90,6 +90,21 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
       });
       c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
+    case 'roles-default-admin-rules':
+      c.addImplToComponent(components.ERC2981Component, {
+        name: 'ERC2981AdminAccessControlDefaultAdminRulesImpl',
+        value: `ERC2981Component::ERC2981AdminAccessControlDefaultAdminRulesImpl<ContractState>`,
+      });
+      c.addConstructorArgument({
+        name: 'royalty_admin',
+        type: 'ContractAddress',
+      });
+      c.addConstructorCode('self.accesscontrol_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      break;
+    default: {
+      const _: never = access;
+      throw new Error('Unknown access control option');
+    }
   }
 
   if (feeDenominator === DEFAULT_FEE_DENOMINATOR) {

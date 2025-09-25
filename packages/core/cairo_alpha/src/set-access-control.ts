@@ -60,12 +60,12 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       if (c.addComponent(components.AccessControlDefaultAdminRulesComponent, initParams, true)) {
         if (c.interfaceFlags.has('ISRC5')) {
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
-            name: 'AccessControlDefaultAdminRulesImpl',
-            value: 'AccessControlDefaultAdminRulesComponent::AccessControlDefaultAdminRulesImpl<ContractState>',
-          });
-          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlImpl',
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlImpl<ContractState>',
+          });
+          c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
+            name: 'AccessControlDefaultAdminRulesImpl',
+            value: 'AccessControlDefaultAdminRulesComponent::AccessControlDefaultAdminRulesImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlCamelImpl',
@@ -86,7 +86,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
 
         c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: 'initial_default_admin', type: 'ContractAddress' });
-
+        c.addConstructorArgument({ name: 'initial_default_admin', type: 'ContractAddress' });
       }
       break;
     }
@@ -182,9 +182,9 @@ const components = defineComponents({
     ],
   },
   AccessControlDefaultAdminRulesComponent: {
-    path: 'openzeppelin_access::accesscontrol::extensions',
+    path: 'openzeppelin::access::accesscontrol::extensions',
     substorage: {
-      name: 'accesscontrol_DAR',
+      name: 'accesscontrol_dar',
       type: 'AccessControlDefaultAdminRulesComponent::Storage',
     },
     event: {
@@ -192,10 +192,6 @@ const components = defineComponents({
       type: 'AccessControlDefaultAdminRulesComponent::Event',
     },
     impls: [
-      {
-        name: 'AccessControlMixinImpl',
-        value: 'AccessControlDefaultAdminRulesComponent::AccessControlMixinImpl<ContractState>',
-      },
       {
         name: 'AccessControlDefaultAdminRulesInternalImpl',
         embed: false,
