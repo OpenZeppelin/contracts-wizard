@@ -95,6 +95,13 @@ test('contract with security contact metadata', t => {
   t.snapshot(printContract(Foo));
 });
 
+test('setting metadata with same key throws', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' });
+
+  t.throws(() => Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' }));
+});
+
 test('contract with multiple metadata', t => {
   const Foo = new ContractBuilder('Foo');
   Foo.addContractMetadata([
