@@ -10,7 +10,7 @@ export type Info = {
 };
 
 export function setInfo(c: ContractBuilder, { securityContact, license }: Info): void {
-  if (securityContact) c.addContractMetadata({ key: 'contact', value: securityContact });
+  if (securityContact) c.addContractMetadata({ key: 'security_contact', value: securityContact });
 
   if (license) c.license = license;
 }
