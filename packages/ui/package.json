@@ -22,7 +22,7 @@
     "@types/node": "^20.0.0",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.5.7",
-    "@upstash/redis": "1.25.2",
+    "@upstash/redis": "1.35.4",
     "autoprefixer": "^10.4.2",
     "openai": "5.13.1",
     "path-browserify": "^1.0.1",
