@@ -2,4 +2,4 @@
 '@openzeppelin/wizard-stellar': patch
 ---
 
-Add contract metadata on contract model
+Set security contact as contract metadata
