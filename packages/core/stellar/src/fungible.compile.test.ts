@@ -290,3 +290,24 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation fungible upgradable mintable pausable with security contact metadata',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      burnable: false,
+      mintable: true,
+      pausable: true,
+      upgradeable: true,
+      info: {
+        securityContact: 'contact@security.lol',
+      },
+    },
+    { snapshotResult: false },
+  ),
+);
