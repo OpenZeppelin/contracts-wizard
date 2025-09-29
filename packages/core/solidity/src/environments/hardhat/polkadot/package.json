@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "@openzeppelin/contracts": "^5.4.0",
-    "@parity/hardhat-polkadot": "^0.1.9",
+    "@parity/hardhat-polkadot": "^0.2.0-pre1",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "hardhat": "^2.16.1"
   }

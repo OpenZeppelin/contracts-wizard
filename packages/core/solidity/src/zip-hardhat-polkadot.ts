@@ -18,7 +18,7 @@ class HardhatPolkadotZipGenerator extends HardhatZipGenerator {
   },
   networks: {
     hardhat: {
-      polkavm: true,
+      polkadot: true,
       nodeConfig: {
         nodeBinaryPath: 'INSERT_PATH_TO_SUBSTRATE_NODE',
         rpcPort: 8000,
