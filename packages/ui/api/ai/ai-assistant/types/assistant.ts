@@ -6,9 +6,8 @@ import type {
   AllLanguagesContractsOptions,
 } from './languages.ts';
 
-export const ChatRoles = ['user', 'assistant', 'system'];
 export type Chat = {
-  role: (typeof ChatRoles)[number];
+  role: 'user' | 'assistant' | 'system';
   content: string;
 };
 

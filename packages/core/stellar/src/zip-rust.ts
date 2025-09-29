@@ -3,28 +3,12 @@ import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
 import {
-  addDependenciesWith,
-  libDependencies,
   contractOptionsToContractName,
   createRustLibFile,
   printContractCargo,
   printRustNameTest,
+  workspaceCargo,
 } from './zip-shared';
-import { contractsVersion, compatibleSorobanVersion } from './utils/version';
-
-const workspaceCargo = `[workspace]
-resolver = "2"
-members = ["contracts/*"]
-
-[workspace.package]
-authors = []
-edition = "2021"
-license = "Apache-2.0"
-version = "0.0.1"
-
-[workspace.dependencies]
-${addDependenciesWith(`"${compatibleSorobanVersion}"`, ['soroban-sdk'])}${addDependenciesWith(`"=${contractsVersion}"`, [...libDependencies])}
-`;
 
 const readme = `\
 # Sample Rust Contract Environment

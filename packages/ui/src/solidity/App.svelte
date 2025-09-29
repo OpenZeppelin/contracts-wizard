@@ -3,6 +3,8 @@
 
   import hljs from './highlightjs';
 
+  import { defaultOverrides, type Overrides } from './overrides';
+
   import ERC20Controls from './ERC20Controls.svelte';
   import ERC721Controls from './ERC721Controls.svelte';
   import ERC1155Controls from './ERC1155Controls.svelte';
@@ -33,10 +35,9 @@
   import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { Language } from '../common/languages-types';
 
   const dispatch = createEventDispatcher();
-
-  const WizSolidity = createWiz<'solidity'>();
 
   async function allowRendering() {
     showCode = false;
@@ -54,6 +55,17 @@
   }
 
   export let initialOpts: InitialOptions = {};
+
+  /**
+   * Allows ecosystem Wizard apps that inherit the Solidity Wizard UI to override specific features.
+   * See @type Overrides for details.
+   *
+   * For Solidity itself, defaultOverrides must be used.
+   */
+  export let overrides: Overrides = defaultOverrides;
+
+  const WizSolidity = overrides.aiAssistant?.svelteComponent ?? createWiz<'solidity'>();
+
   let initialValuesSet = false;
 
   let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
@@ -67,6 +79,8 @@
 
   $: {
     if (opts) {
+      overrides.sanitizeOmittedFeatures(opts);
+
       if (!initialValuesSet) {
         opts.name = initialOpts.name ?? opts.name;
         switch (opts.kind) {
@@ -103,7 +117,7 @@
 
   $: hasErrors = errors[tab] !== undefined;
 
-  $: showButtons = getButtonVisibilities(opts);
+  $: showButtons = getButtonVisibilities(overrides, opts);
 
   interface ButtonVisibilities {
     openInRemix: boolean;
@@ -111,26 +125,31 @@
     downloadFoundry: boolean;
   }
 
-  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
-    if (opts?.kind === 'Governor') {
-      return {
-        openInRemix: true,
-        downloadHardhat: false,
-        downloadFoundry: false,
-      };
-    } else if (opts?.kind === 'Stablecoin' || opts?.kind === 'RealWorldAsset') {
-      return {
-        openInRemix: false,
-        downloadHardhat: false,
-        downloadFoundry: false,
-      };
-    } else {
-      return {
-        openInRemix: true,
-        downloadHardhat: true,
-        downloadFoundry: true,
-      };
+  const getButtonVisibilities = (overrides: Overrides, opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    const result = {
+      openInRemix: true,
+      downloadHardhat: true,
+      downloadFoundry: true,
+    };
+    switch (opts?.kind) {
+      case 'Governor':
+        result.downloadHardhat = false;
+        result.downloadFoundry = false;
+        break;
+      case 'Stablecoin':
+      case 'RealWorldAsset':
+        result.openInRemix = false;
+        result.downloadHardhat = false;
+        result.downloadFoundry = false;
+        break;
     }
+    if (overrides.omitZipHardhat) {
+      result.downloadHardhat = false;
+    }
+    if (overrides.omitZipFoundry) {
+      result.downloadFoundry = false;
+    }
+    return result;
   };
 
   const getSolcSources = (contract: Contract) => {
@@ -139,7 +158,7 @@
     return sources;
   };
 
-  const language = 'solidity';
+  const language: Language = overrides.postConfigLanguage ?? 'solidity';
 
   let copied = false;
   const copyHandler = async () => {
@@ -160,7 +179,11 @@
     const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
 
     const versionedCode = printContractVersioned(contract);
-    window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    window.open(
+      remixURL(versionedCode, !!opts?.upgradeable, overrides?.remix?.url).toString(),
+      '_blank',
+      'noopener,noreferrer',
+    );
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -202,11 +225,13 @@
     tab = sanitizeKind(aiFunctionCall.name);
     allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
   };
+
+  $: wizLanguage = (overrides.aiAssistant?.language ?? 'solidity') as 'solidity';
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
   <WizSolidity
-    language="solidity"
+    language={wizLanguage}
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
@@ -224,7 +249,9 @@
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
         </button>
-        <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
+        {#if !overrides.omitTabs.includes('Account')}
+          <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
+        {/if}
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'Custom'} on:click={() => (tab = 'Custom')}> Custom </button>
       </OverflowMenu>
@@ -257,7 +284,7 @@
               on:click={remixHandler}
             >
               <RemixIcon />
-              Open in Remix
+              {overrides?.remix?.label ?? 'Open in Remix'}
             </button>
             <div slot="content">
               Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
@@ -316,7 +343,11 @@
       class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
-        <ERC20Controls bind:opts={allOpts.ERC20} errors={errors.ERC20} />
+        <ERC20Controls
+          bind:opts={allOpts.ERC20}
+          errors={errors.ERC20}
+          omitFeatures={overrides.omitFeatures.get('ERC20')}
+        />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
         <ERC721Controls bind:opts={allOpts.ERC721} />
@@ -325,10 +356,18 @@
         <ERC1155Controls bind:opts={allOpts.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
-        <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
+        <StablecoinControls
+          bind:opts={allOpts.Stablecoin}
+          errors={errors.Stablecoin}
+          omitFeatures={overrides.omitFeatures.get('Stablecoin')}
+        />
       </div>
       <div class:hidden={tab !== 'RealWorldAsset'}>
-        <RealWorldAssetControls bind:opts={allOpts.RealWorldAsset} errors={errors.RealWorldAsset} />
+        <RealWorldAssetControls
+          bind:opts={allOpts.RealWorldAsset}
+          errors={errors.RealWorldAsset}
+          omitFeatures={overrides.omitFeatures.get('RealWorldAsset')}
+        />
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />

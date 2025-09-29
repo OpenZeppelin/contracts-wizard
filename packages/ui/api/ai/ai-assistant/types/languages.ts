@@ -1,35 +1,41 @@
 // Solidity
-import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
-export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+import type { KindedOptions as SolidityKindedOptions } from '../../../../../core/solidity/dist';
+export type { CommonOptions as SolidityCommonOptions } from '../../../../../core/solidity/dist/common-options';
 // Cairo
-import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
-export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../core/cairo/dist/common-options';
-export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../core/cairo/dist/set-royalty-info';
+import type { KindedOptions as CairoKindedOptions } from '../../../../../core/cairo/dist';
+export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../../core/cairo/dist/common-options';
+export type { RoyaltyInfoOptions as CairoRoyaltyInfoOptions } from '../../../../../core/cairo/dist/set-royalty-info';
 // Cairo-alpha
-import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../core/cairo_alpha/dist';
-export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../core/cairo_alpha/dist/common-options';
-export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../core/cairo_alpha/dist/set-royalty-info';
+import type { KindedOptions as CairoAlphaKindedOptions } from '../../../../../core/cairo_alpha/dist';
+export type { CommonContractOptions as CairoAlphaCommonContractOptions } from '../../../../../core/cairo_alpha/dist/common-options';
+export type { RoyaltyInfoOptions as CairoAlphaRoyaltyInfoOptions } from '../../../../../core/cairo_alpha/dist/set-royalty-info';
 //Stellar
-import type { KindedOptions as StellarKindedOptions } from '../../../../core/stellar/dist';
-import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../core/stellar/dist/common-options';
+import type { KindedOptions as StellarKindedOptions } from '../../../../../core/stellar/dist';
+import type { CommonContractOptions as StellarCommonContractOptionsBase } from '../../../../../core/stellar/dist/common-options';
 export type StellarCommonContractOptions = Omit<StellarCommonContractOptionsBase, 'upgradeable'> & {
   upgradeable?: false;
 };
 // Stylus
-import type { KindedOptions as StylusKindedOptions } from '../../../../core/stylus/dist';
-import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
+import type { KindedOptions as StylusKindedOptions } from '../../../../../core/stylus/dist';
+import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../../core/stylus/dist/common-options';
 export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
+
+type SolidityContractsOptions = Omit<
+  SolidityKindedOptions,
+  'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'
+> & {
+  Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
+  RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+  Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
+  Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
+};
 
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'> & {
-    Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
-    RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
-    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
-    Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
-  };
+  solidity: SolidityContractsOptions;
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
+  polkadot: Omit<SolidityContractsOptions, 'Account'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
@@ -45,6 +51,7 @@ export type LanguagesContractsOptions = {
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['polkadot'] &
   LanguagesContractsOptions['stellar'] &
   LanguagesContractsOptions['stylus'];
 //
