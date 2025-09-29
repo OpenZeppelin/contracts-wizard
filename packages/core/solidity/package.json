@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@openzeppelin/community-contracts": "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#269f9b5",
-    "@openzeppelin/contracts": "^5.5.0.rc-0",
+    "@openzeppelin/contracts": "^5.5.0-rc.0",
     "@openzeppelin/contracts-upgradeable": "^5.5.0-rc.0",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",
