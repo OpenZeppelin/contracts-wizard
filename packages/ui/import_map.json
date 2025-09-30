@@ -1,6 +1,6 @@
 {
   "imports": {
-    "@upstash/redis": "https://esm.sh/@upstash/redis@1.25.2",
-    "openai": "https://esm.sh/openai@5.13.1"
+    "@upstash/redis": "https://esm.sh/@upstash/redis@1.35.4",
+    "openai": "https://esm.sh/openai@5.23.2"
   }
 }
