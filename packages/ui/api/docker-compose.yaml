@@ -3,14 +3,13 @@ services:
     container_name: stellar-api
     build:
       context: ./stellar
-      # TODO revert to .dev
-      dockerfile: Dockerfile.prod
-    # volumes:
-    #   - ./stellar:/usr/src/stellar-api
-    #   - stellar-cargo-target:/usr/src/stellar-api/target
-    #   - stellar-cargo-cache:/usr/local/cargo/registry
-    #   - stellar-cargo-git:/usr/local/cargo/git
-    #   - stellar-tmp:/tmp
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./stellar:/usr/src/stellar-api
+      - stellar-cargo-target:/usr/src/stellar-api/target
+      - stellar-cargo-cache:/usr/local/cargo/registry
+      - stellar-cargo-git:/usr/local/cargo/git
+      - stellar-tmp:/tmp
     environment:
       - RUSTFLAGS=-C debuginfo=0
       - CFLAGS=-g0
@@ -18,8 +17,8 @@ services:
     env_file:
       - ./stellar/.env
     ports:
-      - '8888:8888'
-    # command: ['cargo', 'watch', '-x', 'run']
+      - "8888:8888"
+    command: ["cargo", "watch", "-x", "run"]
     tty: true
     stdin_open: true
 
@@ -38,8 +37,8 @@ services:
       - DENO_DIR=/deno-dir
       - ENV=dev
     ports:
-      - '3000:3000'
-    command: ['deno', 'task', 'dev']
+      - "3000:3000"
+    command: ["deno", "task", "dev"]
     tty: true
     stdin_open: true
 

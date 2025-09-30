@@ -91,6 +91,7 @@
     const { zipRustProjectBlob } = await zipRustModule;
 
     try {
+      downloadScaffoldError = false;
       isDownloadingScaffold = true;
 
       const {
@@ -256,12 +257,18 @@
             <button class="download-option" on:click={downloadScaffoldHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Scaffold Stellar Package</p>
                 <p>
                   {downloadScaffoldError
                     ? 'Could not download Scaffold'
                     : isDownloadingScaffold
                       ? 'Please wait while we build scaffold project...'
+                      : 'Scaffold Stellar Package'}
+                </p>
+                <p>
+                  {downloadScaffoldError
+                    ? '⚠️'
+                    : isDownloadingScaffold
+                      ? '⌛'
                       : 'Sample Scaffold Stellar project to get started with development and testing.'}
                 </p>
               </div>
