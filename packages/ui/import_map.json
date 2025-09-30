@@ -3,9 +3,7 @@
     "@upstash/redis": "https://esm.sh/@upstash/redis@1.25.2",
     "openai": "https://esm.sh/openai@5.13.1",
     "jszip": "https://esm.sh/jszip@3.6.0",
-    "@openzeppelin/wizard": "../../node_modules/@openzeppelin/wizard/dist/",
-    "@openzeppelin/wizard/": "../../node_modules/@openzeppelin/wizard/",
-    "@openzeppelin/wizard-common": "../../node_modules/@openzeppelin/wizard-common/dist/",
-    "@openzeppelin/wizard-confidential": "../../node_modules/@openzeppelin/wizard-confidential/dist/"
+    "@openzeppelin/wizard": "../core/solidity/dist/index.js",
+    "@openzeppelin/wizard/dist/": "../core/solidity/dist/"
   }
 }
