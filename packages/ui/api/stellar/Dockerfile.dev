@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y \
 ENV CFLAGS=-g0 \
     CXXFLAGS=-g0
 
+RUN mkdir -p /opt/tmp && chmod 1777 /opt/tmp
+
 RUN cargo install cargo-watch
 
 RUN rustup update \
