@@ -2,45 +2,54 @@ import { defineFunctions } from '@openzeppelin/wizard';
 import { BaseHook } from './BaseHook';
 import type { Hook } from './index';
 
-const BaseOverrideFee: Hook = {
-  name: 'BaseOverrideFee',
-  displayName: 'Dynamic Swap Fee',
+const BaseHookFee: Hook = {
+  name: 'BaseHookFee',
+  displayName: 'Hook Fee',
   category: 'Fee',
-  tooltipText: 'Applies a dynamic fee calculated in a per-swap basis, determined by the <code>_getFee</code> function.',
-  tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseOverrideFee',
+  tooltipText:
+    "Base implementation for applying hook fees to the unspecified currency of the swap, independent of the pool's LP fee.",
+  tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseHookFee',
   sharesConfig: 'optional',
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,
-      // dynamically override the fee (required)
-      _getFee: {
+      // Abstract function that must be implemented to determine hook fee
+      _getHookFee: {
         kind: 'internal',
+        mutability: 'view',
         args: [
           { name: 'sender', type: 'address' },
           { name: 'key', type: 'PoolKey calldata' },
           { name: 'params', type: 'SwapParams calldata' },
+          { name: 'delta', type: 'BalanceDelta' },
           { name: 'hookData', type: 'bytes calldata' },
         ],
         returns: ['uint24'],
       },
+      // Abstract function for handling accumulated hook fees
+      handleHookFees: {
+        kind: 'public',
+        args: [{ name: 'currencies', type: 'Currency[] memory' }],
+        returns: [],
+      },
     }),
   },
   permissions: {
-    beforeInitialize: true,
+    beforeInitialize: false,
     afterInitialize: false,
     beforeAddLiquidity: false,
     afterAddLiquidity: false,
     beforeRemoveLiquidity: false,
     afterRemoveLiquidity: false,
-    beforeSwap: true,
-    afterSwap: false,
+    beforeSwap: false,
+    afterSwap: true,
     beforeDonate: false,
     afterDonate: false,
     beforeSwapReturnDelta: false,
-    afterSwapReturnDelta: false,
+    afterSwapReturnDelta: true,
     afterAddLiquidityReturnDelta: false,
     afterRemoveLiquidityReturnDelta: false,
   },
 };
 
-export { BaseOverrideFee };
+export { BaseHookFee };

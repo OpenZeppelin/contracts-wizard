@@ -6,8 +6,10 @@ const BaseDynamicFee: Hook = {
   name: 'BaseDynamicFee',
   displayName: 'Dynamic Pool Fee',
   category: 'Fee',
-  tooltipText: 'Applies a dynamic fee to the entire pool, determined by <code>_getFee</code> and updated upon calling <code>_poke</code>.',
+  tooltipText:
+    'Applies a dynamic fee to the entire pool, determined by <code>_getFee</code> and updated upon calling <code>_poke</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
+  sharesConfig: 'optional',
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,

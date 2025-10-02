@@ -11,7 +11,6 @@
   import SharesControlsSection from './SharesControlsSection.svelte';
 
   import { 
-    areSharesRequired,
     permissionRequiredByHook, 
     permissionRequiredByPausable, 
     permissionRequiredByAnotherPermission, 
@@ -45,12 +44,7 @@
     const hook = HOOKS[key as HookName];
     hooksByCategory[hook.category].push(hook);
   }
-
-  // function normalizeHookName(name: string): string {
-  //   if (name === 'BaseHook') return name;
-  //   return name.replace('Hook', '').replace('Base', '');
-  // }
-
+  
   function shortcutPermissionName(name: string): string {
     if (name.length > 25) return name.replace('Return', '');
     return name;
@@ -170,8 +164,12 @@
 
   <div class="shares-section">
     <SharesControlsSection bind:opts 
-    disabled={areSharesRequired(opts)} 
-    helpContent={areSharesRequired(opts) ? `Shares are required by <code>${opts.hook}</code>` : undefined} />
+    disabled={HOOKS[opts.hook].sharesConfig === 'disabled' || HOOKS[opts.hook].sharesConfig === 'required'} 
+    helpContent={HOOKS[opts.hook].sharesConfig === 'required' ? 
+    `Shares are required by <code>${opts.hook}</code>` 
+    : HOOKS[opts.hook].sharesConfig === 'disabled' ?
+    `Shares are are not compatible with <code>${opts.hook}</code>` 
+    : undefined} />
   </div>
 </section>
 

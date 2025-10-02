@@ -9,6 +9,7 @@ const LiquidityPenaltyHook: Hook = {
   tooltipText:
     'When liquidity is added and removed faster than <code>_blockNumberOffset</code> blocks, accumulated fees are linearly penalized and donated to in-range LPs.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#LiquidityPenaltyHook',
+  sharesConfig: 'optional',
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,

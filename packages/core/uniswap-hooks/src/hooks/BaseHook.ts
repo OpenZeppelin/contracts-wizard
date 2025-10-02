@@ -7,6 +7,7 @@ const BaseHook: Hook = {
   category: 'Base',
   tooltipText: 'Provides standard entry points, permission checks, and validation utilities for building hooks.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
+  sharesConfig: 'optional',
   functions: {
     ...defineFunctions({
       // Permissions descriptor that inheritors must implement (required)

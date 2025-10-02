@@ -7,9 +7,11 @@ import { BaseCustomCurve } from './BaseCustomCurve';
 import { BaseDynamicFee } from './BaseDynamicFee';
 import { BaseOverrideFee } from './BaseOverrideFee';
 import { BaseDynamicAfterFee } from './BaseDynamicAfterFee';
+import { BaseHookFee } from './BaseHookFee';
 import { AntiSandwichHook } from './AntiSandwichHook';
 import { LimitOrderHook } from './LimitOrderHook';
 import { LiquidityPenaltyHook } from './LiquidityPenaltyHook';
+import { ReHypothecationHook } from './ReHypothecationHook';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
 
@@ -22,6 +24,7 @@ export type Hook = {
   permissions: Permissions;
   functions: Record<string, BaseFunction>;
   disabledFunctions?: string[];
+  sharesConfig: SharesConfig;
 };
 
 export const HOOKS = {
@@ -32,9 +35,11 @@ export const HOOKS = {
   BaseDynamicFee,
   BaseOverrideFee,
   BaseDynamicAfterFee,
+  BaseHookFee,
   AntiSandwichHook,
   LiquidityPenaltyHook,
   LimitOrderHook,
+  ReHypothecationHook,
 } as const;
 
 export type HookName = keyof typeof HOOKS;
@@ -73,3 +78,5 @@ export type Shares = {
   symbol?: string;
   uri?: string;
 };
+
+export type SharesConfig = 'required' | 'optional' | 'disabled' | 'ERC20' | 'ERC6909' | 'ERC1155';

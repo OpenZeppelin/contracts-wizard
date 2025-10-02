@@ -102,22 +102,38 @@ export function buildHooks(opts: HooksOptions): Contract {
     addTransientStorage(c, allOpts);
   }
 
-  if (areSharesRequired(allOpts)) {
-    if (!allOpts.shares.options) {
+  // Set the shares options based on the hook's shares config.
+  switch (HOOKS[allOpts.hook].sharesConfig) {
+    case 'optional':
+      break;
+    case 'disabled':
+      allOpts.shares.options = false;
+      break;
+    case 'required':
+      if (!allOpts.shares.options) allOpts.shares.options = 'ERC20';
+      break;
+    case 'ERC20':
       allOpts.shares.options = 'ERC20';
-    }
+      break;
+    case 'ERC6909':
+      allOpts.shares.options = 'ERC6909';
+      break;
+    case 'ERC1155':
+      allOpts.shares.options = 'ERC1155';
+      break;
   }
 
-  if (allOpts.shares.options) {
-    if (allOpts.shares.options === 'ERC20') {
+  // Add the shares based on the shares options.
+  switch (allOpts.shares.options) {
+    case 'ERC20':
       addERC20Shares(c, allOpts);
-    }
-    if (allOpts.shares.options === 'ERC1155') {
-      addERC1155Shares(c, allOpts);
-    }
-    if (allOpts.shares.options === 'ERC6909') {
+      break;
+    case 'ERC6909':
       addERC6909Shares(c, allOpts);
-    }
+      break;
+    case 'ERC1155':
+      addERC1155Shares(c, allOpts);
+      break;
   }
 
   // Add required permissions given the current options.
@@ -138,7 +154,7 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   addAdditionalPermissionFunctions(c, allOpts);
 
-  addGetHookPermissions(c, allOpts);
+  addGetHookPermissionsFunction(c, allOpts);
 
   importRequiredTypes(c);
 
@@ -197,6 +213,12 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
       c.setFunctionBody([`// Implement _getFee`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
+    case 'BaseHookFee':
+      c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions._getHookFee!);
+      c.setFunctionBody([`// Implement _getHookFee`], HOOKS.BaseHookFee.functions._getHookFee!);
+      c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions.handleHookFees!);
+      c.setFunctionBody([`// Implement handleHookFees`], HOOKS.BaseHookFee.functions.handleHookFees!);
+      break;
     case 'AntiSandwichHook':
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
@@ -204,6 +226,34 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     case 'LiquidityPenaltyHook':
       c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
       constructorParams.push({ lit: '_blockNumberOffset' });
+      break;
+    case 'ReHypothecationHook':
+      // params
+      c.addConstructorArgument({ type: 'string', name: 'name' });
+      constructorParams.push({ lit: 'name' });
+      c.addConstructorArgument({ type: 'string', name: 'symbol' });
+      constructorParams.push({ lit: 'symbol' });
+      // overrides
+      c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
+      c.setFunctionBody(
+        [`// Implement getCurrencyYieldSource`],
+        HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!,
+      );
+      c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._depositToYieldSource!);
+      c.setFunctionBody(
+        [`// Implement _depositToYieldSource`],
+        HOOKS.ReHypothecationHook.functions._depositToYieldSource!,
+      );
+      c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._withdrawFromYieldSource!);
+      c.setFunctionBody(
+        [`// Implement _withdrawFromYieldSource`],
+        HOOKS.ReHypothecationHook.functions._withdrawFromYieldSource!,
+      );
+      c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!);
+      c.setFunctionBody(
+        [`// Implement _getAmountInYieldSource`],
+        HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!,
+      );
       break;
     default:
       break;
@@ -220,10 +270,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
   return !!opts.pausable;
-}
-
-export function areSharesRequired(opts: HooksOptions): boolean {
-  return opts.hook === 'BaseCustomAccounting' || opts.hook === 'BaseCustomCurve';
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -311,7 +357,7 @@ function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
   }
 }
 
-function addGetHookPermissions(c: ContractBuilder, _allOpts: HooksOptions) {
+function addGetHookPermissionsFunction(c: ContractBuilder, _allOpts: HooksOptions) {
   const permissionLines = PERMISSIONS.map(
     (key, idx) => `    ${key}: ${_allOpts.permissions[key] ?? false}${idx === PERMISSIONS.length - 1 ? '' : ','}`,
   );
