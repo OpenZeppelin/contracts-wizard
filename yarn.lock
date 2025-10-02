@@ -4150,10 +4150,10 @@ once@^1.3.0, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-openai@5.13.1:
-  version "5.13.1"
-  resolved "https://registry.yarnpkg.com/openai/-/openai-5.13.1.tgz#485e0a60a222256463af3a89d387140f3ac8919f"
-  integrity sha512-Jty97Apw40znKSlXZL2YDap1U2eN9NfXbqm/Rj1rExeOLEnhwezpKQ+v43kIqojavUgm30SR3iuvGlNEBR+AFg==
+openai@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-6.1.0.tgz#12919340f9813dae674bd2dfbb04c0989b3ef26d"
+  integrity sha512-5sqb1wK67HoVgGlsPwcH2bUbkg66nnoIYKoyV9zi5pZPqh7EWlmSrSDjAh4O5jaIg/0rIlcDKBtWvZBuacmGZg==
 
 optionator@^0.9.3:
   version "0.9.4"
