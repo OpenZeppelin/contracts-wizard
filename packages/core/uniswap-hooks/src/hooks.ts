@@ -9,7 +9,7 @@ import {
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
-import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS } from './hooks/';
+import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS, specificSharesType } from './hooks/';
 import type { HookName, Shares, Permissions, Permission } from './hooks/';
 import importPaths from './importPaths.json';
 
@@ -78,9 +78,12 @@ export function printHooks(opts: HooksOptions = defaults): string {
 export function buildHooks(opts: HooksOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  allOpts.upgradeable = false; // Upgradeability is not yet available for hooks
+  // Upgradeability is not yet available for hooks
+  allOpts.upgradeable = false;
 
   const c = new ContractBuilder(allOpts.name);
+
+  const selectedHook = HOOKS[allOpts.hook];
 
   setInfo(c, allOpts.info);
 
@@ -102,16 +105,16 @@ export function buildHooks(opts: HooksOptions): Contract {
     addTransientStorage(c, allOpts);
   }
 
-  // Set the shares options based on the hook's shares config.
-  switch (HOOKS[allOpts.hook].sharesConfig) {
-    case 'optional':
-      break;
+  // Automatically preset the shares options based on the hook's shares type pre-configuration.
+  switch (selectedHook.shares) {
     case 'disabled':
       allOpts.shares.options = false;
       break;
     case 'required':
+      // Select the ERC20 shares by default when any share type is required
       if (!allOpts.shares.options) allOpts.shares.options = 'ERC20';
       break;
+    // Select the specific shares types options when they're specifically required by the hook
     case 'ERC20':
       allOpts.shares.options = 'ERC20';
       break;
@@ -121,19 +124,24 @@ export function buildHooks(opts: HooksOptions): Contract {
     case 'ERC1155':
       allOpts.shares.options = 'ERC1155';
       break;
+    case 'optional':
+    default:
+      break;
   }
 
   // Add the shares based on the shares options.
-  switch (allOpts.shares.options) {
-    case 'ERC20':
-      addERC20Shares(c, allOpts);
-      break;
-    case 'ERC6909':
-      addERC6909Shares(c, allOpts);
-      break;
-    case 'ERC1155':
-      addERC1155Shares(c, allOpts);
-      break;
+  if (!selectedHook.implementsShares) {
+    switch (allOpts.shares.options) {
+      case 'ERC20':
+        addERC20Shares(c, allOpts);
+        break;
+      case 'ERC6909':
+        addERC6909Shares(c, allOpts);
+        break;
+      case 'ERC1155':
+        addERC1155Shares(c, allOpts);
+        break;
+    }
   }
 
   // Add required permissions given the current options.
@@ -228,12 +236,10 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       constructorParams.push({ lit: '_blockNumberOffset' });
       break;
     case 'ReHypothecationHook':
-      // params
       c.addConstructorArgument({ type: 'string', name: 'name' });
       constructorParams.push({ lit: 'name' });
       c.addConstructorArgument({ type: 'string', name: 'symbol' });
       constructorParams.push({ lit: 'symbol' });
-      // overrides
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
         [`// Implement getCurrencyYieldSource`],
@@ -357,11 +363,11 @@ function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
   }
 }
 
+// Adds the `getHookPermissions` required function to the hook, which returns the permissions of the hook.
 function addGetHookPermissionsFunction(c: ContractBuilder, _allOpts: HooksOptions) {
   const permissionLines = PERMISSIONS.map(
     (key, idx) => `    ${key}: ${_allOpts.permissions[key] ?? false}${idx === PERMISSIONS.length - 1 ? '' : ','}`,
   );
-
   c.addOverride({ name: 'BaseHook' }, HOOKS.BaseHook.functions.getHookPermissions!);
   c.setFunctionBody(
     ['return Hooks.Permissions({', ...permissionLines, '});'],

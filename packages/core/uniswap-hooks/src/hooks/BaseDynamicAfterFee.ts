@@ -9,7 +9,10 @@ const BaseDynamicAfterFee: Hook = {
   tooltipText:
     'Enforces a target for swap outcomes determined by <code>_getTargetUnspecified</code>, capturing any better-than-expected results as hook fees that can be handled or distributed via <code>_afterSwapHandler</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicAfterFee',
-  sharesConfig: 'optional',
+  shares: 'optional',
+  implementsShares: false,
+  inputs: [],
+  disabledFunctions: [],
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,

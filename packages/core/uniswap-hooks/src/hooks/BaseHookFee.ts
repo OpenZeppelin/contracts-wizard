@@ -9,7 +9,10 @@ const BaseHookFee: Hook = {
   tooltipText:
     "Base implementation for applying hook fees to the unspecified currency of the swap, independent of the pool's LP fee.",
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseHookFee',
-  sharesConfig: 'optional',
+  shares: 'optional',
+  implementsShares: false,
+  inputs: [],
+  disabledFunctions: [],
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,

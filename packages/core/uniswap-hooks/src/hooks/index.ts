@@ -15,6 +15,20 @@ import { ReHypothecationHook } from './ReHypothecationHook';
 
 export type HookCategory = 'Base' | 'Fee' | 'General';
 
+/**
+ * Hook configuration object that defines the structure and behavior of each hook.
+ * @property name - The Smart Contract Name of the hook
+ * @property displayName - Human-readable name shown in the UI
+ * @property category - Classification category for organizing hooks
+ * @property tooltipText - Descriptive text displayed in tooltips (supports HTML)
+ * @property tooltipLink - URL to documentation for this hook
+ * @property permissions - Bitmap of hook lifecycle permissions
+ * @property functions - Map of relevant function definitions from the hook for it's configuration on the wizard
+ * @property disabledFunctions - idk
+ * @property shares - Configuration for hook shares functionality
+ * @property implementsShares - Whether this hook implements already implements shares and doesn't require to inherit.
+ * @property inputs - Array of user-configurable input parameters for the wizard UI.
+ */
 export type Hook = {
   name: HookName;
   displayName: string;
@@ -23,8 +37,10 @@ export type Hook = {
   tooltipLink: string;
   permissions: Permissions;
   functions: Record<string, BaseFunction>;
-  disabledFunctions?: string[];
-  sharesConfig: SharesConfig;
+  disabledFunctions: string[];
+  shares: SharesConfig;
+  implementsShares: boolean;
+  inputs: HookInput[];
 };
 
 export const HOOKS = {
@@ -79,4 +95,14 @@ export type Shares = {
   uri?: string;
 };
 
+export function specificSharesType(sharesConfig: SharesConfig): boolean {
+  return sharesConfig === 'ERC20' || sharesConfig === 'ERC6909' || sharesConfig === 'ERC1155';
+}
+
 export type SharesConfig = 'required' | 'optional' | 'disabled' | 'ERC20' | 'ERC6909' | 'ERC1155';
+
+export type HookInput = {
+  label: string;
+  value: string;
+  type: 'string' | 'number';
+};

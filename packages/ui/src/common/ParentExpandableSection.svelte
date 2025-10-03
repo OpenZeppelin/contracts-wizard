@@ -95,7 +95,7 @@
   </h1>
 
   <div class="text-sm text-gray-500" hidden={!disabled || disabledReason === undefined}>
-    <span class="italic">{disabledReason}</span>
+    <span class="italic">{@html disabledReason}</span>
   </div>
 
   <div hidden={!isExpanded}>

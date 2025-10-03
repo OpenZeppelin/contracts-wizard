@@ -3,7 +3,7 @@
 
   import { hooks } from '@openzeppelin/wizard-uniswap-hooks/';
   import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
-  import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
+  import type { HookCategory, Hook, HookName, KindedOptions, HookInput } from '@openzeppelin/wizard-uniswap-hooks';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
@@ -23,7 +23,7 @@
     ...hooks.defaults,
   };
 
-  $: requireAccessControl = hooks.isAccessControlRequired(opts);
+  $: selectedHook = HOOKS[opts.hook];
 
   let lastHook: HookName | undefined = undefined;
   $: if (opts.hook !== lastHook) {
@@ -50,8 +50,11 @@
     return name;
   }
 
-  let showAdvancedPermissions = false;
-  let showUtilities = false;
+  $: requireAccessControl = hooks.isAccessControlRequired(opts);
+
+  let openAdvancedPermissionsDropdown = false;
+  let openUtilitiesDropdown = false;
+
 </script>
 
 <section class="controls-section">
@@ -61,6 +64,17 @@
     <span>Name</span>
     <input bind:value={opts.name} />
   </label>
+
+  {#each selectedHook.inputs as input}
+    <label class="labeled-input">
+      <span>{input.label}</span>
+      {#if input.type === 'number'}
+        <input type="number" bind:value={input.value} />
+      {:else}
+        <input type="text" bind:value={input.value} />
+      {/if}
+    </label>
+  {/each}
 </section>
 
 {#each CATEGORY_ORDER as category}
@@ -82,7 +96,7 @@
 
 <ExpandableSection
   label="Additional Hook Permissions"
-  bind:checked={showAdvancedPermissions}
+  bind:checked={openAdvancedPermissionsDropdown}
   helpContent="Fine-tune which core hook function permissions are enabled."
   helpLink="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions"
 >
@@ -117,7 +131,7 @@
 
 <ExpandableSection
   label="Utilities"
-  bind:checked={showUtilities}
+  bind:checked={openUtilitiesDropdown}
   helpContent="Utilities are optional libraries that can used to enhance the functionality or security of the hook."
 >
   <div class="checkbox-group">
@@ -163,13 +177,7 @@
   </div>
 
   <div class="shares-section">
-    <SharesControlsSection bind:opts 
-    disabled={HOOKS[opts.hook].sharesConfig === 'disabled' || HOOKS[opts.hook].sharesConfig === 'required'} 
-    helpContent={HOOKS[opts.hook].sharesConfig === 'required' ? 
-    `Shares are required by <code>${opts.hook}</code>` 
-    : HOOKS[opts.hook].sharesConfig === 'disabled' ?
-    `Shares are are not compatible with <code>${opts.hook}</code>` 
-    : undefined} />
+    <SharesControlsSection bind:opts sharesConfig={selectedHook.shares} />
   </div>
 </section>
 
