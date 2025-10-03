@@ -9,7 +9,7 @@ const BaseCustomAccounting: Hook = {
   tooltipText: 'Overrides how liquidity modifications are processed and how liquidiy shares are minted/burned.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
   shares: 'required',
-  implementsShares: false,
+  alreadyImplementsShares: false,
   inputs: [],
   disabledFunctions: ['_beforeAddLiquidity', '_beforeRemoveLiquidity'],
   functions: {

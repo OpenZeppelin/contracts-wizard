@@ -10,7 +10,7 @@ const ReHypothecationHook: Hook = {
     'Enables rehypothecation of liquidity positions by depositing assets into yield-generating sources while providing Just-in-Time liquidity during swaps.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/general#ReHypothecationHook',
   shares: 'ERC20',
-  implementsShares: true,
+  alreadyImplementsShares: true,
   inputs: [],
   disabledFunctions: [],
   functions: {

@@ -10,7 +10,7 @@ const BaseDynamicFee: Hook = {
     'Applies a dynamic fee to the entire pool, determined by <code>_getFee</code> and updated upon calling <code>_poke</code>.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseDynamicFee',
   shares: 'optional',
-  implementsShares: false,
+  alreadyImplementsShares: false,
   inputs: [],
   disabledFunctions: [],
   functions: {

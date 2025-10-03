@@ -8,7 +8,7 @@ const BaseHook: Hook = {
   tooltipText: 'Provides standard entry points, permission checks, and validation utilities for building hooks.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseHook',
   shares: 'optional',
-  implementsShares: false,
+  alreadyImplementsShares: false,
   inputs: [],
   disabledFunctions: [],
   functions: {

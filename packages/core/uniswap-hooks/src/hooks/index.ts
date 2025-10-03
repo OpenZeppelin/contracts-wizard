@@ -26,7 +26,7 @@ export type HookCategory = 'Base' | 'Fee' | 'General';
  * @property functions - Map of relevant function definitions from the hook for it's configuration on the wizard
  * @property disabledFunctions - idk
  * @property shares - Configuration for hook shares functionality
- * @property implementsShares - Whether this hook implements already implements shares and doesn't require to inherit.
+ * @property alreadyImplementsShares - Whether this hook implements already implements shares and doesn't require to inherit.
  * @property inputs - Array of user-configurable input parameters for the wizard UI.
  */
 export type Hook = {
@@ -39,7 +39,7 @@ export type Hook = {
   functions: Record<string, BaseFunction>;
   disabledFunctions: string[];
   shares: SharesConfig;
-  implementsShares: boolean;
+  alreadyImplementsShares: boolean;
   inputs: HookInput[];
 };
 

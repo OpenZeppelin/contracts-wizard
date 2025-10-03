@@ -130,7 +130,7 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   // Add the shares based on the shares options.
-  if (!selectedHook.implementsShares) {
+  if (!selectedHook.alreadyImplementsShares) {
     switch (allOpts.shares.options) {
       case 'ERC20':
         addERC20Shares(c, allOpts);
@@ -170,10 +170,10 @@ export function buildHooks(opts: HooksOptions): Contract {
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
-  c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
+  // c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
 
   const constructorParams: Value[] = [];
-  constructorParams.push({ lit: '_poolManager' });
+  // constructorParams.push({ lit: '_poolManager' });
 
   // Add Overrides & Constructor Params specific to each hook
   switch (allOpts.hook) {
@@ -236,10 +236,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       constructorParams.push({ lit: '_blockNumberOffset' });
       break;
     case 'ReHypothecationHook':
-      c.addConstructorArgument({ type: 'string', name: 'name' });
-      constructorParams.push({ lit: 'name' });
-      c.addConstructorArgument({ type: 'string', name: 'symbol' });
-      constructorParams.push({ lit: 'symbol' });
+      constructorParams.push('shares_name');
+      constructorParams.push('shares_symbol');
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
         [`// Implement getCurrencyYieldSource`],
@@ -353,11 +351,15 @@ function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
   // Make custom eligible functions pausable. See {functionShouldBePausable} for eligibility criteria.
   for (const f of Object.values(HOOKS[_allOpts.hook].functions)) {
     if (functionShouldBePausable(f, _allOpts)) {
-      // add a super function invocation return if the function has not been set yet.
-      if (!c.functions.find(fn => fn.name === f.name)) {
+      const existingFunction = c.functions.find(fn => fn.name === f.name);
+      if (!existingFunction) {
+        // Function doesn't exist yet, add it with super invocation
         c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
+        c.addOverride({ name: c.name }, f);
+      } else {
+        // Function already exists (likely from parent override), just add the modifier
+        // Don't add another override to avoid duplicate override lists
       }
-      c.addOverride({ name: c.name }, f);
       c.addModifier('whenNotPaused', f);
     }
   }

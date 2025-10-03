@@ -10,7 +10,7 @@ const BaseCustomCurve: Hook = {
   tooltipText: 'Allows for custom pricing logic and swap amount calculations, useful to implement a custom curve.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomCurve',
   shares: 'required',
-  implementsShares: false,
+  alreadyImplementsShares: false,
   inputs: [],
   disabledFunctions: ['_beforeAddLiquidity', '_beforeRemoveLiquidity'],
   functions: {

@@ -9,7 +9,7 @@ const BaseOverrideFee: Hook = {
   tooltipText: 'Applies a dynamic fee calculated in a per-swap basis, determined by the <code>_getFee</code> function.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/fee#BaseOverrideFee',
   shares: 'optional',
-  implementsShares: false,
+  alreadyImplementsShares: false,
   inputs: [],
   disabledFunctions: [],
   functions: {
