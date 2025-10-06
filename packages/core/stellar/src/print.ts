@@ -4,6 +4,7 @@ import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
+import { toByteArray } from './utils/convert-strings';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
@@ -368,5 +369,7 @@ function printDocumentations(documentations: string[]): string[] {
 }
 
 function printMetadata(contract: Contract) {
-  return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
+  return Array.from(contract.metadata.entries()).map(
+    ([key, value]) => `contractmeta!(key="${key}", val="${toByteArray(value)}");`,
+  );
 }

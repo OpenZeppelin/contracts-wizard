@@ -3,6 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseTraitImplBlock } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { setInfo } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -118,5 +119,12 @@ test('contract with multiple metadata and documentation', t => {
     { key: 'meta', value: 'data' },
   ]);
   Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with setInfo', t => {
+  const Foo = new ContractBuilder('Foo');
+  setInfo(Foo, { securityContact: 'security@example.com', license: 'MIT' });
+
   t.snapshot(printContract(Foo));
 });
