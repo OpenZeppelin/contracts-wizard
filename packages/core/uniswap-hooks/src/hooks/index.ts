@@ -24,7 +24,8 @@ export type HookCategory = 'Base' | 'Fee' | 'General';
  * @property tooltipLink - URL to documentation for this hook
  * @property permissions - Bitmap of hook lifecycle permissions
  * @property functions - Map of relevant function definitions from the hook for it's configuration on the wizard
- * @property disabledFunctions - idk
+ * @property disabledFunctions - Hook functions that are disabled in the hook, so that the {Pausable} option doesn't add the `whenNotPaused` modifier to them.
+ * i.e, `BaseCustomAccounting` disables `_beforeAddLiquidity` and `_beforeRemoveLiquidity`, and therefore they don't require pausability.
  * @property shares - Configuration for hook shares functionality
  * @property alreadyImplementsShares - Whether this hook implements already implements shares and doesn't require to inherit.
  * @property inputs - Array of user-configurable input parameters for the wizard UI.
@@ -101,8 +102,15 @@ export function specificSharesType(sharesConfig: SharesConfig): boolean {
 
 export type SharesConfig = 'required' | 'optional' | 'disabled' | 'ERC20' | 'ERC6909' | 'ERC1155';
 
+/**
+ * @property name - The name of the input parameter in camelCase
+ * @property label - The label of the input parameter in human-readable format
+ * @property value - The value of the input parameter
+ * @property type - The type of the input parameter
+ */
 export type HookInput = {
+  name: string;
   label: string;
-  value: string;
   type: 'string' | 'number';
+  placeholder?: string;
 };

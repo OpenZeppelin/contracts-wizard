@@ -9,7 +9,7 @@ import {
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
-import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS, specificSharesType } from './hooks/';
+import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS } from './hooks/';
 import type { HookName, Shares, Permissions, Permission } from './hooks/';
 import importPaths from './importPaths.json';
 
@@ -22,6 +22,9 @@ export interface HooksOptions extends CommonOptions {
   transientStorage: boolean;
   shares: Shares;
   permissions: Permissions;
+  inputs: {
+    blockNumberOffset: number;
+  };
 }
 
 export const defaults: Required<HooksOptions> = {
@@ -56,6 +59,9 @@ export const defaults: Required<HooksOptions> = {
     afterAddLiquidityReturnDelta: false,
     afterRemoveLiquidityReturnDelta: false,
   },
+  inputs: {
+    blockNumberOffset: 10,
+  },
 };
 
 function withDefaults(opts: HooksOptions): Required<HooksOptions> {
@@ -68,6 +74,7 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
     transientStorage: opts.transientStorage ?? defaults.transientStorage,
     shares: opts.shares ?? defaults.shares,
     permissions: opts.permissions ?? defaults.permissions,
+    inputs: opts.inputs ?? defaults.inputs,
   };
 }
 
@@ -77,6 +84,7 @@ export function printHooks(opts: HooksOptions = defaults): string {
 
 export function buildHooks(opts: HooksOptions): Contract {
   const allOpts = withDefaults(opts);
+  console.log('allOpts', allOpts);
 
   // Upgradeability is not yet available for hooks
   allOpts.upgradeable = false;
@@ -170,10 +178,7 @@ export function buildHooks(opts: HooksOptions): Contract {
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
-  // c.addConstructorArgument({ type: 'IPoolManager', name: '_poolManager' });
-
   const constructorParams: Value[] = [];
-  // constructorParams.push({ lit: '_poolManager' });
 
   // Add Overrides & Constructor Params specific to each hook
   switch (allOpts.hook) {
@@ -232,12 +237,11 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       break;
     case 'LiquidityPenaltyHook':
-      c.addConstructorArgument({ type: 'uint48', name: '_blockNumberOffset' });
-      constructorParams.push({ lit: '_blockNumberOffset' });
+      constructorParams.push(allOpts.inputs?.blockNumberOffset || 10);
       break;
     case 'ReHypothecationHook':
-      constructorParams.push('shares_name');
-      constructorParams.push('shares_symbol');
+      constructorParams.push(allOpts.shares.name || '');
+      constructorParams.push(allOpts.shares.symbol || '');
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
         [`// Implement getCurrencyYieldSource`],
@@ -356,9 +360,6 @@ function addPausableFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
         // Function doesn't exist yet, add it with super invocation
         c.setFunctionBody([returnSuperFunctionInvocation(f)], f);
         c.addOverride({ name: c.name }, f);
-      } else {
-        // Function already exists (likely from parent override), just add the modifier
-        // Don't add another override to avoid duplicate override lists
       }
       c.addModifier('whenNotPaused', f);
     }
@@ -381,10 +382,13 @@ function addGetHookPermissionsFunction(c: ContractBuilder, _allOpts: HooksOption
 function addAdditionalPermissionFunctions(c: ContractBuilder, _allOpts: HooksOptions) {
   // Print each enabled permission associated function that has not been printed yet.
   for (const permission of getEnabledPermissions(_allOpts)) {
+    // A permission is additional if it is not required by the hook and not required by pausability
+    // (It was manually enabled by the user)
     const isAdditionalPermission =
       !permissionRequiredByHook(_allOpts.hook, permission) &&
       !(_allOpts.pausable && permissionRequiredByPausable(_allOpts, permission));
 
+    // If the permission is additional, add the permission associated function to the contract.
     if (isAdditionalPermission) {
       const functionName = `_${permission}`;
       const permissionFunction = HOOKS.BaseHook.functions[functionName]!;
@@ -402,6 +406,9 @@ function returnSuperFunctionInvocation(f: BaseFunction): string {
 }
 
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
+  // Doesn't require pausability if the function is disabled in the hook.
+  if (HOOKS[_allOpts.hook].disabledFunctions.includes(f.name)) return false;
+
   // Should be pausable if it is a pausable permission function.
   for (const p of PAUSABLE_PERMISSIONS) {
     if (f.name === `_${p}`) return true;

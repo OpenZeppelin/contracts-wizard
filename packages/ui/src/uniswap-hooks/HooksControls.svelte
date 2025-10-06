@@ -50,6 +50,8 @@
     return name;
   }
 
+  $: inputs = opts.inputs as Record<string, string | number>;
+
   $: requireAccessControl = hooks.isAccessControlRequired(opts);
 
   let openAdvancedPermissionsDropdown = false;
@@ -69,9 +71,9 @@
     <label class="labeled-input">
       <span>{input.label}</span>
       {#if input.type === 'number'}
-        <input type="number" bind:value={input.value} />
+        <input type="number" bind:value={inputs[input.name]} placeholder={input.placeholder} />
       {:else}
-        <input type="text" bind:value={input.value} />
+        <input type="text" bind:value={inputs[input.name]} />
       {/if}
     </label>
   {/each}

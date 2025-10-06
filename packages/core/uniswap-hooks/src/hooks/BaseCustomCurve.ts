@@ -12,7 +12,7 @@ const BaseCustomCurve: Hook = {
   shares: 'required',
   alreadyImplementsShares: false,
   inputs: [],
-  disabledFunctions: ['_beforeAddLiquidity', '_beforeRemoveLiquidity'],
+  disabledFunctions: [...BaseCustomAccounting.disabledFunctions],
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,

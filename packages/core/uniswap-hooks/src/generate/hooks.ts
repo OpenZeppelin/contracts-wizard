@@ -29,6 +29,7 @@ const blueprint = {
   currencySettler: [true],
   safeCast: [true],
   transientStorage: [true],
+  inputs: [],
 };
 
 export function* generateHooksOptions(): Generator<Required<HooksOptions>> {

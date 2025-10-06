@@ -13,8 +13,9 @@ const LiquidityPenaltyHook: Hook = {
   alreadyImplementsShares: false,
   inputs: [
     {
+      name: 'blockNumberOffset',
       label: 'Block Number Offset',
-      value: '10',
+      placeholder: '10',
       type: 'number',
     },
   ],
