@@ -1,5 +1,4 @@
 import type { WizardContractAPI, AccessControlAPI } from '@openzeppelin/wizard';
-
 import {
   printHooks,
   defaults as hooksDefaults,

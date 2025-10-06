@@ -84,7 +84,6 @@ export function printHooks(opts: HooksOptions = defaults): string {
 
 export function buildHooks(opts: HooksOptions): Contract {
   const allOpts = withDefaults(opts);
-  console.log('allOpts', allOpts);
 
   // Upgradeability is not yet available for hooks
   allOpts.upgradeable = false;
@@ -184,57 +183,78 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   switch (allOpts.hook) {
     case 'BaseCustomAccounting':
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
-      c.setFunctionBody([`// Implement _getAddLiquidity`], HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
+      c.setFunctionBody(
+        [`// Implement how liquidity additions and minted shares are computed`],
+        HOOKS.BaseCustomAccounting.functions._getAddLiquidity!,
+      );
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getRemoveLiquidity!);
       c.setFunctionBody(
-        [`// Implement _getRemoveLiquidity`],
+        [`// Implement how liquidity removals and burned shares are computed`],
         HOOKS.BaseCustomAccounting.functions._getRemoveLiquidity!,
       );
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Implement _mint`], HOOKS.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement how shares are minted`], HOOKS.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Implement _burn`], HOOKS.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseCustomCurve':
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
-      c.setFunctionBody([`// Implement _getUnspecifiedAmount`], HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
+      c.setFunctionBody(
+        [`// Implement how the amount of the unspecified currency is computed`],
+        HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!,
+      );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!);
-      c.setFunctionBody([`// Implement _getSwapFeeAmount`], HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!);
+      c.setFunctionBody(
+        [`// Implement how the amount of fees to be paid to LPs in the swap is computed`],
+        HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!,
+      );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountOut!);
-      c.setFunctionBody([`// Implement _getAmountOut`], HOOKS.BaseCustomCurve.functions._getAmountOut!);
+      c.setFunctionBody(
+        [`// Implement how the amount out is computed`],
+        HOOKS.BaseCustomCurve.functions._getAmountOut!,
+      );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountIn!);
-      c.setFunctionBody([`// Implement _getAmountIn`], HOOKS.BaseCustomCurve.functions._getAmountIn!);
+      c.setFunctionBody([`// Implement how the amount in is computed`], HOOKS.BaseCustomCurve.functions._getAmountIn!);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._mint!);
-      c.setFunctionBody([`// Implement _mint`], HOOKS.BaseCustomAccounting.functions._mint!);
+      c.setFunctionBody([`// Implement how shares are minted`], HOOKS.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._burn!);
-      c.setFunctionBody([`// Implement _burn`], HOOKS.BaseCustomAccounting.functions._burn!);
+      c.setFunctionBody([`// Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseDynamicFee':
       c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
-      c.setFunctionBody([`// Implement _getFee`], HOOKS.BaseDynamicFee.functions._getFee!);
+      c.setFunctionBody([`// Implement how the LP fee is computed`], HOOKS.BaseDynamicFee.functions._getFee!);
       break;
     case 'BaseDynamicAfterFee':
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
-        [`// Implement _getTargetUnspecified`],
+        [`// Implement how the target unspecified amount is computed`],
         HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!,
       );
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
+      c.setFunctionBody(
+        [`// Implement how the accumulated fees are handled after swaps`],
+        HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!,
+      );
       break;
     case 'BaseOverrideFee':
       c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
-      c.setFunctionBody([`// Implement _getFee`], HOOKS.BaseOverrideFee.functions._getFee!);
+      c.setFunctionBody([`// Implement how the LP fee is computed`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
     case 'BaseHookFee':
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions._getHookFee!);
-      c.setFunctionBody([`// Implement _getHookFee`], HOOKS.BaseHookFee.functions._getHookFee!);
+      c.setFunctionBody([`// Implement how the Hook fee is computed`], HOOKS.BaseHookFee.functions._getHookFee!);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions.handleHookFees!);
-      c.setFunctionBody([`// Implement handleHookFees`], HOOKS.BaseHookFee.functions.handleHookFees!);
+      c.setFunctionBody(
+        [`// Implement how the accumulated hook fees are handled`],
+        HOOKS.BaseHookFee.functions.handleHookFees!,
+      );
       break;
     case 'AntiSandwichHook':
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
-      c.setFunctionBody([`// Implement _afterSwapHandler`], HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
+      c.setFunctionBody(
+        [`// Implement how the accumulated fees from the sandwich attacks penalties are handled after swaps`],
+        HOOKS.AntiSandwichHook.functions._afterSwapHandler!,
+      );
       break;
     case 'LiquidityPenaltyHook':
       constructorParams.push(allOpts.inputs?.blockNumberOffset || 10);
@@ -244,22 +264,22 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       constructorParams.push(allOpts.shares.symbol || '');
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
-        [`// Implement getCurrencyYieldSource`],
+        [`// Implement how the yield source address is computed for a given currency`],
         HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!,
       );
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._depositToYieldSource!);
       c.setFunctionBody(
-        [`// Implement _depositToYieldSource`],
+        [`// Implement how a given currency is deposited to it's corresponding yield source`],
         HOOKS.ReHypothecationHook.functions._depositToYieldSource!,
       );
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._withdrawFromYieldSource!);
       c.setFunctionBody(
-        [`// Implement _withdrawFromYieldSource`],
+        [`// Implement how a given currency is withdrawn from it's corresponding yield source`],
         HOOKS.ReHypothecationHook.functions._withdrawFromYieldSource!,
       );
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!);
       c.setFunctionBody(
-        [`// Implement _getAmountInYieldSource`],
+        [`// Implement how the hook's balance of a given currency in it's corresponding yield source is obtained`],
         HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!,
       );
       break;

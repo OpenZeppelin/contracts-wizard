@@ -63,11 +63,6 @@ const LimitOrderHook: Hook = {
         ],
         returns: ['uint256', 'uint256'],
       },
-      unlockCallback: {
-        kind: 'public',
-        args: [{ name: 'rawData', type: 'bytes calldata' }],
-        returns: ['bytes memory'],
-      },
       getTickLowerLast: {
         kind: 'public',
         mutability: 'view',

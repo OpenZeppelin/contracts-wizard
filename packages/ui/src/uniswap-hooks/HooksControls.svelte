@@ -69,7 +69,12 @@
 
   {#each selectedHook.inputs as input}
     <label class="labeled-input">
-      <span>{input.label}</span>
+      <span class="flex justify-between pr-2">
+        {input.label}
+        {#if input.tooltipText}
+          <HelpTooltip>{input.tooltipText}</HelpTooltip>
+        {/if}
+      </span>
       {#if input.type === 'number'}
         <input type="number" bind:value={inputs[input.name]} placeholder={input.placeholder} />
       {:else}

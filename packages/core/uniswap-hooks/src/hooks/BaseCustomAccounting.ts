@@ -15,6 +15,18 @@ const BaseCustomAccounting: Hook = {
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,
+      // Public liquidity functions
+      addLiquidity: {
+        kind: 'public',
+        mutability: 'payable',
+        args: [{ name: 'params', type: 'AddLiquidityParams calldata' }],
+        returns: ['BalanceDelta'],
+      },
+      removeLiquidity: {
+        kind: 'public',
+        args: [{ name: 'params', type: 'RemoveLiquidityParams calldata' }],
+        returns: ['BalanceDelta'],
+      },
       // Liquidity modification (required)
       _getAddLiquidity: {
         kind: 'internal',
@@ -49,18 +61,6 @@ const BaseCustomAccounting: Hook = {
           { name: 'shares', type: 'uint256' },
         ],
         returns: [],
-      },
-      // optional overrides
-      addLiquidity: {
-        kind: 'public',
-        mutability: 'payable',
-        args: [{ name: 'params', type: 'AddLiquidityParams calldata' }],
-        returns: ['BalanceDelta'],
-      },
-      removeLiquidity: {
-        kind: 'public',
-        args: [{ name: 'params', type: 'RemoveLiquidityParams calldata' }],
-        returns: ['BalanceDelta'],
       },
     }),
   },

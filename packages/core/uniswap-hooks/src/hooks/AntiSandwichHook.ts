@@ -27,17 +27,6 @@ const AntiSandwichHook: Hook = {
           { name: 'feeAmount', type: 'uint256' },
         ],
       },
-      // determine the target unspecified amount (optional override)
-      _getTargetUnspecified: {
-        kind: 'internal',
-        args: [
-          { name: 'sender', type: 'address' },
-          { name: 'key', type: 'PoolKey calldata' },
-          { name: 'params', type: 'SwapParams calldata' },
-          { name: 'hookData', type: 'bytes calldata' },
-        ],
-        returns: ['uint256', 'bool'],
-      },
     }),
   },
   permissions: {

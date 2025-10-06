@@ -23,7 +23,7 @@ const ReHypothecationHook: Hook = {
         args: [],
         returns: ['PoolKey memory'],
       },
-      // Rehypothecated liquidity management
+      // Rehypothecated liquidity management (required)
       addReHypothecatedLiquidity: {
         kind: 'public',
         mutability: 'payable',
@@ -36,7 +36,7 @@ const ReHypothecationHook: Hook = {
         args: [{ name: 'shares', type: 'uint256' }],
         returns: ['BalanceDelta'],
       },
-      // Preview functions
+      // Preview functions (optional override)
       previewAmountsForShares: {
         kind: 'public',
         mutability: 'view',
@@ -56,7 +56,7 @@ const ReHypothecationHook: Hook = {
         args: [],
         returns: ['int24'],
       },
-      // Yield source interface (abstract functions that must be implemented)
+      // Yield source interface (required)
       getCurrencyYieldSource: {
         kind: 'public',
         mutability: 'view',

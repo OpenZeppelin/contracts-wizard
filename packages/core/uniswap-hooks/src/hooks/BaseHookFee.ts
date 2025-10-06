@@ -16,7 +16,7 @@ const BaseHookFee: Hook = {
   functions: {
     ...defineFunctions({
       ...BaseHook.functions,
-      // Abstract function that must be implemented to determine hook fee
+      // Determine the hook fee (required)
       _getHookFee: {
         kind: 'internal',
         mutability: 'view',
@@ -29,7 +29,7 @@ const BaseHookFee: Hook = {
         ],
         returns: ['uint24'],
       },
-      // Abstract function for handling accumulated hook fees
+      // Handle the accumulated hook fees (required)
       handleHookFees: {
         kind: 'public',
         args: [{ name: 'currencies', type: 'Currency[] memory' }],

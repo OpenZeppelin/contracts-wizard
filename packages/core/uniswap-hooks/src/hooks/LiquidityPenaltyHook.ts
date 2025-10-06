@@ -17,6 +17,8 @@ const LiquidityPenaltyHook: Hook = {
       label: 'Block Number Offset',
       placeholder: '10',
       type: 'number',
+      tooltipText:
+        'The minimum time window (in blocks) that must pass after adding liquidity before it can be removed without any penalty. During this period, JIT attacks are deterred through fee withholding and penalties. Higher values provide stronger JIT protection but may discourage legitimate LPs.',
     },
   ],
   disabledFunctions: [],

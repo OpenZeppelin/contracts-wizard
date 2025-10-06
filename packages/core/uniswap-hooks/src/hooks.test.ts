@@ -3,7 +3,7 @@ import { hooks } from './api';
 import { buildHooks, type HooksOptions } from './hooks';
 import { HOOKS } from './hooks/';
 import { printContract } from './print';
-import { generateAllPermissions, generateInversedMixedPermissions, generateMixedPermissions } from './generate/hooks';
+import { generateAllPermissions, generateMixedInversedPermissions, generateMixedPermissions } from './generate/hooks';
 
 function testHooks(title: string, opts: Partial<HooksOptions>) {
   test(title, t => {
@@ -23,7 +23,7 @@ for (const key in HOOKS) {
 
   testHooks(`inversed mixed permissions ${hook.name}`, {
     hook: hook.name,
-    permissions: generateInversedMixedPermissions(),
+    permissions: generateMixedInversedPermissions(),
   });
 
   testHooks(`all permissions ${hook.name}`, { hook: hook.name, permissions: generateAllPermissions() });

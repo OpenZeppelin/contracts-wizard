@@ -11,7 +11,7 @@ const sharesOptions: Shares[] = [
 ] as const;
 
 // Generate some permission combinations. Note that generating all would result in 2^14 combinations.
-const permissionsOptions: Permissions[] = [generateMixedPermissions(), generateInversedMixedPermissions()] as const;
+const permissionsOptions: Permissions[] = [generateMixedPermissions(), generateMixedInversedPermissions()] as const;
 
 const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
 
@@ -40,7 +40,7 @@ export function generateMixedPermissions(): Permissions {
   return Object.fromEntries(PERMISSIONS.map((key, idx) => [key, idx % 2 === 0])) as Permissions;
 }
 
-export function generateInversedMixedPermissions(): Permissions {
+export function generateMixedInversedPermissions(): Permissions {
   return Object.fromEntries(PERMISSIONS.map((key, idx) => [key, idx % 2 !== 0])) as Permissions;
 }
 

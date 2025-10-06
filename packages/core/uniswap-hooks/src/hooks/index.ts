@@ -23,7 +23,8 @@ export type HookCategory = 'Base' | 'Fee' | 'General';
  * @property tooltipText - Descriptive text displayed in tooltips (supports HTML)
  * @property tooltipLink - URL to documentation for this hook
  * @property permissions - Bitmap of hook lifecycle permissions
- * @property functions - Map of relevant function definitions from the hook for it's configuration on the wizard
+ * @property functions - Map of relevant function definitions from the hook for it's configuration on the wizard. All public/external functions must be included
+ * in order to automatically get the `whenNotPaused` modifier added to them.
  * @property disabledFunctions - Hook functions that are disabled in the hook, so that the {Pausable} option doesn't add the `whenNotPaused` modifier to them.
  * i.e, `BaseCustomAccounting` disables `_beforeAddLiquidity` and `_beforeRemoveLiquidity`, and therefore they don't require pausability.
  * @property shares - Configuration for hook shares functionality
@@ -89,6 +90,12 @@ export const PAUSABLE_PERMISSIONS: Permission[] = [
   'beforeDonate',
 ];
 
+/**
+ * @property options - The type of shares to use
+ * @property name - The name of the shares
+ * @property symbol - The symbol of the shares
+ * @property uri - The URI of the shares
+ */
 export type Shares = {
   options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
   name?: string;
@@ -96,6 +103,11 @@ export type Shares = {
   uri?: string;
 };
 
+/**
+ * @description Determines if the hook share type compatibility is specific and cannot be changed by the user
+ * @param sharesConfig - The type of shares to use
+ * @returns True if the shares type is ERC20, ERC6909, or ERC1155
+ */
 export function specificSharesType(sharesConfig: SharesConfig): boolean {
   return sharesConfig === 'ERC20' || sharesConfig === 'ERC6909' || sharesConfig === 'ERC1155';
 }
@@ -113,4 +125,5 @@ export type HookInput = {
   label: string;
   type: 'string' | 'number';
   placeholder?: string;
+  tooltipText?: string;
 };
