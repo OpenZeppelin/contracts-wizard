@@ -20,16 +20,22 @@ import type { KindedOptions as StylusKindedOptions } from '../../../../core/styl
 import type { CommonContractOptions as StylusCommonContractOptionsBase } from '../../../../core/stylus/dist/common-options';
 export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 'access'> & { access?: false };
 
+type SolidityContractsOptions = Omit<
+  SolidityKindedOptions,
+  'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'
+> & {
+  Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
+  RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
+  Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
+  Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
+};
+
 // Add supported language here
 export type LanguagesContractsOptions = {
-  solidity: Omit<SolidityKindedOptions, 'Stablecoin' | 'RealWorldAsset' | 'Account' | 'Governor'> & {
-    Stablecoin: Omit<SolidityKindedOptions['Stablecoin'], 'upgradeable'> & { upgradeable?: false };
-    RealWorldAsset: Omit<SolidityKindedOptions['RealWorldAsset'], 'upgradeable'> & { upgradeable?: false };
-    Account: Omit<SolidityKindedOptions['Account'], 'upgradeable' | 'access'> & { upgradeable?: false; access?: false };
-    Governor: Omit<SolidityKindedOptions['Governor'], 'access'> & { access?: false };
-  };
+  solidity: SolidityContractsOptions;
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
+  polkadot: Omit<SolidityContractsOptions, 'Account'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
@@ -45,6 +51,7 @@ export type LanguagesContractsOptions = {
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
   LanguagesContractsOptions['cairo'] &
   LanguagesContractsOptions['cairoAlpha'] &
+  LanguagesContractsOptions['polkadot'] &
   LanguagesContractsOptions['stellar'] &
   LanguagesContractsOptions['stylus'];
 //
