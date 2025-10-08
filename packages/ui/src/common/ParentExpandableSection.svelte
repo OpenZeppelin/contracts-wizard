@@ -61,15 +61,15 @@
     <label class="items-center tooltip-container pr-2 flex justify-between">
       <div class="flex items-center">
         {#if type !== 'section'}
-        <span class="mr-2">
-          {#if type === 'checkbox'}
-            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
-          {:else if type === 'toggleradio'}
-            <ToggleRadio
-              bind:value={toggleRadioValue}
-              defaultValue={toggleRadioDefaultValue}
-              disabled={disabled || required}
-            />
+          <span class="mr-2">
+            {#if type === 'checkbox'}
+              <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
+            {:else if type === 'toggleradio'}
+              <ToggleRadio
+                bind:value={toggleRadioValue}
+                defaultValue={toggleRadioDefaultValue}
+                disabled={disabled || required}
+              />
             {/if}
           </span>
         {/if}

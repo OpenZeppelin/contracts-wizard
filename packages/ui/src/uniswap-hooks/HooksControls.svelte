@@ -10,10 +10,10 @@
   import ExpandableSection from '../common/ExpandableSection.svelte';
   import SharesControlsSection from './SharesControlsSection.svelte';
 
-  import { 
-    permissionRequiredByHook, 
-    permissionRequiredByPausable, 
-    permissionRequiredByAnotherPermission, 
+  import {
+    permissionRequiredByHook,
+    permissionRequiredByPausable,
+    permissionRequiredByAnotherPermission,
     returnDeltaPermissionExtension,
   } from '@openzeppelin/wizard-uniswap-hooks/src/hooks';
   import { PERMISSIONS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
@@ -44,7 +44,7 @@
     const hook = HOOKS[key as HookName];
     hooksByCategory[hook.category].push(hook);
   }
-  
+
   function shortcutPermissionName(name: string): string {
     if (name.length > 25) return name.replace('Return', '');
     return name;
@@ -56,7 +56,6 @@
 
   let openAdvancedPermissionsDropdown = false;
   let openUtilitiesDropdown = false;
-
 </script>
 
 <section class="controls-section">
@@ -113,11 +112,9 @@
         <input
           type="checkbox"
           bind:checked={opts.permissions[permission]}
-          disabled={
-            permissionRequiredByHook(opts.hook, permission) ||
+          disabled={permissionRequiredByHook(opts.hook, permission) ||
             permissionRequiredByPausable(opts, permission) ||
-            permissionRequiredByAnotherPermission(opts, permission)
-          }
+            permissionRequiredByAnotherPermission(opts, permission)}
         />
         {shortcutPermissionName(permission)}
         <HelpTooltip link="https://docs.uniswap.org/contracts/v4/concepts/hooks#core-hook-functions">
@@ -126,7 +123,8 @@
           {:else if permissionRequiredByPausable(opts, permission)}
             The <code>{permission}</code> permission is required when <code>Pausable</code> is enabled.
           {:else if permissionRequiredByAnotherPermission(opts, permission)}
-            The <code>{permission}</code> permission is required when the <code>{returnDeltaPermissionExtension(permission)}</code> permission is enabled.
+            The <code>{permission}</code> permission is required when the
+            <code>{returnDeltaPermissionExtension(permission)}</code> permission is enabled.
           {:else}
             Optionally enable the <code>{permission}</code> permission.
           {/if}
@@ -146,7 +144,8 @@
       <input type="checkbox" bind:checked={opts.currencySettler} />
       CurrencySettler
       <HelpTooltip link="https://docs.openzeppelin.com/uniswap-hooks/api/utils#CurrencySettler">
-        Utility library used to settle and take any pending deltas with an unlocked `PoolManager` during flash accounting.
+        Utility library used to settle and take any pending deltas with an unlocked `PoolManager` during flash
+        accounting.
       </HelpTooltip>
     </label>
 
@@ -167,7 +166,7 @@
       </HelpTooltip>
     </label>
   </div>
-</ExpandableSection>  
+</ExpandableSection>
 
 <section class="controls-section">
   <h1>Features</h1>

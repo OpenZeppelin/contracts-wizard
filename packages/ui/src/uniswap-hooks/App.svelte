@@ -149,7 +149,6 @@
     //   await postConfig(opts, 'download-foundry', language);
     // }
   };
-
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
@@ -174,61 +173,60 @@
         </button>
 
         {#if showButtons.openInRemix}
-        <Tooltip
-          let:trigger
-          disabled={!(opts?.upgradeable === 'transparent')}
-          theme="light-red border"
-          hideOnClick={false}
-          interactive
-        >
-          <button
-            use:trigger
-            class="action-button with-text"
-            class:disabled={opts?.upgradeable === 'transparent'}
-            on:click={remixHandler}
+          <Tooltip
+            let:trigger
+            disabled={!(opts?.upgradeable === 'transparent')}
+            theme="light-red border"
+            hideOnClick={false}
+            interactive
           >
-            <RemixIcon />
-            Open in Remix
+            <button
+              use:trigger
+              class="action-button with-text"
+              class:disabled={opts?.upgradeable === 'transparent'}
+              on:click={remixHandler}
+            >
+              <RemixIcon />
+              Open in Remix
+            </button>
+            <div slot="content">
+              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
+              use Hardhat or Foundry with
+              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
+                >OpenZeppelin Upgrades</a
+              >.
+              <br />
+              <!-- svelte-ignore a11y-invalid-attribute -->
+              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+            </div>
+          </Tooltip>
+        {/if}
+
+        <Dropdown let:active>
+          <button class="action-button with-text" class:active slot="button">
+            <DownloadIcon />
+            Download
           </button>
-          <div slot="content">
-            Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
-            use Hardhat or Foundry with
-            <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
-              >OpenZeppelin Upgrades</a
-            >.
-            <br />
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-          </div>
-        </Tooltip>
-      {/if}
 
-      <Dropdown let:active>
-        <button class="action-button with-text" class:active slot="button">
-          <DownloadIcon />
-          Download
-        </button>
+          <button class="download-option" on:click={downloadSingleFileHandler}>
+            <FileIcon />
+            <div class="download-option-content">
+              <p>Single file</p>
+              <p>Requires installation of foundry package (<code>@openzeppelin/uniswap-hooks</code>).</p>
+              <p>Simple to receive updates.</p>
+            </div>
+          </button>
 
-        <button class="download-option" on:click={downloadSingleFileHandler}>
-          <FileIcon />
-          <div class="download-option-content">
-            <p>Single file</p>
-            <p>Requires installation of foundry package (<code>@openzeppelin/uniswap-hooks</code>).</p>
-            <p>Simple to receive updates.</p>
-          </div>
-        </button>
-
-        {#if showButtons.downloadFoundry}
-        <button class="download-option" on:click={downloadFoundryHandler}>
-          <ZipIcon />
-          <div class="download-option-content">
-            <p>Development Package (Foundry)</p>
-            <p>Sample Foundry project to get started with development and testing.</p>
-          </div>
-        </button>
-      {/if}
-
-      </Dropdown>
+          {#if showButtons.downloadFoundry}
+            <button class="download-option" on:click={downloadFoundryHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Foundry)</p>
+                <p>Sample Foundry project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
+        </Dropdown>
       </div>
     {/if}
   </div>
@@ -253,6 +251,7 @@
     </div>
   </div>
 </div>
+
 <style lang="postcss">
   .button-bg:hover {
     transform: translateX(-2px);

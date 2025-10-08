@@ -10,18 +10,20 @@
 
   $: disabled = sharesConfig === 'required' || sharesConfig === 'disabled' || specificSharesType(sharesConfig);
 
-  $: disabledReason = sharesConfig === 'required' 
-  ? `Shares are required by <code>${opts.hook}</code>`
-  : sharesConfig === 'disabled'
-  ? `Shares are disabled for <code>${opts.hook}</code>` 
-  : specificSharesType(sharesConfig)
-  ? `${sharesConfig} Shares are required for <code>${opts.hook}</code>`
-  : undefined;
+  $: disabledReason =
+    sharesConfig === 'required'
+      ? `Shares are required by <code>${opts.hook}</code>`
+      : sharesConfig === 'disabled'
+        ? `Shares are disabled for <code>${opts.hook}</code>`
+        : specificSharesType(sharesConfig)
+          ? `${sharesConfig} Shares are required for <code>${opts.hook}</code>`
+          : undefined;
 
   $: isERC20Disabled = sharesConfig === 'disabled' || (specificSharesType(sharesConfig) && 'ERC20' !== sharesConfig);
-  $: isERC1155Disabled = sharesConfig === 'disabled' || (specificSharesType(sharesConfig) && 'ERC1155' !== sharesConfig);
-  $: isERC6909Disabled = sharesConfig === 'disabled' || (specificSharesType(sharesConfig) && 'ERC6909' !== sharesConfig);
-
+  $: isERC1155Disabled =
+    sharesConfig === 'disabled' || (specificSharesType(sharesConfig) && 'ERC1155' !== sharesConfig);
+  $: isERC6909Disabled =
+    sharesConfig === 'disabled' || (specificSharesType(sharesConfig) && 'ERC6909' !== sharesConfig);
 </script>
 
 <ExpandableToggleRadio
@@ -30,9 +32,8 @@
   {disabled}
   {disabledReason}
   defaultValue="ERC20"
-  helpContent={"Shares are useful to account for the ownership of a portion of a liquidity position or pending credit."}
+  helpContent={'Shares are useful to account for the ownership of a portion of a liquidity position or pending credit.'}
   helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20"
-
 >
   <div class="checkbox-group">
     <label class:checked={opts.shares.options === 'ERC20'}>
