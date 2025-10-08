@@ -85,7 +85,13 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
   if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.contract)).join(', ')];
+    return [
+      'is ' +
+        contract.parents
+          .filter(p => !p.constructionOnly)
+          .map(p => transformName(p.contract))
+          .join(', '),
+    ];
   } else {
     return [];
   }

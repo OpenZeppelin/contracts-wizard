@@ -137,19 +137,19 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   // Add the shares based on the shares options.
-  if (!selectedHook.alreadyImplementsShares) {
-    switch (allOpts.shares.options) {
-      case 'ERC20':
-        addERC20Shares(c, allOpts);
-        break;
-      case 'ERC6909':
-        addERC6909Shares(c, allOpts);
-        break;
-      case 'ERC1155':
-        addERC1155Shares(c, allOpts);
-        break;
-    }
+  // if (!selectedHook.alreadyImplementsShares) {
+  switch (allOpts.shares.options) {
+    case 'ERC20':
+      addERC20Shares(c, allOpts);
+      break;
+    case 'ERC6909':
+      addERC6909Shares(c, allOpts);
+      break;
+    case 'ERC1155':
+      addERC1155Shares(c, allOpts);
+      break;
   }
+  // }
 
   // Add required permissions given the current options.
   for (const permission of PERMISSIONS) {
@@ -200,21 +200,24 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     case 'BaseCustomCurve':
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
       c.setFunctionBody(
-        [`// Implement how the amount of the unspecified currency is computed`],
+        [`// Implement how the unspecified currency amount is computed`],
         HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!,
       );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!);
       c.setFunctionBody(
-        [`// Implement how the amount of fees to be paid to LPs in the swap is computed`],
+        [`// Implement how the LPs fees amount is computed`],
         HOOKS.BaseCustomCurve.functions._getSwapFeeAmount!,
       );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountOut!);
       c.setFunctionBody(
-        [`// Implement how the amount out is computed`],
+        [`// Implement how the amount out of the swap is computed`],
         HOOKS.BaseCustomCurve.functions._getAmountOut!,
       );
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getAmountIn!);
-      c.setFunctionBody([`// Implement how the amount in is computed`], HOOKS.BaseCustomCurve.functions._getAmountIn!);
+      c.setFunctionBody(
+        [`// Implement how the amount in of the swap is computed`],
+        HOOKS.BaseCustomCurve.functions._getAmountIn!,
+      );
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._mint!);
       c.setFunctionBody([`// Implement how shares are minted`], HOOKS.BaseCustomAccounting.functions._mint!);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._burn!);
@@ -232,7 +235,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
       c.setFunctionBody(
-        [`// Implement how the accumulated fees are handled after swaps`],
+        [`// Implement how the accumulated penalty fees are handled after swaps`],
         HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!,
       );
       break;
@@ -252,7 +255,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     case 'AntiSandwichHook':
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody(
-        [`// Implement how the accumulated fees from the sandwich attacks penalties are handled after swaps`],
+        [`// Implement how the accumulated penalty fees from sandwich attacks are handled after swaps`],
         HOOKS.AntiSandwichHook.functions._afterSwapHandler!,
       );
       break;
@@ -260,8 +263,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       constructorParams.push(allOpts.inputs?.blockNumberOffset || 10);
       break;
     case 'ReHypothecationHook':
-      constructorParams.push(allOpts.shares.name || '');
-      constructorParams.push(allOpts.shares.symbol || '');
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
         [`// Implement how the yield source address is computed for a given currency`],
@@ -338,13 +339,22 @@ function addTransientStorage(c: ContractBuilder, _allOpts: HooksOptions) {
 }
 
 function addERC20Shares(c: ContractBuilder, _allOpts: HooksOptions) {
-  c.addParent(
-    {
-      name: 'ERC20',
-      path: `@openzeppelin/contracts/token/ERC20/ERC20.sol`,
-    },
-    [_allOpts.shares.name || '', _allOpts.shares.symbol || ''],
-  );
+  const selectedHook = HOOKS[_allOpts.hook];
+  if (selectedHook.alreadyImplementsShares) {
+    // add constructor params
+    c.addConstructionOnly({ name: 'ERC20', path: `@openzeppelin/contracts/token/ERC20/ERC20.sol` }, [
+      _allOpts.shares.name || '',
+      _allOpts.shares.symbol || '',
+    ]);
+  } else {
+    c.addParent(
+      {
+        name: 'ERC20',
+        path: `@openzeppelin/contracts/token/ERC20/ERC20.sol`,
+      },
+      [_allOpts.shares.name || '', _allOpts.shares.symbol || ''],
+    );
+  }
 }
 
 function addERC1155Shares(c: ContractBuilder, _allOpts: HooksOptions) {

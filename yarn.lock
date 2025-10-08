@@ -819,9 +819,9 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.4.0.tgz#177594bdb2d86c71f5d1052fe40cb4edb95fb20f"
   integrity sha512-eCYgWnLg6WO+X52I16TZt8uEjbtdkgLC0SUX/xnAksjjrQI4Xfn4iBRoI5j55dmlOhDv1Y7BoR3cU7e3WWhC6A==
 
-"@openzeppelin/uniswap-hooks@github:gonzaotc/uniswap-hooks#remove-poolmanager-constructor-param":
+"@openzeppelin/uniswap-hooks@github:openzeppelin/uniswap-hooks#master":
   version "1.1.0"
-  resolved "https://codeload.github.com/gonzaotc/uniswap-hooks/tar.gz/3c726bdb3ade14effd2dd3c9654f0da874fba69f"
+  resolved "https://codeload.github.com/openzeppelin/uniswap-hooks/tar.gz/f721a5449610583bafa7f72aac65fabd4e5a2bc5"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"

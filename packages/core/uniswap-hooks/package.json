@@ -17,12 +17,13 @@
     "prepare": "tsc",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
+    "test:compile": "npm test -- src/test.ts",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/uniswap-hooks": "github:gonzaotc/uniswap-hooks#remove-poolmanager-constructor-param",
+    "@openzeppelin/uniswap-hooks": "github:openzeppelin/uniswap-hooks#master",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",
     "@uniswap/v4-core": "^1.0.2",

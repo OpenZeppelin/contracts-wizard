@@ -19,6 +19,7 @@ test.serial('hooks result compiles', async t => {
 async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
   const generatedSourcesPath = path.join(hre.config.paths.sources, `generated`);
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
+
   await writeGeneratedSources(generatedSourcesPath, 'all', kind);
 
   // We only want to check that contracts compile and we don't care about any

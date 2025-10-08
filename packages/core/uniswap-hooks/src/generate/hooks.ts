@@ -15,6 +15,8 @@ const permissionsOptions: Permissions[] = [generateMixedPermissions(), generateM
 
 const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
 
+const inputsOptions = [{ blockNumberOffset: 10 }];
+
 const blueprint = {
   hook: hooksOptions as readonly HookName[],
   name: ['MyHook'] as const,
@@ -29,7 +31,7 @@ const blueprint = {
   currencySettler: [true],
   safeCast: [true],
   transientStorage: [true],
-  inputs: [],
+  inputs: inputsOptions,
 };
 
 export function* generateHooksOptions(): Generator<Required<HooksOptions>> {

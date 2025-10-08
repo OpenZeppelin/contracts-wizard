@@ -20,6 +20,7 @@ export interface Parent {
   contract: ImportContract;
   params: Value[];
   importOnly?: boolean;
+  constructionOnly?: boolean;
 }
 
 export interface ImportContract extends ReferencedContract {
@@ -137,6 +138,12 @@ export class ContractBuilder implements Contract {
       params: [],
       importOnly: true,
     });
+    return !present;
+  }
+
+  addConstructionOnly(contract: ImportContract, params: Value[] = []): boolean {
+    const present = this.parentMap.has(contract.name);
+    this.parentMap.set(contract.name, { contract, params, constructionOnly: true });
     return !present;
   }
 
