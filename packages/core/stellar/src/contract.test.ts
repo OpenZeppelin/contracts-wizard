@@ -101,3 +101,38 @@ test('contract with security info and documentation', t => {
   Foo.addDocumentation('Some documentation');
   t.snapshot(printContract(Foo));
 });
+
+test('addDocumentation preserves insertion order', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentation('First note');
+  Foo.addDocumentation('Second note');
+  Foo.addDocumentation('Third note');
+
+  t.deepEqual(Foo.documentations, ['First note', 'Second note', 'Third note']);
+});
+
+test('addDocumentation keeps duplicate entries', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addDocumentation('Repeated note');
+  Foo.addDocumentation('Repeated note');
+
+  t.deepEqual(Foo.documentations, ['Repeated note', 'Repeated note']);
+});
+
+test('addDocumentation adds a new documentation string', t => {
+  const contract = new ContractBuilder('TestContract');
+  const docString = 'This is a test documentation string.';
+
+  contract.addDocumentation(docString);
+
+  t.deepEqual(contract.documentations, [docString]);
+});
+
+test('addDocumentation appends multiple documentation strings', t => {
+  const contract = new ContractBuilder('TestContract');
+  const docStrings = ['First documentation string.', 'Second documentation string.'];
+
+  docStrings.forEach(doc => contract.addDocumentation(doc));
+
+  t.deepEqual(contract.documentations, docStrings);
+});

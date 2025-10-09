@@ -1,4 +1,4 @@
-use stellar_api::utils::build_globset;
+use stellar_api::utils::{build_globset, is_glob_match};
 
 #[test]
 fn test_single_pattern_match() {
@@ -47,4 +47,24 @@ fn test_question_mark_pattern() {
     assert!(globset.is_match("file1.rs"));
     assert!(globset.is_match("fileA.rs"));
     assert!(!globset.is_match("file10.rs"));
+}
+
+#[test]
+fn test_is_glob_match_success() {
+    let globset = build_globset(vec!["*.rs".to_string(), "*.txt".to_string()]).unwrap();
+    let result = is_glob_match(&globset, "main.rs");
+    assert!(matches!(result, Ok(0)));
+}
+
+#[test]
+fn test_is_glob_match_no_match() {
+    let globset = build_globset(vec!["*.rs".to_string(), "*.txt".to_string()]).unwrap();
+    let result = is_glob_match(&globset, "image.png");
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_is_glob_match_invalid_pattern() {
+    let globset = build_globset(vec!["[invalid".to_string()]);
+    assert!(globset.is_err());
 }

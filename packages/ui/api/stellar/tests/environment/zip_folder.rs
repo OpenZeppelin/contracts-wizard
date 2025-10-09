@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::io::{Cursor, Write};
 use tempfile::tempdir;
 use zip::result::ZipError;
-use zip::{write::FileOptions, CompressionMethod, ZipWriter};
+use zip::{write::FileOptions, CompressionMethod, ZipArchive, ZipWriter};
 
 use stellar_api::environment::{expected_entry_count, unzip_in_temporary_folder, zip_directory};
 
@@ -224,4 +224,110 @@ fn test_allows_matching_with_glob_patterns() {
 
     assert_eq!(a_txt, "hello");
     assert_eq!(b_txt, "world");
+}
+
+#[test]
+fn test_normalizes_backslashes_in_entry_names() {
+    let dir = tempdir().expect("Failed to create temp dir");
+    let root = dir.path();
+
+    // Create a file whose name contains a backslash character
+    // On Unix, backslash is a normal character; normalize_path should convert it to "/"
+    write(root.join("dir1\\b.txt"), b"content").expect("write file with backslash in name");
+
+    let zip_bytes = zip_directory(root).expect("Failed to zip directory");
+
+    // Inspect the zip entries directly and assert the normalized forward slash path exists
+    let cursor = Cursor::new(zip_bytes);
+    let mut archive = ZipArchive::new(cursor).expect("open zip");
+
+    let mut found = false;
+    for i in 0..archive.len() {
+        let entry = archive.by_index(i).expect("entry");
+        if !entry.is_dir() && entry.name() == "dir1/b.txt" {
+            found = true;
+        }
+    }
+    assert!(found, "expected to find normalized entry 'dir1/b.txt'");
+}
+
+#[test]
+fn test_zip_directory_uses_deflated_compression_for_files() {
+    let (_dir, root) = create_sample_directory();
+
+    let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
+
+    let cursor = Cursor::new(zip_bytes);
+    let mut archive = ZipArchive::new(cursor).expect("Open zip");
+    for i in 0..archive.len() {
+        let entry = archive.by_index(i).expect("entry");
+        if entry.is_dir() {
+            continue;
+        }
+        assert_eq!(
+            entry.compression(),
+            CompressionMethod::Deflated,
+            "files should use Deflated compression by default"
+        );
+    }
+}
+
+#[test]
+fn test_rejects_absolute_path_entries() {
+    // Build a zip that contains an absolute path entry /abs.txt
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Stored);
+
+        // Use an absolute path to trigger invalid entry name via enclosed_name
+        writer
+            .start_file("/abs.txt", options)
+            .expect("start /abs.txt");
+        writer.write_all(b"evil").expect("write /abs.txt");
+
+        writer.finish().expect("finish zip");
+    }
+
+    // Use an expected list that matches the entry count (1)
+    let result = unzip_in_temporary_folder(bytes, &["abs.txt"]);
+    match result {
+        Err(ZipError::Io(_)) => {}
+        _ => panic!("Expected ZipError::Io for invalid absolute entry name, got {result:?}"),
+    }
+}
+
+#[test]
+fn test_extracts_nested_file_and_preserves_directory_structure() {
+    // Build a zip that includes the directory entry and a nested file
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Stored);
+
+        writer
+            .add_directory("nested/", options)
+            .expect("add nested/");
+        writer
+            .start_file("nested/inner.txt", options)
+            .expect("start nested/inner.txt");
+        writer
+            .write_all(b"content")
+            .expect("write nested/inner.txt");
+
+        writer.finish().expect("finish zip");
+    }
+
+    // Expect exactly two entries: nested/ and nested/inner.txt
+    let extracted = unzip_in_temporary_folder(bytes, &["nested/inner.txt"]).expect("extract");
+    let content = read_to_string(extracted.path().join("nested").join("inner.txt"))
+        .expect("read nested/inner.txt");
+
+    assert_eq!(content, "content");
+    assert!(
+        extracted.path().join("nested").is_dir(),
+        "parent directory should exist after extraction"
+    );
 }
