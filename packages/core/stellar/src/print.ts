@@ -369,7 +369,5 @@ function printDocumentations(documentations: string[]): string[] {
 }
 
 function printMetadata(contract: Contract) {
-  return Array.from(contract.metadata.entries()).map(
-    ([key, value]) => `contractmeta!(key="${key}", val="${toByteArray(value)}");`,
-  );
+  return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
 }

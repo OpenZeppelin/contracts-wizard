@@ -1,4 +1,4 @@
-import { toIdentifier } from './utils/convert-strings';
+import { toByteArray, toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
   metadata: Map<string, string>;
@@ -271,7 +271,7 @@ export class ContractBuilder implements Contract {
     (Array.isArray(metadata) ? metadata : [metadata]).forEach(({ key, value }) => {
       if (this.metadata.has(key)) throw new Error(`Setting metadata failed: ${key} is already set`);
 
-      this.metadata.set(key, value);
+      this.metadata.set(key, toByteArray(value));
     });
 
     if (this.metadata.size > 0) this.addUseClause('soroban_sdk', 'contractmeta');
