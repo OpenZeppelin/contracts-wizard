@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, tick } from 'svelte';
 
-  import hljs from './highlightjs';
+  import hljs from '../solidity/highlightjs';
 
   import HooksControls from './HooksControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -16,19 +16,16 @@
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import { sanitizeKind } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
-  import { buildGeneric } from '@openzeppelin/wizard-uniswap-hooks/src';
   import { postConfig } from '../common/post-config';
-  import { remixURL } from './remix';
+  import { remixURL } from '../solidity/remix';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
-  import { printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import { zipFoundry } from '@openzeppelin/wizard/zip-env-foundry';
 
   const dispatch = createEventDispatcher();
 
@@ -212,7 +209,7 @@
             <FileIcon />
             <div class="download-option-content">
               <p>Single file</p>
-              <p>Requires installation of foundry package (<code>@openzeppelin/uniswap-hooks</code>).</p>
+              <p>Requires installation of npm package or git submodule (<code>@openzeppelin/uniswap-hooks</code>).</p>
               <p>Simple to receive updates.</p>
             </div>
           </button>
