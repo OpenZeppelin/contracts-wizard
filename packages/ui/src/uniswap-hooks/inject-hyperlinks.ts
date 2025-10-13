@@ -4,7 +4,7 @@ export function injectHyperlinks(code: string) {
   // We are modifying HTML, so use HTML escaped chars. The pattern excludes paths that include /../ in the URL.
   const contractsRegex =
     /&quot;(@openzeppelin\/)(contracts-upgradeable\/|contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
-  const ozUniswapHooksRegex = /&quot;(@openzeppelin\/)(uniswap-hooks\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const uniswapHooksRegex = /&quot;(@openzeppelin\/)(uniswap-hooks\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
   const uniswapV4CoreRegex = /&quot;(@uniswap\/)(v4-core\/src\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
   return code
@@ -17,7 +17,7 @@ export function injectHyperlinks(code: string) {
       `&quot;<a class="import-link" href="https://github.com/Uniswap/v4-core/blob/main/src/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
     )
     .replace(
-      ozUniswapHooksRegex,
+      uniswapHooksRegex,
       `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/uniswap-hooks/blob/master/src/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
     );
 }

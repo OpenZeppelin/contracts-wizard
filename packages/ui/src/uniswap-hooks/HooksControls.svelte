@@ -3,10 +3,10 @@
 
   import { hooks } from '@openzeppelin/wizard-uniswap-hooks/';
   import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
-  import type { HookCategory, Hook, HookName, KindedOptions, HookInput } from '@openzeppelin/wizard-uniswap-hooks';
+  import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
-  import AccessControlSection from './AccessControlSection.svelte';
-  import InfoSection from './InfoSection.svelte';
+  import AccessControlSection from '../solidity/AccessControlSection.svelte';
+  import InfoSection from '../solidity/InfoSection.svelte';
   import ExpandableSection from '../common/ExpandableSection.svelte';
   import SharesControlsSection from './SharesControlsSection.svelte';
 
