@@ -27,7 +27,7 @@ runs:
     - name: assume oidc role
       uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722  # v4.1.0
       with:
-        aws-region: us-east-1
+        aws-region: ${{ inputs.aws-region }}
         role-to-assume: ${{ inputs.role-for-oidc }}
         role-session-name: ${{ inputs.role-session-name }}
         role-duration-seconds: 900
