@@ -60,6 +60,7 @@ jobs:
           - cairo
           - stellar
           - stylus
+          - uniswap-hooks
         # This variant config creates 2 branches of the matrix a default and a compile one to run the compile tests in their own job
         variant:
           - default
@@ -70,6 +71,8 @@ jobs:
           - package: cairo
             variant: compile
           - package: stylus
+            variant: compile
+          - package: uniswap-hooks
             variant: compile
         
 
@@ -82,9 +85,9 @@ jobs:
         uses: ./.github/actions/setup
 
       # ----------------------------
-      # Solidity setup
+      # Solidity and Uniswap Hooks setup
       - name: Install Foundry
-        if: matrix.package == 'solidity'
+        if: matrix.package == 'solidity' || matrix.package == 'uniswap-hooks'
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de #v1.4.0
 
       # ----------------------------
