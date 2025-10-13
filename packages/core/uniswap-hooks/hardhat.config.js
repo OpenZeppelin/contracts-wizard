@@ -9,7 +9,7 @@ const {
   TASK_COMPILE_GET_REMAPPINGS,
 } = require('hardhat/builtin-tasks/task-names');
 
-const SOLIDITY_VERSION = require('./src/.solidity-version.json');
+const SOLIDITY_VERSION = require('../solidity/src/solidity-version.json');
 
 // Keep parity with solidity package: treat warnings as errors except these codes.
 const WARN_UNUSED_PARAMETER = '5667';
