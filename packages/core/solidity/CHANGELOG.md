@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.8.1 (2025-10-14)
+
+- Updated community-contracts digest version ([#659](https://github.com/OpenZeppelin/contracts-wizard/pull/659))
+- Updated community-contracts digest version ([#677](https://github.com/OpenZeppelin/contracts-wizard/pull/677))
+
 ## 0.8.0 (2025-09-16)
 
 - Add constructors for `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913` and `MultiSignerERC7913Weighted` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))
