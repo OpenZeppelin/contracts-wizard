@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/uniswap-hooks": "github:openzeppelin/uniswap-hooks#master",
+    "@openzeppelin/uniswap-hooks": "https://github.com/openzeppelin/uniswap-hooks.git#master",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",
     "@uniswap/v4-core": "^1.0.2",

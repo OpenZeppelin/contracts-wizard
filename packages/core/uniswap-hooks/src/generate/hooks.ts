@@ -15,7 +15,7 @@ const permissionsOptions: Permissions[] = [generateMixedPermissions(), generateM
 
 const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
 
-const inputsOptions = [{ blockNumberOffset: 10 }];
+const inputsOptions = [{ blockNumberOffset: 10, maxAbsTickDelta: 887272 }];
 
 const blueprint = {
   hook: hooksOptions as readonly HookName[],

@@ -24,6 +24,7 @@ export interface HooksOptions extends CommonOptions {
   permissions: Permissions;
   inputs: {
     blockNumberOffset: number;
+    maxAbsTickDelta: number;
   };
 }
 
@@ -61,6 +62,7 @@ export const defaults: Required<HooksOptions> = {
   },
   inputs: {
     blockNumberOffset: 10,
+    maxAbsTickDelta: 887272,
   },
 };
 
@@ -137,7 +139,6 @@ export function buildHooks(opts: HooksOptions): Contract {
   }
 
   // Add the shares based on the shares options.
-  // if (!selectedHook.alreadyImplementsShares) {
   switch (allOpts.shares.options) {
     case 'ERC20':
       addERC20Shares(c, allOpts);
@@ -149,7 +150,6 @@ export function buildHooks(opts: HooksOptions): Contract {
       addERC1155Shares(c, allOpts);
       break;
   }
-  // }
 
   // Add required permissions given the current options.
   for (const permission of PERMISSIONS) {
@@ -286,14 +286,28 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
         HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!,
       );
       break;
+    case 'BaseOracleHook':
+    case 'OracleHookWithV3Adapters':
+      constructorParams.push(allOpts.inputs?.maxAbsTickDelta || 887272);
+      break;
     default:
       break;
+  }
+
+  let path = '';
+  const category = HOOKS[allOpts.hook].category;
+  switch (category) {
+    case 'Oracles':
+      path = `@openzeppelin/uniswap-hooks/oracles/panoptic/${allOpts.hook}.sol`;
+      break;
+    default:
+      path = `@openzeppelin/uniswap-hooks/${category.toLowerCase()}/${allOpts.hook}.sol`;
   }
 
   c.addParent(
     {
       name: allOpts.hook,
-      path: `@openzeppelin/uniswap-hooks/${HOOKS[allOpts.hook].category.toLowerCase()}/${allOpts.hook}.sol`,
+      path,
     },
     constructorParams,
   );
@@ -447,7 +461,7 @@ function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
   }
 
   // Should also be pausable by default if it is a public/external non-pure/view entrypoint to the hook.
-  const whitelist = ['unlockCallback', 'pause', 'unpause'];
+  const whitelist = ['unlockCallback', 'pause', 'unpause', 'increaseObservationCardinalityNext'];
   if (
     (f.kind === 'external' || f.kind === 'public') &&
     f.mutability !== 'pure' &&

@@ -38,11 +38,13 @@
   }
 
   // Keep a stable order and titles
-  const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General'];
-  const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [] };
+  const CATEGORY_ORDER: HookCategory[] = ['Base', 'Fee', 'General', 'Oracles'];
+  const hooksByCategory: Record<HookCategory, Hook[]> = { Base: [], Fee: [], General: [], Oracles: [] };
   for (const key in HOOKS) {
     const hook = HOOKS[key as HookName];
-    hooksByCategory[hook.category].push(hook);
+    const category = hook.category;
+    if (!category) throw new Error(`Hook ${hook.name} has an invalid category: ${hook.category}`);
+    hooksByCategory[category].push(hook);
   }
 
   function shortcutPermissionName(name: string): string {

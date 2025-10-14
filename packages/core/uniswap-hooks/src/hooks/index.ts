@@ -12,8 +12,10 @@ import { AntiSandwichHook } from './AntiSandwichHook';
 import { LimitOrderHook } from './LimitOrderHook';
 import { LiquidityPenaltyHook } from './LiquidityPenaltyHook';
 import { ReHypothecationHook } from './ReHypothecationHook';
+import { BaseOracleHook } from './BaseOracleHook';
+import { OracleHookWithV3Adapters } from './OracleHookWithV3Adapters';
 
-export type HookCategory = 'Base' | 'Fee' | 'General';
+export type HookCategory = 'Base' | 'Fee' | 'General' | 'Oracles';
 
 /**
  * Hook configuration object that defines the structure and behavior of each hook.
@@ -58,6 +60,8 @@ export const HOOKS = {
   LiquidityPenaltyHook,
   LimitOrderHook,
   ReHypothecationHook,
+  BaseOracleHook,
+  OracleHookWithV3Adapters,
 } as const;
 
 export type HookName = keyof typeof HOOKS;
