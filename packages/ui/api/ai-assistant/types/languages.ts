@@ -1,6 +1,8 @@
 // Solidity
 import type { KindedOptions as SolidityKindedOptions } from '../../../../core/solidity/dist';
 export type { CommonOptions as SolidityCommonOptions } from '../../../../core/solidity/dist/common-options';
+// Uniswap Hooks
+import type { KindedOptions as UniswapHooksOptions } from '../../../../core/uniswap-hooks/dist';
 // Cairo
 import type { KindedOptions as CairoKindedOptions } from '../../../../core/cairo/dist';
 export type { CommonContractOptions as CairoCommonContractOptions } from '../../../../core/cairo/dist/common-options';
@@ -46,6 +48,7 @@ export type LanguagesContractsOptions = {
     ERC721: StylusKindedOptions['ERC721'] & StylusCommonContractOptions;
     ERC1155: StylusKindedOptions['ERC1155'] & StylusCommonContractOptions;
   };
+  uniswapHooks: UniswapHooksOptions;
 };
 
 export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity'] &
@@ -53,7 +56,8 @@ export type AllLanguagesContractsOptions = LanguagesContractsOptions['solidity']
   LanguagesContractsOptions['cairoAlpha'] &
   LanguagesContractsOptions['polkadot'] &
   LanguagesContractsOptions['stellar'] &
-  LanguagesContractsOptions['stylus'];
+  LanguagesContractsOptions['stylus'] &
+  LanguagesContractsOptions['uniswapHooks'];
 //
 
 export type SupportedLanguage = keyof LanguagesContractsOptions;
