@@ -29,10 +29,8 @@
   $: if (opts.hook !== lastHook) {
     opts = {
       ...opts,
-      ...hooks.defaults,
       hook: opts.hook,
       permissions: { ...hooks.defaults.permissions },
-      shares: { ...hooks.defaults.shares },
     };
     lastHook = opts.hook;
   }
