@@ -1,9 +1,11 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import { hooks } from '@openzeppelin/wizard-uniswap-hooks/';
+  import { hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
   import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
-  import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
+  import type { HookCategory, Hook, HookName, KindedOptions, } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import type { OptionsErrorMessages } from '@openzeppelin/wizard';
+  import { error } from '../common/error-tooltip';
 
   import AccessControlSection from '../solidity/AccessControlSection.svelte';
   import InfoSection from '../solidity/InfoSection.svelte';
@@ -22,6 +24,8 @@
     kind: 'Hooks',
     ...hooks.defaults,
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   $: selectedHook = HOOKS[opts.hook];
 
@@ -50,8 +54,6 @@
     return name;
   }
 
-  $: inputs = opts.inputs as Record<string, string | number>;
-
   $: requireAccessControl = hooks.isAccessControlRequired(opts);
 
   let openAdvancedPermissionsDropdown = false;
@@ -74,11 +76,22 @@
           <HelpTooltip>{input.tooltipText}</HelpTooltip>
         {/if}
       </span>
-      {#if input.type === 'number'}
-        <input type="number" bind:value={inputs[input.name]} placeholder={input.placeholder} />
-      {:else}
-        <input type="text" bind:value={inputs[input.name]} />
-      {/if}
+        {#if input.name === 'maxAbsTickDelta'}
+          <input 
+            type="number"
+            bind:value={opts.inputs.maxAbsTickDelta}
+            placeholder={input.placeholder} 
+            use:error={errors?.[input.name]}
+          />
+        {:else if input.name === 'blockNumberOffset'}
+          <input 
+            type="number"
+            bind:value={opts.inputs.blockNumberOffset}
+            placeholder={input.placeholder} 
+            use:error={errors?.[input.name]}
+          />
+        {/if}
+        <!-- Add more conditional inputs here if needed -->
     </label>
   {/each}
 </section>

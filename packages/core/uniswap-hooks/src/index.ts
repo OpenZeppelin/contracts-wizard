@@ -13,3 +13,6 @@ export { type HooksOptions } from './hooks';
 export { compatibleContractsSemver } from './utils/version';
 
 export { printContract } from './print';
+
+export type { OptionsErrorMessages } from '@openzeppelin/wizard';
+export { OptionsError } from '@openzeppelin/wizard';

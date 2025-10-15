@@ -252,7 +252,7 @@
       class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'Hooks'}>
-        <HooksControls bind:opts={allOpts.Hooks} />
+        <HooksControls bind:opts={allOpts.Hooks} errors={errors[tab]} />
       </div>
     </div>
 

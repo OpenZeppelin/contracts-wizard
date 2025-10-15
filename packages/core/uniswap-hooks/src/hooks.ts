@@ -6,6 +6,7 @@ import {
   addPausable,
   supportsInterface,
   ContractBuilder,
+  OptionsError,
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
@@ -80,12 +81,39 @@ function withDefaults(opts: HooksOptions): Required<HooksOptions> {
   };
 }
 
+function validateInputs(opts: Required<HooksOptions>): void {
+  const errors: Record<string, string> = {};
+
+  // Validate maxAbsTickDelta if the Oracle Hook or Oracle Hook With V3 Adapters is selected
+  if (opts.hook === 'BaseOracleHook' || opts.hook === 'OracleHookWithV3Adapters') {
+    const maxAbsTickDelta = opts.inputs.maxAbsTickDelta;
+    if (!Number.isInteger(maxAbsTickDelta) || maxAbsTickDelta < 0 || maxAbsTickDelta > 887272) {
+      errors.maxAbsTickDelta = 'Max absolute tick delta must be a positive integer between 0 and 887272.';
+    }
+  }
+
+  // Validate blockNumberOffset if the liquidity penalty hook is selected
+  if (opts.hook === 'LiquidityPenaltyHook') {
+    const blockNumberOffset = opts.inputs.blockNumberOffset;
+    if (!Number.isInteger(blockNumberOffset) || !(blockNumberOffset > 0)) {
+      errors.blockNumberOffset = 'Block number offset must be a positive integer.';
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    throw new OptionsError(errors);
+  }
+}
+
 export function printHooks(opts: HooksOptions = defaults): string {
   return printContract(buildHooks(opts));
 }
 
 export function buildHooks(opts: HooksOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  // Validate inputs
+  validateInputs(allOpts);
 
   // Upgradeability is not yet available for hooks
   allOpts.upgradeable = false;
@@ -259,9 +287,6 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
         HOOKS.AntiSandwichHook.functions._afterSwapHandler!,
       );
       break;
-    case 'LiquidityPenaltyHook':
-      constructorParams.push(allOpts.inputs?.blockNumberOffset || 10);
-      break;
     case 'ReHypothecationHook':
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
@@ -286,10 +311,19 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
         HOOKS.ReHypothecationHook.functions._getAmountInYieldSource!,
       );
       break;
-    case 'BaseOracleHook':
-    case 'OracleHookWithV3Adapters':
-      constructorParams.push(allOpts.inputs?.maxAbsTickDelta || 887272);
+    case 'LiquidityPenaltyHook': {
+      const blockNumberOffset = allOpts.inputs?.blockNumberOffset;
+      constructorParams.push(blockNumberOffset !== undefined && blockNumberOffset > 0 ? blockNumberOffset : 10);
       break;
+    }
+    case 'BaseOracleHook':
+    case 'OracleHookWithV3Adapters': {
+      const maxAbsTickDelta = allOpts.inputs?.maxAbsTickDelta;
+      constructorParams.push(
+        maxAbsTickDelta !== undefined && maxAbsTickDelta >= 0 && maxAbsTickDelta <= 887272 ? maxAbsTickDelta : 887272,
+      );
+      break;
+    }
     default:
       break;
   }
