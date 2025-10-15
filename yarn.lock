@@ -807,10 +807,6 @@
 
 "@openzeppelin/community-contracts@git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd27":
   version "0.0.1"
-<<<<<<< HEAD
-=======
-  uid b0ddd275a4c5d87ba2ded654b33e08db85094588
->>>>>>> 16f4a19d87da9269b4193776f9fc290791eb77e5
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
 "@openzeppelin/contracts-upgradeable@^5.4.0":
@@ -823,15 +819,9 @@
   resolved "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-5.4.0.tgz"
   integrity sha512-eCYgWnLg6WO+X52I16TZt8uEjbtdkgLC0SUX/xnAksjjrQI4Xfn4iBRoI5j55dmlOhDv1Y7BoR3cU7e3WWhC6A==
 
-<<<<<<< HEAD
-"@openzeppelin/uniswap-hooks@https://github.com/openzeppelin/uniswap-hooks.git#master":
-  version "1.2.0"
-  resolved "https://github.com/openzeppelin/uniswap-hooks.git#cf1af765c9c8a9d6851551fe3a7db6b6945399a4"
-=======
 "@openzeppelin/uniswap-hooks@git+https://github.com/OpenZeppelin/uniswap-hooks.git#master":
   version "1.2.0"
   resolved "git+https://github.com/OpenZeppelin/uniswap-hooks.git#cf1af765c9c8a9d6851551fe3a7db6b6945399a4"
->>>>>>> 16f4a19d87da9269b4193776f9fc290791eb77e5
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"

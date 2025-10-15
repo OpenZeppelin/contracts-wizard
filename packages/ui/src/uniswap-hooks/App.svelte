@@ -21,6 +21,8 @@
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
@@ -28,6 +30,8 @@
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   const dispatch = createEventDispatcher();
+
+  const WizUniswapHooks = createWiz<'uniswapHooks'>();
 
   async function allowRendering() {
     showCode = false;
@@ -146,10 +150,25 @@
     //   await postConfig(opts, 'download-foundry', language);
     // }
   };
+
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'uniswapHooks'>>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+  };
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <!-- Introduce Wiz -->
+  <WizUniswapHooks
+    language="uniswapHooks"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    sampleMessages={[
+      'What is a Uniswap hook?',
+      'Could you explain the Async Swaps base hook?',
+      'Create a Uniswap v4 hook using the LiquidityPenaltyHook templates',
+    ]}
+  />
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
