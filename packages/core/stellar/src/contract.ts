@@ -1,8 +1,8 @@
-import { toIdentifier } from './utils/convert-strings';
+import { toByteArray, toIdentifier } from './utils/convert-strings';
 
 export interface Contract {
+  metadata: Map<string, string>;
   license: string;
-  securityContact: string;
   documentations: string[];
   name: string;
   useClauses: UseClause[];
@@ -74,7 +74,7 @@ export interface Argument {
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
-  securityContact = '';
+  metadata = new Map<string, string>();
   ownable = false;
 
   readonly documentations: string[] = [];
@@ -267,7 +267,13 @@ export class ContractBuilder implements Contract {
     this.documentations.push(description);
   }
 
-  addSecurityTag(securityContact: string) {
-    this.securityContact = securityContact;
+  addContractMetadata(metadata: { key: string; value: string }[] | { key: string; value: string }) {
+    (Array.isArray(metadata) ? metadata : [metadata]).forEach(({ key, value }) => {
+      if (this.metadata.has(key)) throw new Error(`Setting metadata failed: ${key} is already set`);
+
+      this.metadata.set(key, toByteArray(value));
+    });
+
+    if (this.metadata.size > 0) this.addUseClause('soroban_sdk', 'contractmeta');
   }
 }

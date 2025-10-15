@@ -17,6 +17,28 @@
         "regex"
       ],
       "groupName": "import_map (regex)"
+    },
+    {
+      "matchManagers": [
+        "regex",
+        "npm"
+      ],
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchPaths": [
+        "packages/ui/**"
+      ],
+      "groupName": "ui deps sync"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPaths": [
+        "packages/ui/package.json"
+      ],
+      "rangeStrategy": "bump"
     }
   ],
   "regexManagers": [
