@@ -16,3 +16,4 @@ public/
 remappings.txt
 *.cairo
 *.sh
+*.rs

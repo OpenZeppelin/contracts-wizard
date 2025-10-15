@@ -1,0 +1,42 @@
+FROM rust:latest
+
+WORKDIR /usr/src/stellar-api
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libdbus-1-dev \
+    libudev-dev \
+    libusb-1.0-0-dev \
+    curl \
+    jq \
+    gdb\
+    lldb \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CFLAGS=-g0 \
+    CXXFLAGS=-g0
+
+RUN mkdir -p /opt/tmp && chmod 1777 /opt/tmp
+
+RUN cargo install cargo-watch
+
+RUN rustup update \
+    && rustup target add wasm32v1-none
+
+COPY Cargo.toml Cargo.lock ./
+RUN cargo fetch
+
+# Install CLI tools with versions pinned from Cargo metadata
+RUN set -eux; \
+    STELLAR_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_cli'); \
+    TMPDIR=/opt/tmp cargo install --locked stellar-cli --version "${STELLAR_CLI_VERSION}" -j 1
+
+RUN set -eux; \
+    STELLAR_SCAFFOLD_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_scaffold_cli'); \
+    TMPDIR=/opt/tmp cargo install --locked stellar-scaffold-cli --version "${STELLAR_SCAFFOLD_CLI_VERSION}" -j 1
+
+EXPOSE 8888
+
+CMD ["cargo", "watch", "-x", "run"]

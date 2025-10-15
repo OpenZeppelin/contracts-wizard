@@ -43,3 +43,6 @@ const addRustProjectReadme = (zip: JSZip) => zip.file('README.md', readme);
 
 export const zipRustProject = async (c: Contract, opts: GenericOptions) =>
   addRustProjectReadme(createRustZipEnvironment(c, opts));
+
+export const zipRustProjectBlob = async (c: Contract, opts: GenericOptions) =>
+  await (await zipRustProject(c, opts)).generateAsync({ type: 'blob', compression: 'DEFLATE' });
