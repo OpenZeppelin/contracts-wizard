@@ -49,7 +49,7 @@ const sharesOptionsSchema = z.literal(false).or(z.literal('ERC20')).or(z.literal
 
 const sharesSchema = z
   .object({
-    options: sharesOptionsSchema.optional().describe(uniswapHooksSharesDescriptions.options),
+    options: sharesOptionsSchema.describe(uniswapHooksSharesDescriptions.options),
     name: z.string().optional().describe(uniswapHooksSharesDescriptions.name),
     symbol: z.string().optional().describe(uniswapHooksSharesDescriptions.symbol),
     uri: z.string().optional().describe(uniswapHooksSharesDescriptions.uri),
@@ -58,46 +58,44 @@ const sharesSchema = z
 
 const permissionsSchema = z
   .object({
-    beforeInitialize: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeInitialize),
-    afterInitialize: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterInitialize),
-    beforeAddLiquidity: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeAddLiquidity),
-    beforeRemoveLiquidity: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeRemoveLiquidity),
-    afterAddLiquidity: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterAddLiquidity),
-    afterRemoveLiquidity: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterRemoveLiquidity),
-    beforeSwap: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeSwap),
-    afterSwap: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterSwap),
-    beforeDonate: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeDonate),
-    afterDonate: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterDonate),
-    beforeSwapReturnDelta: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.beforeSwapReturnDelta),
-    afterSwapReturnDelta: z.boolean().optional().describe(uniswapHooksPermissionDescriptions.afterSwapReturnDelta),
+    beforeInitialize: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeInitialize),
+    afterInitialize: z.boolean().describe(uniswapHooksPermissionDescriptions.afterInitialize),
+    beforeAddLiquidity: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeAddLiquidity),
+    beforeRemoveLiquidity: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeRemoveLiquidity),
+    afterAddLiquidity: z.boolean().describe(uniswapHooksPermissionDescriptions.afterAddLiquidity),
+    afterRemoveLiquidity: z.boolean().describe(uniswapHooksPermissionDescriptions.afterRemoveLiquidity),
+    beforeSwap: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeSwap),
+    afterSwap: z.boolean().describe(uniswapHooksPermissionDescriptions.afterSwap),
+    beforeDonate: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeDonate),
+    afterDonate: z.boolean().describe(uniswapHooksPermissionDescriptions.afterDonate),
+    beforeSwapReturnDelta: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeSwapReturnDelta),
+    afterSwapReturnDelta: z.boolean().describe(uniswapHooksPermissionDescriptions.afterSwapReturnDelta),
     afterAddLiquidityReturnDelta: z
       .boolean()
-      .optional()
       .describe(uniswapHooksPermissionDescriptions.afterAddLiquidityReturnDelta),
     afterRemoveLiquidityReturnDelta: z
       .boolean()
-      .optional()
       .describe(uniswapHooksPermissionDescriptions.afterRemoveLiquidityReturnDelta),
   })
   .describe(uniswapHooksDescriptions.permissions);
 
 const inputsSchema = z
   .object({
-    blockNumberOffset: z.number().optional().describe(uniswapHooksInputsDescriptions.blockNumberOffset),
-    maxAbsTickDelta: z.number().optional().describe(uniswapHooksInputsDescriptions.maxAbsTickDelta),
+    blockNumberOffset: z.number().describe(uniswapHooksInputsDescriptions.blockNumberOffset),
+    maxAbsTickDelta: z.number().describe(uniswapHooksInputsDescriptions.maxAbsTickDelta),
   })
   .describe(uniswapHooksDescriptions.inputs);
 
 export const hooksSchema = {
   hook: z.enum([...hookNames] as [HookName, ...HookName[]]).describe(uniswapHooksDescriptions.hook),
   name: z.string().describe(commonDescriptions.name),
-  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
-  currencySettler: z.boolean().optional().describe(uniswapHooksDescriptions.currencySettler),
-  safeCast: z.boolean().optional().describe(uniswapHooksDescriptions.safeCast),
-  transientStorage: z.boolean().optional().describe(uniswapHooksDescriptions.transientStorage),
-  shares: sharesSchema.optional(),
-  permissions: permissionsSchema.optional(),
-  inputs: inputsSchema.optional(),
+  pausable: z.boolean().describe(commonDescriptions.pausable),
+  currencySettler: z.boolean().describe(uniswapHooksDescriptions.currencySettler),
+  safeCast: z.boolean().describe(uniswapHooksDescriptions.safeCast),
+  transientStorage: z.boolean().describe(uniswapHooksDescriptions.transientStorage),
+  shares: sharesSchema,
+  permissions: permissionsSchema,
+  inputs: inputsSchema,
   access: commonSchema.access,
   upgradeable: commonSchema.upgradeable.describe(solidityCommonDescriptions.upgradeable),
   info: z

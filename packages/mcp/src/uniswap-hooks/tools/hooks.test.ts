@@ -25,10 +25,7 @@ test.before(t => {
   t.context.schema = hooksZodObject;
 });
 
-function assertHasAllSupportedFields(
-  t: ExecutionContext<Context>,
-  params: DeepRequired<HooksSchemaInput>,
-) {
+function assertHasAllSupportedFields(t: ExecutionContext<Context>, params: DeepRequired<HooksSchemaInput>) {
   const defaults = hooks.defaults;
   const options: DeepRequired<HooksOptions> = {
     ...defaults,
@@ -81,15 +78,6 @@ function mergeWithDefaults(options: HooksSchemaInput): HooksOptions {
     info: options.info ?? defaults.info,
   };
 }
-
-test('basic', async t => {
-  const params: HooksSchemaInput = {
-    hook: 'BaseHook',
-    name: 'MyHook',
-  };
-
-  await assertAPIEquivalence(t, params, options => hooks.print(mergeWithDefaults(options)));
-});
 
 test('all', async t => {
   const params: DeepRequired<HooksSchemaInput> = {

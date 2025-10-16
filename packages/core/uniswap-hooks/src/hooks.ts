@@ -17,10 +17,10 @@ import importPaths from './importPaths.json';
 export interface HooksOptions extends CommonOptions {
   hook: HookName;
   name: string;
-  pausable?: boolean;
-  currencySettler?: boolean;
-  safeCast?: boolean;
-  transientStorage?: boolean;
+  pausable: boolean;
+  currencySettler: boolean;
+  safeCast: boolean;
+  transientStorage: boolean;
   shares: Shares;
   permissions: Permissions;
   inputs: {
