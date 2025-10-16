@@ -65,6 +65,7 @@ export const HOOKS = {
 } as const;
 
 export type HookName = keyof typeof HOOKS;
+export const HooksNames = Object.keys(HOOKS) as [HookName, ...HookName[]];
 export type HookDictionary = Record<HookName, Hook>;
 
 export const PERMISSIONS = [
@@ -94,6 +95,8 @@ export const PAUSABLE_PERMISSIONS: Permission[] = [
   'beforeDonate',
 ];
 
+export const ShareOptions = ['ERC20', 'ERC6909', 'ERC1155'] as const;
+export type ShareOption = (typeof ShareOptions)[number];
 /**
  * @property options - The type of shares to use
  * @property name - The name of the shares
@@ -101,7 +104,7 @@ export const PAUSABLE_PERMISSIONS: Permission[] = [
  * @property uri - The URI of the shares
  */
 export type Shares = {
-  options: false | 'ERC20' | 'ERC6909' | 'ERC1155';
+  options: false | ShareOption;
   name?: string;
   symbol?: string;
   uri?: string;
@@ -116,7 +119,7 @@ export function specificSharesType(sharesConfig?: SharesConfig): boolean {
   return sharesConfig === 'ERC20' || sharesConfig === 'ERC6909' || sharesConfig === 'ERC1155';
 }
 
-export type SharesConfig = 'required' | 'optional' | 'disabled' | 'ERC20' | 'ERC6909' | 'ERC1155';
+export type SharesConfig = 'required' | 'optional' | 'disabled' | ShareOption;
 
 /**
  * @property name - The name of the input parameter in camelCase

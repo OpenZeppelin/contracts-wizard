@@ -2,50 +2,27 @@ import { z } from 'zod';
 import {
   commonDescriptions,
   infoDescriptions,
-  solidityCommonDescriptions,
   uniswapHooksDescriptions,
   uniswapHooksSharesDescriptions,
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
 } from '@openzeppelin/wizard-common';
-import type { HooksOptions, HookName, Permission } from '@openzeppelin/wizard-uniswap-hooks';
-import { commonSchema } from '../solidity/schemas';
-
-const hookNames = [
-  'BaseHook',
-  'BaseAsyncSwap',
-  'BaseCustomAccounting',
-  'BaseCustomCurve',
-  'BaseDynamicFee',
-  'BaseOverrideFee',
-  'BaseDynamicAfterFee',
-  'BaseHookFee',
-  'AntiSandwichHook',
-  'LiquidityPenaltyHook',
-  'LimitOrderHook',
-  'ReHypothecationHook',
-  'BaseOracleHook',
-  'OracleHookWithV3Adapters',
-] as const satisfies readonly HookName[];
+import { HooksNames, ShareOptions, type KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
 /**
  * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
  */
 function _typeAssertions() {
-  type _HookNameCoverage = HookName extends HookName[number] ? true : never;
-  type _PermissionCoverage = Permission extends Permission[number] ? true : never;
-
-  const _hookNameCoverage: _HookNameCoverage = true;
-  const _permissionCoverage: _PermissionCoverage = true;
-
-  void _hookNameCoverage;
-  void _permissionCoverage;
-
-  const _options: HooksOptions = {} as HooksOptions;
-  void _options;
+  const _assertions: {
+    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
+  } = {
+    Hooks: z.object(hooksSchema).parse({}),
+  };
 }
 
-const sharesOptionsSchema = z.literal(false).or(z.literal('ERC20')).or(z.literal('ERC6909')).or(z.literal('ERC1155'));
+const hookEnum = z.enum(HooksNames);
+
+const sharesOptionsSchema = z.union([z.literal(false), z.enum(ShareOptions)]);
 
 const sharesSchema = z
   .object({
@@ -70,9 +47,7 @@ const permissionsSchema = z
     afterDonate: z.boolean().describe(uniswapHooksPermissionDescriptions.afterDonate),
     beforeSwapReturnDelta: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeSwapReturnDelta),
     afterSwapReturnDelta: z.boolean().describe(uniswapHooksPermissionDescriptions.afterSwapReturnDelta),
-    afterAddLiquidityReturnDelta: z
-      .boolean()
-      .describe(uniswapHooksPermissionDescriptions.afterAddLiquidityReturnDelta),
+    afterAddLiquidityReturnDelta: z.boolean().describe(uniswapHooksPermissionDescriptions.afterAddLiquidityReturnDelta),
     afterRemoveLiquidityReturnDelta: z
       .boolean()
       .describe(uniswapHooksPermissionDescriptions.afterRemoveLiquidityReturnDelta),
@@ -87,7 +62,7 @@ const inputsSchema = z
   .describe(uniswapHooksDescriptions.inputs);
 
 export const hooksSchema = {
-  hook: z.enum([...hookNames] as [HookName, ...HookName[]]).describe(uniswapHooksDescriptions.hook),
+  hook: hookEnum.describe(uniswapHooksDescriptions.hook),
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().describe(commonDescriptions.pausable),
   currencySettler: z.boolean().describe(uniswapHooksDescriptions.currencySettler),
@@ -96,8 +71,6 @@ export const hooksSchema = {
   shares: sharesSchema,
   permissions: permissionsSchema,
   inputs: inputsSchema,
-  access: commonSchema.access,
-  upgradeable: commonSchema.upgradeable.describe(solidityCommonDescriptions.upgradeable),
   info: z
     .object({
       securityContact: z.string().optional().describe(infoDescriptions.securityContact),

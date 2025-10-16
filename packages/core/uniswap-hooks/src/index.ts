@@ -4,7 +4,7 @@ export { sanitizeKind, type Kind } from './kind';
 
 export { hooks } from './api';
 
-export { HOOKS, specificSharesType } from './hooks/';
+export { HOOKS, HooksNames, ShareOptions, specificSharesType } from './hooks/';
 
 export type { Hook, HookName, HookCategory, Shares, Permissions, Permission, HookInput, SharesConfig } from './hooks/';
 
