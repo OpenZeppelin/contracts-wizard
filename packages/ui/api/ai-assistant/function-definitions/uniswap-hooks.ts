@@ -15,7 +15,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable', 'access', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable', 'info']),
       hook: {
         type: 'string',
         enum: [
