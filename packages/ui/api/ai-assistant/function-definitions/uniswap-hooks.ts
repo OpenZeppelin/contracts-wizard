@@ -7,7 +7,7 @@ import {
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
 } from '../../../../common/src/ai/descriptions/uniswap-hooks.ts';
-import type { HooksName } from '../../../../core/uniswap-hooks/dist';
+import { HooksNames, ShareOptions } from '../../../../core/uniswap-hooks/dist';
 
 export const uniswapHooksHooksAIFunctionDefinition = {
   name: 'Hooks',
@@ -18,22 +18,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable', 'info']),
       hook: {
         type: 'string',
-        enum: [
-          'BaseHook',
-          'BaseAsyncSwap',
-          'BaseCustomAccounting',
-          'BaseCustomCurve',
-          'BaseDynamicFee',
-          'BaseOverrideFee',
-          'BaseDynamicAfterFee',
-          'BaseHookFee',
-          'AntiSandwichHook',
-          'LiquidityPenaltyHook',
-          'LimitOrderHook',
-          'ReHypothecationHook',
-          'BaseOracleHook',
-          'OracleHookWithV3Adapters',
-        ] satisfies HooksName[],
+        enum: HooksNames,
         description: uniswapHooksDescriptions.hook,
       },
       currencySettler: {
@@ -55,7 +40,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
           options: {
             anyOf: [
               { type: 'boolean', enum: [false] },
-              { type: 'string', enum: ['ERC20', 'ERC6909', 'ERC1155'] },
+              { type: 'string', enum: ShareOptions },
             ],
             description: uniswapHooksSharesDescriptions.options,
           },
