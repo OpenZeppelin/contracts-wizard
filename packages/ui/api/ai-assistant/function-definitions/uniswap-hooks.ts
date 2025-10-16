@@ -7,7 +7,7 @@ import {
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
 } from '../../../../common/src/ai/descriptions/uniswap-hooks.ts';
-import type { HooksName } from '../../../../core/uniswap-hooks/dist';
+import { HooksNames } from '../../../../core/uniswap-hooks/dist';
 
 export const uniswapHooksHooksAIFunctionDefinition = {
   name: 'Hooks',
@@ -15,25 +15,10 @@ export const uniswapHooksHooksAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable', 'info']),
+      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable']),
       hook: {
         type: 'string',
-        enum: [
-          'BaseHook',
-          'BaseAsyncSwap',
-          'BaseCustomAccounting',
-          'BaseCustomCurve',
-          'BaseDynamicFee',
-          'BaseOverrideFee',
-          'BaseDynamicAfterFee',
-          'BaseHookFee',
-          'AntiSandwichHook',
-          'LiquidityPenaltyHook',
-          'LimitOrderHook',
-          'ReHypothecationHook',
-          'BaseOracleHook',
-          'OracleHookWithV3Adapters',
-        ] satisfies HooksName[],
+        enum: HooksNames,
         description: uniswapHooksDescriptions.hook,
       },
       currencySettler: {
@@ -78,59 +63,59 @@ export const uniswapHooksHooksAIFunctionDefinition = {
         description: uniswapHooksDescriptions.permissions,
         properties: {
           beforeInitialize: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeInitialize,
           },
           afterInitialize: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterInitialize,
           },
           beforeAddLiquidity: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeAddLiquidity,
           },
           afterAddLiquidity: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterAddLiquidity,
           },
           beforeRemoveLiquidity: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeRemoveLiquidity,
           },
           afterRemoveLiquidity: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterRemoveLiquidity,
           },
           beforeSwap: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeSwap,
           },
           afterSwap: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterSwap,
           },
           beforeDonate: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeDonate,
           },
           afterDonate: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterDonate,
           },
           beforeSwapReturnDelta: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.beforeSwapReturnDelta,
           },
           afterSwapReturnDelta: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterSwapReturnDelta,
           },
           afterAddLiquidityReturnDelta: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterAddLiquidityReturnDelta,
           },
           afterRemoveLiquidityReturnDelta: {
-            type: 'string',
+            type: 'boolean',
             description: uniswapHooksPermissionDescriptions.afterRemoveLiquidityReturnDelta,
           },
         },
@@ -150,7 +135,17 @@ export const uniswapHooksHooksAIFunctionDefinition = {
         },
       },
     },
-    required: ['name', 'hook'],
+    required: [
+      'name',
+      'hook',
+      'pausable',
+      'currencySettler',
+      'safeCast',
+      'transientStorage',
+      'shares',
+      'permissions',
+      'inputs',
+    ],
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'uniswapHooks', 'Hooks'>;

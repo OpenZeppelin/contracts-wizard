@@ -8,11 +8,9 @@ export type IsPrimitiveUnion<T, U = T> = [T] extends [never]
         : true
       : false;
 
-export type Permutation<T, K = T> = [T] extends [never] ? [] : K extends K ? [K, ...Permutation<Exclude<T, K>>] : never;
-
 type RequiredKeys<T, K = keyof T> = K extends keyof T ? (T extends Required<Pick<T, K>> ? K : never) : never;
 
-export type ExactRequiredKeys<T extends object> = Permutation<RequiredKeys<T>>;
+export type ExactRequiredKeys<T extends object> = readonly RequiredKeys<T>[];
 
 export type StringifyPrimaryType<TType> = TType extends string
   ? 'string'
@@ -26,34 +24,21 @@ export type StringifyPrimaryType<TType> = TType extends string
           ? 'object'
           : never;
 
-type MembersOf<U, K extends string> = K extends 'boolean'
+type InferredEnumValue<K extends string, U> = K extends 'boolean'
   ? Extract<U, boolean>
   : K extends 'string'
     ? Extract<U, string>
     : K extends 'number'
       ? Extract<U, number>
-      : never;
-
-type BooleanEnum = [false] | [true] | [false, true] | [true, false];
-
-type EnumFor<K extends string, U> = K extends 'boolean' ? BooleanEnum : Permutation<MembersOf<U, K>>;
+      : U;
 
 type TypeFor<K extends string, U> = {
   type: K;
-  enum: EnumFor<K, U>;
+  enum?: readonly InferredEnumValue<K, U>[];
 };
 
-type Wrap<T> = { __wrapped: T };
-
-type WrappedTypeFor<K extends string, U> = Wrap<TypeFor<K, U>>;
-
 export type TypeGroup<U> = {
-  [K in StringifyPrimaryType<U>]: WrappedTypeFor<K, U>;
+  [K in StringifyPrimaryType<U>]: TypeFor<K, U>;
 }[StringifyPrimaryType<U>];
 
-export type AiFunctionCallAnyOf<U> =
-  Permutation<TypeGroup<U>> extends infer P
-    ? P extends readonly unknown[]
-      ? { [I in keyof P]: P[I] extends Wrap<infer X> ? X : never }
-      : never
-    : never;
+export type AiFunctionCallAnyOf<U> = readonly TypeGroup<U>[];

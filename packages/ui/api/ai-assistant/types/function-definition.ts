@@ -1,10 +1,4 @@
-import type {
-  AiFunctionCallAnyOf,
-  StringifyPrimaryType,
-  ExactRequiredKeys,
-  IsPrimitiveUnion,
-  Permutation,
-} from './helpers.ts';
+import type { AiFunctionCallAnyOf, StringifyPrimaryType, ExactRequiredKeys, IsPrimitiveUnion } from './helpers.ts';
 import type {
   AllLanguagesContractsOptions,
   LanguageContractsNames,
@@ -14,7 +8,7 @@ import type {
 
 type AiFunctionType<TType> = {
   type?: StringifyPrimaryType<TType>;
-  enum?: Permutation<TType>;
+  enum?: readonly TType[];
   description: string;
 };
 
