@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.3 (2025-10-14)
+
+- Set security contact as contract metadata ([#679](https://github.com/OpenZeppelin/contracts-wizard/pull/679))
+
 ## 0.4.2 (2025-07-25)
 
 - Fix access control dependency import to import from `stellar_access` instead of `stellar_contract_utils` ([#608](https://github.com/OpenZeppelin/contracts-wizard/pull/608))

@@ -3,6 +3,7 @@ import test from 'ava';
 import type { BaseFunction, BaseTraitImplBlock } from './contract';
 import { ContractBuilder } from './contract';
 import { printContract } from './print';
+import { setInfo } from './set-info';
 
 test('contract basics', t => {
   const Foo = new ContractBuilder('Foo');
@@ -89,15 +90,41 @@ test('contract with documentation', t => {
   t.snapshot(printContract(Foo));
 });
 
-test('contract with security info', t => {
+test('contract with security contact metadata', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addSecurityTag('security@example.com');
+  Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' });
   t.snapshot(printContract(Foo));
 });
 
-test('contract with security info and documentation', t => {
+test('setting metadata with same key throws', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addSecurityTag('security@example.com');
+  Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' });
+
+  t.throws(() => Foo.addContractMetadata({ key: 'contact', value: 'security@example.com' }));
+});
+
+test('contract with multiple metadata', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addContractMetadata([
+    { key: 'contact', value: 'security@example.com' },
+    { key: 'meta', value: 'data' },
+  ]);
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with multiple metadata and documentation', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addContractMetadata([
+    { key: 'contact', value: 'security@example.com' },
+    { key: 'meta', value: 'data' },
+  ]);
   Foo.addDocumentation('Some documentation');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with setInfo', t => {
+  const Foo = new ContractBuilder('Foo');
+  setInfo(Foo, { securityContact: 'security@example.com', license: 'MIT' });
+
   t.snapshot(printContract(Foo));
 });
