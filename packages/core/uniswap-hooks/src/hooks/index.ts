@@ -112,7 +112,7 @@ export type Shares = {
  * @param sharesConfig - The type of shares to use
  * @returns True if the shares type is ERC20, ERC6909, or ERC1155
  */
-export function specificSharesType(sharesConfig: SharesConfig): boolean {
+export function specificSharesType(sharesConfig?: SharesConfig): boolean {
   return sharesConfig === 'ERC20' || sharesConfig === 'ERC6909' || sharesConfig === 'ERC1155';
 }
 

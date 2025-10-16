@@ -16,10 +16,10 @@ import importPaths from './importPaths.json';
 export interface HooksOptions extends CommonOptions {
   hook: HookName;
   name: string;
-  pausable: boolean;
-  currencySettler: boolean;
-  safeCast: boolean;
-  transientStorage: boolean;
+  pausable?: boolean;
+  currencySettler?: boolean;
+  safeCast?: boolean;
+  transientStorage?: boolean;
   shares: Shares;
   permissions: Permissions;
   inputs: {
@@ -560,7 +560,7 @@ export function permissionRequiredByHook(hook: HookName, permission: Permission)
 }
 
 export function permissionRequiredByPausable(opts: HooksOptions, permission: Permission): boolean {
-  return opts.pausable && PAUSABLE_PERMISSIONS.includes(permission);
+  return Boolean(opts.pausable) && PAUSABLE_PERMISSIONS.includes(permission);
 }
 
 export function returnDeltaPermissionExtension(permission: Permission): Permission {
