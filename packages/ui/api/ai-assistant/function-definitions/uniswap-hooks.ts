@@ -7,7 +7,6 @@ import {
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
 } from '../../../../common/src/ai/descriptions/uniswap-hooks.ts';
-import { HooksNames } from '../../../../core/uniswap-hooks/dist';
 
 export const uniswapHooksHooksAIFunctionDefinition = {
   name: 'Hooks',
@@ -18,7 +17,22 @@ export const uniswapHooksHooksAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable']),
       hook: {
         type: 'string',
-        enum: HooksNames,
+        enum: [
+          'BaseHook',
+          'BaseAsyncSwap',
+          'BaseCustomAccounting',
+          'BaseCustomCurve',
+          'BaseDynamicFee',
+          'BaseOverrideFee',
+          'BaseDynamicAfterFee',
+          'BaseHookFee',
+          'AntiSandwichHook',
+          'LiquidityPenaltyHook',
+          'LimitOrderHook',
+          'ReHypothecationHook',
+          'BaseOracleHook',
+          'OracleHookWithV3Adapters',
+        ],
         description: uniswapHooksDescriptions.hook,
       },
       currencySettler: {
