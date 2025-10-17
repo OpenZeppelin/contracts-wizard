@@ -214,7 +214,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.addNatspecComment(`i.e. queuing swaps to be executed in batches, reordering, etc`);
       break;
     case 'BaseCustomAccounting':
-      c.addNatspecComment(`TODO: Override the required functions to customize accounting logic`);
+      c.addNatspecComment(`TODO: Override the required functions to customize the accounting logic`);
       c.addNatspecComment(`i.e. liquidity mining, rewarding well-behaved LPs, etc`);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
       c.setFunctionBody(
@@ -272,7 +272,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
     case 'BaseDynamicAfterFee':
-      c.addNatspecComment('TODO: Override `_getTargetUnspecified` to customize the target unspecified amount');
+      c.addNatspecComment('TODO: Override `_getTargetUnspecified` to customize the swap outcome target');
       c.addNatspecComment(`i.e. capture any positive difference if the swap outcome surpasses the target`);
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
