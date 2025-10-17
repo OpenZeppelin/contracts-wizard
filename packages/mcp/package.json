@@ -30,7 +30,8 @@
     "@openzeppelin/wizard": "^0.8.0",
     "@openzeppelin/wizard-stylus": "^0.2.0",
     "@openzeppelin/wizard-stellar": "^0.4.2",
-    "@openzeppelin/wizard-cairo": "^2.1.0"
+    "@openzeppelin/wizard-cairo": "^2.1.0",
+    "@openzeppelin/wizard-confidential": "^0.0.1-alpha.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
