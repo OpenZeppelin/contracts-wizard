@@ -1,7 +1,7 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import { commonDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 
-const sharedFunctionDescription = {
+export const sharedFunctionDescription = {
   name: { type: 'string', description: commonDescriptions.name },
 
   symbol: { type: 'string', description: commonDescriptions.symbol },
