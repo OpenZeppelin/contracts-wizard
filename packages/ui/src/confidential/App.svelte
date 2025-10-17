@@ -123,10 +123,8 @@
   let copiedRemappings = false;
   const copyRemappingsHandler = async () => {
     await navigator.clipboard.writeText(
-      `"remappings": [
-  "@openzeppelin/contracts/=@openzeppelin/contracts@${openzeppelinContracts.version}/",
-  "@fhevm/solidity/=@fhevm/solidity@${contractVersionPins.fhevmSolidityVersion}/"
-]`,
+      `@openzeppelin/contracts/=@openzeppelin/contracts@${openzeppelinContracts.version}/
+@fhevm/solidity/=@fhevm/solidity@${contractVersionPins.fhevmSolidityVersion}/`,
     );
     copiedRemappings = true;
     setTimeout(() => {
@@ -229,10 +227,8 @@
               </p>
               <p>
                 <b>3.</b>
-                In Remix's <i>Solidity Compiler</i> tab, click
-                <i>Advanced Configurations</i>, <i>Use configuration file</i>,
-                <i>Update config remix.config.json</i>, then paste the remappings into the
-                <code>"settings"</code> section.
+                In Remix's file explorer, create a new file called<br />
+                <code>remappings.txt</code> and paste the remappings into it.
               </p>
             </div>
           </Tooltip>
