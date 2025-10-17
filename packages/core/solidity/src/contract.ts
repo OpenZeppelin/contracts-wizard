@@ -4,7 +4,7 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
-  natspecComments: string[];
+  topLevelComments: string[];
   natspecTags: NatspecTag[];
   libraries: Library[];
   imports: ImportContract[];
@@ -80,7 +80,7 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly natspecComments: string[] = [];
+  readonly topLevelComments: string[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -177,8 +177,8 @@ export class ContractBuilder implements Contract {
     fn.modifiers.push(modifier);
   }
 
-  addNatspecComment(comment: string) {
-    this.natspecComments.push(comment);
+  addTopLevelComment(comment: string) {
+    this.topLevelComments.push(comment);
   }
 
   addNatspecTag(key: string, value: string) {

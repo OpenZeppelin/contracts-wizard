@@ -210,12 +210,12 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   // Add Overrides, Constructor Params and comments specific to each hook
   switch (allOpts.hook) {
     case 'BaseAsyncSwap':
-      c.addNatspecComment(`TODO: Implement how asynchronous swaps are executed`);
-      c.addNatspecComment(`i.e. queuing swaps to be executed in batches, reordering, etc`);
+      c.addTopLevelComment(`TODO: Implement how asynchronous swaps are executed`);
+      c.addTopLevelComment(`i.e. queuing swaps to be executed in batches, reordering, etc`);
       break;
     case 'BaseCustomAccounting':
-      c.addNatspecComment(`TODO: Override the required functions to customize the accounting logic`);
-      c.addNatspecComment(`i.e. liquidity mining, rewarding well-behaved LPs, etc`);
+      c.addTopLevelComment(`TODO: Override the required functions to customize the accounting logic`);
+      c.addTopLevelComment(`i.e. liquidity mining, rewarding well-behaved LPs, etc`);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
       c.setFunctionBody(
         [`// TODO: Implement how liquidity additions and minted shares are computed`],
@@ -232,8 +232,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseCustomCurve':
-      c.addNatspecComment(`TODO: Override the required functions to customize the curve logic`);
-      c.addNatspecComment(`i.e. custom pricing logic, specialized curves, etc`);
+      c.addTopLevelComment(`TODO: Override the required functions to customize the curve logic`);
+      c.addTopLevelComment(`i.e. custom pricing logic, specialized curves, etc`);
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
       c.setFunctionBody(
         [`// TODO: Implement how the unspecified currency amount is computed`],
@@ -260,20 +260,20 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseDynamicFee':
-      c.addNatspecComment('TODO: Override `_getFee` to customize the LP fee for the entire pool');
-      c.addNatspecComment(`i.e. dynamic fees depending on current market conditions, etc`);
+      c.addTopLevelComment('TODO: Override `_getFee` to customize the LP fee for the entire pool');
+      c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
       c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseDynamicFee.functions._getFee!);
       break;
     case 'BaseOverrideFee':
-      c.addNatspecComment('TODO: Override `_getFee` to customize the swap fee for each swap');
-      c.addNatspecComment(`i.e. dynamic fees depending on current market conditions, swap size, swap direction, etc`);
+      c.addTopLevelComment('TODO: Override `_getFee` to customize the swap fee for each swap');
+      c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, swap size, swap direction, etc`);
       c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
       c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
     case 'BaseDynamicAfterFee':
-      c.addNatspecComment('TODO: Override `_getTargetUnspecified` to customize the swap outcome target');
-      c.addNatspecComment(`i.e. capture any positive difference if the swap outcome surpasses the target`);
+      c.addTopLevelComment('TODO: Override `_getTargetUnspecified` to customize the swap outcome target');
+      c.addTopLevelComment(`i.e. capture any positive difference if the swap outcome surpasses the target`);
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
         [`// TODO: Implement how the target unspecified amount is computed`],
@@ -286,8 +286,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'BaseHookFee':
-      c.addNatspecComment('TODO: Override `_getHookFee` to customize the hook fee for the entire pool');
-      c.addNatspecComment(`i.e. dynamic hook-owned fees depending on current market conditions, etc`);
+      c.addTopLevelComment('TODO: Override `_getHookFee` to customize the hook fee for the entire pool');
+      c.addTopLevelComment(`i.e. dynamic hook-owned fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions._getHookFee!);
       c.setFunctionBody([`// TODO: Implement how the Hook fee is computed`], HOOKS.BaseHookFee.functions._getHookFee!);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions.handleHookFees!);
@@ -297,8 +297,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'AntiSandwichHook':
-      c.addNatspecComment('TODO: Override `_afterSwapHandler` to determine how accumulated penalty fees are handled');
-      c.addNatspecComment(`i.e. distributing the fees to well-behaved LPs, using them for better swap pricing, etc`);
+      c.addTopLevelComment('TODO: Override `_afterSwapHandler` to determine how accumulated penalty fees are handled');
+      c.addTopLevelComment(`i.e. distributing the fees to well-behaved LPs, using them for better swap pricing, etc`);
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody(
         [`// TODO: Implement how the accumulated penalty fees from sandwich attacks are handled after swaps`],
@@ -306,8 +306,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'ReHypothecationHook':
-      c.addNatspecComment(`TODO: Override the required functions to customize the rehypothecation logic`);
-      c.addNatspecComment(
+      c.addTopLevelComment(`TODO: Override the required functions to customize the rehypothecation logic`);
+      c.addTopLevelComment(
         `i.e. keeping the liquidity in a yield-bearing ERC-4626 Vault while still being available for swaps, etc`,
       );
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
@@ -334,8 +334,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'LiquidityPenaltyHook': {
-      c.addNatspecComment(`TODO: Determine the block number offset for the liquidity penalty`);
-      c.addNatspecComment(
+      c.addTopLevelComment(`TODO: Determine the block number offset for the liquidity penalty`);
+      c.addTopLevelComment(
         'i.e. `10` in order to deter JIT attacks linearly for the first 10 blocks after adding liquidity',
       );
       const blockNumberOffset = allOpts.inputs?.blockNumberOffset;
@@ -344,11 +344,11 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
     }
     case 'BaseOracleHook':
     case 'OracleHookWithV3Adapters': {
-      c.addNatspecComment(`TODO: Determine the max absolute tick delta for the truncated oracle`);
-      c.addNatspecComment(
+      c.addTopLevelComment(`TODO: Determine the max absolute tick delta for the truncated oracle`);
+      c.addTopLevelComment(
         'i.e. `488` to limit tick changes per observation to an equivalent of 5% abrupt price changes',
       );
-      c.addNatspecComment('i.e. `887272` to disable truncation and allow full tick range observations');
+      c.addTopLevelComment('i.e. `887272` to disable truncation and allow full tick range observations');
       const maxAbsTickDelta = allOpts.inputs?.maxAbsTickDelta;
       constructorParams.push(
         maxAbsTickDelta !== undefined && maxAbsTickDelta >= 0 && maxAbsTickDelta <= 887272 ? maxAbsTickDelta : 887272,
