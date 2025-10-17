@@ -232,8 +232,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseCustomCurve':
-      c.addTopLevelComment(`TODO: Override the required functions to customize the curve logic`);
-      c.addTopLevelComment(`i.e. custom pricing logic, specialized curves, etc`);
+      c.addTopLevelComment(`TODO: Override the required functions to customize the pricing curve`);
+      c.addTopLevelComment(`i.e. specialized pricing curves, etc`);
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
       c.setFunctionBody(
         [`// TODO: Implement how the unspecified currency amount is computed`],
@@ -273,7 +273,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'BaseDynamicAfterFee':
       c.addTopLevelComment('TODO: Override `_getTargetUnspecified` to customize the swap outcome target');
-      c.addTopLevelComment(`i.e. capture any positive difference if the swap outcome surpasses the target`);
+      c.addTopLevelComment(`i.e. capture any positive difference of the swap outcome that surpasses the target`);
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
         [`// TODO: Implement how the target unspecified amount is computed`],
@@ -286,7 +286,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'BaseHookFee':
-      c.addTopLevelComment('TODO: Override `_getHookFee` to customize the hook fee for the entire pool');
+      c.addTopLevelComment('TODO: Override `_getHookFee` to customize the hook fee collection for the entire pool');
       c.addTopLevelComment(`i.e. dynamic hook-owned fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions._getHookFee!);
       c.setFunctionBody([`// TODO: Implement how the Hook fee is computed`], HOOKS.BaseHookFee.functions._getHookFee!);
@@ -298,7 +298,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       break;
     case 'AntiSandwichHook':
       c.addTopLevelComment('TODO: Override `_afterSwapHandler` to determine how accumulated penalty fees are handled');
-      c.addTopLevelComment(`i.e. distributing the fees to well-behaved LPs, using them for better swap pricing, etc`);
+      c.addTopLevelComment(`i.e. distributing the fees to well-behaved LPs, improving swap pricing, etc`);
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody(
         [`// TODO: Implement how the accumulated penalty fees from sandwich attacks are handled after swaps`],
