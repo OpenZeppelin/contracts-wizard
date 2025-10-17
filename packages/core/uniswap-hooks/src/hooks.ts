@@ -7,6 +7,7 @@ import {
   supportsInterface,
   ContractBuilder,
   OptionsError,
+  requireAccessControl,
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
@@ -264,6 +265,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
       c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseDynamicFee.functions._getFee!);
+      c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions.poke!);
+      requireAccessControl(c, HOOKS.BaseDynamicFee.functions.poke!, allOpts.access!, 'POKE', 'poker');
       break;
     case 'BaseOverrideFee':
       c.addTopLevelComment('TODO: Override `_getFee` to customize the swap fee for each swap');
@@ -379,7 +382,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 }
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
-  return !!opts.pausable;
+  return !!opts.pausable || opts.hook === 'BaseDynamicFee';
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
