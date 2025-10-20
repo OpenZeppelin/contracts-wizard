@@ -1,5 +1,6 @@
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
-import { addFunctionPropertiesFrom, sharedFunctionDescription } from './shared.ts';
+import { addFunctionPropertiesFrom } from './shared.ts';
+import { commonFunctionDescription } from './solidity-shared.ts';
 import {
   uniswapHooksPrompts,
   uniswapHooksDescriptions,
@@ -14,7 +15,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(sharedFunctionDescription, ['name', 'pausable']),
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['access', 'info', 'name', 'pausable']),
       hook: {
         type: 'string',
         enum: [

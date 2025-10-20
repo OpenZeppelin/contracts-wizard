@@ -6,6 +6,7 @@ import {
   uniswapHooksSharesDescriptions,
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
+  solidityCommonDescriptions,
 } from '@openzeppelin/wizard-common';
 import { HooksNames, ShareOptions, type KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
@@ -23,6 +24,22 @@ function _typeAssertions() {
 const hookEnum = z.enum(HooksNames);
 
 const sharesOptionsSchema = z.union([z.literal(false), z.enum(ShareOptions)]);
+
+export const commonSchema = {
+  access: z
+    .literal('ownable')
+    .or(z.literal('roles'))
+    .or(z.literal('managed'))
+    .optional()
+    .describe(solidityCommonDescriptions.access),
+  info: z
+    .object({
+      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
+      license: z.string().optional().describe(infoDescriptions.license),
+    })
+    .optional()
+    .describe(infoDescriptions.info),
+} as const satisfies z.ZodRawShape;
 
 const sharesSchema = z
   .object({
@@ -71,11 +88,5 @@ export const hooksSchema = {
   shares: sharesSchema,
   permissions: permissionsSchema,
   inputs: inputsSchema,
-  info: z
-    .object({
-      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
-      license: z.string().optional().describe(infoDescriptions.license),
-    })
-    .optional()
-    .describe(infoDescriptions.info),
+  ...commonSchema,
 } as const satisfies z.ZodRawShape;

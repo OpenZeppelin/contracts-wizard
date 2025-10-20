@@ -14,7 +14,7 @@ import { HOOKS, PERMISSIONS, PAUSABLE_PERMISSIONS } from './hooks/';
 import type { HookName, Shares, Permissions, Permission } from './hooks/';
 import importPaths from './importPaths.json';
 
-export interface HooksOptions extends CommonOptions {
+export interface HooksOptions extends Omit<CommonOptions, 'upgradeable'> {
   hook: HookName;
   name: string;
   pausable: boolean;
@@ -34,7 +34,6 @@ export const defaults: Required<HooksOptions> = {
   name: 'MyHook',
   pausable: false,
   access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
   currencySettler: false,
   safeCast: false,
@@ -114,9 +113,6 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   // Validate inputs
   validateInputs(allOpts);
-
-  // Upgradeability is not yet available for hooks
-  allOpts.upgradeable = false;
 
   const c = new ContractBuilder(allOpts.name);
 

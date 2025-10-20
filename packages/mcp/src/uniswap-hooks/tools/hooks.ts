@@ -19,6 +19,7 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
       shares,
       permissions,
       inputs,
+      access,
       info,
     }) => {
       const opts: HooksOptions = {
@@ -31,6 +32,7 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
         shares,
         permissions,
         inputs,
+        access,
         info,
       };
 

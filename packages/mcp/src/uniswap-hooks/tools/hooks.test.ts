@@ -55,6 +55,7 @@ test('basic hook configuration', async t => {
       afterAddLiquidityReturnDelta: false,
       afterRemoveLiquidityReturnDelta: false,
     },
+    access: 'ownable',
     inputs: {
       blockNumberOffset: 10,
       maxAbsTickDelta: 1000,
@@ -98,6 +99,7 @@ test('all options engaged', async t => {
       blockNumberOffset: 42,
       maxAbsTickDelta: 600000,
     },
+    access: 'ownable',
     info: {
       securityContact: 'security@example.com',
       license: 'MIT',
@@ -136,6 +138,7 @@ test('oracle hook with invalid maxAbsTickDelta', async t => {
       afterAddLiquidityReturnDelta: false,
       afterRemoveLiquidityReturnDelta: false,
     },
+    access: 'ownable',
     inputs: {
       blockNumberOffset: 10,
       maxAbsTickDelta: 888000,
@@ -172,6 +175,7 @@ test('liquidity penalty hook with invalid blockNumberOffset', async t => {
       afterAddLiquidityReturnDelta: false,
       afterRemoveLiquidityReturnDelta: false,
     },
+    access: 'ownable',
     inputs: {
       blockNumberOffset: 0,
       maxAbsTickDelta: 5000,
