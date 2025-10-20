@@ -10,5 +10,5 @@
 /packages/ui/src/stylus @OpenZeppelin/stylus @OpenZeppelin/wizard
 /packages/core/stellar @OpenZeppelin/stellar @OpenZeppelin/wizard
 /packages/ui/src/stellar @OpenZeppelin/stellar @OpenZeppelin/wizard
-/packages/core/uniswap-hooks @openzeppelin/contracts @OpenZeppelin/wizard
-/packages/ui/src/uniswap-hooks @openzeppelin/contracts @OpenZeppelin/wizard
+/packages/core/uniswap-hooks @OpenZeppelin/contracts @OpenZeppelin/wizard
+/packages/ui/src/uniswap-hooks @OpenZeppelin/contracts @OpenZeppelin/wizard
