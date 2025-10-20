@@ -6,7 +6,17 @@ export { hooks } from './api';
 
 export { HOOKS, HooksNames, ShareOptions, specificSharesType } from './hooks/';
 
-export type { Hook, HookName, HookCategory, Shares, Permissions, Permission, HookInput, SharesConfig } from './hooks/';
+export type {
+  Hook,
+  HookName,
+  HookCategory,
+  Shares,
+  Permissions,
+  Permission,
+  HookInput,
+  SharesConfig,
+  ShareOption,
+} from './hooks/';
 
 export { type HooksOptions } from './hooks';
 

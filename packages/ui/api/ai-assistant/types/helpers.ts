@@ -51,3 +51,11 @@ type StringAnyOf<T> =
 type PrimitiveAnyOf<T> = BooleanAnyOf<T> | NumberAnyOf<T> | StringAnyOf<T>;
 
 export type AiFunctionCallAnyOf<T> = readonly Extract<PrimitiveAnyOf<T>, object>[];
+
+type EnsureEnumCoverage<TUnion extends Primitive, TValues extends readonly TUnion[]> =
+  Exclude<TUnion, TValues[number]> extends never ? TValues : never;
+
+export const enumValues =
+  <TUnion extends Primitive>() =>
+  <TValues extends readonly TUnion[]>(values: EnsureEnumCoverage<TUnion, TValues>) =>
+    values;

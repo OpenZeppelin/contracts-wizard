@@ -1,4 +1,6 @@
+import type { HookName, ShareOption } from '../../../../core/uniswap-hooks/dist';
 import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { enumValues } from '../types/helpers.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
@@ -18,7 +20,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(commonFunctionDescription, ['access', 'info', 'name', 'pausable']),
       hook: {
         type: 'string',
-        enum: [
+        enum: enumValues<HookName>()([
           'BaseHook',
           'BaseAsyncSwap',
           'BaseCustomAccounting',
@@ -33,7 +35,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
           'ReHypothecationHook',
           'BaseOracleHook',
           'OracleHookWithV3Adapters',
-        ],
+        ]),
         description: uniswapHooksDescriptions.hook,
       },
       currencySettler: {
@@ -55,7 +57,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
           options: {
             anyOf: [
               { type: 'boolean', enum: [false] },
-              { type: 'string', enum: ['ERC20', 'ERC6909', 'ERC1155'] },
+              { type: 'string', enum: enumValues<ShareOption>()(['ERC20', 'ERC6909', 'ERC1155']) },
             ],
             description: uniswapHooksSharesDescriptions.options,
           },
