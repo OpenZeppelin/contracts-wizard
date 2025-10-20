@@ -4,14 +4,14 @@ import { HOOKS, PERMISSIONS, type HookName, type Shares, type Permissions } from
 
 const booleanOptions = [true, false];
 
-const sharesOptions: Shares[] = [
+const sharesOptions: readonly Shares[] = [
   { options: false, name: 'MyShares', symbol: 'MSH' },
   { options: 'ERC20', name: 'MyShares', symbol: 'MSH' },
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
-] as const;
+];
 
 // Generate some permission combinations. Note that generating all would result in 2^14 combinations.
-const permissionsOptions: Permissions[] = [generateMixedPermissions(), generateMixedInversedPermissions()] as const;
+const permissionsOptions: readonly Permissions[] = [generateMixedPermissions(), generateMixedInversedPermissions()];
 
 const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
 

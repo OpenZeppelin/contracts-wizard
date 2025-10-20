@@ -516,7 +516,8 @@ function addAdditionalPermissionFunctions(c: ContractBuilder, _allOpts: HooksOpt
 }
 
 function returnSuperFunctionInvocation(f: BaseFunction): string {
-  return `return super.${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
+  const call = `super.${f.name}(${f.args.map(arg => arg.name).join(', ')})`;
+  return f.returns && f.returns.length > 0 ? `return ${call};` : `${call};`;
 }
 
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {
