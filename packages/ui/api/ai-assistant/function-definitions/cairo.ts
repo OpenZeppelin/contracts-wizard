@@ -10,6 +10,8 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
+import type { ClockMode, QuorumMode, VotesOptions } from '../../../../core/cairo/dist/governor';
+import { enumValues } from '../types/helpers.ts';
 
 export const cairoERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -142,7 +144,7 @@ export const cairoGovernorAIFunctionDefinition = {
       },
       quorumMode: {
         type: 'string',
-        enum: ['percent', 'absolute'],
+        enum: enumValues<QuorumMode>()(['percent', 'absolute']),
         description: cairoGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
@@ -155,12 +157,12 @@ export const cairoGovernorAIFunctionDefinition = {
       },
       votes: {
         type: 'string',
-        enum: ['erc20votes', 'erc721votes'],
+        enum: enumValues<VotesOptions>()(['erc20votes', 'erc721votes']),
         description: cairoGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
-        enum: ['timestamp'],
+        enum: enumValues<ClockMode>()(['timestamp']),
         description: cairoGovernorDescriptions.clockMode,
       },
       timelock: {

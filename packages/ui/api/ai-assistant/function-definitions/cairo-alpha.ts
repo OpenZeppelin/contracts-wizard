@@ -11,6 +11,10 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
+import { enumValues } from '../types/helpers.ts';
+import type { ClockMode, QuorumMode, VotesOptions } from '../../../../core/cairo_alpha/dist/governor';
+import type { VestingSchedule } from '../../../../core/cairo_alpha/dist/vesting';
+import type { Account } from '../../../../core/cairo_alpha/dist/account';
 
 export const cairoAlphaERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -143,7 +147,7 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
       },
       quorumMode: {
         type: 'string',
-        enum: ['percent', 'absolute'],
+        enum: enumValues<QuorumMode>()(['percent', 'absolute']),
         description: cairoGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
@@ -156,12 +160,12 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
       },
       votes: {
         type: 'string',
-        enum: ['erc20votes', 'erc721votes'],
+        enum: enumValues<VotesOptions>()(['erc20votes', 'erc721votes']),
         description: cairoGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
-        enum: ['timestamp'],
+        enum: enumValues<ClockMode>()(['timestamp']),
         description: cairoGovernorDescriptions.clockMode,
       },
       timelock: {
@@ -202,7 +206,7 @@ export const cairoAlphaVestingAIFunctionDefinition = {
       },
       schedule: {
         type: 'string',
-        enum: ['linear', 'custom'],
+        enum: enumValues<VestingSchedule>()(['linear', 'custom']),
         description: cairoVestingDescriptions.schedule,
       },
     },
@@ -220,7 +224,7 @@ export const cairoAlphaAccountAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
       type: {
         type: 'string',
-        enum: ['stark', 'eth'],
+        enum: enumValues<Account>()(['stark', 'eth']),
         description: cairoAccountDescriptions.type,
       },
       declare: {

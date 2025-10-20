@@ -32,6 +32,14 @@ type BooleanAnyOf<T> =
         enum?: EnumValues<Extract<T, boolean>>;
       };
 
+type BooleanAnyOfWithEnum<T> =
+  Extract<T, boolean> extends never
+    ? never
+    : {
+        type: 'boolean';
+        enum: EnumValues<Extract<T, boolean>>;
+      };
+
 type NumberAnyOf<T> =
   Extract<T, number> extends never
     ? never
@@ -48,9 +56,37 @@ type StringAnyOf<T> =
         enum?: EnumValues<Extract<T, string>>;
       };
 
+type StringAnyOfWithEnum<T> =
+  Extract<T, string> extends never
+    ? never
+    : {
+        type: 'string';
+        enum: EnumValues<Extract<T, string>>;
+      };
+
 type PrimitiveAnyOf<T> = BooleanAnyOf<T> | NumberAnyOf<T> | StringAnyOf<T>;
 
-export type AiFunctionCallAnyOf<T> = readonly Extract<PrimitiveAnyOf<T>, object>[];
+type PrimitiveAnyOfRest<T> = readonly Extract<PrimitiveAnyOf<T>, object>[];
+
+type BooleanStringAnyOf<T> =
+  | readonly [BooleanAnyOfWithEnum<T>, StringAnyOfWithEnum<T>, ...PrimitiveAnyOfRest<T>]
+  | readonly [StringAnyOfWithEnum<T>, BooleanAnyOfWithEnum<T>, ...PrimitiveAnyOfRest<T>];
+
+type HasBoolean<T> = [Extract<T, boolean>] extends [never] ? false : true;
+type HasString<T> = [Extract<T, string>] extends [never] ? false : true;
+type HasNumber<T> = [Extract<T, number>] extends [never] ? false : true;
+
+type RequiresBooleanStringEnforcement<T> = HasBoolean<T> extends true
+  ? HasString<T> extends true
+    ? HasNumber<T> extends true
+      ? false
+      : true
+    : false
+  : false;
+
+export type AiFunctionCallAnyOf<T> = RequiresBooleanStringEnforcement<T> extends true
+  ? BooleanStringAnyOf<T>
+  : readonly Extract<PrimitiveAnyOf<T>, object>[];
 
 type EnsureEnumCoverage<TUnion extends Primitive, TValues extends readonly TUnion[]> =
   Exclude<TUnion, TValues[number]> extends never ? TValues : never;

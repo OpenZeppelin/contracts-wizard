@@ -10,6 +10,9 @@ import {
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
+import { enumValues } from '../types/helpers.ts';
+import type { QuorumMode, VotesOptions } from '@openzeppelin/wizard/dist/governor';
+import type { ClockMode } from '@openzeppelin/wizard/dist/set-clock-mode';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -257,7 +260,7 @@ export const solidityGovernorAIFunctionDefinition = {
       },
       quorumMode: {
         type: 'string',
-        enum: ['percent', 'absolute'],
+        enum: enumValues<QuorumMode>()(['percent', 'absolute']),
         description: solidityGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
@@ -270,12 +273,12 @@ export const solidityGovernorAIFunctionDefinition = {
       },
       votes: {
         type: 'string',
-        enum: ['erc20votes', 'erc721votes'],
+        enum: enumValues<VotesOptions>()(['erc20votes', 'erc721votes']),
         description: solidityGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
-        enum: ['blocknumber', 'timestamp'],
+        enum: enumValues<ClockMode>()(['blocknumber', 'timestamp']),
         description: solidityGovernorDescriptions.clockMode,
       },
       timelock: {
