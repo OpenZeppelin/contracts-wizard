@@ -179,13 +179,13 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <WizStellar
+  <!-- <WizStellar
     language="stellar"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
     sampleMessages={['Make a fungible token with supply of 10', 'What does mintable do?']}
-  ></WizStellar>
+  ></WizStellar> -->
 
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">

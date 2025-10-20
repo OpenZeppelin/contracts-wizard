@@ -125,13 +125,13 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <WizStylus
+  <!-- <WizStylus
     language="stylus"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
     sampleMessages={['Make a token with flash loan capability', 'What is a flash loan?']}
-  />
+  /> -->
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>

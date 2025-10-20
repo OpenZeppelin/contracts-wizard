@@ -133,13 +133,13 @@
 </script>
 
 <div class="container flex flex-col gap-4 p-4 rounded-3xl">
-  <WizCairoAlpha
+  <!-- <WizCairoAlpha
     language="cairoAlpha"
     bind:currentOpts={opts}
     bind:currentCode={code}
     on:function-call-response={applyFunctionCall}
     sampleMessages={['Make a token with supply of 10 million', 'What does mintable do?', 'Make a contract for a DAO']}
-  />
+  /> -->
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden">
       <OverflowMenu>
