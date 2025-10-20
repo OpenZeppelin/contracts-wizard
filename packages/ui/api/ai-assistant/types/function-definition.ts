@@ -1,20 +1,9 @@
-import type {
-  AiFunctionCallAnyOf,
-  StringifyPrimaryType,
-  ExactRequiredKeys,
-  IsPrimitiveUnion,
-  Permutation,
-} from './helpers.ts';
-import type {
-  AllLanguagesContractsOptions,
-  LanguageContractsNames,
-  LanguageContractsOptions,
-  SupportedLanguage,
-} from './languages.ts';
+import type { AiFunctionCallAnyOf, StringifyPrimaryType, ExactRequiredKeys, EnumValues } from './helpers.ts';
+import type { LanguageContractsNames, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
 
 type AiFunctionType<TType> = {
   type?: StringifyPrimaryType<TType>;
-  enum?: Permutation<TType>;
+  enum?: EnumValues<TType>;
   description: string;
 };
 
@@ -30,15 +19,10 @@ export type AiFunctionCallType<TType> = AiFunctionType<TType> | AiFunctionCallOn
 export type AiFunctionProperties<TProperties extends object> = Required<{
   [K in keyof TProperties]: TProperties[K] extends object
     ? AiFunctionPropertyDefinition<TProperties[K]>
-    : IsPrimitiveUnion<TProperties[K]> extends true
-      ? AiFunctionCallOneOfType<TProperties[K]>
-      : AiFunctionType<TProperties[K]>;
+    : AiFunctionCallType<TProperties[K]>;
 }>;
 
-export type AiFunctionPropertyDefinition<
-  TContract extends Partial<AllLanguagesContractsOptions[keyof AllLanguagesContractsOptions]>,
-  TOmit extends keyof TContract = 'kind',
-> = {
+export type AiFunctionPropertyDefinition<TContract extends object, TOmit extends keyof TContract | 'kind' = 'kind'> = {
   type: 'object';
   description?: string;
   properties: Omit<AiFunctionProperties<Required<TContract>>, 'kind' | TOmit>;
@@ -68,7 +52,7 @@ export type SimpleAiFunctionDefinition = {
     type: 'object';
     description?: string;
     properties: Record<string, unknown>;
-    required?: string[];
+    required?: readonly string[];
     additionalProperties: false;
   };
 };
