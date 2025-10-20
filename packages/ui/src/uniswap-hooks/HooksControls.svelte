@@ -3,7 +3,7 @@
 
   import { hooks } from '@openzeppelin/wizard-uniswap-hooks/src';
   import { HOOKS } from '@openzeppelin/wizard-uniswap-hooks/src/hooks/index';
-  import type { HookCategory, Hook, HookName, KindedOptions, } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import type { HookCategory, Hook, HookName, KindedOptions } from '@openzeppelin/wizard-uniswap-hooks/src';
   import type { OptionsErrorMessages } from '@openzeppelin/wizard';
   import { error } from '../common/error-tooltip';
 
@@ -76,22 +76,22 @@
           <HelpTooltip>{input.tooltipText}</HelpTooltip>
         {/if}
       </span>
-        {#if input.name === 'maxAbsTickDelta'}
-          <input 
-            type="number"
-            bind:value={opts.inputs.maxAbsTickDelta}
-            placeholder={input.placeholder} 
-            use:error={errors?.[input.name]}
-          />
-        {:else if input.name === 'blockNumberOffset'}
-          <input 
-            type="number"
-            bind:value={opts.inputs.blockNumberOffset}
-            placeholder={input.placeholder} 
-            use:error={errors?.[input.name]}
-          />
-        {/if}
-        <!-- Add more conditional inputs here if needed -->
+      {#if input.name === 'maxAbsTickDelta'}
+        <input
+          type="number"
+          bind:value={opts.inputs.maxAbsTickDelta}
+          placeholder={input.placeholder}
+          use:error={errors?.[input.name]}
+        />
+      {:else if input.name === 'blockNumberOffset'}
+        <input
+          type="number"
+          bind:value={opts.inputs.blockNumberOffset}
+          placeholder={input.placeholder}
+          use:error={errors?.[input.name]}
+        />
+      {/if}
+      <!-- Add more conditional inputs here if needed -->
     </label>
   {/each}
 </section>
@@ -174,8 +174,8 @@
       <input type="checkbox" bind:checked={opts.transientStorage} />
       Transient Storage
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
-        Utility library for simplifying the usage of Transient Storage, which is discarded after the transaction ends and
-        whose gas costs are drastically reduced in comparison to regular storage.
+        Utility library for simplifying the usage of Transient Storage, which is discarded after the transaction ends
+        and whose gas costs are drastically reduced in comparison to regular storage.
       </HelpTooltip>
     </label>
   </div>
