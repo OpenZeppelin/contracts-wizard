@@ -162,7 +162,6 @@
         "npm:@types/semver@^7.5.7",
         "npm:@upstash/redis@1.25.2",
         "npm:autoprefixer@^10.4.2",
-        "npm:ava@^6.1.2",
         "npm:file-saver@^2.0.5",
         "npm:highlight.js@^11.0.0",
         "npm:highlightjs-cairo@^0.4.0",
@@ -183,7 +182,6 @@
         "npm:svelte@^3.55.0",
         "npm:tailwindcss@^3.0.15",
         "npm:tippy.js@^6.3.1",
-        "npm:ts-node@^10.9.2",
         "npm:tslib@^2.0.0",
         "npm:typescript@^5.0.0",
         "npm:util@^0.12.4"
