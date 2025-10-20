@@ -124,8 +124,9 @@ export type SharesConfig = 'required' | 'optional' | 'disabled' | ShareOption;
 /**
  * @property name - The name of the input parameter in camelCase
  * @property label - The label of the input parameter in human-readable format
- * @property value - The value of the input parameter
  * @property type - The type of the input parameter
+ * @property placeholder - The placeholder of the input parameter
+ * @property tooltipText - The tooltip text of the input parameter
  */
 export type HookInput = {
   name: string;

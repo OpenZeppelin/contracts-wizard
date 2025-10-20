@@ -150,7 +150,7 @@
 <ExpandableSection
   label="Utilities"
   bind:checked={openUtilitiesDropdown}
-  helpContent="Utilities are optional libraries that can used to enhance the functionality or security of the hook."
+  helpContent="Utilities are optional libraries that can be used to enhance the functionality or security of the hook."
 >
   <div class="checkbox-group">
     <label class:checked={opts.currencySettler}>
@@ -174,7 +174,7 @@
       <input type="checkbox" bind:checked={opts.transientStorage} />
       Transient Storage
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
-        Utility library for simplyfing the usage of Transient Storage, which is discarded after the transaction ends and
+        Utility library for simplifying the usage of Transient Storage, which is discarded after the transaction ends and
         whose gas costs are drastically reduced in comparison to regular storage.
       </HelpTooltip>
     </label>

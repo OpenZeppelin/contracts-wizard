@@ -6,7 +6,7 @@ const BaseCustomAccounting: Hook = {
   name: 'BaseCustomAccounting',
   displayName: 'Custom Accounting',
   category: 'Base',
-  tooltipText: 'Overrides how liquidity modifications are processed and how liquidiy shares are minted/burned.',
+  tooltipText: 'Overrides how liquidity modifications are processed and how liquidity shares are minted/burned.',
   tooltipLink: 'https://docs.openzeppelin.com/uniswap-hooks/api/base#BaseCustomAccounting',
   shares: 'required',
   alreadyImplementsShares: false,
