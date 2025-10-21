@@ -51,7 +51,8 @@
   export let initialOpts: InitialOptions = {};
   let initialValuesSet = false;
 
-  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
+  // Remove { upgradeable: string } when upgradability gets implemented (kept to safeguard opening remix on transparent if added without check)
+  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> & { upgradeable: string } } = {};
   let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
   let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyHook');
