@@ -10,9 +10,13 @@ import {
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
-import { enumValues } from '../types/helpers.ts';
-import type { QuorumMode, VotesOptions } from '@openzeppelin/wizard/dist/governor';
+import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { QuorumMode, TimelockOptions, VotesOptions } from '@openzeppelin/wizard/dist/governor';
 import type { ClockMode } from '@openzeppelin/wizard/dist/set-clock-mode';
+import type { CrossChainBridging } from '@openzeppelin/wizard/dist/erc20';
+import type { Limitations } from '@openzeppelin/wizard/dist/stablecoin';
+import type { ERC7579ModulesOptions, SignatureValidationOptions } from '@openzeppelin/wizard/dist/account';
+import type { SignerOptions } from '@openzeppelin/wizard/dist/signer';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -41,7 +45,7 @@ export const solidityERC20AIFunctionDefinition = {
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false, true] },
-          { type: 'string', enum: ['blocknumber', 'timestamp'] },
+          { type: 'string', enum: extractStringEnumValues<ClockMode>()(['blocknumber', 'timestamp']) },
         ],
         description: solidityERC20Descriptions.votes,
       },
@@ -52,7 +56,7 @@ export const solidityERC20AIFunctionDefinition = {
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['custom', 'superchain'] },
+          { type: 'string', enum: extractStringEnumValues<CrossChainBridging>()(['custom', 'superchain']) },
         ],
         description: solidityERC20Descriptions.crossChainBridging,
       },
@@ -102,7 +106,7 @@ export const solidityERC721AIFunctionDefinition = {
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['blocknumber', 'timestamp'] },
+          { type: 'string', enum: extractStringEnumValues<ClockMode>()(['blocknumber', 'timestamp']) },
         ],
         description: solidityERC721Descriptions.votes,
       },
@@ -159,7 +163,7 @@ export const solidityStablecoinAIFunctionDefinition = {
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['allowlist', 'blocklist'] },
+          { type: 'string', enum: extractStringEnumValues<Limitations>()(['allowlist', 'blocklist']) },
         ],
         description: solidityStablecoinDescriptions.limitations,
       },
@@ -190,7 +194,7 @@ export const solidityAccountAIFunctionDefinition = {
       signatureValidation: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ERC1271', 'ERC7739'] },
+          { type: 'string', enum: extractStringEnumValues<SignatureValidationOptions>()(['ERC1271', 'ERC7739']) },
         ],
         description: solidityAccountDescriptions.signatureValidation,
       },
@@ -205,7 +209,17 @@ export const solidityAccountAIFunctionDefinition = {
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<SignerOptions>()([
+              'ECDSA',
+              'ERC7702',
+              'P256',
+              'RSA',
+              'Multisig',
+              'MultisigWeighted',
+            ]),
+          },
         ],
         description: solidityAccountDescriptions.signer,
       },
@@ -216,7 +230,10 @@ export const solidityAccountAIFunctionDefinition = {
       ERC7579Modules: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<ERC7579ModulesOptions>()(['AccountERC7579', 'AccountERC7579Hooked']),
+          },
         ],
         description: solidityAccountDescriptions.ERC7579Modules,
       },
@@ -283,7 +300,7 @@ export const solidityGovernorAIFunctionDefinition = {
       },
       timelock: {
         anyOf: [
-          { type: 'string', enum: ['openzeppelin', 'compound'] },
+          { type: 'string', enum: extractStringEnumValues<TimelockOptions>()(['openzeppelin', 'compound']) },
           { type: 'boolean', enum: [false] },
         ],
         description: solidityGovernorDescriptions.timelock,

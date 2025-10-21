@@ -11,8 +11,8 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
-import { enumValues } from '../types/helpers.ts';
-import type { ClockMode, QuorumMode, VotesOptions } from '../../../../core/cairo_alpha/dist/governor';
+import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { ClockMode, QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/cairo_alpha/dist/governor';
 import type { VestingSchedule } from '../../../../core/cairo_alpha/dist/vesting';
 import type { Account } from '../../../../core/cairo_alpha/dist/account';
 
@@ -171,7 +171,7 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
       timelock: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['openzeppelin'] },
+          { type: 'string', enum: extractStringEnumValues<TimelockOptions>()(['openzeppelin']) },
         ],
         description: cairoGovernorDescriptions.timelock,
       },

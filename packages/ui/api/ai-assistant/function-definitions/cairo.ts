@@ -10,8 +10,10 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
-import type { ClockMode, QuorumMode, VotesOptions } from '../../../../core/cairo/dist/governor';
-import { enumValues } from '../types/helpers.ts';
+import type { ClockMode, QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/cairo/dist/governor';
+import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { VestingSchedule } from '../../../../core/cairo/dist/vesting';
+import type { Account } from '../../../../core/cairo/dist/account';
 
 export const cairoERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -168,7 +170,7 @@ export const cairoGovernorAIFunctionDefinition = {
       timelock: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['openzeppelin'] },
+          { type: 'string', enum: extractStringEnumValues<TimelockOptions>()(['openzeppelin']) },
         ],
         description: cairoGovernorDescriptions.timelock,
       },
@@ -204,7 +206,7 @@ export const cairoVestingAIFunctionDefinition = {
       },
       schedule: {
         type: 'string',
-        enum: ['linear', 'custom'],
+        enum: enumValues<VestingSchedule>()(['linear', 'custom']),
         description: cairoVestingDescriptions.schedule,
       },
     },
@@ -223,7 +225,7 @@ export const cairoAccountAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
       type: {
         type: 'string',
-        enum: ['stark', 'eth'],
+        enum: enumValues<Account>()(['stark', 'eth']),
         description: cairoAccountDescriptions.type,
       },
       declare: {

@@ -8,6 +8,8 @@ import {
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { Limitations } from '../../../../core/stellar/dist/stablecoin';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
@@ -53,7 +55,7 @@ export const stellarStablecoinAIFunctionDefinition = {
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['allowlist', 'blocklist'] },
+          { type: 'string', enum: extractStringEnumValues<Limitations>()(['allowlist', 'blocklist']) },
         ],
         description: stellarStablecoinDescriptions.limitations,
       },

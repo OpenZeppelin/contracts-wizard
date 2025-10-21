@@ -76,17 +76,13 @@ type HasBoolean<T> = [Extract<T, boolean>] extends [never] ? false : true;
 type HasString<T> = [Extract<T, string>] extends [never] ? false : true;
 type HasNumber<T> = [Extract<T, number>] extends [never] ? false : true;
 
-type RequiresBooleanStringEnforcement<T> = HasBoolean<T> extends true
-  ? HasString<T> extends true
-    ? HasNumber<T> extends true
-      ? false
-      : true
-    : false
-  : false;
+type RequiresBooleanStringEnforcement<T> =
+  HasBoolean<T> extends true ? (HasString<T> extends true ? (HasNumber<T> extends true ? false : true) : false) : false;
 
-export type AiFunctionCallAnyOf<T> = RequiresBooleanStringEnforcement<T> extends true
-  ? BooleanStringAnyOf<T>
-  : readonly Extract<PrimitiveAnyOf<T>, object>[];
+export type AiFunctionCallAnyOf<T> =
+  RequiresBooleanStringEnforcement<T> extends true
+    ? BooleanStringAnyOf<T>
+    : readonly Extract<PrimitiveAnyOf<T>, object>[];
 
 type EnsureEnumCoverage<TUnion extends Primitive, TValues extends readonly TUnion[]> =
   Exclude<TUnion, TValues[number]> extends never ? TValues : never;
@@ -94,4 +90,9 @@ type EnsureEnumCoverage<TUnion extends Primitive, TValues extends readonly TUnio
 export const enumValues =
   <TUnion extends Primitive>() =>
   <TValues extends readonly TUnion[]>(values: EnsureEnumCoverage<TUnion, TValues>) =>
+    values;
+
+export const extractStringEnumValues =
+  <TUnion extends Primitive>() =>
+  <TValues extends readonly Extract<TUnion, string>[]>(values: EnsureEnumCoverage<Extract<TUnion, string>, TValues>) =>
     values;
