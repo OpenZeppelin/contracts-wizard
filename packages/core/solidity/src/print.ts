@@ -38,6 +38,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       printImports(contract.imports, helpers),
 
       [
+        ...printTopLevelComments(contract.topLevelComments),
         ...printNatspecTags(contract.natspecTags),
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
@@ -84,17 +85,11 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
-  if (contract.parents.length > 0) {
-    return [
-      'is ' +
-        contract.parents
-          .filter(p => !p.constructionOnly)
-          .map(p => transformName(p.contract))
-          .join(', '),
-    ];
-  } else {
-    return [];
+  const visibleParents = contract.parents.filter(p => !p.constructionOnly);
+  if (visibleParents.length > 0) {
+    return ['is ' + visibleParents.map(p => transformName(p.contract)).join(', ')];
   }
+  return [];
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
@@ -293,6 +288,10 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
   return [type, arg.name].join(' ');
 }
 
+function printTopLevelComments(comments: string[]): string[] {
+  return comments.map(comment => `/// ${comment}`);
+}
+
 function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
@@ -317,10 +316,12 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
 function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
   if (!contract.libraries || contract.libraries.length === 0) return [];
 
-  return contract.libraries
-    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by library name
-    .map(lib => {
-      const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b)); // Sort types
-      return `using ${transformName(lib.library)} for ${sortedTypes.join(', ')};`;
-    });
+  const lines: string[] = [];
+  for (const lib of contract.libraries.sort((a, b) => a.library.name.localeCompare(b.library.name))) {
+    const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b));
+    for (const type of sortedTypes) {
+      lines.push(`using ${transformName(lib.library)} for ${type};`);
+    }
+  }
+  return lines;
 }

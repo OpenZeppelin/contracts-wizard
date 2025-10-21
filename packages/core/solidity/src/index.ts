@@ -14,7 +14,7 @@ export type { Info } from './set-info';
 
 export { premintPattern, chainIdPattern } from './erc20';
 export { defaults as infoDefaults, infoOptions, setInfo } from './set-info';
-export { accessOptions, setAccessControl } from './set-access-control';
+export { accessOptions, setAccessControl, requireAccessControl } from './set-access-control';
 export { addPausable } from './add-pausable';
 
 export type { OptionsErrorMessages } from './error';

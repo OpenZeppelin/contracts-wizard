@@ -7,6 +7,7 @@ import {
   supportsInterface,
   ContractBuilder,
   OptionsError,
+  requireAccessControl,
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, Value, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
@@ -203,9 +204,15 @@ export function buildHooks(opts: HooksOptions): Contract {
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
   const constructorParams: Value[] = [];
 
-  // Add Overrides & Constructor Params specific to each hook
+  // Add Overrides, Constructor Params and comments specific to each hook
   switch (allOpts.hook) {
+    case 'BaseAsyncSwap':
+      c.addTopLevelComment(`TODO: Implement how asynchronous swaps are executed`);
+      c.addTopLevelComment(`i.e. queuing swaps to be executed in batches, reordering, etc`);
+      break;
     case 'BaseCustomAccounting':
+      c.addTopLevelComment(`TODO: Override the required functions to customize the accounting logic`);
+      c.addTopLevelComment(`i.e. liquidity mining, rewarding well-behaved LPs, etc`);
       c.addOverride({ name: 'BaseCustomAccounting' }, HOOKS.BaseCustomAccounting.functions._getAddLiquidity!);
       c.setFunctionBody(
         [`// TODO: Implement how liquidity additions and minted shares are computed`],
@@ -222,6 +229,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseCustomCurve':
+      c.addTopLevelComment(`TODO: Override the required functions to customize the pricing curve`);
+      c.addTopLevelComment(`i.e. specialized pricing curves, etc`);
       c.addOverride({ name: 'BaseCustomCurve' }, HOOKS.BaseCustomCurve.functions._getUnspecifiedAmount!);
       c.setFunctionBody(
         [`// TODO: Implement how the unspecified currency amount is computed`],
@@ -248,10 +257,22 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       c.setFunctionBody([`// TODO: Implement how shares are burned`], HOOKS.BaseCustomAccounting.functions._burn!);
       break;
     case 'BaseDynamicFee':
+      c.addTopLevelComment('TODO: Override `_getFee` to customize the LP fee for the entire pool');
+      c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
       c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseDynamicFee.functions._getFee!);
+      c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions.poke!);
+      requireAccessControl(c, HOOKS.BaseDynamicFee.functions.poke!, allOpts.access!, 'POKE', 'poker');
+      break;
+    case 'BaseOverrideFee':
+      c.addTopLevelComment('TODO: Override `_getFee` to customize the swap fee for each swap');
+      c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, swap size, swap direction, etc`);
+      c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
+      c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseOverrideFee.functions._getFee!);
       break;
     case 'BaseDynamicAfterFee':
+      c.addTopLevelComment('TODO: Override `_getTargetUnspecified` to customize the swap outcome target');
+      c.addTopLevelComment(`i.e. capture any positive difference of the swap outcome that surpasses the target`);
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._getTargetUnspecified!);
       c.setFunctionBody(
         [`// TODO: Implement how the target unspecified amount is computed`],
@@ -259,15 +280,13 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       c.addOverride({ name: 'BaseDynamicAfterFee' }, HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!);
       c.setFunctionBody(
-        [`// TODO: Implement how the accumulated penalty fees are handled after swaps`],
+        [`// TODO: Implement how the accumulated target penalty fees are handled after swaps`],
         HOOKS.BaseDynamicAfterFee.functions._afterSwapHandler!,
       );
       break;
-    case 'BaseOverrideFee':
-      c.addOverride({ name: 'BaseOverrideFee' }, HOOKS.BaseOverrideFee.functions._getFee!);
-      c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseOverrideFee.functions._getFee!);
-      break;
     case 'BaseHookFee':
+      c.addTopLevelComment('TODO: Override `_getHookFee` to customize the hook fee collection for the entire pool');
+      c.addTopLevelComment(`i.e. dynamic hook-owned fees depending on current market conditions, etc`);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions._getHookFee!);
       c.setFunctionBody([`// TODO: Implement how the Hook fee is computed`], HOOKS.BaseHookFee.functions._getHookFee!);
       c.addOverride({ name: 'BaseHookFee' }, HOOKS.BaseHookFee.functions.handleHookFees!);
@@ -277,6 +296,8 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'AntiSandwichHook':
+      c.addTopLevelComment('TODO: Override `_afterSwapHandler` to determine how accumulated penalty fees are handled');
+      c.addTopLevelComment(`i.e. distributing the fees to well-behaved LPs, improving swap pricing, etc`);
       c.addOverride({ name: 'AntiSandwichHook' }, HOOKS.AntiSandwichHook.functions._afterSwapHandler!);
       c.setFunctionBody(
         [`// TODO: Implement how the accumulated penalty fees from sandwich attacks are handled after swaps`],
@@ -284,6 +305,10 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'ReHypothecationHook':
+      c.addTopLevelComment(`TODO: Override the required functions to customize the rehypothecation logic`);
+      c.addTopLevelComment(
+        `i.e. keeping the liquidity in a yield-bearing ERC-4626 Vault while still being available for swaps, etc`,
+      );
       c.addOverride({ name: 'ReHypothecationHook' }, HOOKS.ReHypothecationHook.functions.getCurrencyYieldSource!);
       c.setFunctionBody(
         [`// TODO: Implement how the yield source address is computed for a given currency`],
@@ -308,12 +333,21 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
       );
       break;
     case 'LiquidityPenaltyHook': {
+      c.addTopLevelComment(`TODO: Determine the block number offset for the liquidity penalty`);
+      c.addTopLevelComment(
+        'i.e. `10` in order to deter JIT attacks linearly for the first 10 blocks after adding liquidity',
+      );
       const blockNumberOffset = allOpts.inputs?.blockNumberOffset;
       constructorParams.push(blockNumberOffset !== undefined && blockNumberOffset > 0 ? blockNumberOffset : 10);
       break;
     }
     case 'BaseOracleHook':
     case 'OracleHookWithV3Adapters': {
+      c.addTopLevelComment(`TODO: Determine the max absolute tick delta for the truncated oracle`);
+      c.addTopLevelComment(
+        'i.e. `488` to limit tick changes per observation to an equivalent of 5% abrupt price changes',
+      );
+      c.addTopLevelComment('i.e. `887272` to disable truncation and allow full tick range observations');
       const maxAbsTickDelta = allOpts.inputs?.maxAbsTickDelta;
       constructorParams.push(
         maxAbsTickDelta !== undefined && maxAbsTickDelta >= 0 && maxAbsTickDelta <= 887272 ? maxAbsTickDelta : 887272,
@@ -344,7 +378,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 }
 
 export function isAccessControlRequired(opts: Partial<HooksOptions>): boolean {
-  return !!opts.pausable;
+  return !!opts.pausable || opts.hook === 'BaseDynamicFee';
 }
 
 function addCurrencySettler(c: ContractBuilder, _allOpts: HooksOptions) {
@@ -478,7 +512,8 @@ function addAdditionalPermissionFunctions(c: ContractBuilder, _allOpts: HooksOpt
 }
 
 function returnSuperFunctionInvocation(f: BaseFunction): string {
-  return `return super.${f.name}(${f.args.map(arg => arg.name).join(', ')});`;
+  const call = `super.${f.name}(${f.args.map(arg => arg.name).join(', ')})`;
+  return f.returns && f.returns.length > 0 ? `return ${call};` : `${call};`;
 }
 
 function functionShouldBePausable(f: BaseFunction, _allOpts: HooksOptions) {

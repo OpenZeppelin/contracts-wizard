@@ -11,7 +11,7 @@
 
     "BaseDynamicFee": "@openzeppelin/uniswap-hooks/fee/BaseDynamicFee.sol",
     "BaseOverrideFee": "@openzeppelin/uniswap-hooks/fee/BaseOverrideFee.sol",
-    "BasedDynamicAfterFee": "@openzeppelin/uniswap-hooks/fee/BaseDynamicAfterFee.sol",
+    "BaseDynamicAfterFee": "@openzeppelin/uniswap-hooks/fee/BaseDynamicAfterFee.sol",
 
     "AntiSandwichHook": "@openzeppelin/uniswap-hooks/general/AntiSandwichHook.sol",
     "LiquidityPenaltyHook": "@openzeppelin/uniswap-hooks/general/LiquidityPenaltyHook.sol",
