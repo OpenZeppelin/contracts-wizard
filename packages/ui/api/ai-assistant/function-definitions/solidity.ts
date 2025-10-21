@@ -11,12 +11,12 @@ import {
   solidityGovernorDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
-import type { QuorumMode, TimelockOptions, VotesOptions } from '@openzeppelin/wizard/dist/governor';
-import type { ClockMode } from '@openzeppelin/wizard/dist/set-clock-mode';
-import type { CrossChainBridging } from '@openzeppelin/wizard/dist/erc20';
-import type { Limitations } from '@openzeppelin/wizard/dist/stablecoin';
-import type { ERC7579ModulesOptions, SignatureValidationOptions } from '@openzeppelin/wizard/dist/account';
-import type { SignerOptions } from '@openzeppelin/wizard/dist/signer';
+import type { QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/solidity/dist/governor';
+import type { ClockMode } from '../../../../core/solidity/dist/set-clock-mode';
+import type { CrossChainBridging } from '../../../../core/solidity/dist/erc20';
+import type { Limitations } from '../../../../core/solidity/dist/stablecoin';
+import type { ERC7579ModulesOptions, SignatureValidationOptions } from '../../../../core/solidity/dist/account';
+import type { SignerOptions } from '../../../../core/solidity/dist/signer';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
