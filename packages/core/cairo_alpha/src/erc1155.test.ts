@@ -5,6 +5,7 @@ import type { ERC1155Options } from './erc1155';
 import { buildERC1155 } from './erc1155';
 import { printContract } from './print';
 import { royaltyInfoOptions } from './set-royalty-info';
+import { AccessControl, darDefaultOpts, darCustomOps } from './set-access-control';
 
 const NAME = 'MyToken';
 const CUSTOM_NAME = 'CustomToken';
@@ -54,7 +55,7 @@ testERC1155('basic non-upgradeable', {
 testERC1155('basic', {});
 
 testERC1155('basic + roles', {
-  access: 'roles',
+  access: AccessControl.Roles,
 });
 
 testERC1155('no updatable uri', {
@@ -75,7 +76,17 @@ testERC1155('mintable', {
 
 testERC1155('mintable + roles', {
   mintable: true,
-  access: 'roles',
+  access: AccessControl.Roles,
+});
+
+testERC1155('mintable + roles DAR (default opts)', {
+  mintable: true,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+});
+
+testERC1155('mintable + roles DAR (custom opts)', {
+  mintable: true,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
 });
 
 testERC1155('royalty info disabled', {
@@ -84,33 +95,72 @@ testERC1155('royalty info disabled', {
 
 testERC1155('royalty info enabled default + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: 'ownable',
+  access: AccessControl.Ownable,
 });
 
 testERC1155('royalty info enabled default + roles', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: 'roles',
+  access: AccessControl.Roles,
+});
+
+testERC1155('royalty info enabled default + roles-DAR (custom opts)', {
+  royaltyInfo: royaltyInfoOptions.enabledDefault,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
 });
 
 testERC1155('royalty info enabled custom + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: 'ownable',
+  access: AccessControl.Ownable,
 });
 
 testERC1155('royalty info enabled custom + roles', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: 'roles',
+  access: AccessControl.Roles,
 });
 
-testERC1155('full non-upgradeable', {
+testERC1155('royalty info enabled custom + roles-DAR (default opts)', {
+  royaltyInfo: royaltyInfoOptions.enabledCustom,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+});
+
+testERC1155('royalty info enabled custom + roles-DAR (custom opts)', {
+  royaltyInfo: royaltyInfoOptions.enabledCustom,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+});
+
+testERC1155('full non-upgradeable roles', {
   ...allFeaturesON,
-  access: 'roles',
+  access: AccessControl.Roles,
   upgradeable: false,
 });
 
-testERC1155('full upgradeable', {
+testERC1155('full upgradeable roles', {
   ...allFeaturesON,
-  access: 'roles',
+  access: AccessControl.Roles,
+  upgradeable: true,
+});
+
+testERC1155('full non-upgradeable roles-DAR (default opts)', {
+  ...allFeaturesON,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+  upgradeable: false,
+});
+
+testERC1155('full non-upgradeable roles-DAR (custom opts)', {
+  ...allFeaturesON,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  upgradeable: false,
+});
+
+testERC1155('full upgradeable roles-DAR (default opts)', {
+  ...allFeaturesON,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+  upgradeable: true,
+});
+
+testERC1155('full upgradeable roles-DAR (custom opts)', {
+  ...allFeaturesON,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
   upgradeable: true,
 });
 
@@ -122,7 +172,7 @@ testAPIEquivalence('API full upgradeable', {
   ...allFeaturesON,
   name: CUSTOM_NAME,
   baseUri: BASE_URI,
-  access: 'roles',
+  access: AccessControl.Roles,
   upgradeable: true,
 });
 
