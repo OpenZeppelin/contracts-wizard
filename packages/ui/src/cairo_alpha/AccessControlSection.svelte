@@ -26,7 +26,7 @@
     }
 
     wasRequired = required;
-    if (accessType !== false) { 
+    if (accessType !== false) {
       defaultTypeWhenEnabled = accessType;
     }
   }
@@ -70,14 +70,15 @@
         Initial delay
         <HelpTooltip>The initial delay before the default admin can be assigned.</HelpTooltip>
       </span>
-      <input bind:value={darInitialDelay} placeholder='' use:error={errors?.darInitialDelay} />
+      <input bind:value={darInitialDelay} placeholder="" use:error={errors?.darInitialDelay} />
     </label>
     <label class="labeled-input">
       <span class="flex justify-between pr-2">
         Default admin delay increase
-        <HelpTooltip>The duration by which the delay for the default admin increases after each assignment.</HelpTooltip>
+        <HelpTooltip>The duration by which the delay for the default admin increases after each assignment.</HelpTooltip
+        >
       </span>
-      <input bind:value={darDefaultDelayIncrease} placeholder='' use:error={errors?.darDefaultDelayIncrease} />
+      <input bind:value={darDefaultDelayIncrease} placeholder="" use:error={errors?.darDefaultDelayIncrease} />
     </label>
   {/if}
 </ExpandableToggleRadio>
