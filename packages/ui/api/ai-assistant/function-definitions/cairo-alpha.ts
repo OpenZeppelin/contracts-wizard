@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoAlphaSharedFunctionDefinition } from './cairo-alpha-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import {
@@ -47,7 +47,7 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         description: cairoERC20Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'ERC20'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC20'>;
@@ -81,7 +81,7 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         description: cairoERC721Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'ERC721'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC721'>;
@@ -111,7 +111,7 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
         description: cairoERC1155Descriptions.updatableUri,
       },
     },
-    required: ['name', 'baseUri'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'ERC1155'>()(['name', 'baseUri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC1155'>;
@@ -180,7 +180,7 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
         description: cairoGovernorDescriptions.settings,
       },
     },
-    required: ['name', 'delay', 'period'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'Governor'>()(['name', 'delay', 'period']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'Governor'>;
@@ -210,7 +210,13 @@ export const cairoAlphaVestingAIFunctionDefinition = {
         description: cairoVestingDescriptions.schedule,
       },
     },
-    required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'Vesting'>()([
+      'name',
+      'schedule',
+      'cliffDuration',
+      'duration',
+      'startDate',
+    ]),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'Vesting'>;
@@ -238,7 +244,7 @@ export const cairoAlphaAccountAIFunctionDefinition = {
         description: cairoAccountDescriptions.outsideExecution,
       },
     },
-    required: ['name', 'type'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'Account'>()(['name', 'type']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'Account'>;
@@ -255,7 +261,7 @@ export const cairoAlphaMultisigAIFunctionDefinition = {
         description: cairoMultisigDescriptions.quorum,
       },
     },
-    required: ['name', 'quorum'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'Multisig'>()(['name', 'quorum']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'Multisig'>;
@@ -274,7 +280,7 @@ export const cairoAlphaCustomAIFunctionDefinition = {
         'info',
       ]),
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'cairoAlpha', 'Custom'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'Custom'>;

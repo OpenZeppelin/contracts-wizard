@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 import {
@@ -32,7 +32,7 @@ export const stellarFungibleAIFunctionDefinition = {
         description: stellarFungibleDescriptions.premint,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'Fungible'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
@@ -68,7 +68,7 @@ export const stellarStablecoinAIFunctionDefinition = {
         description: stellarCommonDescriptions.upgradeable,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'Stablecoin'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Stablecoin'>;
@@ -106,7 +106,7 @@ export const stellarNonFungibleAIFunctionDefinition = {
         description: stellarCommonDescriptions.upgradeable,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'NonFungible'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'NonFungible'>;

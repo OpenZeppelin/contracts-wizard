@@ -1,4 +1,5 @@
 import type { AiFunctionCallAnyOf, StringifyPrimaryType, ExactRequiredKeys, EnumValues } from './helpers.ts';
+import { exactRequiredKeys } from './helpers.ts';
 import type { LanguageContractsNames, LanguageContractsOptions, SupportedLanguage } from './languages.ts';
 
 type AiFunctionType<TType> = {
@@ -44,6 +45,23 @@ export type AiFunctionDefinition<
     additionalProperties: false;
   };
 };
+
+type ContractOptions<
+  TLanguage extends SupportedLanguage,
+  TContractName extends keyof LanguageContractsOptions<TLanguage>,
+> = LanguageContractsOptions<TLanguage>[TContractName];
+
+type DefaultOmit<T> = 'kind' extends keyof Required<T> ? 'kind' : never;
+
+export const contractExactRequiredKeys =
+  <
+    TLanguage extends SupportedLanguage,
+    TContractName extends keyof LanguageContractsOptions<TLanguage>,
+    TOmit extends keyof Required<ContractOptions<TLanguage, TContractName>> = DefaultOmit<
+      ContractOptions<TLanguage, TContractName>
+    >,
+  >() =>
+    exactRequiredKeys<Omit<ContractOptions<TLanguage, TContractName>, 'kind' | TOmit>>();
 
 export type SimpleAiFunctionDefinition = {
   name: string;

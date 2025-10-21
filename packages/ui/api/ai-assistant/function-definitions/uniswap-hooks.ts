@@ -1,5 +1,5 @@
 import type { HookName, ShareOption } from '../../../../core/uniswap-hooks/dist';
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { enumValues } from '../types/helpers.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
@@ -9,7 +9,11 @@ import {
   uniswapHooksSharesDescriptions,
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
+  byHooksDescriptions,
 } from '../../../../common/src/ai/descriptions/uniswap-hooks.ts';
+
+//We keep this to type check that byHooksDescriptions has each HookName description as it can not be imported in common
+const _eachHooksDescription = byHooksDescriptions satisfies Record<HookName, string>;
 
 export const uniswapHooksHooksAIFunctionDefinition = {
   name: 'Hooks',
@@ -152,7 +156,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
         },
       },
     },
-    required: [
+    required: contractExactRequiredKeys<'uniswapHooks', 'Hooks'>()([
       'name',
       'hook',
       'pausable',
@@ -162,7 +166,7 @@ export const uniswapHooksHooksAIFunctionDefinition = {
       'shares',
       'permissions',
       'inputs',
-    ],
+    ]),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'uniswapHooks', 'Hooks'>;

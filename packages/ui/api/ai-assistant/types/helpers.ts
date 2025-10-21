@@ -8,7 +8,21 @@ type RequiredKeys<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K;
 }[keyof T];
 
+type EnsureExactKeys<TKeys extends PropertyKey, TTuple extends readonly TKeys[]> =
+  Exclude<TKeys, TTuple[number]> extends never
+    ? Exclude<TTuple[number], TKeys> extends never
+      ? TTuple
+      : never
+    : never;
+
 export type ExactRequiredKeys<T extends object> = readonly RequiredKeys<T>[];
+
+export const exactRequiredKeys =
+  <TContract extends object>() =>
+  <const TTuple extends readonly RequiredKeys<TContract>[]>(
+    keys: EnsureExactKeys<RequiredKeys<TContract>, TTuple>,
+  ) =>
+    keys;
 
 export type EnumValues<T> = [T] extends [Primitive] ? readonly T[] : never;
 

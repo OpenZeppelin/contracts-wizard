@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
@@ -69,7 +69,7 @@ export const solidityERC20AIFunctionDefinition = {
         description: solidityERC20Descriptions.callback,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'ERC20'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC20'>;
@@ -111,7 +111,7 @@ export const solidityERC721AIFunctionDefinition = {
         description: solidityERC721Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'ERC721'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC721'>;
@@ -144,7 +144,7 @@ export const solidityERC1155AIFunctionDefinition = {
         description: solidityERC1155Descriptions.updatableUri,
       },
     },
-    required: ['name', 'uri'],
+    required: contractExactRequiredKeys<'solidity', 'ERC1155'>()(['name', 'uri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC1155'>;
@@ -173,7 +173,7 @@ export const solidityStablecoinAIFunctionDefinition = {
         description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'Stablecoin'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Stablecoin'>;
@@ -243,7 +243,7 @@ export const solidityAccountAIFunctionDefinition = {
         description: 'Access control is not available for an account contract. It always authorizes itself.',
       },
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'solidity', 'Account'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Account'>;
@@ -320,7 +320,7 @@ export const solidityGovernorAIFunctionDefinition = {
           'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
       },
     },
-    required: ['name', 'delay', 'period'],
+    required: contractExactRequiredKeys<'solidity', 'Governor'>()(['name', 'delay', 'period']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Governor'>;
@@ -337,7 +337,7 @@ export const solidityCustomAIFunctionDefinition = {
       'upgradeable',
       'info',
     ]),
-    required: ['name'],
+    required: contractExactRequiredKeys<'solidity', 'Custom'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Custom'>;
