@@ -1,12 +1,10 @@
 import type {
+  LanguageContractsOptions,
   LanguageContractsNames,
   SupportedLanguage,
   AllLanguageContractsNames,
-  AllLanguageContractOptionValues,
-  LanguageContractOptionValues,
+  AllLanguagesContractsOptions,
 } from './languages.ts';
-
-type DistributivePartial<T> = T extends unknown ? Partial<T> : never;
 
 export type Chat = {
   role: 'user' | 'assistant' | 'system';
@@ -14,8 +12,8 @@ export type Chat = {
 };
 
 export type AiAssistantContractsOptions<TLanguage extends SupportedLanguage = never> = [TLanguage] extends [never]
-  ? DistributivePartial<AllLanguageContractOptionValues>
-  : DistributivePartial<LanguageContractOptionValues<TLanguage>>;
+  ? Partial<AllLanguagesContractsOptions>
+  : Required<LanguageContractsOptions<TLanguage>[keyof LanguageContractsOptions<TLanguage>]>;
 
 export type AiAssistantFunctionName<TLanguage extends SupportedLanguage = never> = [TLanguage] extends [never]
   ? AllLanguageContractsNames
