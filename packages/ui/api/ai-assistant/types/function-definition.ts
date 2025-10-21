@@ -53,15 +53,13 @@ type ContractOptions<
 
 type DefaultOmit<T> = 'kind' extends keyof Required<T> ? 'kind' : never;
 
-export const contractExactRequiredKeys =
-  <
-    TLanguage extends SupportedLanguage,
-    TContractName extends keyof LanguageContractsOptions<TLanguage>,
-    TOmit extends keyof Required<ContractOptions<TLanguage, TContractName>> = DefaultOmit<
-      ContractOptions<TLanguage, TContractName>
-    >,
-  >() =>
-    exactRequiredKeys<Omit<ContractOptions<TLanguage, TContractName>, 'kind' | TOmit>>();
+export const contractExactRequiredKeys = <
+  TLanguage extends SupportedLanguage,
+  TContractName extends keyof LanguageContractsOptions<TLanguage>,
+  TOmit extends keyof Required<ContractOptions<TLanguage, TContractName>> = DefaultOmit<
+    ContractOptions<TLanguage, TContractName>
+  >,
+>() => exactRequiredKeys<Omit<ContractOptions<TLanguage, TContractName>, 'kind' | TOmit>>();
 
 export type SimpleAiFunctionDefinition = {
   name: string;

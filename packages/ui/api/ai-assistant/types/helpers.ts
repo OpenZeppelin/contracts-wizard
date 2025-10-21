@@ -19,9 +19,7 @@ export type ExactRequiredKeys<T extends object> = readonly RequiredKeys<T>[];
 
 export const exactRequiredKeys =
   <TContract extends object>() =>
-  <const TTuple extends readonly RequiredKeys<TContract>[]>(
-    keys: EnsureExactKeys<RequiredKeys<TContract>, TTuple>,
-  ) =>
+  <const TTuple extends readonly RequiredKeys<TContract>[]>(keys: EnsureExactKeys<RequiredKeys<TContract>, TTuple>) =>
     keys;
 
 export type EnumValues<T> = [T] extends [Primitive] ? readonly T[] : never;
