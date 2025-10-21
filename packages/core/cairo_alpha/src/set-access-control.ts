@@ -23,7 +23,7 @@ export const darDefaultOpts: RolesDefaultAdminRulesOptions = {
   darDefaultDelayIncrease: '5 days',
 };
 
-export const darCustomOps: RolesDefaultAdminRulesOptions = {
+export const darCustomOpts: RolesDefaultAdminRulesOptions = {
   darInitialDelay: '2 days',
   darDefaultDelayIncrease: '1 week',
 };
@@ -43,7 +43,7 @@ export const accessOptions = [
   AccessControl.Ownable,
   AccessControl.Roles,
   AccessControl.RolesDefaultAdminRules(darDefaultOpts),
-  AccessControl.RolesDefaultAdminRules(darCustomOps),
+  AccessControl.RolesDefaultAdminRules(darCustomOpts),
 ] as const;
 
 const DEFAULT_ADMIN_DELAY_INCREASE_WAIT = BigInt(5 * 24 * 60 * 60); // 5 days
@@ -51,6 +51,9 @@ const DEFAULT_ADMIN_DELAY_INCREASE_WAIT = BigInt(5 * 24 * 60 * 60); // 5 days
 /// Sets access control for the contract by adding inheritance.
 export function setAccessControl(c: ContractBuilder, access: Access): void {
   switch (access.type) {
+    case false: {
+      break;
+    }
     case 'ownable': {
       c.addComponent(components.OwnableComponent, [{ lit: 'owner' }], true);
       c.addUseClause('starknet', 'ContractAddress');
@@ -133,7 +136,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           'darDefaultDelayIncrease',
           'u64',
         );
-        if (defaultAdminDelayIncreaseWait == DEFAULT_ADMIN_DELAY_INCREASE_WAIT) {
+        if (defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT) {
           c.addUseClause('openzeppelin::access::accesscontrol::extensions', 'DefaultConfig', {
             alias: 'AccessControlDefaultAdminRulesDefaultConfig',
           });
@@ -158,6 +161,10 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       }
       break;
     }
+    default: {
+      const _: never = access.type;
+      throw new Error('Unknown access type');
+    }
   }
 }
 
@@ -172,7 +179,7 @@ export function requireAccessControl(
   roleIdPrefix: string,
   roleOwner: string | undefined,
 ): void {
-  const access = { ...accessObj }; // make a copy to avoid triggering UI updates
+  const access = { ...accessObj }; // make a copy to avoid mutating caller-supplied object
   if (access.type === false) {
     access.type = DEFAULT_ACCESS_CONTROL;
   }

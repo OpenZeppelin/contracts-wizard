@@ -4,7 +4,7 @@ import type { ERC721Options } from './erc721';
 import { buildERC721 } from './erc721';
 import { printContract } from './print';
 import { royaltyInfoOptions } from './set-royalty-info';
-import { AccessControl, darDefaultOpts, darCustomOps } from './set-access-control';
+import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
 
 import type { OptionsError } from '.';
 import { erc721 } from '.';
@@ -101,7 +101,7 @@ testERC721('mintable + roles-DAR (default opts)', {
 
 testERC721('mintable + roles-DAR (custom opts)', {
   mintable: true,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC721('royalty info disabled', {
@@ -125,7 +125,7 @@ testERC721('royalty info enabled default + roles-DAR (default opts)', {
 
 testERC721('royalty info enabled default + roles-DAR (custom opts)', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC721('royalty info enabled custom + ownable', {
@@ -145,7 +145,7 @@ testERC721('royalty info enabled custom + roles-DAR (default opts)', {
 
 testERC721('royalty info enabled custom + roles-DAR (custom opts)', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC721('full non-upgradeable', {

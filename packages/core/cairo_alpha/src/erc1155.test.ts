@@ -5,7 +5,7 @@ import type { ERC1155Options } from './erc1155';
 import { buildERC1155 } from './erc1155';
 import { printContract } from './print';
 import { royaltyInfoOptions } from './set-royalty-info';
-import { AccessControl, darDefaultOpts, darCustomOps } from './set-access-control';
+import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
 
 const NAME = 'MyToken';
 const CUSTOM_NAME = 'CustomToken';
@@ -86,7 +86,7 @@ testERC1155('mintable + roles DAR (default opts)', {
 
 testERC1155('mintable + roles DAR (custom opts)', {
   mintable: true,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC1155('royalty info disabled', {
@@ -105,7 +105,7 @@ testERC1155('royalty info enabled default + roles', {
 
 testERC1155('royalty info enabled default + roles-DAR (custom opts)', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC1155('royalty info enabled custom + ownable', {
@@ -125,7 +125,7 @@ testERC1155('royalty info enabled custom + roles-DAR (default opts)', {
 
 testERC1155('royalty info enabled custom + roles-DAR (custom opts)', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC1155('full non-upgradeable roles', {
@@ -148,7 +148,7 @@ testERC1155('full non-upgradeable roles-DAR (default opts)', {
 
 testERC1155('full non-upgradeable roles-DAR (custom opts)', {
   ...allFeaturesON,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
   upgradeable: false,
 });
 
@@ -160,7 +160,7 @@ testERC1155('full upgradeable roles-DAR (default opts)', {
 
 testERC1155('full upgradeable roles-DAR (custom opts)', {
   ...allFeaturesON,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
   upgradeable: true,
 });
 

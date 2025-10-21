@@ -4,7 +4,7 @@ import { custom } from '.';
 import type { CustomOptions } from './custom';
 import { buildCustom } from './custom';
 import { printContract } from './print';
-import { AccessControl, darDefaultOpts, darCustomOps } from './set-access-control';
+import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
 
 function testCustom(title: string, opts: Partial<CustomOptions>) {
   test(title, t => {
@@ -65,7 +65,7 @@ testCustom('access control roles default admin rules (default opts)', {
 });
 
 testCustom('access control roles default admin rules (custom opts)', {
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testCustom('pausable with access control disabled', {

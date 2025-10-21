@@ -57,7 +57,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
   if (!options.enabled) {
     return;
   }
-  const access = { ...accessObj }; // make a copy to avoid triggering UI updates
+  const access = { ...accessObj }; // make a copy to avoid mutating caller-supplied object
   if (access.type === false) {
     access.type = DEFAULT_ACCESS_CONTROL;
   }

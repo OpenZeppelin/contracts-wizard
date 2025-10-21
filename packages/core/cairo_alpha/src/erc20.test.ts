@@ -3,7 +3,7 @@ import test from 'ava';
 import type { ERC20Options } from './erc20';
 import { buildERC20, getInitialSupply } from './erc20';
 import { printContract } from './print';
-import { AccessControl, darDefaultOpts, darCustomOps } from './set-access-control';
+import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
 
 import type { OptionsError } from '.';
 import { erc20 } from '.';
@@ -64,7 +64,7 @@ testERC20('erc20 pausable with roles-DAR (default opts)', {
 
 testERC20('erc20 pausable with roles-DAR (custom opts)', {
   pausable: true,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC20('erc20 burnable pausable', {
@@ -112,7 +112,7 @@ testERC20('erc20 mintable with roles-DAR (default opts)', {
 
 testERC20('erc20 mintable with roles-DAR (custom opts)', {
   mintable: true,
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testERC20('erc20 votes', {
@@ -206,7 +206,7 @@ testERC20('erc20 full upgradeable with roles-DAR (default opts)', {
 
 testERC20('erc20 full upgradeable with roles-DAR (custom opts)', {
   premint: '2000',
-  access: AccessControl.RolesDefaultAdminRules(darCustomOps),
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
   burnable: true,
   mintable: true,
   votes: true,
