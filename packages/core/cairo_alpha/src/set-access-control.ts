@@ -207,6 +207,10 @@ export function requireAccessControl(
 
       break;
     }
+    default: {
+      const _: never = access.type;
+      throw new Error('Unknown access type');
+    }
   }
 }
 
