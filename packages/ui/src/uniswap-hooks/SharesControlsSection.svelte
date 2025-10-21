@@ -33,13 +33,13 @@
   {disabledReason}
   defaultValue="ERC20"
   helpContent={'Shares are useful to account for the ownership of a portion of a liquidity position or pending credit.'}
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20"
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20"
 >
   <div class="checkbox-group">
     <label class:checked={opts.shares.options === 'ERC20'}>
       <input type="radio" bind:group={opts.shares.options} value="ERC20" disabled={isERC20Disabled} />
       ERC-20
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20">
         ERC-20 shares are useful for single-token accounting.
       </HelpTooltip>
     </label>
@@ -47,7 +47,7 @@
     <label class:checked={opts.shares.options === 'ERC1155'}>
       <input type="radio" bind:group={opts.shares.options} value="ERC1155" disabled={isERC1155Disabled} />
       ERC-1155
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155">
         ERC-1155 shares are useful for multi-token accounting.
       </HelpTooltip>
     </label>
@@ -55,7 +55,7 @@
     <label class:checked={opts.shares.options === 'ERC6909'}>
       <input type="radio" bind:group={opts.shares.options} value="ERC6909" disabled={isERC6909Disabled} />
       ERC-6909
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc6909">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc6909">
         ERC-6909 shares are useful for optimized multi-token accounting.
       </HelpTooltip>
     </label>

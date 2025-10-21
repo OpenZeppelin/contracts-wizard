@@ -165,7 +165,7 @@
     <label class:checked={opts.safeCast}>
       <input type="checkbox" bind:checked={opts.safeCast} />
       SafeCast
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#SafeCast">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#SafeCast">
         Utility library to safely cast between numeric types, i.e. casting an uint256 fee to an uint128 BalanceDelta.
       </HelpTooltip>
     </label>
@@ -173,7 +173,7 @@
     <label class:checked={opts.transientStorage}>
       <input type="checkbox" bind:checked={opts.transientStorage} />
       Transient Storage
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#TransientSlot">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#TransientSlot">
         Utility library for simplifying the usage of Transient Storage, which is discarded after the transaction ends
         and whose gas costs are drastically reduced in comparison to regular storage.
       </HelpTooltip>
@@ -188,7 +188,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
         emergency response.
       </HelpTooltip>
