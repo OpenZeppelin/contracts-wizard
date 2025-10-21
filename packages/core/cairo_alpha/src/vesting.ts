@@ -1,14 +1,14 @@
 import type { BaseImplementedTrait, Contract } from './contract';
 import { ContractBuilder } from './contract';
 import { contractDefaults as commonDefaults } from './common-options';
-import { setAccessControl } from './set-access-control';
+import { AccessControl, setAccessControl } from './set-access-control';
 import { setUpgradeable } from './set-upgradeable';
 import type { Info } from './set-info';
 import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
 import { printContract } from './print';
 import { OptionsError } from './error';
-import { durationToTimestamp } from './utils/duration';
+import { durationToSeconds } from './utils/duration';
 import { toUint, validateUint } from './utils/convert-strings';
 
 export type VestingSchedule = 'linear' | 'custom';
@@ -55,7 +55,7 @@ export function buildVesting(opts: VestingOptions): Contract {
   setInfo(c, allOpts.info);
 
   // Vesting component depends on Ownable component
-  const access = 'ownable';
+  const access = AccessControl.Ownable;
   setAccessControl(c, access);
 
   // Must be non-upgradable to guarantee vesting according to the schedule
@@ -159,7 +159,7 @@ function getVestingStart(opts: VestingOptions): { timestampInSec: bigint; format
 
 function getVestingDuration(opts: VestingOptions): number {
   try {
-    return durationToTimestamp(opts.duration);
+    return durationToSeconds(opts.duration);
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
@@ -173,7 +173,7 @@ function getVestingDuration(opts: VestingOptions): number {
 
 function getCliffDuration(opts: VestingOptions): number {
   try {
-    return durationToTimestamp(opts.cliffDuration);
+    return durationToSeconds(opts.cliffDuration);
   } catch (e) {
     if (e instanceof Error) {
       throw new OptionsError({
