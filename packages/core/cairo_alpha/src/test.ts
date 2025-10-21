@@ -112,7 +112,7 @@ test('is access control required', async t => {
       case 'ERC721':
       case 'ERC1155':
       case 'Custom':
-        if (!contract.options.access) {
+        if (!contract.options.access?.type) {
           if (isAccessControlRequired(contract.options)) {
             t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
           } else {
