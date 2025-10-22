@@ -60,16 +60,13 @@ class TestGenerator {
   }
 
   private declareVariables(args: FunctionArgument[]): Lines[] {
-    const vars = [];
-    for (let i = 0; i < args.length; i++) {
-      if (args[i]!.type === 'address') {
-        vars.push(`const ${args[i]!.name} = (await ethers.getSigners())[${i}].address;`);
+    return args.flatMap((arg, i) => {
+      if (arg.type === 'address') {
+        return [`const ${arg.name} = (await ethers.getSigners())[${i}].address;`];
       } else {
-        vars.push(`// TODO: Set the following constructor argument`);
-        vars.push(`// const ${args[i]!.name} = ...;`);
+        return [`// TODO: Set the following constructor argument`, `// const ${arg.name} = ...;`];
       }
-    }
-    return vars;
+    });
   }
 
   private getDeployLines(c: Contract, argNames: string[]): Lines[] {
