@@ -30,7 +30,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Quorum
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/governance/multisig#signer_management">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/governance/multisig#signer_management">
         The minimal number of confirmations required to approve a transaction.
       </HelpTooltip>
     </span>
