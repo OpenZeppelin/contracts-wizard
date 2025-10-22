@@ -25,19 +25,23 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
         if (c.interfaceFlags.has('ISRC5')) {
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlCamelImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlWithDelayImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlWithDelayImpl<ContractState>',
           });
         } else {
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlMixinImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlMixinImpl<ContractState>',
           });
           c.addInterfaceFlag('ISRC5');
@@ -50,8 +54,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           type: 'ContractAddress',
         });
 
-        c.addUseClause('openzeppelin::access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
-        c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
+        c.addUseClause('openzeppelin_access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
+        c.addConstructorCode('self.access_control._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
     }
@@ -90,11 +94,11 @@ export function requireAccessControl(
         c.addUseClause('starknet', 'ContractAddress');
         c.addConstructorArgument({ name: roleOwner, type: 'ContractAddress' });
         if (addedSuper) {
-          c.addConstructorCode(`self.accesscontrol._grant_role(${roleId}, ${roleOwner})`);
+          c.addConstructorCode(`self.access_control._grant_role(${roleId}, ${roleOwner})`);
         }
       }
 
-      c.addFunctionCodeBefore(trait, fn, `self.accesscontrol.assert_only_role(${roleId})`);
+      c.addFunctionCodeBefore(trait, fn, `self.access_control.assert_only_role(${roleId})`);
 
       break;
     }
@@ -103,7 +107,7 @@ export function requireAccessControl(
 
 const components = defineComponents({
   OwnableComponent: {
-    path: 'openzeppelin::access::ownable',
+    path: 'openzeppelin_access::ownable',
     substorage: {
       name: 'ownable',
       type: 'OwnableComponent::Storage',
@@ -115,6 +119,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'OwnableMixinImpl',
+        embed: true,
         value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
       },
       {
@@ -125,9 +130,9 @@ const components = defineComponents({
     ],
   },
   AccessControlComponent: {
-    path: 'openzeppelin::access::accesscontrol',
+    path: 'openzeppelin_access::accesscontrol',
     substorage: {
-      name: 'accesscontrol',
+      name: 'access_control',
       type: 'AccessControlComponent::Storage',
     },
     event: {
