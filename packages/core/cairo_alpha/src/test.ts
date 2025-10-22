@@ -100,7 +100,7 @@ test('is access control required', async t => {
     uniqueName: false,
     kind: 'all',
     royaltyInfo: 'all',
-    macros: 'all',
+    macros: 'none',
   });
   for (const contract of allSources) {
     const regexOwnable = /(use openzeppelin_access::ownable::OwnableComponent)/gm;

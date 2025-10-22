@@ -2,13 +2,13 @@ export type MacrosOptions = {
   withComponents: boolean;
 };
 
-export const defaults: MacrosOptions = { withComponents: true };
-export type MacrosSubset = 'all' |'none' | 'with_components';
-
 const options = {
   withComponentsOFF: { withComponents: false },
   withComponentsON: { withComponents: true },
 } as const;
+
+export const defaults: MacrosOptions = options.withComponentsOFF;
+export type MacrosSubset = 'all' |'none' | 'with_components';
 
 export function resolveMacrosOptions(subset: MacrosSubset): MacrosOptions[] {
   switch (subset) {
