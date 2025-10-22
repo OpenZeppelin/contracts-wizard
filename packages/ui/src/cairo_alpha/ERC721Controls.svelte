@@ -2,12 +2,13 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { erc721, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { erc721, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -16,6 +17,7 @@
     ...erc721.defaults,
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosInfo is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -113,5 +115,7 @@
 <RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />
