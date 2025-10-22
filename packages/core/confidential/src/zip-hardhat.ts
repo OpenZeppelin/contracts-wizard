@@ -23,6 +23,10 @@ class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {
   protected getPrintContract(c: Contract): string {
     return printContract(c);
   }
+
+  protected getHardhatPlugins(c: Contract): string[] {
+    return super.getHardhatPlugins(c).concat(['fhevm']);
+  }
 }
 
 export async function zipHardhat(c: Contract): Promise<JSZip> {
