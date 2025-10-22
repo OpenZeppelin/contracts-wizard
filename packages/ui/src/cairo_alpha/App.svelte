@@ -26,6 +26,7 @@
     printContract,
     sanitizeKind,
     OptionsError,
+    macrosDefaults,
   } from '@openzeppelin/wizard-cairo-alpha';
   import { postConfig } from '../common/post-config';
 
@@ -63,7 +64,7 @@
 
   let contract: Contract = new ContractBuilder(
     initialOpts.name ?? 'MyToken',
-    { withComponents: true }
+    { withComponents: macrosDefaults.withComponents }
   );
 
   $: opts = allOpts[tab];

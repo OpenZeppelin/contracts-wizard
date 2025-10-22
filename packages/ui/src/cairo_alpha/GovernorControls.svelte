@@ -20,7 +20,7 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
-    macros: { ...macrosDefaults }, // create new object since MacrosInfo is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   let quorumAbsoluteInput: HTMLInputElement;

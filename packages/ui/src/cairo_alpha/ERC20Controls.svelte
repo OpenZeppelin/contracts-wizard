@@ -16,7 +16,7 @@
     ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
-    macros: { ...macrosDefaults }, // create new object since MacrosInfo is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;

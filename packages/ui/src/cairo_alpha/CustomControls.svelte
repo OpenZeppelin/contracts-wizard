@@ -14,7 +14,7 @@
     kind: 'Custom',
     ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
-    macros: { ...macrosDefaults }, // create new object since MacrosInfo is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
