@@ -101,16 +101,22 @@ function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: str
 }
 
 function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
-  if (network === 'zama-sepolia') {
-    c.addParent({
-      name: 'SepoliaConfig',
-      path: '@fhevm/solidity/config/ZamaConfig.sol',
-    });
-  } else if (network === 'zama-ethereum') {
-    c.addParent({
-      name: 'EthereumConfig',
-      path: '@fhevm/solidity/config/ZamaConfig.sol',
-    });
+  switch (network) {
+    case 'zama-sepolia':
+      c.addParent({
+        name: 'SepoliaConfig',
+        path: '@fhevm/solidity/config/ZamaConfig.sol',
+      });
+      break;
+    case 'zama-ethereum':
+      c.addParent({
+        name: 'EthereumConfig',
+        path: '@fhevm/solidity/config/ZamaConfig.sol',
+      });
+      break;
+    default:
+      const _: never = network;
+      throw new Error(`Unknown network config: ${network}`);
   }
 }
 
