@@ -46,29 +46,33 @@ jobs:
           # Exit immediately if a command exits with a non-zero status
           set -e
 
+          declare -a all_macros_options=("none" "with_components")
           declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "Account" "Multisig" "Governor" "Vesting" "Custom")
           declare -a all_royalty_info_options=("disabled" "enabled_default" "enabled_custom")
+
           for kind in "${all_kinds[@]}"; do
             scarb clean
 
             if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
-              for royalty_info_option in "${all_royalty_info_options[@]}"; do
-                proj_name="'$kind (royalty info: $royalty_info_option)' test project"
-                echo "Generating $proj_name..."
-                yarn run update_scarb_project $kind $royalty_info_option
+              for macros_option in "${all_macros_options[@]}"; do
+                for royalty_info_option in "${all_royalty_info_options[@]}"; do
+                  proj_name="'$kind (royalty info: $royalty_info_option, macros: $macros_option)' test project"
+                  echo "Generating $proj_name..."
+                  yarn run update_scarb_project --kind=$kind --royalty-info=$royalty_info_option --macros=$macros_option
 
-                echo "Compiling $proj_name..."
-                scarb build
+                  echo "Compiling $proj_name..."
+                  scarb build
 
-                echo "✅ Compiled $proj_name!"
-                echo "---------------------------------"
+                  echo "✅ Compiled $proj_name!"
+                  echo "---------------------------------"
+                done
               done
 
             else
               proj_name="'$kind' test project"
 
               echo "Generating $proj_name..."
-              yarn run update_scarb_project $kind
+              yarn run update_scarb_project --kind=$kind
 
               echo "Compiling $proj_name..."
               scarb build
