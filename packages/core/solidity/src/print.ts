@@ -38,7 +38,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       printImports(contract.imports, helpers),
 
       [
-        ...printTopLevelComments(contract.topLevelComments),
+        ...printTopLevelComments(contract.topLevelComments, contract.natspecTags.length > 0),
         ...printNatspecTags(contract.natspecTags),
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
@@ -288,8 +288,10 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
   return [type, arg.name].join(' ');
 }
 
-function printTopLevelComments(comments: string[]): string[] {
-  return comments.map(comment => `/// ${comment}`);
+function printTopLevelComments(comments: string[], withExtraBlankLine: boolean = false): string[] {
+  const lines = comments.map(comment => `// ${comment}`);
+  if (withExtraBlankLine) lines.push('//');
+  return lines;
 }
 
 function printNatspecTags(tags: NatspecTag[]): string[] {
