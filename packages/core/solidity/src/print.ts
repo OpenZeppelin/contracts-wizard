@@ -316,12 +316,11 @@ function printImports(imports: ImportContract[], helpers: Helpers): string[] {
 function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
   if (!contract.libraries || contract.libraries.length === 0) return [];
 
-  const lines: string[] = [];
-  for (const lib of contract.libraries.sort((a, b) => a.library.name.localeCompare(b.library.name))) {
-    const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b));
-    for (const type of sortedTypes) {
-      lines.push(`using ${transformName(lib.library)} for ${type};`);
-    }
-  }
-  return lines;
+  return contract.libraries
+    .sort((a, b) => a.library.name.localeCompare(b.library.name))
+    .flatMap(lib =>
+      [...lib.usingFor]
+        .sort((a, b) => a.localeCompare(b))
+        .map(type => `using ${transformName(lib.library)} for ${type};`),
+    );
 }
