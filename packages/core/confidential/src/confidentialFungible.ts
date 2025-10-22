@@ -114,9 +114,10 @@ function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
         path: '@fhevm/solidity/config/ZamaConfig.sol',
       });
       break;
-    default:
+    default: {
       const _: never = network;
       throw new Error(`Unknown network config: ${network}`);
+    }
   }
 }
 
