@@ -24,7 +24,14 @@ function printWithComponentsDirective(contract: Contract): Lines[] {
     return [];
   }
   const componentsStr = contract.components
-    .map(c => c.name.substring(0, c.name.indexOf('Component')))
+    .map(c => c.name)
+    .map(name => {
+      const idx = name.indexOf('Component');
+      if (idx === -1) {
+        throw new Error(`Component name "${name}" must contain "Component" substring`);
+      }
+      return name.substring(0, idx);
+    }) 
     .join(', ');
   return [`#[with_components(${componentsStr})]`];
 }
@@ -170,7 +177,7 @@ function printComponentDeclarations(contract: Contract): Lines[] {
     return [];
   }
   return contract.components
-    .map(c => `component!(path: ${c.name}, storage: ${c.substorage.name}, event: ${c.event.name});`)
+    .map(c => `component!(path: ${c.name}, storage: ${c.substorage.name}, event: ${c.event.name});`);
 }
 
 function printImpls(contract: Contract): Lines[] {
