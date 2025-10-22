@@ -3,6 +3,7 @@ import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
+import { resolveMacrosOptions } from '../set-macros';
 
 const booleans = [true, false];
 
@@ -20,6 +21,7 @@ const blueprint = {
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
+  macros: resolveMacrosOptions('all'),
 };
 
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {

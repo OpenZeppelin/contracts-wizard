@@ -17,6 +17,7 @@ import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { MacrosSubset } from '../set-macros';
 
 export type Subset = 'all' | 'minimal-cover';
 
@@ -25,8 +26,9 @@ export type KindSubset = 'all' | keyof KindedOptions;
 export function* generateOptions(params: {
   kind: KindSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 }): Generator<GenericOptions> {
-  const { kind, royaltyInfo } = params;
+  const { kind, royaltyInfo, macros } = params;
   if (kind === 'all' || kind === 'ERC20') {
     for (const kindOpts of generateERC20Options()) {
       yield { kind: 'ERC20', ...kindOpts };
@@ -34,13 +36,13 @@ export function* generateOptions(params: {
   }
 
   if (kind === 'all' || kind === 'ERC721') {
-    for (const kindOpts of generateERC721Options({ royaltyInfo })) {
+    for (const kindOpts of generateERC721Options({ royaltyInfo, macros })) {
       yield { kind: 'ERC721', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC1155') {
-    for (const kindOpts of generateERC1155Options({ royaltyInfo })) {
+    for (const kindOpts of generateERC1155Options({ royaltyInfo, macros })) {
       yield { kind: 'ERC1155', ...kindOpts };
     }
   }
@@ -90,11 +92,12 @@ function generateContractSubset(params: {
   subset: Subset;
   kind: KindSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 }): GeneratedContract[] {
-  const { subset, kind, royaltyInfo } = params;
+  const { subset, kind, royaltyInfo, macros } = params;
   const contracts = [];
 
-  for (const options of generateOptions({ kind, royaltyInfo })) {
+  for (const options of generateOptions({ kind, royaltyInfo, macros })) {
     const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
     try {
       const contract = buildGeneric(options);
@@ -144,10 +147,11 @@ export function* generateSources(params: {
   uniqueName: boolean;
   kind: KindSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 }): Generator<GeneratedSource> {
-  const { subset, uniqueName, kind, royaltyInfo } = params;
+  const { subset, uniqueName, kind, royaltyInfo, macros } = params;
   let counter = 1;
-  for (const c of generateContractSubset({ subset, kind, royaltyInfo })) {
+  for (const c of generateContractSubset({ subset, kind, royaltyInfo, macros })) {
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
@@ -162,31 +166,32 @@ export async function writeGeneratedSources(params: {
   uniqueName: boolean;
   kind: KindSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
   logsEnabled: boolean;
 }): Promise<string[]> {
-  const { dir, subset, uniqueName, kind, royaltyInfo, logsEnabled } = params;
+  const { dir, subset, uniqueName, kind, royaltyInfo, macros, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
-  for (const { id, contract, source } of generateSources({ subset, uniqueName, kind, royaltyInfo })) {
+  for (const { id, contract, source } of generateSources({ subset, uniqueName, kind, royaltyInfo, macros })) {
     const name = uniqueName ? contract.name : id;
     await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
     contractNames.push(name);
   }
   if (logsEnabled) {
-    const sourceLabel = resolveSourceLabel({ kind, royaltyInfo });
+    const sourceLabel = resolveSourceLabel({ kind, royaltyInfo, macros });
     console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
   }
 
   return contractNames;
 }
 
-function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfoSubset }): string {
-  const { kind, royaltyInfo } = params;
+function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfoSubset; macros: MacrosSubset }): string {
+  const { kind, royaltyInfo, macros } = params;
   switch (kind) {
     case 'ERC721':
     case 'ERC1155':
-      return `${kind} (royaltyInfo: ${royaltyInfo})`;
+      return `${kind} (royaltyInfo: ${royaltyInfo}, macros: ${macros})`;
     case 'all':
       return 'All contract kinds';
     case 'ERC20':

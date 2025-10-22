@@ -3,6 +3,7 @@ import { clockModeOptions, quorumModeOptions, timelockOptions, votesOptions } fr
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
+import { resolveMacrosOptions } from '../set-macros';
 
 const booleans = [true, false];
 
@@ -23,6 +24,7 @@ const blueprint = {
   appVersion: ['v1'],
   upgradeable: upgradeableOptions,
   info: infoOptions,
+  macros: resolveMacrosOptions('all'),
 };
 
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {

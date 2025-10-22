@@ -2,6 +2,7 @@ import { accountTypes, type AccountOptions } from '../account';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
+import { resolveMacrosOptions } from '../set-macros';
 
 const booleans = [true, false];
 
@@ -14,6 +15,7 @@ const blueprint = {
   outsideExecution: booleans,
   upgradeable: upgradeableOptions,
   info: infoOptions,
+  macros: resolveMacrosOptions('all'),
 };
 
 export function* generateAccountOptions(): Generator<Required<AccountOptions>> {
