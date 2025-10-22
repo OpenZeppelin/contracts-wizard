@@ -61,7 +61,10 @@
   let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
   let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-  let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
+  let contract: Contract = new ContractBuilder(
+    initialOpts.name ?? 'MyToken',
+    { withComponents: true }
+  );
 
   $: opts = allOpts[tab];
 
