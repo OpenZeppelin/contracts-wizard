@@ -290,7 +290,7 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
 
 function printTopLevelComments(comments: string[], withExtraBlankLine: boolean = false): string[] {
   const lines = comments.map(comment => `// ${comment}`);
-  if (withExtraBlankLine) lines.push('//');
+  if (comments.length > 0 && withExtraBlankLine) lines.push('//');
   return lines;
 }
 
