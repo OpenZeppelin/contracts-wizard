@@ -24,7 +24,7 @@ class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {
     return printContract(c);
   }
 
-  protected getHardhatPlugins(c: Contract): string[] {
+  public getHardhatPlugins(c: Contract): string[] {
     return super.getHardhatPlugins(c).concat(['fhevm']);
   }
 }
