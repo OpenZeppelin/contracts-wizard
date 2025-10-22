@@ -47,7 +47,7 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
@@ -59,7 +59,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
         emergency response.
       </HelpTooltip>
@@ -67,7 +67,7 @@
     <label class:checked={opts.updatableUri}>
       <input type="checkbox" bind:checked={opts.updatableUri} />
       Updatable URI
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155-_setURI-string-">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155-_setURI-string-">
         Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {'{id}'}
         in the URI with the tokenId.
       </HelpTooltip>
