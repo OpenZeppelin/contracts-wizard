@@ -30,7 +30,7 @@ export function* generateOptions(params: {
 }): Generator<GenericOptions> {
   const { kind, royaltyInfo, macros } = params;
   if (kind === 'all' || kind === 'ERC20') {
-    for (const kindOpts of generateERC20Options()) {
+    for (const kindOpts of generateERC20Options({ macros })) {
       yield { kind: 'ERC20', ...kindOpts };
     }
   }
@@ -48,31 +48,31 @@ export function* generateOptions(params: {
   }
 
   if (kind === 'all' || kind === 'Account') {
-    for (const kindOpts of generateAccountOptions()) {
+    for (const kindOpts of generateAccountOptions({ macros })) {
       yield { kind: 'Account', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Multisig') {
-    for (const kindOpts of generateMultisigOptions()) {
+    for (const kindOpts of generateMultisigOptions({ macros })) {
       yield { kind: 'Multisig', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Governor') {
-    for (const kindOpts of generateGovernorOptions()) {
+    for (const kindOpts of generateGovernorOptions({ macros })) {
       yield { kind: 'Governor', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Vesting') {
-    for (const kindOpts of generateVestingOptions()) {
+    for (const kindOpts of generateVestingOptions({ macros })) {
       yield { kind: 'Vesting', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Custom') {
-    for (const kindOpts of generateCustomOptions()) {
+    for (const kindOpts of generateCustomOptions({ macros })) {
       yield { kind: 'Custom', ...kindOpts };
     }
   }
