@@ -162,9 +162,11 @@ function parseMacrosSubset(value: string): MacrosSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
+    case 'no':
     case 'none':
       return 'none';
     case 'with_components':
+    case 'with-components':
       return 'with_components';
     default:
       throw new Error(`Failed to resolve macros subset from '${value}' value.`);
