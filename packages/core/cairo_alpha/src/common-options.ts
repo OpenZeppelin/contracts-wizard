@@ -9,7 +9,7 @@ import { defaults as macrosDefaults } from './set-macros';
 export const defaults: Required<CommonOptions> = {
   upgradeable: true,
   info: infoDefaults,
-  macros: { ...macrosDefaults },
+  macros: macrosDefaults,
 } as const;
 
 export const contractDefaults: Required<CommonContractOptions> = {
