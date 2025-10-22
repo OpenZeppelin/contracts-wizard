@@ -45,7 +45,7 @@ test.serial('erc20 full', async t => {
     flashmint: true,
   };
   const c = buildERC20(opts);
-  await runIgnitionTest(c, t, opts);
+  await runTestWithoutDeploy(c, t, opts);
 });
 
 test.serial('erc721 basic', async t => {
@@ -58,11 +58,19 @@ test.serial('erc721 basic', async t => {
   await runIgnitionTest(c, t, opts);
 });
 
+async function runTestWithoutDeploy(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
+  const zip = await zipHardhatPolkadot(c, opts);
+
+  assertIgnitionLayout(zip, c, t);
+  await extractAndRunWithoutDeploy(zip, c, t);
+  await assertIgnitionContents(zip, c, t);
+}
+
 async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhatPolkadot(c, opts);
 
   assertIgnitionLayout(zip, c, t);
-  await extractAndRun(zip, c, t);
+  await extractAndRunIgnitionPackage(zip, c, t);
   await assertIgnitionContents(zip, c, t);
 }
 
@@ -85,27 +93,42 @@ function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Conte
   ]);
 }
 
-async function extractAndRun(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
-  const files = Object.values(zip.files);
+function extractAndRun(makeDeployCommand?: (c: Contract) => string | null) {
+  return async (zip: JSZip, c: Contract, t: ExecutionContext<Context>) => {
+    const files = Object.values(zip.files);
 
-  const tempFolder = t.context.tempFolder;
+    const tempFolder = t.context.tempFolder;
 
-  const items = Object.values(files);
-  for (const item of items) {
-    if (item.dir) {
-      await fs.mkdir(path.join(tempFolder, item.name));
-    } else {
-      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+    const items = Object.values(files);
+    for (const item of items) {
+      if (item.dir) {
+        await fs.mkdir(path.join(tempFolder, item.name));
+      } else {
+        await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+      }
     }
-  }
 
-  const command = `cd "${tempFolder}" && npm install && npx hardhat compile && npx hardhat ignition deploy ignition/modules/${c.name}.ts`;
+    let command = `cd "${tempFolder}" && npm install && npx hardhat compile`;
+    if (makeDeployCommand) {
+      if (c.constructorArgs.length > 0) {
+        throw new Error('Ignition deployment cannot be used during tests with contracts that have constructor args');
+      }
 
-  const exec = util.promisify(child.exec);
-  const result = await exec(command);
+      command += ` && ${makeDeployCommand(c)}`;
+    }
 
-  t.regex(result.stdout, /Successfully compiled/);
+    const exec = util.promisify(child.exec);
+    const result = await exec(command);
+
+    t.regex(result.stdout, /Successfully compiled/);
+    if (makeDeployCommand) {
+      t.regex(result.stdout, /successfully deployed/);
+    }
+  };
 }
+
+const extractAndRunWithoutDeploy = extractAndRun();
+const extractAndRunIgnitionPackage = extractAndRun(c => `npx hardhat ignition deploy ignition/modules/${c.name}.ts`);
 
 async function assertIgnitionContents(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const contentComparison = [
