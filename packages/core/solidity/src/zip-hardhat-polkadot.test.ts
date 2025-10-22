@@ -51,7 +51,7 @@ async function runIgnitionTest(c: Contract, t: ExecutionContext<Context>, opts: 
   const zip = await zipHardhatPolkadot(c, opts);
 
   assertIgnitionLayout(zip, c, t);
-  await extractAndRun(zip, t);
+  await extractAndRun(zip, c, t);
   await assertIgnitionContents(zip, c, t);
 }
 
@@ -74,7 +74,7 @@ function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Conte
   ]);
 }
 
-async function extractAndRun(zip: JSZip, t: ExecutionContext<Context>) {
+async function extractAndRun(zip: JSZip, c: Contract, t: ExecutionContext<Context>) {
   const files = Object.values(zip.files);
 
   const tempFolder = t.context.tempFolder;
@@ -88,7 +88,7 @@ async function extractAndRun(zip: JSZip, t: ExecutionContext<Context>) {
     }
   }
 
-  const command = `cd "${tempFolder}" && npm install && npx hardhat compile`;
+  const command = `cd "${tempFolder}" && npm install && npx hardhat compile && npx hardhat ignition deploy ignition/modules/${c.name}.ts`;
 
   const exec = util.promisify(child.exec);
   const result = await exec(command);
