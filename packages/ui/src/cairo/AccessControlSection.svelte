@@ -33,21 +33,21 @@
   bind:value={access}
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/access"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/2.x/access"
   {required}
 >
   <div class="checkbox-group">
     <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable" />
       Ownable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/access#ownership_and_ownable">
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
       <input type="radio" bind:group={access} value="roles" />
       Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/access#role_based_accesscontrol">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
