@@ -7,7 +7,7 @@ const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   tokenURI: ['http://example.com'],
-  votes: [...booleans, ...clockModeOptions] as const,
+  votes: [false, ...clockModeOptions] as const,
   premint: ['1'],
   info: infoOptions,
   networkConfig: ['zama-sepolia', 'zama-ethereum'] as const,

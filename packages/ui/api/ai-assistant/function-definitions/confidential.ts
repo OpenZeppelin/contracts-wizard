@@ -31,7 +31,7 @@ export const confidentialConfidentialFungibleAIFunctionDefinition = {
       },
       votes: {
         anyOf: [
-          { type: 'boolean', enum: [false, true] },
+          { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description: confidentialConfidentialFungibleDescriptions.votes,

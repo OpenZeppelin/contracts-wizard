@@ -12,5 +12,5 @@ export const confidentialConfidentialFungibleDescriptions = {
   networkConfig: 'Specify the provider and network configuration to use for FHEVM contracts.',
   wrappable: 'Whether to allow wrapping an ERC20 token into a confidential fungible token.',
   votes:
-    'Whether to keep track of historical balances for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
+    'Whether to keep track of historical balances for voting in on-chain governance. Voting durations must be expressed as block numbers or timestamps.',
 };

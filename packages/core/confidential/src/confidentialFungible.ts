@@ -4,7 +4,6 @@ import {
   withCommonDefaults,
   commonDefaults,
   setInfo,
-  clockModeDefault,
   setClockMode,
   OptionsError,
   toBigInt,
@@ -28,9 +27,9 @@ export interface ConfidentialFungibleOptions extends CommonOptions {
   wrappable?: boolean;
   /**
    * Whether to keep track of historical balances for voting in on-chain governance, and optionally specify the clock mode.
-   * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
+   * Setting a clock mode implies voting is enabled.
    */
-  votes?: boolean | ClockMode;
+  votes?: false | ClockMode;
 }
 
 export const defaults: Required<ConfidentialFungibleOptions> = {
@@ -77,8 +76,7 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
   }
 
   if (allOpts.votes) {
-    const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-    addVotes(c, allOpts.name, clockMode);
+    addVotes(c, allOpts.name, allOpts.votes);
   }
 
   setInfo(c, info);

@@ -100,10 +100,6 @@ testConfidentialFungible('confidentialFungible wrappable', {
   wrappable: true,
 });
 
-testConfidentialFungible('confidentialFungible votes', {
-  votes: true,
-});
-
 testConfidentialFungible('confidentialFungible votes + blocknumber', {
   votes: 'blocknumber',
 });
@@ -115,14 +111,14 @@ testConfidentialFungible('confidentialFungible votes + timestamp', {
 testConfidentialFungible('confidentialFungible full zama-sepolia', {
   premint: '2000',
   wrappable: true,
-  votes: true,
+  votes: 'blocknumber',
   networkConfig: 'zama-sepolia',
 });
 
 testConfidentialFungible('confidentialFungible full zama-ethereum', {
   premint: '2000',
   wrappable: true,
-  votes: true,
+  votes: 'blocknumber',
   networkConfig: 'zama-ethereum',
 });
 
@@ -149,7 +145,7 @@ testAPIEquivalence('confidentialFungible API full', {
   networkConfig: 'zama-ethereum',
   premint: '2000',
   wrappable: true,
-  votes: true,
+  votes: 'blocknumber',
 });
 
 test('confidentialFungible API assert defaults', async t => {
