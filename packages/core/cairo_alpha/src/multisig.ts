@@ -1,7 +1,7 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonOptions } from './common-options';
-import { contractDefaults as commonDefaults } from './common-options';
+import { contractDefaults as commonDefaults, withCommonDefaults } from './common-options';
 import { setAccessControl } from './set-access-control';
 import { setUpgradeableMultisig } from './set-upgradeable';
 import { setInfo } from './set-info';
@@ -15,6 +15,7 @@ export const defaults: Required<MultisigOptions> = {
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printMultisig(opts: MultisigOptions = defaults): string {
@@ -28,18 +29,17 @@ export interface MultisigOptions extends CommonOptions {
 
 function withDefaults(opts: MultisigOptions): Required<MultisigOptions> {
   return {
-    name: opts.name ?? defaults.name,
+    ...opts,
+    ...withCommonDefaults(opts),
     quorum: opts.quorum ?? defaults.quorum,
-    upgradeable: opts.upgradeable ?? defaults.upgradeable,
-    info: opts.info ?? defaults.info,
   };
 }
 
 export function buildMultisig(opts: MultisigOptions): Contract {
-  const c = new ContractBuilder(opts.name);
   const allOpts = withDefaults(opts);
-
-  addBase(c, opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
+  
+  addBase(c, allOpts);
   setInfo(c, allOpts.info);
   setUpgradeableMultisig(c, allOpts.upgradeable);
 
@@ -85,7 +85,7 @@ function getQuorum(opts: MultisigOptions): bigint {
 
 const components = defineComponents({
   MultisigComponent: {
-    path: 'openzeppelin::governance::multisig',
+    path: 'openzeppelin_governance::multisig',
     substorage: {
       name: 'multisig',
       type: 'MultisigComponent::Storage',
@@ -97,6 +97,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'MultisigImpl',
+        embed: true,
         value: 'MultisigComponent::MultisigImpl<ContractState>',
       },
       {
