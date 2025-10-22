@@ -45,6 +45,17 @@ class HardhatPolkadotZipGenerator extends HardhatZipGenerator {
     return packageLock;
   }
 
+  protected getReadmePrerequisitesSection(): string {
+    return `\
+## Prerequisites
+
+Ensure you have the following installed:
+- [Node.js 22.5+](https://nodejs.org/en/download/)
+- npm 10.9.0+
+
+`;
+  }
+
   protected getReadmeTestingEnvironmentSetupSection(): string {
     return `\
 ## Setting up a testing environment
