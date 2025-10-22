@@ -186,7 +186,11 @@ export async function writeGeneratedSources(params: {
   return contractNames;
 }
 
-function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfoSubset; macros: MacrosSubset }): string {
+function resolveSourceLabel(params: {
+  kind: KindSubset;
+  royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
+}): string {
   const { kind, royaltyInfo, macros } = params;
   switch (kind) {
     case 'ERC721':

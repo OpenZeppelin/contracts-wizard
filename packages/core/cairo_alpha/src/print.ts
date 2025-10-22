@@ -31,7 +31,7 @@ function printWithComponentsDirective(contract: Contract): Lines[] {
         throw new Error(`Component name "${name}" must contain "Component" substring`);
       }
       return name.substring(0, idx);
-    }) 
+    })
     .join(', ');
   return [`#[with_components(${componentsStr})]`];
 }
@@ -176,15 +176,14 @@ function printComponentDeclarations(contract: Contract): Lines[] {
   if (contract.macros.withComponents) {
     return [];
   }
-  return contract.components
-    .map(c => `component!(path: ${c.name}, storage: ${c.substorage.name}, event: ${c.event.name});`);
+  return contract.components.map(
+    c => `component!(path: ${c.name}, storage: ${c.substorage.name}, event: ${c.event.name});`,
+  );
 }
 
 function printImpls(contract: Contract): Lines[] {
   const withComponents = contract.macros.withComponents;
-  const impls = contract
-    .components
-    .flatMap(c => withComponents ? c.impls.filter(i => i.embed) : c.impls);
+  const impls = contract.components.flatMap(c => (withComponents ? c.impls.filter(i => i.embed) : c.impls));
   // group by section
   const grouped = impls.reduce((result: { [section: string]: Impl[] }, current: Impl) => {
     // default section depends on embed
@@ -221,22 +220,14 @@ function printImpl(impl: Impl): Lines[] {
 function printStorage(contract: Contract): (string | string[])[] {
   if (contract.macros.withComponents || contract.components.length === 0) {
     // storage is required regardless of whether there are components
-    return [
-      '#[storage]',
-      'struct Storage {}'
-    ];
+    return ['#[storage]', 'struct Storage {}'];
   }
   const storageLines = [];
   for (const component of contract.components) {
     storageLines.push(`#[substorage(v0)]`);
     storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
   }
-  return [
-    '#[storage]',
-    'struct Storage {',
-    storageLines,
-    '}',
-  ]
+  return ['#[storage]', 'struct Storage {', storageLines, '}'];
 }
 
 function printEvents(contract: Contract): (string | string[])[] {
@@ -248,13 +239,7 @@ function printEvents(contract: Contract): (string | string[])[] {
     eventLines.push('#[flat]');
     eventLines.push(`${component.event.name}: ${component.event.type},`);
   }
-  return [
-    '#[event]',
-    '#[derive(Drop, starknet::Event)]',
-    'enum Event {',
-    eventLines,
-    '}',
-  ];
+  return ['#[event]', '#[derive(Drop, starknet::Event)]', 'enum Event {', eventLines, '}'];
 }
 
 function printImplementedTraits(contract: Contract): Lines[] {

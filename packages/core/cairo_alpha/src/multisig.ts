@@ -38,7 +38,7 @@ function withDefaults(opts: MultisigOptions): Required<MultisigOptions> {
 export function buildMultisig(opts: MultisigOptions): Contract {
   const allOpts = withDefaults(opts);
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
-  
+
   addBase(c, allOpts);
   setInfo(c, allOpts.info);
   setUpgradeableMultisig(c, allOpts.upgradeable);

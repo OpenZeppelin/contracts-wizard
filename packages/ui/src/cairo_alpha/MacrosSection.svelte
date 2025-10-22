@@ -18,4 +18,3 @@
     </label>
   </div>
 </section>
-

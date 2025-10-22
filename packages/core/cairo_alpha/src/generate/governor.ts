@@ -32,7 +32,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };
-};
+}
 
 export function* generateGovernorOptions(opts: GeneratorOptions): Generator<Required<GovernorOptions>> {
   const blueprint = prepareBlueprint(opts);

@@ -156,7 +156,7 @@ function addAccountMixin(c: ContractBuilder, accountType: Account) {
   c.addImplToComponent(componentType, {
     name: `${accountMixinImpl}`,
     value: `${baseComponent}::${accountMixinImpl}<ContractState>`,
-    embed: true
+    embed: true,
   });
 
   c.addInterfaceFlag('ISRC5');

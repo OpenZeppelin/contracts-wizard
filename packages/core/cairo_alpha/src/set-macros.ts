@@ -8,7 +8,7 @@ const options = {
 } as const;
 
 export const defaults: MacrosOptions = options.withComponentsOFF;
-export type MacrosSubset = 'all' |'none' | 'with_components';
+export type MacrosSubset = 'all' | 'none' | 'with_components';
 
 export function resolveMacrosOptions(subset: MacrosSubset): MacrosOptions[] {
   switch (subset) {

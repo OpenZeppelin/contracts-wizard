@@ -21,7 +21,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };
-};
+}
 
 export function* generateCustomOptions(opts: GeneratorOptions): Generator<Required<CustomOptions>> {
   const blueprint = prepareBlueprint(opts);

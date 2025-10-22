@@ -48,8 +48,7 @@ function parseCliArgs(args: string[]): Record<string, string> {
         } else {
           throw new Error(`Invalid argument format: ${arg}`);
         }
-      }
-      else if (i + 1 < args.length) {
+      } else if (i + 1 < args.length) {
         // Handle --arg value format
         const nextArg = args[i + 1];
         if (nextArg && !nextArg.startsWith('--')) {

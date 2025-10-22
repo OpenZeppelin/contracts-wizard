@@ -16,7 +16,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };
-};
+}
 
 export function* generateMultisigOptions(opts: GeneratorOptions): Generator<Required<MultisigOptions>> {
   const blueprint = prepareBlueprint(opts);

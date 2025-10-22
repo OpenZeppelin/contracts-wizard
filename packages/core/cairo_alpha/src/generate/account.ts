@@ -23,7 +23,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };
-};
+}
 
 export function* generateAccountOptions(opts: GeneratorOptions): Generator<Required<AccountOptions>> {
   const blueprint = prepareBlueprint(opts);
