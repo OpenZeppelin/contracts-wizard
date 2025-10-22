@@ -1,9 +1,7 @@
 import { infoOptions, accessOptions, generateAlternatives } from '@openzeppelin/wizard';
 import type { HooksOptions } from '../hooks';
 import { PERMISSIONS, HooksNames } from '../hooks/index';
-import type { HookName, Shares, Permissions } from '../hooks/index';
-
-const booleanOptions = [true, false];
+import type { Shares, Permissions } from '../hooks/index';
 
 const sharesOptions: readonly Shares[] = [
   { options: false, name: 'MyShares', symbol: 'MSH' },
@@ -11,28 +9,21 @@ const sharesOptions: readonly Shares[] = [
   { options: 'ERC6909', name: 'MyShares', symbol: 'MSH' },
 ];
 
-// Generate some permission combinations. Note that generating all would result in 2^14 combinations.
-const permissionsOptions: readonly Permissions[] = [generateMixedPermissions(), generateMixedInversedPermissions()];
-
-const hooksOptions: HookName[] = HooksNames;
-
-const inputsOptions = [{ blockNumberOffset: 10, maxAbsTickDelta: 887272 }];
-
+// Warning: Too many options will result in a exponential amount of combinations
+// - Keep utility libraries marked as true to keep combinations manageable
+// - Use a small set of permissions mixed to keep combinations manageable
 const blueprint = {
-  hook: hooksOptions as readonly HookName[],
+  hook: HooksNames,
   name: ['MyHook'] as const,
-  pausable: booleanOptions,
+  pausable: [true, false],
   access: accessOptions,
   info: infoOptions,
   shares: sharesOptions,
-  permissions: permissionsOptions,
-  // Hooks are not upgradeable yet; fix to false
-  upgradeable: [false] as const,
-  // Keep utility libraries marked as true to keep combinations manageable
+  permissions: [generateMixedPermissions(), generateMixedInversedPermissions()],
   currencySettler: [true],
   safeCast: [true],
   transientStorage: [true],
-  inputs: inputsOptions,
+  inputs: [{ blockNumberOffset: 10, maxAbsTickDelta: 887272 }],
 };
 
 export function* generateHooksOptions(): Generator<Required<HooksOptions>> {
