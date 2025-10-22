@@ -1,6 +1,7 @@
 import { infoOptions, accessOptions, generateAlternatives } from '@openzeppelin/wizard';
 import type { HooksOptions } from '../hooks';
-import { HOOKS, PERMISSIONS, type HookName, type Shares, type Permissions } from '../hooks/index';
+import { PERMISSIONS, HooksNames } from '../hooks/index';
+import type { HookName, Shares, Permissions } from '../hooks/index';
 
 const booleanOptions = [true, false];
 
@@ -13,7 +14,7 @@ const sharesOptions: readonly Shares[] = [
 // Generate some permission combinations. Note that generating all would result in 2^14 combinations.
 const permissionsOptions: readonly Permissions[] = [generateMixedPermissions(), generateMixedInversedPermissions()];
 
-const hooksOptions: HookName[] = Object.keys(HOOKS) as HookName[];
+const hooksOptions: HookName[] = HooksNames;
 
 const inputsOptions = [{ blockNumberOffset: 10, maxAbsTickDelta: 887272 }];
 

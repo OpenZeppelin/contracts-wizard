@@ -2,10 +2,13 @@ import type { GenericOptions } from './build-generic';
 
 export type Kind = GenericOptions['kind'];
 
+export function capitalize(str: string): string {
+  const lowered = str.trim().toLowerCase();
+  return lowered.charAt(0).toUpperCase() + lowered.slice(1);
+}
 export function sanitizeKind(kind: unknown): Kind {
   if (typeof kind === 'string') {
-    const lowered = kind.trim().toLowerCase();
-    const sanitized = lowered.charAt(0).toUpperCase() + lowered.slice(1);
+    const sanitized = capitalize(kind);
     if (isKind(sanitized)) {
       return sanitized;
     }
