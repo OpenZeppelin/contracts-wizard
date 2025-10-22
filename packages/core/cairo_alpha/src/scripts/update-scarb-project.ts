@@ -5,30 +5,68 @@ import type { KindSubset } from '../generate/sources';
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { MacrosSubset } from '../set-macros';
 
 type Arguments = {
   kind: KindSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 };
+
+const defaults: Arguments = {
+  kind: 'all',
+  royaltyInfo: 'all',
+  macros: 'all',
+} as const;
 
 export function resolveArguments(): Arguments {
   const cliArgs = process.argv.slice(2);
-  switch (cliArgs.length) {
-    case 0:
-      return { kind: 'all', royaltyInfo: 'all' };
-    case 1:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: 'all',
-      };
-    case 2:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]),
-      };
-    default:
-      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`);
+  const args = parseCliArgs(cliArgs);
+
+  return {
+    kind: parseKindSubset(args.kind ?? defaults.kind),
+    royaltyInfo: parseRoyaltyInfoSubset(args['royalty-info'] ?? defaults.royaltyInfo),
+    macros: parseMacrosSubset(args.macros ?? defaults.macros),
+  };
+}
+
+function parseCliArgs(args: string[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+
+    if (arg.startsWith('--')) {
+      const argName = arg.slice(2);
+      if (argName.includes('=')) {
+        // Handle --arg=value format
+        const parts = argName.split('=', 2);
+        const key = parts[0];
+        const value = parts[1];
+        if (key && value !== undefined) {
+          result[key] = value;
+        } else {
+          throw new Error(`Invalid argument format: ${arg}`);
+        }
+      }
+      else if (i + 1 < args.length) {
+        // Handle --arg value format
+        const nextArg = args[i + 1];
+        if (nextArg && !nextArg.startsWith('--')) {
+          result[argName] = nextArg;
+          i++; // Skip the next argument since we've used it as a value
+        } else {
+          throw new Error(`No value provided for argument: ${arg}`);
+        }
+      } else {
+        throw new Error(`No value provided for argument: ${arg}`);
+      }
+    } else {
+      throw new Error(`Invalid argument format: ${arg}. Expected --key=value or --key value`);
+    }
   }
+
+  return result;
 }
 
 export async function updateScarbProject() {
@@ -36,13 +74,14 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, royaltyInfo } = resolveArguments();
+  const { kind, royaltyInfo, macros } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
     uniqueName: true,
     kind,
     royaltyInfo,
+    macros,
     logsEnabled: true,
   });
 
@@ -79,10 +118,7 @@ async function updateScarbToml() {
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
 
-function parseKindSubset(value: string | undefined): KindSubset {
-  if (value === undefined) {
-    throw new Error(`Failed to resolve contract kind subset from 'undefined'.`);
-  }
+function parseKindSubset(value: string): KindSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
@@ -107,10 +143,7 @@ function parseKindSubset(value: string | undefined): KindSubset {
   }
 }
 
-function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
-  if (value === undefined) {
-    throw new Error(`Failed to resolve royalty info subset from 'undefined'.`);
-  }
+function parseRoyaltyInfoSubset(value: string): RoyaltyInfoSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
@@ -122,6 +155,19 @@ function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
       return 'enabled_custom';
     default:
       throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
+  }
+}
+
+function parseMacrosSubset(value: string): MacrosSubset {
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'none':
+      return 'none';
+    case 'with_components':
+      return 'with_components';
+    default:
+      throw new Error(`Failed to resolve macros subset from '${value}' value.`);
   }
 }
 
