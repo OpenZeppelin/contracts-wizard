@@ -4,6 +4,7 @@ import _test from 'ava';
 import { zipHardhatPolkadot } from './zip-hardhat-polkadot';
 
 import { buildERC20 } from './erc20';
+import { buildERC721 } from './erc721';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -44,6 +45,16 @@ test.serial('erc20 full', async t => {
     flashmint: true,
   };
   const c = buildERC20(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('erc721 basic', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+  };
+  const c = buildERC721(opts);
   await runIgnitionTest(c, t, opts);
 });
 
