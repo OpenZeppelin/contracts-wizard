@@ -4,6 +4,7 @@
 [![Cairo NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-cairo?color=%23e55233&label=%40openzeppelin%2Fwizard-cairo)](https://www.npmjs.com/package/@openzeppelin/wizard-cairo)
 [![Stellar NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stellar?color=%23e55233&label=%40openzeppelin%2Fwizard-stellar)](https://www.npmjs.com/package/@openzeppelin/wizard-stellar)
 [![Stylus NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stylus?color=%23e55233&label=%40openzeppelin%2Fwizard-stylus)](https://www.npmjs.com/package/@openzeppelin/wizard-stylus)
+[![Uniswap Hooks NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-uniswap-hooks?color=%23e55233&label=%40openzeppelin%2Fwizard-uniswap-hooks)](https://www.npmjs.com/package/@openzeppelin/wizard-uniswap-hooks)
 [![Contracts MCP NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-mcp?label=%40openzeppelin%2Fcontracts-mcp)](https://www.npmjs.com/package/@openzeppelin/contracts-mcp)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca9b53e1-44eb-410d-aac7-31b2f5399b68/deploy-status)](https://app.netlify.com/sites/openzeppelin-contracts-wizard/deploys)
 

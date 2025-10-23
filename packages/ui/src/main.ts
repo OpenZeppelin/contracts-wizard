@@ -6,6 +6,7 @@ import CairoAlphaApp from './cairo_alpha/App.svelte';
 import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
+import UniswapHooksApp from './uniswap-hooks/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
@@ -18,6 +19,7 @@ import {
 } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
+import { compatibleContractsSemver as uniswapHooksSemver } from '@openzeppelin/wizard-uniswap-hooks';
 import type { InitialOptions } from './common/initial-options';
 
 function postResize() {
@@ -44,7 +46,7 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'polkadot' | 'stellar' | 'stylus';
+  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'polkadot' | 'stellar' | 'stylus' | 'uniswap-hooks';
 }
 
 interface IncompatibleSelection {
@@ -100,6 +102,13 @@ function evaluateSelection(
         return { compatible: true, appType: 'stylus' };
       } else {
         return { compatible: false, compatibleVersionsSemver: stylusSemver };
+      }
+    }
+    case 'uniswap-hooks': {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, uniswapHooksSemver)) {
+        return { compatible: true, appType: 'uniswap-hooks' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: uniswapHooksSemver };
       }
     }
     case 'solidity':
@@ -162,6 +171,9 @@ if (!selection.compatible) {
       break;
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+    case 'uniswap-hooks':
+      app = new UniswapHooksApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'solidity':
       app = new SolidityApp({
