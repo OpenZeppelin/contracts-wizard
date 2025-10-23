@@ -1,5 +1,5 @@
 ---
-'@openzeppelin/wizard-uniswap-hooks': patch
+'@openzeppelin/wizard-uniswap-hooks': minor
 '@openzeppelin/wizard': patch
 '@openzeppelin/wizard-common': patch
 '@openzeppelin/contracts-mcp': patch
