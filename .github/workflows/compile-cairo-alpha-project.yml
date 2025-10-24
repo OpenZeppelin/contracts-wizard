@@ -84,7 +84,7 @@ jobs:
               proj_name="'$kind' test project"
 
               echo "Generating $proj_name..."
-              yarn run update_scarb_project $kind
+              yarn run update_scarb_project --kind=$kind
 
               echo "Compiling $proj_name..."
               scarb build
