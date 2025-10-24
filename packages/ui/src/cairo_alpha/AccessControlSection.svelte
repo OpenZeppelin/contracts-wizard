@@ -37,28 +37,28 @@
   bind:value={accessType}
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/access"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/alpha/access"
   {required}
 >
   <div class="checkbox-group">
     <label class:checked={accessType === 'ownable'}>
       <input type="radio" bind:group={accessType} value="ownable" />
       Ownable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#ownership_and_ownable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/access#ownership-and-ownable">
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
     <label class:checked={accessType === 'roles'}>
       <input type="radio" bind:group={accessType} value="roles" />
       Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/access#role-based-accesscontrol">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
     <label class:checked={accessType === 'roles-dar'}>
       <input type="radio" bind:group={accessType} value="roles-dar" />
       Roles (Default Admin Rules)
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/access#role_based_accesscontrol">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/access#AccessControlDefaultAdminRulesComponent">
         Provides additional enforced security measures on top of standard Roles mechanism for managing the most
         privileged role: default admin.
       </HelpTooltip>
