@@ -1,5 +1,5 @@
 import test from 'ava';
-import { generateNamespacesStorageSlot } from './namespaced-storage-generator';
+import { computeNamespacedStorageSlot } from './namespaced-storage-generator';
 
 test('namespaced storage slot generation', t => {
   const cases = [
@@ -18,6 +18,6 @@ test('namespaced storage slot generation', t => {
   ];
 
   for (const { input, expected } of cases) {
-    t.is(generateNamespacesStorageSlot(input), expected);
+    t.is(computeNamespacedStorageSlot(input), expected);
   }
 });

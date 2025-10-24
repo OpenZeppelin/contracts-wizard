@@ -12,7 +12,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
-import { generateNamespacesStorageSlot, getNamespacedStorageName } from './utils/namespaced-storage-generator';
+import { computeNamespacedStorageSlot, getNamespaceId } from './utils/namespaced-storage-generator';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -189,7 +189,7 @@ function addMintable(c: ContractBuilder, access: Access, incremental = false, ur
       const namespacedStorageName = `${c.name.toUpperCase()}_STORAGE_LOCATION`;
       c.addStructVariable(storageStruct, 'uint256 _nextTokenId;');
       c.addVariable(
-        `bytes32 private constant ${namespacedStorageName} = ${generateNamespacesStorageSlot(getNamespacedStorageName(c.name))};`,
+        `bytes32 private constant ${namespacedStorageName} = ${computeNamespacedStorageSlot(getNamespaceId(c.name))};`,
       );
       c.addFunctionCode(`assembly { $.slot :=  ${namespacedStorageName}}`, storageFn);
 
@@ -295,7 +295,7 @@ function getStorageFunction(): BaseFunction {
 function getStorageStruct(name: string) {
   const struct: ContractStruct = {
     name: 'Storage',
-    comments: [`/// @custom:storage-location erc7201:${getNamespacedStorageName(name)}`],
+    comments: [`/// @custom:storage-location erc7201:${getNamespaceId(name)}`],
     variables: [],
   };
   return struct;

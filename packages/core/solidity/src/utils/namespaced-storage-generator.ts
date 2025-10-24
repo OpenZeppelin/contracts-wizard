@@ -1,26 +1,23 @@
-import keccak from 'keccak';
 
-export function getNamespacedStorageName(name: string, namespace: string = 'myProject') {
+import { keccak256 } from 'ethereum-cryptography/keccak';
+import { hexToBytes, toHex, utf8ToBytes } from 'ethereum-cryptography/utils';
+
+export function getNamespaceId(name: string, namespace: string = 'myProject') {
   return `${namespace}.${name}`;
 }
 
-export function generateNamespacesStorageSlot(inputString: string): string {
-  const innerHash = keccak('keccak256').update(inputString).digest('hex');
-  const innerNum = BigInt('0x' + innerHash) - BigInt(1);
+/**
+ * Returns the ERC-7201 storage location for a given namespace id
+ */
+export function computeNamespacedStorageSlot(id: string): string {
+  const innerHash = keccak256(utf8ToBytes(id));
+  const minusOne = BigInt('0x' + toHex(innerHash)) - 1n;
+  const minusOneBytes = hexToBytes(minusOne.toString(16).padStart(64, '0'));
 
-  const encoded = padTo32Bytes(innerNum);
+  const outerHash = keccak256(minusOneBytes);
 
-  const outerHashBuffer = keccak('keccak256').update(encoded).digest();
-  const outerHash = BigInt('0x' + outerHashBuffer.toString('hex'));
-
-  const masked = outerHash & ~BigInt(0xff);
+  const mask = BigInt('0xff');
+  const masked = BigInt('0x' + toHex(outerHash)) & ~mask;
 
   return '0x' + masked.toString(16).padStart(64, '0');
-}
-
-function padTo32Bytes(b: bigint): Buffer {
-  let hex = b.toString(16);
-  if (hex.length > 64) throw new Error('Value too large for uint256');
-  hex = hex.padStart(64, '0');
-  return Buffer.from(hex, 'hex');
 }
