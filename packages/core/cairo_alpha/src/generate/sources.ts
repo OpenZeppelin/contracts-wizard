@@ -36,7 +36,7 @@ export function* generateOptions(params: {
   }
 
   if (kind === 'all' || kind === 'ERC721') {
-    for (const kindOpts of generateERC721Options({ access,royaltyInfo })) {
+    for (const kindOpts of generateERC721Options({ access, royaltyInfo })) {
       yield { kind: 'ERC721', ...kindOpts };
     }
   }
@@ -94,7 +94,7 @@ function generateContractSubset(params: {
   access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 }): GeneratedContract[] {
-  const { subset, kind, access,royaltyInfo } = params;
+  const { subset, kind, access, royaltyInfo } = params;
   const contracts = [];
 
   for (const options of generateOptions({ kind, access, royaltyInfo })) {
@@ -146,7 +146,7 @@ export function* generateSources(params: {
   subset: Subset;
   uniqueName: boolean;
   kind: KindSubset;
-  access: AccessSubset,
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 }): Generator<GeneratedSource> {
   const { subset, uniqueName, kind, access, royaltyInfo } = params;
@@ -186,17 +186,13 @@ export async function writeGeneratedSources(params: {
   return contractNames;
 }
 
-function resolveSourceLabel(params: { 
-  kind: KindSubset; 
-  access: AccessSubset; 
-  royaltyInfo: RoyaltyInfoSubset 
+function resolveSourceLabel(params: {
+  kind: KindSubset;
+  access: AccessSubset;
+  royaltyInfo: RoyaltyInfoSubset;
 }): string {
   const { kind, access, royaltyInfo } = params;
-  return [
-    resolveKindLabel(kind), 
-    resolveAccessLabel(kind, access), 
-    resolveRoyaltyInfoLabel(kind, royaltyInfo)
-  ]
+  return [resolveKindLabel(kind), resolveAccessLabel(kind, access), resolveRoyaltyInfoLabel(kind, royaltyInfo)]
     .filter(elem => elem !== undefined)
     .join(', ');
 }

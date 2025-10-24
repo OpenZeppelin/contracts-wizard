@@ -58,7 +58,9 @@
     <label class:checked={accessType === 'roles-dar'}>
       <input type="radio" bind:group={accessType} value="roles-dar" />
       Roles (Default Admin Rules)
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/access#AccessControlDefaultAdminRulesComponent">
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/access#AccessControlDefaultAdminRulesComponent"
+      >
         Provides additional enforced security measures on top of standard Roles mechanism for managing the most
         privileged role: default admin.
       </HelpTooltip>

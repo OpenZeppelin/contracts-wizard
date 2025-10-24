@@ -1,7 +1,11 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { CairoAlphaCommonContractOptions, CairoAlphaRoyaltyInfoOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
-import { cairoCommonDescriptions, cairoAlphaAccessDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
+import {
+  cairoCommonDescriptions,
+  cairoAlphaAccessDescriptions,
+  cairoRoyaltyInfoDescriptions,
+} from '../../../../common/src/ai/descriptions/cairo.ts';
 
 const commonContractFunctionDescription = {
   upgradeable: {
@@ -25,10 +29,10 @@ const commonContractFunctionDescription = {
     },
   },
 
-  access: { 
-    type: 'object', 
+  access: {
+    type: 'object',
     properties: {
-      type: { 
+      type: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ownable', 'roles', 'roles-dar'] },

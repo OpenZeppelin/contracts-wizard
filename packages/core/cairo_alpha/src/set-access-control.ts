@@ -46,13 +46,7 @@ export const AccessControl = {
 
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
-export type AccessSubset = 
-  | 'all'
-  | 'disabled'
-  | 'ownable'
-  | 'roles'
-  | 'roles-dar-default'
-  | 'roles-dar-custom';
+export type AccessSubset = 'all' | 'disabled' | 'ownable' | 'roles' | 'roles-dar-default' | 'roles-dar-custom';
 
 export function resolveAccessControlOptions(subset: AccessSubset): Access[] {
   switch (subset) {
