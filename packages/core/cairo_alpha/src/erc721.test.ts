@@ -91,7 +91,7 @@ testERC721('pausable + enumerable', {
 
 testERC721('mintable + roles', {
   mintable: true,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC721('mintable + roles-DAR (default opts)', {
@@ -110,12 +110,12 @@ testERC721('royalty info disabled', {
 
 testERC721('royalty info enabled default + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC721('royalty info enabled default + roles', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC721('royalty info enabled default + roles-DAR (default opts)', {
@@ -130,12 +130,12 @@ testERC721('royalty info enabled default + roles-DAR (custom opts)', {
 
 testERC721('royalty info enabled custom + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC721('royalty info enabled custom + roles', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC721('royalty info enabled custom + roles-DAR (default opts)', {

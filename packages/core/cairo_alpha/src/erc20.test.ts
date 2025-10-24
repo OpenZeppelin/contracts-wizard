@@ -49,12 +49,12 @@ testERC20('erc20 burnable', {
 
 testERC20('erc20 pausable', {
   pausable: true,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC20('erc20 pausable with roles', {
   pausable: true,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC20('erc20 pausable with roles-DAR (default opts)', {
@@ -97,12 +97,12 @@ test('erc20 votes, decimals too high', async t => {
 
 testERC20('erc20 mintable', {
   mintable: true,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC20('erc20 mintable with roles', {
   mintable: true,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC20('erc20 mintable with roles-DAR (default opts)', {
@@ -158,7 +158,7 @@ testERC20('erc20 votes, non-upgradeable', {
 
 testERC20('erc20 full, non-upgradeable', {
   premint: '2000',
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
   burnable: true,
   mintable: true,
   votes: true,
@@ -170,7 +170,7 @@ testERC20('erc20 full, non-upgradeable', {
 
 testERC20('erc20 full upgradeable', {
   premint: '2000',
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
   burnable: true,
   mintable: true,
   votes: true,
@@ -182,7 +182,7 @@ testERC20('erc20 full upgradeable', {
 
 testERC20('erc20 full upgradeable with roles', {
   premint: '2000',
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   burnable: true,
   mintable: true,
   votes: true,
@@ -225,7 +225,7 @@ testAPIEquivalence('erc20 API full upgradeable', {
   symbol: 'CTK',
   decimals: '6',
   premint: '2000',
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   burnable: true,
   mintable: true,
   votes: true,

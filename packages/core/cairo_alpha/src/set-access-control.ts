@@ -28,20 +28,27 @@ export const darCustomOpts: RolesDefaultAdminRulesOptions = {
   darDefaultDelayIncrease: '1 week',
 };
 
+type AccessControlFactory = {
+  readonly None: () => Readonly<{ type: false } & typeof darDefaultOpts>;
+  readonly Ownable: () => Readonly<{ type: 'ownable' } & typeof darDefaultOpts>;
+  readonly Roles: () => Readonly<{ type: 'roles' } & typeof darDefaultOpts>;
+  readonly RolesDefaultAdminRules: (
+    opts: RolesDefaultAdminRulesOptions,
+  ) => Readonly<{ type: 'roles-dar' } & RolesDefaultAdminRulesOptions>;
+};
+
 export const AccessControl = {
-  None: { type: false, ...darDefaultOpts } as const,
-  Ownable: { type: 'ownable', ...darDefaultOpts } as const,
-  Roles: { type: 'roles', ...darDefaultOpts } as const,
-  RolesDefaultAdminRules: (opts: RolesDefaultAdminRulesOptions) => {
-    return { type: 'roles-dar', ...opts } as const;
-  },
-} as const;
+  None: () => ({ type: false, ...darDefaultOpts }) as const,
+  Ownable: () => ({ type: 'ownable', ...darDefaultOpts }) as const,
+  Roles: () => ({ type: 'roles', ...darDefaultOpts }) as const,
+  RolesDefaultAdminRules: (opts: RolesDefaultAdminRulesOptions) => ({ type: 'roles-dar', ...opts }) as const,
+} as const satisfies AccessControlFactory;
 
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
-export const accessOptions = [
-  AccessControl.None,
-  AccessControl.Ownable,
-  AccessControl.Roles,
+export const accessOptions: Access[] = [
+  AccessControl.None(),
+  AccessControl.Ownable(),
+  AccessControl.Roles(),
   AccessControl.RolesDefaultAdminRules(darDefaultOpts),
   AccessControl.RolesDefaultAdminRules(darCustomOpts),
 ] as const;

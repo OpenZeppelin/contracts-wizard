@@ -55,7 +55,7 @@ export function buildVesting(opts: VestingOptions): Contract {
   setInfo(c, allOpts.info);
 
   // Vesting component depends on Ownable component
-  const access = AccessControl.Ownable;
+  const access = AccessControl.Ownable();
   setAccessControl(c, access);
 
   // Must be non-upgradable to guarantee vesting according to the schedule

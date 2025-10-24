@@ -49,15 +49,15 @@ testCustom('upgradeable', {
 
 testCustom('access control disabled', {
   upgradeable: false,
-  access: AccessControl.None,
+  access: AccessControl.None(),
 });
 
 testCustom('access control ownable', {
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testCustom('access control roles', {
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testCustom('access control roles default admin rules (default opts)', {
@@ -70,7 +70,7 @@ testCustom('access control roles default admin rules (custom opts)', {
 
 testCustom('pausable with access control disabled', {
   // API should override access to true since it is required for pausable
-  access: AccessControl.None,
+  access: AccessControl.None(),
   pausable: true,
   upgradeable: false,
 });
@@ -79,7 +79,7 @@ testAPIEquivalence('custom API default');
 
 testAPIEquivalence('custom API full upgradeable', {
   name: 'CustomContract',
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   pausable: true,
   upgradeable: true,
 });

@@ -12,7 +12,7 @@ export const defaults: Required<CommonOptions> = {
 
 export const contractDefaults: Required<CommonContractOptions> = {
   ...defaults,
-  access: { ...AccessControl.None },
+  access: AccessControl.None(),
 } as const;
 
 export interface CommonOptions {

@@ -46,7 +46,7 @@ export function buildMultisig(opts: MultisigOptions): Contract {
   // A Multisig contract is exclusively governed by its own multisig process.
   // The collective approval of the designated signers determines all actions.
   // No other access-control mechanism should override or bypass this process.
-  setAccessControl(c, AccessControl.None);
+  setAccessControl(c, AccessControl.None());
 
   return c;
 }

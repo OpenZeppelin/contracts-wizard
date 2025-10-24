@@ -55,7 +55,7 @@ testERC1155('basic non-upgradeable', {
 testERC1155('basic', {});
 
 testERC1155('basic + roles', {
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC1155('no updatable uri', {
@@ -76,7 +76,7 @@ testERC1155('mintable', {
 
 testERC1155('mintable + roles', {
   mintable: true,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC1155('mintable + roles DAR (default opts)', {
@@ -95,12 +95,12 @@ testERC1155('royalty info disabled', {
 
 testERC1155('royalty info enabled default + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC1155('royalty info enabled default + roles', {
   royaltyInfo: royaltyInfoOptions.enabledDefault,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC1155('royalty info enabled default + roles-DAR (custom opts)', {
@@ -110,12 +110,12 @@ testERC1155('royalty info enabled default + roles-DAR (custom opts)', {
 
 testERC1155('royalty info enabled custom + ownable', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.Ownable,
+  access: AccessControl.Ownable(),
 });
 
 testERC1155('royalty info enabled custom + roles', {
   royaltyInfo: royaltyInfoOptions.enabledCustom,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
 });
 
 testERC1155('royalty info enabled custom + roles-DAR (default opts)', {
@@ -130,13 +130,13 @@ testERC1155('royalty info enabled custom + roles-DAR (custom opts)', {
 
 testERC1155('full non-upgradeable roles', {
   ...allFeaturesON,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   upgradeable: false,
 });
 
 testERC1155('full upgradeable roles', {
   ...allFeaturesON,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   upgradeable: true,
 });
 
@@ -172,7 +172,7 @@ testAPIEquivalence('API full upgradeable', {
   ...allFeaturesON,
   name: CUSTOM_NAME,
   baseUri: BASE_URI,
-  access: AccessControl.Roles,
+  access: AccessControl.Roles(),
   upgradeable: true,
 });
 
