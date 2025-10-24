@@ -7,6 +7,7 @@ import type {
   ContractFunction,
   ImplementedTrait,
   UseClause,
+  Variable,
 } from './contract';
 
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -34,7 +35,7 @@ export function printContract(contract: Contract): string {
         `mod ${contract.name} {`,
         spaceBetween(
           printUseClauses(contract),
-          printConstants(contract),
+          printConstants(contract.constants),
           printComponentDeclarations(contract),
           printImpls(contract),
           printStorage(contract),
@@ -135,9 +136,9 @@ function sortUseClauses(contract: Contract): UseClause[] {
   });
 }
 
-function printConstants(contract: Contract): Lines[] {
+function printConstants(constants: Variable[]): Lines[] {
   const lines = [];
-  for (const constant of contract.constants) {
+  for (const constant of constants) {
     // inlineComment is optional, default to false
     const inlineComment = constant.inlineComment ?? false;
     const commented = !!constant.comment;
@@ -284,7 +285,7 @@ function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.name} of ${trait.of} {`);
 
-  const superVars = withSemicolons(trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
+  const superVars = printConstants(trait.superVariables);
   implLines.push(superVars);
 
   const fns = trait.functions.map(fn => printFunction(fn));

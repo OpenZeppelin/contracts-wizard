@@ -2,33 +2,31 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import type { KindSubset } from '../generate/sources';
+import type { AccessSubset } from '../set-access-control';
+import type { RoyaltyInfoSubset } from '../set-royalty-info';
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
-import type { RoyaltyInfoSubset } from '../set-royalty-info';
 
 type Arguments = {
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 };
 
+const defaults: Arguments = {
+  kind: 'all',
+  access: 'all',
+  royaltyInfo: 'all',
+} as const;
+
 export function resolveArguments(): Arguments {
   const cliArgs = process.argv.slice(2);
-  switch (cliArgs.length) {
-    case 0:
-      return { kind: 'all', royaltyInfo: 'all' };
-    case 1:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: 'all',
-      };
-    case 2:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]),
-      };
-    default:
-      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`);
-  }
+  const args = parseCliArgs(cliArgs);
+  return {
+    kind: parseKindSubset(args.kind ?? defaults.kind),
+    access: parseAccessSubset(args.access ?? defaults.access),
+    royaltyInfo: parseRoyaltyInfoSubset(args.royalty ?? defaults.royaltyInfo),
+  };
 }
 
 export async function updateScarbProject() {
@@ -36,12 +34,13 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, royaltyInfo } = resolveArguments();
+  const { kind, access, royaltyInfo } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
     uniqueName: true,
     kind,
+    access,
     royaltyInfo,
     logsEnabled: true,
   });
@@ -107,6 +106,69 @@ function parseKindSubset(value: string | undefined): KindSubset {
   }
 }
 
+function parseCliArgs(args: string[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+
+    if (arg.startsWith('--')) {
+      const argName = arg.slice(2);
+      if (argName.includes('=')) {
+        // Handle --arg=value format
+        const parts = argName.split('=', 2);
+        const key = parts[0];
+        const value = parts[1];
+        if (key && value !== undefined) {
+          result[key] = value;
+        } else {
+          throw new Error(`Invalid argument format: ${arg}`);
+        }
+      } else if (i + 1 < args.length) {
+        // Handle --arg value format
+        const nextArg = args[i + 1];
+        if (nextArg && !nextArg.startsWith('--')) {
+          result[argName] = nextArg;
+          i++; // Skip the next argument since we've used it as a value
+        } else {
+          throw new Error(`No value provided for argument: ${arg}`);
+        }
+      } else {
+        throw new Error(`No value provided for argument: ${arg}`);
+      }
+    } else {
+      throw new Error(`Invalid argument format: ${arg}. Expected --key=value or --key value`);
+    }
+  }
+  return result;
+}
+
+function parseAccessSubset(value: string | undefined): AccessSubset {
+  if (value === undefined) {
+    throw new Error(`Failed to resolve access subset from 'undefined'.`);
+  }
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'disabled':
+    case 'none':
+    case 'no':
+      return 'disabled';
+    case 'ownable':
+      return 'ownable';
+    case 'roles':
+      return 'roles';
+    case 'roles-dar-default':
+    case 'roles_dar_default':
+      return 'roles-dar-default';
+    case 'roles-dar-custom':
+    case 'roles_dar_custom':
+      return 'roles-dar-custom';
+    default:
+      throw new Error(`Failed to resolve access subset from '${value}' value.`);
+  }
+}
+
 function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
   if (value === undefined) {
     throw new Error(`Failed to resolve royalty info subset from 'undefined'.`);
@@ -115,11 +177,15 @@ function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
     case 'all':
       return 'all';
     case 'disabled':
+    case 'none':
+    case 'no':
       return 'disabled';
+    case 'enabled-default':
     case 'enabled_default':
-      return 'enabled_default';
+      return 'enabled-default';
+    case 'enabled-custom':
     case 'enabled_custom':
-      return 'enabled_custom';
+      return 'enabled-custom';
     default:
       throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
   }

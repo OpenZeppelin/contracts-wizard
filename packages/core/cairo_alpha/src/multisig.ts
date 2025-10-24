@@ -2,7 +2,7 @@ import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { CommonOptions } from './common-options';
 import { contractDefaults as commonDefaults } from './common-options';
-import { setAccessControl } from './set-access-control';
+import { setAccessControl, AccessControl } from './set-access-control';
 import { setUpgradeableMultisig } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
@@ -46,7 +46,7 @@ export function buildMultisig(opts: MultisigOptions): Contract {
   // A Multisig contract is exclusively governed by its own multisig process.
   // The collective approval of the designated signers determines all actions.
   // No other access-control mechanism should override or bypass this process.
-  setAccessControl(c, false);
+  setAccessControl(c, AccessControl.None());
 
   return c;
 }

@@ -15,7 +15,8 @@
     kind: 'ERC721',
     ...erc721.defaults,
     royaltyInfo: { ...erc721.defaults.royaltyInfo }, // copy fields
-    info: { ...infoDefaults }, // create new object since Info is nested
+    info: { ...infoDefaults }, // create new object since Info is nested,
+    access: { ...erc721.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -112,6 +113,12 @@
 
 <RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:accessType={opts.access.type}
+  bind:darInitialDelay={opts.access.darInitialDelay}
+  bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  required={requireAccessControl}
+  {errors}
+/>
 
 <InfoSection bind:info={opts.info} />
