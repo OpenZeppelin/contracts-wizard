@@ -1,4 +1,4 @@
-import type { BaseFunction, Contract } from './contract';
+import type { BaseFunction, Contract, ContractStruct } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
 import { setAccessControl, requireAccessControl } from './set-access-control';
@@ -12,6 +12,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
+import { generateNamespacesStorageSlot, getNamespacedStorageName } from './utils/namespaced-storage-generator';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -99,7 +100,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable == 'uups');
   }
 
   if (allOpts.votes) {
@@ -174,14 +175,28 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
+function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, uups = false) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
-
   if (incremental) {
-    c.addVariable('uint256 private _nextTokenId;');
-    c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
-    c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    if (!uups) {
+      c.addVariable('uint256 private _nextTokenId;');
+      c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    } else {
+      const storageFn = getStorageFunction();
+      const storageStruct = getStorageStruct(c.name);
+      const namespacedStorageName = `${c.name.toUpperCase()}_STORAGE_LOCATION`;
+      c.addStructVariable(storageStruct, 'uint256 _nextTokenId;');
+      c.addVariable(
+        `bytes32 private constant ${namespacedStorageName} = ${generateNamespacesStorageSlot(getNamespacedStorageName(c.name))};`,
+      );
+      c.addFunctionCode(`assembly { $.slot :=  ${namespacedStorageName}}`, storageFn);
+
+      c.addFunctionCode('Storage storage $ = _getStorage();', fn);
+      c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    }
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   }
@@ -263,4 +278,25 @@ function getMintFunction(incremental: boolean, uriStorage: boolean): BaseFunctio
   }
 
   return fn;
+}
+
+function getStorageFunction(): BaseFunction {
+  const fn: BaseFunction = {
+    name: '_getStorage',
+    kind: 'internal' as const,
+    mutability: 'pure',
+    args: [],
+    returns: ['Storage storage $'],
+  };
+
+  return fn;
+}
+
+function getStorageStruct(name: string) {
+  const struct: ContractStruct = {
+    name: 'Storage',
+    comments: [`/// @custom:storage-location erc7201:${getNamespacedStorageName(name)}`],
+    variables: [],
+  };
+  return struct;
 }

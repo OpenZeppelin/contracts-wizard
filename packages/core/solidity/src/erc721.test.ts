@@ -133,6 +133,17 @@ testERC721('full upgradeable uups + managed', {
   access: 'managed',
 });
 
+testERC721('full upgradeable uups + managed + incremental', {
+  mintable: true,
+  enumerable: true,
+  pausable: true,
+  burnable: true,
+  incremental:true,
+  votes: true,
+  upgradeable: 'uups',
+  access: 'managed',
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
