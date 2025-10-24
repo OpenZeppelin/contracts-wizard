@@ -55,14 +55,16 @@
     <label class:checked={opts.schedule === 'linear'}>
       <input type="radio" bind:group={opts.schedule} value="linear" />
       Linear
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#LinearVestingSchedule">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/finance#LinearVestingSchedule">
         A vesting schedule implementation when tokens are vested gradually following a linear curve.
       </HelpTooltip>
     </label>
     <label class:checked={opts.schedule === 'custom'}>
       <input type="radio" bind:group={opts.schedule} value="custom" />
       Custom
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#VestingComponent-Vesting-Schedule">
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/finance#VestingComponent-Vesting-Schedule"
+      >
         A custom vesting schedule that requires the implementation of the VestingSchedule trait.
       </HelpTooltip>
     </label>

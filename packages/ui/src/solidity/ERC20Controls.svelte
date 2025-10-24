@@ -107,7 +107,7 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
@@ -115,7 +115,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
         emergency response.
       </HelpTooltip>
@@ -132,7 +132,7 @@
     <label class:checked={opts.permit || opts.votes}>
       <input type="checkbox" bind:checked={opts.permit} />
       Permit
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Permit">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Permit">
         Without paying gas, token holders will be able to allow third parties to transfer from their account.
       </HelpTooltip>
     </label>
@@ -140,7 +140,7 @@
     <label class:checked={opts.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint} />
       Flash Minting
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20FlashMint">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20FlashMint">
         Built-in flash loans. Lend tokens without requiring collateral as long as they're returned in the same
         transaction.
       </HelpTooltip>
@@ -153,20 +153,20 @@
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes"
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Votes"
 >
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber" />
       Block Number
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/governance#governor">
         Uses voting durations expressed as block numbers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.votes === 'timestamp'}>
       <input type="radio" bind:group={opts.votes} value="timestamp" />
       Timestamp
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
@@ -178,7 +178,7 @@
   bind:value={opts.crossChainBridging}
   defaultValue="custom"
   helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Bridgeable"
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Bridgeable"
 >
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
