@@ -45,13 +45,41 @@ export const AccessControl = {
 } as const satisfies AccessControlFactory;
 
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
-export const accessOptions: Access[] = [
-  AccessControl.None(),
-  AccessControl.Ownable(),
-  AccessControl.Roles(),
-  AccessControl.RolesDefaultAdminRules(darDefaultOpts),
-  AccessControl.RolesDefaultAdminRules(darCustomOpts),
-] as const;
+
+export type AccessSubset = 
+  | 'all'
+  | 'disabled'
+  | 'ownable'
+  | 'roles'
+  | 'roles-dar-default'
+  | 'roles-dar-custom';
+
+export function resolveAccessControlOptions(subset: AccessSubset): Access[] {
+  switch (subset) {
+    case 'all':
+      return [
+        AccessControl.None(),
+        AccessControl.Ownable(),
+        AccessControl.Roles(),
+        AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+        AccessControl.RolesDefaultAdminRules(darCustomOpts),
+      ];
+    case 'disabled':
+      return [AccessControl.None()];
+    case 'ownable':
+      return [AccessControl.Ownable()];
+    case 'roles':
+      return [AccessControl.Roles()];
+    case 'roles-dar-default':
+      return [AccessControl.RolesDefaultAdminRules(darDefaultOpts)];
+    case 'roles-dar-custom':
+      return [AccessControl.RolesDefaultAdminRules(darCustomOpts)];
+    default: {
+      const _: never = subset;
+      throw new Error('Unknown AccessControlSubset');
+    }
+  }
+}
 
 const DEFAULT_ADMIN_DELAY_INCREASE_WAIT = BigInt(5 * 24 * 60 * 60); // 5 days
 
