@@ -1,7 +1,7 @@
 import keccak from 'keccak';
 
-export function getNamespacedStorageName(name: string) {
-  return `myProject.${name}`;
+export function getNamespacedStorageName(name: string, namespace: string = 'myProject') {
+  return `${namespace}.${name}`;
 }
 
 export function generateNamespacesStorageSlot(inputString: string): string {

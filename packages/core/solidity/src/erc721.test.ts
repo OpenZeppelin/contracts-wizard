@@ -138,7 +138,7 @@ testERC721('full upgradeable uups + managed + incremental', {
   enumerable: true,
   pausable: true,
   burnable: true,
-  incremental:true,
+  incremental: true,
   votes: true,
   upgradeable: 'uups',
   access: 'managed',

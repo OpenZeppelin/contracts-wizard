@@ -100,7 +100,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable == 'uups');
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable === 'uups');
   }
 
   if (allOpts.votes) {
