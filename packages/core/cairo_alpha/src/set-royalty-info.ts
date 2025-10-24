@@ -13,7 +13,7 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
 };
 
-export type RoyaltyInfoSubset = 'all' | 'disabled' | 'enabled_default' | 'enabled_custom';
+export type RoyaltyInfoSubset = 'all' | 'disabled' | 'enabled-default' | 'enabled-custom';
 
 export const royaltyInfoOptions = {
   disabled: defaults,
@@ -36,9 +36,9 @@ export function resolveRoyaltyOptionsSubset(subset: RoyaltyInfoSubset): RoyaltyI
       return [disabled, enabledDefault, enabledCustom];
     case 'disabled':
       return [disabled];
-    case 'enabled_default':
+    case 'enabled-default':
       return [enabledDefault];
-    case 'enabled_custom':
+    case 'enabled-custom':
       return [enabledCustom];
     default: {
       const _: never = subset;
