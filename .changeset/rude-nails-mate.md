@@ -2,4 +2,4 @@
 '@openzeppelin/wizard': minor
 ---
 
-Support for ERC721 with Mintable → Auto Increment IDs and Upgradeability, using \_nextTokenId in namespaced storage for safe upgradeable minting.
+**Breaking change**: For ERC-721, use namespaced storage for `_nextTokenId` when mintable, auto increment IDs, and upgradeability are enabled together.

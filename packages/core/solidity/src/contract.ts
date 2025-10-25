@@ -59,7 +59,7 @@ export interface ContractStruct {
   variables: string[];
 }
 
-export type FunctionKind = 'internal' | 'public';
+export type FunctionKind = 'internal' | 'public' | 'private';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
