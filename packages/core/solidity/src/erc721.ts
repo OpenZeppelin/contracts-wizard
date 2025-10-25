@@ -12,6 +12,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
+import { addNamespacedFunctionImplementation } from './utils/namespaced-storage-functionality';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -99,7 +100,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable !== false);
   }
 
   if (allOpts.votes) {
@@ -174,14 +175,19 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
+function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, proxy = false) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
-
   if (incremental) {
-    c.addVariable('uint256 private _nextTokenId;');
-    c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
-    c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    if (!proxy) {
+      c.addVariable('uint256 private _nextTokenId;');
+      c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    } else {
+      addNamespacedFunctionImplementation(c, fn);
+      c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    }
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   }
