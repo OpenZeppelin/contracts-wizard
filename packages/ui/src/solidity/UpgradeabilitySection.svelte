@@ -8,6 +8,9 @@
   export let disabled: boolean = false;
   export let disabledReason: string | undefined = undefined;
 
+  export let namespaceRequired: boolean = false;
+  export let namespacePrefix: string | undefined = undefined;
+
   let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
   let wasDisabled = disabled;
   let wasUpgradeable = upgradeable;
@@ -54,4 +57,20 @@
       </HelpTooltip>
     </label>
   </div>
+
+  {#if namespaceRequired}
+    <div style="height: 0.5rem;"></div>
+
+    <label class="labeled-input">
+      <span class="flex justify-between pr-2">
+        Namespace Prefix
+        <HelpTooltip
+          link="https://docs.openzeppelin.com/upgrades-plugins/writing-upgradeable#namespaced-storage-layout"
+        >
+          Prefix for namespace ids. Should be based on your project name or a naming convention unique to your project.
+        </HelpTooltip>
+      </span>
+      <input bind:value={namespacePrefix} />
+    </label>
+  {/if}
 </ExpandableToggleRadio>

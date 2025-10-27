@@ -129,6 +129,10 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  namespaceRequired={opts.upgradeable !== false && opts.mintable && opts.incremental}
+  bind:namespacePrefix={opts.namespacePrefix}
+/>
 
 <InfoSection bind:info={opts.info} />
