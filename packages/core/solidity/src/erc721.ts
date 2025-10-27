@@ -13,7 +13,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
-import { setNamespacedStorage } from './utils/namespaced-storage-functionality';
+import { setNamespacedStorage } from './set-namespaced-storage';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -30,6 +30,7 @@ export interface ERC721Options extends CommonOptions {
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
    */
   votes?: boolean | ClockMode;
+  namespacePrefix?: string;
 }
 
 export const defaults: Required<ERC721Options> = {
@@ -46,6 +47,7 @@ export const defaults: Required<ERC721Options> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  namespacePrefix: 'myProject',
 } as const;
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -60,6 +62,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     mintable: opts.mintable ?? defaults.mintable,
     incremental: opts.incremental ?? defaults.incremental,
     votes: opts.votes ?? defaults.votes,
+    namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
 
@@ -101,7 +104,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable, allOpts.namespacePrefix);
   }
 
   if (allOpts.votes) {
@@ -182,6 +185,7 @@ function addMintable(
   incremental = false,
   uriStorage = false,
   upgradeable: Upgradeable,
+  namespacePrefix: string,
 ) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
@@ -191,7 +195,7 @@ function addMintable(
       c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     } else {
-      setNamespacedStorage(c, fn, ['uint256 _nextTokenId;']);
+      setNamespacedStorage(c, fn, ['uint256 _nextTokenId;'], namespacePrefix);
       c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     }

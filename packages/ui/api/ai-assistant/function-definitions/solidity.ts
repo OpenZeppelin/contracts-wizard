@@ -3,6 +3,7 @@ import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
   solidityPrompts,
+  solidityCommonDescriptions,
   solidityAccountDescriptions,
   solidityERC20Descriptions,
   solidityERC721Descriptions,
@@ -102,6 +103,10 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description: solidityERC721Descriptions.votes,
+      },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
       },
     },
     required: ['name', 'symbol'],

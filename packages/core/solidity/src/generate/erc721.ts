@@ -21,6 +21,7 @@ const blueprint = {
   upgradeable: upgradeableOptions,
   info: infoOptions,
   votes: [...booleans, ...clockModeOptions] as const,
+  namespacePrefix: ['myProject'],
 };
 
 export function* generateERC721Options(): Generator<Required<ERC721Options>> {

@@ -105,6 +105,31 @@ testERC721('votes + timestamp', {
   votes: 'timestamp',
 });
 
+testERC721('custom name + upgradeable uups + mintable + incremental', {
+  name: 'My NFT Token',
+  mintable: true,
+  incremental: true,
+  votes: true,
+  upgradeable: 'uups',
+});
+
+testERC721('custom name + upgradeable transparent + mintable + incremental + namespacePrefix', {
+  name: 'My NFT Token',
+  mintable: true,
+  incremental: true,
+  votes: true,
+  upgradeable: 'transparent',
+  namespacePrefix: 'myNftProject',
+});
+
+testERC721('upgradeable transparent + mintable + incremental + empty namespacePrefix', {
+  mintable: true,
+  incremental: true,
+  votes: true,
+  upgradeable: 'transparent',
+  namespacePrefix: '',
+});
+
 testERC721('full upgradeable transparent', {
   mintable: true,
   enumerable: true,

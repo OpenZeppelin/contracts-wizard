@@ -32,7 +32,7 @@ export const addFunctionPropertiesFrom = <
   TContract,
   TCommonOptions extends Record<string, unknown> = Record<string, unknown>,
   TCommonOptionName extends keyof (typeof sharedFunctionDescription & TCommonOptions) &
-    keyof TContract = keyof (typeof sharedFunctionDescription & TCommonOptions) & keyof TContract,
+  keyof TContract = keyof (typeof sharedFunctionDescription & TCommonOptions) & keyof TContract,
 >(
   commonOptions: TCommonOptions,
   commonOptionNames: TCommonOptionName[],

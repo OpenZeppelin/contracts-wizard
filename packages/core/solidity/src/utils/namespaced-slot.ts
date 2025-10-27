@@ -1,10 +1,6 @@
 import { keccak256 } from 'ethereum-cryptography/keccak';
 import { hexToBytes, toHex, utf8ToBytes } from 'ethereum-cryptography/utils';
 
-export function getNamespaceId(name: string, namespace: string = 'myProject') {
-  return `${namespace}.${name}`;
-}
-
 /**
  * Returns the ERC-7201 storage location for a given namespace id
  */

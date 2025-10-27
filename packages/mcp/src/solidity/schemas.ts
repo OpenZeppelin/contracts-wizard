@@ -83,6 +83,7 @@ export const erc721Schema = {
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC721Descriptions.votes),
   ...commonSchema,
+  namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
 } as const satisfies z.ZodRawShape;
 
 export const erc1155Schema = {
