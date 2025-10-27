@@ -3,7 +3,6 @@ import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
   solidityPrompts,
-  solidityCommonDescriptions,
   solidityAccountDescriptions,
   solidityERC20Descriptions,
   solidityERC721Descriptions,
@@ -26,6 +25,7 @@ export const solidityERC20AIFunctionDefinition = {
         'mintable',
         'access',
         'upgradeable',
+        'namespacePrefix',
         'info',
       ]),
       premint: {
@@ -82,6 +82,7 @@ export const solidityERC721AIFunctionDefinition = {
         'mintable',
         'access',
         'upgradeable',
+        'namespacePrefix',
         'info',
       ]),
       baseUri: { type: 'string', description: solidityERC721Descriptions.baseUri },
@@ -103,10 +104,6 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description: solidityERC721Descriptions.votes,
-      },
-      namespacePrefix: {
-        type: 'string',
-        description: solidityCommonDescriptions.namespacePrefix,
       },
     },
     required: ['name', 'symbol'],

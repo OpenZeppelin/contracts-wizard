@@ -4,12 +4,7 @@ import { computeNamespacedStorageSlot } from './utils/namespaced-slot';
 /**
  * Sets namespaced variables in storage struct, and adds a function to retrieve namespaced storage.
  */
-export function setNamespacedStorage(
-  c: ContractBuilder,
-  fn: BaseFunction,
-  structVariables: string[],
-  namespacePrefix: string,
-) {
+export function setNamespacedStorage(c: ContractBuilder, structVariables: string[], namespacePrefix: string) {
   const namespaceId = toNamespaceId(namespacePrefix, c.name);
   const storageFn = makeStorageFunction(c.name);
   const storageStruct = makeStorageStruct(c.name, namespaceId);
@@ -17,13 +12,15 @@ export function setNamespacedStorage(
 
   structVariables.forEach(v => c.addStructVariable(storageStruct, v));
 
-  c.addVariable(`// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`);
-  c.addVariable(
+  c.addConstantOrImmutableOrCustomError(
     `bytes32 private constant ${namespacedStorageConstant} = ${computeNamespacedStorageSlot(namespaceId)};`,
+    `// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`,
   );
   c.addFunctionCode(`assembly { $.slot := ${namespacedStorageConstant} }`, storageFn);
+}
 
-  c.addFunctionCode(`${c.name}Storage storage $ = ${storageFn.name}();`, fn);
+export function toStorageStructInstantiation(name: string) {
+  return `${name}Storage storage $ = ${makeStorageFunction(name).name}();`;
 }
 
 /**

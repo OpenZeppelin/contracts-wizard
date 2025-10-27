@@ -13,7 +13,7 @@ import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
-import { setNamespacedStorage } from './set-namespaced-storage';
+import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -34,6 +34,7 @@ export interface ERC721Options extends CommonOptions {
 }
 
 export const defaults: Required<ERC721Options> = {
+  ...commonDefaults,
   name: 'MyToken',
   symbol: 'MTK',
   baseUri: '',
@@ -44,9 +45,6 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   incremental: false,
   votes: false,
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info,
   namespacePrefix: 'myProject',
 } as const;
 
@@ -191,11 +189,12 @@ function addMintable(
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
   if (incremental) {
     if (!upgradeable) {
-      c.addVariable('uint256 private _nextTokenId;');
+      c.addVariable('uint256 private _nextTokenId;', upgradeable);
       c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     } else {
-      setNamespacedStorage(c, fn, ['uint256 _nextTokenId;'], namespacePrefix);
+      setNamespacedStorage(c, ['uint256 _nextTokenId;'], namespacePrefix);
+      c.addFunctionCode(toStorageStructInstantiation(c.name), fn);
       c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     }

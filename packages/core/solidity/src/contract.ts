@@ -237,9 +237,27 @@ export class ContractBuilder implements Contract {
   }
 
   /**
-   * Note: The type in the variable is not currently transpiled, even if it refers to a contract
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
    */
-  addVariable(code: string): boolean {
+  addVariable(code: string, upgradeable: boolean): boolean {
+    if (upgradeable) {
+      throw new Error('State variables should not be used when upgradeable is true. Set namespaced storage instead.');
+    } else {
+      return this._addVariable(code);
+    }
+  }
+
+  /**
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
+   */
+  addConstantOrImmutableOrCustomError(code: string, comment?: string): boolean {
+    if (comment) {
+      this._addVariable(comment);
+    }
+    return this._addVariable(code);
+  }
+
+  private _addVariable(code: string): boolean {
     const present = this.variableSet.has(code);
     this.variableSet.add(code);
     return !present;

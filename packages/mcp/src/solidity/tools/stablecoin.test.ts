@@ -55,6 +55,7 @@ test('all', async t => {
     premintChainId: '10',
     limitations: 'allowlist',
     custodian: true,
+    namespacePrefix: 'myProject',
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',

@@ -135,15 +135,36 @@ test('contract with overridden function with code', t => {
 
 test('contract with one variable', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addVariable('uint value = 42;');
+  Foo.addVariable('uint value = 42;', false);
   t.snapshot(printContract(Foo));
 });
 
 test('contract with two variables', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addVariable('uint value = 42;');
-  Foo.addVariable('string name = "john";');
+  Foo.addVariable('uint value = 42;', false);
+  Foo.addVariable('string name = "john";', false);
   t.snapshot(printContract(Foo));
+});
+
+test('contract with immutable', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addConstantOrImmutableOrCustomError('uint immutable value = 42;');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with constant and comment', t => {
+  const Foo = new ContractBuilder('Foo');
+  Foo.addConstantOrImmutableOrCustomError('uint constant value = 42;', '// This is a comment');
+  t.snapshot(printContract(Foo));
+});
+
+test('contract with variable and upgradeable - error', t => {
+  const Foo = new ContractBuilder('Foo');
+  const error = t.throws(() => Foo.addVariable('uint value = 42;', true));
+  t.is(
+    (error as Error).message,
+    'State variables should not be used when upgradeable is true. Set namespaced storage instead.',
+  );
 });
 
 test('name with special characters', t => {
