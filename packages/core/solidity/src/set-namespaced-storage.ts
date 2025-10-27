@@ -12,9 +12,9 @@ export function setNamespacedStorage(c: ContractBuilder, structVariables: string
 
   structVariables.forEach(v => c.addStructVariable(storageStruct, v));
 
-  c.addConstantOrImmutableOrCustomError(
+  c.addConstantOrImmutableOrErrorDefinition(
     `bytes32 private constant ${namespacedStorageConstant} = ${computeNamespacedStorageSlot(namespaceId)};`,
-    `// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`,
+    [`// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`],
   );
   c.addFunctionCode(`assembly { $.slot := ${namespacedStorageConstant} }`, storageFn);
 }

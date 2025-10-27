@@ -10,7 +10,7 @@ export interface Contract {
   structs: ContractStruct[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
-  variables: string[];
+  variableOrErrorDefinitions: VariableOrErrorDefinition[];
   upgradeable: boolean;
 }
 
@@ -79,6 +79,11 @@ export interface NatspecTag {
   value: string;
 }
 
+export interface VariableOrErrorDefinition {
+  code: string;
+  comments?: string[];
+}
+
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
@@ -89,8 +94,8 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
+  readonly variableOrErrorMap: Map<string, VariableOrErrorDefinition> = new Map<string, VariableOrErrorDefinition>();
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map();
   private structMap: Map<string, ContractStruct> = new Map();
@@ -125,8 +130,8 @@ export class ContractBuilder implements Contract {
     return [...this.structMap.values()];
   }
 
-  get variables(): string[] {
-    return [...this.variableSet];
+  get variableOrErrorDefinitions(): VariableOrErrorDefinition[] {
+    return [...this.variableOrErrorMap.values()];
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
@@ -239,27 +244,24 @@ export class ContractBuilder implements Contract {
   /**
    * Note: The type in the code is not currently transpiled, even if it refers to a contract
    */
-  addVariable(code: string, upgradeable: boolean): boolean {
+  addStateVariable(code: string, upgradeable: boolean): boolean {
     if (upgradeable) {
       throw new Error('State variables should not be used when upgradeable is true. Set namespaced storage instead.');
     } else {
-      return this._addVariable(code);
+      return this._addVariableOrErrorDefinition({ code });
     }
   }
 
   /**
    * Note: The type in the code is not currently transpiled, even if it refers to a contract
    */
-  addConstantOrImmutableOrCustomError(code: string, comment?: string): boolean {
-    if (comment) {
-      this._addVariable(comment);
-    }
-    return this._addVariable(code);
+  addConstantOrImmutableOrErrorDefinition(code: string, comments?: string[]): boolean {
+    return this._addVariableOrErrorDefinition({ code, comments });
   }
 
-  private _addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
+  private _addVariableOrErrorDefinition(variableOrErrorDefinition: VariableOrErrorDefinition): boolean {
+    const present = this.variableOrErrorMap.has(variableOrErrorDefinition.code);
+    this.variableOrErrorMap.set(variableOrErrorDefinition.code, variableOrErrorDefinition);
     return !present;
   }
 

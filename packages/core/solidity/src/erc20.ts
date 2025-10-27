@@ -335,7 +335,7 @@ function addCrossChainBridging(
       throw new Error('Unknown value for `crossChainBridging`');
     }
   }
-  c.addConstantOrImmutableOrCustomError('error Unauthorized();');
+  c.addConstantOrImmutableOrErrorDefinition('error Unauthorized();');
 }
 
 function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
@@ -343,7 +343,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
     case false:
     case 'ownable': {
       if (!upgradeable) {
-        const addedBridge = c.addVariable(`address public tokenBridge;`, false);
+        const addedBridge = c.addStateVariable(`address public tokenBridge;`, false);
         if (addedBridge) {
           c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
           c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
@@ -371,7 +371,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
       setAccessControl(c, access);
       const roleOwner = 'tokenBridge';
       const roleId = 'TOKEN_BRIDGE_ROLE';
-      const addedRoleConstant = c.addConstantOrImmutableOrCustomError(
+      const addedRoleConstant = c.addConstantOrImmutableOrErrorDefinition(
         `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
       );
       if (addedRoleConstant) {
@@ -409,7 +409,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
 }
 
 function addSuperchainERC20(c: ContractBuilder) {
-  c.addConstantOrImmutableOrCustomError(
+  c.addConstantOrImmutableOrErrorDefinition(
     'address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;',
   );
   c.setFunctionBody(

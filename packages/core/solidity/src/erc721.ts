@@ -189,7 +189,7 @@ function addMintable(
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
   if (incremental) {
     if (!upgradeable) {
-      c.addVariable('uint256 private _nextTokenId;', upgradeable);
+      c.addStateVariable('uint256 private _nextTokenId;', upgradeable);
       c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     } else {

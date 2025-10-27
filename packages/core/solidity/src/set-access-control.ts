@@ -65,7 +65,7 @@ export function requireAccessControl(
     }
     case 'roles': {
       const roleId = roleIdPrefix + '_ROLE';
-      const addedConstant = c.addConstantOrImmutableOrCustomError(
+      const addedConstant = c.addConstantOrImmutableOrErrorDefinition(
         `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
       );
       if (roleOwner && addedConstant) {

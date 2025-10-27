@@ -7,6 +7,7 @@ import type {
   NatspecTag,
   ImportContract,
   ContractStruct,
+  VariableOrErrorDefinition,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -43,7 +44,8 @@ export function printContract(contract: Contract, opts?: Options): string {
 
         spaceBetween(
           ...structs,
-          contract.variables,
+          printVariableOrErrorDefinitionsWithComments(contract.variableOrErrorDefinitions),
+          printVariableOrErrorDefinitionsWithoutComments(contract.variableOrErrorDefinitions),
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
@@ -55,6 +57,20 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printVariableOrErrorDefinitionsWithComments(variableOrErrorDefinitions: VariableOrErrorDefinition[]): Lines[] {
+  const withComments = variableOrErrorDefinitions.filter(v => v.comments?.length);
+  // Spaces between each item that has comments
+  return spaceBetween(...withComments.map(v => [...v.comments!, v.code]));
+}
+
+function printVariableOrErrorDefinitionsWithoutComments(
+  variableOrErrorDefinitions: VariableOrErrorDefinition[],
+): Lines[] {
+  const withoutComments = variableOrErrorDefinitions.filter(v => !v.comments?.length);
+  // No spaces between items that don't have comments
+  return withoutComments.map(v => v.code);
 }
 
 function printCompatibleLibraryVersions(contract: Contract): string {
