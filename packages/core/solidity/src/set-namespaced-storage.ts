@@ -18,7 +18,9 @@ export function setNamespacedStorage(
   structVariables.forEach(v => c.addStructVariable(storageStruct, v));
 
   c.addVariable(`// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`);
-  c.addVariable(`bytes32 private constant ${namespacedStorageConstant} = ${computeNamespacedStorageSlot(namespaceId)};`);
+  c.addVariable(
+    `bytes32 private constant ${namespacedStorageConstant} = ${computeNamespacedStorageSlot(namespaceId)};`,
+  );
   c.addFunctionCode(`assembly { $.slot := ${namespacedStorageConstant} }`, storageFn);
 
   c.addFunctionCode(`${c.name}Storage storage $ = ${storageFn.name}();`, fn);
