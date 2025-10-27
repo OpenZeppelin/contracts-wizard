@@ -78,6 +78,25 @@ async function updateScarbToml() {
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
 
+function parseCliArgs(args: string[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg.startsWith('--') && arg.slice(2).includes('=')) {
+      const [key, value] = arg.slice(2).split('=', 2);
+      if (key && value !== undefined) {
+        result[key] = value;
+      } else {
+        throw new Error(`Invalid argument format: ${arg}`);
+      }
+    } else {
+      throw new Error(`Invalid argument format: ${arg}. Expected --key=value`);
+    }
+  }
+  return result;
+}
+
 function parseKindSubset(value: string | undefined): KindSubset {
   if (value === undefined) {
     throw new Error(`Failed to resolve contract kind subset from 'undefined'.`);
@@ -106,43 +125,6 @@ function parseKindSubset(value: string | undefined): KindSubset {
   }
 }
 
-function parseCliArgs(args: string[]): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-
-    if (arg.startsWith('--')) {
-      const argName = arg.slice(2);
-      if (argName.includes('=')) {
-        // Handle --arg=value format
-        const parts = argName.split('=', 2);
-        const key = parts[0];
-        const value = parts[1];
-        if (key && value !== undefined) {
-          result[key] = value;
-        } else {
-          throw new Error(`Invalid argument format: ${arg}`);
-        }
-      } else if (i + 1 < args.length) {
-        // Handle --arg value format
-        const nextArg = args[i + 1];
-        if (nextArg && !nextArg.startsWith('--')) {
-          result[argName] = nextArg;
-          i++; // Skip the next argument since we've used it as a value
-        } else {
-          throw new Error(`No value provided for argument: ${arg}`);
-        }
-      } else {
-        throw new Error(`No value provided for argument: ${arg}`);
-      }
-    } else {
-      throw new Error(`Invalid argument format: ${arg}. Expected --key=value or --key value`);
-    }
-  }
-  return result;
-}
-
 function parseAccessSubset(value: string | undefined): AccessSubset {
   if (value === undefined) {
     throw new Error(`Failed to resolve access subset from 'undefined'.`);
@@ -151,8 +133,6 @@ function parseAccessSubset(value: string | undefined): AccessSubset {
     case 'all':
       return 'all';
     case 'disabled':
-    case 'none':
-    case 'no':
       return 'disabled';
     case 'ownable':
       return 'ownable';
@@ -177,8 +157,6 @@ function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
     case 'all':
       return 'all';
     case 'disabled':
-    case 'none':
-    case 'no':
       return 'disabled';
     case 'enabled-default':
     case 'enabled_default':
