@@ -7,7 +7,8 @@ import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setUpgradeable, Upgradeable } from './set-upgradeable';
+import { setUpgradeable } from './set-upgradeable';
+import type { Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
@@ -175,7 +176,13 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, upgradeable: Upgradeable) {
+function addMintable(
+  c: ContractBuilder,
+  access: Access,
+  incremental = false,
+  uriStorage = false,
+  upgradeable: Upgradeable,
+) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
   if (incremental) {

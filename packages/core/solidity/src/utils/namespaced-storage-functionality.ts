@@ -1,4 +1,4 @@
-import { BaseFunction, ContractBuilder, ContractStruct } from '../contract';
+import type { BaseFunction, ContractBuilder, ContractStruct } from '../contract';
 import { computeNamespacedStorageSlot, getNamespaceId } from './namespaced-storage-generator';
 
 /**
@@ -14,7 +14,7 @@ export function setNamespacedStorage(
   const storageStruct = makeStorageStruct(c.name, namespace);
   const namespacedStorageName = `${c.name.toUpperCase()}_STORAGE_LOCATION`;
   const namespaceId = getNamespaceId(c.name, namespace);
-  structVariables.forEach((v) => c.addStructVariable(storageStruct, v));
+  structVariables.forEach(v => c.addStructVariable(storageStruct, v));
 
   c.addVariable(`// keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))`);
   c.addVariable(`bytes32 private constant ${namespacedStorageName} = ${computeNamespacedStorageSlot(namespaceId)};`);
