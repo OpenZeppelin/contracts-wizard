@@ -7,12 +7,12 @@ import { supportsInterface } from './common-functions';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
-import { setUpgradeable } from './set-upgradeable';
+import { setUpgradeable, Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
-import { addNamespacedFunctionImplementation } from './utils/namespaced-storage-functionality';
+import { setNamespacedStorage } from './utils/namespaced-storage-functionality';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -100,7 +100,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable !== false);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable);
   }
 
   if (allOpts.votes) {
@@ -175,16 +175,16 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, proxy = false) {
+function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false, upgradeable: Upgradeable) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
   if (incremental) {
-    if (!proxy) {
+    if (!upgradeable) {
       c.addVariable('uint256 private _nextTokenId;');
       c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     } else {
-      addNamespacedFunctionImplementation(c, fn);
+      setNamespacedStorage(c, fn, ['uint256 _nextTokenId;']);
       c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
       c.addFunctionCode('_safeMint(to, tokenId);', fn);
     }
