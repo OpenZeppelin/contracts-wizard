@@ -821,7 +821,7 @@
 
 "@openzeppelin/uniswap-hooks@git+https://github.com/OpenZeppelin/uniswap-hooks.git#master":
   version "1.2.0"
-  resolved "git+https://github.com/OpenZeppelin/uniswap-hooks.git#cf1af765c9c8a9d6851551fe3a7db6b6945399a4"
+  resolved "git+https://github.com/OpenZeppelin/uniswap-hooks.git#7170eec9cdbbdb4a907d14bfe63478cf15d2eab4"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
