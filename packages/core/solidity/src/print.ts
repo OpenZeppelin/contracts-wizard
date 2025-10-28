@@ -20,38 +20,45 @@ import { stringifyUnicodeSafe } from './utils/sanitize';
 import { importsCommunityContracts } from './utils/imports-libraries';
 import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
 
-export function printContract(contract: Contract, opts?: Options): string {
-  const helpers = withHelpers(contract, opts);
-
-  const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
-
-  const hasOverrides = fns.override.some(l => l.length > 0);
+export function printContract(contracts: Contract | Contract[], opts?: Options): string {
+  contracts = Array.isArray(contracts) ? contracts : [contracts];
+  if (contracts.length == 0) throw new Error('no contract');
+  if (contracts.some(c1 => contracts.some(c2 => c1.license != c2.license))) throw new Error('multiple licences');
 
   return formatLines(
     ...spaceBetween(
+      // Header
       [
-        `// SPDX-License-Identifier: ${contract.license}`,
-        printCompatibleLibraryVersions(contract),
+        `// SPDX-License-Identifier: ${contracts[0]!.license}`,
+        printCompatibleLibraryVersions(contracts[0]!),
         `pragma solidity ^${SOLIDITY_VERSION};`,
       ],
 
-      printImports(contract.imports, helpers),
+      // Imports
+      // TODO: handle double imports & consolidate imports from same file
+      contracts
+        .flatMap(contract => printImports(contract.imports, withHelpers(contract, opts)))
+        .filter((line, i, lines) => lines.indexOf(line) === i),
 
-      [
-        ...printNatspecTags(contract.natspecTags),
-        [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
-
-        spaceBetween(
-          contract.variables,
-          printConstructor(contract, helpers),
-          ...fns.code,
-          ...fns.modifiers,
-          hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
-          ...fns.override,
-        ),
-
-        `}`,
-      ],
+      // contracts
+      ...contracts.map(contract => {
+        const helpers = withHelpers(contract, opts);
+        const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
+        const hasOverrides = fns.override.some(l => l.length > 0);
+        return [
+          ...printNatspecTags(contract.natspecTags),
+          [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
+          spaceBetween(
+            contract.variables,
+            printConstructor(contract, helpers),
+            ...fns.code,
+            ...fns.modifiers,
+            hasOverrides ? [`// The following functions are overrides required by Solidity.`] : [],
+            ...fns.override,
+          ),
+          `}`,
+        ];
+      }),
     ),
   );
 }

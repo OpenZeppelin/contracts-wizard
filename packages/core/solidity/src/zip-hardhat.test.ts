@@ -17,7 +17,7 @@ import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import { buildAccount } from './account';
+import { buildAccount, buildFactory } from './account';
 
 interface Context {
   tempFolder: string;
@@ -102,6 +102,32 @@ test.serial('account ecdsa', async t => {
 test.serial('account ecdsa uups', async t => {
   const opts: GenericOptions = { kind: 'Account', name: 'My Account', signer: 'ECDSA', upgradeable: 'uups' };
   const c = buildAccount(opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
+test.skip('account P256 transparent with factory', async t => {
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    signer: 'P256',
+    upgradeable: 'transparent',
+    factory: true,
+  };
+  const c = buildAccount(opts);
+  const _ = buildFactory(c, opts);
+  await runDeployScriptTest(c, t, opts);
+});
+
+test.skip('account modular uups with factory', async t => {
+  const opts: GenericOptions = {
+    kind: 'Account',
+    name: 'My Account',
+    ERC7579Modules: 'AccountERC7579',
+    upgradeable: 'uups',
+    factory: true,
+  };
+  const c = buildAccount(opts);
+  const _ = buildFactory(c, opts);
   await runDeployScriptTest(c, t, opts);
 });
 
