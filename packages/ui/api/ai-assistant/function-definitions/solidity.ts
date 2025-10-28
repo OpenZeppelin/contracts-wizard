@@ -9,6 +9,7 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
+  solidityCommonDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 
 export const solidityERC20AIFunctionDefinition = {
@@ -25,7 +26,6 @@ export const solidityERC20AIFunctionDefinition = {
         'mintable',
         'access',
         'upgradeable',
-        'namespacePrefix',
         'info',
       ]),
       premint: {
@@ -62,6 +62,10 @@ export const solidityERC20AIFunctionDefinition = {
         type: 'boolean',
         description: solidityERC20Descriptions.callback,
       },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
@@ -82,7 +86,6 @@ export const solidityERC721AIFunctionDefinition = {
         'mintable',
         'access',
         'upgradeable',
-        'namespacePrefix',
         'info',
       ]),
       baseUri: { type: 'string', description: solidityERC721Descriptions.baseUri },
@@ -104,6 +107,10 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description: solidityERC721Descriptions.votes,
+      },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
       },
     },
     required: ['name', 'symbol'],

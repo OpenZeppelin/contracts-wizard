@@ -34,9 +34,4 @@ export const commonFunctionDescription = {
       },
     },
   },
-
-  namespacePrefix: {
-    type: 'string',
-    description: solidityCommonDescriptions.namespacePrefix,
-  },
 } as const satisfies AiFunctionPropertyDefinition<SolidityCommonOptions>['properties'];
