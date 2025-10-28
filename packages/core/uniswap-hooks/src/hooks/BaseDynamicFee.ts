@@ -22,10 +22,16 @@ const BaseDynamicFee: Hook = {
         args: [{ name: 'key', type: 'PoolKey calldata' }],
         returns: ['uint24'],
       },
-      // poke the fee (optional override)
-      poke: {
-        kind: 'public', // external/public for our generator purposes
+      // poke the fee (internal)
+      _poke: {
+        kind: 'internal',
         args: [{ name: 'key', type: 'PoolKey calldata' }],
+      },
+      // poke the fee (public) (must be protected)
+      poke: {
+        kind: 'public',
+        args: [{ name: 'key', type: 'PoolKey calldata' }],
+        returns: [],
       },
     }),
   },

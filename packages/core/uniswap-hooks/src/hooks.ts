@@ -211,6 +211,8 @@ function getHookPath(hookName: HookName): string {
 }
 
 function addHook(c: ContractBuilder, allOpts: HooksOptions) {
+  c.addConstructorArgument({ name: '_poolManager', type: 'IPoolManager' });
+  c.addConstructionOnly({ name: 'BaseHook', path: getHookPath('BaseHook') }, [{ lit: '_poolManager' }]);
   switch (allOpts.hook) {
     case 'BaseHook':
       addBaseHook(c, allOpts);
@@ -260,7 +262,7 @@ function addHook(c: ContractBuilder, allOpts: HooksOptions) {
 }
 
 function addBaseHook(c: ContractBuilder, allOpts: HooksOptions): void {
-  c.addParent({ name: allOpts.hook, path: getHookPath(allOpts.hook) }, []);
+  c.addParent({ name: allOpts.hook, path: getHookPath(allOpts.hook) }, [{ lit: '_poolManager' }]);
 }
 
 function addBaseAsyncSwap(c: ContractBuilder, allOpts: HooksOptions): void {
@@ -324,7 +326,7 @@ function addBaseDynamicFee(c: ContractBuilder, allOpts: HooksOptions): void {
   c.addTopLevelComment(`i.e. dynamic fees depending on current market conditions, etc`);
   c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions._getFee!);
   c.setFunctionBody([`// TODO: Implement how the LP fee is computed`], HOOKS.BaseDynamicFee.functions._getFee!);
-  c.addOverride({ name: 'BaseDynamicFee' }, HOOKS.BaseDynamicFee.functions.poke!);
+  c.addFunctionCode('_poke(key);', HOOKS.BaseDynamicFee.functions.poke!);
   requireAccessControl(c, HOOKS.BaseDynamicFee.functions.poke!, allOpts.access!, 'POKE', 'poker');
   c.addParent({ name: allOpts.hook, path: getHookPath(allOpts.hook) }, []);
 }
