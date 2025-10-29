@@ -1,7 +1,11 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { CairoAlphaCommonContractOptions, CairoAlphaRoyaltyInfoOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
-import { cairoCommonDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
+import {
+  cairoCommonDescriptions,
+  cairoAlphaAccessDescriptions,
+  cairoRoyaltyInfoDescriptions,
+} from '../../../../common/src/ai/descriptions/cairo.ts';
 
 const commonContractFunctionDescription = {
   upgradeable: {
@@ -26,10 +30,24 @@ const commonContractFunctionDescription = {
   },
 
   access: {
-    anyOf: [
-      { type: 'boolean', enum: [false] },
-      { type: 'string', enum: ['ownable', 'roles'] },
-    ],
+    type: 'object',
+    properties: {
+      type: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ownable', 'roles', 'roles-dar'] },
+        ],
+        description: cairoAlphaAccessDescriptions.accessType,
+      },
+      darInitialDelay: {
+        type: 'string',
+        description: cairoAlphaAccessDescriptions.darInitialDelay,
+      },
+      darDefaultDelayIncrease: {
+        type: 'string',
+        description: cairoAlphaAccessDescriptions.darDefaultDelayIncrease,
+      },
+    },
     description: cairoCommonDescriptions.access,
   },
 } as const satisfies AiFunctionPropertyDefinition<CairoAlphaCommonContractOptions>['properties'];

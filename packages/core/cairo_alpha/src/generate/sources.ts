@@ -17,6 +17,7 @@ import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { AccessSubset } from '../set-access-control';
 
 export type Subset = 'all' | 'minimal-cover';
 
@@ -24,23 +25,24 @@ export type KindSubset = 'all' | keyof KindedOptions;
 
 export function* generateOptions(params: {
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 }): Generator<GenericOptions> {
-  const { kind, royaltyInfo } = params;
+  const { kind, access, royaltyInfo } = params;
   if (kind === 'all' || kind === 'ERC20') {
-    for (const kindOpts of generateERC20Options()) {
+    for (const kindOpts of generateERC20Options({ access })) {
       yield { kind: 'ERC20', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC721') {
-    for (const kindOpts of generateERC721Options({ royaltyInfo })) {
+    for (const kindOpts of generateERC721Options({ access, royaltyInfo })) {
       yield { kind: 'ERC721', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC1155') {
-    for (const kindOpts of generateERC1155Options({ royaltyInfo })) {
+    for (const kindOpts of generateERC1155Options({ access, royaltyInfo })) {
       yield { kind: 'ERC1155', ...kindOpts };
     }
   }
@@ -70,7 +72,7 @@ export function* generateOptions(params: {
   }
 
   if (kind === 'all' || kind === 'Custom') {
-    for (const kindOpts of generateCustomOptions()) {
+    for (const kindOpts of generateCustomOptions({ access })) {
       yield { kind: 'Custom', ...kindOpts };
     }
   }
@@ -89,12 +91,13 @@ interface GeneratedSource extends GeneratedContract {
 function generateContractSubset(params: {
   subset: Subset;
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 }): GeneratedContract[] {
-  const { subset, kind, royaltyInfo } = params;
+  const { subset, kind, access, royaltyInfo } = params;
   const contracts = [];
 
-  for (const options of generateOptions({ kind, royaltyInfo })) {
+  for (const options of generateOptions({ kind, access, royaltyInfo })) {
     const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
     try {
       const contract = buildGeneric(options);
@@ -143,11 +146,12 @@ export function* generateSources(params: {
   subset: Subset;
   uniqueName: boolean;
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
 }): Generator<GeneratedSource> {
-  const { subset, uniqueName, kind, royaltyInfo } = params;
+  const { subset, uniqueName, kind, access, royaltyInfo } = params;
   let counter = 1;
-  for (const c of generateContractSubset({ subset, kind, royaltyInfo })) {
+  for (const c of generateContractSubset({ subset, kind, access, royaltyInfo })) {
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
@@ -161,41 +165,91 @@ export async function writeGeneratedSources(params: {
   subset: Subset;
   uniqueName: boolean;
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
   logsEnabled: boolean;
 }): Promise<string[]> {
-  const { dir, subset, uniqueName, kind, royaltyInfo, logsEnabled } = params;
+  const { dir, subset, uniqueName, kind, access, royaltyInfo, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
-  for (const { id, contract, source } of generateSources({ subset, uniqueName, kind, royaltyInfo })) {
+  for (const { id, contract, source } of generateSources({ subset, uniqueName, kind, access, royaltyInfo })) {
     const name = uniqueName ? contract.name : id;
     await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
     contractNames.push(name);
   }
   if (logsEnabled) {
-    const sourceLabel = resolveSourceLabel({ kind, royaltyInfo });
+    const sourceLabel = resolveSourceLabel({ kind, access, royaltyInfo });
     console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
   }
 
   return contractNames;
 }
 
-function resolveSourceLabel(params: { kind: KindSubset; royaltyInfo: RoyaltyInfoSubset }): string {
-  const { kind, royaltyInfo } = params;
+function resolveSourceLabel(params: {
+  kind: KindSubset;
+  access: AccessSubset;
+  royaltyInfo: RoyaltyInfoSubset;
+}): string {
+  const { kind, access, royaltyInfo } = params;
+  return [resolveKindLabel(kind), resolveAccessLabel(kind, access), resolveRoyaltyInfoLabel(kind, royaltyInfo)]
+    .filter(elem => elem !== undefined)
+    .join(', ');
+}
+
+function resolveKindLabel(kind: KindSubset): string {
   switch (kind) {
+    case 'all':
+      return 'All kinds';
+    case 'ERC20':
     case 'ERC721':
     case 'ERC1155':
-      return `${kind} (royaltyInfo: ${royaltyInfo})`;
-    case 'all':
-      return 'All contract kinds';
-    case 'ERC20':
     case 'Account':
     case 'Multisig':
     case 'Governor':
     case 'Vesting':
     case 'Custom':
       return kind;
+    default: {
+      const _: never = kind;
+      throw new Error('Unknown kind');
+    }
+  }
+}
+
+function resolveAccessLabel(kind: KindSubset, access: AccessSubset): string | undefined {
+  switch (kind) {
+    case 'all':
+    case 'Custom':
+    case 'ERC20':
+    case 'ERC721':
+    case 'ERC1155':
+      return `access: ${access}`;
+    case 'Account':
+    case 'Multisig':
+    case 'Governor':
+    case 'Vesting':
+      return undefined;
+    default: {
+      const _: never = kind;
+      throw new Error('Unknown kind');
+    }
+  }
+}
+
+function resolveRoyaltyInfoLabel(kind: KindSubset, royaltyInfo: RoyaltyInfoSubset): string | undefined {
+  switch (kind) {
+    case 'all':
+    case 'ERC721':
+    case 'ERC1155':
+      return `royalty: ${royaltyInfo}`;
+    case 'ERC20':
+    case 'Account':
+    case 'Custom':
+    case 'Multisig':
+    case 'Governor':
+    case 'Vesting':
+      return undefined;
     default: {
       const _: never = kind;
       throw new Error('Unknown kind');

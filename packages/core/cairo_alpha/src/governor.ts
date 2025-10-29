@@ -7,7 +7,7 @@ import { printContract } from './print';
 import { setInfo } from './set-info';
 import { setUpgradeableGovernor } from './set-upgradeable';
 import { defineComponents } from './utils/define-components';
-import { durationToTimestamp } from './utils/duration';
+import { durationToSeconds } from './utils/duration';
 import { addSNIP12Metadata, addSRC5Component } from './common-components';
 import { toUint, isNaturalNumber } from './utils/convert-strings';
 export const clockModeOptions = ['timestamp'] as const;
@@ -269,7 +269,7 @@ const components = defineComponents({
 
 function addBase(c: ContractBuilder, _: GovernorOptions) {
   c.addUseClause('starknet', 'ContractAddress');
-  c.addUseClause('openzeppelin::governance::governor', 'DefaultConfig');
+  c.addUseClause('openzeppelin::governance::governor', 'DefaultConfig', { alias: 'GovernorDefaultConfig' });
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
   c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalTrait', {
     alias: 'GovernorInternalTrait',
@@ -316,7 +316,7 @@ function addSettings(c: ContractBuilder, allOpts: Required<GovernorOptions>) {
 function getVotingDelay(opts: Required<GovernorOptions>): number {
   try {
     if (opts.clockMode === 'timestamp') {
-      return durationToTimestamp(opts.delay);
+      return durationToSeconds(opts.delay);
     } else {
       throw new Error('Invalid clock mode');
     }
@@ -334,7 +334,7 @@ function getVotingDelay(opts: Required<GovernorOptions>): number {
 function getVotingPeriod(opts: Required<GovernorOptions>): number {
   try {
     if (opts.clockMode === 'timestamp') {
-      return durationToTimestamp(opts.period);
+      return durationToSeconds(opts.period);
     } else {
       throw new Error('Invalid clock mode');
     }
