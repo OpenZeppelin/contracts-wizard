@@ -232,7 +232,7 @@ function printStorage(contract: Contract): (string | string[])[] {
 }
 
 function printEvents(contract: Contract): (string | string[])[] {
-  if (contract.macros.withComponents) {
+  if (contract.macros.withComponents || contract.components.length === 0) {
     return [];
   }
   const eventLines = [];
