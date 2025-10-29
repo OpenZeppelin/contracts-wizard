@@ -11,6 +11,7 @@ const defaults: MultisigOptions = {
   quorum: '2',
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: { withComponents: true },
 };
 
 const CUSTOM_NAME = 'CustomMultisig';
