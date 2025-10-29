@@ -1,12 +1,14 @@
 import test from 'ava';
 
 import type { ERC20Options } from '../../../erc20';
-import { buildERC20, getInitialSupply } from '../../../erc20';
+import { buildERC20, getInitialSupply, defaults } from '../../../erc20';
 import { printContract } from '../../../print';
 import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
 import type { OptionsError } from '../../..';
 import { erc20 } from '../../..';
+
+const withComponentsMacroON = { withComponents: true };
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {
@@ -14,6 +16,7 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
       name: 'MyToken',
       symbol: 'MTK',
       ...opts,
+      macros: withComponentsMacroON,
     });
     t.snapshot(printContract(c));
   });
@@ -23,15 +26,13 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: ERC20Options) {
+  const options = opts === undefined ? defaults : opts;
+  options.macros = withComponentsMacroON;
   test(title, t => {
     t.is(
-      erc20.print(opts),
+      erc20.print(options),
       printContract(
-        buildERC20({
-          name: 'MyToken',
-          symbol: 'MTK',
-          ...opts,
-        }),
+        buildERC20(options),
       ),
     );
   });
