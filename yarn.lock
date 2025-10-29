@@ -807,7 +807,6 @@
 
 "@openzeppelin/community-contracts@git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd27":
   version "0.0.1"
-  uid b0ddd275a4c5d87ba2ded654b33e08db85094588
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
 "@openzeppelin/contracts-upgradeable@^5.4.0":
@@ -819,6 +818,10 @@
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.4.0.tgz#177594bdb2d86c71f5d1052fe40cb4edb95fb20f"
   integrity sha512-eCYgWnLg6WO+X52I16TZt8uEjbtdkgLC0SUX/xnAksjjrQI4Xfn4iBRoI5j55dmlOhDv1Y7BoR3cU7e3WWhC6A==
+
+"@openzeppelin/uniswap-hooks@git+https://github.com/OpenZeppelin/uniswap-hooks.git#master":
+  version "1.2.0"
+  resolved "git+https://github.com/OpenZeppelin/uniswap-hooks.git#7170eec9cdbbdb4a907d14bfe63478cf15d2eab4"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -1336,6 +1339,16 @@
   dependencies:
     "@typescript-eslint/types" "8.39.1"
     eslint-visitor-keys "^4.2.1"
+
+"@uniswap/v4-core@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@uniswap/v4-core/-/v4-core-1.0.2.tgz#5b5701267eea25e84221f7697d971fb4f66169f6"
+  integrity sha512-X15Tm2wWd+USAzEExMbo+g9naA6QN6mPgWm0MzDwRNlOfaNlepfUpSyt9RSrUfEODspwbyWbcLg6t5nwc/e7lg==
+
+"@uniswap/v4-periphery@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@uniswap/v4-periphery/-/v4-periphery-1.0.3.tgz#d931bc5d6f29703482ceb43ad1f9ad859293ee12"
+  integrity sha512-JxLL0Djv9XcMvI2PatEnWrCrxuEaYNVhHxstndBOP+aJfh1XLg5ec8SDZ0xyoVfg2ElJTvuKpBgnu90bNValsg==
 
 "@upstash/redis@1.35.6":
   version "1.35.6"

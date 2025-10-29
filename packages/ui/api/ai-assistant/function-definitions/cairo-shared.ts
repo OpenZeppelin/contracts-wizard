@@ -2,6 +2,8 @@ import type { AiFunctionPropertyDefinition } from '../types/function-definition.
 import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { cairoCommonDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { Access } from '../../../../core/cairo/dist/set-access-control';
 
 const commonContractFunctionDescription = {
   upgradeable: {
@@ -28,7 +30,7 @@ const commonContractFunctionDescription = {
   access: {
     anyOf: [
       { type: 'boolean', enum: [false] },
-      { type: 'string', enum: ['ownable', 'roles'] },
+      { type: 'string', enum: extractStringEnumValues<Access>()(['ownable', 'roles']) },
     ],
     description: cairoCommonDescriptions.access,
   },

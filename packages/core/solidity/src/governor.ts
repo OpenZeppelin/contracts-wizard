@@ -40,6 +40,8 @@ export function printGovernor(opts: GovernorOptions = defaults): string {
   return printContract(buildGovernor(opts));
 }
 
+export type QuorumMode = 'percent' | 'absolute';
+
 export interface GovernorOptions extends CommonOptions {
   name: string;
   delay: string;
@@ -47,7 +49,7 @@ export interface GovernorOptions extends CommonOptions {
   blockTime?: number;
   proposalThreshold?: string;
   decimals?: number;
-  quorumMode?: 'percent' | 'absolute';
+  quorumMode?: QuorumMode;
   quorumPercent?: number;
   quorumAbsolute?: string;
   votes?: VotesOptions;
