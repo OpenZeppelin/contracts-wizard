@@ -2,10 +2,11 @@ import test from 'ava';
 import { governor } from '../../..';
 
 import type { GovernorOptions } from '../../../governor';
-import { buildGovernor } from '../../../governor';
+import { buildGovernor, defaults } from '../../../governor';
 import { printContract } from '../../../print';
 
 const NAME = 'MyGovernor';
+const withComponentsMacroON = { withComponents: true };
 
 function testGovernor(title: string, opts: Partial<GovernorOptions>) {
   test(title, t => {
@@ -14,6 +15,7 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
       delay: '1 day',
       period: '1 week',
       ...opts,
+      macros: withComponentsMacroON,
     });
     t.snapshot(printContract(c));
   });
@@ -23,16 +25,13 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: GovernorOptions) {
+  const options = opts === undefined ? defaults : opts;
+  options.macros = withComponentsMacroON;
   test(title, t => {
     t.is(
-      governor.print(opts),
+      governor.print(options),
       printContract(
-        buildGovernor({
-          name: NAME,
-          delay: '1 day',
-          period: '1 week',
-          ...opts,
-        }),
+        buildGovernor(options),
       ),
     );
   });
