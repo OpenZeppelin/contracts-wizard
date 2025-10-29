@@ -1,10 +1,10 @@
 import test from 'ava';
-import { custom } from '.';
+import { custom } from '../../..';
 
-import type { CustomOptions } from './custom';
-import { buildCustom } from './custom';
-import { printContract } from './print';
-import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
+import type { CustomOptions } from '../../../custom';
+import { buildCustom } from '../../../custom';
+import { printContract } from '../../../print';
+import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
 function testCustom(title: string, opts: Partial<CustomOptions>) {
   test(title, t => {

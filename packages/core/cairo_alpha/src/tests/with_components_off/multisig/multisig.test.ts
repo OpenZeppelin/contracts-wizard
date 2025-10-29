@@ -1,10 +1,10 @@
 import test from 'ava';
-import type { OptionsError } from '.';
-import { multisig } from '.';
-import type { MultisigOptions } from './multisig';
-import { buildMultisig } from './multisig';
-import { contractDefaults as commonDefaults } from './common-options';
-import { printContract } from './print';
+import type { OptionsError } from '../../..';
+import { multisig } from '../../..';
+import type { MultisigOptions } from '../../../multisig';
+import { buildMultisig } from '../../../multisig';
+import { contractDefaults as commonDefaults } from '../../../common-options';
+import { printContract } from '../../../print';
 
 const defaults: MultisigOptions = {
   name: 'MyMultisig',

@@ -1,12 +1,12 @@
 import test from 'ava';
 
-import type { ERC20Options } from './erc20';
-import { buildERC20, getInitialSupply } from './erc20';
-import { printContract } from './print';
-import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
+import type { ERC20Options } from '../../../erc20';
+import { buildERC20, getInitialSupply } from '../../../erc20';
+import { printContract } from '../../../print';
+import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
-import type { OptionsError } from '.';
-import { erc20 } from '.';
+import type { OptionsError } from '../../..';
+import { erc20 } from '../../..';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
   test(title, t => {

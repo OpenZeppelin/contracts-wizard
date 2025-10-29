@@ -1,10 +1,10 @@
 import test from 'ava';
 
-import type { BaseFunction, BaseImplementedTrait, Component } from './contract';
-import type { MacrosOptions } from './set-macros';
-import { ContractBuilder } from './contract';
-import { printContract } from './print';
-import { SECURITY_CONTACT_DOCUMENTATION } from './set-info';
+import type { BaseFunction, BaseImplementedTrait, Component } from '../../../contract';
+import type { MacrosOptions } from '../../../set-macros';
+import { ContractBuilder } from '../../../contract';
+import { printContract } from '../../../print';
+import { SECURITY_CONTACT_DOCUMENTATION } from '../../../set-info';
 
 const FOO_COMPONENT: Component = {
   name: 'FooComponent',

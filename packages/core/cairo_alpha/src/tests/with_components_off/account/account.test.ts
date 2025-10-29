@@ -1,10 +1,10 @@
 import test from 'ava';
 
-import type { AccountOptions } from './account';
-import { buildAccount } from './account';
-import { printContract } from './print';
+import type { AccountOptions } from '../../../account';
+import { buildAccount } from '../../../account';
+import { printContract } from '../../../print';
 
-import { account } from '.';
+import { account } from '../../..';
 
 function testAccount(title: string, opts: Partial<AccountOptions>) {
   test(title, t => {

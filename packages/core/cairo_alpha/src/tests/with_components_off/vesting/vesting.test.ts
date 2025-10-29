@@ -1,9 +1,9 @@
 import test from 'ava';
-import type { OptionsError } from '.';
-import { vesting } from '.';
-import type { VestingOptions } from './vesting';
-import { buildVesting } from './vesting';
-import { printContract } from './print';
+import type { OptionsError } from '../../..';
+import { vesting } from '../../..';
+import type { VestingOptions } from '../../../vesting';
+import { buildVesting } from '../../../vesting';
+import { printContract } from '../../../print';
 
 const defaults: VestingOptions = {
   name: 'MyVesting',

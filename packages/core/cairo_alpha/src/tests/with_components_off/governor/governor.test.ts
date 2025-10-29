@@ -1,9 +1,9 @@
 import test from 'ava';
-import { governor } from '.';
+import { governor } from '../../..';
 
-import type { GovernorOptions } from './governor';
-import { buildGovernor } from './governor';
-import { printContract } from './print';
+import type { GovernorOptions } from '../../../governor';
+import { buildGovernor } from '../../../governor';
+import { printContract } from '../../../print';
 
 const NAME = 'MyGovernor';
 

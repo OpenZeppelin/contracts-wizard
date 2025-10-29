@@ -1,13 +1,13 @@
 import test from 'ava';
 
-import type { ERC721Options } from './erc721';
-import { buildERC721 } from './erc721';
-import { printContract } from './print';
-import { royaltyInfoOptions } from './set-royalty-info';
-import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
+import type { ERC721Options } from '../../../erc721';
+import { buildERC721 } from '../../../erc721';
+import { printContract } from '../../../print';
+import { royaltyInfoOptions } from '../../../set-royalty-info';
+import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
-import type { OptionsError } from '.';
-import { erc721 } from '.';
+import type { OptionsError } from '../../..';
+import { erc721 } from '../../..';
 
 const NAME = 'MyToken';
 const CUSTOM_NAME = 'CustomToken';

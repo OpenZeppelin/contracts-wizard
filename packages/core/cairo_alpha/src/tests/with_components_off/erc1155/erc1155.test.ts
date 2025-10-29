@@ -1,11 +1,11 @@
 import test from 'ava';
-import { erc1155 } from '.';
+import { erc1155 } from '../../..';
 
-import type { ERC1155Options } from './erc1155';
-import { buildERC1155 } from './erc1155';
-import { printContract } from './print';
-import { royaltyInfoOptions } from './set-royalty-info';
-import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
+import type { ERC1155Options } from '../../../erc1155';
+import { buildERC1155 } from '../../../erc1155';
+import { printContract } from '../../../print';
+import { royaltyInfoOptions } from '../../../set-royalty-info';
+import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
 const NAME = 'MyToken';
 const CUSTOM_NAME = 'CustomToken';
