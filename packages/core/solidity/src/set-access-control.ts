@@ -65,7 +65,9 @@ export function requireAccessControl(
     }
     case 'roles': {
       const roleId = roleIdPrefix + '_ROLE';
-      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      const addedConstant = c.addConstantOrImmutableOrErrorDefinition(
+        `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
+      );
       if (roleOwner && addedConstant) {
         c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
