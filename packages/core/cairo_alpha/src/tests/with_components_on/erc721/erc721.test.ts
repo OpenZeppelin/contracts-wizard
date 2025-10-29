@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import type { ERC721Options } from '../../../erc721';
-import { buildERC721 } from '../../../erc721';
+import { buildERC721, defaults } from '../../../erc721';
 import { printContract } from '../../../print';
 import { royaltyInfoOptions } from '../../../set-royalty-info';
 import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
@@ -16,6 +16,8 @@ const CUSTOM_SYMBOL = 'CTK';
 const APP_NAME = 'MY_DAPP_NAME';
 const APP_VERSION = 'MY_DAPP_VERSION';
 const BASE_URI = 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/';
+
+const withComponentsMacroON = { withComponents: true };
 
 const allFeaturesON: Partial<ERC721Options> = {
   mintable: true,
@@ -35,6 +37,7 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
       name: NAME,
       symbol: SYMBOL,
       ...opts,
+      macros: withComponentsMacroON,
     });
     t.snapshot(printContract(c));
   });
@@ -44,15 +47,13 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: ERC721Options) {
+  const options = opts === undefined ? defaults : opts;
+  options.macros = withComponentsMacroON;
   test(title, t => {
     t.is(
-      erc721.print(opts),
+      erc721.print(options),
       printContract(
-        buildERC721({
-          name: NAME,
-          symbol: SYMBOL,
-          ...opts,
-        }),
+        buildERC721(options),
       ),
     );
   });
