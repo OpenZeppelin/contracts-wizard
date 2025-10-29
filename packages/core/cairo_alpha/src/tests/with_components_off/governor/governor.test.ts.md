@@ -1,4 +1,4 @@
-# Snapshot report for `src/governor.test.ts`
+# Snapshot report for `src/tests/with_components_off/governor/governor.test.ts`
 
 The actual snapshot is saved in `governor.test.ts.snap`.
 

@@ -1,4 +1,4 @@
-# Snapshot report for `src/vesting.test.ts`
+# Snapshot report for `src/tests/with_components_off/vesting/vesting.test.ts`
 
 The actual snapshot is saved in `vesting.test.ts.snap`.
 

@@ -1,4 +1,4 @@
-# Snapshot report for `src/account.test.ts`
+# Snapshot report for `src/tests/with_components_off/account/account.test.ts`
 
 The actual snapshot is saved in `account.test.ts.snap`.
 

@@ -1,4 +1,4 @@
-# Snapshot report for `src/contract.test.ts`
+# Snapshot report for `src/tests/with_components_off/contract/contract.test.ts`
 
 The actual snapshot is saved in `contract.test.ts.snap`.
 

@@ -1,4 +1,4 @@
-# Snapshot report for `src/multisig.test.ts`
+# Snapshot report for `src/tests/with_components_off/multisig/multisig.test.ts`
 
 The actual snapshot is saved in `multisig.test.ts.snap`.
 

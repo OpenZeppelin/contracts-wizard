@@ -1,4 +1,4 @@
-# Snapshot report for `src/erc20.test.ts`
+# Snapshot report for `src/tests/with_components_off/erc20/erc20.test.ts`
 
 The actual snapshot is saved in `erc20.test.ts.snap`.
 
