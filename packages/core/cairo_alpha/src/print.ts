@@ -21,7 +21,7 @@ const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
 
 function printWithComponentsDirective(contract: Contract): Lines[] {
-  if (!contract.macros.withComponents) {
+  if (!contract.macros.withComponents || contract.components.length === 0) {
     return [];
   }
   const componentsStr = contract.components
