@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.9.0 (2025-10-29)
+
+- **Breaking changes**: Use namespaced storage instead of state variables when upgradeability is enabled. ([#704](https://github.com/OpenZeppelin/contracts-wizard/pull/704))
+  - For ERC-20, use namespaced storage for `tokenBridge` when cross-chain bridging is set to `'custom'` and upgradeability is enabled.
+  - For ERC-721, use namespaced storage for `_nextTokenId` when mintable, auto increment IDs, and upgradeability are enabled.
+
 ## 0.8.1 (2025-10-14)
 
 - Updated community-contracts digest version ([#659](https://github.com/OpenZeppelin/contracts-wizard/pull/659))
