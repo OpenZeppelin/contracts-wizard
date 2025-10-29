@@ -19,7 +19,7 @@ export const solidityCommonDescriptions = {
   upgradeable:
     'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
   namespacePrefix:
-    'The prefix for an ERC-7201 namespace identifier. It should be derived from the project name or a unique naming convention specific to the project. Used only if the contract includes storage variables and upgradeability is enabled. Default is "myProject".',
+    'The prefix for ERC-7201 namespace identifiers. It should be derived from the project name or a unique naming convention specific to the project. Used only if the contract includes storage variables and upgradeability is enabled. Default is "myProject".',
 };
 
 export const solidityERC20Descriptions = {

@@ -67,7 +67,8 @@
         <HelpTooltip
           link="https://docs.openzeppelin.com/upgrades-plugins/writing-upgradeable#namespaced-storage-layout"
         >
-          Prefix for namespace ids. Should be based on your project name or a naming convention unique to your project.
+          Prefix for ERC-7201 namespace identifiers. Should be derived from your project name or a unique naming
+          convention specific to your project.
         </HelpTooltip>
       </span>
       <input bind:value={namespacePrefix} />
