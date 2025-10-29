@@ -26,12 +26,7 @@ function testAPIEquivalence(title: string, opts?: CustomOptions) {
   const options = opts === undefined ? defaults : opts;
   options.macros = withComponentsMacroON;
   test(title, t => {
-    t.is(
-      custom.print(options),
-      printContract(
-        buildCustom(options),
-      ),
-    );
+    t.is(custom.print(options), printContract(buildCustom(options)));
   });
 }
 

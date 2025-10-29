@@ -40,12 +40,7 @@ function testAPIEquivalence(title: string, opts?: ERC1155Options) {
   const options = opts === undefined ? defaults : opts;
   options.macros = withComponentsMacroON;
   test(title, t => {
-    t.is(
-      erc1155.print(options),
-      printContract(
-        buildERC1155(options),
-      ),
-    );
+    t.is(erc1155.print(options), printContract(buildERC1155(options)));
   });
 }
 

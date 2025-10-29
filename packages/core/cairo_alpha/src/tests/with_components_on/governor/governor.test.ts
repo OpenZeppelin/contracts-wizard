@@ -28,12 +28,7 @@ function testAPIEquivalence(title: string, opts?: GovernorOptions) {
   const options = opts === undefined ? defaults : opts;
   options.macros = withComponentsMacroON;
   test(title, t => {
-    t.is(
-      governor.print(options),
-      printContract(
-        buildGovernor(options),
-      ),
-    );
+    t.is(governor.print(options), printContract(buildGovernor(options)));
   });
 }
 

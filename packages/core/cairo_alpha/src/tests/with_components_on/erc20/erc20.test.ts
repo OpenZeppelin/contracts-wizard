@@ -29,12 +29,7 @@ function testAPIEquivalence(title: string, opts?: ERC20Options) {
   const options = opts === undefined ? defaults : opts;
   options.macros = withComponentsMacroON;
   test(title, t => {
-    t.is(
-      erc20.print(options),
-      printContract(
-        buildERC20(options),
-      ),
-    );
+    t.is(erc20.print(options), printContract(buildERC20(options)));
   });
 }
 
