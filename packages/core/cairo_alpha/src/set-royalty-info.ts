@@ -104,7 +104,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
         name: 'royalty_admin',
         type: 'ContractAddress',
       });
-      c.addConstructorCode('self.accesscontrol_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      c.addConstructorCode('self.access_control_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
     }
     default: {
