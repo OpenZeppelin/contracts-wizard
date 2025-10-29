@@ -6,14 +6,23 @@
 </script>
 
 <section class="controls-section">
-  <h1>Macros</h1>
+  <h1>
+    <div class="items-center tooltip-container pr-2 flex justify-between">
+      <span>Macros</span>
+      <HelpTooltip>
+        In order to compile Cairo contracts with macros enabled, you need to have the Rust toolchain installed and <code
+          >openzeppelin_macros</code
+        > package added as a dependency.
+      </HelpTooltip>
+    </div>
+  </h1>
 
   <div class="checkbox-group">
     <label class:checked={macros.withComponents}>
       <input type="checkbox" bind:checked={macros.withComponents} />
       with_components
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/macros/with_components">
-        Use the <code>with_components</code>S macro for simplified contract structure.
+        Use the <code>with_components</code> macro for simplified contract structure.
       </HelpTooltip>
     </label>
   </div>
