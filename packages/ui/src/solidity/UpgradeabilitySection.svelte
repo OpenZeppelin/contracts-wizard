@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { Upgradeable } from '@openzeppelin/wizard';
+  import type { Upgradeable, OptionsErrorMessages } from '@openzeppelin/wizard';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
+  import { error } from '../common/error-tooltip';
 
   export let upgradeable: Upgradeable;
   export let disabled: boolean = false;
@@ -10,6 +11,8 @@
 
   export let namespaceRequired: boolean = false;
   export let namespacePrefix: string | undefined = undefined;
+
+  export let errors: undefined | OptionsErrorMessages = undefined;
 
   let defaultValueWhenEnabled: 'transparent' | 'uups' = 'transparent';
   let wasDisabled = disabled;
@@ -71,7 +74,7 @@
           convention specific to your project.
         </HelpTooltip>
       </span>
-      <input bind:value={namespacePrefix} />
+      <input bind:value={namespacePrefix} use:error={errors?.namespacePrefix} />
     </label>
   {/if}
 </ExpandableToggleRadio>

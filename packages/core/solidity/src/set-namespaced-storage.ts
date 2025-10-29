@@ -1,10 +1,13 @@
 import type { BaseFunction, ContractBuilder, ContractStruct } from './contract';
 import { computeNamespacedStorageSlot } from './utils/namespaced-slot';
+import { OptionsError } from './error';
 
 /**
  * Sets namespaced variables in storage struct, and adds a function to retrieve namespaced storage.
  */
 export function setNamespacedStorage(c: ContractBuilder, structVariables: string[], namespacePrefix: string) {
+  validateNoWhitespace(namespacePrefix);
+
   const namespaceId = toNamespaceId(namespacePrefix, c.name);
   const storageFn = makeStorageFunction(c.name);
   const storageStruct = makeStorageStruct(c.name, namespaceId);
@@ -21,6 +24,15 @@ export function setNamespacedStorage(c: ContractBuilder, structVariables: string
 
 export function toStorageStructInstantiation(name: string) {
   return `${name}Storage storage $ = ${makeStorageFunction(name).name}();`;
+}
+
+/**
+ * According to ERC-7201, namespace ids should not contain any whitespace characters.
+ */
+function validateNoWhitespace(namespacePrefix: string) {
+  if (namespacePrefix.match(/\s+/)) {
+    throw new OptionsError({ namespacePrefix: 'Namespace prefix should not contain whitespace characters' });
+  }
 }
 
 /**

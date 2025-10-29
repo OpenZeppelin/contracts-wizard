@@ -206,6 +206,7 @@
   bind:upgradeable={opts.upgradeable}
   namespaceRequired={opts.upgradeable !== false && opts.crossChainBridging === 'custom'}
   bind:namespacePrefix={opts.namespacePrefix}
+  {errors}
 />
 
 <InfoSection bind:info={opts.info} />
