@@ -175,7 +175,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           'u64',
         );
         if (defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT) {
-          c.addUseClause('openzeppelin::access::accesscontrol::extensions', 'DefaultConfig', {
+          c.addUseClause('openzeppelin_access::accesscontrol::extensions', 'DefaultConfig', {
             alias: 'AccessControlDefaultAdminRulesDefaultConfig',
           });
         } else {
@@ -330,9 +330,9 @@ const components = defineComponents({
     ],
   },
   AccessControlDefaultAdminRulesComponent: {
-    path: 'openzeppelin::access::accesscontrol::extensions',
+    path: 'openzeppelin_access::accesscontrol::extensions',
     substorage: {
-      name: 'accesscontrol_dar',
+      name: 'access_control_dar',
       type: 'AccessControlDefaultAdminRulesComponent::Storage',
     },
     event: {
