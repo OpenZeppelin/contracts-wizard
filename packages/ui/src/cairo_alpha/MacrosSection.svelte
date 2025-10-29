@@ -13,7 +13,7 @@
       <input type="checkbox" bind:checked={macros.withComponents} />
       with_components
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/macros/with_components">
-        Use the "with_components" macro for simplified contract structure.
+        Use the <code>with_components</code>S macro for simplified contract structure.
       </HelpTooltip>
     </label>
   </div>
