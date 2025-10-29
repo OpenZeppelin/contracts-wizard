@@ -11,6 +11,7 @@ const defaults: VestingOptions = {
   duration: '0 day',
   cliffDuration: '0 day',
   schedule: 'linear',
+  macros: { withComponents: true },
 };
 
 const CUSTOM_NAME = 'CustomVesting';
