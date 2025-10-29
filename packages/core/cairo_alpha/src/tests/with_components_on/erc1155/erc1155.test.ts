@@ -2,7 +2,7 @@ import test from 'ava';
 import { erc1155 } from '../../..';
 
 import type { ERC1155Options } from '../../../erc1155';
-import { buildERC1155 } from '../../../erc1155';
+import { buildERC1155, defaults } from '../../../erc1155';
 import { printContract } from '../../../print';
 import { royaltyInfoOptions } from '../../../set-royalty-info';
 import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
@@ -10,6 +10,8 @@ import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-acces
 const NAME = 'MyToken';
 const CUSTOM_NAME = 'CustomToken';
 const BASE_URI = 'https://gateway.pinata.cloud/ipfs/QmcP9hxrnC1T5ATPmq2saFeAM1ypFX9BnAswCdHB9JCjLA/';
+
+const withComponentsMacroON = { withComponents: true };
 
 const allFeaturesON: Partial<ERC1155Options> = {
   mintable: true,
@@ -25,6 +27,7 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
       name: NAME,
       baseUri: BASE_URI,
       ...opts,
+      macros: withComponentsMacroON,
     });
     t.snapshot(printContract(c));
   });
@@ -34,15 +37,13 @@ function testERC1155(title: string, opts: Partial<ERC1155Options>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: ERC1155Options) {
+  const options = opts === undefined ? defaults : opts;
+  options.macros = withComponentsMacroON;
   test(title, t => {
     t.is(
-      erc1155.print(opts),
+      erc1155.print(options),
       printContract(
-        buildERC1155({
-          name: NAME,
-          baseUri: '',
-          ...opts,
-        }),
+        buildERC1155(options),
       ),
     );
   });
