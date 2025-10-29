@@ -13,4 +13,11 @@ export type LanguagesOptions =
   | Required<StylusOptions>
   | Required<UniswapHooksOptions>;
 
-export type Language = 'solidity' | 'cairo' | 'cairo-alpha' | 'polkadot-solidity' | 'stylus' | 'stellar';
+export type Language =
+  | 'solidity'
+  | 'cairo'
+  | 'cairo-alpha'
+  | 'polkadot-solidity'
+  | 'stylus'
+  | 'stellar'
+  | 'uniswap-hooks-solidity';

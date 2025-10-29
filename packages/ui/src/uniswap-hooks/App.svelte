@@ -105,7 +105,7 @@
     };
   };
 
-  const language = 'solidity';
+  const language = 'uniswap-hooks-solidity';
 
   let copied = false;
   const copyHandler = async () => {
