@@ -103,10 +103,9 @@
 
   $: code = printContract(contract);
   $: highlightedCode = injectHyperlinks(hljs.highlight(code, { language: 'cairo' }).value);
-
   $: hasErrors = errors[tab] !== undefined;
 
-  const language = 'cairo';
+  const language = 'cairo-alpha';
 
   let copied = false;
   const copyHandler = async () => {

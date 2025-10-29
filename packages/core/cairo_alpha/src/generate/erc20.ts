@@ -1,5 +1,6 @@
 import type { ERC20Options } from '../erc20';
-import { accessOptions } from '../set-access-control';
+import type { AccessSubset } from '../set-access-control';
+import { resolveAccessControlOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
@@ -10,6 +11,7 @@ const booleans = [true, false];
 
 type GeneratorOptions = {
   macros: MacrosSubset;
+  access: AccessSubset;
 };
 
 function prepareBlueprint(opts: GeneratorOptions) {
@@ -24,7 +26,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     votes: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],
-    access: accessOptions,
+    access: resolveAccessControlOptions(opts.access),
     upgradeable: upgradeableOptions,
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),

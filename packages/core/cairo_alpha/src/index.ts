@@ -6,7 +6,7 @@ export { ContractBuilder } from './contract';
 
 export { printContract } from './print';
 
-export type { Access } from './set-access-control';
+export type { Access, AccessType } from './set-access-control';
 export type { Account } from './account';
 export type { Upgradeable } from './set-upgradeable';
 export type { Info } from './set-info';

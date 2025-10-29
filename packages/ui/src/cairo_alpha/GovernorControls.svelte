@@ -156,7 +156,7 @@
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes" />
       ERC20Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/governance#VotesComponent">
         Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -164,7 +164,7 @@
     <label class:checked={opts.votes === 'erc721votes'}>
       <input type="radio" bind:group={opts.votes} value="erc721votes" />
       ERC721Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/governance#VotesComponent">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -203,7 +203,9 @@
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin" />
       TimelockController
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/governance#TimelockControllerComponent">
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/governance#TimelockControllerComponent"
+      >
         Module compatible with OpenZeppelin's <code>TimelockController</code>.
       </HelpTooltip>
     </label>
@@ -222,7 +224,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12"
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/guides/snip12"
         >Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip
       >
     </span>
@@ -232,7 +234,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12"
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/guides/snip12"
         >Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip
       >
     </span>

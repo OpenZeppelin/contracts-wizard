@@ -1,5 +1,6 @@
 import type { ERC721Options } from '../erc721';
-import { accessOptions } from '../set-access-control';
+import type { AccessSubset } from '../set-access-control';
+import { resolveAccessControlOptions } from '../set-access-control';
 import { defaults as infoDefaults } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
@@ -11,6 +12,7 @@ import { resolveMacrosOptions } from '../set-macros';
 const booleans = [true, false];
 
 type GeneratorOptions = {
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 };
@@ -28,7 +30,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     pausable: booleans,
     mintable: booleans,
     royaltyInfo: resolveRoyaltyOptionsSubset(opts.royaltyInfo),
-    access: accessOptions,
+    access: resolveAccessControlOptions(opts.access),
     upgradeable: upgradeableOptions,
     info: [infoDefaults],
     macros: resolveMacrosOptions(opts.macros),

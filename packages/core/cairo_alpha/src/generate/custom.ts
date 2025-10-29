@@ -1,5 +1,6 @@
 import type { CustomOptions } from '../custom';
-import { accessOptions } from '../set-access-control';
+import type { AccessSubset } from '../set-access-control';
+import { resolveAccessControlOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
@@ -9,6 +10,7 @@ import { resolveMacrosOptions } from '../set-macros';
 const booleans = [true, false];
 
 type GeneratorOptions = {
+  access: AccessSubset;
   macros: MacrosSubset;
 };
 
@@ -16,7 +18,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
   return {
     name: ['MyContract'],
     pausable: booleans,
-    access: accessOptions,
+    access: resolveAccessControlOptions(opts.access),
     upgradeable: upgradeableOptions,
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),

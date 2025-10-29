@@ -15,6 +15,7 @@
     ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
     macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
+    access: { ...custom.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -38,7 +39,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
@@ -49,7 +50,13 @@
   </div>
 </section>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:accessType={opts.access.type}
+  bind:darInitialDelay={opts.access.darInitialDelay}
+  bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  required={requireAccessControl}
+  {errors}
+/>
 
 <MacrosSection bind:macros={opts.macros} />
 

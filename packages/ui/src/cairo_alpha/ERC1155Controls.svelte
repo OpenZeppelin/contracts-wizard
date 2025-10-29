@@ -16,6 +16,7 @@
     royaltyInfo: { ...erc1155.defaults.royaltyInfo }, // copy fields
     info: { ...infoDefaults }, // create new object since Info is nested
     macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
+    access: { ...erc1155.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -58,7 +59,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
@@ -67,7 +68,7 @@
     <label class:checked={opts.updatableUri}>
       <input type="checkbox" bind:checked={opts.updatableUri} />
       Updatable URI
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/erc1155#ERC1155Component-set_base_uri">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc1155#ERC1155Component-set_base_uri">
         Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {'{id}'}
         in the URI with the tokenId.
       </HelpTooltip>
@@ -78,7 +79,13 @@
 
 <RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:accessType={opts.access.type}
+  bind:darInitialDelay={opts.access.darInitialDelay}
+  bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  required={requireAccessControl}
+  {errors}
+/>
 
 <MacrosSection bind:macros={opts.macros} />
 
