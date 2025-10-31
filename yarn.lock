@@ -807,18 +807,17 @@
 
 "@openzeppelin/community-contracts@git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd27":
   version "0.0.1"
-  uid b0ddd275a4c5d87ba2ded654b33e08db85094588
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
-"@openzeppelin/contracts-upgradeable@^5.5.0-rc.0":
-  version "5.5.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.5.0-rc.0.tgz#53d23e8d941956d65ec18dc161b90e652e6a321f"
-  integrity sha512-WJBXTtwBiKuqs2Gwm5g3PLRxlkqVKRVCQmeCG6kBwyhh41w3clQbyj23PiqurWBjzcU123bi+EzbWRM4ro/5UA==
+"@openzeppelin/contracts-upgradeable@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.5.0.tgz#e35b3ededa5ccc13205c2b42e2058cd5cb7d424a"
+  integrity sha512-Va5hKG5oaK0EE5bXTVWugcGimMHazxL+SL523dH6WVbGiuLXwuWr9oxtLyPHQSVGtgmlIgtKNR5V+OUpCIUwFQ==
 
-"@openzeppelin/contracts@^5.5.0-rc.0":
-  version "5.5.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.5.0-rc.0.tgz#5c143bfc6362702d8ce7fde76d009d9633a9f01e"
-  integrity sha512-bhJiU4PC3suR1bJ4xkhkAlIZsyAjYr0q3VRgh6tfi8uDpy/NTNpwDeTI+qlGnyXrrnqT04/Qjui6IDHNmAT4wA==
+"@openzeppelin/contracts@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.5.0.tgz#24e8a2f9598de484dcb223512af656edf52bc0e8"
+  integrity sha512-R8hq4zmKKWP2c7OxeRgAcjZwvF5W0Qq2OIX7degrtdM52Q9xYr4MLJdUAVPKGUewNJ1qo+M6YiZLLnNUnjP/gg==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
