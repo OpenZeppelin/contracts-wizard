@@ -61,7 +61,7 @@
         }}
       />
       Signature Validation
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#signature_validation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/accounts#signature_validation">
         Enables smart contracts to validate signatures through a standard <code>isValidSignature</code> method. Unlike EOAs
         (regular accounts) that use private keys, this allows contracts to implement custom signature validation logic, making
         them capable of acting as signing entities for operations like approvals, swaps, or any signed messages.
@@ -77,7 +77,7 @@
         }}
       />
       Account Bound
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#erc_7739_signatures">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/accounts#erc_7739_signatures">
         Enhances signature security by using a defensive rehashing scheme that prevents signature replay attacks across
         multiple smart accounts owned by the same private key. This preserves the readability of signed contents while
         ensuring each signature is uniquely bound to a specific account and chain.
@@ -92,7 +92,7 @@
         }}
       />
       ERC721 Holder
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Holder">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Holder">
         Implement native support for receiving ERC-721 tokens.
       </HelpTooltip>
     </label>
@@ -105,7 +105,7 @@
         }}
       />
       ERC1155 Holder
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc1155#ERC1155Holder">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Holder">
         Implement native support for receiving ERC-1155 tokens.
       </HelpTooltip>
     </label>
@@ -119,7 +119,7 @@
         }}
       />
       Batched Execution
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/accounts#batched_execution">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/accounts#batched_execution">
         Enables atomic execution of multiple transactions in a single operation, reducing total transaction costs and
         latency.
       </HelpTooltip>
@@ -164,13 +164,13 @@
   bind:value={opts.signer}
   defaultValue="ECDSA"
   helpContent="Defines the base signature validation mechanism for the account. This implementation will be used to validate user operations following ERC-4337 or by ERC-1271's <code>isValidSignature</code> to verify signatures on behalf of the account."
-  helpLink="https://docs.openzeppelin.com/contracts/accounts#selecting_a_signer"
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/accounts#selecting_a_signer"
 >
   <div class="checkbox-group">
     <label class:checked={opts.signer === 'ECDSA'}>
       <input type="radio" bind:group={opts.signer} value="ECDSA" />
       ECDSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#ECDSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#ECDSA">
         Standard Ethereum signature validation using secp256k1. Validates signatures against a specified owner address,
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
@@ -178,7 +178,7 @@
     <label class:checked={opts.signer === 'EIP7702'}>
       <input type="radio" bind:group={opts.signer} value="EIP7702" use:error={errors?.eip7702} />
       EOA Delegation
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/eoa-delegation">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
         rights to the account while maintaining their native signature verification.
       </HelpTooltip>
@@ -186,7 +186,7 @@
     <label class:checked={opts.signer === 'Multisig'}>
       <input type="radio" bind:group={opts.signer} value="Multisig" />
       Multisig
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/multisig">
         ERC-7913 multisignature validation requiring a minimum number of signatures to approve operations. The contract
         maintains a set of authorized signers and validates that the number of valid signatures meets the threshold
         requirement.
@@ -195,7 +195,7 @@
     <label class:checked={opts.signer === 'MultisigWeighted'}>
       <input type="radio" bind:group={opts.signer} value="MultisigWeighted" />
       Multisig Weighted
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/multisig#multisignererc7913weighted">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/multisig#multisignererc7913weighted">
         Weighted version of ERC-7913 multisignature validation. Signers have different voting weights, allowing for
         flexible governance. The total weight of valid signatures must meet the threshold requirement.
       </HelpTooltip>
@@ -203,7 +203,7 @@
     <label class:checked={opts.signer === 'P256'}>
       <input type="radio" bind:group={opts.signer} value="P256" />
       P256
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#P256">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#P256">
         Signature validation using the NIST P-256 curve (secp256r1). Useful for integrating with external systems and
         hardware that use this standardized curve, such as Apple's Passkeys or certain HSMs.
       </HelpTooltip>
@@ -211,7 +211,7 @@
     <label class:checked={opts.signer === 'RSA'}>
       <input type="radio" bind:group={opts.signer} value="RSA" />
       RSA
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils/cryptography#RSA">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#RSA">
         RSA PKCS#1 v1.5 signature validation following RFC8017. Enables integration with traditional PKI systems and
         hardware security modules that use RSA keys.
       </HelpTooltip>

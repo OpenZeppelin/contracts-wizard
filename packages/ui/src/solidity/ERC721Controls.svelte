@@ -1,7 +1,7 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { erc721, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
@@ -14,6 +14,8 @@
     ...erc721.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   let wasMintable = opts.mintable;
   let wasIncremental = opts.incremental;
@@ -73,14 +75,14 @@
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Burnable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Burnable">
         Token holders will be able to destroy their tokens.
       </HelpTooltip>
     </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/utils#Pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils#Pausable">
         Privileged accounts will be able to pause the functionality marked as <code>whenNotPaused</code>. Useful for
         emergency response.
       </HelpTooltip>
@@ -88,14 +90,14 @@
     <label class:checked={opts.enumerable}>
       <input type="checkbox" bind:checked={opts.enumerable} />
       Enumerable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Enumerable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Enumerable">
         Allows on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.uriStorage}>
       <input type="checkbox" bind:checked={opts.uriStorage} />
       URI Storage
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721URIStorage">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721URIStorage">
         Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>
@@ -107,20 +109,20 @@
   bind:value={opts.votes}
   defaultValue="blocknumber"
   helpContent="Keeps track of individual units for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts/api/token/erc721#ERC721Votes"
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Votes"
 >
   <div class="checkbox-group">
     <label class:checked={opts.votes === 'blocknumber'}>
       <input type="radio" bind:group={opts.votes} value="blocknumber" />
       Block Number
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#governor">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/governance#governor">
         Uses voting durations expressed as block numbers.
       </HelpTooltip>
     </label>
     <label class:checked={opts.votes === 'timestamp'}>
       <input type="radio" bind:group={opts.votes} value="timestamp" />
       Timestamp
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/governance#timestamp_based_governance">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/governance#timestamp_based_governance">
         Uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
@@ -129,6 +131,11 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  namespaceRequired={opts.upgradeable !== false && opts.mintable && opts.incremental}
+  bind:namespacePrefix={opts.namespacePrefix}
+  {errors}
+/>
 
 <InfoSection bind:info={opts.info} />

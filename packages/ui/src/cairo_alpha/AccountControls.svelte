@@ -1,7 +1,7 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { account, type Account, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import type { Account, KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
+  import { account, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
   import { error } from '../common/error-tooltip';
@@ -31,7 +31,7 @@
     <label class:checked={accountType === 'stark'}>
       <input type="radio" bind:group={opts.type} value="stark" />
       Starknet
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#starknet_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/accounts#starknet_account">
         Starknet account that uses the STARK curve for signature checking.
       </HelpTooltip>
     </label>
@@ -39,7 +39,7 @@
     <label class:checked={accountType === 'eth'}>
       <input type="radio" bind:group={opts.type} value="eth" />
       Ethereum
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#ethereum_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/accounts#ethereum_account">
         Ethereum-flavored account that uses the Secp256k1 curve for signature checking.
       </HelpTooltip>
     </label>
@@ -69,7 +69,7 @@
     <label class:checked={opts.deploy}>
       <input type="checkbox" bind:checked={opts.deploy} />
       Deployable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/accounts#deploying_an_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/accounts#deploying_an_account">
         Enables the account to be counterfactually deployed.
       </HelpTooltip>
     </label>

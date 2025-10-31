@@ -4,6 +4,7 @@ import { custom } from '.';
 import type { CustomOptions } from './custom';
 import { buildCustom } from './custom';
 import { printContract } from './print';
+import { AccessControl, darDefaultOpts, darCustomOpts } from './set-access-control';
 
 function testCustom(title: string, opts: Partial<CustomOptions>) {
   test(title, t => {
@@ -48,20 +49,28 @@ testCustom('upgradeable', {
 
 testCustom('access control disabled', {
   upgradeable: false,
-  access: false,
+  access: AccessControl.None(),
 });
 
 testCustom('access control ownable', {
-  access: 'ownable',
+  access: AccessControl.Ownable(),
 });
 
 testCustom('access control roles', {
-  access: 'roles',
+  access: AccessControl.Roles(),
+});
+
+testCustom('access control roles default admin rules (default opts)', {
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+});
+
+testCustom('access control roles default admin rules (custom opts)', {
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
 testCustom('pausable with access control disabled', {
   // API should override access to true since it is required for pausable
-  access: false,
+  access: AccessControl.None(),
   pausable: true,
   upgradeable: false,
 });
@@ -70,7 +79,7 @@ testAPIEquivalence('custom API default');
 
 testAPIEquivalence('custom API full upgradeable', {
   name: 'CustomContract',
-  access: 'roles',
+  access: AccessControl.Roles(),
   pausable: true,
   upgradeable: true,
 });

@@ -15,6 +15,7 @@
     ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
+    access: { ...erc20.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -61,7 +62,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/erc20-supply">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/guides/erc20-supply">
         Privileged accounts will be able to create more supply.
       </HelpTooltip>
     </label>
@@ -75,7 +76,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
@@ -90,13 +91,13 @@
   label="Votes"
   bind:checked={opts.votes}
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/governance/votes"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/alpha/governance/votes"
   error={errors?.appName || errors?.appVersion}
 >
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/guides/snip12">
         Name for domain separator. Prevents two applications from producing the same hash.
       </HelpTooltip>
     </span>
@@ -106,7 +107,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/guides/snip12">
         Version for domain separator. Prevents two versions of the same application from producing the same hash.
       </HelpTooltip>
     </span>
@@ -114,6 +115,12 @@
   </label>
 </ExpandableCheckbox>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:accessType={opts.access.type}
+  bind:darInitialDelay={opts.access.darInitialDelay}
+  bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  required={requireAccessControl}
+  {errors}
+/>
 
 <InfoSection bind:info={opts.info} />

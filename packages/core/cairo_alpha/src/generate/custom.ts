@@ -1,19 +1,27 @@
 import type { CustomOptions } from '../custom';
-import { accessOptions } from '../set-access-control';
+import type { AccessSubset } from '../set-access-control';
+import { resolveAccessControlOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
-const blueprint = {
-  name: ['MyContract'],
-  pausable: booleans,
-  access: accessOptions,
-  upgradeable: upgradeableOptions,
-  info: infoOptions,
+type GeneratorOptions = {
+  access: AccessSubset;
 };
 
-export function* generateCustomOptions(): Generator<Required<CustomOptions>> {
+function prepareBlueprint(opts: GeneratorOptions) {
+  return {
+    name: ['MyContract'],
+    pausable: booleans,
+    access: resolveAccessControlOptions(opts.access),
+    upgradeable: upgradeableOptions,
+    info: infoOptions,
+  };
+}
+
+export function* generateCustomOptions(opts: GeneratorOptions): Generator<Required<CustomOptions>> {
+  const blueprint = prepareBlueprint(opts);
   yield* generateAlternatives(blueprint);
 }

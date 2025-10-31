@@ -5,10 +5,11 @@ import _test from 'ava';
 import path from 'path';
 
 import type { KindSubset } from './generate/sources';
-import { generateSources, writeGeneratedSources } from './generate/sources';
-import type { GenericOptions } from './build-generic';
-import { custom, erc20, erc721, erc1155 } from './api';
+import type { AccessSubset } from './set-access-control';
 import type { RoyaltyInfoSubset } from './set-royalty-info';
+import type { GenericOptions } from './build-generic';
+import { generateSources, writeGeneratedSources } from './generate/sources';
+import { custom, erc20, erc721, erc1155 } from './api';
 
 interface Context {
   generatedSourcesPath: string;
@@ -17,15 +18,15 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.serial('erc20 results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'ERC20' });
+  await testGenerate({ ctx, kind: 'ERC20', access: 'all' });
 });
 
 test.serial('erc721 results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'ERC721', royaltyInfo: 'all' });
+  await testGenerate({ ctx, kind: 'ERC721', access: 'all', royaltyInfo: 'all' });
 });
 
 test.serial('erc1155 results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'ERC1155', royaltyInfo: 'all' });
+  await testGenerate({ ctx, kind: 'ERC1155', access: 'all', royaltyInfo: 'all' });
 });
 
 test.serial('account results generated', async ctx => {
@@ -45,15 +46,16 @@ test.serial('vesting results generated', async ctx => {
 });
 
 test.serial('custom results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'Custom' });
+  await testGenerate({ ctx, kind: 'Custom', access: 'all' });
 });
 
 async function testGenerate(params: {
   ctx: ExecutionContext<Context>;
   kind: KindSubset;
+  access?: AccessSubset;
   royaltyInfo?: RoyaltyInfoSubset;
 }) {
-  const { ctx, kind, royaltyInfo } = params;
+  const { ctx, kind, access, royaltyInfo } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
@@ -61,6 +63,7 @@ async function testGenerate(params: {
     subset: 'all',
     uniqueName: true,
     kind,
+    access: access || 'all',
     royaltyInfo: royaltyInfo || 'all',
     logsEnabled: false,
   });
@@ -96,6 +99,7 @@ test('is access control required', async t => {
     subset: 'all',
     uniqueName: false,
     kind: 'all',
+    access: 'all',
     royaltyInfo: 'all',
   });
   for (const contract of allSources) {
@@ -112,7 +116,7 @@ test('is access control required', async t => {
       case 'ERC721':
       case 'ERC1155':
       case 'Custom':
-        if (!contract.options.access) {
+        if (!contract.options.access?.type) {
           if (isAccessControlRequired(contract.options)) {
             t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
           } else {
