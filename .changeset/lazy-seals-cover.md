@@ -1,7 +1,7 @@
 ---
-'@openzeppelin/wizard': patch
+'@openzeppelin/wizard': minor
 '@openzeppelin/wizard-common': patch
-'@openzeppelin/contracts-mcp': patch
+'@openzeppelin/contracts-mcp': minor
 ---
 
 Update `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` dependencies to 5.5.0
