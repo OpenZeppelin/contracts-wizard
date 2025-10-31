@@ -102,7 +102,10 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
     if (helpers.upgradeable) {
       const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
       // Omit Initializable and UUPSUpgradeable since they don't have explicit constructors
-      const nonUpgradeableParentsWithConstructors = contract.parents.filter(p => !inferTranspiled(p.contract) && p.contract.name !== 'Initializable' && p.contract.name !== 'UUPSUpgradeable');
+      const nonUpgradeableParentsWithConstructors = contract.parents.filter(
+        p =>
+          !inferTranspiled(p.contract) && p.contract.name !== 'Initializable' && p.contract.name !== 'UUPSUpgradeable',
+      );
       const constructor = printFunction2(
         [
           nonUpgradeableParentsWithConstructors.length > 0
