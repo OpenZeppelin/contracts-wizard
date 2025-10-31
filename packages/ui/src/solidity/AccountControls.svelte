@@ -25,7 +25,7 @@
   let upgradeNotSupported = false;
   let upgradeNotSupportedReason = '';
   $: {
-    if (opts.signer === 'ERC7702') {
+    if (opts.signer === 'EIP7702') {
       upgradeNotSupported = true;
       upgradeNotSupportedReason = 'EOAs can upgrade by redelegating to a new account';
     } else {
@@ -175,8 +175,8 @@
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer === 'ERC7702'}>
-      <input type="radio" bind:group={opts.signer} value="ERC7702" use:error={errors?.erc7702} />
+    <label class:checked={opts.signer === 'EIP7702'}>
+      <input type="radio" bind:group={opts.signer} value="EIP7702" use:error={errors?.eip7702} />
       EOA Delegation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
