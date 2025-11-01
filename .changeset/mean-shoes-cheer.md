@@ -2,4 +2,4 @@
 '@openzeppelin/wizard-common': patch
 ---
 
-Add macros descriptions for Cairo-alpha
+Add macros descriptions for Cairo
