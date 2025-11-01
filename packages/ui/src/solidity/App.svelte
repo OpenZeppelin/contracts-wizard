@@ -350,7 +350,7 @@
         />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} />
+        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} />

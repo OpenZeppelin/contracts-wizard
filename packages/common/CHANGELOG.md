@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.1.2 (2025-10-29)
+
+- Add AI descriptions for AccessControl in Cairo-alpha ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
+
 ## 0.1.1 (2025-09-16)
 
 - Update Solidity Account prompt ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))

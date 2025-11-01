@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.3.0 (2025-10-29)
+
+- **Breaking changes**: Solidity: Use namespaced storage instead of state variables when upgradeability is enabled. ([#704](https://github.com/OpenZeppelin/contracts-wizard/pull/704))
+  - For ERC-20, use namespaced storage for `tokenBridge` when cross-chain bridging is set to `'custom'` and upgradeability is enabled.
+  - For ERC-721, use namespaced storage for `_nextTokenId` when mintable, auto increment IDs, and upgradeability are enabled.
+- Updated dependencies [[`38da80c`](https://github.com/OpenZeppelin/contracts-wizard/commit/38da80c4e92eaef55d313e747df8a2a01f1211f6), [`0f0509d`](https://github.com/OpenZeppelin/contracts-wizard/commit/0f0509d6691893f60508735d83a8d8a4abd561b7)]:
+  - @openzeppelin/wizard@0.9.0
+  - @openzeppelin/wizard-common@0.1.2
+
 ## 0.2.0 (2025-09-16)
 
 - Add constructors for `SignerECDSA`, `SignerP256`, `SignerRSA`, `SignerERC7702`, `SignerERC7913`, `MultiSignerERC7913` and `MultiSignerERC7913Weighted` ([#609](https://github.com/OpenZeppelin/contracts-wizard/pull/609))

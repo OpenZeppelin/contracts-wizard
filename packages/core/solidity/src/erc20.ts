@@ -6,6 +6,7 @@ import { defineFunctions } from './utils/define-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
+import type { Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
@@ -13,6 +14,7 @@ import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
+import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
 export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -34,9 +36,11 @@ export interface ERC20Options extends CommonOptions {
   votes?: boolean | ClockMode;
   flashmint?: boolean;
   crossChainBridging?: CrossChainBridging;
+  namespacePrefix?: string;
 }
 
 export const defaults: Required<ERC20Options> = {
+  ...commonDefaults,
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
@@ -49,9 +53,7 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   flashmint: false,
   crossChainBridging: false,
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info,
+  namespacePrefix: 'myProject',
 } as const;
 
 export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
@@ -68,6 +70,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
     crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
 
@@ -89,7 +92,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, access);
+    addCrossChainBridging(c, allOpts.crossChainBridging, access, upgradeable, allOpts.namespacePrefix);
   }
 
   if (allOpts.premint) {
@@ -304,7 +307,13 @@ function addFlashMint(c: ContractBuilder) {
   });
 }
 
-function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access) {
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'custom' | 'superchain',
+  access: Access,
+  upgradeable: Upgradeable,
+  namespacePrefix: string,
+) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,
@@ -316,7 +325,7 @@ function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' 
   c.addOverride(ERC20Bridgeable, functions._checkTokenBridge);
   switch (crossChainBridging) {
     case 'custom':
-      addCustomBridging(c, access);
+      addCustomBridging(c, access, upgradeable, namespacePrefix);
       break;
     case 'superchain':
       addSuperchainERC20(c);
@@ -326,27 +335,45 @@ function addCrossChainBridging(c: ContractBuilder, crossChainBridging: 'custom' 
       throw new Error('Unknown value for `crossChainBridging`');
     }
   }
-  c.addVariable('error Unauthorized();');
+  c.addConstantOrImmutableOrErrorDefinition('error Unauthorized();');
 }
 
-function addCustomBridging(c: ContractBuilder, access: Access) {
+function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
   switch (access) {
     case false:
     case 'ownable': {
-      const addedBridgeImmutable = c.addVariable(`address public tokenBridge;`);
-      if (addedBridgeImmutable) {
+      if (!upgradeable) {
+        const addedBridge = c.addStateVariable(`address public tokenBridge;`, false);
+        if (addedBridge) {
+          c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
+          c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
+          c.addConstructorCode(`tokenBridge = tokenBridge_;`);
+        }
+        c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+      } else {
+        setNamespacedStorage(c, ['address tokenBridge;'], namespacePrefix);
+
         c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
         c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
-        c.addConstructorCode(`tokenBridge = tokenBridge_;`);
+
+        c.addConstructorCode(toStorageStructInstantiation(c.name));
+        c.addConstructorCode(`$.tokenBridge = tokenBridge_;`);
+
+        c.setFunctionBody(
+          [toStorageStructInstantiation(c.name), `if (caller != $.tokenBridge) revert Unauthorized();`],
+          functions._checkTokenBridge,
+          'view',
+        );
       }
-      c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
       break;
     }
     case 'roles': {
       setAccessControl(c, access);
       const roleOwner = 'tokenBridge';
       const roleId = 'TOKEN_BRIDGE_ROLE';
-      const addedRoleConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      const addedRoleConstant = c.addConstantOrImmutableOrErrorDefinition(
+        `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
+      );
       if (addedRoleConstant) {
         c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
@@ -382,7 +409,9 @@ function addCustomBridging(c: ContractBuilder, access: Access) {
 }
 
 function addSuperchainERC20(c: ContractBuilder) {
-  c.addVariable('address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;');
+  c.addConstantOrImmutableOrErrorDefinition(
+    'address internal constant SUPERCHAIN_TOKEN_BRIDGE = 0x4200000000000000000000000000000000000028;',
+  );
   c.setFunctionBody(
     ['if (caller != SUPERCHAIN_TOKEN_BRIDGE) revert Unauthorized();'],
     functions._checkTokenBridge,

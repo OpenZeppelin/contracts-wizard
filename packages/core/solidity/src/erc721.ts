@@ -8,10 +8,12 @@ import { defineFunctions } from './utils/define-functions';
 import type { CommonOptions } from './common-options';
 import { withCommonDefaults, defaults as commonDefaults } from './common-options';
 import { setUpgradeable } from './set-upgradeable';
+import type { Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
+import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
 export interface ERC721Options extends CommonOptions {
   name: string;
@@ -28,9 +30,11 @@ export interface ERC721Options extends CommonOptions {
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
    */
   votes?: boolean | ClockMode;
+  namespacePrefix?: string;
 }
 
 export const defaults: Required<ERC721Options> = {
+  ...commonDefaults,
   name: 'MyToken',
   symbol: 'MTK',
   baseUri: '',
@@ -41,9 +45,7 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   incremental: false,
   votes: false,
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info,
+  namespacePrefix: 'myProject',
 } as const;
 
 function withDefaults(opts: ERC721Options): Required<ERC721Options> {
@@ -58,6 +60,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     mintable: opts.mintable ?? defaults.mintable,
     incremental: opts.incremental ?? defaults.incremental,
     votes: opts.votes ?? defaults.votes,
+    namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
 
@@ -99,7 +102,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(c, access, allOpts.incremental, allOpts.uriStorage);
+    addMintable(c, access, allOpts.incremental, allOpts.uriStorage, allOpts.upgradeable, allOpts.namespacePrefix);
   }
 
   if (allOpts.votes) {
@@ -174,14 +177,27 @@ function addBurnable(c: ContractBuilder) {
   });
 }
 
-function addMintable(c: ContractBuilder, access: Access, incremental = false, uriStorage = false) {
+function addMintable(
+  c: ContractBuilder,
+  access: Access,
+  incremental = false,
+  uriStorage = false,
+  upgradeable: Upgradeable,
+  namespacePrefix: string,
+) {
   const fn = getMintFunction(incremental, uriStorage);
   requireAccessControl(c, fn, access, 'MINTER', 'minter');
-
   if (incremental) {
-    c.addVariable('uint256 private _nextTokenId;');
-    c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
-    c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    if (!upgradeable) {
+      c.addStateVariable('uint256 private _nextTokenId;', upgradeable);
+      c.addFunctionCode('uint256 tokenId = _nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    } else {
+      setNamespacedStorage(c, ['uint256 _nextTokenId;'], namespacePrefix);
+      c.addFunctionCode(toStorageStructInstantiation(c.name), fn);
+      c.addFunctionCode('uint256 tokenId = $._nextTokenId++;', fn);
+      c.addFunctionCode('_safeMint(to, tokenId);', fn);
+    }
   } else {
     c.addFunctionCode('_safeMint(to, tokenId);', fn);
   }

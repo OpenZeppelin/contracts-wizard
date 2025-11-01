@@ -6,6 +6,8 @@ import type {
   Value,
   NatspecTag,
   ImportContract,
+  ContractStruct,
+  VariableOrErrorDefinition,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -23,10 +25,9 @@ import { getCommunityContractsGitCommit } from './utils/community-contracts-git-
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
+  const structs = contract.structs.map(_struct => printStruct(_struct));
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
-
   const hasOverrides = fns.override.some(l => l.length > 0);
-
   return formatLines(
     ...spaceBetween(
       [
@@ -42,7 +43,9 @@ export function printContract(contract: Contract, opts?: Options): string {
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
         spaceBetween(
-          contract.variables,
+          ...structs,
+          printVariableOrErrorDefinitionsWithComments(contract.variableOrErrorDefinitions),
+          printVariableOrErrorDefinitionsWithoutComments(contract.variableOrErrorDefinitions),
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
@@ -54,6 +57,20 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printVariableOrErrorDefinitionsWithComments(variableOrErrorDefinitions: VariableOrErrorDefinition[]): Lines[] {
+  const withComments = variableOrErrorDefinitions.filter(v => v.comments?.length);
+  // Spaces between each item that has comments
+  return spaceBetween(...withComments.map(v => [...v.comments!, v.code]));
+}
+
+function printVariableOrErrorDefinitionsWithoutComments(
+  variableOrErrorDefinitions: VariableOrErrorDefinition[],
+): Lines[] {
+  const withoutComments = variableOrErrorDefinitions.filter(v => !v.comments?.length);
+  // No spaces between items that don't have comments
+  return withoutComments.map(v => v.code);
 }
 
 function printCompatibleLibraryVersions(contract: Contract): string {
@@ -256,6 +273,20 @@ function printFunction2(
   }
 
   return fn;
+}
+
+function printStruct(_struct: ContractStruct): Lines[] {
+  const [comments, kindedName, code] = [_struct.comments, _struct.name, _struct.variables];
+  const struct: Lines[] = [...comments];
+
+  const braces = code.length > 0 ? '{' : '{}';
+  struct.push([`struct ${kindedName}`, braces].join(' '));
+
+  if (code.length > 0) {
+    struct.push(code, '}');
+  }
+
+  return struct;
 }
 
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {
