@@ -15,6 +15,7 @@ export const defaults: Required<CustomOptions> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printCustom(opts: CustomOptions = defaults): string {
@@ -39,9 +40,8 @@ export function isAccessControlRequired(opts: Partial<CustomOptions>): boolean {
 }
 
 export function buildCustom(opts: CustomOptions): Contract {
-  const c = new ContractBuilder(opts.name);
-
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);

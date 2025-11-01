@@ -3,6 +3,7 @@ import type { CairoAlphaCommonContractOptions, CairoAlphaRoyaltyInfoOptions } fr
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import {
   cairoCommonDescriptions,
+  cairoMacrosDescriptions,
   cairoAlphaAccessDescriptions,
   cairoRoyaltyInfoDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
@@ -25,6 +26,17 @@ const commonContractFunctionDescription = {
       license: {
         type: 'string',
         description: infoDescriptions.license,
+      },
+    },
+  },
+
+  macros: {
+    type: 'object',
+    description: cairoMacrosDescriptions.macros,
+    properties: {
+      withComponents: {
+        type: 'boolean',
+        description: cairoMacrosDescriptions.withComponents,
       },
     },
   },

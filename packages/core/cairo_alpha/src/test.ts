@@ -8,6 +8,7 @@ import type { KindSubset } from './generate/sources';
 import type { AccessSubset } from './set-access-control';
 import type { RoyaltyInfoSubset } from './set-royalty-info';
 import type { GenericOptions } from './build-generic';
+import type { MacrosSubset } from './set-macros';
 import { generateSources, writeGeneratedSources } from './generate/sources';
 import { custom, erc20, erc721, erc1155 } from './api';
 
@@ -54,8 +55,9 @@ async function testGenerate(params: {
   kind: KindSubset;
   access?: AccessSubset;
   royaltyInfo?: RoyaltyInfoSubset;
+  macros?: MacrosSubset;
 }) {
-  const { ctx, kind, access, royaltyInfo } = params;
+  const { ctx, kind, access, royaltyInfo, macros } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
@@ -65,6 +67,7 @@ async function testGenerate(params: {
     kind,
     access: access || 'all',
     royaltyInfo: royaltyInfo || 'all',
+    macros: macros || 'all',
     logsEnabled: false,
   });
 
@@ -101,9 +104,10 @@ test('is access control required', async t => {
     kind: 'all',
     access: 'all',
     royaltyInfo: 'all',
+    macros: 'none',
   });
   for (const contract of allSources) {
-    const regexOwnable = /(use openzeppelin::access::ownable::OwnableComponent)/gm;
+    const regexOwnable = /(use openzeppelin_access::ownable::OwnableComponent)/gm;
 
     switch (contract.options.kind) {
       case 'Account':

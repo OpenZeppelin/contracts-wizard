@@ -4,10 +4,13 @@ import { AccessControl } from './set-access-control';
 import type { Info } from './set-info';
 import { defaults as infoDefaults } from './set-info';
 import type { Upgradeable } from './set-upgradeable';
+import type { MacrosOptions } from './set-macros';
+import { defaults as macrosDefaults } from './set-macros';
 
 export const defaults: Required<CommonOptions> = {
   upgradeable: true,
   info: infoDefaults,
+  macros: macrosDefaults,
 } as const;
 
 export const contractDefaults: Required<CommonContractOptions> = {
@@ -18,6 +21,7 @@ export const contractDefaults: Required<CommonContractOptions> = {
 export interface CommonOptions {
   upgradeable?: Upgradeable;
   info?: Info;
+  macros?: MacrosOptions;
 }
 
 export interface CommonContractOptions extends CommonOptions {
@@ -28,6 +32,7 @@ export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions>
   return {
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     info: opts.info ?? defaults.info,
+    macros: opts.macros ?? defaults.macros,
   };
 }
 

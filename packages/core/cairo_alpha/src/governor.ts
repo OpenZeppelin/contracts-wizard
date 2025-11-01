@@ -14,7 +14,7 @@ export const clockModeOptions = ['timestamp'] as const;
 export const clockModeDefault = 'timestamp' as const;
 export type ClockMode = (typeof clockModeOptions)[number];
 
-const extensionPath = 'openzeppelin::governance::governor::extensions';
+const extensionPath = 'openzeppelin_governance::governor::extensions';
 const extensionExternalSection = 'Extensions (external)';
 const extensionInternalSection = 'Extensions (internal)';
 
@@ -35,6 +35,7 @@ export const defaults: Required<GovernorOptions> = {
   appName: 'OpenZeppelin Governor',
   appVersion: 'v1',
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export const quorumModeOptions = ['percent', 'absolute'] as const;
@@ -88,8 +89,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
 
 export function buildGovernor(opts: GovernorOptions): Contract {
   const allOpts = withDefaults(opts);
-
-  const c = new ContractBuilder(allOpts.name);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   validateDecimals(allOpts.decimals);
 
@@ -108,7 +108,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
 
 const components = defineComponents({
   GovernorComponent: {
-    path: 'openzeppelin::governance::governor',
+    path: 'openzeppelin_governance::governor',
     substorage: {
       name: 'governor',
       type: 'GovernorComponent::Storage',
@@ -120,6 +120,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'GovernorImpl',
+        embed: true,
         value: 'GovernorComponent::GovernorImpl<ContractState>',
         section: 'Governor Core',
       },
@@ -138,13 +139,14 @@ const components = defineComponents({
     impls: [
       {
         name: 'GovernorSettingsAdminImpl',
+        embed: true,
         value: 'GovernorSettingsComponent::GovernorSettingsAdminImpl<ContractState>',
         section: extensionExternalSection,
       },
       {
         name: 'GovernorSettingsImpl',
-        value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
         embed: false,
+        value: 'GovernorSettingsComponent::GovernorSettings<ContractState>',
         section: extensionInternalSection,
       },
     ],
@@ -162,13 +164,14 @@ const components = defineComponents({
     impls: [
       {
         name: 'VotesTokenImpl',
+        embed: true,
         value: 'GovernorVotesComponent::VotesTokenImpl<ContractState>',
         section: extensionExternalSection,
       },
       {
         name: 'GovernorVotesImpl',
-        value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
         embed: false,
+        value: 'GovernorVotesComponent::GovernorVotes<ContractState>',
         section: extensionInternalSection,
       },
     ],
@@ -176,7 +179,7 @@ const components = defineComponents({
   GovernorVotesQuorumFractionComponent: {
     path: extensionPath,
     substorage: {
-      name: 'governor_votes',
+      name: 'governor_votes_quorum_fraction',
       type: 'GovernorVotesQuorumFractionComponent::Storage',
     },
     event: {
@@ -186,18 +189,19 @@ const components = defineComponents({
     impls: [
       {
         name: 'GovernorQuorumImpl',
-        value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
         embed: false,
+        value: 'GovernorVotesQuorumFractionComponent::GovernorQuorum<ContractState>',
         section: extensionInternalSection,
       },
       {
         name: 'GovernorVotesImpl',
-        value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
         embed: false,
+        value: 'GovernorVotesQuorumFractionComponent::GovernorVotes<ContractState>',
         section: extensionInternalSection,
       },
       {
         name: 'QuorumFractionImpl',
+        embed: true,
         value: 'GovernorVotesQuorumFractionComponent::QuorumFractionImpl<ContractState>',
         section: extensionExternalSection,
       },
@@ -206,7 +210,7 @@ const components = defineComponents({
   GovernorCountingSimpleComponent: {
     path: extensionPath,
     substorage: {
-      name: 'governor_counting',
+      name: 'governor_counting_simple',
       type: 'GovernorCountingSimpleComponent::Storage',
     },
     event: {
@@ -216,8 +220,8 @@ const components = defineComponents({
     impls: [
       {
         name: 'GovernorCountingSimpleImpl',
-        value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
         embed: false,
+        value: 'GovernorCountingSimpleComponent::GovernorCounting<ContractState>',
         section: extensionInternalSection,
       },
     ],
@@ -225,7 +229,7 @@ const components = defineComponents({
   GovernorCoreExecutionComponent: {
     path: extensionPath,
     substorage: {
-      name: 'governor_execution',
+      name: 'governor_core_execution',
       type: 'GovernorCoreExecutionComponent::Storage',
     },
     event: {
@@ -235,8 +239,8 @@ const components = defineComponents({
     impls: [
       {
         name: 'GovernorCoreExecutionImpl',
-        value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
         embed: false,
+        value: 'GovernorCoreExecutionComponent::GovernorExecution<ContractState>',
         section: extensionInternalSection,
       },
     ],
@@ -254,13 +258,14 @@ const components = defineComponents({
     impls: [
       {
         name: 'TimelockedImpl',
+        embed: true,
         value: 'GovernorTimelockExecutionComponent::TimelockedImpl<ContractState>',
         section: extensionExternalSection,
       },
       {
         name: 'GovernorTimelockExecutionImpl',
-        value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
         embed: false,
+        value: 'GovernorTimelockExecutionComponent::GovernorExecution<ContractState>',
         section: extensionInternalSection,
       },
     ],
@@ -269,9 +274,9 @@ const components = defineComponents({
 
 function addBase(c: ContractBuilder, _: GovernorOptions) {
   c.addUseClause('starknet', 'ContractAddress');
-  c.addUseClause('openzeppelin::governance::governor', 'DefaultConfig', { alias: 'GovernorDefaultConfig' });
+  c.addUseClause('openzeppelin_governance::governor', 'DefaultConfig', { alias: 'GovernorDefaultConfig' });
   c.addConstructorArgument({ name: 'votes_token', type: 'ContractAddress' });
-  c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalTrait', {
+  c.addUseClause('openzeppelin_governance::governor::GovernorComponent', 'InternalTrait', {
     alias: 'GovernorInternalTrait',
   });
   c.addComponent(components.GovernorComponent, [], true);

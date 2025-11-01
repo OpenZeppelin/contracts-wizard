@@ -28,6 +28,7 @@ export const defaults: Required<ERC1155Options> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printERC1155(opts: ERC1155Options = defaults): string {
@@ -67,9 +68,8 @@ export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean 
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
-  const c = new ContractBuilder(opts.name);
-
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c, toByteArray(allOpts.baseUri));
   addERC1155Mixin(c);
@@ -127,13 +127,14 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
       code: ['let contract_state = self.get_contract()', 'contract_state.pausable.assert_not_paused()'],
     });
   } else {
-    c.addUseClause('openzeppelin::token::erc1155', 'ERC1155HooksEmptyImpl');
+    c.addUseClause('openzeppelin_token::erc1155', 'ERC1155HooksEmptyImpl');
   }
 }
 
 function addERC1155Mixin(c: ContractBuilder) {
   c.addImplToComponent(components.ERC1155Component, {
     name: 'ERC1155MixinImpl',
+    embed: true,
     value: 'ERC1155Component::ERC1155MixinImpl<ContractState>',
   });
   c.addInterfaceFlag('ISRC5');
@@ -170,7 +171,7 @@ function addSetBaseUri(c: ContractBuilder, access: Access) {
 
 const components = defineComponents({
   ERC1155Component: {
-    path: 'openzeppelin::token::erc1155',
+    path: 'openzeppelin_token::erc1155',
     substorage: {
       name: 'erc1155',
       type: 'ERC1155Component::Storage',

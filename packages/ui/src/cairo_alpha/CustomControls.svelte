@@ -2,17 +2,19 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { custom, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { custom, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Custom']> = {
     kind: 'Custom',
     ...custom.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
     access: { ...custom.defaults.access }, // create new object since Access is nested
   };
 
@@ -55,5 +57,7 @@
   required={requireAccessControl}
   {errors}
 />
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

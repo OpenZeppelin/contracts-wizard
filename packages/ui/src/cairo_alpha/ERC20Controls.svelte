@@ -2,11 +2,12 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { premintPattern, erc20, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { premintPattern, erc20, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import { error } from '../common/error-tooltip';
 
@@ -15,6 +16,7 @@
     ...erc20.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
     access: { ...erc20.defaults.access }, // create new object since Access is nested
   };
 
@@ -122,5 +124,7 @@
   required={requireAccessControl}
   {errors}
 />
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />
