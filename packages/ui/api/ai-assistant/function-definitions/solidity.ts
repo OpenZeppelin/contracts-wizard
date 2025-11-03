@@ -162,12 +162,12 @@ export const solidityStablecoinAIFunctionDefinition = {
         type: 'boolean',
         description: solidityStablecoinDescriptions.custodian,
       },
-      limitations: {
+      restrictions: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
-        description: solidityStablecoinDescriptions.limitations,
+        description: solidityStablecoinDescriptions.restrictions,
       },
       upgradeable: {
         type: 'boolean',

@@ -63,16 +63,16 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
 
 function addRestrictions(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
   const type = mode === 'allowlist';
-  const ERC20Limitation = {
+  const ERC20Restricted = {
     name: 'ERC20Restricted',
     path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Restricted.sol`,
   };
 
-  c.addParent(ERC20Limitation);
-  c.addOverride(ERC20Limitation, functions._update);
+  c.addParent(ERC20Restricted);
+  c.addOverride(ERC20Restricted, functions._update);
 
   if (type) {
-    c.addOverride(ERC20Limitation, functions.isUserAllowed);
+    c.addOverride(ERC20Restricted, functions.isUserAllowed);
     c.setFunctionBody([`return getRestriction(user) == Restriction.ALLOWED;`], functions.isUserAllowed);
   }
 
