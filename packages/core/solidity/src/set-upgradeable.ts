@@ -21,6 +21,7 @@ function setUpgradeableBase(
   c.addParent({
     name: 'Initializable',
     path: '@openzeppelin/contracts/proxy/utils/Initializable.sol',
+    transpiled: false,
   });
 
   switch (upgradeable) {
@@ -32,6 +33,7 @@ function setUpgradeableBase(
       const UUPSUpgradeable = {
         name: 'UUPSUpgradeable',
         path: '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol',
+        transpiled: false,
       };
       c.addParent(UUPSUpgradeable);
       c.addOverride(UUPSUpgradeable, functions._authorizeUpgrade);

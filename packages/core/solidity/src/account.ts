@@ -286,6 +286,7 @@ const functions = {
       args: [
         { name: 'userOp', type: 'PackedUserOperation calldata' },
         { name: 'userOpHash', type: 'bytes32' },
+        { name: 'signature', type: 'bytes calldata' },
       ],
       returns: ['uint256'],
     },
