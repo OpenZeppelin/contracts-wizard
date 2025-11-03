@@ -62,7 +62,7 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
 }
 
 function addRestrictions(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
-  const type = mode === 'allowlist';
+  const isAllowlist = mode === 'allowlist';
   const ERC20Restricted = {
     name: 'ERC20Restricted',
     path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Restricted.sol`,
@@ -71,17 +71,17 @@ function addRestrictions(c: ContractBuilder, access: Access, mode: boolean | 'al
   c.addParent(ERC20Restricted);
   c.addOverride(ERC20Restricted, functions._update);
 
-  if (type) {
+  if (isAllowlist) {
     c.addOverride(ERC20Restricted, functions.isUserAllowed);
     c.setFunctionBody([`return getRestriction(user) == Restriction.ALLOWED;`], functions.isUserAllowed);
   }
 
-  const [addFn, removeFn] = type
+  const [addFn, removeFn] = isAllowlist
     ? [functions.allowUser, functions.disallowUser]
     : [functions.blockUser, functions.unblockUser];
 
   requireAccessControl(c, addFn, access, 'LIMITER', 'limiter');
-  c.addFunctionCode(`_${type ? 'allow' : 'block'}User(user);`, addFn);
+  c.addFunctionCode(`_${isAllowlist ? 'allow' : 'block'}User(user);`, addFn);
 
   requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
   c.addFunctionCode(`_resetUser(user);`, removeFn);
