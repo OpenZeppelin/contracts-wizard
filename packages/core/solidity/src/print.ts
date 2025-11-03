@@ -101,16 +101,20 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     if (helpers.upgradeable) {
       const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
-      const nonUpgradeableParents = contract.parents.filter(p => !inferTranspiled(p.contract));
+      // Omit Initializable and UUPSUpgradeable since they don't have explicit constructors
+      const nonUpgradeableParentsWithConstructors = contract.parents.filter(
+        p =>
+          !inferTranspiled(p.contract) && p.contract.name !== 'Initializable' && p.contract.name !== 'UUPSUpgradeable',
+      );
       const constructor = printFunction2(
         [
-          nonUpgradeableParents.length > 0
+          nonUpgradeableParentsWithConstructors.length > 0
             ? '/// @custom:oz-upgrades-unsafe-allow-reachable constructor'
             : '/// @custom:oz-upgrades-unsafe-allow constructor',
         ],
         'constructor',
         [],
-        nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
+        nonUpgradeableParentsWithConstructors.flatMap(p => printParentConstructor(p, helpers)),
         ['_disableInitializers();'],
       );
       const initializer = printFunction2(
