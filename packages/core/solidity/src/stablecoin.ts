@@ -12,7 +12,7 @@ import {
 } from './erc20';
 
 export interface StablecoinOptions extends ERC20Options {
-  limitations?: false | 'allowlist' | 'blocklist';
+  restrictions?: false | 'allowlist' | 'blocklist';
   custodian?: boolean;
 }
 
@@ -20,7 +20,7 @@ export const defaults: Required<StablecoinOptions> = {
   ...erc20defaults,
   name: 'MyStablecoin',
   symbol: 'MST',
-  limitations: false,
+  restrictions: false,
   custodian: false,
 } as const;
 
@@ -29,7 +29,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
     ...withERC20Defaults(opts),
     name: opts.name ?? defaults.name,
     symbol: opts.symbol ?? defaults.symbol,
-    limitations: opts.limitations ?? defaults.limitations,
+    restrictions: opts.restrictions ?? defaults.restrictions,
     custodian: opts.custodian ?? defaults.custodian,
   };
 }
@@ -39,7 +39,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.limitations !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.restrictions !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
@@ -54,14 +54,14 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
     addCustodian(c, allOpts.access);
   }
 
-  if (allOpts.limitations) {
-    addLimitations(c, allOpts.access, allOpts.limitations);
+  if (allOpts.restrictions) {
+    addRestrictions(c, allOpts.access, allOpts.restrictions);
   }
 
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
+function addRestrictions(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
   const type = mode === 'allowlist';
   const ERC20Limitation = {
     name: 'ERC20Restricted',
