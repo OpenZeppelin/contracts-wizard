@@ -246,12 +246,14 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     const accountName = opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579';
     const signerName = opts.upgradeable ? upgradeableName(`Signer${opts.signer}`) : `Signer${opts.signer}`;
 
-    c.addImportOnly({
-      name: 'AbstractSigner',
-      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
-      transpiled: false,
-    });
-    c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+    if (opts.signer !== 'WebAuthn') {
+      c.addImportOnly({
+        name: 'AbstractSigner',
+        path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+        transpiled: false,
+      });
+      c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+    }
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [

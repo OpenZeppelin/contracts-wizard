@@ -70,6 +70,7 @@ export const solidityAccountDescriptions = {
         - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
         - EIP7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
         - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
+        - WebAuthn: Web Authentication (WebAuthn) assertion validation for integration with Passkeys and HSMs on top of P256
         - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
         - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
         - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`,

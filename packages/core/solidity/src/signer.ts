@@ -3,7 +3,16 @@ import { OptionsError } from './error';
 import type { Upgradeable } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 
-export const SignerOptions = [false, 'ECDSA', 'EIP7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
+export const SignerOptions = [
+  false,
+  'ECDSA',
+  'EIP7702',
+  'P256',
+  'WebAuthn',
+  'RSA',
+  'Multisig',
+  'MultisigWeighted',
+] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
@@ -34,6 +43,22 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       );
       break;
     }
+    case 'WebAuthn': {
+      signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+      c.addParent(
+        signers['P256'],
+        signerArgs[signer].map(arg => ({ lit: arg.name })),
+      );
+      c.addParent(signers[signer]);
+      c.addImportOnly({
+        name: 'AbstractSigner',
+        path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+        transpiled: false,
+      });
+      c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+      c.addOverride({ name: 'SignerP256' }, signerFunctions._rawSignatureValidation);
+      break;
+    }
   }
 }
 
@@ -49,6 +74,10 @@ export const signers = {
   P256: {
     name: 'SignerP256',
     path: '@openzeppelin/contracts/utils/cryptography/signers/SignerP256.sol',
+  },
+  WebAuthn: {
+    name: 'SignerWebAuthn',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerWebAuthn.sol',
   },
   RSA: {
     name: 'SignerRSA',
@@ -73,6 +102,10 @@ export const signerArgs: Record<Exclude<SignerOptions, false | 'EIP7702'>, { nam
   RSA: [
     { name: 'e', type: 'bytes memory' },
     { name: 'n', type: 'bytes memory' },
+  ],
+  WebAuthn: [
+    { name: 'qx', type: 'bytes32' },
+    { name: 'qy', type: 'bytes32' },
   ],
   Multisig: [
     { name: 'signers', type: 'bytes[] memory' },

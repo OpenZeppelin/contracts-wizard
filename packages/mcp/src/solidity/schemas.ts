@@ -128,6 +128,7 @@ export const accountSchema = {
     .or(z.literal('ECDSA'))
     .or(z.literal('EIP7702'))
     .or(z.literal('P256'))
+    .or(z.literal('WebAuthn'))
     .or(z.literal('RSA'))
     .or(z.literal('Multisig'))
     .or(z.literal('MultisigWeighted'))

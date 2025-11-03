@@ -61,7 +61,7 @@ function format(upgradeable: false | 'uups' | 'transparent') {
   }
 }
 
-for (const signer of [false, 'ECDSA', 'EIP7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
+for (const signer of [false, 'ECDSA', 'EIP7702', 'P256', 'WebAuthn', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
   for (const upgradeable of [false, 'uups', 'transparent'] as const) {
     if (signer === 'EIP7702' && !!upgradeable) continue;
 
