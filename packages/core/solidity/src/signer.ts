@@ -44,10 +44,10 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       break;
     }
     case 'WebAuthn': {
-      signerArgs[signer].forEach(arg => c.addConstructorArgument(arg));
+      signerArgs.P256.forEach(arg => c.addConstructorArgument(arg));
       c.addParent(
-        signers['P256'],
-        signerArgs[signer].map(arg => ({ lit: arg.name })),
+        signers.P256,
+        signerArgs.P256.map(arg => ({ lit: arg.name })),
       );
       c.addParent(signers[signer]);
       c.addImportOnly({
@@ -103,10 +103,7 @@ export const signerArgs: Record<Exclude<SignerOptions, false | 'EIP7702'>, { nam
     { name: 'e', type: 'bytes memory' },
     { name: 'n', type: 'bytes memory' },
   ],
-  WebAuthn: [
-    { name: 'qx', type: 'bytes32' },
-    { name: 'qy', type: 'bytes32' },
-  ],
+  WebAuthn: [],
   Multisig: [
     { name: 'signers', type: 'bytes[] memory' },
     { name: 'threshold', type: 'uint64' },
