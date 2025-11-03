@@ -1,5 +1,7 @@
 ---
-'@openzeppelin/wizard': minor
+'@openzeppelin/wizard-common': minor
+'@openzeppelin/wizard': patch
+'@openzeppelin/contracts-mcp': patch
 ---
 
-Replacement of ERC20Allowlist and ERC20Blacklist with the new ERC20Restricted for Stablecoin and RWA in the Solidity package.
+**Breaking changes**: Solidity Stablecoin and RWA: Change `limitations` option to `restrictions`. Replace ERC20Allowlist and ERC20Blocklist with ERC20Restricted. 
