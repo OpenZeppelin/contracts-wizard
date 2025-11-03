@@ -64,23 +64,27 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
 function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
   const type = mode === 'allowlist';
   const ERC20Limitation = {
-    name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+    name: 'ERC20Restricted',
+    path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Restricted.sol`,
   };
 
   c.addParent(ERC20Limitation);
   c.addOverride(ERC20Limitation, functions._update);
-  c.addOverride(ERC20Limitation, functions._approve);
+
+  if (type) {
+    c.addOverride(ERC20Limitation, functions.isUserAllowed);
+    c.setFunctionBody([`return getRestriction(user) == Restriction.ALLOWED;`], functions.isUserAllowed);
+  }
 
   const [addFn, removeFn] = type
     ? [functions.allowUser, functions.disallowUser]
     : [functions.blockUser, functions.unblockUser];
 
   requireAccessControl(c, addFn, access, 'LIMITER', 'limiter');
-  c.addFunctionCode(`_${type ? 'allowUser' : 'blockUser'}(user);`, addFn);
+  c.addFunctionCode(`_${type ? 'allow' : 'block'}User(user);`, addFn);
 
   requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
-  c.addFunctionCode(`_${type ? 'disallowUser' : 'unblockUser'}(user);`, removeFn);
+  c.addFunctionCode(`_resetUser(user);`, removeFn);
 }
 
 function addCustodian(c: ContractBuilder, access: Access) {
@@ -160,6 +164,13 @@ const functions = {
     unblockUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
+    },
+
+    isUserAllowed: {
+      kind: 'public' as const,
+      args: [{ name: 'user', type: 'address' }],
+      returns: ['bool'],
+      mutability: 'view' as const,
     },
   }),
 };
