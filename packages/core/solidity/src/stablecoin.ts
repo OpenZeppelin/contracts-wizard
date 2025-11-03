@@ -61,7 +61,7 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   return c;
 }
 
-function addRestrictions(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
+function addRestrictions(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
   const isAllowlist = mode === 'allowlist';
   const ERC20Restricted = {
     name: 'ERC20Restricted',
