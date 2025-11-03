@@ -1,7 +1,7 @@
 ---
-'@openzeppelin/wizard': minor
-'@openzeppelin/wizard-common': minor
-'@openzeppelin/contracts-mcp': minor
+'@openzeppelin/wizard': patch
+'@openzeppelin/wizard-common': patch
+'@openzeppelin/contracts-mcp': patch
 ---
 
-Add `WebAuthn` to the list of signers available for smart accounts.
+Solidity account signer: Add `WebAuthn` to the list of signers available.
