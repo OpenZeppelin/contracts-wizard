@@ -44,7 +44,7 @@ const erc20Full = {
 
 const stablecoinExtensions = {
   restrictions: [false, 'allowlist', 'blocklist'] as const,
-  custodian: booleans,
+  freezable: booleans,
   upgradeable: [false] as const,
 };
 

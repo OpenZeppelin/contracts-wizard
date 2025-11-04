@@ -86,8 +86,8 @@ testStablecoin('stablecoin permit', {
   permit: true,
 });
 
-testStablecoin('stablecoin custodian', {
-  custodian: true,
+testStablecoin('stablecoin freezable', {
+  freezable: true,
 });
 
 testStablecoin('stablecoin allowlist', {
@@ -129,7 +129,7 @@ testStablecoin('stablecoin full', {
   crossChainBridging: 'custom',
   premintChainId: '10',
   restrictions: 'allowlist',
-  custodian: true,
+  freezable: true,
 });
 
 testAPIEquivalence('stablecoin API default');
@@ -154,7 +154,7 @@ testAPIEquivalence('stablecoin API full', {
   crossChainBridging: 'custom',
   premintChainId: '10',
   restrictions: 'allowlist',
-  custodian: true,
+  freezable: true,
 });
 
 test('stablecoin API assert defaults', async t => {
