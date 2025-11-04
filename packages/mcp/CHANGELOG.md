@@ -1,6 +1,18 @@
 # Changelog
 
 
+## 0.4.0 (2025-11-03)
+
+- Update `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` dependencies to 5.5.0 ([#681](https://github.com/OpenZeppelin/contracts-wizard/pull/681))
+  - **Breaking changes**:
+    - Solidity account signer: `ERC7702` option is renamed as `EIP7702`. Imported contract `SignerERC7702` is renamed as `SignerEIP7702`.
+    - Solidity upgradeable contracts: `Initializable` and `UUPSUpgradeable` are imported from `@openzeppelin/contracts` instead of `@openzeppelin/contracts-upgradeable`.
+
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `limitations` option to `restrictions`. Replace ERC20Allowlist and ERC20Blocklist with ERC20Restricted. ([#715](https://github.com/OpenZeppelin/contracts-wizard/pull/715))
+- Updated dependencies [[`880b9b8`](https://github.com/OpenZeppelin/contracts-wizard/commit/880b9b84c2d179a48372befe83f3693e9526f6f7), [`b49e056`](https://github.com/OpenZeppelin/contracts-wizard/commit/b49e0568724ab355633dcada70bcaf9cc938374a)]:
+  - @openzeppelin/wizard-common@0.2.0
+  - @openzeppelin/wizard@0.10.0
+
 ## 0.3.0 (2025-10-29)
 
 - **Breaking changes**: Solidity: Use namespaced storage instead of state variables when upgradeability is enabled. ([#704](https://github.com/OpenZeppelin/contracts-wizard/pull/704))

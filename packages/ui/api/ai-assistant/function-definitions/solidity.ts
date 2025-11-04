@@ -162,12 +162,12 @@ export const solidityStablecoinAIFunctionDefinition = {
         type: 'boolean',
         description: solidityStablecoinDescriptions.custodian,
       },
-      limitations: {
+      restrictions: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
-        description: solidityStablecoinDescriptions.limitations,
+        description: solidityStablecoinDescriptions.restrictions,
       },
       upgradeable: {
         type: 'boolean',
@@ -211,7 +211,7 @@ export const solidityAccountAIFunctionDefinition = {
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
+          { type: 'string', enum: ['ECDSA', 'EIP7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
         ],
         description: solidityAccountDescriptions.signer,
       },

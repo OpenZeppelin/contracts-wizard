@@ -25,7 +25,7 @@ export function registerSolidityRWA(server: McpServer) {
       crossChainBridging,
       access,
       info,
-      limitations,
+      restrictions,
       custodian,
     }) => {
       const opts: StablecoinOptions = {
@@ -43,7 +43,7 @@ export function registerSolidityRWA(server: McpServer) {
         crossChainBridging,
         access,
         info,
-        limitations,
+        restrictions,
         custodian,
       };
       return {
