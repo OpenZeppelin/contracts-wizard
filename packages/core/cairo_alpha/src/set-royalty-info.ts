@@ -76,6 +76,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     case 'ownable': {
       c.addImplToComponent(components.ERC2981Component, {
         name: 'ERC2981AdminOwnableImpl',
+        embed: true,
         value: `ERC2981Component::ERC2981AdminOwnableImpl<ContractState>`,
       });
       break;
@@ -83,25 +84,27 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     case 'roles': {
       c.addImplToComponent(components.ERC2981Component, {
         name: 'ERC2981AdminAccessControlImpl',
+        embed: true,
         value: `ERC2981Component::ERC2981AdminAccessControlImpl<ContractState>`,
       });
       c.addConstructorArgument({
         name: 'royalty_admin',
         type: 'ContractAddress',
       });
-      c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      c.addConstructorCode('self.access_control._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
     }
     case 'roles-dar': {
       c.addImplToComponent(components.ERC2981Component, {
         name: 'ERC2981AdminAccessControlDefaultAdminRulesImpl',
+        embed: true,
         value: `ERC2981Component::ERC2981AdminAccessControlDefaultAdminRulesImpl<ContractState>`,
       });
       c.addConstructorArgument({
         name: 'royalty_admin',
         type: 'ContractAddress',
       });
-      c.addConstructorCode('self.accesscontrol_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      c.addConstructorCode('self.access_control_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
     }
     default: {
@@ -110,7 +113,7 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     }
   }
   if (feeDenominator === DEFAULT_FEE_DENOMINATOR) {
-    c.addUseClause('openzeppelin::token::common::erc2981', 'DefaultConfig', { alias: 'ERC2981DefaultConfig' });
+    c.addUseClause('openzeppelin_token::common::erc2981', 'DefaultConfig', { alias: 'ERC2981DefaultConfig' });
   } else {
     const trait: BaseImplementedTrait = {
       name: 'ERC2981ImmutableConfig',
@@ -147,7 +150,7 @@ function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): {
 
 const components = defineComponents({
   ERC2981Component: {
-    path: 'openzeppelin::token::common::erc2981',
+    path: 'openzeppelin_token::common::erc2981',
     substorage: {
       name: 'erc2981',
       type: 'ERC2981Component::Storage',
@@ -159,16 +162,18 @@ const components = defineComponents({
     impls: [
       {
         name: 'ERC2981Impl',
+        embed: true,
         value: 'ERC2981Component::ERC2981Impl<ContractState>',
       },
       {
         name: 'ERC2981InfoImpl',
+        embed: true,
         value: 'ERC2981Component::ERC2981InfoImpl<ContractState>',
       },
       {
         name: 'ERC2981InternalImpl',
-        value: 'ERC2981Component::InternalImpl<ContractState>',
         embed: false,
+        value: 'ERC2981Component::InternalImpl<ContractState>',
       },
     ],
   },

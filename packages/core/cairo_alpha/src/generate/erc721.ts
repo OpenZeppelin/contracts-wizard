@@ -6,16 +6,18 @@ import { upgradeableOptions } from '../set-upgradeable';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
 import { resolveRoyaltyOptionsSubset } from '../set-royalty-info';
 import { generateAlternatives } from './alternatives';
+import type { MacrosSubset } from '../set-macros';
+import { resolveMacrosOptions } from '../set-macros';
 
 const booleans = [true, false];
 
 type GeneratorOptions = {
   access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 };
 
 function prepareBlueprint(opts: GeneratorOptions) {
-  const royaltyInfo = resolveRoyaltyOptionsSubset(opts.royaltyInfo);
   return {
     name: ['MyToken'],
     symbol: ['MTK'],
@@ -27,10 +29,11 @@ function prepareBlueprint(opts: GeneratorOptions) {
     appVersion: ['v1'],
     pausable: booleans,
     mintable: booleans,
-    royaltyInfo,
+    royaltyInfo: resolveRoyaltyOptionsSubset(opts.royaltyInfo),
     access: resolveAccessControlOptions(opts.access),
     upgradeable: upgradeableOptions,
     info: [infoDefaults],
+    macros: resolveMacrosOptions(opts.macros),
   };
 }
 

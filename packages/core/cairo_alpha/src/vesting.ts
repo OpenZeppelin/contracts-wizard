@@ -4,6 +4,7 @@ import { contractDefaults as commonDefaults } from './common-options';
 import { AccessControl, setAccessControl } from './set-access-control';
 import { setUpgradeable } from './set-upgradeable';
 import type { Info } from './set-info';
+import type { MacrosOptions } from './set-macros';
 import { setInfo } from './set-info';
 import { defineComponents } from './utils/define-components';
 import { printContract } from './print';
@@ -20,6 +21,7 @@ export const defaults: Required<VestingOptions> = {
   cliffDuration: '0 day',
   schedule: 'custom',
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printVesting(opts: VestingOptions = defaults): string {
@@ -33,6 +35,7 @@ export interface VestingOptions {
   cliffDuration: string;
   schedule: VestingSchedule;
   info?: Info;
+  macros?: MacrosOptions;
 }
 
 function withDefaults(opts: VestingOptions): Required<VestingOptions> {
@@ -43,15 +46,16 @@ function withDefaults(opts: VestingOptions): Required<VestingOptions> {
     cliffDuration: opts.cliffDuration ?? defaults.cliffDuration,
     schedule: opts.schedule ?? defaults.schedule,
     info: opts.info ?? defaults.info,
+    macros: opts.macros ?? defaults.macros,
   };
 }
 
 export function buildVesting(opts: VestingOptions): Contract {
-  const c = new ContractBuilder(opts.name);
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
-  addBase(c, opts);
-  addSchedule(c, opts);
+  addBase(c, allOpts);
+  addSchedule(c, allOpts);
   setInfo(c, allOpts.info);
 
   // Vesting component depends on Ownable component
@@ -106,7 +110,7 @@ function addBase(c: ContractBuilder, opts: VestingOptions) {
 function addSchedule(c: ContractBuilder, opts: VestingOptions) {
   switch (opts.schedule) {
     case 'linear':
-      c.addUseClause('openzeppelin::finance::vesting', 'LinearVestingSchedule');
+      c.addUseClause('openzeppelin_finance::vesting', 'LinearVestingSchedule');
       return;
     case 'custom': {
       const scheduleTrait: BaseImplementedTrait = {
@@ -197,7 +201,7 @@ function validateDurations(duration: number, cliffDuration: number): void {
 
 const components = defineComponents({
   VestingComponent: {
-    path: 'openzeppelin::finance::vesting',
+    path: 'openzeppelin_finance::vesting',
     substorage: {
       name: 'vesting',
       type: 'VestingComponent::Storage',
@@ -209,6 +213,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'VestingImpl',
+        embed: true,
         value: 'VestingComponent::VestingImpl<ContractState>',
       },
       {

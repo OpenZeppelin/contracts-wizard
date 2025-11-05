@@ -1,15 +1,17 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
   import type { Account, KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { account, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { account, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Account']> = {
     kind: 'Account',
     ...account.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -82,5 +84,7 @@
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />
