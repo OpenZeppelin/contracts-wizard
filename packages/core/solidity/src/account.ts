@@ -244,9 +244,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     const accountName = opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579';
-    const signerBaseName = opts.signer.includes('Multisig')
-      ? `MultiSignerERC7913${opts.signer == 'MultisigWeighted' ? 'Weighted' : ''}`
-      : `Signer${opts.signer}`;
+    const signerBaseName = signers[opts.signer].name;
     const signerName = opts.upgradeable ? upgradeableName(signerBaseName) : signerBaseName;
 
     c.addImportOnly({
