@@ -6,7 +6,7 @@ export type Token = (typeof tokenTypes)[number];
 
 const components = defineComponents({
   SRC5Component: {
-    path: 'openzeppelin::introspection::src5',
+    path: 'openzeppelin_introspection::src5',
     substorage: {
       name: 'src5',
       type: 'SRC5Component::Storage',
@@ -19,7 +19,7 @@ const components = defineComponents({
   },
 
   VotesComponent: {
-    path: 'openzeppelin::governance::votes',
+    path: 'openzeppelin_governance::votes',
     substorage: {
       name: 'votes',
       type: 'VotesComponent::Storage',
@@ -38,7 +38,7 @@ const components = defineComponents({
   },
 
   NoncesComponent: {
-    path: 'openzeppelin::utils::cryptography::nonces',
+    path: 'openzeppelin_utils::cryptography::nonces',
     substorage: {
       name: 'nonces',
       type: 'NoncesComponent::Storage',
@@ -50,6 +50,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'NoncesImpl',
+        embed: true,
         value: 'NoncesComponent::NoncesImpl<ContractState>',
       },
     ],
@@ -62,6 +63,7 @@ export function addSRC5Component(c: ContractBuilder, section?: string) {
   if (!c.interfaceFlags.has('ISRC5')) {
     c.addImplToComponent(components.SRC5Component, {
       name: 'SRC5Impl',
+      embed: true,
       value: 'SRC5Component::SRC5Impl<ContractState>',
       section,
     });
@@ -75,13 +77,14 @@ export function addVotesComponent(c: ContractBuilder, name: string, version: str
   c.addComponent(components.VotesComponent, [], false);
   c.addImplToComponent(components.VotesComponent, {
     name: 'VotesImpl',
+    embed: true,
     value: `VotesComponent::VotesImpl<ContractState>`,
   });
-  c.addUseClause('openzeppelin::utils::contract_clock', 'ERC6372TimestampClock');
+  c.addUseClause('openzeppelin_utils::contract_clock', 'ERC6372TimestampClock');
 }
 
 export function addSNIP12Metadata(c: ContractBuilder, name: string, version: string, section?: string) {
-  c.addUseClause('openzeppelin::utils::cryptography::snip12', 'SNIP12Metadata');
+  c.addUseClause('openzeppelin_utils::cryptography::snip12', 'SNIP12Metadata');
 
   const SNIP12Metadata: BaseImplementedTrait = {
     name: 'SNIP12MetadataImpl',

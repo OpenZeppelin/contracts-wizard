@@ -4,6 +4,7 @@ import path from 'path';
 import type { KindSubset } from '../generate/sources';
 import type { AccessSubset } from '../set-access-control';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { MacrosSubset } from '../set-macros';
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
 
@@ -11,10 +12,12 @@ type Arguments = {
   kind: KindSubset;
   access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 };
 
 const defaults: Arguments = {
   kind: 'all',
+  macros: 'all',
   access: 'all',
   royaltyInfo: 'all',
 } as const;
@@ -24,6 +27,7 @@ export function resolveArguments(): Arguments {
   const args = parseCliArgs(cliArgs);
   return {
     kind: parseKindSubset(args.kind ?? defaults.kind),
+    macros: parseMacrosSubset(args.macros ?? defaults.macros),
     access: parseAccessSubset(args.access ?? defaults.access),
     royaltyInfo: parseRoyaltyInfoSubset(args.royalty ?? defaults.royaltyInfo),
   };
@@ -34,7 +38,7 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, access, royaltyInfo } = resolveArguments();
+  const { kind, macros, access, royaltyInfo } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
@@ -42,6 +46,7 @@ export async function updateScarbProject() {
     kind,
     access,
     royaltyInfo,
+    macros,
     logsEnabled: true,
   });
 
@@ -166,6 +171,21 @@ function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
       return 'enabled-custom';
     default:
       throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
+  }
+}
+
+function parseMacrosSubset(value: string): MacrosSubset {
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'no':
+    case 'none':
+      return 'none';
+    case 'with_components':
+    case 'with-components':
+      return 'with_components';
+    default:
+      throw new Error(`Failed to resolve macros subset from '${value}' value.`);
   }
 }
 
