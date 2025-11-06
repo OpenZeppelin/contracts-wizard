@@ -256,7 +256,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [
-        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountName}`,
+        `// IMPORTANT: Make sure ${signerName} is more derived than ${accountName}`,
         `// in the inheritance chain (i.e. contract ... is ${accountName}, ..., ${signerName})`,
         '// to ensure the correct order of function resolution.',
         `// ${accountName} returns false for _rawSignatureValidation`,
