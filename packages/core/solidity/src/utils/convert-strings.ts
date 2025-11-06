@@ -25,4 +25,3 @@ export function toUint256(value: string, field: string): bigint {
   }
   return numValue;
 }
-
