@@ -1,5 +1,5 @@
 ---
-'@openzeppelin/wizard': major
+'@openzeppelin/wizard': patch
 ---
 
-docs: minor improvement for docs
+Solidity account signer: Fix grammar in comment
