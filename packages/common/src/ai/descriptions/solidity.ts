@@ -56,7 +56,7 @@ export const solidityERC1155Descriptions = {
 export const solidityStablecoinDescriptions = {
   custodian:
     'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.',
-  limitations:
+  restrictions:
     'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
 };
 

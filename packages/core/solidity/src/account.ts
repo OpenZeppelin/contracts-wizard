@@ -244,7 +244,8 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     const accountName = opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579';
-    const signerName = opts.upgradeable ? upgradeableName(`Signer${opts.signer}`) : `Signer${opts.signer}`;
+    const signerBaseName = signers[opts.signer].name;
+    const signerName = opts.upgradeable ? upgradeableName(signerBaseName) : signerBaseName;
 
     // WebAuthnSigner depends inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
     if (opts.signer !== 'WebAuthn') {

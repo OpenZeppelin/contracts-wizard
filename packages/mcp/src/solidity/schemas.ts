@@ -102,12 +102,12 @@ const { upgradeable: _, ...erc20SchemaOmitUpgradeable } = erc20Schema;
 
 export const stablecoinSchema = {
   ...erc20SchemaOmitUpgradeable,
-  limitations: z
+  restrictions: z
     .literal(false)
     .or(z.literal('allowlist'))
     .or(z.literal('blocklist'))
     .optional()
-    .describe(solidityStablecoinDescriptions.limitations),
+    .describe(solidityStablecoinDescriptions.restrictions),
   custodian: z.boolean().optional().describe(solidityStablecoinDescriptions.custodian),
 } as const satisfies z.ZodRawShape;
 

@@ -94,19 +94,23 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
         if (c.interfaceFlags.has('ISRC5')) {
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlCamelImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlCamelImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlWithDelayImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlWithDelayImpl<ContractState>',
           });
         } else {
           c.addImplToComponent(components.AccessControlComponent, {
             name: 'AccessControlMixinImpl',
+            embed: true,
             value: 'AccessControlComponent::AccessControlMixinImpl<ContractState>',
           });
           c.addInterfaceFlag('ISRC5');
@@ -119,8 +123,8 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           type: 'ContractAddress',
         });
 
-        c.addUseClause('openzeppelin::access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
-        c.addConstructorCode('self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
+        c.addUseClause('openzeppelin_access::accesscontrol', 'DEFAULT_ADMIN_ROLE');
+        c.addConstructorCode('self.access_control._grant_role(DEFAULT_ADMIN_ROLE, default_admin)');
       }
       break;
     }
@@ -130,23 +134,28 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
         if (c.interfaceFlags.has('ISRC5')) {
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlImpl',
+            embed: true,
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlDefaultAdminRulesImpl',
+            embed: true,
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlDefaultAdminRulesImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlCamelImpl',
+            embed: true,
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlCamelImpl<ContractState>',
           });
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlWithDelayImpl',
+            embed: true,
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlWithDelayImpl<ContractState>',
           });
         } else {
           c.addImplToComponent(components.AccessControlDefaultAdminRulesComponent, {
             name: 'AccessControlMixinImpl',
+            embed: true,
             value: 'AccessControlDefaultAdminRulesComponent::AccessControlMixinImpl<ContractState>',
           });
           c.addInterfaceFlag('ISRC5');
@@ -166,7 +175,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           'u64',
         );
         if (defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT) {
-          c.addUseClause('openzeppelin::access::accesscontrol::extensions', 'DefaultConfig', {
+          c.addUseClause('openzeppelin_access::accesscontrol::extensions', 'DefaultConfig', {
             alias: 'AccessControlDefaultAdminRulesDefaultConfig',
           });
         } else {
@@ -280,7 +289,7 @@ function getDefaultAdminDelayIncreaseWait(opts: RolesDefaultAdminRulesOptions): 
 
 const components = defineComponents({
   OwnableComponent: {
-    path: 'openzeppelin::access::ownable',
+    path: 'openzeppelin_access::ownable',
     substorage: {
       name: 'ownable',
       type: 'OwnableComponent::Storage',
@@ -292,6 +301,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'OwnableMixinImpl',
+        embed: true,
         value: 'OwnableComponent::OwnableMixinImpl<ContractState>',
       },
       {
@@ -302,9 +312,9 @@ const components = defineComponents({
     ],
   },
   AccessControlComponent: {
-    path: 'openzeppelin::access::accesscontrol',
+    path: 'openzeppelin_access::accesscontrol',
     substorage: {
-      name: 'accesscontrol',
+      name: 'access_control',
       type: 'AccessControlComponent::Storage',
     },
     event: {
@@ -320,9 +330,9 @@ const components = defineComponents({
     ],
   },
   AccessControlDefaultAdminRulesComponent: {
-    path: 'openzeppelin::access::accesscontrol::extensions',
+    path: 'openzeppelin_access::accesscontrol::extensions',
     substorage: {
-      name: 'accesscontrol_dar',
+      name: 'access_control_dar',
       type: 'AccessControlDefaultAdminRulesComponent::Storage',
     },
     event: {

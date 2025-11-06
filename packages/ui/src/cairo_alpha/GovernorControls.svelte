@@ -2,11 +2,12 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { governor, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { governor, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
 
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -19,6 +20,7 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -239,5 +241,7 @@
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} />
   </label>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

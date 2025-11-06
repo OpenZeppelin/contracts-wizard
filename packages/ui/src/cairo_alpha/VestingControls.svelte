@@ -2,15 +2,17 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { vesting, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { vesting, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Vesting']> = {
     kind: 'Vesting',
     ...vesting.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -70,5 +72,7 @@
     </label>
   </div>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />
