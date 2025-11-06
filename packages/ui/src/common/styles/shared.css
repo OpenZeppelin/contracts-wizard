@@ -11,12 +11,6 @@
   color: var(--gray-5);
 }
 
-.tab button,
-.overflow-btn {
-  border: 0;
-  background-color: transparent;
-}
-
 .tab button:hover,
 .overflow-btn:hover {
   background-color: var(--gray-2);
@@ -29,6 +23,8 @@
 
 .tab button,
 .overflow-btn {
+  border: 0;
+  background-color: transparent;
   padding: var(--size-2) var(--size-3);
   border-radius: 20px;
   cursor: pointer;
