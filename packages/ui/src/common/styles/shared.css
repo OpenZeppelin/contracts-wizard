@@ -25,7 +25,7 @@
 .overflow-btn {
   border: 0;
   background-color: transparent;
-  padding: var(--size-2) var(--size-3);
+  padding: var(--size-2) var(--size-4);
   border-radius: 20px;
   cursor: pointer;
   transition: background-color ease-in-out 0.2s;
