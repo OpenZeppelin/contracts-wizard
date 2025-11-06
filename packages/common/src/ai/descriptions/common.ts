@@ -16,4 +16,3 @@ export const infoDescriptions = {
     'Email where people can contact you to report security issues. Will only be visible if contract source code is verified.',
   license: 'The license used by the contract, default is "MIT"',
 };
-

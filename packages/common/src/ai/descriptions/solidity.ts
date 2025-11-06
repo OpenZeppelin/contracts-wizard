@@ -96,4 +96,3 @@ export const solidityGovernorDescriptions = {
   storage: 'Enable storage of proposal details and enumerability of proposals',
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
 };
-
