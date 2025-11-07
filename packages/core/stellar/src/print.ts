@@ -1,4 +1,4 @@
-import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause, ConstructorArgument } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -249,7 +249,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines, undefined);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
@@ -283,6 +283,7 @@ function printConstructor(contract: Contract): Lines[] {
   if (contract.constructorCode.length > 0) {
     const head = 'fn __constructor';
     const args = [getSelfArg(), ...contract.constructorArgs];
+    const deploy = printDeployCommand(contract.constructorArgs);
 
     const body = spaceBetween(withSemicolons(contract.constructorCode));
 
@@ -294,6 +295,7 @@ function printConstructor(contract: Contract): Lines[] {
       undefined,
       undefined,
       body,
+      deploy,
     );
     return constructor;
   } else {
@@ -311,11 +313,16 @@ function printFunction2(
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[],
+  deploy: string[] | undefined,
 ): Lines[] {
   const fn = [];
 
   for (let i = 0; i < tags.length; i++) {
     fn.push(`#[${tags[i]}]`);
+  }
+
+  if (kindedName === 'fn __constructor' && deploy) {
+    fn.push(...deploy);
   }
 
   let accum = '';
@@ -370,4 +377,28 @@ function printDocumentations(documentations: string[]): string[] {
 
 function printMetadata(contract: Contract) {
   return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
+}
+
+function printDeployCommand(args: ConstructorArgument[]): string[] {
+  if (args.length === 0) {
+    return [];
+  }
+
+  const cmd = [];
+  cmd.push('// deploy this smart contract with the Stellar CLI:');
+  cmd.push('//');
+  cmd.push('// stellar contract deploy \\');
+  cmd.push('// --wasm path/to/file.wasm \\');
+  cmd.push('// -- \\');
+  args.map((arg, i) => {
+    if (arg.value) {
+      let formattedArg = `// --${arg.name} ${arg.value}`;
+      if (i !== args.length - 1) {
+        formattedArg += ' \\';
+      }
+      cmd.push(formattedArg);
+    }
+  });
+
+  return cmd;
 }
