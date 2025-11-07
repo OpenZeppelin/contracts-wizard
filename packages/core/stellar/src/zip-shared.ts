@@ -8,12 +8,39 @@ function pascalToSnakeCase(string: string) {
     .toLowerCase();
 }
 
+function stringFromStr(str: string): string {
+  return `String::from_str(&env, "${str}")`;
+}
+
 export const contractOptionsToContractName = pascalToSnakeCase;
 
 export function getAddressArgs(c: Pick<Contract, 'constructorArgs'>): string[] {
   return (c.constructorArgs || [])
     .filter(constructorArg => constructorArg.type?.trim() === 'Address')
     .map(constructorArg => constructorArg.name);
+}
+
+export function getConstructorArgs(c: Pick<Contract, 'constructorArgs'>): string[] {
+  return (c.constructorArgs || [])
+    .map(constructorArg => {
+      switch (constructorArg.type?.trim()) {
+        case 'Address':
+          return 'Address::generate(&env)';
+        case 'String':
+          return constructorArg.value
+            ? stringFromStr(constructorArg.value)
+            : constructorArg.name === 'name'
+              ? stringFromStr('MyToken')
+              : constructorArg.name === 'symbol'
+                ? stringFromStr('MTK')
+                : stringFromStr('SomeString');
+        case 'i128':
+          return constructorArg.value ? `${constructorArg.value}i128` : '100i128';
+        default:
+          return '';
+      }
+    })
+    .filter(constructorArg => constructorArg);
 }
 
 export const printRustNameTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => `#![cfg(test)]
@@ -28,15 +55,15 @@ use crate::contract::{ ${c.name}, ${c.name}Client };
 fn initial_state() {
     let env = Env::default();
 
-    let contract_addr = env.register(${c.name}, (${getAddressArgs(c)
-      .map(() => 'Address::generate(&env)')
-      .join(',')}${getAddressArgs(c).length === 1 ? ',' : ''}));
+    let contract_addr = env.register(${c.name}, (${getConstructorArgs(c).join(
+      ',',
+    )}${getConstructorArgs(c).length === 1 ? ',' : ''}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
 }
 
-// Add more tests bellow
+// Add more tests below
 `;
 
 export const libDependencies = [
