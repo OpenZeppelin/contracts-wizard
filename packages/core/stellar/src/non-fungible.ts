@@ -121,9 +121,9 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
 
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   // Set metadata
-  c.addConstructorCode('let uri = String::from_str(e, "www.mytoken.com");');
-  c.addConstructorCode(`let name = String::from_str(e, "${name}");`);
-  c.addConstructorCode(`let symbol = String::from_str(e, "${symbol}");`);
+  c.addConstructorArgument({ name: 'uri', type: 'String', value: 'www.mytoken.com' });
+  c.addConstructorArgument({ name: 'name', type: 'String', value: name });
+  c.addConstructorArgument({ name: 'symbol', type: 'String', value: symbol });
   c.addConstructorCode(`Base::set_metadata(e, uri, name, symbol);`);
 
   // Set token functions
