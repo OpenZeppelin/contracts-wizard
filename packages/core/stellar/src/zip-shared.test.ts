@@ -134,7 +134,7 @@ fn initial_state() {
     assert_eq!(client.name(), String::from_str(&env, "Fungible"));
 }
 
-// Add more tests bellow
+// Add more tests below
 `;
   t.is(output, expected);
 });
@@ -164,7 +164,7 @@ fn initial_state() {
     assert_eq!(client.name(), String::from_str(&env, "NoArgs"));
 }
 
-// Add more tests bellow
+// Add more tests below
 `;
   t.is(output, expected);
 });
@@ -194,7 +194,37 @@ fn initial_state() {
     assert_eq!(client.name(), String::from_str(&env, "SingleArg"));
 }
 
-// Add more tests bellow
+// Add more tests below
+`;
+  t.is(output, expected);
+});
+
+test('printRustNameTest handles single String arg', t => {
+  const contract = {
+    name: 'SingleToken',
+    constructorArgs: [{ name: 'name', type: 'String', value: 'SingleToken' }],
+  };
+  const output = printRustNameTest(contract);
+
+  const expected = `#![cfg(test)]
+
+extern crate std;
+
+use soroban_sdk::{ Env, String };
+
+use crate::contract::{ SingleToken, SingleTokenClient };
+
+#[test]
+fn initial_state() {
+    let env = Env::default();
+
+    let contract_addr = env.register(SingleToken, (String::from_str(&env, "SingleToken"),));
+    let client = SingleTokenClient::new(&env, &contract_addr);
+
+    assert_eq!(client.name(), String::from_str(&env, "SingleToken"));
+}
+
+// Add more tests below
 `;
   t.is(output, expected);
 });
