@@ -1,4 +1,4 @@
-import { CommonOptions } from './common-options';
+import type { CommonOptions } from './common-options';
 import { getRawCompatibleContractsSemver } from './utils/version';
 
 export function getVersionedRemappings(opts?: CommonOptions): string[] {
