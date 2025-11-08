@@ -78,6 +78,11 @@ testStablecoin('stablecoin mintable with roles', {
   access: 'roles',
 });
 
+testStablecoin('stablecoin mintable with role managed', {
+  mintable: true,
+  access: 'managed',
+});
+
 testStablecoin('stablecoin callback', {
   callback: true,
 });
