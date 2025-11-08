@@ -16,6 +16,7 @@ import { toByteArray } from './utils/convert-strings';
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
+  uri: '',
   burnable: false,
   enumerable: false,
   consecutive: false,
@@ -34,6 +35,7 @@ export function printNonFungible(opts: NonFungibleOptions = defaults): string {
 export interface NonFungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
+  uri?: string;
   burnable?: boolean;
   enumerable?: boolean;
   consecutive?: boolean;
@@ -47,6 +49,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
+    uri: opts.uri ?? defaults.uri,
     burnable: opts.burnable ?? defaults.burnable,
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
@@ -87,7 +90,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     throw new OptionsError(errors);
   }
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.uri), allOpts.pausable);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -119,11 +122,11 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
+function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string, pausable: boolean) {
   // Set metadata
-  c.addConstructorArgument({ name: 'uri', type: 'String', value: 'www.mytoken.com' });
   c.addConstructorArgument({ name: 'name', type: 'String', value: name });
   c.addConstructorArgument({ name: 'symbol', type: 'String', value: symbol });
+  c.addConstructorArgument({ name: 'uri', type: 'String', value: baseUri });
   c.addConstructorCode(`Base::set_metadata(e, uri, name, symbol);`);
 
   // Set token functions

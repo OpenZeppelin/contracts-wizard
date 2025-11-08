@@ -19,6 +19,7 @@ export const stellarFungibleDescriptions = {
 };
 
 export const stellarNonFungibleDescriptions = {
+  baseUri: 'A base uri for the token',
   enumerable: 'Whether the NFTs are enumerable (can be iterated over).',
   consecutive: 'To batch mint NFTs instead of minting them individually (sequential minting is mandatory).',
   sequential: 'Whether the IDs of the minted NFTs will be sequential.',

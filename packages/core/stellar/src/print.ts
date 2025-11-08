@@ -390,13 +390,18 @@ function printDeployCommand(args: ConstructorArgument[]): string[] {
   cmd.push('// --wasm path/to/file.wasm \\');
   cmd.push('// -- \\');
   args.map((arg, i) => {
+    let formattedArg = '';
     if (arg.value) {
-      let formattedArg = `// --${arg.name} ${arg.value}`;
-      if (i !== args.length - 1) {
-        formattedArg += ' \\';
-      }
-      cmd.push(formattedArg);
+      const needsQuoting = /[\s"'$\\]/.test(arg.value) || arg.name === 'uri';
+      const quotedValue = needsQuoting ? `"${arg.value.replace(/"/g, '\\"')}"` : arg.value;
+      formattedArg += `// --${arg.name} ${quotedValue}`;
+    } else if (arg.name === 'uri') {
+      formattedArg += `// --${arg.name} "https://example.com/"`;
     }
+    if (i < args.length - 1) {
+      formattedArg += ' \\';
+    }
+    cmd.push(formattedArg);
   });
 
   return cmd;
