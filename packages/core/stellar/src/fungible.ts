@@ -200,7 +200,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     c.addUseClause('soroban_sdk', 'Address');
 
-    c.addConstructorArgument({ name: 'recipient', type: 'Address', value: '<recipient address>' });
+    c.addConstructorArgument({ name: 'recipient', type: 'Address', value: '<recipient_address>' });
     c.addConstructorArgument({ name: 'premint', type: 'i128', value: String(premintAbsolute) });
     c.addConstructorCode(`Base::mint(e, &recipient, premint);`);
   }
