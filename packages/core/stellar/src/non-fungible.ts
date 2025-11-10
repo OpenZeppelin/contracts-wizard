@@ -16,6 +16,7 @@ import { toByteArray } from './utils/convert-strings';
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
+  tokenUri: 'www.mytoken.com',
   burnable: false,
   enumerable: false,
   consecutive: false,
@@ -34,6 +35,7 @@ export function printNonFungible(opts: NonFungibleOptions = defaults): string {
 export interface NonFungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
+  tokenUri?: string;
   burnable?: boolean;
   enumerable?: boolean;
   consecutive?: boolean;
@@ -47,6 +49,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
+    tokenUri: opts.tokenUri ?? defaults.tokenUri,
     burnable: opts.burnable ?? defaults.burnable,
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
@@ -87,7 +90,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     throw new OptionsError(errors);
   }
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.tokenUri), allOpts.pausable);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -119,9 +122,9 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
+function addBase(c: ContractBuilder, name: string, symbol: string, tokenUri: string, pausable: boolean) {
   // Set metadata
-  c.addConstructorCode('let uri = String::from_str(e, "www.mytoken.com");');
+  c.addConstructorCode(`let uri = String::from_str(e, "${tokenUri}");`);
   c.addConstructorCode(`let name = String::from_str(e, "${name}");`);
   c.addConstructorCode(`let symbol = String::from_str(e, "${symbol}");`);
   c.addConstructorCode(`Base::set_metadata(e, uri, name, symbol);`);

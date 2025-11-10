@@ -57,6 +57,7 @@ export const stablecoinSchema = {
 export const nonFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
+  tokenUri: z.string().optional().describe(stellarNonFungibleDescriptions.tokenUri),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   enumerable: z.boolean().optional().describe(stellarNonFungibleDescriptions.enumerable),
   consecutive: z.boolean().optional().describe(stellarNonFungibleDescriptions.consecutive),
