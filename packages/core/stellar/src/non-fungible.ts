@@ -16,7 +16,7 @@ import { toByteArray } from './utils/convert-strings';
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
-  uri: '',
+  baseUri: '',
   burnable: false,
   enumerable: false,
   consecutive: false,
@@ -35,7 +35,7 @@ export function printNonFungible(opts: NonFungibleOptions = defaults): string {
 export interface NonFungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
-  uri?: string;
+  baseUri?: string;
   burnable?: boolean;
   enumerable?: boolean;
   consecutive?: boolean;
@@ -49,7 +49,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
-    uri: opts.uri ?? defaults.uri,
+    baseUri: opts.baseUri ?? defaults.baseUri,
     burnable: opts.burnable ?? defaults.burnable,
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
@@ -90,7 +90,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     throw new OptionsError(errors);
   }
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.uri), allOpts.pausable);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.baseUri), allOpts.pausable);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
