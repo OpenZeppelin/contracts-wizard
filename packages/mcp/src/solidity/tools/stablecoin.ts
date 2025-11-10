@@ -26,7 +26,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
       access,
       info,
       restrictions,
-      custodian,
+      freezable,
     }) => {
       const opts: StablecoinOptions = {
         name,
@@ -44,7 +44,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
         access,
         info,
         restrictions,
-        custodian,
+        freezable,
       };
       return {
         content: [
