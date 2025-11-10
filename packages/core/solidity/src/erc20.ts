@@ -237,7 +237,7 @@ function addPremint(
  * Check for potential premint overflow assuming the user's contract has decimals() = 18
  *
  * @param baseUnits The base units of the token, before applying power of 10
- * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `validatedBaseUnits`. Ignored if <= 0.
+ * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `baseUnits`. Ignored if <= 0.
  * @throws OptionsError if the calculated value would overflow uint256
  */
 function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
