@@ -2,33 +2,35 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import type { KindSubset } from '../generate/sources';
+import type { AccessSubset } from '../set-access-control';
+import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { MacrosSubset } from '../set-macros';
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
-import type { RoyaltyInfoSubset } from '../set-royalty-info';
 
 type Arguments = {
   kind: KindSubset;
+  access: AccessSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  macros: MacrosSubset;
 };
+
+const defaults: Arguments = {
+  kind: 'all',
+  macros: 'all',
+  access: 'all',
+  royaltyInfo: 'all',
+} as const;
 
 export function resolveArguments(): Arguments {
   const cliArgs = process.argv.slice(2);
-  switch (cliArgs.length) {
-    case 0:
-      return { kind: 'all', royaltyInfo: 'all' };
-    case 1:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: 'all',
-      };
-    case 2:
-      return {
-        kind: parseKindSubset(cliArgs[0]),
-        royaltyInfo: parseRoyaltyInfoSubset(cliArgs[1]),
-      };
-    default:
-      throw new Error(`Too many CLI arguments provided: ${cliArgs.length}.`);
-  }
+  const args = parseCliArgs(cliArgs);
+  return {
+    kind: parseKindSubset(args.kind ?? defaults.kind),
+    macros: parseMacrosSubset(args.macros ?? defaults.macros),
+    access: parseAccessSubset(args.access ?? defaults.access),
+    royaltyInfo: parseRoyaltyInfoSubset(args.royalty ?? defaults.royaltyInfo),
+  };
 }
 
 export async function updateScarbProject() {
@@ -36,13 +38,15 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, royaltyInfo } = resolveArguments();
+  const { kind, macros, access, royaltyInfo } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
     uniqueName: true,
     kind,
+    access,
     royaltyInfo,
+    macros,
     logsEnabled: true,
   });
 
@@ -79,6 +83,25 @@ async function updateScarbToml() {
   await fs.writeFile(scarbTomlPath, updatedContent, 'utf8');
 }
 
+function parseCliArgs(args: string[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg.startsWith('--') && arg.slice(2).includes('=')) {
+      const [key, value] = arg.slice(2).split('=', 2);
+      if (key && value !== undefined) {
+        result[key] = value;
+      } else {
+        throw new Error(`Invalid argument format: ${arg}`);
+      }
+    } else {
+      throw new Error(`Invalid argument format: ${arg}. Expected --key=value`);
+    }
+  }
+  return result;
+}
+
 function parseKindSubset(value: string | undefined): KindSubset {
   if (value === undefined) {
     throw new Error(`Failed to resolve contract kind subset from 'undefined'.`);
@@ -107,6 +130,30 @@ function parseKindSubset(value: string | undefined): KindSubset {
   }
 }
 
+function parseAccessSubset(value: string | undefined): AccessSubset {
+  if (value === undefined) {
+    throw new Error(`Failed to resolve access subset from 'undefined'.`);
+  }
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'disabled':
+      return 'disabled';
+    case 'ownable':
+      return 'ownable';
+    case 'roles':
+      return 'roles';
+    case 'roles-dar-default':
+    case 'roles_dar_default':
+      return 'roles-dar-default';
+    case 'roles-dar-custom':
+    case 'roles_dar_custom':
+      return 'roles-dar-custom';
+    default:
+      throw new Error(`Failed to resolve access subset from '${value}' value.`);
+  }
+}
+
 function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
   if (value === undefined) {
     throw new Error(`Failed to resolve royalty info subset from 'undefined'.`);
@@ -116,12 +163,29 @@ function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
       return 'all';
     case 'disabled':
       return 'disabled';
+    case 'enabled-default':
     case 'enabled_default':
-      return 'enabled_default';
+      return 'enabled-default';
+    case 'enabled-custom':
     case 'enabled_custom':
-      return 'enabled_custom';
+      return 'enabled-custom';
     default:
       throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
+  }
+}
+
+function parseMacrosSubset(value: string): MacrosSubset {
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'no':
+    case 'none':
+      return 'none';
+    case 'with_components':
+    case 'with-components':
+      return 'with_components';
+    default:
+      throw new Error(`Failed to resolve macros subset from '${value}' value.`);
   }
 }
 

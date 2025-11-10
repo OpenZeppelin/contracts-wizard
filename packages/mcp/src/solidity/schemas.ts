@@ -68,6 +68,7 @@ export const erc20Schema = {
     .or(z.literal('superchain'))
     .optional()
     .describe(solidityERC20Descriptions.crossChainBridging),
+  namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;
 
@@ -83,6 +84,7 @@ export const erc721Schema = {
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC721Descriptions.votes),
   ...commonSchema,
+  namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
 } as const satisfies z.ZodRawShape;
 
 export const erc1155Schema = {
@@ -100,12 +102,12 @@ const { upgradeable: _, ...erc20SchemaOmitUpgradeable } = erc20Schema;
 
 export const stablecoinSchema = {
   ...erc20SchemaOmitUpgradeable,
-  limitations: z
+  restrictions: z
     .literal(false)
     .or(z.literal('allowlist'))
     .or(z.literal('blocklist'))
     .optional()
-    .describe(solidityStablecoinDescriptions.limitations),
+    .describe(solidityStablecoinDescriptions.restrictions),
   custodian: z.boolean().optional().describe(solidityStablecoinDescriptions.custodian),
 } as const satisfies z.ZodRawShape;
 
@@ -123,8 +125,8 @@ export const accountSchema = {
   ERC1155Holder: z.boolean().optional().describe(solidityAccountDescriptions.ERC1155Holder),
   signer: z
     .literal(false)
-    .or(z.literal('ERC7702'))
     .or(z.literal('ECDSA'))
+    .or(z.literal('EIP7702'))
     .or(z.literal('P256'))
     .or(z.literal('RSA'))
     .or(z.literal('Multisig'))

@@ -3,7 +3,7 @@ import { OptionsError } from './error';
 import type { Upgradeable } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 
-export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
+export const SignerOptions = [false, 'ECDSA', 'EIP7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
@@ -13,11 +13,11 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
   c.addOverride({ name: signerName }, signerFunctions._rawSignatureValidation);
 
   switch (signer) {
-    case 'ERC7702':
+    case 'EIP7702':
       c.addParent(signers[signer]);
       if (upgradeable) {
         throw new OptionsError({
-          erc7702: 'EOAs can upgrade by redelegating to a new account',
+          eip7702: 'EOAs can upgrade by redelegating to a new account',
           upgradeable: 'EOAs can upgrade by redelegating to a new account',
         });
       }
@@ -38,13 +38,13 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
 }
 
 export const signers = {
-  ERC7702: {
-    name: 'SignerERC7702',
-    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerERC7702.sol',
-  },
   ECDSA: {
     name: 'SignerECDSA',
     path: '@openzeppelin/contracts/utils/cryptography/signers/SignerECDSA.sol',
+  },
+  EIP7702: {
+    name: 'SignerEIP7702',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerEIP7702.sol',
   },
   P256: {
     name: 'SignerP256',
@@ -64,7 +64,7 @@ export const signers = {
   },
 };
 
-export const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { name: string; type: string }[]> = {
+export const signerArgs: Record<Exclude<SignerOptions, false | 'EIP7702'>, { name: string; type: string }[]> = {
   ECDSA: [{ name: 'signer', type: 'address' }],
   P256: [
     { name: 'qx', type: 'bytes32' },

@@ -12,7 +12,7 @@ import {
 } from './erc20';
 
 export interface StablecoinOptions extends ERC20Options {
-  limitations?: false | 'allowlist' | 'blocklist';
+  restrictions?: false | 'allowlist' | 'blocklist';
   custodian?: boolean;
 }
 
@@ -20,7 +20,7 @@ export const defaults: Required<StablecoinOptions> = {
   ...erc20defaults,
   name: 'MyStablecoin',
   symbol: 'MST',
-  limitations: false,
+  restrictions: false,
   custodian: false,
 } as const;
 
@@ -29,7 +29,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
     ...withERC20Defaults(opts),
     name: opts.name ?? defaults.name,
     symbol: opts.symbol ?? defaults.symbol,
-    limitations: opts.limitations ?? defaults.limitations,
+    restrictions: opts.restrictions ?? defaults.restrictions,
     custodian: opts.custodian ?? defaults.custodian,
   };
 }
@@ -39,7 +39,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.limitations !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.restrictions !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
@@ -54,33 +54,37 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
     addCustodian(c, allOpts.access);
   }
 
-  if (allOpts.limitations) {
-    addLimitations(c, allOpts.access, allOpts.limitations);
+  if (allOpts.restrictions) {
+    addRestrictions(c, allOpts.access, allOpts.restrictions);
   }
 
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: boolean | 'allowlist' | 'blocklist') {
-  const type = mode === 'allowlist';
-  const ERC20Limitation = {
-    name: type ? 'ERC20Allowlist' : 'ERC20Blocklist',
-    path: `@openzeppelin/community-contracts/token/ERC20/extensions/${type ? 'ERC20Allowlist' : 'ERC20Blocklist'}.sol`,
+function addRestrictions(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
+  const isAllowlist = mode === 'allowlist';
+  const ERC20Restricted = {
+    name: 'ERC20Restricted',
+    path: `@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Restricted.sol`,
   };
 
-  c.addParent(ERC20Limitation);
-  c.addOverride(ERC20Limitation, functions._update);
-  c.addOverride(ERC20Limitation, functions._approve);
+  c.addParent(ERC20Restricted);
+  c.addOverride(ERC20Restricted, functions._update);
 
-  const [addFn, removeFn] = type
+  if (isAllowlist) {
+    c.addOverride(ERC20Restricted, functions.isUserAllowed);
+    c.setFunctionBody([`return getRestriction(user) == Restriction.ALLOWED;`], functions.isUserAllowed);
+  }
+
+  const [addFn, removeFn] = isAllowlist
     ? [functions.allowUser, functions.disallowUser]
     : [functions.blockUser, functions.unblockUser];
 
   requireAccessControl(c, addFn, access, 'LIMITER', 'limiter');
-  c.addFunctionCode(`_${type ? 'allowUser' : 'blockUser'}(user);`, addFn);
+  c.addFunctionCode(`_${isAllowlist ? 'allow' : 'block'}User(user);`, addFn);
 
   requireAccessControl(c, removeFn, access, 'LIMITER', 'limiter');
-  c.addFunctionCode(`_${type ? 'disallowUser' : 'unblockUser'}(user);`, removeFn);
+  c.addFunctionCode(`_resetUser(user);`, removeFn);
 }
 
 function addCustodian(c: ContractBuilder, access: Access) {
@@ -107,7 +111,9 @@ function addCustodian(c: ContractBuilder, access: Access) {
     case 'roles': {
       const roleOwner = 'custodian';
       const roleId = 'CUSTODIAN_ROLE';
-      const addedConstant = c.addVariable(`bytes32 public constant ${roleId} = keccak256("${roleId}");`);
+      const addedConstant = c.addConstantOrImmutableOrErrorDefinition(
+        `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
+      );
       if (roleOwner && addedConstant) {
         c.addConstructorArgument({ type: 'address', name: roleOwner });
         c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
@@ -158,6 +164,13 @@ const functions = {
     unblockUser: {
       kind: 'public' as const,
       args: [{ name: 'user', type: 'address' }],
+    },
+
+    isUserAllowed: {
+      kind: 'public' as const,
+      args: [{ name: 'user', type: 'address' }],
+      returns: ['bool'],
+      mutability: 'view' as const,
     },
   }),
 };

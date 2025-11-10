@@ -2,15 +2,17 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { vesting, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { vesting, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Vesting']> = {
     kind: 'Vesting',
     ...vesting.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -55,18 +57,22 @@
     <label class:checked={opts.schedule === 'linear'}>
       <input type="radio" bind:group={opts.schedule} value="linear" />
       Linear
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#LinearVestingSchedule">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/finance#LinearVestingSchedule">
         A vesting schedule implementation when tokens are vested gradually following a linear curve.
       </HelpTooltip>
     </label>
     <label class:checked={opts.schedule === 'custom'}>
       <input type="radio" bind:group={opts.schedule} value="custom" />
       Custom
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/api/finance#VestingComponent-Vesting-Schedule">
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/finance#VestingComponent-Vesting-Schedule"
+      >
         A custom vesting schedule that requires the implementation of the VestingSchedule trait.
       </HelpTooltip>
     </label>
   </div>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

@@ -13,7 +13,7 @@
   label="Royalty Info"
   bind:checked={opts.enabled}
   helpContent="Provides information for how much royalty is owed and to whom, based on a sale price. Follows ERC-2981 standard."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/api/token_common#ERC2981Component"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/2.x/api/token_common#ERC2981Component"
   error={errors?.defaultRoyaltyFraction || errors?.feeDenominator}
 >
   <label class="labeled-input">
@@ -35,7 +35,7 @@
     <span class="flex justify-between pr-2">
       Fee Denominator
       <HelpTooltip
-        link="https://docs.openzeppelin.com/contracts-cairo/api/token_common#ERC2981Component-IC-FEE_DENOMINATOR"
+        link="https://docs.openzeppelin.com/contracts-cairo/2.x/api/token_common#ERC2981Component-IC-FEE_DENOMINATOR"
       >
         The denominator used to interpret a token's fee and to calculate the result fee fraction.
       </HelpTooltip>

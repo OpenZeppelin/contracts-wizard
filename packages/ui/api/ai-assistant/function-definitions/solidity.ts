@@ -9,6 +9,7 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
+  solidityCommonDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 
 export const solidityERC20AIFunctionDefinition = {
@@ -61,6 +62,10 @@ export const solidityERC20AIFunctionDefinition = {
         type: 'boolean',
         description: solidityERC20Descriptions.callback,
       },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
+      },
     },
     required: ['name', 'symbol'],
     additionalProperties: false,
@@ -102,6 +107,10 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
         description: solidityERC721Descriptions.votes,
+      },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
       },
     },
     required: ['name', 'symbol'],
@@ -153,12 +162,12 @@ export const solidityStablecoinAIFunctionDefinition = {
         type: 'boolean',
         description: solidityStablecoinDescriptions.custodian,
       },
-      limitations: {
+      restrictions: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['allowlist', 'blocklist'] },
         ],
-        description: solidityStablecoinDescriptions.limitations,
+        description: solidityStablecoinDescriptions.restrictions,
       },
       upgradeable: {
         type: 'boolean',
@@ -202,7 +211,7 @@ export const solidityAccountAIFunctionDefinition = {
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ECDSA', 'ERC7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
+          { type: 'string', enum: ['ECDSA', 'EIP7702', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] },
         ],
         description: solidityAccountDescriptions.signer,
       },

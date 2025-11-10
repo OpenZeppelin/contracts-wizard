@@ -54,6 +54,7 @@ test('all', async t => {
     crossChainBridging: 'superchain',
     access: 'roles',
     upgradeable: 'transparent',
+    namespacePrefix: 'myProject',
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',

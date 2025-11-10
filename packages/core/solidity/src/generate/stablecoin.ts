@@ -21,6 +21,7 @@ const erc20Basic = {
   crossChainBridging: [false] as const,
   access: [false] as const,
   info: [{}] as const,
+  namespacePrefix: ['myProject'],
 };
 
 const erc20Full = {
@@ -38,10 +39,11 @@ const erc20Full = {
   crossChainBridging: crossChainBridgingOptions,
   access: accessOptions,
   info: infoOptions,
+  namespacePrefix: ['myProject'],
 };
 
 const stablecoinExtensions = {
-  limitations: [false, 'allowlist', 'blocklist'] as const,
+  restrictions: [false, 'allowlist', 'blocklist'] as const,
   custodian: booleans,
   upgradeable: [false] as const,
 };
