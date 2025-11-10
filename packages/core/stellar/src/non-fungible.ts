@@ -16,7 +16,7 @@ import { toByteArray } from './utils/convert-strings';
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
-  tokenUri: 'www.mytoken.com',
+  tokenUri: 'https://www.mytoken.com',
   burnable: false,
   enumerable: false,
   consecutive: false,
