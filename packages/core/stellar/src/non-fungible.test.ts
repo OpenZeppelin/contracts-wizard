@@ -155,7 +155,7 @@ testNonFungible('non-fungible - complex name', {
 
 testAPIEquivalence('non-fungible API default');
 
-testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK', baseUri: 'www.customtoken.com' });
+testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
 
 testAPIEquivalence('non-fungible API full', {
   name: 'CustomToken',

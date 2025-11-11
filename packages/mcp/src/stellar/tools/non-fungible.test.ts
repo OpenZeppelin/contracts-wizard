@@ -34,7 +34,6 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
-    baseUri: 'https://example.com/nft/',
   };
   await assertAPIEquivalence(t, params, nonFungible.print);
 });
@@ -43,7 +42,6 @@ test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',
-    baseUri: 'https://example.com/nft/',
     burnable: true,
     enumerable: true,
     consecutive: true,
