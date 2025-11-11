@@ -1,6 +1,6 @@
 import type { Contract, ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
-import { setAccessControl, requireAccessControl } from './set-access-control';
+import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 import { printContract } from './print';
 import type { ERC20Options } from './erc20';
@@ -13,7 +13,7 @@ import {
 
 export interface StablecoinOptions extends ERC20Options {
   restrictions?: false | 'allowlist' | 'blocklist';
-  custodian?: boolean;
+  freezable?: boolean;
 }
 
 export const defaults: Required<StablecoinOptions> = {
@@ -21,7 +21,7 @@ export const defaults: Required<StablecoinOptions> = {
   name: 'MyStablecoin',
   symbol: 'MST',
   restrictions: false,
-  custodian: false,
+  freezable: false,
 } as const;
 
 function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
@@ -30,7 +30,7 @@ function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {
     name: opts.name ?? defaults.name,
     symbol: opts.symbol ?? defaults.symbol,
     restrictions: opts.restrictions ?? defaults.restrictions,
-    custodian: opts.custodian ?? defaults.custodian,
+    freezable: opts.freezable ?? defaults.freezable,
   };
 }
 
@@ -39,7 +39,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.restrictions !== false || opts.custodian || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.restrictions !== false || opts.freezable || opts.pausable || opts.upgradeable === 'uups';
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
@@ -50,8 +50,8 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
 
   const c = buildERC20(allOpts);
 
-  if (allOpts.custodian) {
-    addCustodian(c, allOpts.access);
+  if (allOpts.freezable) {
+    addFreezable(c, allOpts.access);
   }
 
   if (allOpts.restrictions) {
@@ -87,63 +87,33 @@ function addRestrictions(c: ContractBuilder, access: Access, mode: 'allowlist' |
   c.addFunctionCode(`_resetUser(user);`, removeFn);
 }
 
-function addCustodian(c: ContractBuilder, access: Access) {
-  const ERC20Custodian = {
-    name: 'ERC20Custodian',
-    path: '@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol',
+function addFreezable(c: ContractBuilder, access: Access) {
+  const ERC20Freezable = {
+    name: 'ERC20Freezable',
+    path: '@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Freezable.sol',
   };
 
-  c.addParent(ERC20Custodian);
-  c.addOverride(ERC20Custodian, functions._update);
-  c.addOverride(ERC20Custodian, functions._isCustodian);
+  c.addParent(ERC20Freezable);
+  c.addOverride(ERC20Freezable, functions._update);
 
   if (access === false) {
     access = 'ownable';
   }
 
-  setAccessControl(c, access);
-
-  switch (access) {
-    case 'ownable': {
-      c.setFunctionBody([`return user == owner();`], functions._isCustodian);
-      break;
-    }
-    case 'roles': {
-      const roleOwner = 'custodian';
-      const roleId = 'CUSTODIAN_ROLE';
-      const addedConstant = c.addConstantOrImmutableOrErrorDefinition(
-        `bytes32 public constant ${roleId} = keccak256("${roleId}");`,
-      );
-      if (roleOwner && addedConstant) {
-        c.addConstructorArgument({ type: 'address', name: roleOwner });
-        c.addConstructorCode(`_grantRole(${roleId}, ${roleOwner});`);
-      }
-      c.setFunctionBody([`return hasRole(CUSTODIAN_ROLE, user);`], functions._isCustodian);
-      break;
-    }
-    case 'managed': {
-      c.addImportOnly({
-        name: 'AuthorityUtils',
-        path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
-      });
-      const logic = [
-        `(bool immediate,) = AuthorityUtils.canCallWithDelay(authority(), user, address(this), bytes4(_msgData()[0:4]));`,
-        `return immediate;`,
-      ];
-      c.setFunctionBody(logic, functions._isCustodian);
-      break;
-    }
-  }
+  const freezeFn = functions.freeze;
+  requireAccessControl(c, freezeFn, access, 'FREEZER', 'freezer');
+  c.setFunctionBody([`_setFrozen(user, amount);`], freezeFn);
 }
 
 const functions = {
   ...erc20functions,
   ...defineFunctions({
-    _isCustodian: {
-      kind: 'internal' as const,
-      args: [{ name: 'user', type: 'address' }],
-      returns: ['bool'],
-      mutability: 'view' as const,
+    freeze: {
+      kind: 'public' as const,
+      args: [
+        { name: 'user', type: 'address' },
+        { name: 'amount', type: 'uint256' },
+      ],
     },
 
     allowUser: {
