@@ -37,33 +37,53 @@ export const withTemporaryFolderDo =
     }
   };
 
+const doRunRustCompilationTest = async (
+  makeContract: MakeContract,
+  opts: GenericOptions,
+  testOptions: { snapshotResult: boolean },
+  test: ExecutionContext,
+  folderPath: string,
+) => {
+  test.timeout(3_000_000);
+
+  const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
+
+  const expectedZipFiles = [
+    `contracts/${scaffoldContractName}/src/contract.rs`,
+    `contracts/${scaffoldContractName}/src/test.rs`,
+    `contracts/${scaffoldContractName}/src/lib.rs`,
+    `contracts/${scaffoldContractName}/Cargo.toml`,
+    'Cargo.toml',
+    'README.md',
+  ];
+
+  const zip = await zipRustProject(makeContract(opts), opts);
+
+  assertLayout(test, zip, expandPathsFromFilesPaths(expectedZipFiles));
+  await extractPackage(zip, folderPath);
+  await runCargoTest(test, folderPath);
+
+  if (testOptions.snapshotResult) await snapshotZipContents(test, zip, expectedZipFiles);
+};
+
 export const runRustCompilationTest = withTemporaryFolderDo(
   async (
     makeContract: MakeContract,
     opts: GenericOptions,
-    testOptions: { snapshotResult: boolean },
+    testOptions: { snapshotResult: boolean; excludeExplicitTraitTest?: boolean },
     test: ExecutionContext,
     folderPath: string,
   ) => {
-    test.timeout(3_000_000);
+    await doRunRustCompilationTest(makeContract, opts, testOptions, test, folderPath);
 
-    const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
+    if (testOptions.excludeExplicitTraitTest || opts.explicitImplementations === true) return;
 
-    const expectedZipFiles = [
-      `contracts/${scaffoldContractName}/src/contract.rs`,
-      `contracts/${scaffoldContractName}/src/test.rs`,
-      `contracts/${scaffoldContractName}/src/lib.rs`,
-      `contracts/${scaffoldContractName}/Cargo.toml`,
-      'Cargo.toml',
-      'README.md',
-    ];
-
-    const zip = await zipRustProject(makeContract(opts), opts);
-
-    assertLayout(test, zip, expandPathsFromFilesPaths(expectedZipFiles));
-    await extractPackage(zip, folderPath);
-    await runCargoTest(test, folderPath);
-
-    if (testOptions.snapshotResult) await snapshotZipContents(test, zip, expectedZipFiles);
+    await doRunRustCompilationTest(
+      makeContract,
+      { ...opts, explicitImplementations: true },
+      testOptions,
+      test,
+      folderPath,
+    );
   },
 );
