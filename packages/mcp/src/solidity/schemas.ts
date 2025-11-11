@@ -108,7 +108,7 @@ export const stablecoinSchema = {
     .or(z.literal('blocklist'))
     .optional()
     .describe(solidityStablecoinDescriptions.restrictions),
-  custodian: z.boolean().optional().describe(solidityStablecoinDescriptions.custodian),
+  freezable: z.boolean().optional().describe(solidityStablecoinDescriptions.freezable),
 } as const satisfies z.ZodRawShape;
 
 export const rwaSchema = stablecoinSchema;
