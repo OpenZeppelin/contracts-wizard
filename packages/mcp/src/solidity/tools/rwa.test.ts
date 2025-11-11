@@ -54,7 +54,7 @@ test('all', async t => {
     crossChainBridging: 'custom',
     premintChainId: '10',
     restrictions: 'allowlist',
-    custodian: true,
+    freezable: true,
     namespacePrefix: 'myProject',
     info: {
       license: 'MIT',
