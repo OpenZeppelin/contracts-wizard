@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 import type { GenericOptions } from '../build-generic';
 import type { Contract } from '../contract';
 import { assertLayout, snapshotZipContents, expandPathsFromFilesPaths, extractPackage } from './zip-test';
-import { mkdtemp, rm } from 'fs/promises';
+import { mkdtemp, rm, readdir, mkdir } from 'fs/promises';
 import { contractOptionsToContractName } from '../zip-shared';
 import { zipRustProject } from '../zip-rust';
 
@@ -29,7 +29,6 @@ export const withTemporaryFolderDo =
   (...testFunctionArguments: Args) =>
   async (test: ExecutionContext) => {
     const temporaryFolder = await mkdtemp(path.join(tmpdir(), `compilation-test-${crypto.randomUUID()}`));
-
     try {
       await testFunction(...testFunctionArguments, test, temporaryFolder);
     } finally {
@@ -45,6 +44,8 @@ const doRunRustCompilationTest = async (
   folderPath: string,
 ) => {
   test.timeout(3_000_000);
+
+  await mkdir(folderPath, { recursive: true });
 
   const scaffoldContractName = contractOptionsToContractName(opts?.kind || 'contract');
 
@@ -74,16 +75,17 @@ export const runRustCompilationTest = withTemporaryFolderDo(
     test: ExecutionContext,
     folderPath: string,
   ) => {
-    await doRunRustCompilationTest(makeContract, opts, testOptions, test, folderPath);
+    await doRunRustCompilationTest(makeContract, opts, testOptions, test, `${folderPath}/default`);
 
-    if (testOptions.excludeExplicitTraitTest || opts.explicitImplementations === true) return;
+    const shouldBeExcludedOrHasAlreadyRun = testOptions.excludeExplicitTraitTest || opts.explicitImplementations;
+    if (shouldBeExcludedOrHasAlreadyRun) return;
 
     await doRunRustCompilationTest(
       makeContract,
       { ...opts, explicitImplementations: true },
       testOptions,
       test,
-      folderPath,
+      `${folderPath}/explicit`,
     );
   },
 );
