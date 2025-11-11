@@ -47,6 +47,13 @@ export interface WizardContractAPI<Options extends CommonOptions> {
 
   /**
    * Returns remappings that map unversioned import prefixes to versioned import prefixes.
+   * @example
+   * ```ts
+   * [
+   *   "@openzeppelin/contracts/=@openzeppelin/contracts@5.5.0/",
+   *   "@openzeppelin/contracts-upgradeable/=@openzeppelin/contracts-upgradeable@5.5.0/"
+   * ]
+   * ```
    */
   getVersionedRemappings: (opts?: Options) => string[];
 
