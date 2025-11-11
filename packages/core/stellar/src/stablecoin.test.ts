@@ -123,6 +123,10 @@ testStablecoin('stablecoin full - complex name', {
   pausable: true,
 });
 
+testStablecoin('stablecoin explicit trait implementations', {
+  explicitImplementations: true,
+});
+
 testAPIEquivalence('stablecoin API default');
 
 testAPIEquivalence('stablecoin API basic', { name: 'CustomToken', symbol: 'CTK' });

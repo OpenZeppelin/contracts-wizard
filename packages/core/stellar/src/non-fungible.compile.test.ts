@@ -166,6 +166,27 @@ test.serial(
 );
 
 test.serial(
+  'compilation nonfungible explicit trait implementations',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      burnable: false,
+      enumerable: false,
+      consecutive: false,
+      pausable: false,
+      upgradeable: false,
+      mintable: false,
+      sequential: false,
+      explicitImplementations: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
   'compilation nonfungible enumerable',
   runRustCompilationTest(
     buildNonFungible,

@@ -48,13 +48,18 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   const c = buildFungible(allOpts);
 
   if (allOpts.limitations) {
-    addLimitations(c, allOpts.access, allOpts.limitations);
+    addLimitations(c, allOpts.access, allOpts.limitations, allOpts.explicitImplementations);
   }
 
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
+function addLimitations(
+  c: ContractBuilder,
+  access: Access,
+  mode: 'allowlist' | 'blocklist',
+  explicitImplementations: boolean,
+) {
   const type = mode === 'allowlist';
 
   const limitationsTrait = {
@@ -85,10 +90,10 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
   };
 
   c.addTraitFunction(limitationsTrait, addFn);
-  requireAccessControl(c, limitationsTrait, addFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, addFn, access, accessProps, explicitImplementations);
 
   c.addTraitFunction(limitationsTrait, removeFn);
-  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps, explicitImplementations);
 }
 
 const functions = {

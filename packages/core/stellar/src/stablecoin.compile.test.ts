@@ -159,6 +159,20 @@ test.serial(
 );
 
 test.serial(
+  'compilation stablecoin explicit trait implementations',
+  runRustCompilationTest(
+    buildStablecoin,
+    {
+      kind: 'Stablecoin',
+      name: 'MyStablecoin',
+      symbol: 'MST',
+      explicitImplementations: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
   'compilation stablecoin full - ownable, allowlist',
   runRustCompilationTest(
     buildStablecoin,

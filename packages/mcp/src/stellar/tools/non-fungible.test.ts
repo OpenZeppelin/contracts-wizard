@@ -49,6 +49,7 @@ test('all', async t => {
     upgradeable: true,
     mintable: true,
     sequential: true,
+    explicitImplementations: true,
     access: 'ownable',
     info: {
       license: 'MIT',

@@ -4,7 +4,7 @@ import type { Access } from './set-access-control';
 import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
 
-export function addPausable(c: ContractBuilder, access: Access) {
+export function addPausable(c: ContractBuilder, access: Access, explicitImplementations: boolean) {
   c.addUseClause('stellar_contract_utils::pausable', 'self', { alias: 'pausable' });
   c.addUseClause('stellar_contract_utils::pausable', 'Pausable');
   c.addUseClause('stellar_macros', 'default_impl');
@@ -22,17 +22,31 @@ export function addPausable(c: ContractBuilder, access: Access) {
   c.addTraitFunction(pausableTrait, functions.paused);
   c.addTraitFunction(pausableTrait, pauseFn);
   c.addTraitFunction(pausableTrait, unpauseFn);
-  requireAccessControl(c, pausableTrait, pauseFn, access, {
-    useMacro: true,
-    role: 'pauser',
-    caller: 'caller',
-  });
+  requireAccessControl(
+    c,
+    pausableTrait,
+    pauseFn,
+    access,
+    {
+      useMacro: true,
+      role: 'pauser',
+      caller: 'caller',
+    },
+    explicitImplementations,
+  );
 
-  requireAccessControl(c, pausableTrait, unpauseFn, access, {
-    useMacro: true,
-    role: 'pauser',
-    caller: 'caller',
-  });
+  requireAccessControl(
+    c,
+    pausableTrait,
+    unpauseFn,
+    access,
+    {
+      useMacro: true,
+      role: 'pauser',
+      caller: 'caller',
+    },
+    explicitImplementations,
+  );
 }
 
 const functions = defineFunctions({

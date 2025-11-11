@@ -153,6 +153,10 @@ testNonFungible('non-fungible - complex name', {
   pausable: true,
 });
 
+testNonFungible('non-fungible explicit trait implementations', {
+  explicitImplementations: true,
+});
+
 testAPIEquivalence('non-fungible API default');
 
 testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK' });

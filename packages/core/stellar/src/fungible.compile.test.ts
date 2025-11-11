@@ -202,6 +202,20 @@ test.serial(
 );
 
 test.serial(
+  'compilation fungible explicit trait implementations',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      explicitImplementations: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
   'compilation fungible upgradable mintable',
   runRustCompilationTest(
     buildFungible,

@@ -22,6 +22,7 @@ export const defaults: Required<FungibleOptions> = {
   mintable: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
+  explicitImplementations: commonDefaults.explicitImplementations,
 } as const;
 
 export function printFungible(opts: FungibleOptions = defaults): string {
@@ -59,58 +60,70 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable, allOpts.explicitImplementations);
 
   if (allOpts.premint) {
     addPremint(c, allOpts.premint);
   }
 
   if (allOpts.pausable) {
-    addPausable(c, allOpts.access);
+    addPausable(c, allOpts.access, allOpts.explicitImplementations);
   }
 
   if (allOpts.upgradeable) {
-    addUpgradeable(c, allOpts.access);
+    addUpgradeable(c, allOpts.access, allOpts.explicitImplementations);
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable);
+    addBurnable(c, allOpts.pausable, allOpts.explicitImplementations);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access, allOpts.pausable);
+    addMintable(c, allOpts.access, allOpts.pausable, allOpts.explicitImplementations);
   }
 
-  setAccessControl(c, allOpts.access);
+  setAccessControl(c, allOpts.access, allOpts.explicitImplementations);
   setInfo(c, allOpts.info);
 
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
+function addBase(
+  c: ContractBuilder,
+  name: string,
+  symbol: string,
+  pausable: boolean,
+  explicitImplementations: boolean,
+) {
   // Set metadata
   c.addConstructorCode(`Base::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
   c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
-  c.addUseClause('stellar_macros', 'default_impl');
+  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
   c.addUseClause('soroban_sdk', 'Env');
+  if (explicitImplementations || pausable) {
+    c.addUseClause('soroban_sdk', 'Address');
+  }
 
   const fungibleTokenTrait = {
     traitName: 'FungibleToken',
     structName: c.name,
-    tags: ['default_impl', 'contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
     assocType: 'type ContractType = Base;',
   };
 
   c.addTraitImplBlock(fungibleTokenTrait);
 
+  if (explicitImplementations) {
+    for (const fn of fungibleTokenTraitFunctions) c.addTraitFunction(fungibleTokenTrait, fn);
+  }
+
   if (pausable) {
-    c.addUseClause('soroban_sdk', 'Address');
     c.addUseClause('stellar_macros', 'when_not_paused');
 
     c.addTraitFunction(fungibleTokenTrait, functions.transfer);
@@ -121,7 +134,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boo
   }
 }
 
-function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
+function addMintable(c: ContractBuilder, access: Access, pausable: boolean, explicitImplementations: boolean) {
   c.addUseClause('soroban_sdk', 'Address');
   switch (access) {
     case false:
@@ -129,7 +142,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
     case 'ownable': {
       c.addFreeFunction(functions.mint);
 
-      requireAccessControl(c, undefined, functions.mint, access);
+      requireAccessControl(c, undefined, functions.mint, access, undefined, explicitImplementations);
 
       if (pausable) {
         c.addFunctionTag(functions.mint, 'when_not_paused');
@@ -139,11 +152,18 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
     case 'roles': {
       c.addFreeFunction(functions.mint_with_caller);
 
-      requireAccessControl(c, undefined, functions.mint_with_caller, access, {
-        useMacro: true,
-        caller: 'caller',
-        role: 'minter',
-      });
+      requireAccessControl(
+        c,
+        undefined,
+        functions.mint_with_caller,
+        access,
+        {
+          useMacro: true,
+          caller: 'caller',
+          role: 'minter',
+        },
+        explicitImplementations,
+      );
 
       if (pausable) {
         c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
@@ -157,7 +177,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean) {
   }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean) {
+function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::fungible', 'burnable::FungibleBurnable');
   c.addUseClause('soroban_sdk', 'Address');
 
@@ -176,6 +196,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean) {
 
     c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
     c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
+  } else if (explicitImplementations) {
+    for (const fn of fungibleBurnableFunctions) c.addTraitFunction(fungibleBurnableTrait, fn);
   } else {
     // prepend '#[default_impl]'
     fungibleBurnableTrait.tags.unshift('default_impl');
@@ -335,3 +357,17 @@ export const functions = defineFunctions({
     code: ['Base::mint(e, &account, amount);'],
   },
 });
+
+const fungibleTokenTraitFunctions = [
+  functions.total_supply,
+  functions.balance,
+  functions.allowance,
+  functions.transfer,
+  functions.transfer_from,
+  functions.approve,
+  functions.decimals,
+  functions.name,
+  functions.symbol,
+];
+
+const fungibleBurnableFunctions = [functions.burn, functions.burn_from];

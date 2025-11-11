@@ -6,6 +6,7 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import TraitImplementationSection from './TraitImplementationSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Fungible']> = {
@@ -43,6 +44,8 @@
     <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source} />
   </label>
 </section>
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <section class="controls-section">
   <h1>Features</h1>

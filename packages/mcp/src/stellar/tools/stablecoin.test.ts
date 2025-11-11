@@ -49,6 +49,7 @@ test('all', async t => {
     upgradeable: true,
     access: 'ownable',
     limitations: 'allowlist',
+    explicitImplementations: true,
     info: {
       license: 'MIT',
       securityContact: 'security@contact.com',
