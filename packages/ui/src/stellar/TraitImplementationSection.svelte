@@ -12,7 +12,11 @@
 
 <section class="controls-section">
   <h1>Trait Implementations</h1>
-  <p>Show explicit traits to override specific functions with custom behavior</p>
+  <p>
+    Show explicit traits to override specific functions with custom behavior instead of relying on #[default_impl] macro
+    that auto-generates stub bodies for every function in the trait that you do not explicitly implement inside that
+    impl block
+  </p>
   <div class="checkbox-group">
     <label class:checked={implementationMode === 'default'}>
       <input type="radio" bind:group={implementationMode} value="default" />
