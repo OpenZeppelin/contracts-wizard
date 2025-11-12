@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.3.0 (2025-11-11)
+
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `custodian` option to `freezable`. Replace ERC20Custodian with ERC20Freezable. ([#719](https://github.com/OpenZeppelin/contracts-wizard/pull/719))
+- Add macros descriptions for Cairo ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
+
 ## 0.2.0 (2025-11-03)
 
 - **Breaking changes**: Solidity Stablecoin and RWA: Change `limitations` option to `restrictions`. Replace ERC20Allowlist and ERC20Blocklist with ERC20Restricted. ([#715](https://github.com/OpenZeppelin/contracts-wizard/pull/715))
