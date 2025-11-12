@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 import type { GenericOptions } from '../build-generic';
 import type { Contract } from '../contract';
 import { assertLayout, snapshotZipContents, expandPathsFromFilesPaths, extractPackage } from './zip-test';
-import { mkdtemp, rm, readdir, mkdir } from 'fs/promises';
+import { mkdtemp, rm, mkdir } from 'fs/promises';
 import { contractOptionsToContractName } from '../zip-shared';
 import { zipRustProject } from '../zip-rust';
 
@@ -80,12 +80,16 @@ export const runRustCompilationTest = withTemporaryFolderDo(
     const shouldBeExcludedOrHasAlreadyRun = testOptions.excludeExplicitTraitTest || opts.explicitImplementations;
     if (shouldBeExcludedOrHasAlreadyRun) return;
 
-    await doRunRustCompilationTest(
-      makeContract,
-      { ...opts, explicitImplementations: true },
-      testOptions,
-      test,
-      `${folderPath}/explicit`,
-    );
+    try {
+      await doRunRustCompilationTest(
+        makeContract,
+        { ...opts, explicitImplementations: true },
+        testOptions,
+        test,
+        `${folderPath}/explicit`,
+      );
+    } catch (error) {
+      throw new Error(`EXPLICIT IMPLEMENTATION ERROR: ${error}`);
+    }
   },
 );
