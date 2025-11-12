@@ -1,6 +1,20 @@
 # Changelog
 
 
+## 0.4.2 (2025-11-12)
+
+- Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
+- Updated dependencies [[`be91f8f`](https://github.com/OpenZeppelin/contracts-wizard/commit/be91f8fee6f66ae8a045394fded8d46ef1383b9f)]:
+  - @openzeppelin/wizard@0.10.2
+  - @openzeppelin/wizard-common@0.3.1
+
+## 0.4.1 (2025-11-11)
+
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `custodian` option to `freezable`. Replace ERC20Custodian with ERC20Freezable. ([#719](https://github.com/OpenZeppelin/contracts-wizard/pull/719))
+- Updated dependencies [[`6b8f8f5`](https://github.com/OpenZeppelin/contracts-wizard/commit/6b8f8f52b973946ea6ce441dcbc1cbf3c3a848f2), [`c14be02`](https://github.com/OpenZeppelin/contracts-wizard/commit/c14be0291fca353946fc7583046de8669c209cc4), [`bec86b5`](https://github.com/OpenZeppelin/contracts-wizard/commit/bec86b542daf8d4ebacaa512b5a66f970500f826), [`ce8fbba`](https://github.com/OpenZeppelin/contracts-wizard/commit/ce8fbba5f006fcbc822e9e42b860c9fa7a9827df), [`5c1fa0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/5c1fa0f29c8a86952a9be111235e8cd615a889ca)]:
+  - @openzeppelin/wizard@0.10.1
+  - @openzeppelin/wizard-common@0.3.0
+
 ## 0.4.0 (2025-11-03)
 
 - Update `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` dependencies to 5.5.0 ([#681](https://github.com/OpenZeppelin/contracts-wizard/pull/681))
