@@ -1,6 +1,6 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
-import { type Access, requireAccessControl, setAccessControl } from './set-access-control';
+import { type Access, DEFAULT_ACCESS_CONTROL, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
 import { defineFunctions } from './utils/define-functions';
@@ -12,6 +12,7 @@ import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray } from './utils/convert-strings';
+import { pickKeys } from '@openzeppelin/wizard-common/src/utils/object';
 
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
@@ -143,16 +144,13 @@ function addBase(
   // Set token functions
   c.addUseClause('stellar_tokens::non_fungible', 'Base');
   c.addUseClause('stellar_tokens::non_fungible', 'NonFungibleToken');
-  if (!explicitImplementations) {
-    c.addUseClause('stellar_macros', 'default_impl');
-  }
+  if (explicitImplementations) c.addUseClause('stellar_tokens::non_fungible', 'ContractOverrides');
+  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
   c.addUseClause('soroban_sdk', 'Env');
-  if (explicitImplementations || pausable) {
-    c.addUseClause('soroban_sdk', 'Address');
-  }
+  if (explicitImplementations || pausable) c.addUseClause('soroban_sdk', 'Address');
 
   const nonFungibleTokenTrait = {
     traitName: 'NonFungibleToken',
@@ -163,11 +161,7 @@ function addBase(
 
   c.addTraitImplBlock(nonFungibleTokenTrait);
 
-  if (explicitImplementations) {
-    for (const fn of nonFungibleTokenTraitFunctions) {
-      c.addTraitFunction(nonFungibleTokenTrait, fn);
-    }
-  }
+  if (explicitImplementations) c.addTraitForEachFunctions(nonFungibleTokenTrait, nonFungibleTokenTraitFunctions);
 
   if (pausable) {
     c.addUseClause('stellar_macros', 'when_not_paused');
@@ -198,11 +192,9 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
 
     c.addTraitFunction(nonFungibleBurnableTrait, burnableFunctions.burn_from);
     c.addFunctionTag(burnableFunctions.burn_from, 'when_not_paused', nonFungibleBurnableTrait);
-  } else if (explicitImplementations) {
-    for (const fn of nonFungibleBurnableFunctions) {
-      c.addTraitFunction(nonFungibleBurnableTrait, fn);
-    }
-  } else {
+  } else if (explicitImplementations)
+    c.addTraitForEachFunctions(nonFungibleBurnableTrait, nonFungibleBurnableFunctions);
+  else {
     // prepend '#[default_impl]'
     nonFungibleBurnableTrait.tags.unshift('default_impl');
     c.addTraitImplBlock(nonFungibleBurnableTrait);
@@ -211,12 +203,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
 
 function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
-  if (!explicitImplementations) {
-    c.addUseClause('stellar_macros', 'default_impl');
-  }
-  if (explicitImplementations) {
-    c.addUseClause('soroban_sdk', 'Address');
-  }
+  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
+  if (explicitImplementations) c.addUseClause('soroban_sdk', 'Address');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
@@ -224,11 +212,9 @@ function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
     tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
     section: 'Extensions',
   };
-  if (explicitImplementations) {
-    for (const fn of nonFungibleEnumerableTraitFunctions) {
-      c.addTraitFunction(nonFungibleEnumerableTrait, fn);
-    }
-  } else {
+  if (explicitImplementations)
+    c.addTraitForEachFunctions(nonFungibleEnumerableTrait, nonFungibleEnumerableTraitFunctions);
+  else {
     c.addTraitImplBlock(nonFungibleEnumerableTrait);
   }
 
@@ -239,6 +225,7 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
   c.addUseClause('stellar_tokens::non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
   c.addUseClause('soroban_sdk', 'Address');
 
+  const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
   const nonFungibleConsecutiveTrait = {
     traitName: 'NonFungibleConsecutive',
     structName: c.name,
@@ -250,7 +237,8 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
 
   c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;');
 
-  const mintFn = access === 'ownable' ? consecutiveFunctions.batch_mint : consecutiveFunctions.batch_mint_with_caller;
+  const mintFn =
+    effectiveAccess === 'ownable' ? consecutiveFunctions.batch_mint : consecutiveFunctions.batch_mint_with_caller;
   c.addFreeFunction(mintFn);
   if (pausable) {
     c.addFunctionTag(mintFn, 'when_not_paused');
@@ -260,7 +248,7 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
     c,
     undefined,
     mintFn,
-    access,
+    effectiveAccess,
     {
       useMacro: true,
       role: 'minter',
@@ -280,29 +268,33 @@ function addMintable(
 ) {
   c.addUseClause('soroban_sdk', 'Address');
   const accessProps = { useMacro: true, role: 'minter', caller: 'caller' };
+  const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
 
   let mintFn;
 
   if (enumerable) {
     if (sequential) {
       mintFn =
-        access === 'ownable' ? enumerableFunctions.sequential_mint : enumerableFunctions.sequential_mint_with_caller;
+        effectiveAccess === 'ownable'
+          ? enumerableFunctions.sequential_mint
+          : enumerableFunctions.sequential_mint_with_caller;
     } else {
       mintFn =
-        access === 'ownable'
+        effectiveAccess === 'ownable'
           ? enumerableFunctions.non_sequential_mint
           : enumerableFunctions.non_sequential_mint_with_caller;
     }
   } else {
     if (sequential) {
-      mintFn = access === 'ownable' ? baseFunctions.sequential_mint : baseFunctions.sequential_mint_with_caller;
+      mintFn =
+        effectiveAccess === 'ownable' ? baseFunctions.sequential_mint : baseFunctions.sequential_mint_with_caller;
     } else {
-      mintFn = access === 'ownable' ? baseFunctions.mint : baseFunctions.mint_with_caller;
+      mintFn = effectiveAccess === 'ownable' ? baseFunctions.mint : baseFunctions.mint_with_caller;
     }
   }
 
   c.addFreeFunction(mintFn);
-  requireAccessControl(c, undefined, mintFn, access, accessProps, explicitImplementations);
+  requireAccessControl(c, undefined, mintFn, effectiveAccess, accessProps, explicitImplementations);
 
   if (pausable) {
     c.addFunctionTag(mintFn, 'when_not_paused');
@@ -412,19 +404,19 @@ const baseFunctions = defineFunctions({
   },
 });
 
-const nonFungibleTokenTraitFunctions = [
-  baseFunctions.balance,
-  baseFunctions.owner_of,
-  baseFunctions.transfer,
-  baseFunctions.transfer_from,
-  baseFunctions.approve,
-  baseFunctions.approve_for_all,
-  baseFunctions.get_approved,
-  baseFunctions.is_approved_for_all,
-  baseFunctions.name,
-  baseFunctions.symbol,
-  baseFunctions.token_uri,
-];
+const nonFungibleTokenTraitFunctions = pickKeys(baseFunctions, [
+  'balance',
+  'owner_of',
+  'transfer',
+  'transfer_from',
+  'approve',
+  'approve_for_all',
+  'get_approved',
+  'is_approved_for_all',
+  'name',
+  'symbol',
+  'token_uri',
+]);
 
 const burnableFunctions = defineFunctions({
   burn: {
@@ -442,13 +434,13 @@ const burnableFunctions = defineFunctions({
   },
 });
 
-const nonFungibleBurnableFunctions = [burnableFunctions.burn, burnableFunctions.burn_from];
+const nonFungibleBurnableFunctions = pickKeys(burnableFunctions, ['burn', 'burn_from']);
 
 const enumerableFunctions = defineFunctions({
   total_supply: {
     args: [getSelfArg()],
     returns: 'u32',
-    code: ['non_fungible::enumerable::Enumerable::total_supply(e)'],
+    code: ['Enumerable::total_supply(e)'],
   },
   get_owner_token_id: {
     args: [getSelfArg(), { name: 'owner', type: 'Address' }, { name: 'index', type: 'u32' }],
@@ -487,18 +479,18 @@ const enumerableFunctions = defineFunctions({
   },
 });
 
-const nonFungibleEnumerableTraitFunctions = [
-  enumerableFunctions.total_supply,
-  enumerableFunctions.get_owner_token_id,
-  enumerableFunctions.get_token_id,
-];
+const nonFungibleEnumerableTraitFunctions = pickKeys(enumerableFunctions, [
+  'total_supply',
+  'get_owner_token_id',
+  'get_token_id',
+]);
 
 const consecutiveFunctions = defineFunctions({
   batch_mint: {
     name: 'batch_mint',
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
-    code: ['Consecutive::batch_mint(e, &to, amount);'],
+    code: ['Consecutive::batch_mint(e, &to, amount)'],
   },
   batch_mint_with_caller: {
     name: 'batch_mint',
@@ -509,6 +501,6 @@ const consecutiveFunctions = defineFunctions({
       { name: 'caller', type: 'Address' },
     ],
     returns: 'u32',
-    code: ['Consecutive::batch_mint(e, &to, amount);'],
+    code: ['Consecutive::batch_mint(e, &to, amount)'],
   },
 });

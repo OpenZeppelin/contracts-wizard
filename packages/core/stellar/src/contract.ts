@@ -245,6 +245,11 @@ export class ContractBuilder implements Contract {
     existingFn.tags = [...(existingFn.tags ?? []), tag];
   }
 
+  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: BaseTraitImplBlock): void {
+    const existingFn = this.getOrCreateFunction(fn, baseTrait);
+    existingFn.code = [...code];
+  }
+
   addConstructorArgument(arg: Argument): void {
     for (const existingArg of this.constructorArgs) {
       if (existingArg.name == arg.name) {

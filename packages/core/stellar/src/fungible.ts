@@ -11,6 +11,7 @@ import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
+import { pickKeys } from '@openzeppelin/wizard-common/src/utils/object';
 
 export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
@@ -119,9 +120,7 @@ function addBase(
 
   c.addTraitImplBlock(fungibleTokenTrait);
 
-  if (explicitImplementations) {
-    for (const fn of fungibleTokenTraitFunctions) c.addTraitFunction(fungibleTokenTrait, fn);
-  }
+  if (explicitImplementations) c.addTraitForEachFunctions(fungibleTokenTrait, fungibleTokenTraitFunctions);
 
   if (pausable) {
     c.addUseClause('stellar_macros', 'when_not_paused');
@@ -196,9 +195,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
 
     c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
     c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
-  } else if (explicitImplementations) {
-    for (const fn of fungibleBurnableFunctions) c.addTraitFunction(fungibleBurnableTrait, fn);
-  } else {
+  } else if (explicitImplementations) c.addTraitForEachFunctions(fungibleBurnableTrait, fungibleBurnableFunctions);
+  else {
     // prepend '#[default_impl]'
     fungibleBurnableTrait.tags.unshift('default_impl');
     c.addTraitImplBlock(fungibleBurnableTrait);
@@ -358,16 +356,16 @@ export const functions = defineFunctions({
   },
 });
 
-const fungibleTokenTraitFunctions = [
-  functions.total_supply,
-  functions.balance,
-  functions.allowance,
-  functions.transfer,
-  functions.transfer_from,
-  functions.approve,
-  functions.decimals,
-  functions.name,
-  functions.symbol,
-];
+const fungibleTokenTraitFunctions = pickKeys(functions, [
+  'total_supply',
+  'balance',
+  'allowance',
+  'transfer',
+  'transfer_from',
+  'approve',
+  'decimals',
+  'name',
+  'symbol',
+]);
 
-const fungibleBurnableFunctions = [functions.burn, functions.burn_from];
+const fungibleBurnableFunctions = pickKeys(functions, ['burn', 'burn_from']);

@@ -78,6 +78,16 @@ testStablecoin('stablecoin blocklist', {
   limitations: 'blocklist',
 });
 
+testStablecoin('stablecoin allowlist explicit trait implementations', {
+  limitations: 'allowlist',
+  explicitImplementations: true,
+});
+
+testStablecoin('stablecoin blocklist explicit trait implementations', {
+  limitations: 'blocklist',
+  explicitImplementations: true,
+});
+
 testStablecoin('stablecoin full - ownable, allowlist', {
   premint: '2000',
   access: 'ownable',
