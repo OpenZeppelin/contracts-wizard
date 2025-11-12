@@ -38,7 +38,32 @@ test('basic', async t => {
   await assertAPIEquivalence(t, params, nonFungible.print);
 });
 
-test('all', async t => {
+test('all default', async t => {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    burnable: true,
+    enumerable: true,
+    consecutive: true,
+    pausable: true,
+    upgradeable: true,
+    mintable: true,
+    sequential: true,
+    access: 'ownable',
+    explicitImplementations: false,
+    info: {
+      license: 'MIT',
+      securityContact: 'security@contact.com',
+    },
+  };
+  assertHasAllSupportedFields(t, params);
+
+  // Records an error in the snapshot, because some fields are incompatible with each other.
+  // This is ok, because we just need to check that all fields can be passed in.
+  await assertAPIEquivalence(t, params, nonFungible.print, true);
+});
+
+test('all explicit', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',

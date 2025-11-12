@@ -13,7 +13,7 @@ export const stellarCommonDescriptions = {
   access:
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.',
   explicitImplementations:
-    'If ever the contract should use the default implementation using #[default_impl] macro or explicitly defining all traits of the contract',
+    'Whether the contract should use explicit trait implementations instead of using the #[default_impl] macro to auto-generate trait method bodies.',
 };
 
 export const stellarFungibleDescriptions = {
