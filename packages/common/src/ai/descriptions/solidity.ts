@@ -69,10 +69,11 @@ export const solidityAccountDescriptions = {
   signer: `Defines the signature verification algorithm used by the account to verify user operations. Options:
         - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
         - EIP7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
+        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
+        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights
         - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
         - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
-        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
-        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`,
+        - WebAuthn: Web Authentication (WebAuthn) assertion validation for integration with Passkeys and HSMs on top of P256`,
   batchedExecution:
     'Whether to implement a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
   ERC7579Modules:
