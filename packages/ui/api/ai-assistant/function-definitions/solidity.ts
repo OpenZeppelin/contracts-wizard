@@ -158,9 +158,9 @@ export const solidityStablecoinAIFunctionDefinition = {
     type: 'object',
     properties: {
       ...solidityERC20AIFunctionDefinition.parameters.properties,
-      custodian: {
+      freezable: {
         type: 'boolean',
-        description: solidityStablecoinDescriptions.custodian,
+        description: solidityStablecoinDescriptions.freezable,
       },
       restrictions: {
         anyOf: [
