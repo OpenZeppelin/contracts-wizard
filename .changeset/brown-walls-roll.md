@@ -1,7 +1,7 @@
 ---
-'@openzeppelin/wizard-stellar': minor
-'@openzeppelin/wizard-common': minor
-'@openzeppelin/contracts-mcp': minor
+'@openzeppelin/wizard-stellar': patch
+'@openzeppelin/wizard-common': patch
+'@openzeppelin/contracts-mcp': patch
 ---
 
 Add tokenUri setting for stellar non fungible model
