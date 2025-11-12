@@ -216,6 +216,13 @@
         hardware security modules that use RSA keys.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.signer === 'WebAuthn'}>
+      <input type="radio" bind:group={opts.signer} value="WebAuthn" />
+      WebAuthn
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#WebAuthn">
+        Web Authentication (WebAuthn) assertion validation for integration with Passkeys and HSMs on top of P256.
+      </HelpTooltip>
+    </label>
   </div>
 </ExpandableToggleRadio>
 
