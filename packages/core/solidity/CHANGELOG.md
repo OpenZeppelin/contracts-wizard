@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.2 (2025-11-12)
+
+- Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
+
 ## 0.10.1 (2025-11-11)
 
 - Fixed bug with incorrect names in generated comment for Multisig account. ([#720](https://github.com/OpenZeppelin/contracts-wizard/pull/720))
