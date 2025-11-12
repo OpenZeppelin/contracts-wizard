@@ -37,12 +37,25 @@ import {
   defaults as customDefaults,
   isAccessControlRequired as customIsAccessControlRequired,
 } from './custom';
+import { getVersionedRemappings } from './get-versioned-remappings';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
    * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
    */
   print: (opts?: Options) => string;
+
+  /**
+   * Returns remappings that map unversioned import prefixes to versioned import prefixes.
+   * @example
+   * ```ts
+   * [
+   *   "@openzeppelin/contracts/=@openzeppelin/contracts@5.5.0/",
+   *   "@openzeppelin/contracts-upgradeable/=@openzeppelin/contracts-upgradeable@5.5.0/"
+   * ]
+   * ```
+   */
+  getVersionedRemappings: (opts?: Options) => string[];
 
   /**
    * The default options that are used for `print`.
@@ -69,40 +82,48 @@ export type Custom = WizardContractAPI<CustomOptions> & AccessControlAPI<CustomO
 
 export const erc20: ERC20 = {
   print: printERC20,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: erc20defaults,
   isAccessControlRequired: erc20IsAccessControlRequired,
 };
 export const erc721: ERC721 = {
   print: printERC721,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: erc721defaults,
   isAccessControlRequired: erc721IsAccessControlRequired,
 };
 export const erc1155: ERC1155 = {
   print: printERC1155,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: erc1155defaults,
   isAccessControlRequired: erc1155IsAccessControlRequired,
 };
 export const stablecoin: Stablecoin = {
   print: printStablecoin,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
 };
 export const account: Account = {
   print: printAccount,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: accountDefaults,
 };
 export const realWorldAsset: RealWorldAsset = {
   print: printStablecoin,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
 };
 export const governor: Governor = {
   print: printGovernor,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: governorDefaults,
   isAccessControlRequired: governorIsAccessControlRequired,
 };
 export const custom: Custom = {
   print: printCustom,
+  getVersionedRemappings: getVersionedRemappings,
   defaults: customDefaults,
   isAccessControlRequired: customIsAccessControlRequired,
 };

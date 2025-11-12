@@ -157,9 +157,9 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.custodian}>
-      <input type="checkbox" bind:checked={opts.custodian} />
-      Custodian*
+    <label class:checked={opts.freezable}>
+      <input type="checkbox" bind:checked={opts.freezable} />
+      Freezable*
       <HelpTooltip>
         Authorized accounts can freeze and unfreeze accounts for regulatory or security purposes.
       </HelpTooltip>

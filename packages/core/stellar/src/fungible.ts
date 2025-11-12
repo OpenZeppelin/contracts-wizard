@@ -207,7 +207,7 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 /**
- * Calculates the initial supply that would be used in an Fungible contract based on a given premint amount and number of decimals.
+ * Calculates the initial supply that would be used in a Fungible contract based on a given premint amount and number of decimals.
  *
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
