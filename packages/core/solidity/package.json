@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
