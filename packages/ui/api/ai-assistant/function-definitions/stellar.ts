@@ -24,6 +24,7 @@ export const stellarFungibleAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       premint: {
         type: 'string',
@@ -49,6 +50,7 @@ export const stellarStablecoinAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       limitations: {
         anyOf: [
@@ -86,6 +88,7 @@ export const stellarNonFungibleAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       enumerable: {
         type: 'boolean',
