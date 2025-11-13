@@ -17,6 +17,11 @@ export const stellarCommonFunctionDescription = {
     description: stellarCommonDescriptions.upgradeable,
   },
 
+  explicitImplementations: {
+    type: 'boolean',
+    description: stellarCommonDescriptions.explicitImplementations,
+  },
+
   info: {
     type: 'object',
     description: infoDescriptions.info,

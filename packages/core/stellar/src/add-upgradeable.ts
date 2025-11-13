@@ -4,7 +4,7 @@ import { requireAccessControl } from './set-access-control';
 import type { BaseFunction, ContractBuilder } from './contract';
 import { defineFunctions } from './utils/define-functions';
 
-export function addUpgradeable(c: ContractBuilder, access: Access) {
+export function addUpgradeable(c: ContractBuilder, access: Access, explicitImplementations: boolean) {
   const functions = defineFunctions({
     _require_auth: {
       args: [getSelfArg(), { name: 'operator', type: '&Address' }],
@@ -34,9 +34,16 @@ export function addUpgradeable(c: ContractBuilder, access: Access) {
 
   c.addTraitFunction(upgradeableTrait, upgradeFn);
 
-  requireAccessControl(c, upgradeableTrait, upgradeFn, access, {
-    useMacro: false,
-    role: 'upgrader',
-    caller: 'operator',
-  });
+  requireAccessControl(
+    c,
+    upgradeableTrait,
+    upgradeFn,
+    access,
+    {
+      useMacro: false,
+      role: 'upgrader',
+      caller: 'operator',
+    },
+    explicitImplementations,
+  );
 }
