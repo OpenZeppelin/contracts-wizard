@@ -89,7 +89,9 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
 
 function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean) {
   // Set metadata
-  c.addConstructorCode(`Base::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+  c.addConstructorArgument({ name: 'name', type: 'String', value: name });
+  c.addConstructorArgument({ name: 'symbol', type: 'String', value: symbol });
+  c.addConstructorCode('Base::set_metadata(e, 18, name, symbol);');
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
@@ -198,8 +200,9 @@ function addPremint(c: ContractBuilder, amount: string) {
 
     c.addUseClause('soroban_sdk', 'Address');
 
-    c.addConstructorArgument({ name: 'recipient', type: 'Address' });
-    c.addConstructorCode(`Base::mint(e, &recipient, ${premintAbsolute});`);
+    c.addConstructorArgument({ name: 'recipient', type: 'Address', value: '<recipient_address>' });
+    c.addConstructorArgument({ name: 'premint', type: 'i128', value: String(premintAbsolute) });
+    c.addConstructorCode(`Base::mint(e, &recipient, premint);`);
   }
 }
 
