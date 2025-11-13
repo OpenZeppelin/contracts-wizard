@@ -21,7 +21,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
   return {
     name: ['MyToken'],
     symbol: ['MTK'],
-    baseUri: ['https://www.mytoken.com/'],
+    baseUri: ['https://example.com/'],
     burnable: booleans,
     enumerable: booleans,
     votes: booleans,

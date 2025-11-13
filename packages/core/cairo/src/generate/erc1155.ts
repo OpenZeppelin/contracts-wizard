@@ -16,7 +16,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
   const royaltyInfo = resolveRoyaltyOptionsSubset(opts.royaltyInfo);
   return {
     name: ['MyToken'],
-    baseUri: ['https://www.mytoken.com/'],
+    baseUri: ['https://example.com/'],
     burnable: booleans,
     pausable: booleans,
     mintable: booleans,

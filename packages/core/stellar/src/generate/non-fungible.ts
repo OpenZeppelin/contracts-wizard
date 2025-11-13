@@ -8,7 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
-  tokenUri: ['https://www.mytoken.com'],
+  tokenUri: ['https://example.com'],
   burnable: booleans,
   pausable: booleans,
   upgradeable: booleans,

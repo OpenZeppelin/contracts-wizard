@@ -33,7 +33,7 @@ function assertHasAllSupportedFields(
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyNFT',
-    baseUri: 'https://www.mytoken.com/nft/',
+    baseUri: 'https://example.com/nft/',
   };
   await assertAPIEquivalence(t, params, erc1155.print);
 });
@@ -41,7 +41,7 @@ test('basic', async t => {
 test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyNFT',
-    baseUri: 'https://www.mytoken.com/nft/',
+    baseUri: 'https://example.com/nft/',
     burnable: true,
     pausable: true,
     mintable: true,

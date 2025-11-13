@@ -42,7 +42,7 @@ test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyNFT',
     symbol: 'NFT',
-    baseUri: 'https://www.mytoken.com/nft/',
+    baseUri: 'https://example.com/nft/',
     burnable: true,
     pausable: true,
     mintable: true,

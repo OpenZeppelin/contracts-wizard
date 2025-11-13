@@ -384,7 +384,7 @@ const needsQuoting = (name: string, value?: string): boolean =>
   name === 'uri' || (value !== undefined && /[\s"'$\\]/.test(value));
 
 const formatDeployValue = (name: string, value?: string): string => {
-  if (value === undefined && name === 'uri') return `"https://www.mytoken.com/"`;
+  if (value === undefined && name === 'uri') return `"https://example.com/"`;
   if (value === undefined) return '';
   return needsQuoting(name, value) ? `"${escapeQuotes(value)}"` : value;
 };

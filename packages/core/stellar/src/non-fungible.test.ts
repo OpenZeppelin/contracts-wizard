@@ -154,7 +154,7 @@ testNonFungible('non-fungible - complex name', {
 });
 
 testNonFungible('non-fungible custom token uri', {
-  tokenUri: 'https://www.mytoken.com/nfts/',
+  tokenUri: 'https://example.com/nfts/',
 });
 
 testAPIEquivalence('non-fungible API default');
