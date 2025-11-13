@@ -102,6 +102,10 @@ export const stellarNonFungibleAIFunctionDefinition = {
         type: 'boolean',
         description: stellarNonFungibleDescriptions.sequential,
       },
+      tokenUri: {
+        type: 'string',
+        description: stellarNonFungibleDescriptions.tokenUri,
+      },
       upgradeable: {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
