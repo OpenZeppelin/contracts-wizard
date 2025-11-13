@@ -40,7 +40,7 @@ export function getConstructorArgs(c: Pick<Contract, 'constructorArgs'>): string
           return '';
       }
     })
-    .filter(constructorArg => constructorArg);
+    .filter(Boolean);
 }
 
 export const printRustNameTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => `#![cfg(test)]

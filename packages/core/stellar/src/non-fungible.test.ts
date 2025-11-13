@@ -153,6 +153,10 @@ testNonFungible('non-fungible - complex name', {
   pausable: true,
 });
 
+testNonFungible('non-fungible custom token uri', {
+  tokenUri: 'https://www.mytoken.com/nfts/',
+});
+
 testAPIEquivalence('non-fungible API default');
 
 testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK' });

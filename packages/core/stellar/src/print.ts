@@ -378,31 +378,27 @@ function printMetadata(contract: Contract) {
   return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
 }
 
-function printDeployCommand(args: ConstructorArgument[]): string[] {
-  if (args.length === 0) {
-    return [];
-  }
+const escapeQuotes = (s: string): string => s.replace(/"/g, '\\"');
 
-  const cmd = [];
-  cmd.push('// deploy this smart contract with the Stellar CLI:');
-  cmd.push('//');
-  cmd.push('// stellar contract deploy \\');
-  cmd.push('// --wasm path/to/file.wasm \\');
-  cmd.push('// -- \\');
-  args.map((arg, i) => {
-    let formattedArg = '';
-    if (arg.value) {
-      const needsQuoting = /[\s"'$\\]/.test(arg.value) || arg.name === 'uri';
-      const quotedValue = needsQuoting ? `"${arg.value.replace(/"/g, '\\"')}"` : arg.value;
-      formattedArg += `// --${arg.name} ${quotedValue}`;
-    } else if (arg.name === 'uri') {
-      formattedArg += `// --${arg.name} "https://example.com/"`;
-    }
-    if (i < args.length - 1) {
-      formattedArg += ' \\';
-    }
-    cmd.push(formattedArg);
-  });
+const needsQuoting = (name: string, value?: string): boolean =>
+  name === 'uri' || (value !== undefined && /[\s"'$\\]/.test(value));
 
-  return cmd;
-}
+const formatDeployValue = (name: string, value?: string): string => {
+  if (value === undefined && name === 'uri') return `"https://www.mytoken.com/"`;
+  if (value === undefined) return '';
+  return needsQuoting(name, value) ? `"${escapeQuotes(value)}"` : value;
+};
+
+const formatDeployArgument = (arg: ConstructorArgument, isLast: boolean): string =>
+  [`// --${arg.name} ${formatDeployValue(arg.name, arg.value)}`, isLast ? '' : ' \\'].join('');
+
+const deployHeader = (): string[] => [
+  '// deploy this smart contract with the Stellar CLI:',
+  '//',
+  '// stellar contract deploy \\',
+  '// --wasm path/to/file.wasm \\',
+  '// -- \\',
+];
+
+export const printDeployCommand = (args: ConstructorArgument[]): string[] =>
+  args.length === 0 ? [] : [...deployHeader(), ...args.map((a, i) => formatDeployArgument(a, i === args.length - 1))];

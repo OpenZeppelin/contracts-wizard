@@ -20,7 +20,7 @@ type GeneratorOptions = {
 function prepareBlueprint(opts: GeneratorOptions) {
   return {
     name: ['MyToken'],
-    baseUri: ['https://example.com/'],
+    baseUri: ['https://www.mytoken.com/'],
     burnable: booleans,
     pausable: booleans,
     mintable: booleans,
