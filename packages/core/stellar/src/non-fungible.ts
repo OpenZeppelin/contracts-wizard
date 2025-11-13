@@ -12,7 +12,7 @@ import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray } from './utils/convert-strings';
-import { pickKeys } from '@openzeppelin/wizard-common/src/utils/object';
+import { pickKeys } from '@openzeppelin/wizard-common';
 
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
