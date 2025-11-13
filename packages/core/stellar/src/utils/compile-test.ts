@@ -56,6 +56,7 @@ export const runRustCompilationTest = withTemporaryFolderDo(
       `contracts/${scaffoldContractName}/Cargo.toml`,
       'Cargo.toml',
       'README.md',
+      '.gitignore',
     ];
 
     const zip = await zipRustProject(makeContract(opts), opts);
