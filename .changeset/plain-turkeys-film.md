@@ -4,4 +4,4 @@
 '@openzeppelin/contracts-mcp': patch
 ---
 
-For stellar add a explicitImplementations flag that switch from using default_impl macro to explicit definitions
+Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions
