@@ -1,6 +1,17 @@
 # Changelog
 
 
+## 0.10.2 (2025-11-12)
+
+- Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
+
+## 0.10.1 (2025-11-11)
+
+- Fixed bug with incorrect names in generated comment for Multisig account. ([#720](https://github.com/OpenZeppelin/contracts-wizard/pull/720))
+- Add API function to get versioned remappings. ([#724](https://github.com/OpenZeppelin/contracts-wizard/pull/724))
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `custodian` option to `freezable`. Replace ERC20Custodian with ERC20Freezable. ([#719](https://github.com/OpenZeppelin/contracts-wizard/pull/719))
+- Solidity account signer: Fix grammar in comment ([#711](https://github.com/OpenZeppelin/contracts-wizard/pull/711))
+
 ## 0.10.0 (2025-11-03)
 
 - Update `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` dependencies to 5.5.0 ([#681](https://github.com/OpenZeppelin/contracts-wizard/pull/681))

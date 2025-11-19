@@ -1,0 +1,17 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "watch": {
+    "exclude": [
+      "node_modules",
+      "dist"
+    ]
+  },
+  "importMap": "./import_map.json",
+  "tasks": {
+    "dev": "deno run --allow-all --env-file --watch --no-clear-screen development-server.ts ",
+    "type:check": "deno check ./paths/ai.ts --unstable-sloppy-imports"
+  }
+}

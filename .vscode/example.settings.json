@@ -4,5 +4,13 @@
   "deno.enable": true,
   "deno.enablePaths": [
     "packages/ui/scripts/deno/"
-  ]
+  ],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "rust-analyzer.linkedProjects": [
+    "packages/ui/stellar/Cargo.toml"
+  ],
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.checkOnSave": true
 }

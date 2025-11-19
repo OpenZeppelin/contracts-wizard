@@ -1,0 +1,62 @@
+FROM rust:bookworm AS builder
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TMPDIR=/opt/tmp
+RUN mkdir -p /opt/tmp /opt/target
+ENV CARGO_TARGET_DIR=/opt/target
+
+WORKDIR /usr/src/stellar-api
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential pkg-config libssl-dev libdbus-1-dev libudev-dev libusb-1.0-0-dev ca-certificates jq \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN rustup update stable && rustup target add wasm32v1-none
+
+COPY Cargo.toml Cargo.lock ./
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/local/cargo/git \
+  cargo fetch
+
+# Install CLI tools with versions pinned from Cargo metadata
+RUN set -eux; \
+  STELLAR_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_cli'); \
+  TMPDIR=/opt/tmp cargo install --locked stellar-cli --version "${STELLAR_CLI_VERSION}" -j 1
+
+RUN set -eux; \
+  STELLAR_SCAFFOLD_CLI_VERSION=$(cargo metadata -q --format-version=1 | jq -r '.packages[] | select(.name=="stellar-api") | .metadata.tools.stellar_scaffold_cli'); \
+  TMPDIR=/opt/tmp cargo install --locked stellar-scaffold-cli --version "${STELLAR_SCAFFOLD_CLI_VERSION}" -j 1
+
+COPY . .
+RUN TMPDIR=/opt/tmp cargo build --release
+
+RUN strip /opt/target/release/stellar-api || true
+
+FROM rust:bookworm AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /usr/local/bin
+
+RUN apt-get purge -y --auto-remove \
+  build-essential pkg-config libssl-dev 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates libssl3 libdbus-1-3 libudev1 libusb-1.0-0 \
+  && rm -rf /var/lib/apt/lists/*  
+
+RUN useradd -u 10001 -m -s /usr/sbin/nologin appuser
+
+COPY --chown=appuser:appuser --from=builder /opt/target/release/stellar-api /usr/local/bin/stellar-api
+COPY --from=builder /usr/local/cargo/bin/stellar /usr/local/bin/stellar
+COPY --from=builder /usr/local/cargo/bin/stellar-scaffold /usr/local/bin/stellar-scaffold
+RUN chmod 0755 /usr/local/bin/stellar-api /usr/local/bin/stellar /usr/local/bin/stellar-scaffold
+
+ENV CARGO_HOME=/home/appuser/.cargo
+ENV RUSTUP_HOME=/home/appuser/.rustup
+ENV PATH=/usr/local/cargo/bin:/usr/local/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH
+
+RUN mkdir -p $CARGO_HOME $RUSTUP_HOME && chown -R appuser:appuser /home/appuser
+
+USER appuser
+
+EXPOSE 8888
+ENV RUST_LOG=info
+
+ENTRYPOINT ["stellar-api"]

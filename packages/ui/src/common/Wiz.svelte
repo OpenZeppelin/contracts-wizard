@@ -14,7 +14,6 @@
     Object.keys(previousOptions).reduce(
       (acc, currentKey) => {
         if (aiFunctionCall.name === currentKey)
-          //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
           return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
         else return acc;
       },
@@ -52,7 +51,7 @@
     AiFunctionCall,
     AiFunctionCallResponse,
     Chat,
-  } from '../../api/ai-assistant/types/assistant';
+  } from '../../api/ai/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
 
   const apiHost = process.env.API_HOST;

@@ -127,10 +127,11 @@ export const accountSchema = {
     .literal(false)
     .or(z.literal('ECDSA'))
     .or(z.literal('EIP7702'))
-    .or(z.literal('P256'))
-    .or(z.literal('RSA'))
     .or(z.literal('Multisig'))
     .or(z.literal('MultisigWeighted'))
+    .or(z.literal('P256'))
+    .or(z.literal('RSA'))
+    .or(z.literal('WebAuthn'))
     .optional()
     .describe(solidityAccountDescriptions.signer),
   batchedExecution: z.boolean().optional().describe(solidityAccountDescriptions.batchedExecution),

@@ -1,0 +1,50 @@
+services:
+  stellar-api:
+    container_name: stellar-api
+    build:
+      context: ./stellar
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./stellar:/usr/src/stellar-api
+      - stellar-cargo-target:/usr/src/stellar-api/target
+      - stellar-cargo-cache:/usr/local/cargo/registry
+      - stellar-cargo-git:/usr/local/cargo/git
+      - stellar-tmp:/tmp
+    environment:
+      - RUSTFLAGS=-C debuginfo=0
+      - CFLAGS=-g0
+      - CXXFLAGS=-g0
+    env_file:
+      - ./stellar/.env
+    ports:
+      - "8888:8888"
+    command: ["cargo", "watch", "-x", "run"]
+    tty: true
+    stdin_open: true
+
+  deno-api:
+    container_name: deno-api
+    build:
+      context: ../..
+      dockerfile: ui/api/ai/Dockerfile.dev
+    volumes:
+      - ./ai:/app/ui/api/ai
+      - ../../common:/app/common
+      - deno-cache:/deno-dir
+    env_file:
+      - ./ai/.env
+    environment:
+      - DENO_DIR=/deno-dir
+      - ENV=dev
+    ports:
+      - "3000:3000"
+    command: ["deno", "task", "dev"]
+    tty: true
+    stdin_open: true
+
+volumes:
+  stellar-cargo-target:
+  stellar-cargo-cache:
+  stellar-cargo-git:
+  stellar-tmp:
+  deno-cache:

@@ -129,6 +129,9 @@ export default [
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
         'process.env.API_HOST': JSON.stringify(production ? '' : `http://localhost:${process.env.API_PORT || 3000}`),
+        'process.env.FARGATE_HOST': JSON.stringify(
+          production ? 'TODO' : `http://localhost:${process.env.FARGATE_PORT || 8888}`,
+        ),
       }),
 
       json(),
