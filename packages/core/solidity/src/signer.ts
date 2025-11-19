@@ -3,7 +3,16 @@ import { OptionsError } from './error';
 import type { Upgradeable } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 
-export const SignerOptions = [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const;
+export const SignerOptions = [
+  false,
+  'ECDSA',
+  'EIP7702',
+  'Multisig',
+  'MultisigWeighted',
+  'P256',
+  'RSA',
+  'WebAuthn',
+] as const;
 export type SignerOptions = (typeof SignerOptions)[number];
 
 export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable: Upgradeable): void {
@@ -13,11 +22,11 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
   c.addOverride({ name: signerName }, signerFunctions._rawSignatureValidation);
 
   switch (signer) {
-    case 'ERC7702':
+    case 'EIP7702':
       c.addParent(signers[signer]);
       if (upgradeable) {
         throw new OptionsError({
-          erc7702: 'EOAs can upgrade by redelegating to a new account',
+          eip7702: 'EOAs can upgrade by redelegating to a new account',
           upgradeable: 'EOAs can upgrade by redelegating to a new account',
         });
       }
@@ -34,25 +43,37 @@ export function addSigner(c: ContractBuilder, signer: SignerOptions, upgradeable
       );
       break;
     }
+    case 'WebAuthn': {
+      signerArgs.P256.forEach(arg => c.addConstructorArgument(arg));
+      c.addParent(
+        signers.P256,
+        signerArgs.P256.map(arg => ({ lit: arg.name })),
+      );
+      c.addParent(signers[signer]);
+      c.addImportOnly({
+        name: 'AbstractSigner',
+        path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+        transpiled: false,
+      });
+      c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+      c.addOverride({ name: 'SignerP256' }, signerFunctions._rawSignatureValidation);
+      break;
+    }
+    default: {
+      const _: never = signer;
+      throw new Error('Unknown signer');
+    }
   }
 }
 
 export const signers = {
-  ERC7702: {
-    name: 'SignerERC7702',
-    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerERC7702.sol',
-  },
   ECDSA: {
     name: 'SignerECDSA',
     path: '@openzeppelin/contracts/utils/cryptography/signers/SignerECDSA.sol',
   },
-  P256: {
-    name: 'SignerP256',
-    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerP256.sol',
-  },
-  RSA: {
-    name: 'SignerRSA',
-    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerRSA.sol',
+  EIP7702: {
+    name: 'SignerEIP7702',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerEIP7702.sol',
   },
   Multisig: {
     name: 'MultiSignerERC7913',
@@ -62,17 +83,25 @@ export const signers = {
     name: 'MultiSignerERC7913Weighted',
     path: '@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913Weighted.sol',
   },
+  P256: {
+    name: 'SignerP256',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerP256.sol',
+  },
+  RSA: {
+    name: 'SignerRSA',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerRSA.sol',
+  },
+  WebAuthn: {
+    name: 'SignerWebAuthn',
+    path: '@openzeppelin/contracts/utils/cryptography/signers/SignerWebAuthn.sol',
+  },
 };
 
-export const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { name: string; type: string }[]> = {
+export const signerArgs: Record<Exclude<SignerOptions, false | 'EIP7702'>, { name: string; type: string }[]> = {
   ECDSA: [{ name: 'signer', type: 'address' }],
   P256: [
     { name: 'qx', type: 'bytes32' },
     { name: 'qy', type: 'bytes32' },
-  ],
-  RSA: [
-    { name: 'e', type: 'bytes memory' },
-    { name: 'n', type: 'bytes memory' },
   ],
   Multisig: [
     { name: 'signers', type: 'bytes[] memory' },
@@ -83,6 +112,11 @@ export const signerArgs: Record<Exclude<SignerOptions, false | 'ERC7702'>, { nam
     { name: 'weights', type: 'uint64[] memory' },
     { name: 'threshold', type: 'uint64' },
   ],
+  RSA: [
+    { name: 'e', type: 'bytes memory' },
+    { name: 'n', type: 'bytes memory' },
+  ],
+  WebAuthn: [],
 };
 
 export const signerFunctions = defineFunctions({

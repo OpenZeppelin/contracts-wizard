@@ -50,6 +50,14 @@
       <input bind:value={opts.symbol} use:error={errors?.symbol} />
     </label>
   </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Token URI
+      <HelpTooltip>Sets the metadata URI that the contract returns from <code>token_uri</code>.</HelpTooltip>
+    </span>
+    <input bind:value={opts.tokenUri} placeholder="https://..." use:error={errors?.tokenUri} />
+  </label>
 </section>
 
 <section class="controls-section">

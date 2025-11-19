@@ -78,6 +78,11 @@ testStablecoin('stablecoin mintable with roles', {
   access: 'roles',
 });
 
+testStablecoin('stablecoin mintable with role managed', {
+  mintable: true,
+  access: 'managed',
+});
+
 testStablecoin('stablecoin callback', {
   callback: true,
 });
@@ -86,16 +91,16 @@ testStablecoin('stablecoin permit', {
   permit: true,
 });
 
-testStablecoin('stablecoin custodian', {
-  custodian: true,
+testStablecoin('stablecoin freezable', {
+  freezable: true,
 });
 
 testStablecoin('stablecoin allowlist', {
-  limitations: 'allowlist',
+  restrictions: 'allowlist',
 });
 
 testStablecoin('stablecoin blocklist', {
-  limitations: 'blocklist',
+  restrictions: 'blocklist',
 });
 
 testStablecoin('stablecoin votes', {
@@ -128,8 +133,8 @@ testStablecoin('stablecoin full', {
   flashmint: true,
   crossChainBridging: 'custom',
   premintChainId: '10',
-  limitations: 'allowlist',
-  custodian: true,
+  restrictions: 'allowlist',
+  freezable: true,
 });
 
 testAPIEquivalence('stablecoin API default');
@@ -153,8 +158,8 @@ testAPIEquivalence('stablecoin API full', {
   flashmint: true,
   crossChainBridging: 'custom',
   premintChainId: '10',
-  limitations: 'allowlist',
-  custodian: true,
+  restrictions: 'allowlist',
+  freezable: true,
 });
 
 test('stablecoin API assert defaults', async t => {
@@ -164,6 +169,6 @@ test('stablecoin API assert defaults', async t => {
 test('stablecoin API isAccessControlRequired', async t => {
   t.is(stablecoin.isAccessControlRequired({ mintable: true }), true);
   t.is(stablecoin.isAccessControlRequired({ pausable: true }), true);
-  t.is(stablecoin.isAccessControlRequired({ limitations: 'allowlist' }), true);
-  t.is(stablecoin.isAccessControlRequired({ limitations: 'blocklist' }), true);
+  t.is(stablecoin.isAccessControlRequired({ restrictions: 'allowlist' }), true);
+  t.is(stablecoin.isAccessControlRequired({ restrictions: 'blocklist' }), true);
 });

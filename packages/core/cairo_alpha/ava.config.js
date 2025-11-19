@@ -4,6 +4,7 @@ module.exports = {
   watchmode: {
     ignoreChanges: ['contracts', 'artifacts', 'cache'],
   },
+  snapshotDir: '.',
   timeout: '10m',
   workerThreads: false,
 };

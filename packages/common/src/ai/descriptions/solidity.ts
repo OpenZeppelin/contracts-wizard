@@ -18,6 +18,8 @@ export const solidityCommonDescriptions = {
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
   upgradeable:
     'Whether the smart contract is upgradeable. Transparent uses more complex proxy with higher overhead, requires less changes in your contract. Can also be used with beacons. UUPS uses simpler proxy with less overhead, requires including extra code in your contract. Allows flexibility for authorizing upgrades.',
+  namespacePrefix:
+    'The prefix for ERC-7201 namespace identifiers. It should be derived from the project name or a unique naming convention specific to the project. Used only if the contract includes storage variables and upgradeability is enabled. Default is "myProject".',
 };
 
 export const solidityERC20Descriptions = {
@@ -52,9 +54,9 @@ export const solidityERC1155Descriptions = {
 };
 
 export const solidityStablecoinDescriptions = {
-  custodian:
+  freezable:
     'Whether authorized accounts can freeze and unfreeze accounts for regulatory or security purposes. This feature is experimental, not audited and is subject to change.',
-  limitations:
+  restrictions:
     'Whether to restrict certain users from transferring tokens, either via allowing or blocking them. This feature is experimental, not audited and is subject to change.',
 };
 
@@ -66,11 +68,12 @@ export const solidityAccountDescriptions = {
     'Whether to implement the `onERC1155Received` function to allow the account to receive ERC1155 tokens.',
   signer: `Defines the signature verification algorithm used by the account to verify user operations. Options:
         - ECDSA: Standard Ethereum signature validation using secp256k1, validates signatures against a specified owner address
-        - ERC7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
+        - EIP7702: Special ECDSA validation using account's own address as signer, enables EOAs to delegate execution rights
+        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
+        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights
         - P256: NIST P-256 curve (secp256r1) validation for integration with Passkeys and HSMs
         - RSA: RSA PKCS#1 v1.5 signature validation (RFC8017) for PKI systems and HSMs
-        - Multisig: ERC-7913 multisignature requiring minimum number of signatures from authorized signers
-        - MultisigWeighted: ERC-7913 weighted multisignature where signers have different voting weights`,
+        - WebAuthn: Web Authentication (WebAuthn) assertion validation for integration with Passkeys and HSMs on top of P256`,
   batchedExecution:
     'Whether to implement a minimal batching interface for the account to allow multiple operations to be executed in a single transaction following the ERC-7821 standard.',
   ERC7579Modules:

@@ -19,6 +19,7 @@ const blueprint = {
   incremental: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,
+  namespacePrefix: ['myProject'],
   info: infoOptions,
   votes: [...booleans, ...clockModeOptions] as const,
 };

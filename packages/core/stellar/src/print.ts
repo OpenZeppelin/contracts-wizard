@@ -4,6 +4,7 @@ import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
+import { toByteArray } from './utils/convert-strings';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
@@ -24,11 +25,11 @@ export function printContract(contract: Contract): string {
         `// SPDX-License-Identifier: ${contract.license}`,
         `// Compatible with OpenZeppelin Stellar Soroban Contracts ${compatibleContractsSemver}`,
         ...(contract.documentations.length ? ['', ...printDocumentations(contract.documentations)] : []),
-        ...(contract.securityContact ? ['', ...printSecurityTag(contract.securityContact)] : []),
         ...createLevelAttributes,
       ],
       spaceBetween(
         printUseClauses(contract),
+        printMetadata(contract),
         printVariables(contract),
         printContractStruct(contract),
         printContractErrors(contract),
@@ -367,6 +368,6 @@ function printDocumentations(documentations: string[]): string[] {
   return documentations.map(documentation => `//! ${documentation}`);
 }
 
-function printSecurityTag(securityContact: string) {
-  return ['//! # Security', '//!', `//! For security issues, please contact: ${securityContact}`];
+function printMetadata(contract: Contract) {
+  return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
 }
