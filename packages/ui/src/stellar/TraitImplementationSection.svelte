@@ -33,7 +33,7 @@
       <input type="radio" bind:group={implementationMode} value="explicit" on:change={syncExplicit} />
       Explicit trait methods
       <HelpTooltip
-        >Generate every trait function body explicitly and omit the <code>#[default_impl]</code> attribute.</HelpTooltip
+        >Generate every trait function body explicitly and omit the <code>#[default_impl]</code> attribute. Easier to customize.</HelpTooltip
       >
     </label>
   </div>
