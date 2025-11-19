@@ -109,7 +109,7 @@
       if (!ok) throw new Error(`HTTP ${status}`);
 
       saveAs(await new Response(scaffoldProject).blob(), 'scaffold-project.zip');
-      await postConfig(opts, 'download-file', language);
+      await postConfig(opts, 'download-scaffold', language);
 
       isDownloadingScaffold = false;
     } catch (error) {
@@ -259,9 +259,9 @@
               <div class="download-option-content">
                 <p>
                   {downloadScaffoldError
-                    ? 'Could not download Scaffold'
+                    ? 'Could not download Scaffold, check console for details.'
                     : isDownloadingScaffold
-                      ? 'Please wait while we build scaffold project...'
+                      ? 'Building scaffold project...'
                       : 'Scaffold Stellar Package'}
                 </p>
                 <p>

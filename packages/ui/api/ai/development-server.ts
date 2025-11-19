@@ -3,18 +3,6 @@
 import './utils/log.ts';
 import { getEnvironmentVariableOr } from './utils/env.ts';
 import { dirname } from 'https://deno.land/std/path/mod.ts';
-import { join } from 'https://deno.land/std@0.224.0/path/mod.ts';
-
-const listAll = async (dirPath: string) => {
-  for await (const entry of Deno.readDir(dirPath)) {
-    const fullPath = join(dirPath, entry.name);
-    console.log(fullPath);
-
-    if (entry.isDirectory) {
-      await listAll(fullPath);
-    }
-  }
-};
 
 const developmentCors = new Response(undefined, {
   status: 200,
@@ -33,10 +21,6 @@ Deno.serve(
     const calledEndpoint = new URL(request.url).pathname;
 
     try {
-      console.log(`file://${dirname(Deno.cwd())}/ai/paths/${calledEndpoint}.ts`);
-
-      await listAll('.');
-
       // Dynamically import the route handler
       const module = await import(`file://${dirname(Deno.cwd())}/ai/paths${calledEndpoint}.ts`);
 

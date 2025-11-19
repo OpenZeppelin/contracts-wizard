@@ -211,7 +211,6 @@ fn validate_entry_metadata<R: Read + io::Seek>(entry: &ZipFile<R>) -> Result<Str
     Ok(entry_path)
 }
 
-//EvLUATE WHAT CAN BE EXTRACTED FROM SPECIFIC RUST ENV PROCESS
 pub fn zip_directory(zip_path: &Path) -> ZipResult<Vec<u8>> {
     let mut zip_result = Vec::new();
 
