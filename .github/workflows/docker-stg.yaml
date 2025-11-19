@@ -4,7 +4,7 @@ name: (Staging) Build and Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main,stellar-scaffold]
   workflow_dispatch:
     inputs:
       branch:
