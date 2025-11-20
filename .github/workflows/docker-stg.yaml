@@ -64,8 +64,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.REGISTRY }}/wizard-stellar-api-stg:latest
-            ${{ env.REGISTRY }}/wizard-stellar-api-stg:${{ github.sha }}
+            ${{ env.REGISTRY }}/wizard-api-stg:latest
+            ${{ env.REGISTRY }}/wizard-api-stg:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
