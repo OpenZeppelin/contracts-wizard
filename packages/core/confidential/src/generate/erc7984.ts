@@ -6,7 +6,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
-  tokenURI: ['http://example.com'],
+  contractURI: ['http://example.com'],
   votes: [false, ...clockModeOptions] as const,
   premint: ['1'],
   info: infoOptions,

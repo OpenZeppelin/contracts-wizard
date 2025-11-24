@@ -36,10 +36,10 @@
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
-      Token URI
-      <HelpTooltip>A URI related to the token.</HelpTooltip>
+      Contract URI
+      <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7572">The metadata URI for the token.</HelpTooltip>
     </span>
-    <input bind:value={opts.tokenURI} placeholder="https://..." />
+    <input bind:value={opts.contractURI} placeholder="https://..." />
   </label>
 
   <label class="labeled-input">

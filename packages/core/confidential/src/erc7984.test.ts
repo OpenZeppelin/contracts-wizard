@@ -11,7 +11,7 @@ function testERC7984(title: string, opts: Partial<ERC7984Options>) {
     const c = buildERC7984({
       name: 'MyToken',
       symbol: 'MTK',
-      tokenURI: 'https://example.com/token',
+      contractURI: 'https://example.com/token',
       networkConfig: 'zama-sepolia',
       ...opts,
     });
@@ -30,7 +30,7 @@ function testAPIEquivalence(title: string, opts?: ERC7984Options) {
         buildERC7984({
           name: 'MyToken',
           symbol: 'MTK',
-          tokenURI: '',
+          contractURI: '',
           networkConfig: 'zama-sepolia',
           ...opts,
         }),
@@ -62,7 +62,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
         buildERC7984({
           name: 'MyToken',
           symbol: 'MTK',
-          tokenURI: 'https://example.com/token',
+          contractURI: 'https://example.com/token',
           networkConfig: 'zama-sepolia',
           premint,
         }),
@@ -72,7 +72,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
       const c = buildERC7984({
         name: 'MyToken',
         symbol: 'MTK',
-        tokenURI: 'https://example.com/token',
+        contractURI: 'https://example.com/token',
         networkConfig: 'zama-sepolia',
         premint,
       });
@@ -134,14 +134,14 @@ testAPIEquivalence('erc7984 API default');
 testAPIEquivalence('erc7984 API basic', {
   name: 'CustomToken',
   symbol: 'CTK',
-  tokenURI: 'https://custom.example.com/token',
+  contractURI: 'https://custom.example.com/token',
   networkConfig: 'zama-sepolia',
 });
 
 testAPIEquivalence('erc7984 API full', {
   name: 'CustomToken',
   symbol: 'CTK',
-  tokenURI: 'https://custom.example.com/token',
+  contractURI: 'https://custom.example.com/token',
   networkConfig: 'zama-ethereum',
   premint: '2000',
   wrappable: true,

@@ -26,7 +26,7 @@ export const commonSchema = {
 export const erc7984Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
-  tokenURI: z.string().describe(confidentialERC7984Descriptions.tokenURI),
+  contractURI: z.string().describe(confidentialERC7984Descriptions.contractURI),
   premint: z.string().optional().describe(confidentialERC7984Descriptions.premint),
   networkConfig: z
     .literal('zama-sepolia')

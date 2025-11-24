@@ -51,7 +51,7 @@ To generate the source code for a confidential fungible contract with a custom n
 const contract = erc7984.print({
   name: 'ExampleToken',
   symbol: 'ETK',
-  tokenURI: 'https://example.com',
+  contractURI: 'https://example.com',
   networkConfig: 'zama-sepolia',
   premint: '1000000',
   wrappable: true,

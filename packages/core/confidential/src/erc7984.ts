@@ -21,7 +21,7 @@ export type NetworkConfig = (typeof networkConfigOptions)[number];
 export interface ERC7984Options extends CommonOptions {
   name: string;
   symbol: string;
-  tokenURI: string;
+  contractURI: string;
   networkConfig: NetworkConfig;
   premint?: string;
   wrappable?: boolean;
@@ -35,7 +35,7 @@ export interface ERC7984Options extends CommonOptions {
 export const defaults: Required<ERC7984Options> = {
   name: 'MyToken',
   symbol: 'MTK',
-  tokenURI: '',
+  contractURI: '',
   networkConfig: 'zama-sepolia',
   premint: '0',
   wrappable: false,
@@ -64,7 +64,7 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
 
   const { info } = allOpts;
 
-  addBase(c, allOpts.name, allOpts.symbol, allOpts.tokenURI);
+  addBase(c, allOpts.name, allOpts.symbol, allOpts.contractURI);
   addNetworkConfig(c, allOpts.networkConfig);
 
   if (allOpts.premint) {
@@ -84,12 +84,12 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: string) {
+function addBase(c: ContractBuilder, name: string, symbol: string, contractURI: string) {
   const ERC7984 = {
     name: 'ERC7984',
     path: '@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol',
   };
-  c.addParent(ERC7984, [name, symbol, tokenURI]);
+  c.addParent(ERC7984, [name, symbol, contractURI]);
 
   c.addImportOnly({
     name: 'euint64',

@@ -34,7 +34,7 @@ test.serial('erc7984 basic', async t => {
   const opts: GenericOptions = {
     kind: 'ERC7984',
     name: 'My Token',
-    tokenURI: 'https://example.com',
+    contractURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
     symbol: 'MTK',
   };
@@ -45,7 +45,7 @@ test.serial('erc7984 basic', async t => {
 test.serial('erc7984 full', async t => {
   const fullOptions: Required<ERC7984Options> = {
     name: 'My Token',
-    tokenURI: 'https://example.com',
+    contractURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
     symbol: 'MTK',
     premint: '2000',

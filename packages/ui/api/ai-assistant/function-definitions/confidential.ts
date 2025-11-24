@@ -13,9 +13,9 @@ export const confidentialERC7984AIFunctionDefinition = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'symbol', 'info']),
-      tokenURI: {
+      contractURI: {
         type: 'string',
-        description: confidentialERC7984Descriptions.tokenURI,
+        description: confidentialERC7984Descriptions.contractURI,
       },
       premint: {
         type: 'string',
@@ -37,7 +37,7 @@ export const confidentialERC7984AIFunctionDefinition = {
         description: confidentialERC7984Descriptions.votes,
       },
     },
-    required: ['name', 'symbol', 'tokenURI', 'networkConfig'],
+    required: ['name', 'symbol', 'contractURI', 'networkConfig'],
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'confidential', 'ERC7984'>;

@@ -34,7 +34,7 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
-    tokenURI: 'https://example.com',
+    contractURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
   };
   await assertAPIEquivalence(t, params, erc7984.print);
@@ -44,7 +44,7 @@ test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',
-    tokenURI: 'https://example.com',
+    contractURI: 'https://example.com',
     premint: '1000',
     networkConfig: 'zama-sepolia',
     wrappable: true,
