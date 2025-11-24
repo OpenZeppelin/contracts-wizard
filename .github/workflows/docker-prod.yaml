@@ -1,8 +1,6 @@
 name: (Production) Build and Deploy
 
 on:
-  push:
-    branches: [stellar-scaffold]
   workflow_dispatch:
 
 permissions:

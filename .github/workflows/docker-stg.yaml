@@ -1,10 +1,8 @@
-# This workflow runs whenever a release is created.
-# The image is tagged with latest and the release version.
 name: (Staging) Build and Deploy
 
 on:
   push:
-    branches: [main,stellar-scaffold]
+    branches: [main]
   workflow_dispatch:
     inputs:
       branch:
