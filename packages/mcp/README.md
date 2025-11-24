@@ -17,7 +17,7 @@ Provides tools to generate smart contract source code for the following language
 | --- | --- |
 | solidity | erc20, erc721, erc1155, stablecoin, rwa, account, governor, custom |
 | cairo | erc20, erc721, erc1155, account, multisig, governor, vesting, custom |
-| confidential | confidential-fungible |
+| confidential | erc7984 |
 | stellar | fungible, stablecoin, non-fungible |
 | stylus | erc20, erc721, erc1155 |
 

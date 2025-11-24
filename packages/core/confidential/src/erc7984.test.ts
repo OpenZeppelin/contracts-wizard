@@ -1,14 +1,14 @@
 import test from 'ava';
 import type { OptionsError } from '.';
-import { confidentialFungible } from '.';
+import { erc7984 } from '.';
 
-import type { ConfidentialFungibleOptions } from './confidentialFungible';
-import { buildConfidentialFungible } from './confidentialFungible';
+import type { ERC7984Options } from './erc7984';
+import { buildERC7984 } from './erc7984';
 import { printContract } from './print';
 
-function testConfidentialFungible(title: string, opts: Partial<ConfidentialFungibleOptions>) {
+function testERC7984(title: string, opts: Partial<ERC7984Options>) {
   test(title, t => {
-    const c = buildConfidentialFungible({
+    const c = buildERC7984({
       name: 'MyToken',
       symbol: 'MTK',
       tokenURI: 'https://example.com/token',
@@ -22,12 +22,12 @@ function testConfidentialFungible(title: string, opts: Partial<ConfidentialFungi
 /**
  * Tests external API for equivalence with internal API
  */
-function testAPIEquivalence(title: string, opts?: ConfidentialFungibleOptions) {
+function testAPIEquivalence(title: string, opts?: ERC7984Options) {
   test(title, t => {
     t.is(
-      confidentialFungible.print(opts),
+      erc7984.print(opts),
       printContract(
-        buildConfidentialFungible({
+        buildERC7984({
           name: 'MyToken',
           symbol: 'MTK',
           tokenURI: '',
@@ -39,27 +39,27 @@ function testAPIEquivalence(title: string, opts?: ConfidentialFungibleOptions) {
   });
 }
 
-testConfidentialFungible('basic confidentialFungible', {});
+testERC7984('basic erc7984', {});
 
-testConfidentialFungible('confidentialFungible name is unicodeSafe', { name: 'MyTokeć' });
+testERC7984('erc7984 name is unicodeSafe', { name: 'MyTokeć' });
 
-testConfidentialFungible('confidentialFungible zama-ethereum', {
+testERC7984('erc7984 zama-ethereum', {
   networkConfig: 'zama-ethereum',
 });
 
-testConfidentialFungible('confidentialFungible preminted', {
+testERC7984('erc7984 preminted', {
   premint: '1000',
 });
 
-testConfidentialFungible('confidentialFungible premint of 0', {
+testERC7984('erc7984 premint of 0', {
   premint: '0',
 });
 
 function testPremint(scenario: string, premint: string, expectedError?: string) {
-  test(`confidentialFungible premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
+  test(`erc7984 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {
       const error = t.throws(() =>
-        buildConfidentialFungible({
+        buildERC7984({
           name: 'MyToken',
           symbol: 'MTK',
           tokenURI: 'https://example.com/token',
@@ -69,7 +69,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
       );
       t.is((error as OptionsError).messages.premint, expectedError);
     } else {
-      const c = buildConfidentialFungible({
+      const c = buildERC7984({
         name: 'MyToken',
         symbol: 'MTK',
         tokenURI: 'https://example.com/token',
@@ -96,49 +96,49 @@ testPremint(
   'Amount would overflow uint64 after applying decimals, assuming 6 decimals',
 );
 
-testConfidentialFungible('confidentialFungible wrappable', {
+testERC7984('erc7984 wrappable', {
   wrappable: true,
 });
 
-testConfidentialFungible('confidentialFungible votes + blocknumber', {
+testERC7984('erc7984 votes + blocknumber', {
   votes: 'blocknumber',
 });
 
-testConfidentialFungible('confidentialFungible votes + timestamp', {
+testERC7984('erc7984 votes + timestamp', {
   votes: 'timestamp',
 });
 
-testConfidentialFungible('confidentialFungible full zama-sepolia', {
+testERC7984('erc7984 full zama-sepolia', {
   premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
   networkConfig: 'zama-sepolia',
 });
 
-testConfidentialFungible('confidentialFungible full zama-ethereum', {
+testERC7984('erc7984 full zama-ethereum', {
   premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
   networkConfig: 'zama-ethereum',
 });
 
-testConfidentialFungible('confidentialFungible full with timestamp votes', {
+testERC7984('erc7984 full with timestamp votes', {
   premint: '2000',
   wrappable: true,
   votes: 'timestamp',
   networkConfig: 'zama-ethereum',
 });
 
-testAPIEquivalence('confidentialFungible API default');
+testAPIEquivalence('erc7984 API default');
 
-testAPIEquivalence('confidentialFungible API basic', {
+testAPIEquivalence('erc7984 API basic', {
   name: 'CustomToken',
   symbol: 'CTK',
   tokenURI: 'https://custom.example.com/token',
   networkConfig: 'zama-sepolia',
 });
 
-testAPIEquivalence('confidentialFungible API full', {
+testAPIEquivalence('erc7984 API full', {
   name: 'CustomToken',
   symbol: 'CTK',
   tokenURI: 'https://custom.example.com/token',
@@ -148,6 +148,6 @@ testAPIEquivalence('confidentialFungible API full', {
   votes: 'blocknumber',
 });
 
-test('confidentialFungible API assert defaults', async t => {
-  t.is(confidentialFungible.print(confidentialFungible.defaults), confidentialFungible.print());
+test('erc7984 API assert defaults', async t => {
+  t.is(erc7984.print(erc7984.defaults), erc7984.print());
 });

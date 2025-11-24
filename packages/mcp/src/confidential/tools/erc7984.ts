@@ -1,17 +1,17 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ConfidentialFungibleOptions } from '@openzeppelin/wizard-confidential';
-import { confidentialFungible } from '@openzeppelin/wizard-confidential';
+import type { ERC7984Options } from '@openzeppelin/wizard-confidential';
+import { erc7984 } from '@openzeppelin/wizard-confidential';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
-import { confidentialFungibleSchema } from '../schemas';
+import { erc7984Schema } from '../schemas';
 import { confidentialPrompts } from '@openzeppelin/wizard-common';
 
-export function registerConfidentialConfidentialFungible(server: McpServer): RegisteredTool {
+export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
   return server.tool(
-    'confidential-fungible',
-    makeDetailedPrompt(confidentialPrompts.ConfidentialFungible),
-    confidentialFungibleSchema,
+    'erc7984',
+    makeDetailedPrompt(confidentialPrompts.ERC7984),
+    erc7984Schema,
     async ({ name, symbol, tokenURI, premint, networkConfig, wrappable, votes, info }) => {
-      const opts: ConfidentialFungibleOptions = {
+      const opts: ERC7984Options = {
         name,
         symbol,
         tokenURI,
@@ -25,7 +25,7 @@ export function registerConfidentialConfidentialFungible(server: McpServer): Reg
         content: [
           {
             type: 'text',
-            text: safePrintSolidityCodeBlock(() => confidentialFungible.print(opts)),
+            text: safePrintSolidityCodeBlock(() => erc7984.print(opts)),
           },
         ],
       };

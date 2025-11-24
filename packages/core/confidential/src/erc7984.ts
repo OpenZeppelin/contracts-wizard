@@ -18,7 +18,7 @@ import { printContract } from './print';
 export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
 
-export interface ConfidentialFungibleOptions extends CommonOptions {
+export interface ERC7984Options extends CommonOptions {
   name: string;
   symbol: string;
   tokenURI: string;
@@ -32,7 +32,7 @@ export interface ConfidentialFungibleOptions extends CommonOptions {
   votes?: false | ClockMode;
 }
 
-export const defaults: Required<ConfidentialFungibleOptions> = {
+export const defaults: Required<ERC7984Options> = {
   name: 'MyToken',
   symbol: 'MTK',
   tokenURI: '',
@@ -43,7 +43,7 @@ export const defaults: Required<ConfidentialFungibleOptions> = {
   info: commonDefaults.info,
 } as const;
 
-export function withDefaults(opts: ConfidentialFungibleOptions): Required<ConfidentialFungibleOptions> {
+export function withDefaults(opts: ERC7984Options): Required<ERC7984Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
@@ -53,11 +53,11 @@ export function withDefaults(opts: ConfidentialFungibleOptions): Required<Confid
   };
 }
 
-export function printConfidentialFungible(opts: ConfidentialFungibleOptions = defaults): string {
-  return printContract(buildConfidentialFungible(opts));
+export function printERC7984(opts: ERC7984Options = defaults): string {
+  return printContract(buildERC7984(opts));
 }
 
-export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): ContractBuilder {
+export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   const allOpts = withDefaults(opts);
 
   const c = new ContractBuilder(allOpts.name);

@@ -3,7 +3,7 @@
 
   import hljs from '../solidity/highlightjs';
 
-  import ConfidentialFungibleControls from './ConfidentialFungibleControls.svelte';
+  import ERC7984Controls from './ERC7984Controls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import RemixIcon from '../common/icons/RemixIcon.svelte';
@@ -42,7 +42,7 @@
     showCode = true;
   }
 
-  export let initialTab: string | undefined = 'ConfidentialFungible';
+  export let initialTab: string | undefined = 'ERC7984';
 
   export let tab: Kind = sanitizeKind(initialTab);
   $: {
@@ -68,7 +68,7 @@
       if (!initialValuesSet) {
         opts.name = initialOpts.name ?? opts.name;
         switch (opts.kind) {
-          case 'ConfidentialFungible':
+          case 'ERC7984':
             opts.premint = initialOpts.premint ?? opts.premint;
         }
         initialValuesSet = true;
@@ -183,9 +183,7 @@
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
-        <button class:selected={tab === 'ConfidentialFungible'} on:click={() => (tab = 'ConfidentialFungible')}>
-          ConfidentialFungible
-        </button>
+        <button class:selected={tab === 'ERC7984'} on:click={() => (tab = 'ERC7984')}> ERC7984 </button>
       </OverflowMenu>
     </div>
 
@@ -267,8 +265,8 @@
     <div
       class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
     >
-      <div class:hidden={tab !== 'ConfidentialFungible'}>
-        <ConfidentialFungibleControls bind:opts={allOpts.ConfidentialFungible} errors={errors.ConfidentialFungible} />
+      <div class:hidden={tab !== 'ERC7984'}>
+        <ERC7984Controls bind:opts={allOpts.ERC7984} errors={errors.ERC7984} />
       </div>
     </div>
 

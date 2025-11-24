@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerConfidentialConfidentialFungible } from './tools/confidentialFungible.js';
+import { registerConfidentialERC7984 } from './tools/erc7984.js';
 import type { KindedOptions } from '@openzeppelin/wizard-confidential';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
@@ -9,7 +9,7 @@ type ConfidentialToolRegisterFunctions = {
 
 function getRegisterFunctions(server: McpServer): ConfidentialToolRegisterFunctions {
   return {
-    ConfidentialFungible: () => registerConfidentialConfidentialFungible(server),
+    ERC7984: () => registerConfidentialERC7984(server),
   };
 }
 

@@ -3,41 +3,41 @@ import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './confidential-shared.ts';
 import {
   confidentialPrompts,
-  confidentialConfidentialFungibleDescriptions,
+  confidentialERC7984Descriptions,
 } from '../../../../common/src/ai/descriptions/confidential.ts';
 
-export const confidentialConfidentialFungibleAIFunctionDefinition = {
-  name: 'ConfidentialFungible',
-  description: confidentialPrompts.ConfidentialFungible,
+export const confidentialERC7984AIFunctionDefinition = {
+  name: 'ERC7984',
+  description: confidentialPrompts.ERC7984,
   parameters: {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(commonFunctionDescription, ['name', 'symbol', 'info']),
       tokenURI: {
         type: 'string',
-        description: confidentialConfidentialFungibleDescriptions.tokenURI,
+        description: confidentialERC7984Descriptions.tokenURI,
       },
       premint: {
         type: 'string',
-        description: confidentialConfidentialFungibleDescriptions.premint,
+        description: confidentialERC7984Descriptions.premint,
       },
       networkConfig: {
         anyOf: [{ type: 'string', enum: ['zama-sepolia', 'zama-ethereum'] }],
-        description: confidentialConfidentialFungibleDescriptions.networkConfig,
+        description: confidentialERC7984Descriptions.networkConfig,
       },
       wrappable: {
         type: 'boolean',
-        description: confidentialConfidentialFungibleDescriptions.wrappable,
+        description: confidentialERC7984Descriptions.wrappable,
       },
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['blocknumber', 'timestamp'] },
         ],
-        description: confidentialConfidentialFungibleDescriptions.votes,
+        description: confidentialERC7984Descriptions.votes,
       },
     },
     required: ['name', 'symbol', 'tokenURI', 'networkConfig'],
     additionalProperties: false,
   },
-} as const satisfies AiFunctionDefinition<'confidential', 'ConfidentialFungible'>;
+} as const satisfies AiFunctionDefinition<'confidential', 'ERC7984'>;

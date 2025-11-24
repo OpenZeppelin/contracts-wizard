@@ -1,4 +1,4 @@
-import { type ConfidentialFungibleOptions } from '../confidentialFungible';
+import { type ERC7984Options } from '../erc7984';
 import { clockModeOptions, infoOptions, generateAlternatives } from '@openzeppelin/wizard';
 
 const booleans = [true, false];
@@ -14,6 +14,6 @@ const blueprint = {
   wrappable: booleans,
 };
 
-export function* generateConfidentialFungibleOptions(): Generator<Required<ConfidentialFungibleOptions>> {
+export function* generateERC7984Options(): Generator<Required<ERC7984Options>> {
   yield* generateAlternatives(blueprint);
 }

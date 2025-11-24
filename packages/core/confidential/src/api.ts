@@ -1,6 +1,6 @@
 import type { CommonOptions } from './common-options';
-import type { ConfidentialFungibleOptions } from './confidentialFungible';
-import { printConfidentialFungible, defaults as confidentialFungibleDefaults } from './confidentialFungible';
+import type { ERC7984Options } from './erc7984';
+import { printERC7984, defaults as erc7984Defaults } from './erc7984';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
@@ -14,9 +14,9 @@ export interface WizardContractAPI<Options extends CommonOptions> {
   defaults: Required<Options>;
 }
 
-export type ConfidentialFungible = WizardContractAPI<ConfidentialFungibleOptions>;
+export type ERC7984 = WizardContractAPI<ERC7984Options>;
 
-export const confidentialFungible: ConfidentialFungible = {
-  print: printConfidentialFungible,
-  defaults: confidentialFungibleDefaults,
+export const erc7984: ERC7984 = {
+  print: printERC7984,
+  defaults: erc7984Defaults,
 };

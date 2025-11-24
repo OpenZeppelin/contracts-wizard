@@ -13,8 +13,8 @@ interface Context {
 
 const test = _test as TestFn<Context>;
 
-test.serial('confidentialFungible result compiles', async t => {
-  await testCompile(t, 'ConfidentialFungible');
+test.serial('erc7984 result compiles', async t => {
+  await testCompile(t, 'ERC7984');
 });
 
 async function testCompile(t: ExecutionContext<Context>, kind: keyof KindedOptions) {

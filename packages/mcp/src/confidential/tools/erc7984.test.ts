@@ -2,31 +2,31 @@ import type { TestFn, ExecutionContext } from 'ava';
 import _test from 'ava';
 import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerConfidentialConfidentialFungible } from './confidentialFungible';
+import { registerConfidentialERC7984 } from './erc7984';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
-import type { ConfidentialFungibleOptions } from '@openzeppelin/wizard-confidential';
-import { confidentialFungible } from '@openzeppelin/wizard-confidential';
-import { confidentialFungibleSchema } from '../schemas';
+import type { ERC7984Options } from '@openzeppelin/wizard-confidential';
+import { erc7984 } from '@openzeppelin/wizard-confidential';
+import { erc7984Schema } from '../schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof confidentialFungibleSchema>;
+  schema: z.ZodObject<typeof erc7984Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
-  t.context.tool = registerConfidentialConfidentialFungible(new McpServer(testMcpInfo));
-  t.context.schema = z.object(confidentialFungibleSchema);
+  t.context.tool = registerConfidentialERC7984(new McpServer(testMcpInfo));
+  t.context.schema = z.object(erc7984Schema);
 });
 
 function assertHasAllSupportedFields(
   t: ExecutionContext<Context>,
   params: DeepRequired<z.infer<typeof t.context.schema>>,
 ) {
-  const _: DeepRequired<ConfidentialFungibleOptions> = params;
+  const _: DeepRequired<ERC7984Options> = params;
   t.pass();
 }
 
@@ -37,7 +37,7 @@ test('basic', async t => {
     tokenURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
   };
-  await assertAPIEquivalence(t, params, confidentialFungible.print);
+  await assertAPIEquivalence(t, params, erc7984.print);
 });
 
 test('all', async t => {
@@ -57,5 +57,5 @@ test('all', async t => {
 
   assertHasAllSupportedFields(t, params);
 
-  await assertAPIEquivalence(t, params, confidentialFungible.print);
+  await assertAPIEquivalence(t, params, erc7984.print);
 });

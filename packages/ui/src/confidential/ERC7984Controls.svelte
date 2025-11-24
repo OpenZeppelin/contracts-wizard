@@ -3,15 +3,15 @@
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-confidential';
   import { infoDefaults } from '@openzeppelin/wizard';
-  import { confidentialFungible, premintPattern } from '@openzeppelin/wizard-confidential';
+  import { erc7984, premintPattern } from '@openzeppelin/wizard-confidential';
 
   import InfoSection from '../solidity/InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import { error } from '../common/error-tooltip';
 
-  export let opts: Required<KindedOptions['ConfidentialFungible']> = {
-    kind: 'ConfidentialFungible',
-    ...confidentialFungible.defaults,
+  export let opts: Required<KindedOptions['ERC7984']> = {
+    kind: 'ERC7984',
+    ...erc7984.defaults,
     premint: '', // default to empty premint in UI instead of 0
     info: { ...infoDefaults }, // create new object since Info is nested
   };

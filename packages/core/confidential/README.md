@@ -13,7 +13,7 @@ This package provides a programmatic API. For a web interface, see https://wizar
 ### Contract types
 
 The following contract types are supported:
-- `confidentialFungible`
+- `erc7984`
 
 Each contract type has functions/constants as defined below.
 
@@ -21,14 +21,14 @@ Each contract type has functions/constants as defined below.
 
 #### `print`
 ```js
-function print(opts?: ConfidentialFungibleOptions): string
+function print(opts?: ERC7984Options): string
 ```
 
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
 #### `defaults`
 ```js
-const defaults: Required<ConfidentialFungibleOptions>
+const defaults: Required<ERC7984Options>
 ```
 
 The default options that are used for [`print`](#print).
@@ -38,17 +38,17 @@ The default options that are used for [`print`](#print).
 Import the contract type(s) that you want to use from the `@openzeppelin/wizard-confidential` package:
 
 ```js
-import { confidentialFungible } from '@openzeppelin/wizard-confidential';
+import { erc7984 } from '@openzeppelin/wizard-confidential';
 ```
 
 To generate the source code for a confidential fungible contract with all of the default settings:
 ```js
-const contract = confidentialFungible.print();
+const contract = erc7984.print();
 ```
 
 To generate the source code for a confidential fungible contract with a custom name, symbol, URI, and network configuration, along with some custom settings:
 ```js
-const contract = confidentialFungible.print({
+const contract = erc7984.print({
   name: 'ExampleToken',
   symbol: 'ETK',
   tokenURI: 'https://example.com',

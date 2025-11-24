@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  commonDescriptions,
-  infoDescriptions,
-  confidentialConfidentialFungibleDescriptions,
-} from '@openzeppelin/wizard-common';
+import { commonDescriptions, infoDescriptions, confidentialERC7984Descriptions } from '@openzeppelin/wizard-common';
 import type { KindedOptions } from '@openzeppelin/wizard-confidential';
 
 /**
@@ -13,7 +9,7 @@ function _typeAssertions() {
   const _assertions: {
     [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
   } = {
-    ConfidentialFungible: z.object(confidentialFungibleSchema).parse({}),
+    ERC7984: z.object(erc7984Schema).parse({}),
   };
 }
 
@@ -27,20 +23,16 @@ export const commonSchema = {
     .describe(infoDescriptions.info),
 } as const satisfies z.ZodRawShape;
 
-export const confidentialFungibleSchema = {
+export const erc7984Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
-  tokenURI: z.string().describe(confidentialConfidentialFungibleDescriptions.tokenURI),
-  premint: z.string().optional().describe(confidentialConfidentialFungibleDescriptions.premint),
+  tokenURI: z.string().describe(confidentialERC7984Descriptions.tokenURI),
+  premint: z.string().optional().describe(confidentialERC7984Descriptions.premint),
   networkConfig: z
     .literal('zama-sepolia')
     .or(z.literal('zama-ethereum'))
-    .describe(confidentialConfidentialFungibleDescriptions.networkConfig),
-  wrappable: z.boolean().optional().describe(confidentialConfidentialFungibleDescriptions.wrappable),
-  votes: z
-    .literal('blocknumber')
-    .or(z.literal('timestamp'))
-    .optional()
-    .describe(confidentialConfidentialFungibleDescriptions.votes),
+    .describe(confidentialERC7984Descriptions.networkConfig),
+  wrappable: z.boolean().optional().describe(confidentialERC7984Descriptions.wrappable),
+  votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(confidentialERC7984Descriptions.votes),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;

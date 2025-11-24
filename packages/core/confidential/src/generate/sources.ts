@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-import { generateConfidentialFungibleOptions } from './confidentialFungible';
+import { generateERC7984Options } from './erc7984';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
@@ -14,9 +14,9 @@ type Subset = 'all' | 'minimal-cover';
 type Kind = keyof KindedOptions;
 
 export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
-  if (!kind || kind === 'ConfidentialFungible') {
-    for (const kindOpts of generateConfidentialFungibleOptions()) {
-      yield { kind: 'ConfidentialFungible', ...kindOpts };
+  if (!kind || kind === 'ERC7984') {
+    for (const kindOpts of generateERC7984Options()) {
+      yield { kind: 'ERC7984', ...kindOpts };
     }
   }
 }

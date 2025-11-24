@@ -3,8 +3,8 @@ import _test from 'ava';
 
 import { zipHardhat } from './zip-hardhat';
 
-import type { ConfidentialFungibleOptions } from './confidentialFungible';
-import { buildConfidentialFungible } from './confidentialFungible';
+import type { ERC7984Options } from './erc7984';
+import { buildERC7984 } from './erc7984';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -30,20 +30,20 @@ test.afterEach.always(async t => {
   await rimraf(t.context.tempFolder);
 });
 
-test.serial('confidentialFungible basic', async t => {
+test.serial('erc7984 basic', async t => {
   const opts: GenericOptions = {
-    kind: 'ConfidentialFungible',
+    kind: 'ERC7984',
     name: 'My Token',
     tokenURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
     symbol: 'MTK',
   };
-  const c = buildConfidentialFungible(opts);
+  const c = buildERC7984(opts);
   await runIgnitionTest(c, t);
 });
 
-test.serial('confidentialFungible full', async t => {
-  const fullOptions: Required<ConfidentialFungibleOptions> = {
+test.serial('erc7984 full', async t => {
+  const fullOptions: Required<ERC7984Options> = {
     name: 'My Token',
     tokenURI: 'https://example.com',
     networkConfig: 'zama-sepolia',
@@ -56,10 +56,10 @@ test.serial('confidentialFungible full', async t => {
     },
   };
   const opts: GenericOptions = {
-    kind: 'ConfidentialFungible',
+    kind: 'ERC7984',
     ...fullOptions,
   };
-  const c = buildConfidentialFungible(opts);
+  const c = buildERC7984(opts);
   await runIgnitionTest(c, t);
 });
 
