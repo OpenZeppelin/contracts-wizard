@@ -22,7 +22,7 @@
     "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat"
   },
   "dependencies": {
-    "@openzeppelin/wizard": "^0.8.0"
+    "@openzeppelin/wizard": "^0.10.2"
   },
   "devDependencies": {
     "@fhevm/core-contracts": "0.7.0-12",

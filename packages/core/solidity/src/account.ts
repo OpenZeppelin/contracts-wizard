@@ -244,18 +244,23 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
   // Disambiguate between Signer and AccountERC7579
   if (opts.signer && opts.ERC7579Modules) {
     const accountName = opts.upgradeable ? upgradeableName('AccountERC7579') : 'AccountERC7579';
-    const signerName = opts.upgradeable ? upgradeableName(`Signer${opts.signer}`) : `Signer${opts.signer}`;
+    const signerBaseName = signers[opts.signer].name;
+    const signerName = opts.upgradeable ? upgradeableName(signerBaseName) : signerBaseName;
 
-    c.addImportOnly({
-      name: 'AbstractSigner',
-      path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
-      transpiled: false,
-    });
-    c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+    // WebAuthnSigner depends inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
+    if (opts.signer !== 'WebAuthn') {
+      c.addImportOnly({
+        name: 'AbstractSigner',
+        path: '@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol',
+        transpiled: false,
+      });
+      c.addOverride({ name: 'AbstractSigner', transpiled: false }, signerFunctions._rawSignatureValidation);
+    }
+
     c.addOverride({ name: 'AccountERC7579' }, signerFunctions._rawSignatureValidation);
     c.setFunctionComments(
       [
-        `// IMPORTANT: Make sure ${signerName} is most derived than ${accountName}`,
+        `// IMPORTANT: Make sure ${signerName} is more derived than ${accountName}`,
         `// in the inheritance chain (i.e. contract ... is ${accountName}, ..., ${signerName})`,
         '// to ensure the correct order of function resolution.',
         `// ${accountName} returns false for _rawSignatureValidation`,
@@ -286,6 +291,7 @@ const functions = {
       args: [
         { name: 'userOp', type: 'PackedUserOperation calldata' },
         { name: 'userOpHash', type: 'bytes32' },
+        { name: 'signature', type: 'bytes calldata' },
       ],
       returns: ['uint256'],
     },

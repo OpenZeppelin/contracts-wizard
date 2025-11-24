@@ -38,12 +38,12 @@ Import the contract type(s) (for example, `fungible`) that you want to use from 
 import { fungible } from '@openzeppelin/wizard-stellar';
 ```
 
-To generate the source code for an Fungible contract with all of the default settings:
+To generate the source code for a Fungible contract with all of the default settings:
 ```js
 const contract = fungible.print();
 ```
 
-To generate the source code for an Fungible contract with some custom settings:
+To generate the source code for a Fungible contract with some custom settings:
 ```js
 const contract = fungible.print({
   pausable: true,

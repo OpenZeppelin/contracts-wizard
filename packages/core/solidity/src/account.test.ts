@@ -4,6 +4,7 @@ import { account } from '.';
 import type { AccountOptions } from './account';
 import { buildAccount } from './account';
 import { printContract } from './print';
+import { SignerOptions } from './signer';
 
 /**
  * Tests external API for equivalence with internal API
@@ -61,9 +62,9 @@ function format(upgradeable: false | 'uups' | 'transparent') {
   }
 }
 
-for (const signer of [false, 'ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const) {
+for (const signer of SignerOptions) {
   for (const upgradeable of [false, 'uups', 'transparent'] as const) {
-    if (signer === 'ERC7702' && !!upgradeable) continue;
+    if (signer === 'EIP7702' && !!upgradeable) continue;
 
     let title = 'Account';
     if (signer) {

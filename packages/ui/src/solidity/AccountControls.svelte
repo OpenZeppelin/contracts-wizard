@@ -25,7 +25,7 @@
   let upgradeNotSupported = false;
   let upgradeNotSupportedReason = '';
   $: {
-    if (opts.signer === 'ERC7702') {
+    if (opts.signer === 'EIP7702') {
       upgradeNotSupported = true;
       upgradeNotSupportedReason = 'EOAs can upgrade by redelegating to a new account';
     } else {
@@ -175,8 +175,8 @@
         making it suitable for accounts controlled by EOAs.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.signer === 'ERC7702'}>
-      <input type="radio" bind:group={opts.signer} value="ERC7702" use:error={errors?.erc7702} />
+    <label class:checked={opts.signer === 'EIP7702'}>
+      <input type="radio" bind:group={opts.signer} value="EIP7702" use:error={errors?.eip7702} />
       EOA Delegation
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/eoa-delegation">
         Special ECDSA validation that uses the account's own address as the signer. Enables EOAs to delegate execution
@@ -214,6 +214,13 @@
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#RSA">
         RSA PKCS#1 v1.5 signature validation following RFC8017. Enables integration with traditional PKI systems and
         hardware security modules that use RSA keys.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.signer === 'WebAuthn'}>
+      <input type="radio" bind:group={opts.signer} value="WebAuthn" />
+      WebAuthn
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/utils/cryptography#WebAuthn">
+        Web Authentication (WebAuthn) assertion validation for integration with Passkeys and HSMs on top of P256.
       </HelpTooltip>
     </label>
   </div>

@@ -1,6 +1,32 @@
 # Changelog
 
 
+## 0.10.2 (2025-11-12)
+
+- Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
+
+## 0.10.1 (2025-11-11)
+
+- Fixed bug with incorrect names in generated comment for Multisig account. ([#720](https://github.com/OpenZeppelin/contracts-wizard/pull/720))
+- Add API function to get versioned remappings. ([#724](https://github.com/OpenZeppelin/contracts-wizard/pull/724))
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `custodian` option to `freezable`. Replace ERC20Custodian with ERC20Freezable. ([#719](https://github.com/OpenZeppelin/contracts-wizard/pull/719))
+- Solidity account signer: Fix grammar in comment ([#711](https://github.com/OpenZeppelin/contracts-wizard/pull/711))
+
+## 0.10.0 (2025-11-03)
+
+- Update `@openzeppelin/contracts` and `@openzeppelin/contracts-upgradeable` dependencies to 5.5.0 ([#681](https://github.com/OpenZeppelin/contracts-wizard/pull/681))
+  - **Breaking changes**:
+    - Solidity account signer: `ERC7702` option is renamed as `EIP7702`. Imported contract `SignerERC7702` is renamed as `SignerEIP7702`.
+    - Solidity upgradeable contracts: `Initializable` and `UUPSUpgradeable` are imported from `@openzeppelin/contracts` instead of `@openzeppelin/contracts-upgradeable`.
+
+- **Breaking changes**: Solidity Stablecoin and RWA: Change `limitations` option to `restrictions`. Replace ERC20Allowlist and ERC20Blocklist with ERC20Restricted. ([#715](https://github.com/OpenZeppelin/contracts-wizard/pull/715))
+
+## 0.9.0 (2025-10-29)
+
+- **Breaking changes**: Use namespaced storage instead of state variables when upgradeability is enabled. ([#704](https://github.com/OpenZeppelin/contracts-wizard/pull/704))
+  - For ERC-20, use namespaced storage for `tokenBridge` when cross-chain bridging is set to `'custom'` and upgradeability is enabled.
+  - For ERC-721, use namespaced storage for `_nextTokenId` when mintable, auto increment IDs, and upgradeability are enabled.
+
 ## 0.8.1 (2025-10-14)
 
 - Updated community-contracts digest version ([#659](https://github.com/OpenZeppelin/contracts-wizard/pull/659))

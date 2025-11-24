@@ -29,6 +29,9 @@
       "**/typescript"
     ]
   },
+  "resolutions": {
+    "ethereum-cryptography": "^3.2.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "concurrently": "^9.1.2",

@@ -8,7 +8,7 @@ const account = {
   signatureValidation: [false, 'ERC1271', 'ERC7739'] as const,
   ERC721Holder: [false, true] as const,
   ERC1155Holder: [false, true] as const,
-  signer: ['ERC7702', 'ECDSA', 'P256', 'RSA', 'Multisig', 'MultisigWeighted'] as const,
+  signer: ['ECDSA', 'EIP7702', 'Multisig', 'MultisigWeighted', 'P256', 'RSA', 'WebAuthn'] as const,
   batchedExecution: [false, true] as const,
   ERC7579Modules: [false, 'AccountERC7579', 'AccountERC7579Hooked'] as const,
   access: [false] as const,

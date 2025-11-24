@@ -8,9 +8,10 @@ export interface Contract {
   libraries: Library[];
   imports: ImportContract[];
   functions: ContractFunction[];
+  structs: ContractStruct[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
-  variables: string[];
+  variableOrErrorDefinitions: VariableOrErrorDefinition[];
   upgradeable: boolean;
 }
 
@@ -53,7 +54,14 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
+export interface ContractStruct {
+  name: string;
+  comments: string[];
+  variables: string[];
+}
+
 export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
+
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
@@ -73,6 +81,11 @@ export interface NatspecTag {
   value: string;
 }
 
+export interface VariableOrErrorDefinition {
+  code: string;
+  comments?: string[];
+}
+
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
@@ -82,11 +95,12 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
+  readonly variableOrErrorMap: Map<string, VariableOrErrorDefinition> = new Map<string, VariableOrErrorDefinition>();
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
   private functionMap: Map<string, ContractFunction> = new Map<string, ContractFunction>();
   private libraryMap: Map<string, Library> = new Map<string, Library>();
+  private structMap: Map<string, ContractStruct> = new Map<string, ContractStruct>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -120,8 +134,12 @@ export class ContractBuilder implements Contract {
     return [...this.functionMap.values()];
   }
 
-  get variables(): string[] {
-    return [...this.variableSet];
+  get structs(): ContractStruct[] {
+    return [...this.structMap.values()];
+  }
+
+  get variableOrErrorDefinitions(): VariableOrErrorDefinition[] {
+    return [...this.variableOrErrorMap.values()];
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
@@ -194,6 +212,19 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  private addStruct(_struct: ContractStruct): ContractStruct {
+    const got = this.structMap.get(_struct.name);
+    if (got !== undefined) {
+      return got;
+    } else {
+      const struct: ContractStruct = {
+        ..._struct,
+      };
+      this.structMap.set(_struct.name, struct);
+      return struct;
+    }
+  }
+
   addConstructorArgument(arg: FunctionArgument) {
     this.constructorArgs.push(arg);
   }
@@ -234,11 +265,36 @@ export class ContractBuilder implements Contract {
   }
 
   /**
-   * Note: The type in the variable is not currently transpiled, even if it refers to a contract
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
    */
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
+  addStateVariable(code: string, upgradeable: boolean): boolean {
+    if (upgradeable) {
+      throw new Error('State variables should not be used when upgradeable is true. Set namespaced storage instead.');
+    } else {
+      return this._addVariableOrErrorDefinition({ code });
+    }
+  }
+
+  /**
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
+   */
+  addConstantOrImmutableOrErrorDefinition(code: string, comments?: string[]): boolean {
+    return this._addVariableOrErrorDefinition({ code, comments });
+  }
+
+  private _addVariableOrErrorDefinition(variableOrErrorDefinition: VariableOrErrorDefinition): boolean {
+    const present = this.variableOrErrorMap.has(variableOrErrorDefinition.code);
+    this.variableOrErrorMap.set(variableOrErrorDefinition.code, variableOrErrorDefinition);
+    return !present;
+  }
+
+  addStructVariable(baseStruct: ContractStruct, code: string): boolean {
+    let struct = this.structMap.get(baseStruct.name);
+    if (!struct) {
+      struct = this.addStruct(baseStruct);
+    }
+    const present = struct.variables.includes(code);
+    if (!present) struct.variables.push(code);
     return !present;
   }
 }

@@ -2,18 +2,21 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { erc1155, infoDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { erc1155, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
 
   export let opts: Required<KindedOptions['ERC1155']> = {
     kind: 'ERC1155',
     ...erc1155.defaults,
     royaltyInfo: { ...erc1155.defaults.royaltyInfo }, // copy fields
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
+    access: { ...erc1155.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -76,6 +79,14 @@
 
 <RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:accessType={opts.access.type}
+  bind:darInitialDelay={opts.access.darInitialDelay}
+  bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  required={requireAccessControl}
+  {errors}
+/>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

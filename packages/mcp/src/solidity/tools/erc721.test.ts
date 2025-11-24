@@ -56,6 +56,7 @@ test('all', async t => {
       license: 'MIT',
       securityContact: 'security@example.com',
     },
+    namespacePrefix: 'myNftProject',
   };
   assertHasAllSupportedFields(t, params);
   await assertAPIEquivalence(t, params, erc721.print);

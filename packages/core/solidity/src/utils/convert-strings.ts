@@ -5,10 +5,10 @@ export const UINT256_MAX = BigInt(2) ** BigInt(256) - BigInt(1);
 /**
  * Checks that a string is a valid number, and convert to bigint.
  *
- * @param value The value to check.
- * @param field The field name to use in the error if the value is invalid.
+ * @param value The string value to check and convert.
+ * @param field The field name to use in the error message if the value is invalid.
  * @throws OptionsError if the value is not a valid number.
- * @returns The value as a bigint.
+ * @returns The validated value as a bigint.
  */
 export function toBigInt(value: string, field: string): bigint {
   const isValidNumber = /^\d+$/.test(value);
