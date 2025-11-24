@@ -3,6 +3,8 @@ name: (Staging) Build and Deploy
 on:
   push:
     branches: [master]
+    paths:
+      - 'packages/ui/api/**'
   workflow_dispatch:
     inputs:
       branch:
