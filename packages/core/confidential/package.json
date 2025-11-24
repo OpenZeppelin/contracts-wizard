@@ -25,12 +25,11 @@
     "@openzeppelin/wizard": "^0.10.2"
   },
   "devDependencies": {
-    "@fhevm/core-contracts": "0.7.0-12",
-    "@fhevm/hardhat-plugin": "0.0.1-6",
-    "@fhevm/mock-utils": "^0.0.1-6",
-    "@fhevm/solidity": "0.7.0",
+    "@fhevm/hardhat-plugin": "^0.1.0",
+    "@fhevm/mock-utils": "^0.1.0",
+    "@fhevm/solidity": "^0.8.0",
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
-    "@openzeppelin/confidential-contracts": "^0.2.0",
+    "@openzeppelin/confidential-contracts": "^0.3.0-rc.0",
     "@openzeppelin/contracts": "^5.4.0",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",

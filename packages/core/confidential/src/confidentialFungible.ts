@@ -85,19 +85,19 @@ export function buildConfidentialFungible(opts: ConfidentialFungibleOptions): Co
 }
 
 function addBase(c: ContractBuilder, name: string, symbol: string, tokenURI: string) {
-  const ConfidentialFungibleToken = {
-    name: 'ConfidentialFungibleToken',
-    path: '@openzeppelin/confidential-contracts/token/ConfidentialFungibleToken.sol',
+  const ERC7984 = {
+    name: 'ERC7984',
+    path: '@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol',
   };
-  c.addParent(ConfidentialFungibleToken, [name, symbol, tokenURI]);
+  c.addParent(ERC7984, [name, symbol, tokenURI]);
 
   c.addImportOnly({
     name: 'euint64',
     path: '@fhevm/solidity/lib/FHE.sol',
   });
-  c.addOverride(ConfidentialFungibleToken, functions._update);
-  c.addOverride(ConfidentialFungibleToken, functions.confidentialTotalSupply);
-  c.addOverride(ConfidentialFungibleToken, functions.decimals);
+  c.addOverride(ERC7984, functions._update);
+  c.addOverride(ERC7984, functions.confidentialTotalSupply);
+  c.addOverride(ERC7984, functions.decimals);
 }
 
 function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
@@ -190,12 +190,12 @@ function addWrappable(c: ContractBuilder) {
     name: underlyingArg,
   });
 
-  const ConfidentialFungibleTokenERC20Wrapper = {
-    name: 'ConfidentialFungibleTokenERC20Wrapper',
-    path: '@openzeppelin/confidential-contracts/token/extensions/ConfidentialFungibleTokenERC20Wrapper.sol',
+  const ERC7984ERC20Wrapper = {
+    name: 'ERC7984ERC20Wrapper',
+    path: '@openzeppelin/confidential-contracts/token/ERC7984/extensions/ERC7984ERC20Wrapper.sol',
   };
-  c.addParent(ConfidentialFungibleTokenERC20Wrapper, [{ lit: underlyingArg }]);
-  c.addOverride(ConfidentialFungibleTokenERC20Wrapper, functions.decimals);
+  c.addParent(ERC7984ERC20Wrapper, [{ lit: underlyingArg }]);
+  c.addOverride(ERC7984ERC20Wrapper, functions.decimals);
 }
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
@@ -205,18 +205,18 @@ function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   };
   c.addParent(EIP712, [name, '1']);
 
-  const ConfidentialFungibleTokenVotes = {
-    name: 'ConfidentialFungibleTokenVotes',
-    path: '@openzeppelin/confidential-contracts/token/extensions/ConfidentialFungibleTokenVotes.sol',
+  const ERC7984Votes = {
+    name: 'ERC7984Votes',
+    path: '@openzeppelin/confidential-contracts/token/ERC7984/extensions/ERC7984Votes.sol',
   };
-  c.addParent(ConfidentialFungibleTokenVotes);
-  c.addOverride(ConfidentialFungibleTokenVotes, functions._update);
-  c.addOverride(ConfidentialFungibleTokenVotes, functions.confidentialTotalSupply);
+  c.addParent(ERC7984Votes);
+  c.addOverride(ERC7984Votes, functions._update);
+  c.addOverride(ERC7984Votes, functions.confidentialTotalSupply);
 
   c.addModifier('override', functions._validateHandleAllowance);
   requireAccessControl(c, functions._validateHandleAllowance, 'roles', 'HANDLE_VIEWER', 'handleViewer');
 
-  setClockMode(c, ConfidentialFungibleTokenVotes, clockMode);
+  setClockMode(c, ERC7984Votes, clockMode);
 }
 
 export const functions = defineFunctions({
