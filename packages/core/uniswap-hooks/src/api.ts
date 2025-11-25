@@ -10,6 +10,8 @@ export type Hooks = WizardContractAPI<HooksOptions> & AccessControlAPI<HooksOpti
 
 export const hooks: Hooks = {
   print: printHooks,
+  // TODO: Implement when Remix compatibility is added
+  getVersionedRemappings: () => [],
   defaults: hooksDefaults,
   isAccessControlRequired: hooksIsAccessControlRequired,
 };

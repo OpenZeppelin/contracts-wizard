@@ -9,6 +9,7 @@ import {
   solidityERC1155Descriptions,
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
+  solidityCommonDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
 import type { QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/solidity/dist/governor';
@@ -68,6 +69,10 @@ export const solidityERC20AIFunctionDefinition = {
         type: 'boolean',
         description: solidityERC20Descriptions.callback,
       },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
+      },
     },
     required: contractExactRequiredKeys<'solidity', 'ERC20'>()(['name', 'symbol']),
     additionalProperties: false,
@@ -109,6 +114,10 @@ export const solidityERC721AIFunctionDefinition = {
           { type: 'string', enum: extractStringEnumValues<ClockMode>()(['blocknumber', 'timestamp']) },
         ],
         description: solidityERC721Descriptions.votes,
+      },
+      namespacePrefix: {
+        type: 'string',
+        description: solidityCommonDescriptions.namespacePrefix,
       },
     },
     required: contractExactRequiredKeys<'solidity', 'ERC721'>()(['name', 'symbol']),
@@ -156,16 +165,16 @@ export const solidityStablecoinAIFunctionDefinition = {
     type: 'object',
     properties: {
       ...solidityERC20AIFunctionDefinition.parameters.properties,
-      custodian: {
+      freezable: {
         type: 'boolean',
-        description: solidityStablecoinDescriptions.custodian,
+        description: solidityStablecoinDescriptions.freezable,
       },
-      limitations: {
+      restrictions: {
         anyOf: [
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: extractStringEnumValues<Limitations>()(['allowlist', 'blocklist']) },
         ],
-        description: solidityStablecoinDescriptions.limitations,
+        description: solidityStablecoinDescriptions.restrictions,
       },
       upgradeable: {
         type: 'boolean',
@@ -209,17 +218,7 @@ export const solidityAccountAIFunctionDefinition = {
       signer: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          {
-            type: 'string',
-            enum: extractStringEnumValues<SignerOptions>()([
-              'ECDSA',
-              'ERC7702',
-              'P256',
-              'RSA',
-              'Multisig',
-              'MultisigWeighted',
-            ]),
-          },
+          { type: 'string', enum: ['ECDSA', 'EIP7702', 'P256', 'Multisig', 'MultisigWeighted', 'RSA', 'WebAuthn'] },
         ],
         description: solidityAccountDescriptions.signer,
       },

@@ -4,11 +4,14 @@ import { resolveAccessControlOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
+import type { MacrosSubset } from '../set-macros';
+import { resolveMacrosOptions } from '../set-macros';
 
 const booleans = [true, false];
 
 type GeneratorOptions = {
   access: AccessSubset;
+  macros: MacrosSubset;
 };
 
 function prepareBlueprint(opts: GeneratorOptions) {
@@ -18,6 +21,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     access: resolveAccessControlOptions(opts.access),
     upgradeable: upgradeableOptions,
     info: infoOptions,
+    macros: resolveMacrosOptions(opts.macros),
   };
 }
 
