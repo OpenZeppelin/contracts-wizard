@@ -507,7 +507,7 @@ function addERC6909Shares(c: ContractBuilder, _allOpts: HooksOptions) {
   c.addParent(
     {
       name: 'ERC6909',
-      path: `@openzeppelin/contracts/token/ERC6909/draft-ERC6909.sol`,
+      path: `@openzeppelin/contracts/token/ERC6909/ERC6909.sol`,
     },
     [],
   );

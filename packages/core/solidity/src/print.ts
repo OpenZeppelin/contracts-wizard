@@ -6,6 +6,8 @@ import type {
   Value,
   NatspecTag,
   ImportContract,
+  ContractStruct,
+  VariableOrErrorDefinition,
 } from './contract';
 import type { Options, Helpers } from './options';
 import { withHelpers } from './options';
@@ -23,10 +25,9 @@ import { getCommunityContractsGitCommit } from './utils/community-contracts-git-
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
+  const structs = contract.structs.map(_struct => printStruct(_struct));
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
-
   const hasOverrides = fns.override.some(l => l.length > 0);
-
   return formatLines(
     ...spaceBetween(
       [
@@ -44,7 +45,9 @@ export function printContract(contract: Contract, opts?: Options): string {
 
         spaceBetween(
           printLibraries(contract, helpers),
-          contract.variables,
+          ...structs,
+          printVariableOrErrorDefinitionsWithComments(contract.variableOrErrorDefinitions),
+          printVariableOrErrorDefinitionsWithoutComments(contract.variableOrErrorDefinitions),
           printConstructor(contract, helpers),
           ...fns.code,
           ...fns.modifiers,
@@ -56,6 +59,20 @@ export function printContract(contract: Contract, opts?: Options): string {
       ],
     ),
   );
+}
+
+function printVariableOrErrorDefinitionsWithComments(variableOrErrorDefinitions: VariableOrErrorDefinition[]): Lines[] {
+  const withComments = variableOrErrorDefinitions.filter(v => v.comments?.length);
+  // Spaces between each item that has comments
+  return spaceBetween(...withComments.map(v => [...v.comments!, v.code]));
+}
+
+function printVariableOrErrorDefinitionsWithoutComments(
+  variableOrErrorDefinitions: VariableOrErrorDefinition[],
+): Lines[] {
+  const withoutComments = variableOrErrorDefinitions.filter(v => !v.comments?.length);
+  // No spaces between items that don't have comments
+  return withoutComments.map(v => v.code);
 }
 
 function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
@@ -99,16 +116,20 @@ function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
   if (hasParentParams || hasConstructorCode || (helpers.upgradeable && parentsWithInitializers.length > 0)) {
     if (helpers.upgradeable) {
       const upgradeableParents = parentsWithInitializers.filter(p => inferTranspiled(p.contract));
-      const nonUpgradeableParents = contract.parents.filter(p => !inferTranspiled(p.contract));
+      // Omit Initializable and UUPSUpgradeable since they don't have explicit constructors
+      const nonUpgradeableParentsWithConstructors = contract.parents.filter(
+        p =>
+          !inferTranspiled(p.contract) && p.contract.name !== 'Initializable' && p.contract.name !== 'UUPSUpgradeable',
+      );
       const constructor = printFunction2(
         [
-          nonUpgradeableParents.length > 0
+          nonUpgradeableParentsWithConstructors.length > 0
             ? '/// @custom:oz-upgrades-unsafe-allow-reachable constructor'
             : '/// @custom:oz-upgrades-unsafe-allow constructor',
         ],
         'constructor',
         [],
-        nonUpgradeableParents.flatMap(p => printParentConstructor(p, helpers)),
+        nonUpgradeableParentsWithConstructors.flatMap(p => printParentConstructor(p, helpers)),
         ['_disableInitializers();'],
       );
       const initializer = printFunction2(
@@ -271,6 +292,20 @@ function printFunction2(
   }
 
   return fn;
+}
+
+function printStruct(_struct: ContractStruct): Lines[] {
+  const [comments, kindedName, code] = [_struct.comments, _struct.name, _struct.variables];
+  const struct: Lines[] = [...comments];
+
+  const braces = code.length > 0 ? '{' : '{}';
+  struct.push([`struct ${kindedName}`, braces].join(' '));
+
+  if (code.length > 0) {
+    struct.push(code, '}');
+  }
+
+  return struct;
 }
 
 function printArgument(arg: FunctionArgument, { transformName }: Helpers): string {

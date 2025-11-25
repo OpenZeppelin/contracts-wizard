@@ -53,8 +53,9 @@ test('all', async t => {
     flashmint: true,
     crossChainBridging: 'custom',
     premintChainId: '10',
-    limitations: 'allowlist',
-    custodian: true,
+    restrictions: 'allowlist',
+    freezable: true,
+    namespacePrefix: 'myProject',
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',

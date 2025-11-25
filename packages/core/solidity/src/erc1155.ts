@@ -22,6 +22,7 @@ export interface ERC1155Options extends CommonOptions {
 }
 
 export const defaults: Required<ERC1155Options> = {
+  ...commonDefaults,
   name: 'MyToken',
   uri: '',
   burnable: false,
@@ -29,9 +30,6 @@ export const defaults: Required<ERC1155Options> = {
   mintable: false,
   supply: false,
   updatableUri: true,
-  access: commonDefaults.access,
-  upgradeable: commonDefaults.upgradeable,
-  info: commonDefaults.info,
 } as const;
 
 function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {

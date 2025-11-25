@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard",
-  "version": "0.8.1",
+  "version": "0.10.2",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -21,10 +21,13 @@
     "test:watch": "ava --watch",
     "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable"
   },
+  "dependencies": {
+    "ethereum-cryptography": "^3.2.0"
+  },
   "devDependencies": {
     "@openzeppelin/community-contracts": "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd27",
-    "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/contracts-upgradeable": "^5.4.0",
+    "@openzeppelin/contracts": "^5.5.0",
+    "@openzeppelin/contracts-upgradeable": "^5.5.0",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",
     "ava": "^6.0.0",

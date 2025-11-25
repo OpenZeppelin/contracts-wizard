@@ -22,6 +22,7 @@ const blueprint = {
   crossChainBridging: crossChainBridgingOptions,
   access: accessOptions,
   upgradeable: upgradeableOptions,
+  namespacePrefix: ['myProject'],
   info: infoOptions,
 };
 

@@ -31,6 +31,7 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
         'appName',
         'appVersion',
       ]),
@@ -67,6 +68,7 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         'mintable',
         'upgradeable',
         'info',
+        'macros',
         'royaltyInfo',
         'appName',
         'appVersion',
@@ -100,6 +102,7 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
         'royaltyInfo',
       ]),
       baseUri: {
@@ -126,6 +129,7 @@ export const cairoAlphaGovernorAIFunctionDefinition = {
         'name',
         'upgradeable',
         'info',
+        'macros',
         'appName',
         'appVersion',
       ]),
@@ -191,7 +195,7 @@ export const cairoAlphaVestingAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'info']),
+      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'info', 'macros']),
       startDate: {
         type: 'string',
         description: cairoVestingDescriptions.startDate,
@@ -227,7 +231,7 @@ export const cairoAlphaAccountAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info', 'macros']),
       type: {
         type: 'string',
         enum: enumValues<Account>()(['stark', 'eth']),
@@ -255,7 +259,7 @@ export const cairoAlphaMultisigAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, ['name', 'upgradeable', 'info', 'macros']),
       quorum: {
         type: 'string',
         description: cairoMultisigDescriptions.quorum,
@@ -278,6 +282,7 @@ export const cairoAlphaCustomAIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
       ]),
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'Custom'>()(['name']),
