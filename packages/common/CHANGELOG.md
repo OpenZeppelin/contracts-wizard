@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.3.2 (2025-11-26)
+
+- Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))
+
 ## 0.3.1 (2025-11-12)
 
 - Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
