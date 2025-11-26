@@ -334,6 +334,8 @@ function addERC20Crosschain(c: ContractBuilder) {
   };
   c.addConstructionOnly(CrosschainLinked, [{ lit: 'links' }]);
   c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
+
+  // TODO add access controlled setLink
 }
 
 function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
