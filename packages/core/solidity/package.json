@@ -11,6 +11,8 @@
     "NOTICE",
     "/dist",
     "/src",
+    "openzeppelin-contracts-version.json",
+    "openzeppelin-contracts-version.d.ts",
     "!**/*.test.*"
   ],
   "scripts": {
