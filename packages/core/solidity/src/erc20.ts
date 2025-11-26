@@ -315,13 +315,13 @@ function addCrossChainBridging(
   namespacePrefix: string,
 ) {
   if (crossChainBridging === 'native') {
-    addERC20Crosschain(c);
+    addERC20Crosschain(c, access);
   } else {
     addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);
   }
 }
 
-function addERC20Crosschain(c: ContractBuilder) {
+function addERC20Crosschain(c: ContractBuilder, access: Access) {
   const ERC20Crosschain = {
     name: 'ERC20Crosschain',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
@@ -335,7 +335,8 @@ function addERC20Crosschain(c: ContractBuilder) {
   c.addConstructionOnly(CrosschainLinked, [{ lit: 'links' }]);
   c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
 
-  // TODO add access controlled setLink
+  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
+  c.addFunctionCode('_setLink(gateway, counterpart, allowOverride);', functions.setLink);
 }
 
 function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
@@ -507,5 +508,14 @@ export const functions = defineFunctions({
   _checkTokenBridge: {
     kind: 'internal' as const,
     args: [{ name: 'caller', type: 'address' }],
+  },
+
+  setLink: {
+    kind: 'public' as const,
+    args: [
+      { name: 'gateway', type: 'address' },
+      { name: 'counterpart', type: 'bytes memory' },
+      { name: 'allowOverride', type: 'bool' },
+    ],
   },
 });
