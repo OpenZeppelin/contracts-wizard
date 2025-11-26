@@ -87,11 +87,11 @@ function printCompatibleLibraryVersions(contract: Contract): string {
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
-  if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.contract)).join(', ')];
-  } else {
-    return [];
+  const visibleParents = contract.parents.filter(p => !p.constructionOnly);
+  if (visibleParents.length > 0) {
+    return ['is ' + visibleParents.map(p => transformName(p.contract)).join(', ')];
   }
+  return [];
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {

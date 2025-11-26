@@ -20,6 +20,7 @@ export interface Parent {
   contract: ImportContract;
   params: Value[];
   importOnly?: boolean;
+  constructionOnly?: boolean;
 }
 
 export interface ImportContract extends ReferencedContract {
@@ -134,20 +135,26 @@ export class ContractBuilder implements Contract {
     return [...this.variableOrErrorMap.values()];
   }
 
-  addParent(contract: ImportContract, params: Value[] = []): boolean {
+  private updateParentMap(
+    contract: ImportContract,
+    params: Value[] = [],
+    flags: Partial<Pick<Parent, 'importOnly' | 'constructionOnly'>> = {},
+  ): boolean {
     const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params });
+    this.parentMap = new Map(this.parentMap).set(contract.name, { contract, params, ...flags });
     return !present;
   }
 
+  addParent(contract: ImportContract, params: Value[] = []): boolean {
+    return this.updateParentMap(contract, params);
+  }
+
   addImportOnly(contract: ImportContract): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, {
-      contract,
-      params: [],
-      importOnly: true,
-    });
-    return !present;
+    return this.updateParentMap(contract, [], { importOnly: true });
+  }
+
+  addConstructionOnly(contract: ImportContract, params: Value[] = []): boolean {
+    return this.updateParentMap(contract, params, { constructionOnly: true });
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {

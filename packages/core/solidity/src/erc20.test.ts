@@ -146,6 +146,10 @@ testERC20('erc20 crossChainBridging custom', {
   crossChainBridging: 'custom',
 });
 
+testERC20('erc20 crossChainBridging native', {
+  crossChainBridging: 'native',
+});
+
 testERC20('erc20 crossChainBridging custom ownable', {
   crossChainBridging: 'custom',
   access: 'ownable',

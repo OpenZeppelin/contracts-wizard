@@ -16,7 +16,7 @@ import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
-export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
+export const crossChainBridgingOptions = [false, 'custom', 'native', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export interface ERC20Options extends CommonOptions {
@@ -309,11 +309,34 @@ function addFlashMint(c: ContractBuilder) {
 
 function addCrossChainBridging(
   c: ContractBuilder,
-  crossChainBridging: 'custom' | 'superchain',
+  crossChainBridging: 'custom' | 'native' | 'superchain',
   access: Access,
   upgradeable: Upgradeable,
   namespacePrefix: string,
 ) {
+  if (crossChainBridging === 'native') {
+    addERC20Crosschain(c);
+  } else {
+    addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);
+  }
+}
+
+function addERC20Crosschain(c: ContractBuilder) {
+  const ERC20Crosschain = {
+    name: 'ERC20Crosschain',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
+  };
+  c.addParent(ERC20Crosschain);
+
+  const CrosschainLinked = {
+    name: 'CrosschainLinked',
+    path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+  };
+  c.addConstructionOnly(CrosschainLinked, [{ lit: 'links' }]);
+  c.addConstructorArgument({ type: 'Link[] memory', name: 'links' });
+}
+
+function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,
