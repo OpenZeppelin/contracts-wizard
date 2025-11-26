@@ -79,7 +79,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom';
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -365,10 +365,14 @@ function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | '
 }
 
 function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
+  if (access === false) {
+    access = 'ownable';
+  }
+
   switch (access) {
-    case false:
     case 'ownable': {
       if (!upgradeable) {
+        // Add variable and constructor logic using state variable
         const addedBridge = c.addStateVariable(`address public tokenBridge;`, false);
         if (addedBridge) {
           c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
@@ -376,7 +380,12 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
           c.addConstructorCode(`tokenBridge = tokenBridge_;`);
         }
         c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+
+        // Add bridge setter
+        requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
+        c.addFunctionCode('tokenBridge = tokenBridge_;', functions.setTokenBridge);
       } else {
+        // Add variable and constructor logic using namespaced storage
         setNamespacedStorage(c, ['address tokenBridge;'], namespacePrefix);
 
         c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
@@ -389,6 +398,16 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
           [toStorageStructInstantiation(c.name), `if (caller != $.tokenBridge) revert Unauthorized();`],
           functions._checkTokenBridge,
           'view',
+        );
+
+        // Add bridge setter
+        requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
+        c.setFunctionBody(
+          [
+            toStorageStructInstantiation(c.name),
+            '$.tokenBridge = tokenBridge_;'
+          ],
+          functions.setTokenBridge
         );
       }
       break;
@@ -508,6 +527,11 @@ export const functions = defineFunctions({
   _checkTokenBridge: {
     kind: 'internal' as const,
     args: [{ name: 'caller', type: 'address' }],
+  },
+
+  setTokenBridge: {
+    kind: 'public' as const,
+    args: [{ name: 'tokenBridge_', type: 'address' }],
   },
 
   setLink: {
