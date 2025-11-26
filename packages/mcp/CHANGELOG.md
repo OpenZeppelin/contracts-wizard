@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 0.4.3 (2025-11-26)
+
+- Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))
+- Updated dependencies [[`3bb0213`](https://github.com/OpenZeppelin/contracts-wizard/commit/3bb02139b5a3b7a4098859a8e6824d7ac6e0fc6f), [`57dabc8`](https://github.com/OpenZeppelin/contracts-wizard/commit/57dabc812e0639635c01cad7445c33d6cbfcc61a)]:
+  - @openzeppelin/wizard-stellar@0.4.4
+  - @openzeppelin/wizard-common@0.3.2
+  - @openzeppelin/wizard@0.10.3
+
 ## 0.4.2 (2025-11-12)
 
 - Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
