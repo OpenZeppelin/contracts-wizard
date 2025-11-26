@@ -333,7 +333,7 @@ function addERC20Crosschain(c: ContractBuilder) {
     path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
   };
   c.addConstructionOnly(CrosschainLinked, [{ lit: 'links' }]);
-  c.addConstructorArgument({ type: 'Link[] memory', name: 'links' });
+  c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
 }
 
 function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
