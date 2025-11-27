@@ -225,8 +225,7 @@
       <input type="radio" bind:group={opts.crossChainBridging} value="embedded" />
       Embedded
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Crosschain"
-        >Embeds bridge logic directly in the token contract, making it natively crosschain. Requires specifying ERC-7786
-        gateways and counterparts.</HelpTooltip
+        >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
       >
     </label>
 
