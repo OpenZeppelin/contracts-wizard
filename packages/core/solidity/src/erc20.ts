@@ -79,7 +79,13 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom' || opts.crossChainBridging === 'embedded';
+  return (
+    opts.mintable ||
+    opts.pausable ||
+    opts.upgradeable === 'uups' ||
+    opts.crossChainBridging === 'custom' ||
+    opts.crossChainBridging === 'embedded'
+  );
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -339,7 +345,13 @@ function addERC20Crosschain(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_setLink(gateway, counterpart, allowOverride);', functions.setLink);
 }
 
-function addERC20Bridgeable(c: ContractBuilder, crossChainBridging: 'custom' | 'superchain', access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
+function addERC20Bridgeable(
+  c: ContractBuilder,
+  crossChainBridging: 'custom' | 'superchain',
+  access: Access,
+  upgradeable: Upgradeable,
+  namespacePrefix: string,
+) {
   const ERC20Bridgeable = {
     name: 'ERC20Bridgeable',
     path: `@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol`,
@@ -403,11 +415,8 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
         // Add bridge setter
         requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
         c.setFunctionBody(
-          [
-            toStorageStructInstantiation(c.name),
-            '$.tokenBridge = tokenBridge_;'
-          ],
-          functions.setTokenBridge
+          [toStorageStructInstantiation(c.name), '$.tokenBridge = tokenBridge_;'],
+          functions.setTokenBridge,
         );
       }
       break;
