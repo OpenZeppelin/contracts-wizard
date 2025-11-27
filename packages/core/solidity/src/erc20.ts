@@ -79,7 +79,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom' || opts.crossChainBridging === 'native';
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {

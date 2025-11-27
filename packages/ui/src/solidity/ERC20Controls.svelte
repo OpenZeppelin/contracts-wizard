@@ -183,8 +183,14 @@
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
       <input type="radio" bind:group={opts.crossChainBridging} value="custom" />
-      Custom
+      Custom Bridge
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
+    </label>
+
+    <label class:checked={opts.crossChainBridging === 'native'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="native" />
+      Embedded Bridge
+      <HelpTooltip>Makes this token natively crosschain by embedding bridge logic.</HelpTooltip>
     </label>
 
     {#if !omitFeatures?.includes('superchain')}
