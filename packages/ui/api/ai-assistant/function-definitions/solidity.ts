@@ -50,7 +50,7 @@ export const solidityERC20AIFunctionDefinition = {
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['custom', 'superchain'] },
+          { type: 'string', enum: ['custom', 'embedded', 'superchain'] },
         ],
         description: solidityERC20Descriptions.crossChainBridging,
       },
