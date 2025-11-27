@@ -10,6 +10,7 @@ export const defaults: Required<CommonOptions> = {
 export const contractDefaults: Required<CommonContractOptions> = {
   ...defaults,
   access: false,
+  explicitImplementations: false,
 } as const;
 
 export interface CommonOptions {
@@ -18,6 +19,7 @@ export interface CommonOptions {
 
 export interface CommonContractOptions extends CommonOptions {
   access?: Access;
+  explicitImplementations?: boolean;
 }
 
 export function withCommonDefaults(opts: CommonOptions): Required<CommonOptions> {
@@ -30,6 +32,7 @@ export function withCommonContractDefaults(opts: CommonContractOptions): Require
   return {
     ...withCommonDefaults(opts),
     access: opts.access ?? contractDefaults.access,
+    explicitImplementations: opts.explicitImplementations ?? contractDefaults.explicitImplementations,
   };
 }
 

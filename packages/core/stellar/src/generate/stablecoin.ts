@@ -16,6 +16,7 @@ const blueprint = {
   access: accessOptions,
   limitations: limitationsOptions,
   info: infoOptions,
+  explicitImplementations: booleans,
 };
 
 export function* generateStablecoinOptions(): Generator<Required<StablecoinOptions>> {

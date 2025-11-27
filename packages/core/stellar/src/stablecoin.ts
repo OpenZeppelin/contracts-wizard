@@ -48,13 +48,18 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   const c = buildFungible(allOpts);
 
   if (allOpts.limitations) {
-    addLimitations(c, allOpts.access, allOpts.limitations);
+    addLimitations(c, allOpts.access, allOpts.limitations, allOpts.explicitImplementations);
   }
 
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
+function addLimitations(
+  c: ContractBuilder,
+  access: Access,
+  mode: 'allowlist' | 'blocklist',
+  explicitImplementations: boolean,
+) {
   const type = mode === 'allowlist';
 
   const limitationsTrait = {
@@ -72,6 +77,8 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
     c.overrideAssocType('FungibleToken', 'type ContractType = BlockList;');
   }
 
+  if (explicitImplementations) overrideFungibleReadonlyFunctionsWithBase(c);
+
   const [getterFn, addFn, removeFn] = type
     ? [functions.allowed, functions.allow_user, functions.disallow_user]
     : [functions.blocked, functions.block_user, functions.unblock_user];
@@ -85,10 +92,31 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
   };
 
   c.addTraitFunction(limitationsTrait, addFn);
-  requireAccessControl(c, limitationsTrait, addFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, addFn, access, accessProps, explicitImplementations);
 
   c.addTraitFunction(limitationsTrait, removeFn);
-  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps, explicitImplementations);
+}
+
+function overrideFungibleReadonlyFunctionsWithBase(c: ContractBuilder) {
+  const fungibleTokenTrait = {
+    traitName: 'FungibleToken',
+    structName: c.name,
+    tags: [],
+  };
+
+  const overrides: Array<[(typeof fungibleFunctions)[keyof typeof fungibleFunctions], string[]]> = [
+    [fungibleFunctions.total_supply, ['Base::total_supply(e)']],
+    [fungibleFunctions.balance, ['Base::balance(e, &account)']],
+    [fungibleFunctions.allowance, ['Base::allowance(e, &owner, &spender)']],
+    [fungibleFunctions.decimals, ['Base::decimals(e)']],
+    [fungibleFunctions.name, ['Base::name(e)']],
+    [fungibleFunctions.symbol, ['Base::symbol(e)']],
+  ];
+
+  for (const [fn, code] of overrides) {
+    c.setFunctionCode(fn, code, fungibleTokenTrait);
+  }
 }
 
 const functions = {
