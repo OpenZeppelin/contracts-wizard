@@ -168,34 +168,34 @@ testERC20('erc20 crossChainBridging custom managed', {
   access: 'managed',
 });
 
-testERC20('erc20 crossChainBridging native', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded', {
+  crossChainBridging: 'embedded',
 });
 
-testERC20('erc20 crossChainBridging native ownable', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded ownable', {
+  crossChainBridging: 'embedded',
   access: 'ownable',
 });
 
-testERC20('erc20 crossChainBridging native ownable mintable burnable', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded ownable mintable burnable', {
+  crossChainBridging: 'embedded',
   access: 'ownable',
   mintable: true,
   burnable: true,
 });
 
-testERC20('erc20 crossChainBridging native roles', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded roles', {
+  crossChainBridging: 'embedded',
   access: 'roles',
 });
 
-testERC20('erc20 crossChainBridging native managed', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded managed', {
+  crossChainBridging: 'embedded',
   access: 'managed',
 });
 
-testERC20('erc20 crossChainBridging native upgradeable', {
-  crossChainBridging: 'native',
+testERC20('erc20 crossChainBridging embedded upgradeable', {
+  crossChainBridging: 'embedded',
   upgradeable: 'transparent',
 });
 

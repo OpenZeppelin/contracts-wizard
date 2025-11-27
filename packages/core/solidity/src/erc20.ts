@@ -16,7 +16,7 @@ import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
-export const crossChainBridgingOptions = [false, 'custom', 'native', 'superchain'] as const;
+export const crossChainBridgingOptions = [false, 'custom', 'embedded', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export interface ERC20Options extends CommonOptions {
@@ -79,7 +79,7 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom' || opts.crossChainBridging === 'native';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'custom' || opts.crossChainBridging === 'embedded';
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -309,12 +309,12 @@ function addFlashMint(c: ContractBuilder) {
 
 function addCrossChainBridging(
   c: ContractBuilder,
-  crossChainBridging: 'custom' | 'native' | 'superchain',
+  crossChainBridging: 'custom' | 'embedded' | 'superchain',
   access: Access,
   upgradeable: Upgradeable,
   namespacePrefix: string,
 ) {
-  if (crossChainBridging === 'native') {
+  if (crossChainBridging === 'embedded') {
     addERC20Crosschain(c, access);
   } else {
     addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);

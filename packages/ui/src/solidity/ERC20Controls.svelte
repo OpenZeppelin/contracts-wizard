@@ -183,14 +183,17 @@
   <div class="checkbox-group">
     <label class:checked={opts.crossChainBridging === 'custom'}>
       <input type="radio" bind:group={opts.crossChainBridging} value="custom" />
-      Custom Bridge
+      Custom
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    <label class:checked={opts.crossChainBridging === 'native'}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="native" />
-      Embedded Bridge
-      <HelpTooltip>Makes this token natively crosschain by embedding bridge logic.</HelpTooltip>
+    <label class:checked={opts.crossChainBridging === 'embedded'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="embedded" />
+      Embedded
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Crosschain"
+        >Embeds bridge logic directly in the token contract, making it natively crosschain. Requires specifying ERC-7786
+        gateways and counterparts.</HelpTooltip
+      >
     </label>
 
     {#if !omitFeatures?.includes('superchain')}
