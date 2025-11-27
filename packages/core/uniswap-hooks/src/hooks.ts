@@ -267,7 +267,7 @@ function addBaseHook(c: ContractBuilder, allOpts: HooksOptions): void {
 
 function addBaseAsyncSwap(c: ContractBuilder, allOpts: HooksOptions): void {
   c.addTopLevelComment(`TODO: Implement how asynchronous swaps are executed`);
-  c.addTopLevelComment(`i.e. queuing swaps to be executed in batches, reordering, etc`);
+  c.addTopLevelComment(`i.e. queuing swaps to be executed together in batches, reordering, etc`);
   c.addParent({ name: allOpts.hook, path: getHookPath(allOpts.hook) }, []);
 }
 
