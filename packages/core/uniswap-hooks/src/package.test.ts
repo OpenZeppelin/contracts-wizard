@@ -19,22 +19,24 @@ async function packPackage(packageRoot: string): Promise<string> {
 }
 
 test('packed package can be installed and imported', async t => {
-  const packageRoot = join(__dirname, '..');
+  const solidityPackageRoot = join(__dirname, '../../solidity');
+  const hooksPackageRoot = join(__dirname, '..');
   const tempDir = await mkdtemp(join(tmpdir(), 'wizard-package-test-'));
 
   try {
-    // Pack the package
-    const packedPath = await packPackage(packageRoot);
+    // Pack both packages (since hooks wizard depends on solidity wizard)
+    const solidityPackedPath = await packPackage(solidityPackageRoot);
+    const hooksPackedPath = await packPackage(hooksPackageRoot);
 
     try {
       // Create a test project in temp directory
       await execAsync('npm init -y', { cwd: tempDir });
 
-      // Install the packed package
-      await execAsync(`npm install "${packedPath}"`, { cwd: tempDir });
+      // Install both packages
+      await execAsync(`npm install "${solidityPackedPath}" "${hooksPackedPath}"`, { cwd: tempDir });
 
       // Test that the package can be imported
-      const testScript = `const { erc20 } = require('@openzeppelin/wizard');
+      const testScript = `const { hooks } = require('@openzeppelin/wizard-uniswap-hooks');
 console.log('SUCCESS');
 `;
 
@@ -44,8 +46,9 @@ console.log('SUCCESS');
 
       t.true(stdout.includes('SUCCESS'));
     } finally {
-      // Clean up the packed file
-      await rm(packedPath, { force: true });
+      // Clean up the packed files
+      await rm(solidityPackedPath, { force: true });
+      await rm(hooksPackedPath, { force: true });
     }
   } finally {
     // Clean up temp directory
