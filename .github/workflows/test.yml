@@ -52,6 +52,9 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/ui/api/stellar
     steps:
       # Checkout the repository
       - name: Harden the runner (Audit all outbound calls)
@@ -101,7 +104,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: dev-coverage
-          files: dev-lcov.info
+          files: packages/ui/api/stellar/dev-lcov.info
           flags: dev
           fail_ci_if_error: true
 
@@ -119,7 +122,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: ai-coverage
-          files: ai-lcov.info
+          files: packages/ui/api/stellar/ai-lcov.info
           flags: ai
           fail_ci_if_error: true
 
