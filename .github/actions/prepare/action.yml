@@ -1,0 +1,25 @@
+---
+name: Cache
+description: Caches cargo dependencies
+inputs:
+  components:
+    description: Additional Rust components to install (comma separated). rustfmt and clippy are always included.
+    required: false
+    default: ''
+outputs:
+  cache-hit:
+    description: Cache Hit
+    value: ${{ steps.cache.outputs.cache-hit }}
+runs:
+  using: composite
+  steps:
+    - name: setup rust tool chain
+      uses: dtolnay/rust-toolchain@1.88.0  # v1.88.0
+      with:
+        components: ${{ (inputs.components != '') && format('{0}, rustfmt, clippy', inputs.components) || 'rustfmt, clippy' }}
+    - name: Install libsodium
+      run: sudo apt-get update && sudo apt-get install -y libsodium-dev
+      shell: bash
+    - name: Restore cargo dependencies from cache
+      uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3  # v2.7.7
+      id: cache
