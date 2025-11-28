@@ -28,9 +28,7 @@ export const erc7984Schema = {
   symbol: z.string().describe(commonDescriptions.symbol),
   contractURI: z.string().describe(confidentialERC7984Descriptions.contractURI),
   premint: z.string().optional().describe(confidentialERC7984Descriptions.premint),
-  networkConfig: z
-    .literal('zama-ethereum')
-    .describe(confidentialERC7984Descriptions.networkConfig),
+  networkConfig: z.literal('zama-ethereum').describe(confidentialERC7984Descriptions.networkConfig),
   wrappable: z.boolean().optional().describe(confidentialERC7984Descriptions.wrappable),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(confidentialERC7984Descriptions.votes),
   ...commonSchema,

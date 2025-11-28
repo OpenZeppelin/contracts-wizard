@@ -29,8 +29,10 @@ export interface Options {
   transformImport?: (parent: ImportContract) => ImportContract;
   /**
    * Add additional libraries to the compatibility banner printed at the top of the contract.
+   *
+   * If `alwaysKeepOzPrefix` is true, the library name will always keep the "OpenZeppelin " prefix, even if there are multiple libraries from OpenZeppelin being imported.
    */
-  additionalCompatibleLibraries?: { name: string; path: string; version: string }[];
+  additionalCompatibleLibraries?: { name: string; path: string; version: string; alwaysKeepOzPrefix?: boolean }[];
 }
 
 export interface Helpers extends Required<Options> {

@@ -75,15 +75,20 @@ function printVariableOrErrorDefinitionsWithoutComments(
   return withoutComments.map(v => v.code);
 }
 
+type LibraryDescription = {
+  nameAndVersion: string;
+  alwaysKeepOzPrefix?: boolean;
+};
+
 function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
-  const libraries: string[] = [];
+  const libraryDescriptions: LibraryDescription[] = [];
   if (importsLibrary(contract, '@openzeppelin/contracts')) {
-    libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
+    libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Contracts ${compatibleContractsSemver}` });
   }
   if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
-      libraries.push(`OpenZeppelin Community Contracts commit ${commit}`);
+      libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Community Contracts commit ${commit}` });
     } catch (e) {
       console.error(e);
     }
@@ -91,25 +96,34 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   if (opts?.additionalCompatibleLibraries) {
     for (const library of opts.additionalCompatibleLibraries) {
       if (importsLibrary(contract, library.path)) {
-        libraries.push(`${library.name} ${library.version}`);
+        libraryDescriptions.push({
+          nameAndVersion: `${library.name} ${library.version}`,
+          alwaysKeepOzPrefix: library.alwaysKeepOzPrefix,
+        });
       }
     }
   }
 
-  if (libraries.length === 0) {
+  if (libraryDescriptions.length === 0) {
     return '';
-  } else if (libraries.length === 1) {
-    return `// Compatible with ${libraries[0]}`;
+  } else if (libraryDescriptions.length === 1) {
+    return `// Compatible with ${libraryDescriptions[0]!.nameAndVersion}`;
   } else {
     const OZ_PREFIX_WITH_SPACE = 'OpenZeppelin ';
-    if (libraries[0]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
-      for (let i = 1; i < libraries.length; i++) {
-        if (libraries[i]!.startsWith(OZ_PREFIX_WITH_SPACE)) {
-          libraries[i] = libraries[i]!.slice(OZ_PREFIX_WITH_SPACE.length);
+    if (libraryDescriptions[0]!.nameAndVersion.startsWith(OZ_PREFIX_WITH_SPACE)) {
+      for (let i = 1; i < libraryDescriptions.length; i++) {
+        if (
+          libraryDescriptions[i]!.nameAndVersion.startsWith(OZ_PREFIX_WITH_SPACE) &&
+          !libraryDescriptions[i]!.alwaysKeepOzPrefix
+        ) {
+          libraryDescriptions[i]!.nameAndVersion = libraryDescriptions[i]!.nameAndVersion.slice(
+            OZ_PREFIX_WITH_SPACE.length,
+          );
         }
       }
     }
-    return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
+    const librariesToPrint = libraryDescriptions.map(l => l.nameAndVersion);
+    return `// Compatible with ${librariesToPrint.slice(0, -1).join(', ')} and ${librariesToPrint.slice(-1)}`;
   }
 }
 
