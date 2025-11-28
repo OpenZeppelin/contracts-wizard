@@ -1,10 +1,7 @@
-# This workflow runs whenever a release is created.
-# The image is tagged with latest and the release version.
 name: (Production) Build and Deploy
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,36 +16,17 @@ jobs:
       attestations: write
       security-events: write
     env:
-      REGISTRY: ${{ secrets.RESEARCH_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-      ROLE_FOR_OIDC: 'arn:aws:iam::${{ secrets.ROOT_ACCOUNT_ID }}:role/github-actions-research-account-oidc-role'
-      ROLE_TO_ASSUME: 'arn:aws:iam::${{ secrets.RESEARCH_ACCOUNT_ID }}:role/GithubOIDCResearchAccountRole'
+      REGISTRY: ${{ vars.DOCKER_REGISTRY }}
+      ROLE_FOR_OIDC: "${{ secrets.ROLE_FOR_OIDC }}"
+      ROLE_TO_ASSUME: "${{ secrets.ROLE_TO_ASSUME }}"
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
         with:
           egress-policy: audit
 
-      - uses: actions/create-github-app-token@af35edadc00be37caa72ed9f3e6d5f7801bfdf09 # v1.11.7
-        id: gh-app-token
-        with:
-          app-id: ${{ vars.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-
       - name: Checkout Repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          token: ${{ steps.gh-app-token.outputs.token }}
-          fetch-depth: 0
-
-      - name: Setup pre-requisites
-        uses: ./.github/actions/setup
-        with:
-          token: ${{ steps.gh-app-token.outputs.token }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
-        with:
-          platforms: 'arm64'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2
@@ -62,38 +40,13 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
 
-      - name: Build Stellar API Docker image
-        uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
-        id: build
-        with:
-          context: .
-          platforms: linux/amd64 # linux/arm64 causes anchore/scan-action to fail
-          tags: |
-            ${{ env.REGISTRY }}/wizard-stellar-api-prod:latest
-            ${{ env.REGISTRY }}/wizard-stellar-api-prod:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          load: true
-
-      - name: Scan Stellar API Docker image
-        uses: anchore/scan-action@df395807f4554463d4455b8047cf58e37b6acaae # v6.5.0
-        id: scan
-        with:
-          image: ${{ env.REGISTRY }}/wizard-stellar-api-prod:${{ github.sha }}
-          fail-build: false
-
-      - name: Upload Anchore scan SARIF report
-        uses: github/codeql-action/upload-sarif@51f77329afa6477de8c49fc9c7046c15b9a4e79d # v3.29.5
-        with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
-
       - name: Build and push Stellar API Docker image
         uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
         id: push
         with:
-          context: packages/ui/api/stellar
-          file: Dockerfile.prod
-          platforms: linux/arm64
+          context: ./packages/ui/api/stellar
+          file: ./packages/ui/api/stellar/Dockerfile.prod
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ env.REGISTRY }}/wizard-api-prod:latest
