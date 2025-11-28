@@ -1,7 +1,6 @@
 dist
 *.tsbuildinfo
 node_modules
-openzeppelin-wizard-*.tgz
 
 .env
 .env.local
