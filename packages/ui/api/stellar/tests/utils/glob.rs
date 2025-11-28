@@ -1,7 +1,7 @@
 use stellar_api::utils::{build_globset, is_glob_match};
 
 #[test]
-fn test_single_pattern_match() {
+fn ai_test_single_pattern_match() {
     let globset = build_globset(vec!["*.rs".to_string()]).unwrap();
     let matcher = globset.matches("main.rs");
     assert!(!matcher.is_empty());

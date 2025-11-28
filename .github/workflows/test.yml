@@ -50,7 +50,7 @@ jobs:
         run: yarn test
         working-directory: packages/ui
 
-  backend:
+  stellar-backend:
     runs-on: ubuntu-latest
     defaults:
       run:

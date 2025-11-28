@@ -21,7 +21,7 @@ fn create_sample_directory() -> (tempfile::TempDir, PathBuf) {
 }
 
 #[test]
-fn test_returns_streaming_ndjson_response_with_headers() {
+fn ai_test_returns_streaming_ndjson_response_with_headers() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -39,7 +39,7 @@ fn test_returns_streaming_ndjson_response_with_headers() {
 }
 
 #[test]
-fn test_builds_system_prompt_with_contract_context() {
+fn ai_test_builds_system_prompt_with_contract_context() {
     // For files ["a.txt", "dir1/b.txt"], the expected entries are:
     // - a.txt
     // - dir1
@@ -50,7 +50,7 @@ fn test_builds_system_prompt_with_contract_context() {
 }
 
 #[test]
-fn test_persists_chat_on_successful_stream_completion() {
+fn ai_test_persists_chat_on_successful_stream_completion() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -68,7 +68,7 @@ fn test_persists_chat_on_successful_stream_completion() {
 }
 
 #[test]
-fn test_filters_out_messages_at_or_above500_chars() {
+fn ai_test_filters_out_messages_at_or_above500_chars() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -88,7 +88,7 @@ fn test_filters_out_messages_at_or_above500_chars() {
 }
 
 #[test]
-fn test_uses_empty_tools_for_unsupported_language() {
+fn ai_test_uses_empty_tools_for_unsupported_language() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -104,7 +104,7 @@ fn test_uses_empty_tools_for_unsupported_language() {
 }
 
 #[test]
-fn test_returns_error_json_on_request_parsing_failure() {
+fn ai_test_returns_error_json_on_request_parsing_failure() {
     // Invalid zip data should fail to parse/extract
     let invalid = vec![0u8, 1, 2, 3, 4, 5];
     let res = unzip_in_temporary_folder(invalid, &[]);
@@ -112,7 +112,7 @@ fn test_returns_error_json_on_request_parsing_failure() {
 }
 
 #[test]
-fn test_fails_when_entry_count_mismatch() {
+fn ai_test_fails_when_entry_count_mismatch() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -126,7 +126,7 @@ fn test_fails_when_entry_count_mismatch() {
 }
 
 #[test]
-fn test_supports_stored_compression_method() {
+fn ai_test_supports_stored_compression_method() {
     // Build a ZIP with Stored (no compression) for entries: a.txt and dir1/b.txt plus dir1/ directory
     let mut bytes = Vec::new();
     {
@@ -159,7 +159,7 @@ fn test_supports_stored_compression_method() {
 }
 
 #[test]
-fn test_rejects_path_traversal_entries() {
+fn ai_test_rejects_path_traversal_entries() {
     // Build a ZIP that contains a path traversal entry ../evil.txt
     let mut bytes = Vec::new();
     {
@@ -185,7 +185,7 @@ fn test_rejects_path_traversal_entries() {
 }
 
 #[test]
-fn test_rejects_archives_exceeding_total_uncompressed_size() {
+fn ai_test_rejects_archives_exceeding_total_uncompressed_size() {
     // Build a ZIP with three 40KB files using Stored compression to avoid ratio checks
     let mut bytes = Vec::new();
     {
@@ -209,7 +209,7 @@ fn test_rejects_archives_exceeding_total_uncompressed_size() {
 }
 
 #[test]
-fn test_allows_matching_with_glob_patterns() {
+fn ai_test_allows_matching_with_glob_patterns() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -227,7 +227,7 @@ fn test_allows_matching_with_glob_patterns() {
 }
 
 #[test]
-fn test_normalizes_backslashes_in_entry_names() {
+fn ai_test_normalizes_backslashes_in_entry_names() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -252,7 +252,7 @@ fn test_normalizes_backslashes_in_entry_names() {
 }
 
 #[test]
-fn test_zip_directory_uses_deflated_compression_for_files() {
+fn ai_test_zip_directory_uses_deflated_compression_for_files() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -273,7 +273,7 @@ fn test_zip_directory_uses_deflated_compression_for_files() {
 }
 
 #[test]
-fn test_rejects_absolute_path_entries() {
+fn ai_test_rejects_absolute_path_entries() {
     // Build a zip that contains an absolute path entry /abs.txt
     let mut bytes = Vec::new();
     {
@@ -299,7 +299,7 @@ fn test_rejects_absolute_path_entries() {
 }
 
 #[test]
-fn test_extracts_nested_file_and_preserves_directory_structure() {
+fn ai_test_extracts_nested_file_and_preserves_directory_structure() {
     // Build a zip that includes the directory entry and a nested file
     let mut bytes = Vec::new();
     {
