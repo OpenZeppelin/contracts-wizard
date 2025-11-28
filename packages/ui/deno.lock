@@ -211,6 +211,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@openzeppelin/confidential-contracts@^0.3.0",
         "npm:@rollup/plugin-alias@^5.1.1",
         "npm:@rollup/plugin-commonjs@^28.0.8",
         "npm:@rollup/plugin-json@^6.1.0",
