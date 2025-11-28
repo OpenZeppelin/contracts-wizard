@@ -36,7 +36,7 @@ test('packed package can be installed and imported', async t => {
       await execAsync(`npm install "${solidityPackedPath}" "${packedPath}"`, { cwd: tempDir });
 
       // Test that the package can be imported
-      const testScript = `const { hooks } = require('@openzeppelin/wizard-uniswap-hooks');
+      const testScript = `const { erc7984 } = require('@openzeppelin/wizard-confidential');
 console.log('SUCCESS');
 `;
 

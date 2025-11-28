@@ -1,6 +1,6 @@
 import type JSZip from 'jszip';
 import type { Contract } from '@openzeppelin/wizard';
-import { HardhatZipGenerator } from '@openzeppelin/wizard';
+import { HardhatZipGenerator } from '@openzeppelin/wizard/zip-env-hardhat';
 import { printContract } from './print';
 
 class ConfidentialHardhatZipGenerator extends HardhatZipGenerator {

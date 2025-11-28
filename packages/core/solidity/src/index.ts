@@ -51,6 +51,5 @@ export type { Options } from './options';
 export type { Lines } from './utils/format-lines';
 export { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 export { findCover } from './utils/find-cover';
-export { HardhatZipGenerator } from './zip-hardhat';
 export type { PremintCalculation } from './erc20';
 export { calculatePremint as calculateERC20Premint, scaleByPowerOfTen } from './erc20';
