@@ -21,6 +21,9 @@
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch"
   },
+  "dependencies": {
+    "@openzeppelin/wizard": "^0.10.3"
+  },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.5.0",
     "@openzeppelin/uniswap-hooks": "^1.2.1",
