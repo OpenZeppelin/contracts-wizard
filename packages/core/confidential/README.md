@@ -52,7 +52,7 @@ const contract = erc7984.print({
   name: 'ExampleToken',
   symbol: 'ETK',
   contractURI: 'https://example.com',
-  networkConfig: 'zama-sepolia',
+  networkConfig: 'zama-ethereum',
   premint: '1000000',
   wrappable: true,
 });

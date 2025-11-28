@@ -35,7 +35,7 @@ test.serial('erc7984 basic', async t => {
     kind: 'ERC7984',
     name: 'My Token',
     contractURI: 'https://example.com',
-    networkConfig: 'zama-sepolia',
+    networkConfig: 'zama-ethereum',
     symbol: 'MTK',
   };
   const c = buildERC7984(opts);
@@ -46,7 +46,7 @@ test.serial('erc7984 full', async t => {
   const fullOptions: Required<ERC7984Options> = {
     name: 'My Token',
     contractURI: 'https://example.com',
-    networkConfig: 'zama-sepolia',
+    networkConfig: 'zama-ethereum',
     symbol: 'MTK',
     premint: '2000',
     wrappable: true,

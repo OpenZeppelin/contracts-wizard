@@ -10,7 +10,7 @@ const blueprint = {
   votes: [false, ...clockModeOptions] as const,
   premint: ['1'],
   info: infoOptions,
-  networkConfig: ['zama-sepolia', 'zama-ethereum'] as const,
+  networkConfig: ['zama-ethereum'] as const,
   wrappable: booleans,
 };
 

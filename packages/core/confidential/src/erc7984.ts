@@ -11,11 +11,12 @@ import {
   calculateERC20Premint,
   scaleByPowerOfTen,
   type ClockMode,
+  supportsInterface,
 } from '@openzeppelin/wizard';
 import type { CommonOptions } from './common-options';
 import { printContract } from './print';
 
-export const networkConfigOptions = ['zama-sepolia', 'zama-ethereum'] as const;
+export const networkConfigOptions = ['zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
 
 export interface ERC7984Options extends CommonOptions {
@@ -36,7 +37,7 @@ export const defaults: Required<ERC7984Options> = {
   name: 'MyToken',
   symbol: 'MTK',
   contractURI: '',
-  networkConfig: 'zama-sepolia',
+  networkConfig: 'zama-ethereum',
   premint: '0',
   wrappable: false,
   votes: false,
@@ -90,6 +91,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, contractURI: 
     path: '@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol',
   };
   c.addParent(ERC7984, [name, symbol, contractURI]);
+  c.addOverride(ERC7984, supportsInterface);
 
   c.addImportOnly({
     name: 'euint64',
@@ -102,15 +104,9 @@ function addBase(c: ContractBuilder, name: string, symbol: string, contractURI: 
 
 function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
   switch (network) {
-    case 'zama-sepolia':
-      c.addParent({
-        name: 'SepoliaConfig',
-        path: '@fhevm/solidity/config/ZamaConfig.sol',
-      });
-      break;
     case 'zama-ethereum':
       c.addParent({
-        name: 'EthereumConfig',
+        name: 'ZamaEthereumConfig',
         path: '@fhevm/solidity/config/ZamaConfig.sol',
       });
       break;

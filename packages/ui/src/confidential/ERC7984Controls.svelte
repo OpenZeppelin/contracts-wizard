@@ -56,13 +56,12 @@
       <HelpTooltip>Specify the network configuration and provider to use for FHEVM contracts.</HelpTooltip>
     </span>
     <div class="checkbox-group">
-      <label class:checked={opts.networkConfig === 'zama-sepolia'}>
-        <input type="radio" bind:group={opts.networkConfig} value="zama-sepolia" />
-        Sepolia - Zama &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
-      </label>
       <label class:checked={opts.networkConfig === 'zama-ethereum'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-ethereum" />
-        Ethereum - Zama &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
+        Zama Ethereum &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
+        <HelpTooltip
+          >Uses the FHEVM contracts provided by Zama on the Ethereum (mainnet) and Sepolia networks.</HelpTooltip
+        >
       </label>
     </div>
   </div>

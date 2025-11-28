@@ -12,7 +12,7 @@ function testERC7984(title: string, opts: Partial<ERC7984Options>) {
       name: 'MyToken',
       symbol: 'MTK',
       contractURI: 'https://example.com/token',
-      networkConfig: 'zama-sepolia',
+      networkConfig: 'zama-ethereum',
       ...opts,
     });
     t.snapshot(printContract(c));
@@ -31,7 +31,7 @@ function testAPIEquivalence(title: string, opts?: ERC7984Options) {
           name: 'MyToken',
           symbol: 'MTK',
           contractURI: '',
-          networkConfig: 'zama-sepolia',
+          networkConfig: 'zama-ethereum',
           ...opts,
         }),
       ),
@@ -42,10 +42,6 @@ function testAPIEquivalence(title: string, opts?: ERC7984Options) {
 testERC7984('basic erc7984', {});
 
 testERC7984('erc7984 name is unicodeSafe', { name: 'MyTokeć' });
-
-testERC7984('erc7984 zama-ethereum', {
-  networkConfig: 'zama-ethereum',
-});
 
 testERC7984('erc7984 preminted', {
   premint: '1000',
@@ -63,7 +59,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
           name: 'MyToken',
           symbol: 'MTK',
           contractURI: 'https://example.com/token',
-          networkConfig: 'zama-sepolia',
+          networkConfig: 'zama-ethereum',
           premint,
         }),
       );
@@ -73,7 +69,7 @@ function testPremint(scenario: string, premint: string, expectedError?: string) 
         name: 'MyToken',
         symbol: 'MTK',
         contractURI: 'https://example.com/token',
-        networkConfig: 'zama-sepolia',
+        networkConfig: 'zama-ethereum',
         premint,
       });
       t.snapshot(printContract(c));
@@ -108,13 +104,6 @@ testERC7984('erc7984 votes + timestamp', {
   votes: 'timestamp',
 });
 
-testERC7984('erc7984 full zama-sepolia', {
-  premint: '2000',
-  wrappable: true,
-  votes: 'blocknumber',
-  networkConfig: 'zama-sepolia',
-});
-
 testERC7984('erc7984 full zama-ethereum', {
   premint: '2000',
   wrappable: true,
@@ -135,7 +124,7 @@ testAPIEquivalence('erc7984 API basic', {
   name: 'CustomToken',
   symbol: 'CTK',
   contractURI: 'https://custom.example.com/token',
-  networkConfig: 'zama-sepolia',
+  networkConfig: 'zama-ethereum',
 });
 
 testAPIEquivalence('erc7984 API full', {

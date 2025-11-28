@@ -512,36 +512,36 @@
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
   integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
 
-"@fhevm/core-contracts@0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@fhevm/core-contracts/-/core-contracts-0.8.0.tgz#5e89204ab5c385b1e929383b01cdb634737e1322"
-  integrity sha512-jQ2gyoTH0DZfOyOCQKLfV11agOVqrwZ7YfpLKdHDVjjXSO9gWIrXrvmUS6eV6zhED+PDHAcX0vfGGfLmsEBMTA==
+"@fhevm/hardhat-plugin@^0.3.0-1":
+  version "0.3.0-1"
+  resolved "https://registry.yarnpkg.com/@fhevm/hardhat-plugin/-/hardhat-plugin-0.3.0-1.tgz#954efd430213a723d2cc48d4141d3f034edd4c76"
+  integrity sha512-SnxtynkDehpkvoq0CRi1x09J01/K1rP2Q99fMNUv6PxXowwvjhZYhq0vw8qi6mZLI62AVMh94KbzN/Gb3L4e/w==
+  dependencies:
+    "@fhevm/host-contracts" "0.9.0"
+    debug "^4.1.1"
+    dotenv "^16.5.0"
+    picocolors "^1.1.1"
+    resolve "^1.22.10"
+
+"@fhevm/host-contracts@0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@fhevm/host-contracts/-/host-contracts-0.9.0.tgz#b296946edb193ba4097c8c262f337e4a42cd6878"
+  integrity sha512-N/DRfpXVCzHbg+9NE5sLHzTH3X7Wt3xRSN/7Jyoo+mKgjI7u40heJz8z/dUqvcq0h8wXjXcZcQHgP4pjMNjLKw==
   dependencies:
     encrypted-types "^0.0.4"
   optionalDependencies:
     solidity-comments-darwin-arm64 "0.1.1"
     solidity-comments-linux-x64-gnu "0.1.1"
 
-"@fhevm/hardhat-plugin@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@fhevm/hardhat-plugin/-/hardhat-plugin-0.1.0.tgz#18fd9fdd51707812130f7a1f2095f45a66f1eeef"
-  integrity sha512-u8gNJt/K+ggxgaESM7pbUpxu3wbiwtDOF+ONb8XJIlDmqnv/O4zkhide/+TTlF8X831tBd8cLwvJlWOzhgfZnQ==
-  dependencies:
-    "@fhevm/core-contracts" "0.8.0"
-    debug "^4.1.1"
-    dotenv "^16.5.0"
-    picocolors "^1.1.1"
-    resolve "^1.22.10"
-
 "@fhevm/mock-utils@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@fhevm/mock-utils/-/mock-utils-0.1.0.tgz#403522994f1f7a9e3c27715c8dfa2587e12d1f0c"
   integrity sha512-MZk+hXNrO4t0kIgoO9nLln9lKCefCe6gCAKeBhwAMmndIdYGIGkNJHVTbqAAMWS7wPTsA5pkR47BWvX0N6XaZQ==
 
-"@fhevm/solidity@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@fhevm/solidity/-/solidity-0.8.0.tgz#901893c99e21283196878e17ba82a088a329617f"
-  integrity sha512-+jpjPcJbwE+eNRhCn4IwQ2mcH11W9TW0GepwJh0aWm/oN1pmvmapHkj3WiLtG+PorQ8LDMgaq7+LO8hyVYKEzA==
+"@fhevm/solidity@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@fhevm/solidity/-/solidity-0.9.1.tgz#1ca0fe341a03f8a5a49a292f3666058a77f4735b"
+  integrity sha512-QxP+R+6v3aHA/rzgH9cDsiYOwRBB6zLAL3qNI4YfRewKA6ZB01cdkYvrB80FkJyddzxRNsT1jHIvJvSRS8XZ+Q==
   dependencies:
     encrypted-types "^0.0.4"
   optionalDependencies:
@@ -867,15 +867,10 @@
   version "0.0.1"
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
-"@openzeppelin/confidential-contracts@^0.3.0-rc.0":
-  version "0.3.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.0-rc.0.tgz#d3dd21c5e658a71af89dc1f79e055584fbdab2cd"
-  integrity sha512-LJlXsRSjH7/Bwq1j9QApF5n0Jn0046pFozZOFiDxlyG+lT95pN+De7xBgEKZDcYI4Hv8IBeImZhUwfQARuq6Jg==
-
-"@openzeppelin/contracts-upgradeable@^5.0.2":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.4.0.tgz#a325066da702d0a8be091eb17136d3e9c92cc76a"
-  integrity sha512-STJKyDzUcYuB35Zub1JpWW58JxvrFFVgQ+Ykdr8A9PGXgtq/obF5uoh07k2XmFyPxfnZdPdBdhkJ/n2YxJ87HQ==
+"@openzeppelin/confidential-contracts@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.0.tgz#5e7d08fb19d50109be1cff8a3c7b2ac3645f514b"
+  integrity sha512-SccPGH4RgmKNtNBhv6gU85Ek/MT99fuI09o14xN4gd6PBrjEetUoAS01dlevP1lpqbAoyM8oiXshOEJ86M5tyw==
 
 "@openzeppelin/contracts-upgradeable@^5.5.0":
   version "5.5.0"
@@ -1438,26 +1433,19 @@
     picomatch "^4.0.2"
     resolve-from "^5.0.0"
 
-"@zama-fhe/oracle-solidity@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@zama-fhe/oracle-solidity/-/oracle-solidity-0.1.0.tgz#1bce165d00a1568a50e3ab929c0e7f03b50c09e2"
-  integrity sha512-phRego2FW7SWgneQOES/iQ99c97ZCb+KZk5m+lT474dSNrsgEDh96W9T1+Owhc9C6VKtCpMLM43dHXwKHDIw6g==
-  dependencies:
-    "@openzeppelin/contracts-upgradeable" "^5.0.2"
-
-"@zama-fhe/relayer-sdk@^0.1.0-5":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@zama-fhe/relayer-sdk/-/relayer-sdk-0.1.2.tgz#ec657a380f30fcf54cbdc55ccfbf18c1e987ad33"
-  integrity sha512-xiNply3d8q6qC6hLfcE8BuPnguQZ9CHMbMcysoLMyN+H9UsQrXGwsdd7vA0DJS1aSvTiO54N/6u/E/FL2aHZlA==
+"@zama-fhe/relayer-sdk@0.3.0-5":
+  version "0.3.0-5"
+  resolved "https://registry.yarnpkg.com/@zama-fhe/relayer-sdk/-/relayer-sdk-0.3.0-5.tgz#f1d809bcdb95c39006c6e5a84842d1c285c1657b"
+  integrity sha512-DIPlN9z5tfSCXqUlhQN2MEv57HmAUHSGV9LPtGs6LWmM7POj6WsMd1hU7Qci4AWPsor7k3IqMfqGGthIvot/DQ==
   dependencies:
     commander "^14.0.0"
     ethers "^6.15.0"
     fetch-retry "^6.0.0"
     keccak "^3.0.4"
-    node-tfhe "1.2.0"
-    node-tkms "0.11.0-rc20"
-    tfhe "1.2.0"
-    tkms "0.11.0-rc20"
+    node-tfhe "1.4.0-alpha.3"
+    node-tkms "^0.12.0"
+    tfhe "1.4.0-alpha.3"
+    tkms "^0.12.0"
     wasm-feature-detect "^1.8.0"
 
 abbrev@^3.0.0:
@@ -4231,15 +4219,15 @@ node-releases@^2.0.19:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.19.tgz#9e445a52950951ec4d177d843af370b411caf314"
   integrity sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==
 
-node-tfhe@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/node-tfhe/-/node-tfhe-1.2.0.tgz#d21a0bd93de8e5d5a2b7057b6ca7dca20a5cfcde"
-  integrity sha512-h+rVdBHpfAHukSyuPGNciKopnirW/gI4UibiR24/6R1+qC321R5u9gdfwOPSsSD1URokYAoo9HG7MOFnzS9/3A==
+node-tfhe@1.4.0-alpha.3:
+  version "1.4.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/node-tfhe/-/node-tfhe-1.4.0-alpha.3.tgz#9e8d8afbd13ea7b0c00283f6929bf0a7af9787e3"
+  integrity sha512-oTcWL0OFA6t6BhScmDiGQ3VA8tU8T3EXCzIzpNxQxcuJDgQtiUF5CV6dgJLOrpWck4KCp1Bo/xLhv07uwn3q6Q==
 
-node-tkms@0.11.0-rc20:
-  version "0.11.0-rc20"
-  resolved "https://registry.yarnpkg.com/node-tkms/-/node-tkms-0.11.0-rc20.tgz#ad78f7405593ac24ce91baea5c1a374162c56b18"
-  integrity sha512-Ez9Tnl1WQQ5+3jBTriu9t8K096zgND58R9lH8OSYPGjovNVSmYcvmCawVxz4y1fw2V3Q28JjNnqi6T/I98zeqA==
+node-tkms@^0.12.0:
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/node-tkms/-/node-tkms-0.12.5.tgz#fc7f2ee30e86859082b9643c305d6ba8ceeddcbc"
+  integrity sha512-1GZf8DtZGSqNKT/K4swcNytwhChYXUkKXg/rJTc66FbJ3VwjPbDDheHlp5kEBw0tFQO+dJ0lWsm+NRtafucFYg==
 
 nofilter@^3.0.2:
   version "3.1.0"
@@ -6021,10 +6009,10 @@ terser@^5.0.0:
     commander "^2.20.0"
     source-map-support "~0.5.20"
 
-tfhe@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/tfhe/-/tfhe-1.2.0.tgz#e29e2d921a786b71801f8c44feb09fd1b3c2883d"
-  integrity sha512-+Ks02bMYs5Rlk1twydzFdi2mG24CIFoeP3klB2s/F9HspFG3F/V41fElkRKWF/sxahRhCxOuXlu3lQyBrS2vKQ==
+tfhe@1.4.0-alpha.3:
+  version "1.4.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/tfhe/-/tfhe-1.4.0-alpha.3.tgz#e00e20f3e12b302b49c2fecc336faa6a05639462"
+  integrity sha512-xdla7hi2WzLFIdAx2/ihRZ/bKlKcgDDabTJGtoqp1E5oqhLM1PzTXsJE0p7tW8+ebrvxiMGfbgMAWnU3f2ZAIQ==
 
 thenify-all@^1.0.0:
   version "1.6.0"
@@ -6065,10 +6053,10 @@ tippy.js@^6.3.7:
   dependencies:
     "@popperjs/core" "^2.9.0"
 
-tkms@0.11.0-rc20:
-  version "0.11.0-rc20"
-  resolved "https://registry.yarnpkg.com/tkms/-/tkms-0.11.0-rc20.tgz#1566511e67367985e8af385581f34dcda67a7eed"
-  integrity sha512-TH+D1Oy78qntx2n6DYu1+qt0zl+5o6peL87SZM4xDHFinx8uyeNUNTyFt+ytOlDYF0aaOMumtYp5/6BlrI7AiA==
+tkms@^0.12.0:
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/tkms/-/tkms-0.12.5.tgz#1a48db4f83bcca049b9a2970aa00dca5765050f3"
+  integrity sha512-FuZYwBGEmdDAQ8S4mmq0o9SBhNQWczqOTX8L+lHLmPcLT7KCLlof6jYyXlp2/8IIFLnZ4gwEzLeWBYaW05q3AA==
 
 tmp@0.0.33, tmp@^0.0.33:
   version "0.0.33"

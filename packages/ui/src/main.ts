@@ -3,6 +3,7 @@ import './common/styles/global.css';
 import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
+import ConfidentialApp from './confidential/App.svelte';
 import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';

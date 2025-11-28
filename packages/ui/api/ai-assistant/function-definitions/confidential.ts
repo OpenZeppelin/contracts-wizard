@@ -22,7 +22,7 @@ export const confidentialERC7984AIFunctionDefinition = {
         description: confidentialERC7984Descriptions.premint,
       },
       networkConfig: {
-        anyOf: [{ type: 'string', enum: ['zama-sepolia', 'zama-ethereum'] }],
+        anyOf: [{ type: 'string', enum: ['zama-ethereum'] }],
         description: confidentialERC7984Descriptions.networkConfig,
       },
       wrappable: {

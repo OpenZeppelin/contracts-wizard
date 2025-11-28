@@ -35,7 +35,7 @@ test('basic', async t => {
     name: 'TestToken',
     symbol: 'TST',
     contractURI: 'https://example.com',
-    networkConfig: 'zama-sepolia',
+    networkConfig: 'zama-ethereum',
   };
   await assertAPIEquivalence(t, params, erc7984.print);
 });
@@ -46,7 +46,7 @@ test('all', async t => {
     symbol: 'TST',
     contractURI: 'https://example.com',
     premint: '1000',
-    networkConfig: 'zama-sepolia',
+    networkConfig: 'zama-ethereum',
     wrappable: true,
     votes: 'blocknumber',
     info: {
