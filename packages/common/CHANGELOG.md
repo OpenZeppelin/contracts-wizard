@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.3.3 (2025-11-28)
+
+- Add support for Uniswap Hooks Wizard ([#628](https://github.com/OpenZeppelin/contracts-wizard/pull/628))
+
 ## 0.3.2 (2025-11-26)
 
 - Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))
