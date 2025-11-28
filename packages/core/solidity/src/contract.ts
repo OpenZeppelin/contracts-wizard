@@ -4,6 +4,7 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
+  topLevelComments: string[];
   natspecTags: NatspecTag[];
   libraries: Library[];
   imports: ImportContract[];
@@ -21,6 +22,7 @@ export interface Parent {
   contract: ImportContract;
   params: Value[];
   importOnly?: boolean;
+  constructionOnly?: boolean;
 }
 
 export interface ImportContract extends ReferencedContract {
@@ -54,13 +56,12 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
+export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
 export interface ContractStruct {
   name: string;
   comments: string[];
   variables: string[];
 }
-
-export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
 
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
@@ -91,6 +92,7 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
+  readonly topLevelComments: string[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -142,20 +144,26 @@ export class ContractBuilder implements Contract {
     return [...this.variableOrErrorMap.values()];
   }
 
-  addParent(contract: ImportContract, params: Value[] = []): boolean {
+  private updateParentMap(
+    contract: ImportContract,
+    params: Value[] = [],
+    flags: Partial<Pick<Parent, 'importOnly' | 'constructionOnly'>> = {},
+  ): boolean {
     const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params });
+    this.parentMap = new Map(this.parentMap).set(contract.name, { contract, params, ...flags });
     return !present;
   }
 
+  addParent(contract: ImportContract, params: Value[] = []): boolean {
+    return this.updateParentMap(contract, params);
+  }
+
   addImportOnly(contract: ImportContract): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, {
-      contract,
-      params: [],
-      importOnly: true,
-    });
-    return !present;
+    return this.updateParentMap(contract, [], { importOnly: true });
+  }
+
+  addConstructionOnly(contract: ImportContract, params: Value[] = []): boolean {
+    return this.updateParentMap(contract, params, { constructionOnly: true });
   }
 
   addLibrary(library: ImportContract, usingFor: string[]): boolean {
@@ -184,6 +192,10 @@ export class ContractBuilder implements Contract {
   addModifier(modifier: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.modifiers.push(modifier);
+  }
+
+  addTopLevelComment(comment: string) {
+    this.topLevelComments.push(comment);
   }
 
   addNatspecTag(key: string, value: string) {

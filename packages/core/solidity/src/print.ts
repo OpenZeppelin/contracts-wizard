@@ -39,6 +39,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       printImports(contract.imports, helpers),
 
       [
+        ...printTopLevelComments(contract.topLevelComments, contract.natspecTags.length > 0),
         ...printNatspecTags(contract.natspecTags),
         [`contract ${contract.name}`, ...printInheritance(contract, helpers), '{'].join(' '),
 
@@ -113,11 +114,11 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
-  if (contract.parents.length > 0) {
-    return ['is ' + contract.parents.map(p => transformName(p.contract)).join(', ')];
-  } else {
-    return [];
+  const visibleParents = contract.parents.filter(p => !p.constructionOnly);
+  if (visibleParents.length > 0) {
+    return ['is ' + visibleParents.map(p => transformName(p.contract)).join(', ')];
   }
+  return [];
 }
 
 function printConstructor(contract: Contract, helpers: Helpers): Lines[] {
@@ -334,6 +335,12 @@ function printArgument(arg: FunctionArgument, { transformName }: Helpers): strin
   return [type, arg.name].join(' ');
 }
 
+function printTopLevelComments(comments: string[], withExtraBlankLine: boolean = false): string[] {
+  const lines = comments.map(comment => `// ${comment}`);
+  if (comments.length > 0 && withExtraBlankLine) lines.push('//');
+  return lines;
+}
+
 function printNatspecTags(tags: NatspecTag[]): string[] {
   return tags.map(({ key, value }) => `/// ${key} ${value}`);
 }
@@ -355,7 +362,7 @@ function printLibraries(contract: Contract, { transformName }: Helpers): string[
   if (!contract.libraries || contract.libraries.length === 0) return [];
 
   return contract.libraries
-    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by library name
+    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by import path
     .map(lib => {
       const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b)); // Sort types
       return `using ${transformName(lib.library)} for ${sortedTypes.join(', ')};`;

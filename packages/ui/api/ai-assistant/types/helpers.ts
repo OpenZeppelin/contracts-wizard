@@ -1,18 +1,28 @@
-export type IsPrimitiveUnion<T, U = T> = [T] extends [never]
-  ? false
-  : [T] extends [boolean]
-    ? false
-    : T extends U
-      ? [U] extends [T]
-        ? false
-        : true
-      : false;
+type Primitive = string | number | boolean;
 
-export type Permutation<T, K = T> = [T] extends [never] ? [] : K extends K ? [K, ...Permutation<Exclude<T, K>>] : never;
+type IsUnion<T, U = T> = [T] extends [never] ? false : T extends U ? ([U] extends [T] ? false : true) : false;
 
-type RequiredKeys<T, K = keyof T> = K extends keyof T ? (T extends Required<Pick<T, K>> ? K : never) : never;
+export type IsPrimitiveUnion<T> = [T] extends [never] ? false : T extends Primitive ? IsUnion<T> : false;
 
-export type ExactRequiredKeys<T extends object> = Permutation<RequiredKeys<T>>;
+type RequiredKeys<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? never : K;
+}[keyof T];
+
+type EnsureExactKeys<TKeys extends PropertyKey, TTuple extends readonly TKeys[]> =
+  Exclude<TKeys, TTuple[number]> extends never
+    ? Exclude<TTuple[number], TKeys> extends never
+      ? TTuple
+      : never
+    : never;
+
+export type ExactRequiredKeys<T extends object> = readonly RequiredKeys<T>[];
+
+export const exactRequiredKeys =
+  <TContract extends object>() =>
+  <const TTuple extends readonly RequiredKeys<TContract>[]>(keys: EnsureExactKeys<RequiredKeys<TContract>, TTuple>) =>
+    keys;
+
+export type EnumValues<T> = [T] extends [Primitive] ? readonly T[] : never;
 
 export type StringifyPrimaryType<TType> = TType extends string
   ? 'string'
@@ -26,34 +36,75 @@ export type StringifyPrimaryType<TType> = TType extends string
           ? 'object'
           : never;
 
-type MembersOf<U, K extends string> = K extends 'boolean'
-  ? Extract<U, boolean>
-  : K extends 'string'
-    ? Extract<U, string>
-    : K extends 'number'
-      ? Extract<U, number>
-      : never;
+type BooleanAnyOf<T> =
+  Extract<T, boolean> extends never
+    ? never
+    : {
+        type: 'boolean';
+        enum?: EnumValues<Extract<T, boolean>>;
+      };
 
-type BooleanEnum = [false] | [true] | [false, true] | [true, false];
+type BooleanAnyOfWithEnum<T> =
+  Extract<T, boolean> extends never
+    ? never
+    : {
+        type: 'boolean';
+        enum: EnumValues<Extract<T, boolean>>;
+      };
 
-type EnumFor<K extends string, U> = K extends 'boolean' ? BooleanEnum : Permutation<MembersOf<U, K>>;
+type NumberAnyOf<T> =
+  Extract<T, number> extends never
+    ? never
+    : {
+        type: 'number';
+        enum?: EnumValues<Extract<T, number>>;
+      };
 
-type TypeFor<K extends string, U> = {
-  type: K;
-  enum: EnumFor<K, U>;
-};
+type StringAnyOf<T> =
+  Extract<T, string> extends never
+    ? never
+    : {
+        type: 'string';
+        enum?: EnumValues<Extract<T, string>>;
+      };
 
-type Wrap<T> = { __wrapped: T };
+type StringAnyOfWithEnum<T> =
+  Extract<T, string> extends never
+    ? never
+    : {
+        type: 'string';
+        enum: EnumValues<Extract<T, string>>;
+      };
 
-type WrappedTypeFor<K extends string, U> = Wrap<TypeFor<K, U>>;
+type PrimitiveAnyOf<T> = BooleanAnyOf<T> | NumberAnyOf<T> | StringAnyOf<T>;
 
-export type TypeGroup<U> = {
-  [K in StringifyPrimaryType<U>]: WrappedTypeFor<K, U>;
-}[StringifyPrimaryType<U>];
+type PrimitiveAnyOfRest<T> = readonly Extract<PrimitiveAnyOf<T>, object>[];
 
-export type AiFunctionCallAnyOf<U> =
-  Permutation<TypeGroup<U>> extends infer P
-    ? P extends readonly unknown[]
-      ? { [I in keyof P]: P[I] extends Wrap<infer X> ? X : never }
-      : never
-    : never;
+type BooleanStringAnyOf<T> =
+  | readonly [BooleanAnyOfWithEnum<T>, StringAnyOfWithEnum<T>, ...PrimitiveAnyOfRest<T>]
+  | readonly [StringAnyOfWithEnum<T>, BooleanAnyOfWithEnum<T>, ...PrimitiveAnyOfRest<T>];
+
+type HasBoolean<T> = [Extract<T, boolean>] extends [never] ? false : true;
+type HasString<T> = [Extract<T, string>] extends [never] ? false : true;
+type HasNumber<T> = [Extract<T, number>] extends [never] ? false : true;
+
+type RequiresBooleanStringEnforcement<T> =
+  HasBoolean<T> extends true ? (HasString<T> extends true ? (HasNumber<T> extends true ? false : true) : false) : false;
+
+export type AiFunctionCallAnyOf<T> =
+  RequiresBooleanStringEnforcement<T> extends true
+    ? BooleanStringAnyOf<T>
+    : readonly Extract<PrimitiveAnyOf<T>, object>[];
+
+type EnsureEnumCoverage<TUnion extends Primitive, TValues extends readonly TUnion[]> =
+  Exclude<TUnion, TValues[number]> extends never ? TValues : never;
+
+export const enumValues =
+  <TUnion extends Primitive>() =>
+  <TValues extends readonly TUnion[]>(values: EnsureEnumCoverage<TUnion, TValues>) =>
+    values;
+
+export const extractStringEnumValues =
+  <TUnion extends Primitive>() =>
+  <TValues extends readonly Extract<TUnion, string>[]>(values: EnsureEnumCoverage<Extract<TUnion, string>, TValues>) =>
+    values;

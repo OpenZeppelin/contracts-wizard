@@ -4,6 +4,6 @@
     "openai": "https://esm.sh/openai@5.23.2",
     "jszip": "https://esm.sh/jszip@3.6.0",
     "@openzeppelin/wizard": "../core/solidity/dist/index.js",
-    "@openzeppelin/wizard/dist/": "../core/solidity/dist/"
+    "@openzeppelin/wizard/": "../core/solidity/dist/"
   }
 }

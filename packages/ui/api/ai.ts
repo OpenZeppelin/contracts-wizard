@@ -5,6 +5,7 @@ import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-
 import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import * as confidentialFunctions from './ai-assistant/function-definitions/confidential.ts';
+import * as uniswapHooksFunctions from './ai-assistant/function-definitions/uniswap-hooks.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import type { ChatMessages } from './services/open-ai.ts';
 import { createOpenAiCompletionStream } from './services/open-ai.ts';
@@ -27,6 +28,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     stellar: stellarFunctions,
     stylus: stylusFunctions,
     confidential: confidentialFunctions,
+    uniswapHooks: uniswapHooksFunctions,
   };
 
   return (Object.values(functionPerLanguages[language] ?? {}) as SimpleAiFunctionDefinition[]).map(
