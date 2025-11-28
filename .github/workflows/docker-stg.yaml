@@ -4,13 +4,13 @@ on:
   push:
     branches: [master]
     paths:
-      - "packages/ui/api/**"
+      - 'packages/ui/api/**'
   workflow_dispatch:
     inputs:
       branch:
-        description: "Branch to build from"
+        description: 'Branch to build from'
         required: true
-        default: "master"
+        default: 'master'
         type: string
 
 permissions:
