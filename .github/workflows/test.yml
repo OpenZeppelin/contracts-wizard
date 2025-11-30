@@ -97,7 +97,7 @@ jobs:
           RUSTFLAGS: -Cinstrument-coverage
           RUST_TEST_THREADS: 1
         run: |
-          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-dev-lcov.info --tests -- --skip ai_
+          cargo hack llvm-cov --locked --lib --lcov --ignore-filename-regex 'src/main.rs' --output-path stellar-backend-dev-lcov.info --tests -- --skip ai_
 
       - name: Upload Developer Coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
@@ -115,7 +115,7 @@ jobs:
           RUSTFLAGS: -Cinstrument-coverage
           RUST_TEST_THREADS: 1
         run: |
-          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-ai-lcov.info --tests -- ai_
+          cargo hack llvm-cov --locked --lib --lcov --ignore-filename-regex 'src/main.rs' --output-path stellar-backend-ai-lcov.info --tests -- ai_
 
       - name: Upload AI Coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
