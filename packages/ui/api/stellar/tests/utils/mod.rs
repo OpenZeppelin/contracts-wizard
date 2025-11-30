@@ -1,3 +1,4 @@
+pub mod dir;
+pub mod errors;
 pub mod glob;
-pub mod glob_extra;
-pub mod path_tests;
+pub mod path;

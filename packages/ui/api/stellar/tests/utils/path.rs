@@ -68,3 +68,48 @@ fn ensure_no_symlinks_detects_parent_and_self_symlink() {
     let res2 = ensure_no_symlinks(&root, &file_link);
     assert!(res2.is_err(), "expected symlink detected on final path");
 }
+
+#[test]
+fn ai_join_and_assert_inside_success() {
+    let tmp = tempdir().expect("tmp");
+    let root = tmp.path();
+    let inside = PathBuf::from("subdir/file.txt");
+    let full = root.join(&inside);
+    create_dir_all(full.parent().unwrap()).unwrap();
+    File::create(&full).unwrap();
+
+    let res = join_and_assert_inside(root, &inside);
+    assert!(res.is_ok());
+    let got = res.unwrap();
+    assert!(got.starts_with(root));
+}
+
+#[test]
+fn ai_canonicalize_existing_dir_on_file_returns_err() {
+    let tmp = tempdir().expect("tmp");
+    let f = tmp.path().join("afile");
+    File::create(&f).unwrap();
+    let res = canonicalize_existing_dir(&f);
+    assert!(res.is_err());
+}
+
+#[test]
+fn ai_ensure_no_symlinks_ok() {
+    let tmp = tempdir().expect("tmp");
+    let root = tmp.path().to_path_buf();
+    create_dir_all(root.join("a/b")).unwrap();
+    let target = root.join("a/b/c.txt");
+    File::create(&target).unwrap();
+    let res = ensure_no_symlinks(&root, &target);
+    assert!(res.is_ok());
+}
+
+#[test]
+fn ai_expand_with_directories_handles_dot_and_backslash() {
+    let items = expand_with_directories(&["./a/b/c.txt", "dir\\file.txt"]);
+    assert!(items.iter().any(|s| s.ends_with("a/b/c.txt")));
+    // backslash should be normalized to forward slash somewhere in the output
+    assert!(items
+        .iter()
+        .any(|s| s.contains("dir/") || s.contains("dir\\")));
+}

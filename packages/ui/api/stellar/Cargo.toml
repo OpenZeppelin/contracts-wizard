@@ -17,6 +17,9 @@ tempfile = "^3.21.0"
 globset = "^0.4.16"
 libc = "^0.2.175"
 
+[dev-dependencies]
+actix-rt = "2"
+
 [package.metadata.tools]
 stellar_cli = "23.0.1"
 stellar_scaffold_cli = "0.0.8"

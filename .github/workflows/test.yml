@@ -104,7 +104,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: stellar-backend-dev-coverage
-          files: packages/ui/api/stellar/dev-lcov.info
+          files: packages/ui/api/stellar/stellar-backend-dev-lcov.info
           flags: stellar-backend-dev
           fail_ci_if_error: true
 
@@ -122,7 +122,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: stellar-backend-ai-coverage
-          files: packages/ui/api/stellar/ai-lcov.info
+          files: packages/ui/api/stellar/stellar-backend-ai-lcov.info
           flags: stellar-backend-ai
           fail_ci_if_error: true
 

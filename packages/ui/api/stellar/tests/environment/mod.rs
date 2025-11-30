@@ -1,2 +1,2 @@
-pub mod scaffold_cmd;
+pub mod scaffold_upgrade;
 pub mod zip_folder;
