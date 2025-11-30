@@ -4,11 +4,9 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use tempfile::tempdir;
 
+use actix_web::web;
 use std::env;
 use std::io::Cursor;
-
-use actix_web::rt::System;
-use actix_web::web;
 
 use std::sync::Mutex;
 use stellar_api::controllers::upgrade_to_scaffold;
