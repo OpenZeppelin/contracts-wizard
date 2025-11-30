@@ -17,3 +17,6 @@ remappings.txt
 *.cairo
 *.sh
 *.rs
+**/Dockerfile*
+*.yml
+*.yaml

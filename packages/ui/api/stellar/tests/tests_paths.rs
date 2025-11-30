@@ -1,3 +1,9 @@
+#[path = "config/mod.rs"]
+mod config;
+
+#[path = "controllers/mod.rs"]
+mod controllers;
+
 #[path = "environment/mod.rs"]
 mod environment;
 
