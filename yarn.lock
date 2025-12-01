@@ -811,9 +811,23 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.5.0.tgz#e35b3ededa5ccc13205c2b42e2058cd5cb7d424a"
   integrity sha512-Va5hKG5oaK0EE5bXTVWugcGimMHazxL+SL523dH6WVbGiuLXwuWr9oxtLyPHQSVGtgmlIgtKNR5V+OUpCIUwFQ==
 
+"@openzeppelin/contracts@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.5.0.tgz#24e8a2f9598de484dcb223512af656edf52bc0e8"
+  integrity sha512-R8hq4zmKKWP2c7OxeRgAcjZwvF5W0Qq2OIX7degrtdM52Q9xYr4MLJdUAVPKGUewNJ1qo+M6YiZLLnNUnjP/gg==
+
 "@openzeppelin/contracts@git+https://github.com/Amxx/openzeppelin-contracts.git#crosschain/erc20bridge":
   version "5.4.0"
   resolved "git+https://github.com/Amxx/openzeppelin-contracts.git#63ef13b316e5a656ba69fcd4af42febde9314517"
+
+"@openzeppelin/uniswap-hooks@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/uniswap-hooks/-/uniswap-hooks-1.2.1.tgz#94d88aaaa06975a552104d98d632be863999e4f9"
+  integrity sha512-x8mOuXtiHX3uOutu+v3VFYVyaC/R2nQ9EJNoV21+c1YsJMx0LNdyIbKb5Xm3hDfWrAeRKwqA9eMff7S+ZvPMDg==
+  dependencies:
+    "@openzeppelin/contracts" "^5.5.0"
+    "@uniswap/v4-core" "^1.0.2"
+    "@uniswap/v4-periphery" "^1.0.3"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -1309,6 +1323,16 @@
   dependencies:
     "@typescript-eslint/types" "8.39.1"
     eslint-visitor-keys "^4.2.1"
+
+"@uniswap/v4-core@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@uniswap/v4-core/-/v4-core-1.0.2.tgz#5b5701267eea25e84221f7697d971fb4f66169f6"
+  integrity sha512-X15Tm2wWd+USAzEExMbo+g9naA6QN6mPgWm0MzDwRNlOfaNlepfUpSyt9RSrUfEODspwbyWbcLg6t5nwc/e7lg==
+
+"@uniswap/v4-periphery@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@uniswap/v4-periphery/-/v4-periphery-1.0.3.tgz#d931bc5d6f29703482ceb43ad1f9ad859293ee12"
+  integrity sha512-JxLL0Djv9XcMvI2PatEnWrCrxuEaYNVhHxstndBOP+aJfh1XLg5ec8SDZ0xyoVfg2ElJTvuKpBgnu90bNValsg==
 
 "@upstash/redis@1.35.6":
   version "1.35.6"

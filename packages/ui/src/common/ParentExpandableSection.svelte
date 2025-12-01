@@ -13,7 +13,7 @@
   import ChevronDown from './icons/ChevronDown.svelte';
 
   export let label: string;
-  export let type: 'checkbox' | 'toggleradio';
+  export let type: 'checkbox' | 'toggleradio' | 'section';
 
   export let checkboxChecked: boolean | undefined = undefined;
 
@@ -60,17 +60,19 @@
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="items-center tooltip-container pr-2 flex justify-between">
       <div class="flex items-center">
-        <span class="mr-2">
-          {#if type === 'checkbox'}
-            <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
-          {:else if type === 'toggleradio'}
-            <ToggleRadio
-              bind:value={toggleRadioValue}
-              defaultValue={toggleRadioDefaultValue}
-              disabled={disabled || required}
-            />
-          {/if}
-        </span>
+        {#if type !== 'section'}
+          <span class="mr-2">
+            {#if type === 'checkbox'}
+              <input type="checkbox" bind:checked={checkboxChecked} disabled={disabled || required} />
+            {:else if type === 'toggleradio'}
+              <ToggleRadio
+                bind:value={toggleRadioValue}
+                defaultValue={toggleRadioDefaultValue}
+                disabled={disabled || required}
+              />
+            {/if}
+          </span>
+        {/if}
         <span>{label}</span>
       </div>
       <div class="flex items-center">
@@ -93,7 +95,7 @@
   </h1>
 
   <div class="text-sm text-gray-500" hidden={!disabled || disabledReason === undefined}>
-    <span class="italic">{disabledReason}</span>
+    <span class="italic">{@html disabledReason}</span>
   </div>
 
   <div hidden={!isExpanded}>

@@ -2,11 +2,13 @@ import type { AiFunctionPropertyDefinition } from '../types/function-definition.
 import type { SolidityCommonOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { solidityCommonDescriptions } from '../../../../common/src/ai/descriptions/solidity.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { Access, Upgradeable } from '@openzeppelin/wizard';
 
 export const commonFunctionDescription = {
   access: {
     anyOf: [
-      { type: 'string', enum: ['ownable', 'roles', 'managed'] },
+      { type: 'string', enum: extractStringEnumValues<Access>()(['ownable', 'roles', 'managed']) },
       { type: 'boolean', enum: [false] },
     ],
     description: solidityCommonDescriptions.access,
@@ -14,7 +16,7 @@ export const commonFunctionDescription = {
 
   upgradeable: {
     anyOf: [
-      { type: 'string', enum: ['transparent', 'uups'] },
+      { type: 'string', enum: extractStringEnumValues<Upgradeable>()(['transparent', 'uups']) },
       { type: 'boolean', enum: [false] },
     ],
     description: solidityCommonDescriptions.upgradeable,

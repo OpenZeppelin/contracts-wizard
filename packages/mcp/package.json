@@ -6,9 +6,7 @@
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "contracts-mcp": "dist/cli.js"
-  },
+  "bin": "dist/cli.js",
   "ts:main": "src/index.ts",
   "files": [
     "LICENSE",
@@ -34,8 +32,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
     "ava": "^6.0.0",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.4.0",
+    "typescript": "^5.0.0"
   }
 }

@@ -4,7 +4,9 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
+  topLevelComments: string[];
   natspecTags: NatspecTag[];
+  libraries: Library[];
   imports: ImportContract[];
   functions: ContractFunction[];
   structs: ContractStruct[];
@@ -32,9 +34,9 @@ export interface ReferencedContract {
   transpiled?: boolean;
 }
 
-export interface Using {
+export interface Library {
   library: ImportContract;
-  usingFor: string;
+  usingFor: Set<string>;
 }
 
 export interface BaseFunction {
@@ -54,13 +56,13 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
+export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
 export interface ContractStruct {
   name: string;
   comments: string[];
   variables: string[];
 }
 
-export type FunctionKind = 'internal' | 'public' | 'private';
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
@@ -90,7 +92,7 @@ export class ContractBuilder implements Contract {
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly using: Using[] = [];
+  readonly topLevelComments: string[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
@@ -98,6 +100,7 @@ export class ContractBuilder implements Contract {
 
   readonly variableOrErrorMap: Map<string, VariableOrErrorDefinition> = new Map<string, VariableOrErrorDefinition>();
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
+  private libraryMap: Map<string, Library> = new Map<string, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
   private structMap: Map<string, ContractStruct> = new Map();
 
@@ -120,7 +123,13 @@ export class ContractBuilder implements Contract {
   }
 
   get imports(): ImportContract[] {
-    return [...[...this.parentMap.values()].map(p => p.contract), ...this.using.map(u => u.library)];
+    const parents = [...this.parentMap.values()].map(p => p.contract);
+    const libraries = [...this.libraryMap.values()].map(l => l.library);
+    return [...parents, ...libraries];
+  }
+
+  get libraries(): Library[] {
+    return [...this.libraryMap.values()];
   }
 
   get functions(): ContractFunction[] {
@@ -157,6 +166,21 @@ export class ContractBuilder implements Contract {
     return this.updateParentMap(contract, params, { constructionOnly: true });
   }
 
+  addLibrary(library: ImportContract, usingFor: string[]): boolean {
+    let modified = false;
+    if (this.libraryMap.has(library.name)) {
+      const existing = this.libraryMap.get(library.name)!;
+      const initialSize = existing.usingFor.size;
+      usingFor.forEach(type => existing.usingFor.add(type));
+      modified = existing.usingFor.size > initialSize;
+    } else {
+      this.libraryMap.set(library.name, { library, usingFor: new Set(usingFor) });
+      modified = true;
+    }
+
+    return modified;
+  }
+
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
     const fn = this.addFunction(baseFn);
     fn.override.add(parent);
@@ -168,6 +192,10 @@ export class ContractBuilder implements Contract {
   addModifier(modifier: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.modifiers.push(modifier);
+  }
+
+  addTopLevelComment(comment: string) {
+    this.topLevelComments.push(comment);
   }
 
   addNatspecTag(key: string, value: string) {
