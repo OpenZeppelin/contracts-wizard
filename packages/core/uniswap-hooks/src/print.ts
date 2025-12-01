@@ -6,7 +6,12 @@ export function printContract(contract: Contract, opts?: HooksOptions): string {
   return printSolidityContract(contract, {
     ...opts,
     additionalCompatibleLibraries: [
-      { name: 'OpenZeppelin Uniswap Hooks', path: '@openzeppelin/uniswap-hooks', version: compatibleContractsSemver },
+      {
+        name: 'OpenZeppelin Uniswap Hooks',
+        path: '@openzeppelin/uniswap-hooks',
+        version: compatibleContractsSemver,
+        alwaysKeepOzPrefix: true,
+      },
     ],
   });
 }

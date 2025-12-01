@@ -100,9 +100,9 @@ export class ContractBuilder implements Contract {
 
   readonly variableOrErrorMap: Map<string, VariableOrErrorDefinition> = new Map<string, VariableOrErrorDefinition>();
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
+  private functionMap: Map<string, ContractFunction> = new Map<string, ContractFunction>();
   private libraryMap: Map<string, Library> = new Map<string, Library>();
-  private functionMap: Map<string, ContractFunction> = new Map();
-  private structMap: Map<string, ContractStruct> = new Map();
+  private structMap: Map<string, ContractStruct> = new Map<string, ContractStruct>();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
