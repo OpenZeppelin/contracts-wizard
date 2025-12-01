@@ -8,6 +8,7 @@ use actix_web::web;
 use std::env;
 use std::io::Cursor;
 
+use serial_test::serial;
 use std::sync::Mutex;
 use stellar_api::controllers::upgrade_to_scaffold;
 use stellar_api::environment::run_scaffold_upgrade_command;
@@ -30,6 +31,7 @@ fn make_fake_stellar(dir: &Path, exit_code: i32, stderr: Option<&str>) -> std::p
 }
 
 #[actix_rt::test]
+#[serial]
 async fn ai_upgrade_to_scaffold_happy_path() {
     let tmp = tempdir().expect("tmp");
     let root = tmp.path();
@@ -79,6 +81,7 @@ async fn ai_upgrade_to_scaffold_happy_path() {
 }
 
 #[test]
+#[serial]
 fn run_scaffold_upgrade_command_success() {
     let tmp = tempdir().expect("tmp");
     let bin_dir = tmp.path().join("bin");
@@ -113,6 +116,7 @@ fn run_scaffold_upgrade_command_success() {
 }
 
 #[test]
+#[serial]
 fn run_scaffold_upgrade_command_failure_propagates_error() {
     let tmp = tempdir().expect("tmp");
     let bin_dir = tmp.path().join("bin");
@@ -142,6 +146,7 @@ fn run_scaffold_upgrade_command_failure_propagates_error() {
 }
 
 #[test]
+#[serial]
 fn ai_run_scaffold_upgrade_command_when_missing_fails() {
     // Ensure PATH does not include any stellar binary by setting to empty temp dir
     let tmp = tempdir().expect("tmp");

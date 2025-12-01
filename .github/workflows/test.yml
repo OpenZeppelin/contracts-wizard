@@ -93,36 +93,38 @@ jobs:
       - name: Run Developer Tests (excluding AI) and Generate Coverage Report
         id: dev_coverage
         env:
-          LLVM_PROFILE_FILE: dev-%p-%m.profraw
+          LLVM_PROFILE_FILE: stellar-backend-dev-%p-%m.profraw
           RUSTFLAGS: -Cinstrument-coverage
           RUST_TEST_THREADS: 1
         run: |
-          cargo hack llvm-cov --locked --lib --lcov --output-path dev-lcov.info --tests -- --skip ai_
+          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-dev-lcov.info --tests -- --skip ai_
 
       - name: Upload Developer Coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: dev-coverage
-          files: packages/ui/api/stellar/dev-lcov.info
-          flags: dev
+          working-directory: packages/ui/api/stellar
+          name: stellar-backend-dev-coverage
+          files: stellar-backend-dev-lcov.info
+          flags: stellar-backend-dev
           fail_ci_if_error: true
 
       - name: Run AI Tests and Generate Coverage Report
         id: ai_coverage
         env:
-          LLVM_PROFILE_FILE: ai-%p-%m.profraw
+          LLVM_PROFILE_FILE: stellar-backend-ai-%p-%m.profraw
           RUSTFLAGS: -Cinstrument-coverage
           RUST_TEST_THREADS: 1
         run: |
-          cargo hack llvm-cov --locked --lib --lcov --output-path ai-lcov.info --tests -- ai_
+          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-ai-lcov.info --tests -- ai_
 
       - name: Upload AI Coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: packages/ui/api/stellar
           name: stellar-backend-ai-coverage
-          files: packages/ui/api/stellar/stellar-backend-ai-lcov.info
+          files: stellar-backend-ai-lcov.info
           flags: stellar-backend-ai
           fail_ci_if_error: true
 
