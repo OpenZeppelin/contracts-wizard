@@ -99,12 +99,20 @@ jobs:
         run: |
           cargo hack llvm-cov --locked --lib --lcov --ignore-filename-regex 'src/main.rs' --output-path stellar-backend-dev-lcov.info --tests -- --skip ai_
 
+      - name: Show generated dev lcov
+        run: ls -la stellar-backend-dev-lcov.info
+        working-directory: packages/ui/api/stellar
+
+      - name: Copy dev lcov to workspace root
+        run: cp stellar-backend-dev-lcov.info $GITHUB_WORKSPACE/stellar-backend-dev-lcov.info
+
       - name: Upload Developer Coverage to Codecov
+        if: ${{ secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: stellar-backend-dev-coverage
-          files: packages/ui/api/stellar/stellar-backend-dev-lcov.info
+          files: stellar-backend-dev-lcov.info
           flags: stellar-backend-dev
           fail_ci_if_error: true
 
@@ -117,12 +125,19 @@ jobs:
         run: |
           cargo hack llvm-cov --locked --lib --lcov --ignore-filename-regex 'src/main.rs' --output-path stellar-backend-ai-lcov.info --tests -- ai_
 
+      - name: Show generated ai lcov
+        run: ls -la stellar-backend-ai-lcov.info
+        working-directory: packages/ui/api/stellar
+
+      - name: Copy ai lcov to workspace root
+        run: cp stellar-backend-ai-lcov.info $GITHUB_WORKSPACE/stellar-backend-ai-lcov.info
+
       - name: Upload AI Coverage to Codecov
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: stellar-backend-ai-coverage
-          files: packages/ui/api/stellar/stellar-backend-ai-lcov.info
+          files: stellar-backend-ai-lcov.info
           flags: stellar-backend-ai
           fail_ci_if_error: true
 
