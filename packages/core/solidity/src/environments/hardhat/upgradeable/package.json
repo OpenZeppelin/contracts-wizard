@@ -11,7 +11,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "@openzeppelin/contracts": "^5.5.0",
-    "@openzeppelin/contracts-unreleased": "git+https://github.com/Amxx/openzeppelin-contracts.git#crosschain/erc20bridge",
+    "@openzeppelin/contracts-unreleased": "git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#master",
     "@openzeppelin/contracts-upgradeable": "^5.5.0",
     "@openzeppelin/hardhat-upgrades": "^3.0.0",
     "hardhat": "^2.22.0"

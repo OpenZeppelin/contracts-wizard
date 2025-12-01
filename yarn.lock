@@ -816,9 +816,9 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.5.0.tgz#24e8a2f9598de484dcb223512af656edf52bc0e8"
   integrity sha512-R8hq4zmKKWP2c7OxeRgAcjZwvF5W0Qq2OIX7degrtdM52Q9xYr4MLJdUAVPKGUewNJ1qo+M6YiZLLnNUnjP/gg==
 
-"@openzeppelin/contracts@git+https://github.com/Amxx/openzeppelin-contracts.git#crosschain/erc20bridge":
-  version "5.4.0"
-  resolved "git+https://github.com/Amxx/openzeppelin-contracts.git#63ef13b316e5a656ba69fcd4af42febde9314517"
+"@openzeppelin/contracts@git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#master":
+  version "5.5.0"
+  resolved "git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#bacb570d143e637c6637a68727795f4e71aac891"
 
 "@openzeppelin/uniswap-hooks@^1.2.1":
   version "1.2.1"
