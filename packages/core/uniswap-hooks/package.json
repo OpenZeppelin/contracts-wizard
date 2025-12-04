@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-uniswap-hooks",
-  "version": "0.0.1-alpha.0",
+  "version": "0.1.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Uniswap Hooks",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -22,7 +22,7 @@
     "test:watch": "ava --watch"
   },
   "dependencies": {
-    "@openzeppelin/wizard": "^0.10.3"
+    "@openzeppelin/wizard": "^0.10.4"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.5.0",
