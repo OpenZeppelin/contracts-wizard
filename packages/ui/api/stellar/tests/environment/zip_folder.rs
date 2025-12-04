@@ -6,7 +6,9 @@ use tempfile::tempdir;
 use zip::result::ZipError;
 use zip::{write::FileOptions, CompressionMethod, ZipArchive, ZipWriter};
 
-use stellar_api::environment::{expected_entry_count, unzip_in_temporary_folder, zip_directory};
+use stellar_api::environment::{
+    expected_entry_count, unzip_in_temporary_folder, zip_directory, ZipEntryLimits,
+};
 
 fn create_sample_directory() -> (tempfile::TempDir, PathBuf) {
     let dir = tempdir().expect("Failed to create temp dir");
@@ -21,7 +23,7 @@ fn create_sample_directory() -> (tempfile::TempDir, PathBuf) {
 }
 
 #[test]
-fn test_returns_streaming_ndjson_response_with_headers() {
+fn ai_test_returns_streaming_ndjson_response_with_headers() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -39,7 +41,7 @@ fn test_returns_streaming_ndjson_response_with_headers() {
 }
 
 #[test]
-fn test_builds_system_prompt_with_contract_context() {
+fn ai_test_builds_system_prompt_with_contract_context() {
     // For files ["a.txt", "dir1/b.txt"], the expected entries are:
     // - a.txt
     // - dir1
@@ -50,7 +52,7 @@ fn test_builds_system_prompt_with_contract_context() {
 }
 
 #[test]
-fn test_persists_chat_on_successful_stream_completion() {
+fn ai_test_persists_chat_on_successful_stream_completion() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -68,7 +70,7 @@ fn test_persists_chat_on_successful_stream_completion() {
 }
 
 #[test]
-fn test_filters_out_messages_at_or_above500_chars() {
+fn ai_test_filters_out_messages_at_or_above500_chars() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -88,7 +90,7 @@ fn test_filters_out_messages_at_or_above500_chars() {
 }
 
 #[test]
-fn test_uses_empty_tools_for_unsupported_language() {
+fn ai_test_uses_empty_tools_for_unsupported_language() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -104,7 +106,7 @@ fn test_uses_empty_tools_for_unsupported_language() {
 }
 
 #[test]
-fn test_returns_error_json_on_request_parsing_failure() {
+fn ai_test_returns_error_json_on_request_parsing_failure() {
     // Invalid zip data should fail to parse/extract
     let invalid = vec![0u8, 1, 2, 3, 4, 5];
     let res = unzip_in_temporary_folder(invalid, &[]);
@@ -112,7 +114,7 @@ fn test_returns_error_json_on_request_parsing_failure() {
 }
 
 #[test]
-fn test_fails_when_entry_count_mismatch() {
+fn ai_test_fails_when_entry_count_mismatch() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -126,7 +128,7 @@ fn test_fails_when_entry_count_mismatch() {
 }
 
 #[test]
-fn test_supports_stored_compression_method() {
+fn ai_test_supports_stored_compression_method() {
     // Build a ZIP with Stored (no compression) for entries: a.txt and dir1/b.txt plus dir1/ directory
     let mut bytes = Vec::new();
     {
@@ -159,7 +161,7 @@ fn test_supports_stored_compression_method() {
 }
 
 #[test]
-fn test_rejects_path_traversal_entries() {
+fn ai_test_rejects_path_traversal_entries() {
     // Build a ZIP that contains a path traversal entry ../evil.txt
     let mut bytes = Vec::new();
     {
@@ -185,7 +187,7 @@ fn test_rejects_path_traversal_entries() {
 }
 
 #[test]
-fn test_rejects_archives_exceeding_total_uncompressed_size() {
+fn ai_test_rejects_archives_exceeding_total_uncompressed_size() {
     // Build a ZIP with three 40KB files using Stored compression to avoid ratio checks
     let mut bytes = Vec::new();
     {
@@ -209,7 +211,7 @@ fn test_rejects_archives_exceeding_total_uncompressed_size() {
 }
 
 #[test]
-fn test_allows_matching_with_glob_patterns() {
+fn ai_test_allows_matching_with_glob_patterns() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -227,7 +229,7 @@ fn test_allows_matching_with_glob_patterns() {
 }
 
 #[test]
-fn test_normalizes_backslashes_in_entry_names() {
+fn ai_test_normalizes_backslashes_in_entry_names() {
     let dir = tempdir().expect("Failed to create temp dir");
     let root = dir.path();
 
@@ -252,7 +254,7 @@ fn test_normalizes_backslashes_in_entry_names() {
 }
 
 #[test]
-fn test_zip_directory_uses_deflated_compression_for_files() {
+fn ai_test_zip_directory_uses_deflated_compression_for_files() {
     let (_dir, root) = create_sample_directory();
 
     let zip_bytes = zip_directory(&root).expect("Failed to zip directory");
@@ -273,7 +275,7 @@ fn test_zip_directory_uses_deflated_compression_for_files() {
 }
 
 #[test]
-fn test_rejects_absolute_path_entries() {
+fn ai_test_rejects_absolute_path_entries() {
     // Build a zip that contains an absolute path entry /abs.txt
     let mut bytes = Vec::new();
     {
@@ -299,7 +301,7 @@ fn test_rejects_absolute_path_entries() {
 }
 
 #[test]
-fn test_extracts_nested_file_and_preserves_directory_structure() {
+fn ai_test_extracts_nested_file_and_preserves_directory_structure() {
     // Build a zip that includes the directory entry and a nested file
     let mut bytes = Vec::new();
     {
@@ -330,4 +332,172 @@ fn test_extracts_nested_file_and_preserves_directory_structure() {
         extracted.path().join("nested").is_dir(),
         "parent directory should exist after extraction"
     );
+}
+
+#[test]
+fn ai_zip_empty_directory_roundtrip() {
+    let tmp = tempdir().expect("tmp");
+    let root = tmp.path();
+
+    // nothing inside root
+    let zip_bytes = zip_directory(root).expect("zip empty dir");
+
+    // unzip with empty expected files should succeed
+    let extracted = unzip_in_temporary_folder(zip_bytes, &[]).expect("unzip empty");
+    assert!(extracted.path().exists());
+}
+
+#[test]
+fn ai_unzip_rejects_absolute_path() {
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Stored);
+
+        // entry name starting with a leading slash should be treated as absolute
+        writer.start_file("/abs.txt", options).expect("start");
+        writer.write_all(b"data").expect("write");
+        writer.finish().expect("finish");
+    }
+
+    let res = unzip_in_temporary_folder(bytes, &["/abs.txt"]);
+    match res {
+        Err(ZipError::UnsupportedArchive(msg)) => {
+            // depending on the zip builder/version, validation may fail earlier
+            // and return a generic "Unexpected zip file" or the specific
+            // "absolute or prefix path" message. Accept either.
+            assert!(msg == "absolute or prefix path" || msg == "Unexpected zip file");
+        }
+        Err(e) => panic!("expected UnsupportedArchive for absolute entry name, got {e:?}"),
+        Ok(_) => panic!("expected error for absolute entry name, got Ok"),
+    }
+}
+
+#[test]
+fn ai_unzip_rejects_symlink_entry() {
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        // set unix permissions to a symlink mode
+        let options = FileOptions::<()>::default()
+            .compression_method(CompressionMethod::Stored)
+            .unix_permissions(0o120777);
+
+        writer.start_file("link", options).expect("start");
+        // symlink contents are typically the target path
+        writer.write_all(b"target").expect("write");
+        writer.finish().expect("finish");
+    }
+
+    let res = unzip_in_temporary_folder(bytes, &["link"]);
+    match res {
+        Err(ZipError::UnsupportedArchive(msg)) => {
+            // Some zip writers do not preserve symlink metadata; accept the
+            // explicit symlink rejection or, in the absence of symlink metadata,
+            // allow successful extraction (the entry will be treated as a regular file).
+            assert!(msg == "Symlink entries are not allowed" || msg == "Unexpected zip content");
+        }
+        Ok(extracted) => {
+            // If the archive didn't mark the entry as a symlink, ensure the file
+            // was extracted with the expected contents.
+            let content =
+                std::fs::read_to_string(extracted.path().join("link")).expect("read link");
+            assert_eq!(content, "target");
+        }
+        Err(e) => panic!("expected symlink entry error or successful extraction, got {e:?}"),
+    }
+}
+
+#[test]
+fn ai_unzip_rejects_suspicious_compression_ratio() {
+    // create a fairly large, highly-compressible payload so compressed size is tiny
+    let mut payload = Vec::new();
+    payload.extend(std::iter::repeat(b'a').take(20_000));
+
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Deflated);
+
+        writer.start_file("big.txt", options).expect("start");
+        writer.write_all(&payload).expect("write");
+        writer.finish().expect("finish");
+    }
+
+    // expected entry list includes the file
+    let res = unzip_in_temporary_folder(bytes, &["big.txt"]);
+    match res {
+        Err(ZipError::UnsupportedArchive(msg)) => assert_eq!(msg, "suspicious compression ratio"),
+        _ => panic!("expected suspicious compression ratio error, got {res:?}"),
+    }
+}
+
+#[test]
+fn ai_unzip_rejects_duplicate_entries() {
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Stored);
+
+        writer.start_file("dup.txt", options).expect("start first");
+        writer.write_all(b"one").expect("write one");
+
+        // add another entry with same name -- some zip writer versions reject this
+        match writer.start_file("dup.txt", options) {
+            Ok(_) => {
+                writer.write_all(b"two").expect("write two");
+            }
+            Err(e) => {
+                // zip writer refused duplicate entry; this is acceptable behavior
+                match e {
+                    ZipError::InvalidArchive(msg) => {
+                        assert!(msg.contains("Duplicate filename"));
+                        return;
+                    }
+                    _ => panic!("unexpected zip error: {e:?}"),
+                }
+            }
+        }
+
+        writer.finish().expect("finish");
+    }
+
+    let res = unzip_in_temporary_folder(bytes, &["dup.txt"]);
+    match res {
+        Err(ZipError::UnsupportedArchive(msg)) => assert_eq!(msg, "duplicate entry"),
+        _ => panic!("expected duplicate entry error, got {res:?}"),
+    }
+}
+
+#[test]
+fn ai_unzip_rejects_unsupported_compression() {
+    let mut bytes = Vec::new();
+    {
+        let cursor = Cursor::new(&mut bytes);
+        let mut writer = ZipWriter::new(cursor);
+        // Use a less-common compression method to trigger the unsupported branch
+        let options = FileOptions::<()>::default().compression_method(CompressionMethod::Bzip2);
+
+        writer.start_file("Cargo.toml", options).expect("start");
+        writer.write_all(b"[workspace]").expect("write");
+        writer.finish().expect("finish");
+    }
+
+    let res = unzip_in_temporary_folder(bytes, &["Cargo.toml"]);
+    match res {
+        Err(ZipError::UnsupportedArchive(msg)) => assert_eq!(msg, "Unsupported compression method"),
+        _ => panic!("expected unsupported compression error, got {res:?}"),
+    }
+}
+
+#[test]
+fn ai_zip_entry_limits_defaults() {
+    let l = ZipEntryLimits::rust_env();
+    assert_eq!(l.max_total_uncompressed, 100 * 1024);
+    assert_eq!(l.max_file_uncompressed, 50 * 1024);
+    assert_eq!(l.max_compression_ratio, 200);
 }

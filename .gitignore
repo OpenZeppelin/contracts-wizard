@@ -10,3 +10,6 @@ node_modules
 # will have compiled files and executables
 debug/
 target/
+
+**/*.profraw
+**/*lcov*

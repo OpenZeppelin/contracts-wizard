@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [master]
+    branches: [master, stellar-scafold-fargate-backend, stellar-scafold]
   pull_request: {}
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Set up Deno 1.46.3 (matching Netlify edge function environment)
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
         with:
-          deno-version: '1.46.3'
+          deno-version: "1.46.3"
       - name: Set up environment
         uses: ./.github/actions/setup
       - name: Deno check API
@@ -50,6 +50,84 @@ jobs:
         run: yarn test
         working-directory: packages/ui
 
+  stellar-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/ui/api/stellar
+    steps:
+      # Checkout the repository
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+      - name: Checkout Code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: free disk space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt clean
+          if [[ $(docker image ls -aq) ]]; then
+            docker rmi $(docker image ls -aq)
+          else
+            echo "No Docker images found to remove"
+          fi
+      - name: Prepare
+        id: init
+        uses: ./.github/actions/prepare
+        with:
+          components: llvm-tools-preview
+
+      # Get the output of the prepare composite action
+      - name: Get cache-hit output
+        run: 'echo "Cache hit >>>>>: ${{ steps.init.outputs.cache-hit }}"'
+      - name: Install cargo hack and cargo-llvm-cov
+        uses: taiki-e/install-action@a24ba45235ed716ff76646268742990dc9458860 # v2.62.42
+        with:
+          tool: cargo-hack,cargo-llvm-cov
+      - name: Build
+        run: cargo test --no-run --locked
+
+      - name: Run Developer Tests (excluding AI) and Generate Coverage Report
+        id: dev_coverage
+        env:
+          LLVM_PROFILE_FILE: stellar-backend-dev-%p-%m.profraw
+          RUSTFLAGS: -Cinstrument-coverage
+          RUST_TEST_THREADS: 1
+        run: |
+          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-dev-lcov.info --tests -- --skip ai_
+
+      - name: Upload Developer Coverage to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: packages/ui/api/stellar
+          name: stellar-backend-dev-coverage
+          files: stellar-backend-dev-lcov.info
+          flags: stellar-backend-dev
+          fail_ci_if_error: true
+
+      - name: Run AI Tests and Generate Coverage Report
+        id: ai_coverage
+        env:
+          LLVM_PROFILE_FILE: stellar-backend-ai-%p-%m.profraw
+          RUSTFLAGS: -Cinstrument-coverage
+          RUST_TEST_THREADS: 1
+        run: |
+          cargo hack llvm-cov --locked --lib --lcov --output-path stellar-backend-ai-lcov.info --tests -- ai_
+
+      - name: Upload AI Coverage to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: packages/ui/api/stellar
+          name: stellar-backend-ai-coverage
+          files: stellar-backend-ai-lcov.info
+          flags: stellar-backend-ai
+          fail_ci_if_error: true
+
   build:
     name: build (${{ matrix.package }}, ${{ matrix.variant }})
     timeout-minutes: 90
@@ -71,13 +149,12 @@ jobs:
             variant: compile
           - package: stylus
             variant: compile
-        
 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-            fetch-depth: 0
+          fetch-depth: 0
       - name: Set up environment
         uses: ./.github/actions/setup
 
@@ -102,7 +179,6 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: cargo-${{ matrix.package }}
-
 
       - name: Set up rust toolchain
         if: matrix.package == 'stellar' && matrix.variant == 'compile'

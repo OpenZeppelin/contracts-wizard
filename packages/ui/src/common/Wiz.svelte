@@ -11,13 +11,19 @@
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
   ): TOption =>
-    Object.keys(previousOptions).reduce(
-      (acc, currentKey) => {
-        if (aiFunctionCall.name === currentKey)
-          return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+    (Object.keys(previousOptions) as Array<keyof TOption>).reduce(
+      (acc: TOption, currentKey: keyof TOption) => {
+        if ((aiFunctionCall.name as unknown as keyof TOption) === currentKey)
+          return {
+            ...acc,
+            [currentKey]: {
+              ...(acc[currentKey] as Record<string, unknown>),
+              ...(aiFunctionCall.arguments as Record<string, unknown>),
+            },
+          } as TOption;
         else return acc;
       },
-      { ...previousOptions },
+      { ...previousOptions } as TOption,
     );
 
   export function createWiz<TLanguage extends AiAssistantLanguage>() {
