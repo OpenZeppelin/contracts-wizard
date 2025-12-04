@@ -38,6 +38,16 @@ test('basic', async t => {
   await assertAPIEquivalence(t, params, stablecoin.print);
 });
 
+test('crosschain embedded allowOverrides', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    crossChainBridging: 'embedded',
+    crossChainLinkAllowOverride: true,
+  };
+  await assertAPIEquivalence(t, params, stablecoin.print);
+});
+
 test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyStablecoin',
@@ -52,6 +62,7 @@ test('all', async t => {
     votes: 'blocknumber',
     flashmint: true,
     crossChainBridging: 'custom',
+    crossChainLinkAllowOverride: false,
     premintChainId: '10',
     restrictions: 'allowlist',
     freezable: true,

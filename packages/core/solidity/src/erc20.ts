@@ -36,6 +36,7 @@ export interface ERC20Options extends CommonOptions {
   votes?: boolean | ClockMode;
   flashmint?: boolean;
   crossChainBridging?: CrossChainBridging;
+  crossChainLinkAllowOverride?: boolean;
   namespacePrefix?: string;
 }
 
@@ -53,6 +54,7 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   flashmint: false,
   crossChainBridging: false,
+  crossChainLinkAllowOverride: false,
   namespacePrefix: 'myProject',
 } as const;
 
@@ -70,6 +72,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
     crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    crossChainLinkAllowOverride: opts.crossChainLinkAllowOverride ?? defaults.crossChainLinkAllowOverride,
     namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
@@ -98,7 +101,14 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, access, upgradeable, allOpts.namespacePrefix);
+    addCrossChainBridging(
+      c,
+      allOpts.crossChainBridging,
+      allOpts.crossChainLinkAllowOverride,
+      access,
+      upgradeable,
+      allOpts.namespacePrefix,
+    );
   }
 
   if (allOpts.premint) {
@@ -316,18 +326,19 @@ function addFlashMint(c: ContractBuilder) {
 function addCrossChainBridging(
   c: ContractBuilder,
   crossChainBridging: 'custom' | 'embedded' | 'superchain',
+  crossChainLinkAllowOverride: boolean,
   access: Access,
   upgradeable: Upgradeable,
   namespacePrefix: string,
 ) {
   if (crossChainBridging === 'embedded') {
-    addERC20Crosschain(c, access);
+    addERC20Crosschain(c, crossChainLinkAllowOverride, access);
   } else {
     addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);
   }
 }
 
-function addERC20Crosschain(c: ContractBuilder, access: Access) {
+function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
   const ERC20Crosschain = {
     name: 'ERC20Crosschain',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
@@ -342,7 +353,7 @@ function addERC20Crosschain(c: ContractBuilder, access: Access) {
   c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
 
   requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
-  c.addFunctionCode('_setLink(gateway, counterpart, allowOverride);', functions.setLink);
+  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
 }
 
 function addERC20Bridgeable(
@@ -548,7 +559,6 @@ export const functions = defineFunctions({
     args: [
       { name: 'gateway', type: 'address' },
       { name: 'counterpart', type: 'bytes memory' },
-      { name: 'allowOverride', type: 'bool' },
     ],
   },
 });

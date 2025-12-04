@@ -20,6 +20,7 @@ const blueprint = {
   premint: ['1'],
   premintChainId: ['10'],
   crossChainBridging: crossChainBridgingOptions,
+  crossChainLinkAllowOverride: booleans,
   access: accessOptions,
   upgradeable: upgradeableOptions,
   namespacePrefix: ['myProject'],

@@ -172,6 +172,11 @@ testERC20('erc20 crossChainBridging embedded', {
   crossChainBridging: 'embedded',
 });
 
+testERC20('erc20 crossChainBridging embedded allowOverride', {
+  crossChainBridging: 'embedded',
+  crossChainLinkAllowOverride: true,
+});
+
 testERC20('erc20 crossChainBridging embedded ownable', {
   crossChainBridging: 'embedded',
   access: 'ownable',

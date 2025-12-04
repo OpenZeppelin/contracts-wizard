@@ -61,6 +61,10 @@ export const solidityERC20AIFunctionDefinition = {
         ],
         description: solidityERC20Descriptions.crossChainBridging,
       },
+      crossChainLinkAllowOverride: {
+        type: 'boolean',
+        description: solidityERC20Descriptions.crossChainLinkAllowOverride,
+      },
       premintChainId: {
         type: 'string',
         description: solidityERC20Descriptions.premintChainId,

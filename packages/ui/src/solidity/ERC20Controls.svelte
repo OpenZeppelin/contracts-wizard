@@ -50,6 +50,11 @@
   $: {
     showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
   }
+
+  let showAllowOverride = false;
+  $: {
+    showAllowOverride = opts.crossChainBridging === 'embedded';
+  }
 </script>
 
 <section class="controls-section">
@@ -194,6 +199,16 @@
         >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
       >
     </label>
+
+    {#if showAllowOverride}
+      <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+        <label class="text-sm flex-1">
+          <input type="checkbox" bind:checked={opts.crossChainLinkAllowOverride} />
+          Allow Link Overrides
+        </label>
+        <HelpTooltip>Whether to allow replacing a crosschain link that has already been registered.</HelpTooltip>
+      </p>
+    {/if}
 
     {#if !omitFeatures?.includes('superchain')}
       <label class:checked={opts.crossChainBridging === 'superchain'} bind:this={superchainLabel}>
