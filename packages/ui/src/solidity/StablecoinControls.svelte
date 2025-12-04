@@ -221,9 +221,9 @@
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
 
-    <label class:checked={opts.crossChainBridging === 'embedded'}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="embedded" />
-      Embedded
+    <label class:checked={opts.crossChainBridging === 'erc7786native'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
+      ERC-7786 Native
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Crosschain"
         >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
       >

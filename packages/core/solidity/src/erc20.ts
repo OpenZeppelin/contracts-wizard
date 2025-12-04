@@ -16,7 +16,7 @@ import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
-export const crossChainBridgingOptions = [false, 'custom', 'embedded', 'superchain'] as const;
+export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export interface ERC20Options extends CommonOptions {
@@ -87,7 +87,7 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
     opts.pausable ||
     opts.upgradeable === 'uups' ||
     opts.crossChainBridging === 'custom' ||
-    opts.crossChainBridging === 'embedded'
+    opts.crossChainBridging === 'erc7786native'
   );
 }
 
@@ -325,13 +325,13 @@ function addFlashMint(c: ContractBuilder) {
 
 function addCrossChainBridging(
   c: ContractBuilder,
-  crossChainBridging: 'custom' | 'embedded' | 'superchain',
+  crossChainBridging: 'custom' | 'erc7786native' | 'superchain',
   crossChainLinkAllowOverride: boolean,
   access: Access,
   upgradeable: Upgradeable,
   namespacePrefix: string,
 ) {
-  if (crossChainBridging === 'embedded') {
+  if (crossChainBridging === 'erc7786native') {
     addERC20Crosschain(c, crossChainLinkAllowOverride, access);
   } else {
     addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);

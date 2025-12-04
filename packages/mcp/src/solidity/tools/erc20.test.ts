@@ -38,11 +38,11 @@ test('basic', async t => {
   await assertAPIEquivalence(t, params, erc20.print);
 });
 
-test('crosschain embedded allowOverrides', async t => {
+test('crosschain erc7786native allowOverrides', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
-    crossChainBridging: 'embedded',
+    crossChainBridging: 'erc7786native',
     crossChainLinkAllowOverride: true,
   };
   await assertAPIEquivalence(t, params, erc20.print);

@@ -33,7 +33,7 @@ export const solidityERC20Descriptions = {
   crossChainBridging:
     'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
   crossChainLinkAllowOverride:
-    'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "embedded".',
+    'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
   premintChainId: 'The chain ID of the network on which to premint tokens.',
   callback:
     'Whether to include support for code execution after transfers and approvals on recipient contracts in a single transaction.',
