@@ -396,27 +396,40 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
   switch (access) {
     case 'ownable': {
       if (!upgradeable) {
+        const LINES_CHECK_AND_SET_TOKEN_BRIDGE = [
+          `require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`,
+          `tokenBridge = tokenBridge_;`,
+        ];
+
         // Add variable and constructor logic using state variable
         const addedBridge = c.addStateVariable(`address public tokenBridge;`, false);
         if (addedBridge) {
           c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
-          c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
-          c.addConstructorCode(`tokenBridge = tokenBridge_;`);
+          LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+            c.addConstructorCode(line);
+          });
         }
         c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
 
         // Add bridge setter
         requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
-        c.addFunctionCode('tokenBridge = tokenBridge_;', functions.setTokenBridge);
+        LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+          c.addFunctionCode(line, functions.setTokenBridge);
+        });
       } else {
+        const LINES_CHECK_AND_SET_TOKEN_BRIDGE = [
+          `require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`,
+          toStorageStructInstantiation(c.name),
+          '$.tokenBridge = tokenBridge_;',
+        ];
+
         // Add variable and constructor logic using namespaced storage
         setNamespacedStorage(c, ['address tokenBridge;'], namespacePrefix);
 
         c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
-        c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
-
-        c.addConstructorCode(toStorageStructInstantiation(c.name));
-        c.addConstructorCode(`$.tokenBridge = tokenBridge_;`);
+        LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+          c.addConstructorCode(line);
+        });
 
         c.setFunctionBody(
           [toStorageStructInstantiation(c.name), `if (caller != $.tokenBridge) revert Unauthorized();`],
@@ -426,10 +439,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
 
         // Add bridge setter
         requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
-        c.setFunctionBody(
-          [toStorageStructInstantiation(c.name), '$.tokenBridge = tokenBridge_;'],
-          functions.setTokenBridge,
-        );
+        c.setFunctionBody(LINES_CHECK_AND_SET_TOKEN_BRIDGE, functions.setTokenBridge);
       }
       break;
     }
