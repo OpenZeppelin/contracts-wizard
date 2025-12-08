@@ -339,17 +339,18 @@ function addCrossChainBridging(
 }
 
 function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
-  const ERC20Crosschain = {
+  c.addParent({
     name: 'ERC20Crosschain',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
-  };
-  c.addParent(ERC20Crosschain);
+  });
 
-  const CrosschainLinked = {
-    name: 'CrosschainLinked',
-    path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
-  };
-  c.addConstructionOnly(CrosschainLinked, [{ lit: 'links' }]);
+  c.addConstructionOnly(
+    {
+      name: 'CrosschainLinked',
+      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+    }, 
+    [{ lit: 'links' }],
+  );
   c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
 
   requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
