@@ -348,7 +348,7 @@ function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boo
     {
       name: 'CrosschainLinked',
       path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
-    }, 
+    },
     [{ lit: 'links' }],
   );
   c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
