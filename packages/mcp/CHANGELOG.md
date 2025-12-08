@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.5 (2025-12-08)
+
+- Fix dependency on @openzeppelin/wizard-uniswap-hooks ([#748](https://github.com/OpenZeppelin/contracts-wizard/pull/748))
+
 ## 0.4.4 (2025-11-28)
 
 - Add support for Uniswap Hooks Wizard ([#628](https://github.com/OpenZeppelin/contracts-wizard/pull/628))
