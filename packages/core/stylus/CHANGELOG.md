@@ -1,5 +1,6 @@
 # Changelog
 
+[//]: # (TODO#q: update changelog)
 
 ## 0.2.0 (2025-07-21)
 

@@ -26,7 +26,7 @@
     "@modelcontextprotocol/sdk": "^1.11.1",
     "@openzeppelin/wizard-common": "^0.3.3",
     "@openzeppelin/wizard": "^0.10.4",
-    "@openzeppelin/wizard-stylus": "^0.2.0",
+    "@openzeppelin/wizard-stylus": "^0.3.0",
     "@openzeppelin/wizard-stellar": "^0.4.4",
     "@openzeppelin/wizard-cairo": "^2.1.0",
     "@openzeppelin/wizard-uniswap-hooks": "^0.1.0"
