@@ -7,6 +7,7 @@
     "lint": "eslint",
     "format:write": "prettier --write \"**/*\"",
     "format:check": "prettier --check \"**/*\"",
+    "test:ui": "yarn --cwd ./packages/ui test",
     "type:check:api": "yarn --cwd ./packages/ui type:check:api",
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
@@ -27,18 +28,22 @@
       "**/typescript"
     ]
   },
+  "resolutions": {
+    "ethereum-cryptography": "^3.2.0"
+  },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.2",
     "@eslint/js": "^9.21.0",
     "concurrently": "^9.1.2",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
-    "eslint-plugin-unicorn": "^60.0.0",
+    "eslint-plugin-unicorn": "^61.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.3.3",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.29.0",
-    "@changesets/cli": "^2.29.2",
-    "@changesets/changelog-github": "^0.5.1"
+    "typescript-eslint": "^8.29.0"
   }
 }
+

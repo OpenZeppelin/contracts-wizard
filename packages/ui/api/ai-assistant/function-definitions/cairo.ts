@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { cairoSharedFunctionDefinition } from './cairo-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import {
@@ -10,6 +10,10 @@ import {
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
+import type { ClockMode, QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/cairo/dist/governor';
+import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { VestingSchedule } from '../../../../core/cairo/dist/vesting';
+import type { Account } from '../../../../core/cairo/dist/account';
 
 export const cairoERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -42,7 +46,7 @@ export const cairoERC20AIFunctionDefinition = {
         description: cairoERC20Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'cairo', 'ERC20'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC20'>;
@@ -76,7 +80,7 @@ export const cairoERC721AIFunctionDefinition = {
         description: cairoERC721Descriptions.votes,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'cairo', 'ERC721'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC721'>;
@@ -106,7 +110,7 @@ export const cairoERC1155AIFunctionDefinition = {
         description: cairoERC1155Descriptions.updatableUri,
       },
     },
-    required: ['name', 'baseUri'],
+    required: contractExactRequiredKeys<'cairo', 'ERC1155'>()(['name', 'baseUri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC1155'>;
@@ -142,7 +146,7 @@ export const cairoGovernorAIFunctionDefinition = {
       },
       quorumMode: {
         type: 'string',
-        enum: ['percent', 'absolute'],
+        enum: enumValues<QuorumMode>()(['percent', 'absolute']),
         description: cairoGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
@@ -155,18 +159,18 @@ export const cairoGovernorAIFunctionDefinition = {
       },
       votes: {
         type: 'string',
-        enum: ['erc20votes', 'erc721votes'],
+        enum: enumValues<VotesOptions>()(['erc20votes', 'erc721votes']),
         description: cairoGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
-        enum: ['timestamp'],
+        enum: enumValues<ClockMode>()(['timestamp']),
         description: cairoGovernorDescriptions.clockMode,
       },
       timelock: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['openzeppelin'] },
+          { type: 'string', enum: extractStringEnumValues<TimelockOptions>()(['openzeppelin']) },
         ],
         description: cairoGovernorDescriptions.timelock,
       },
@@ -175,7 +179,7 @@ export const cairoGovernorAIFunctionDefinition = {
         description: cairoGovernorDescriptions.settings,
       },
     },
-    required: ['name', 'delay', 'period'],
+    required: contractExactRequiredKeys<'cairo', 'Governor'>()(['name', 'delay', 'period']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Governor'>;
@@ -202,11 +206,17 @@ export const cairoVestingAIFunctionDefinition = {
       },
       schedule: {
         type: 'string',
-        enum: ['linear', 'custom'],
+        enum: enumValues<VestingSchedule>()(['linear', 'custom']),
         description: cairoVestingDescriptions.schedule,
       },
     },
-    required: ['name', 'schedule', 'cliffDuration', 'duration', 'startDate'],
+    required: contractExactRequiredKeys<'cairo', 'Vesting'>()([
+      'name',
+      'schedule',
+      'cliffDuration',
+      'duration',
+      'startDate',
+    ]),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Vesting'>;
@@ -221,7 +231,7 @@ export const cairoAccountAIFunctionDefinition = {
       ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
       type: {
         type: 'string',
-        enum: ['stark', 'eth'],
+        enum: enumValues<Account>()(['stark', 'eth']),
         description: cairoAccountDescriptions.type,
       },
       declare: {
@@ -235,7 +245,7 @@ export const cairoAccountAIFunctionDefinition = {
         description: cairoAccountDescriptions.outsideExecution,
       },
     },
-    required: ['name', 'type'],
+    required: contractExactRequiredKeys<'cairo', 'Account'>()(['name', 'type']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Account'>;
@@ -252,7 +262,7 @@ export const cairoMultisigAIFunctionDefinition = {
         description: cairoMultisigDescriptions.quorum,
       },
     },
-    required: ['name', 'quorum'],
+    required: contractExactRequiredKeys<'cairo', 'Multisig'>()(['name', 'quorum']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Multisig'>;
@@ -271,7 +281,7 @@ export const cairoCustomAIFunctionDefinition = {
         'info',
       ]),
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'cairo', 'Custom'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'Custom'>;

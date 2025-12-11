@@ -4,9 +4,81 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["@openzeppelin/"],
-      "schedule": ["at any time"],
+      "matchPackagePrefixes": [
+        "@openzeppelin/"
+      ],
+      "schedule": [
+        "at any time"
+      ],
       "rangeStrategy": "update-lockfile"
+    },
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "groupName": "import_map (regex)"
+    },
+    {
+      "matchManagers": [
+        "regex",
+        "npm"
+      ],
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchPaths": [
+        "packages/ui/**"
+      ],
+      "groupName": "ui deps sync"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPaths": [
+        "packages/ui/package.json"
+      ],
+      "rangeStrategy": "bump"
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"https://esm\\.sh/(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"npm:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"jsr:(?<depName>(?:@[^/@]+/)?[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
+      ],
+      "datasourceTemplate": "jsr"
+    },
+    {
+      "fileMatch": [
+        "(^|/)import_map\\.json$"
+      ],
+      "matchStrings": [
+        "\"[^\"]+\"\\s*:\\s*\"https://deno\\.land/x/(?<depName>[^@/]+)@(?<currentValue>[^\"\\?/]+)\""
+      ],
+      "datasourceTemplate": "deno"
     }
   ]
 }

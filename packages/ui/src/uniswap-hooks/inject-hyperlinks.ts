@@ -1,0 +1,24 @@
+import { version as contractsVersion } from '@openzeppelin/contracts/package.json';
+import { version as uniswapHooksVersion } from '@openzeppelin/uniswap-hooks/package.json';
+
+export function injectHyperlinks(code: string) {
+  // We are modifying HTML, so use HTML escaped chars. The pattern excludes paths that include /../ in the URL.
+  const contractsRegex =
+    /&quot;(@openzeppelin\/)(contracts-upgradeable\/|contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const uniswapHooksRegex = /&quot;(@openzeppelin\/)(uniswap-hooks\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  const uniswapV4CoreRegex = /&quot;(@uniswap\/)(v4-core\/src\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+
+  return code
+    .replace(
+      contractsRegex,
+      `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/openzeppelin-$2blob/v${contractsVersion}/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+    )
+    .replace(
+      uniswapV4CoreRegex,
+      `&quot;<a class="import-link" href="https://github.com/Uniswap/v4-core/blob/main/src/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+    )
+    .replace(
+      uniswapHooksRegex,
+      `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/uniswap-hooks/blob/v${uniswapHooksVersion}/src/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+    );
+}

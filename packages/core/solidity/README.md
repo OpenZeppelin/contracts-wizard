@@ -22,83 +22,44 @@ The following contract types are supported:
 - `governor`
 - `custom`
 
-Note that `stablecoin`, and `realWorldAsset` are experimental and may be subject to change.
-
-Each contract type has functions/constants as defined below.
+Note that `stablecoin` and `realWorldAsset` are experimental and may be subject to change.
 
 ### Functions
 
+Each contract type implements a common API with methods that take contract-specific options (e.g., `ERC20Options` for `erc20`, `ERC721Options` for `erc721`, etc.). This ensures type safety and allows for contract-specific features.
+
 #### `print`
 ```js
-function print(opts?: ERC20Options): string
-```
-```js
-function print(opts?: ERC721Options): string
-```
-```js
-function print(opts?: ERC1155Options): string
-```
-```js
-function print(opts?: StablecoinOptions): string
-```
-```js
-function print(opts?: AccountOptions): string
-```
-```js
-function print(opts?: GovernorOptions): string
-```
-```js
-function print(opts?: CustomOptions): string
+function print(opts?: Options): string
 ```
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
+#### `getVersionedRemappings`
+```js
+function getVersionedRemappings(opts?: Options): string[]
+```
+Returns an array of remappings that map unversioned import prefixes to versioned import prefixes. For example:
+```js
+[
+  "@openzeppelin/contracts/=@openzeppelin/contracts@5.5.0/",
+  "@openzeppelin/contracts-upgradeable/=@openzeppelin/contracts-upgradeable@5.5.0/"
+]
+```
+If the contract options include upgradeability, the upgradeable remapping is included. If `opts` is not provided, uses [`defaults`](#defaults).
+
 #### `defaults`
 ```js
-const defaults: Required<ERC20Options>
+const defaults: Required<Options>
 ```
-```js
-const defaults: Required<ERC721Options>
-```
-```js
-const defaults: Required<ERC1155Options>
-```
-```js
-const defaults: Required<StablecoinOptions>
-```
-```js
-const defaults: Required<AccountOptions>
-```
-```js
-const defaults: Required<GovernorOptions>
-```
-```js
-const defaults: Required<CustomOptions>
-```
-The default options that are used for [`print`](#print).
+The default options that are used for [`print`](#print) and [`getVersionedRemappings`](#getVersionedRemappings).
 
 #### `isAccessControlRequired`
 ```js
-function isAccessControlRequired(opts: Partial<ERC20Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<GovernorOptions>): boolean
-```
-```js
-function isAccessControlRequired(opts: Partial<CustomOptions>): boolean
+function isAccessControlRequired(opts: Partial<Options>): boolean
 ```
 Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
 
-> Note that contracts such as `account`, have its own way of handling permissions and do not support the `access` option.
-Thus, that type does not include `isAccessControlRequired`.
+> Note that contracts such as `account` have their own way of handling permissions and do not support the `access` option. Thus, that type does not include `isAccessControlRequired`.
 
 ### Examples
 
@@ -129,4 +90,3 @@ const contract = erc20.print({
   ...erc20.defaults,
   upgradeable: 'uups',
 });
-```
