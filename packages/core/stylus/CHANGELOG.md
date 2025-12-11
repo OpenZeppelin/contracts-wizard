@@ -1,6 +1,10 @@
 # Changelog
 
-[//]: # (TODO#q: update changelog)
+## 0.3.0 (2025-12-11)
+
+- Refactor Stylus templates to match the official v0.3.0 release ([#753](https://github.com/OpenZeppelin/contracts-wizard/pull/753))
+  - **Breaking changes**:
+    - Requires OpenZeppelin Contracts for Stylus v0.3.0
 
 ## 0.2.0 (2025-07-21)
 
@@ -10,7 +14,7 @@
 
 ## 0.2.0-alpha.5 (2025-06-20)
 
-- Add security contact in contract info ([#564](https://github.com/OpenZeppelin/contracts-wizard/pull/564))
+
 - Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
 
 ## 0.2.0-alpha.4 (2025-03-10)
