@@ -14,7 +14,7 @@
 
 ## 0.2.0-alpha.5 (2025-06-20)
 
-
+- Add security contact in contract info ([#564](https://github.com/OpenZeppelin/contracts-wizard/pull/564))
 - Add support for Wizard MCP server. ([#569](https://github.com/OpenZeppelin/contracts-wizard/pull/569))
 
 ## 0.2.0-alpha.4 (2025-03-10)
