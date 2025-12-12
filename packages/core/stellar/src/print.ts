@@ -1,10 +1,9 @@
-import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause } from './contract';
+import type { Contract, Argument, ContractFunction, TraitImplBlock, UseClause, ConstructorArgument } from './contract';
 
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
 import { getSelfArg } from './common-options';
 import { compatibleContractsSemver } from './utils/version';
-import { toByteArray } from './utils/convert-strings';
 
 const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
@@ -249,7 +248,7 @@ function printFunction(fn: ContractFunction): Lines[] {
     }
   }
 
-  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines);
+  return printFunction2(fn.pub, head, args, fn.tags, fn.returns, undefined, codeLines, undefined);
 }
 
 function printContractFunctions(contract: Contract): Lines[] {
@@ -283,6 +282,7 @@ function printConstructor(contract: Contract): Lines[] {
   if (contract.constructorCode.length > 0) {
     const head = 'fn __constructor';
     const args = [getSelfArg(), ...contract.constructorArgs];
+    const deploy = printDeployCommand(contract.constructorArgs);
 
     const body = spaceBetween(withSemicolons(contract.constructorCode));
 
@@ -294,6 +294,7 @@ function printConstructor(contract: Contract): Lines[] {
       undefined,
       undefined,
       body,
+      deploy,
     );
     return constructor;
   } else {
@@ -311,11 +312,16 @@ function printFunction2(
   returns: string | undefined,
   returnLine: string | undefined,
   code: Lines[],
+  deploy: string[] | undefined,
 ): Lines[] {
   const fn = [];
 
   for (let i = 0; i < tags.length; i++) {
     fn.push(`#[${tags[i]}]`);
+  }
+
+  if (kindedName === 'fn __constructor' && deploy) {
+    fn.push(...deploy);
   }
 
   let accum = '';
@@ -371,3 +377,28 @@ function printDocumentations(documentations: string[]): string[] {
 function printMetadata(contract: Contract) {
   return Array.from(contract.metadata.entries()).map(([key, value]) => `contractmeta!(key="${key}", val="${value}");`);
 }
+
+const escapeQuotes = (s: string): string => s.replace(/"/g, '\\"');
+
+const needsQuoting = (name: string, value?: string): boolean =>
+  name === 'uri' || (value !== undefined && /[\s"'$\\]/.test(value));
+
+const formatDeployValue = (name: string, value?: string): string => {
+  if (value === undefined && name === 'uri') return `"https://example.com/"`;
+  if (value === undefined) return '';
+  return needsQuoting(name, value) ? `"${escapeQuotes(value)}"` : value;
+};
+
+const formatDeployArgument = (arg: ConstructorArgument, isLast: boolean): string =>
+  [`// --${arg.name} ${formatDeployValue(arg.name, arg.value)}`, isLast ? '' : ' \\'].join('');
+
+const deployHeader = (): string[] => [
+  '// deploy this smart contract with the Stellar CLI:',
+  '//',
+  '// stellar contract deploy \\',
+  '// --wasm path/to/file.wasm \\',
+  '// -- \\',
+];
+
+export const printDeployCommand = (args: ConstructorArgument[]): string[] =>
+  args.length === 0 ? [] : [...deployHeader(), ...args.map((a, i) => formatDeployArgument(a, i === args.length - 1))];

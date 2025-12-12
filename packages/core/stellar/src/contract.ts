@@ -7,7 +7,7 @@ export interface Contract {
   name: string;
   useClauses: UseClause[];
   constructorCode: string[];
-  constructorArgs: Argument[];
+  constructorArgs: ConstructorArgument[];
   implementedTraits: TraitImplBlock[];
   freeFunctions: ContractFunction[];
   variables: Variable[];
@@ -71,6 +71,10 @@ export interface Argument {
   type?: string;
 }
 
+export interface ConstructorArgument extends Argument {
+  value?: string;
+}
+
 export class ContractBuilder implements Contract {
   readonly name: string;
   license = 'MIT';
@@ -79,7 +83,7 @@ export class ContractBuilder implements Contract {
 
   readonly documentations: string[] = [];
 
-  readonly constructorArgs: Argument[] = [];
+  readonly constructorArgs: ConstructorArgument[] = [];
   readonly constructorCode: string[] = [];
 
   private implementedTraitsMap: Map<string, TraitImplBlock> = new Map();
@@ -241,7 +245,7 @@ export class ContractBuilder implements Contract {
     existingFn.tags = [...(existingFn.tags ?? []), tag];
   }
 
-  addConstructorArgument(arg: Argument): void {
+  addConstructorArgument(arg: ConstructorArgument): void {
     for (const existingArg of this.constructorArgs) {
       if (existingArg.name == arg.name) {
         return;
