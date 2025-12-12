@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.4.6 (2025-12-12)
+
+- Updated dependencies [[`ce60539`](https://github.com/OpenZeppelin/contracts-wizard/commit/ce6053924898e3ecbc8f80e05502786ddbc5e559)]:
+  - @openzeppelin/wizard-stylus@0.3.0
+
 ## 0.4.5 (2025-12-08)
 
 - Fix dependency on @openzeppelin/wizard-uniswap-hooks ([#748](https://github.com/OpenZeppelin/contracts-wizard/pull/748))
