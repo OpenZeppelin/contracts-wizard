@@ -32,7 +32,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
         };
         c.addTraitImplBlock(ownableTrait);
 
-        c.addConstructorArgument({ name: 'owner', type: 'Address' });
+        c.addConstructorArgument({ name: 'owner', type: 'Address', value: '<owner_address>' });
         c.addConstructorCode('ownable::set_owner(e, &owner);');
       }
       break;
@@ -50,7 +50,7 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
       };
       c.addTraitImplBlock(accessControltrait);
 
-      c.addConstructorArgument({ name: 'admin', type: 'Address' });
+      c.addConstructorArgument({ name: 'admin', type: 'Address', value: '<admin_address>' });
       c.addConstructorCode('access_control::set_admin(e, &admin);');
       break;
     }
@@ -93,7 +93,7 @@ export function requireAccessControl(
 
       if (caller && role) {
         c.addUseClause('soroban_sdk', 'Symbol');
-        c.addConstructorArgument({ name: role, type: 'Address' });
+        c.addConstructorArgument({ name: role, type: 'Address', value: `<${role}_address>` });
         c.addConstructorCode(`access_control::grant_role_no_auth(e, &admin, &${role}, &Symbol::new(e, "${role}"));`);
 
         if (useMacro) {
