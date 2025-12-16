@@ -1,0 +1,444 @@
+<script lang="ts">
+  import { createEventDispatcher, tick } from 'svelte';
+
+  import hljs from '../solidity/highlightjs';
+
+  import HooksControls from './HooksControls.svelte';
+  import CopyIcon from '../common/icons/CopyIcon.svelte';
+  import CheckIcon from '../common/icons/CheckIcon.svelte';
+  import RemixIcon from '../common/icons/RemixIcon.svelte';
+  import OverflowMenu from '../common/OverflowMenu.svelte';
+  import Tooltip from '../common/Tooltip.svelte';
+  import Dropdown from '../common/Dropdown.svelte';
+  import DownloadIcon from '../common/icons/DownloadIcon.svelte';
+  import FileIcon from '../common/icons/FileIcon.svelte';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
+
+  import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
+  import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
+
+  import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
+  import { postConfig } from '../common/post-config';
+  import { remixURL } from '../solidity/remix';
+  import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
+  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+
+  import { saveAs } from 'file-saver';
+  import { injectHyperlinks } from './inject-hyperlinks';
+  import type { InitialOptions } from '../common/initial-options';
+  import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
+
+  const dispatch = createEventDispatcher();
+
+  const WizUniswapHooks = createWiz<'uniswapHooks'>();
+
+  async function allowRendering() {
+    showCode = false;
+    await tick();
+    showCode = true;
+  }
+
+  export let initialTab: string | undefined = 'Hooks';
+
+  export let tab: Kind = sanitizeKind(initialTab);
+  $: {
+    tab = sanitizeKind(tab);
+    allowRendering();
+    dispatch('tab-change', tab);
+  }
+
+  export let initialOpts: InitialOptions = {};
+  let initialValuesSet = false;
+
+  // Remove { upgradeable: string } when upgradability gets implemented (kept to safeguard opening remix on transparent if added without check)
+  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> & { upgradeable: string } } = {};
+  let errors: { [k in Kind]?: OptionsErrorMessages } = {};
+
+  let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyHook');
+
+  let showCode = true;
+
+  $: opts = allOpts[tab];
+
+  $: {
+    if (opts) {
+      if (!initialValuesSet) {
+        opts.name = initialOpts.name ?? opts.name;
+        switch (opts.kind) {
+          case 'Hooks':
+        }
+        initialValuesSet = true;
+      }
+      try {
+        contract = buildGeneric(opts);
+        errors[tab] = undefined;
+      } catch (e: unknown) {
+        if (e instanceof OptionsError) {
+          errors[tab] = e.messages;
+        } else {
+          throw e;
+        }
+      }
+      allowRendering();
+    }
+  }
+
+  $: code = printContract(contract);
+  $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+
+  $: hasErrors = errors[tab] !== undefined;
+
+  $: showButtons = getButtonVisibilities(opts);
+
+  interface ButtonVisibilities {
+    openInRemix: boolean;
+    downloadHardhat: boolean;
+    downloadFoundry: boolean;
+  }
+
+  const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
+    return {
+      openInRemix: false,
+      downloadHardhat: false,
+      downloadFoundry: false,
+    };
+  };
+
+  const language = 'uniswap-hooks-solidity';
+
+  let copied = false;
+  const copyHandler = async () => {
+    await navigator.clipboard.writeText(code);
+    copied = true;
+    if (opts) {
+      await postConfig(opts, 'copy', language);
+    }
+    setTimeout(() => {
+      copied = false;
+    }, 1000);
+  };
+
+  const remixHandler = async (e: MouseEvent) => {
+    e.preventDefault();
+    if ((e.target as Element)?.classList.contains('disabled')) return;
+
+    const { printContractVersioned } = await import('@openzeppelin/wizard/print-versioned');
+
+    const versionedCode = printContractVersioned(contract);
+    window.open(remixURL(versionedCode, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    if (opts) {
+      await postConfig(opts, 'remix', language);
+    }
+  };
+
+  const downloadSingleFileHandler = async () => {
+    const blob = new Blob([code], { type: 'text/plain' });
+    if (opts) {
+      saveAs(blob, opts.name + '.sol');
+      await postConfig(opts, 'download-file', language);
+    }
+  };
+
+  const zipFoundryModule = import('@openzeppelin/wizard/zip-env-foundry');
+
+  const downloadFoundryHandler = async () => {
+    // const { zipFoundry } = await zipFoundryModule;
+    // const zip = await zipFoundry(contract, opts);
+    // const blob = await zip.generateAsync({ type: 'blob' });
+    // saveAs(blob, 'project.zip');
+    // if (opts) {
+    //   await postConfig(opts, 'download-foundry', language);
+    // }
+  };
+
+  const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'uniswapHooks'>>) => {
+    tab = sanitizeKind(aiFunctionCall.name);
+    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+  };
+</script>
+
+<div class="container flex flex-col gap-4 p-4 rounded-3xl">
+  <WizUniswapHooks
+    language="uniswapHooks"
+    bind:currentOpts={opts}
+    bind:currentCode={code}
+    on:function-call-response={applyFunctionCall}
+    sampleMessages={[
+      'What is a Uniswap hook?',
+      'Could you explain the Async Swaps base hook?',
+      'Create a Uniswap v4 hook using the LiquidityPenaltyHook templates',
+    ]}
+  />
+  <div class="header flex flex-row justify-between">
+    <div class="tab overflow-hidden whitespace-nowrap">
+      <OverflowMenu>
+        <button class:selected={tab === 'Hooks'} on:click={() => (tab = 'Hooks')}> Hooks </button>
+      </OverflowMenu>
+    </div>
+
+    {#if hasErrors}
+      <ErrorDisabledActionButtons />
+    {:else}
+      <div class="action flex flex-row gap-2 shrink-0">
+        <button class="action-button p-3 min-w-[40px]" on:click={copyHandler} title="Copy to Clipboard">
+          {#if copied}
+            <CheckIcon />
+          {:else}
+            <CopyIcon />
+          {/if}
+        </button>
+
+        {#if showButtons.openInRemix}
+          <Tooltip
+            let:trigger
+            disabled={!(opts?.upgradeable === 'transparent')}
+            theme="light-red border"
+            hideOnClick={false}
+            interactive
+          >
+            <button
+              use:trigger
+              class="action-button with-text"
+              class:disabled={opts?.upgradeable === 'transparent'}
+              on:click={remixHandler}
+            >
+              <RemixIcon />
+              Open in Remix
+            </button>
+            <div slot="content">
+              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
+              use Hardhat or Foundry with
+              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
+                >OpenZeppelin Upgrades</a
+              >.
+              <br />
+              <!-- svelte-ignore a11y-invalid-attribute -->
+              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+            </div>
+          </Tooltip>
+        {/if}
+
+        <Dropdown let:active>
+          <button class="action-button with-text" class:active slot="button">
+            <DownloadIcon />
+            Download
+          </button>
+
+          <button class="download-option" on:click={downloadSingleFileHandler}>
+            <FileIcon />
+            <div class="download-option-content">
+              <p>Single file</p>
+              <p>Requires installation of npm package or git submodule (<code>@openzeppelin/uniswap-hooks</code>).</p>
+              <p>Simple to receive updates.</p>
+            </div>
+          </button>
+
+          {#if showButtons.downloadFoundry}
+            <button class="download-option" on:click={downloadFoundryHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Foundry)</p>
+                <p>Sample Foundry project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
+        </Dropdown>
+      </div>
+    {/if}
+  </div>
+
+  <div class="flex flex-row grow">
+    <div
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+    >
+      <div class:hidden={tab !== 'Hooks'}>
+        <HooksControls bind:opts={allOpts.Hooks} errors={errors[tab]} />
+      </div>
+    </div>
+
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+      <pre class="flex flex-col grow basis-0 overflow-auto">
+        {#if showCode}
+          <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
+            >{@html highlightedCode}</code
+          >
+        {/if}
+      </pre>
+    </div>
+  </div>
+</div>
+
+<style lang="postcss">
+  .button-bg:hover {
+    transform: translateX(-2px);
+    transition: transform 300ms;
+  }
+
+  .hide-deploy {
+    transform: translateX(-320px);
+    transition: transform 0.45s;
+  }
+  .hide-deploy button {
+    background-color: white;
+    border: 1px solid white;
+  }
+
+  .hide-deploy:hover {
+    transform: translatex(-318px);
+  }
+
+  .container {
+    background-color: var(--gray-1);
+    min-width: 32rem;
+  }
+
+  .header {
+    font-size: var(--text-small);
+  }
+
+  .tab {
+    color: var(--gray-5);
+  }
+
+  .tab button,
+  :global(.overflow-btn) {
+    padding: var(--size-2) var(--size-4);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color ease-in-out 0.2s;
+  }
+
+  .tab button {
+  }
+
+  .tab button,
+  :global(.overflow-btn) {
+    border: 0;
+    background-color: transparent;
+  }
+
+  .tab button:hover,
+  :global(.overflow-btn):hover {
+    background-color: var(--gray-2);
+  }
+
+  .tab button.selected {
+    background-color: var(--uniswap-pink);
+    color: white;
+    order: -1;
+  }
+
+  :global(.overflow-menu) button.selected {
+    order: unset;
+  }
+
+  :global(.action-button) {
+    padding: 7px;
+    border-radius: 20px;
+    transition: background-color ease-in-out 0.2s;
+
+    background-color: var(--gray-1);
+    border: 1px solid var(--gray-3);
+    color: var(--gray-6);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--gray-2);
+    }
+
+    &:active,
+    &.active {
+      background-color: var(--gray-2);
+    }
+
+    :global(.icon) {
+      margin: 0 var(--size-1);
+    }
+  }
+
+  :global(.action-button.disabled) {
+    color: var(--gray-4);
+  }
+
+  :global(.with-text) {
+    padding-right: var(--size-3);
+  }
+
+  .controls {
+    background-color: white;
+    padding: var(--size-4);
+  }
+
+  .controls-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    color: var(--gray-5);
+    margin-top: var(--size-3);
+    padding: 0 var(--size-2);
+    font-size: var(--text-small);
+
+    & > * + * {
+      margin-left: var(--size-3);
+    }
+
+    :global(.icon) {
+      margin-right: 0.2em;
+      opacity: 0.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .download-option {
+    display: flex;
+    padding: var(--size-2);
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+
+    :global(.icon) {
+      margin-top: var(--icon-adjust);
+    }
+
+    :not(:hover) + & {
+      border-top: 1px solid var(--gray-2);
+    }
+
+    &:hover,
+    &:focus {
+      background-color: var(--gray-1);
+      border: 1px solid var(--gray-3);
+    }
+
+    & div {
+      display: block;
+    }
+  }
+
+  .download-option-content {
+    margin-left: var(--size-3);
+    font-size: var(--text-small);
+
+    & > :first-child {
+      margin-bottom: var(--size-2);
+      color: var(--gray-6);
+      font-weight: bold;
+    }
+
+    & > :not(:first-child) {
+      margin-top: var(--size-1);
+      color: var(--gray-5);
+    }
+  }
+</style>
