@@ -20,13 +20,14 @@ export const defaults: Required<StablecoinOptions> = {
 } as const;
 
 export const limitationsOptions = [false, 'allowlist', 'blocklist'] as const;
+export type Limitations = (typeof limitationsOptions)[number];
 
 export function printStablecoin(opts: StablecoinOptions = defaults): string {
   return printContract(buildStablecoin(opts));
 }
 
 export interface StablecoinOptions extends FungibleOptions {
-  limitations?: false | 'allowlist' | 'blocklist';
+  limitations?: Limitations;
 }
 
 function withDefaults(opts: StablecoinOptions): Required<StablecoinOptions> {

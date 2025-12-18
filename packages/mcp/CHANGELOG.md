@@ -1,15 +1,36 @@
 # Changelog
 
 
+## 0.4.6 (2025-12-12)
+
+- Updated dependencies [[`ce60539`](https://github.com/OpenZeppelin/contracts-wizard/commit/ce6053924898e3ecbc8f80e05502786ddbc5e559)]:
+  - @openzeppelin/wizard-stylus@0.3.0
+
+## 0.4.5 (2025-12-08)
+
+- Fix dependency on @openzeppelin/wizard-uniswap-hooks ([#748](https://github.com/OpenZeppelin/contracts-wizard/pull/748))
+
+## 0.4.4 (2025-11-28)
+
+- Add support for Uniswap Hooks Wizard ([#628](https://github.com/OpenZeppelin/contracts-wizard/pull/628))
+- Updated dependencies [[`985d5a4`](https://github.com/OpenZeppelin/contracts-wizard/commit/985d5a48ff513978e364ada8184dbf82f8676f49)]:
+  - @openzeppelin/wizard@0.10.4
+  - @openzeppelin/wizard-common@0.3.3
+
+## 0.4.3 (2025-11-26)
+
+- Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))
+- Updated dependencies [[`3bb0213`](https://github.com/OpenZeppelin/contracts-wizard/commit/3bb02139b5a3b7a4098859a8e6824d7ac6e0fc6f), [`57dabc8`](https://github.com/OpenZeppelin/contracts-wizard/commit/57dabc812e0639635c01cad7445c33d6cbfcc61a)]:
+  - @openzeppelin/wizard-stellar@0.4.4
+  - @openzeppelin/wizard-common@0.3.2
+  - @openzeppelin/wizard@0.10.3
+
 ## 0.4.2 (2025-11-12)
 
 - Solidity account signer: Add `WebAuthn` to the list of signers available. ([#718](https://github.com/OpenZeppelin/contracts-wizard/pull/718))
 - Updated dependencies [[`be91f8f`](https://github.com/OpenZeppelin/contracts-wizard/commit/be91f8fee6f66ae8a045394fded8d46ef1383b9f)]:
   - @openzeppelin/wizard@0.10.2
   - @openzeppelin/wizard-common@0.3.1
-
-## 0.4.1 (2025-11-11)
-
 - **Breaking changes**: Solidity Stablecoin and RWA: Change `custodian` option to `freezable`. Replace ERC20Custodian with ERC20Freezable. ([#719](https://github.com/OpenZeppelin/contracts-wizard/pull/719))
 - Updated dependencies [[`6b8f8f5`](https://github.com/OpenZeppelin/contracts-wizard/commit/6b8f8f52b973946ea6ce441dcbc1cbf3c3a848f2), [`c14be02`](https://github.com/OpenZeppelin/contracts-wizard/commit/c14be0291fca353946fc7583046de8669c209cc4), [`bec86b5`](https://github.com/OpenZeppelin/contracts-wizard/commit/bec86b542daf8d4ebacaa512b5a66f970500f826), [`ce8fbba`](https://github.com/OpenZeppelin/contracts-wizard/commit/ce8fbba5f006fcbc822e9e42b860c9fa7a9827df), [`5c1fa0f`](https://github.com/OpenZeppelin/contracts-wizard/commit/5c1fa0f29c8a86952a9be111235e8cd615a889ca)]:
   - @openzeppelin/wizard@0.10.1

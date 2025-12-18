@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.4 (2025-11-26)
+
+- Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))
+
 ## 0.4.3 (2025-10-14)
 
 - Set security contact as contract metadata ([#679](https://github.com/OpenZeppelin/contracts-wizard/pull/679))

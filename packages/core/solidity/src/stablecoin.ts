@@ -11,6 +11,8 @@ import {
   functions as erc20functions,
 } from './erc20';
 
+export type Limitations = 'allowlist' | 'blocklist';
+
 export interface StablecoinOptions extends ERC20Options {
   restrictions?: false | 'allowlist' | 'blocklist';
   freezable?: boolean;
