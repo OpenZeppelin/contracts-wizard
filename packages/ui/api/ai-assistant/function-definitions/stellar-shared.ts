@@ -2,11 +2,13 @@ import type { AiFunctionPropertyDefinition } from '../types/function-definition.
 import type { StellarCommonContractOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
 import { stellarCommonDescriptions } from '../../../../common/src/ai/descriptions/stellar.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { Access } from '../../../../core/stellar/dist/set-access-control';
 
 export const stellarCommonFunctionDescription = {
   access: {
     anyOf: [
-      { type: 'string', enum: ['ownable', 'roles'] },
+      { type: 'string', enum: extractStringEnumValues<Access>()(['ownable', 'roles']) },
       { type: 'boolean', enum: [false] },
     ],
     description: stellarCommonDescriptions.access,

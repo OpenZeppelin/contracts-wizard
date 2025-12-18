@@ -12,6 +12,9 @@ module.exports = {
 
   theme: {
     extend: {
+      spacing: {
+        74: '18.5rem',
+      },
       keyframes: {
         'fade-in': {
           '0%': { opacity: '0' },
