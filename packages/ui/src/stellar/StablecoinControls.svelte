@@ -46,8 +46,6 @@
   </label>
 </section>
 
-<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
-
 <section class="controls-section">
   <h1>Features</h1>
 
@@ -101,5 +99,7 @@
 </ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <InfoSection bind:info={opts.info} />
