@@ -15,15 +15,17 @@
 </script>
 
 <section class="controls-section">
-  <h1>Trait Implementations</h1>
-  <p class="explain">
-    Whether the contract should use explicit trait implementations instead of the #[default_impl] macro to auto-generate
-    trait method bodies.
-  </p>
+  <h1 class="flex justify-between pr-2">
+    Trait Implementations
+    <HelpTooltip>
+      Whether the contract should use explicit trait implementations instead of the <code>#[default_impl]</code> macro to
+      auto-generate trait method bodies.
+    </HelpTooltip>
+  </h1>
   <div class="checkbox-group">
     <label class:checked={implementationMode === 'default'}>
       <input type="radio" bind:group={implementationMode} value="default" on:change={syncExplicit} />
-      Default implementation
+      Default
       <HelpTooltip
         >Keep the <code>#[default_impl]</code> attribute so unused trait functions rely on the macro.</HelpTooltip
       >
@@ -31,16 +33,10 @@
 
     <label class:checked={implementationMode === 'explicit'}>
       <input type="radio" bind:group={implementationMode} value="explicit" on:change={syncExplicit} />
-      Explicit trait methods
+      Explicit
       <HelpTooltip
         >Generate every trait function body explicitly and omit the <code>#[default_impl]</code> attribute. Easier to customize.</HelpTooltip
       >
     </label>
   </div>
 </section>
-
-<style>
-  .explain {
-    font-size: small;
-  }
-</style>
