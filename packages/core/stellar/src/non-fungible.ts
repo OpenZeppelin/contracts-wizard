@@ -1,18 +1,17 @@
-import type { Contract } from './contract';
-import { ContractBuilder } from './contract';
-import { type Access, DEFAULT_ACCESS_CONTROL, requireAccessControl, setAccessControl } from './set-access-control';
+import { pickKeys } from '@openzeppelin/wizard-common';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
-import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
-import { withCommonContractDefaults, getSelfArg } from './common-options';
-import { setInfo } from './set-info';
+import { contractDefaults as commonDefaults, getSelfArg, withCommonContractDefaults } from './common-options';
+import type { Contract } from './contract';
+import { ContractBuilder } from './contract';
 import type { OptionsErrorMessages } from './error';
 import { OptionsError } from './error';
-import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
+import { type Access, DEFAULT_ACCESS_CONTROL, requireAccessControl, setAccessControl } from './set-access-control';
+import { setInfo } from './set-info';
 import { toByteArray } from './utils/convert-strings';
-import { pickKeys } from '@openzeppelin/wizard-common';
+import { defineFunctions } from './utils/define-functions';
 
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
@@ -156,7 +155,7 @@ function addBase(
   c.addUseClause('stellar_tokens::non_fungible', 'Base');
   c.addUseClause('stellar_tokens::non_fungible', 'NonFungibleToken');
   if (explicitImplementations) c.addUseClause('stellar_tokens::non_fungible', 'ContractOverrides');
-  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
+  else c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
@@ -214,8 +213,8 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
 
 function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
-  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
   if (explicitImplementations) c.addUseClause('soroban_sdk', 'Address');
+  else c.addUseClause('stellar_macros', 'default_impl');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
@@ -225,9 +224,7 @@ function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
   };
   if (explicitImplementations)
     c.addTraitForEachFunctions(nonFungibleEnumerableTrait, nonFungibleEnumerableTraitFunctions);
-  else {
-    c.addTraitImplBlock(nonFungibleEnumerableTrait);
-  }
+  else c.addTraitImplBlock(nonFungibleEnumerableTrait);
 
   c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;');
 }
