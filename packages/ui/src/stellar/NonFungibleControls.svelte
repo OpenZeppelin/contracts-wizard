@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import MintableSection from './MintableSection.svelte';
+  import TraitImplementationSection from './TraitImplementationSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['NonFungible']> = {
@@ -108,5 +109,7 @@
 />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <InfoSection bind:info={opts.info} />

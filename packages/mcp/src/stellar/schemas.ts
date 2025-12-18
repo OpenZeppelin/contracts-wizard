@@ -24,6 +24,7 @@ function _typeAssertions() {
 
 export const commonSchema = {
   access: z.literal('ownable').or(z.literal('roles')).optional().describe(stellarCommonDescriptions.access),
+  explicitImplementations: z.boolean().optional().describe(stellarCommonDescriptions.explicitImplementations),
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({

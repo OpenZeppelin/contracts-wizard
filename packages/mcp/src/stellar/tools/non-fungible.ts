@@ -22,6 +22,7 @@ export function registerStellarNonFungible(server: McpServer): RegisteredTool {
       sequential,
       upgradeable,
       info,
+      explicitImplementations,
     }) => {
       const opts: NonFungibleOptions = {
         name,
@@ -35,6 +36,7 @@ export function registerStellarNonFungible(server: McpServer): RegisteredTool {
         sequential,
         upgradeable,
         info,
+        explicitImplementations,
       };
       return {
         content: [

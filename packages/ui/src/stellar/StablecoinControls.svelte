@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+  import TraitImplementationSection from './TraitImplementationSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
@@ -98,5 +99,7 @@
 </ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <InfoSection bind:info={opts.info} />

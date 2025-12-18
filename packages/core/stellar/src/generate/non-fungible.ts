@@ -18,6 +18,7 @@ const blueprint = {
   mintable: booleans,
   access: accessOptions,
   info: infoOptions,
+  explicitImplementations: booleans,
 };
 
 export function* generateNonFungibleOptions(): Generator<Required<NonFungibleOptions>> {
