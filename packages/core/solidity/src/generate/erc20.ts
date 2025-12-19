@@ -7,16 +7,12 @@ import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
 
-const blueprint = {
+const blueprintWithoutBasicFeatures = {
   name: ['MyToken'],
   symbol: ['MTK'],
-  burnable: booleans,
   pausable: booleans,
   mintable: booleans,
-  callback: booleans,
-  permit: booleans,
   votes: [...booleans, ...clockModeOptions] as const,
-  flashmint: booleans,
   premint: ['1'],
   premintChainId: ['10'],
   crossChainBridging: crossChainBridgingOptions,
@@ -27,8 +23,32 @@ const blueprint = {
   info: infoOptions,
 };
 
+// Basic features that do not depend on other features like access control
+const basicFeatures = {
+  OFF: {
+    burnable: [false],
+    callback: [false],
+    permit: [false],
+    flashmint: [false],
+  },
+  ON: {
+    burnable: [true],
+    callback: [true],
+    permit: [true],
+    flashmint: [true],
+  },
+};
+
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
-  for (const opts of generateAlternatives(blueprint)) {
+  // Separate generation steps with basic features OFF and ON to avoid having too many combinations
+  for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.OFF })) {
+    // crossChainBridging does not currently support upgradeable
+    if (!(opts.crossChainBridging && opts.upgradeable)) {
+      yield opts;
+    }
+  }
+
+  for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.ON })) {
     // crossChainBridging does not currently support upgradeable
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
