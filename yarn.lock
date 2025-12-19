@@ -806,14 +806,19 @@
   version "0.0.1"
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
-"@openzeppelin/contracts-upgradeable@^5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.5.0.tgz#e35b3ededa5ccc13205c2b42e2058cd5cb7d424a"
-  integrity sha512-Va5hKG5oaK0EE5bXTVWugcGimMHazxL+SL523dH6WVbGiuLXwuWr9oxtLyPHQSVGtgmlIgtKNR5V+OUpCIUwFQ==
+"@openzeppelin/contracts-upgradeable@^5.6.0-rc.0":
+  version "5.6.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.6.0-rc.0.tgz#b5bbaf861236cc072ef1949f27bf2c841558d378"
+  integrity sha512-vY8myFBM8dhZeujvBG7FyRT6kK5SztyrqIdqQbSZpo+gvQyG4i03NMsb//Cvdkxs5lJQcJ1f58HrswGqIa6XHg==
 
-"@openzeppelin/contracts@^5.5.0", "@openzeppelin/contracts@git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#master":
+"@openzeppelin/contracts@^5.5.0":
   version "5.5.0"
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#bacb570d143e637c6637a68727795f4e71aac891"
+
+"@openzeppelin/contracts@^5.6.0-rc.0":
+  version "5.6.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.6.0-rc.0.tgz#9a852a7d0f64a8a5b4f50edaea076019cc76a32c"
+  integrity sha512-BHah0nkj+WBnLQulvcTkDSM+LJYBUuK4vwGRXGiNvivILb+FNPQJKeNyuw0OkY0AyYwKHycZprNsgC4ci5BDTg==
 
 "@openzeppelin/uniswap-hooks@^1.2.1":
   version "1.2.1"

@@ -1,4 +1,3 @@
 @openzeppelin/contracts/=node_modules/@openzeppelin/contracts/contracts/
 @uniswap/v4-core/=node_modules/@uniswap/v4-core/
 @uniswap/v4-periphery/=node_modules/@uniswap/v4-periphery/
-@openzeppelin/uniswap-hooks/=node_modules/@openzeppelin/uniswap-hooks/src/
