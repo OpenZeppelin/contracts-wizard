@@ -203,9 +203,7 @@
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin" />
       TimelockController
-      <HelpTooltip
-        link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/governance#TimelockControllerComponent"
-      >
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/governance#TimelockControllerComponent">
         Module compatible with OpenZeppelin's <code>TimelockController</code>.
       </HelpTooltip>
     </label>
