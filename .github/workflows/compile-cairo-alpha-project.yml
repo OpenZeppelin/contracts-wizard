@@ -61,6 +61,7 @@ jobs:
                     yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
 
                     echo "Compiling $proj_name..."
+                    scarb clean
                     scarb build
 
                     echo "✅ Compiled $proj_name!"
@@ -75,6 +76,7 @@ jobs:
                   yarn run update_scarb_project --kind=$kind --access=$access_option
 
                   echo "Compiling $proj_name..."
+                  scarb clean
                   scarb build
 
                   echo "✅ Compiled $proj_name!"
@@ -88,6 +90,7 @@ jobs:
                 yarn run update_scarb_project --kind=$kind
 
                 echo "Compiling $proj_name..."
+                scarb clean
                 scarb build
 
                 echo "✅ Compiled $proj_name!"
