@@ -2,11 +2,12 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { governor, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { governor, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
 
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
@@ -19,6 +20,7 @@
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   let quorumAbsoluteInput: HTMLInputElement;
@@ -154,7 +156,7 @@
     <label class:checked={opts.votes === 'erc20votes'}>
       <input type="radio" bind:group={opts.votes} value="erc20votes" />
       ERC20Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/governance#VotesComponent">
         Represent voting power with a votes-enabled ERC20 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -162,7 +164,7 @@
     <label class:checked={opts.votes === 'erc721votes'}>
       <input type="radio" bind:group={opts.votes} value="erc721votes" />
       ERC721Votes
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/api/governance#VotesComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/governance#VotesComponent">
         Represent voting power with a votes-enabled ERC721 token. Voters can entrust their voting power to a delegate.
       </HelpTooltip>
     </label>
@@ -201,7 +203,9 @@
     <label class:checked={opts.timelock === 'openzeppelin'}>
       <input type="radio" bind:group={opts.timelock} value="openzeppelin" />
       TimelockController
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/api/governance#TimelockControllerComponent">
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/governance#TimelockControllerComponent"
+      >
         Module compatible with OpenZeppelin's <code>TimelockController</code>.
       </HelpTooltip>
     </label>
@@ -220,7 +224,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/guides/snip12"
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12"
         >Name for domain separator. Prevents two applications from producing the same hash.</HelpTooltip
       >
     </span>
@@ -230,12 +234,14 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/guides/snip12"
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12"
         >Version for domain separator. Prevents two versions of the same application from producing the same hash.</HelpTooltip
       >
     </span>
     <input bind:value={opts.appVersion} use:error={errors?.appVersion} />
   </label>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

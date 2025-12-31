@@ -1,55 +1,86 @@
 <script lang="ts">
-  import type { Access } from '@openzeppelin/wizard-cairo';
+  import type { AccessType, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
   import HelpTooltip from '../common/HelpTooltip.svelte';
+  import { error } from '../common/error-tooltip';
 
-  export let access: Access;
+  export let accessType: AccessType;
+  export let darInitialDelay: string;
+  export let darDefaultDelayIncrease: string;
   export let required: boolean;
-  let defaultValueWhenEnabled: 'ownable' | 'roles' = 'ownable';
+  export let errors: undefined | OptionsErrorMessages;
 
+  let defaultTypeWhenEnabled: 'ownable' | 'roles' | 'roles-dar' = 'ownable';
   let wasRequired = required;
-  let wasAccess = access;
+  let wasAccessType = accessType;
 
   $: {
     if (wasRequired && !required) {
-      access = wasAccess;
+      accessType = wasAccessType;
     } else {
-      wasAccess = access;
-      if (access === false && required) {
-        access = defaultValueWhenEnabled;
+      wasAccessType = accessType;
+      if (accessType === false && required) {
+        accessType = defaultTypeWhenEnabled;
       }
     }
 
     wasRequired = required;
-    if (access !== false) {
-      defaultValueWhenEnabled = access;
+    if (accessType !== false) {
+      defaultTypeWhenEnabled = accessType;
     }
   }
 </script>
 
 <ExpandableToggleRadio
   label="Access Control"
-  bind:value={access}
+  bind:value={accessType}
   defaultValue="ownable"
   helpContent="Restrict who can access the functions of a contract or when they can do it."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/2.x/access"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/3.x/access"
   {required}
 >
   <div class="checkbox-group">
-    <label class:checked={access === 'ownable'}>
-      <input type="radio" bind:group={access} value="ownable" />
+    <label class:checked={accessType === 'ownable'}>
+      <input type="radio" bind:group={accessType} value="ownable" />
       Ownable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/access#ownership_and_ownable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/access#ownership-and-ownable">
         Simple mechanism with a single account authorized for all privileged actions.
       </HelpTooltip>
     </label>
-    <label class:checked={access === 'roles'}>
-      <input type="radio" bind:group={access} value="roles" />
+    <label class:checked={accessType === 'roles'}>
+      <input type="radio" bind:group={accessType} value="roles" />
       Roles
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/access#role_based_accesscontrol">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/access#role-based-accesscontrol">
         Flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.
       </HelpTooltip>
     </label>
+    <label class:checked={accessType === 'roles-dar'}>
+      <input type="radio" bind:group={accessType} value="roles-dar" />
+      Roles (Default Admin Rules)
+      <HelpTooltip
+        link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/access#AccessControlDefaultAdminRulesComponent"
+      >
+        Provides additional enforced security measures on top of standard Roles mechanism for managing the most
+        privileged role: default admin.
+      </HelpTooltip>
+    </label>
   </div>
+  {#if accessType === 'roles-dar'}
+    <label class="labeled-input">
+      <span class="flex justify-between pr-2">
+        Initial delay
+        <HelpTooltip>The initial delay before the default admin can be assigned.</HelpTooltip>
+      </span>
+      <input bind:value={darInitialDelay} placeholder="" use:error={errors?.darInitialDelay} />
+    </label>
+    <label class="labeled-input">
+      <span class="flex justify-between pr-2">
+        Default admin delay increase
+        <HelpTooltip>The duration by which the delay for the default admin increases after each assignment.</HelpTooltip
+        >
+      </span>
+      <input bind:value={darDefaultDelayIncrease} placeholder="" use:error={errors?.darDefaultDelayIncrease} />
+    </label>
+  {/if}
 </ExpandableToggleRadio>
