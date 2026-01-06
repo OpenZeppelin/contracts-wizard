@@ -47,34 +47,55 @@ jobs:
           set -e
 
           declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "Account" "Multisig" "Governor" "Vesting" "Custom")
-          declare -a all_royalty_info_options=("disabled" "enabled_default" "enabled_custom")
-          for kind in "${all_kinds[@]}"; do
-            scarb clean
+          declare -a all_macros_options=("none" "with_components")
+          declare -a all_access_options=("disabled" "ownable" "roles" "roles-dar-default" "roles-dar-custom")
+          declare -a all_royalty_options=("disabled" "enabled-default" "enabled-custom")
 
-            if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
-              for royalty_info_option in "${all_royalty_info_options[@]}"; do
-                proj_name="'$kind (royalty info: $royalty_info_option)'' test project"
+          for macros_option in "${all_macros_options[@]}"; do
+            for kind in "${all_kinds[@]}"; do
+              if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
+                for access_option in "${all_access_options[@]}"; do
+                  for royalty_option in "${all_royalty_options[@]}"; do
+                    proj_name="'$kind, macros: $macros_option, access: $access_option, royalty: $royalty_option' test project"
+                    echo "Generating $proj_name..."
+                    yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
+
+                    echo "Compiling $proj_name..."
+                    scarb clean
+                    scarb build
+
+                    echo "✅ Compiled $proj_name!"
+                    echo "---------------------------------"
+                  done
+                done
+
+              elif [[ "$kind" == "ERC20" || "$kind" == "Custom" ]]; then
+                for access_option in "${all_access_options[@]}"; do
+                  proj_name="'$kind, access: $access_option' test project"
+                  echo "Generating $proj_name..."
+                  yarn run update_scarb_project --kind=$kind --access=$access_option
+
+                  echo "Compiling $proj_name..."
+                  scarb clean
+                  scarb build
+
+                  echo "✅ Compiled $proj_name!"
+                  echo "---------------------------------"
+                done
+
+              else
+                proj_name="'$kind' test project"
+
                 echo "Generating $proj_name..."
-                yarn run update_scarb_project $kind $royalty_info_option
+                yarn run update_scarb_project --kind=$kind
 
                 echo "Compiling $proj_name..."
+                scarb clean
                 scarb build
 
                 echo "✅ Compiled $proj_name!"
                 echo "---------------------------------"
-              done
-
-            else
-              proj_name="'$kind' test project"
-
-              echo "Generating $proj_name..."
-              yarn run update_scarb_project $kind
-
-              echo "Compiling $proj_name..."
-              scarb build
-
-              echo "✅ Compiled $proj_name!"
-              echo "---------------------------------"
-            fi
+              fi
+            done
 
           done
