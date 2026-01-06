@@ -59,6 +59,10 @@ const commonContractFunctionDescription = {
         type: 'string',
         description: cairoAccessDescriptions.darDefaultDelayIncrease,
       },
+      darMaxTransferDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darMaxTransferDelay,
+      },
     },
     description: cairoCommonDescriptions.access,
   },
