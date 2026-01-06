@@ -183,8 +183,9 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           'darMaxTransferDelay',
           'u64',
         );
-        const shouldUseDefaultConfig = defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT 
-          && maxDefaultAdminTransferDelay === MAXIMUM_DEFAULT_ADMIN_TRANSFER_DELAY;
+        const shouldUseDefaultConfig =
+          defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT &&
+          maxDefaultAdminTransferDelay === MAXIMUM_DEFAULT_ADMIN_TRANSFER_DELAY;
         if (shouldUseDefaultConfig) {
           c.addUseClause('openzeppelin_access::accesscontrol::extensions', 'DefaultConfig', {
             alias: 'AccessControlDefaultAdminRulesDefaultConfig',
