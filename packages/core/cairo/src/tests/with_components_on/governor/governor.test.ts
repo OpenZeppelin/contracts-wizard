@@ -25,8 +25,7 @@ function testGovernor(title: string, opts: Partial<GovernorOptions>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: GovernorOptions) {
-  const options = opts === undefined ? defaults : opts;
-  options.macros = withComponentsMacroON;
+  const options = { ...(opts === undefined ? defaults : opts), macros: withComponentsMacroON };
   test(title, t => {
     t.is(governor.print(options), printContract(buildGovernor(options)));
   });

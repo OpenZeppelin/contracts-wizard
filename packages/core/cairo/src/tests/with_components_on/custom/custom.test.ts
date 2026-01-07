@@ -23,8 +23,7 @@ function testCustom(title: string, opts: Partial<CustomOptions>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: CustomOptions) {
-  const options = opts === undefined ? defaults : opts;
-  options.macros = withComponentsMacroON;
+  const options = { ...(opts === undefined ? defaults : opts), macros: withComponentsMacroON };
   test(title, t => {
     t.is(custom.print(options), printContract(buildCustom(options)));
   });
