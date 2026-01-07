@@ -47,8 +47,7 @@ function testERC721(title: string, opts: Partial<ERC721Options>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: ERC721Options) {
-  const options = opts === undefined ? defaults : opts;
-  options.macros = withComponentsMacroON;
+  const options = { ...(opts === undefined ? defaults : opts), macros: withComponentsMacroON };
   test(title, t => {
     t.is(erc721.print(options), printContract(buildERC721(options)));
   });

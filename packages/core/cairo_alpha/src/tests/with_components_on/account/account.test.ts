@@ -36,8 +36,7 @@ function testEthAccount(title: string, opts: Partial<AccountOptions>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: AccountOptions) {
-  const options = opts === undefined ? defaults : opts;
-  options.macros = withComponentsMacroON;
+  const options = { ...(opts === undefined ? defaults : opts), macros: withComponentsMacroON };
   test(title, t => {
     t.is(
       account.print(options),

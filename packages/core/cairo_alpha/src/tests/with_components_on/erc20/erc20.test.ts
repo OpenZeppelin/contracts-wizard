@@ -26,8 +26,7 @@ function testERC20(title: string, opts: Partial<ERC20Options>) {
  * Tests external API for equivalence with internal API
  */
 function testAPIEquivalence(title: string, opts?: ERC20Options) {
-  const options = opts === undefined ? defaults : opts;
-  options.macros = withComponentsMacroON;
+  const options = { ...(opts === undefined ? defaults : opts), macros: withComponentsMacroON };
   test(title, t => {
     t.is(erc20.print(options), printContract(buildERC20(options)));
   });
