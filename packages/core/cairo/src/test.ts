@@ -58,7 +58,7 @@ async function testGenerate(params: {
   macros?: MacrosSubset;
 }) {
   const { ctx, kind, access, royaltyInfo, macros } = params;
-  const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
+  const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
     dir: generatedSourcesPath,
