@@ -1,5 +1,6 @@
 ---
 '@openzeppelin/wizard-cairo': major
+'@openzeppelin/contracts-mcp': minor
 '@openzeppelin/wizard-common': patch
 ---
 
