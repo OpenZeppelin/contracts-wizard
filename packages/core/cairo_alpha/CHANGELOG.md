@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.0.0 (2026-01-08)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
 - Add AccessControlDefaultAdminRules. ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
@@ -10,6 +10,14 @@
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.2. ([#663](https://github.com/OpenZeppelin/contracts-wizard/pull/663))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.1. ([#638](https://github.com/OpenZeppelin/contracts-wizard/pull/638))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.0. ([#623](https://github.com/OpenZeppelin/contracts-wizard/pull/623))
+
+## 2.1.0 (2025-09-16)
+
+- Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+
+## 2.0.1 (2025-08-20)
+
+- Fix missing use clause in hooks for ERC20 votes ([#637](https://github.com/OpenZeppelin/contracts-wizard/pull/637))
 
 ## 2.0.0 (2025-06-20)
 
