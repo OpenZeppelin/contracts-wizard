@@ -36,7 +36,12 @@ function _typeAssertions() {
 
 export const commonSchema = {
   access: z.object({
-    type: z.literal('ownable').or(z.literal('roles')).or(z.literal('roles-dar')).or(z.literal(false)).describe(cairoAccessDescriptions.accessType),
+    type: z
+      .literal('ownable')
+      .or(z.literal('roles'))
+      .or(z.literal('roles-dar'))
+      .or(z.literal(false))
+      .describe(cairoAccessDescriptions.accessType),
     darInitialDelay: z.string().describe(cairoAccessDescriptions.darInitialDelay),
     darDefaultDelayIncrease: z.string().describe(cairoAccessDescriptions.darDefaultDelayIncrease),
     darMaxTransferDelay: z.string().describe(cairoAccessDescriptions.darMaxTransferDelay),
@@ -49,8 +54,8 @@ export const commonSchema = {
     })
     .optional()
     .describe(infoDescriptions.info),
-  macros: z.
-    object({
+  macros: z
+    .object({
       withComponents: z.boolean().describe(cairoMacrosDescriptions.withComponents),
     })
     .optional()
