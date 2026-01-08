@@ -10,7 +10,7 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
     'cairo-vesting',
     makeDetailedPrompt(cairoPrompts.Vesting),
     vestingSchema,
-    async ({ name, startDate, duration, cliffDuration, schedule, info }) => {
+    async ({ name, startDate, duration, cliffDuration, schedule, info, macros }) => {
       const opts: VestingOptions = {
         name,
         startDate,
@@ -18,6 +18,7 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
         cliffDuration,
         schedule,
         info,
+        macros,
       };
       return {
         content: [
