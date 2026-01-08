@@ -64,7 +64,7 @@ const commonContractFunctionDescription = {
         description: cairoAccessDescriptions.darMaxTransferDelay,
       },
     },
-    description: cairoCommonDescriptions.access,
+    description: cairoAccessDescriptions.accessType,
   },
 } as const satisfies AiFunctionPropertyDefinition<CairoCommonContractOptions>['properties'];
 
