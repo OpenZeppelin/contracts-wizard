@@ -1,7 +1,7 @@
 ---
 '@openzeppelin/wizard-cairo': major
 '@openzeppelin/contracts-mcp': minor
-'@openzeppelin/wizard-common': patch
+'@openzeppelin/wizard-common': minor
 ---
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
