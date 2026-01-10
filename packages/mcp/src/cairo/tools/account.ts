@@ -10,7 +10,7 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
     'cairo-account',
     makeDetailedPrompt(cairoPrompts.Account),
     accountSchema,
-    async ({ name, type, declare, deploy, pubkey, outsideExecution, upgradeable, info }) => {
+    async ({ name, type, declare, deploy, pubkey, outsideExecution, upgradeable, info, macros }) => {
       const opts: AccountOptions = {
         name,
         type,
@@ -20,6 +20,7 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
         outsideExecution,
         upgradeable,
         info,
+        macros,
       };
       return {
         content: [

@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## 2.1.0 (2025-09-16)
 
 - Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))

@@ -8,6 +8,7 @@
   export let accessType: AccessType;
   export let darInitialDelay: string;
   export let darDefaultDelayIncrease: string;
+  export let darMaxTransferDelay: string;
   export let required: boolean;
   export let errors: undefined | OptionsErrorMessages;
 
@@ -81,6 +82,13 @@
         >
       </span>
       <input bind:value={darDefaultDelayIncrease} placeholder="" use:error={errors?.darDefaultDelayIncrease} />
+    </label>
+    <label class="labeled-input">
+      <span class="flex justify-between pr-2">
+        Max default admin transfer delay
+        <HelpTooltip>The maximum delay in seconds for a default admin transfer.</HelpTooltip>
+      </span>
+      <input bind:value={darMaxTransferDelay} placeholder="" use:error={errors?.darMaxTransferDelay} />
     </label>
   {/if}
 </ExpandableToggleRadio>

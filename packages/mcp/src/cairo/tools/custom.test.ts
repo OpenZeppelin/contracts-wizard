@@ -33,19 +33,79 @@ function assertHasAllSupportedFields(
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyAccount',
+    access: {
+      type: false,
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
   };
   await assertAPIEquivalence(t, params, custom.print);
 });
 
-test('all', async t => {
+test('ownable', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyAccount',
     pausable: true,
-    access: 'roles',
+    access: {
+      type: 'ownable',
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
     upgradeable: true,
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',
+    },
+    macros: {
+      withComponents: true,
+    },
+  };
+  assertHasAllSupportedFields(t, params);
+  await assertAPIEquivalence(t, params, custom.print);
+});
+
+test('roles', async t => {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    name: 'MyAccount',
+    pausable: true,
+    access: {
+      type: 'roles',
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
+    upgradeable: true,
+    info: {
+      license: 'MIT',
+      securityContact: 'security@example.com',
+    },
+    macros: {
+      withComponents: true,
+    },
+  };
+  assertHasAllSupportedFields(t, params);
+  await assertAPIEquivalence(t, params, custom.print);
+});
+
+test('roles-dar', async t => {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    name: 'MyAccount',
+    pausable: true,
+    access: {
+      type: 'roles-dar',
+      darInitialDelay: '1 day',
+      darDefaultDelayIncrease: '5 days',
+      darMaxTransferDelay: '30 days',
+    },
+    upgradeable: true,
+    info: {
+      license: 'MIT',
+      securityContact: 'security@example.com',
+    },
+    macros: {
+      withComponents: true,
     },
   };
   assertHasAllSupportedFields(t, params);
