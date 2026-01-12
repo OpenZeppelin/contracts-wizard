@@ -34,6 +34,12 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyNFT',
     baseUri: 'https://example.com/nft/',
+    access: {
+      type: false,
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
   };
   await assertAPIEquivalence(t, params, erc1155.print);
 });
@@ -51,11 +57,19 @@ test('all', async t => {
       defaultRoyaltyFraction: '500',
       feeDenominator: '10000',
     },
-    access: 'roles',
+    access: {
+      type: 'roles',
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
     upgradeable: true,
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',
+    },
+    macros: {
+      withComponents: true,
     },
   };
   assertHasAllSupportedFields(t, params);

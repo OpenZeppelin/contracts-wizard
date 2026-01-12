@@ -3,6 +3,8 @@ import {
   commonDescriptions,
   infoDescriptions,
   cairoCommonDescriptions,
+  cairoAccessDescriptions,
+  cairoMacrosDescriptions,
   cairoERC20Descriptions,
   cairoERC721Descriptions,
   cairoRoyaltyInfoDescriptions,
@@ -33,7 +35,17 @@ function _typeAssertions() {
 }
 
 export const commonSchema = {
-  access: z.literal('ownable').or(z.literal('roles')).optional().describe(cairoCommonDescriptions.access),
+  access: z.object({
+    type: z
+      .literal('ownable')
+      .or(z.literal('roles'))
+      .or(z.literal('roles-dar'))
+      .or(z.literal(false))
+      .describe(cairoAccessDescriptions.accessType),
+    darInitialDelay: z.string().describe(cairoAccessDescriptions.darInitialDelay),
+    darDefaultDelayIncrease: z.string().describe(cairoAccessDescriptions.darDefaultDelayIncrease),
+    darMaxTransferDelay: z.string().describe(cairoAccessDescriptions.darMaxTransferDelay),
+  }),
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
   info: z
     .object({
@@ -42,6 +54,12 @@ export const commonSchema = {
     })
     .optional()
     .describe(infoDescriptions.info),
+  macros: z
+    .object({
+      withComponents: z.boolean().describe(cairoMacrosDescriptions.withComponents),
+    })
+    .optional()
+    .describe(cairoMacrosDescriptions.macros),
 } as const satisfies z.ZodRawShape;
 
 export const erc20Schema = {
@@ -107,6 +125,7 @@ export const accountSchema = {
   outsideExecution: z.boolean().optional().describe(cairoAccountDescriptions.outsideExecution),
   upgradeable: commonSchema.upgradeable,
   info: commonSchema.info,
+  macros: commonSchema.macros,
 } as const satisfies z.ZodRawShape;
 
 export const multisigSchema = {
@@ -114,6 +133,7 @@ export const multisigSchema = {
   quorum: z.string().describe(cairoMultisigDescriptions.quorum),
   upgradeable: commonSchema.upgradeable,
   info: commonSchema.info,
+  macros: commonSchema.macros,
 } as const satisfies z.ZodRawShape;
 
 export const governorSchema = {
@@ -136,6 +156,7 @@ export const governorSchema = {
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
   info: commonSchema.info,
+  macros: commonSchema.macros,
 } as const satisfies z.ZodRawShape;
 
 export const vestingSchema = {
@@ -145,6 +166,7 @@ export const vestingSchema = {
   cliffDuration: z.string().describe(cairoVestingDescriptions.cliffDuration),
   schedule: z.enum(['linear', 'custom']).describe(cairoVestingDescriptions.schedule),
   info: commonSchema.info,
+  macros: commonSchema.macros,
 } as const satisfies z.ZodRawShape;
 
 export const customSchema = {
