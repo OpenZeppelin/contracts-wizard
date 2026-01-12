@@ -3,7 +3,7 @@
 
 ## 0.4.0 (2026-01-10)
 
-- - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703)) ([#757](https://github.com/OpenZeppelin/contracts-wizard/pull/757))
+- - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
   - Add AccessControlDefaultAdminRules. ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
   - **Breaking changes**:
     - Use OpenZeppelin Contracts for Cairo v3.0.0. ([#757](https://github.com/OpenZeppelin/contracts-wizard/pull/757))

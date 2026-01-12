@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 (2026-01-09)
+## 3.0.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
 - Add AccessControlDefaultAdminRules. ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
