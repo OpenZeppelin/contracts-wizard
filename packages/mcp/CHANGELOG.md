@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.5.1 (2026-01-14)
+
+- Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions ([#728](https://github.com/OpenZeppelin/contracts-wizard/pull/728))
+- Updated dependencies [[`aa0f0d2`](https://github.com/OpenZeppelin/contracts-wizard/commit/aa0f0d29c1dcad1297c3a2eea3081c8e93a56df1)]:
+  - @openzeppelin/wizard-stellar@0.4.5
+  - @openzeppelin/wizard-common@0.4.1
+
 ## 0.5.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
