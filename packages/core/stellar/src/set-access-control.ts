@@ -1,6 +1,6 @@
+import { getSelfArg } from './common-options';
 import type { BaseFunction, BaseTraitImplBlock, ContractBuilder } from './contract';
 import { defineFunctions } from './utils/define-functions';
-import { getSelfArg } from './common-options';
 
 export const accessOptions = [false, 'ownable', 'roles'] as const;
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
@@ -45,7 +45,6 @@ export function setAccessControl(c: ContractBuilder, access: Access, explicitImp
     }
     case 'roles': {
       c.addUseClause('soroban_sdk', 'Address');
-      c.addUseClause('soroban_sdk', 'Symbol');
       c.addUseClause('stellar_access::access_control', 'self', { alias: 'access_control' });
       c.addUseClause('stellar_access::access_control', 'AccessControl');
 
@@ -56,6 +55,7 @@ export function setAccessControl(c: ContractBuilder, access: Access, explicitImp
         section: 'Utils',
       };
       if (explicitImplementations) {
+        c.addUseClause('soroban_sdk', 'Symbol');
         c.addTraitForEachFunctions(accessControlTrait, accessControlFunctions);
       } else {
         c.addTraitImplBlock(accessControlTrait);

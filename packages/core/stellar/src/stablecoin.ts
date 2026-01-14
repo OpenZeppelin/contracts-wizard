@@ -1,16 +1,16 @@
-import type { Contract, ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import { getSelfArg } from './common-options';
-import { printContract } from './print';
+import type { Contract, ContractBuilder } from './contract';
 import type { FungibleOptions } from './fungible';
 import {
   buildFungible,
   defaults as fungibleDefaults,
-  withDefaults as withFungibleDefaults,
   functions as fungibleFunctions,
   isAccessControlRequired as fungibleIsAccessControlRequired,
+  withDefaults as withFungibleDefaults,
 } from './fungible';
+import { printContract } from './print';
 import { requireAccessControl, type Access } from './set-access-control';
+import { defineFunctions } from './utils/define-functions';
 
 export const defaults: Required<StablecoinOptions> = {
   ...fungibleDefaults,
@@ -107,12 +107,12 @@ function overrideFungibleReadonlyFunctionsWithBase(c: ContractBuilder) {
   };
 
   const overrides: Array<[(typeof fungibleFunctions)[keyof typeof fungibleFunctions], string[]]> = [
-    [fungibleFunctions.total_supply, ['Base::total_supply(e)']],
-    [fungibleFunctions.balance, ['Base::balance(e, &account)']],
-    [fungibleFunctions.allowance, ['Base::allowance(e, &owner, &spender)']],
-    [fungibleFunctions.decimals, ['Base::decimals(e)']],
-    [fungibleFunctions.name, ['Base::name(e)']],
-    [fungibleFunctions.symbol, ['Base::symbol(e)']],
+    [fungibleFunctions.total_supply, ['Self::ContractType::total_supply(e)']],
+    [fungibleFunctions.balance, ['Self::ContractType::balance(e, &account)']],
+    [fungibleFunctions.allowance, ['Self::ContractType::allowance(e, &owner, &spender)']],
+    [fungibleFunctions.decimals, ['Self::ContractType::decimals(e)']],
+    [fungibleFunctions.name, ['Self::ContractType::name(e)']],
+    [fungibleFunctions.symbol, ['Self::ContractType::symbol(e)']],
   ];
 
   for (const [fn, code] of overrides) {
