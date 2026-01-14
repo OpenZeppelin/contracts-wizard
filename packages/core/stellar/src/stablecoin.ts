@@ -100,6 +100,7 @@ function addLimitations(
 }
 
 function overrideFungibleReadonlyFunctionsWithBase(c: ContractBuilder) {
+  c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
   const fungibleTokenTrait = {
     traitName: 'FungibleToken',
     structName: c.name,
