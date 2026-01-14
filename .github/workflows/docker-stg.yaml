@@ -2,15 +2,15 @@ name: (Staging) Build and Deploy
 
 on:
   push:
-    branches: [master]
     paths:
-      - 'packages/ui/api/**'
+      - "packages/ui/api/**"
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to build from'
+        description: "Branch to build from"
         required: true
-        default: 'master'
+        # default: master TODO
+        default: "stellar-scaffold"
         type: string
 
 permissions:
@@ -68,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
+      DEPLOYMENT_URL: https://wizard-api-stg.openzeppelin.com/
       ROLE_FOR_OIDC: "${{ secrets.ROLE_FOR_OIDC }}"
       ROLE_TO_ASSUME: "${{ secrets.ROLE_TO_ASSUME }}"
       ECS_CLUSTER: ${{ vars.ECS_STG_CLUSTER }}

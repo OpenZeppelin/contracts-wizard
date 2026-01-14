@@ -1,6 +1,11 @@
 name: (Production) Build and Deploy
 
 on:
+  push:
+    branches:
+      - stellar-scaffold
+    paths:
+      - "packages/ui/api/**"
   workflow_dispatch:
 
 permissions:
