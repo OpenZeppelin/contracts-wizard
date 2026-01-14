@@ -32,7 +32,7 @@ impl ServerConfig {
                 .parse()
                 .unwrap_or(100),
             wizard_origin: env::var("WIZARD_ORIGIN")
-                .unwrap_or_else(|_| "http://localhost:8080".to_string()),
+                .unwrap_or_else(|_| "https://wizard.openzeppelin.com".to_string()),
         }
     }
 }

@@ -24,6 +24,7 @@ jobs:
       REGISTRY: ${{ vars.DOCKER_REGISTRY }}
       ROLE_FOR_OIDC: "${{ secrets.ROLE_FOR_OIDC }}"
       ROLE_TO_ASSUME: "${{ secrets.ROLE_TO_ASSUME }}"
+      WIZARD_ORIGIN: https://wizard.openzeppelin.com
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
@@ -58,6 +59,8 @@ jobs:
             ${{ env.REGISTRY }}/wizard-api-prod:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            WIZARD_ORIGIN=${{ env.WIZARD_ORIGIN }}
 
   deploy:
     runs-on: ubuntu-latest

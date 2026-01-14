@@ -32,6 +32,7 @@ RUN TMPDIR=/opt/tmp cargo build --release
 RUN strip /opt/target/release/stellar-api || true
 
 FROM rust:bookworm AS runtime
+ARG WIZARD_ORIGIN
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /usr/local/bin
 
@@ -58,5 +59,6 @@ USER appuser
 
 EXPOSE 8888
 ENV RUST_LOG=info
+ENV WIZARD_ORIGIN=${WIZARD_ORIGIN}
 
 ENTRYPOINT ["stellar-api"]
