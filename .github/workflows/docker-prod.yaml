@@ -7,6 +7,12 @@ on:
     paths:
       - "packages/ui/api/**"
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to build from"
+        required: true
+        default: master
+        type: string
 
 permissions:
   contents: read
