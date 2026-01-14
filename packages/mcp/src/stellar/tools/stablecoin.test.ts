@@ -38,7 +38,7 @@ test('basic', async t => {
   await assertAPIEquivalence(t, params, stablecoin.print);
 });
 
-test('all', async t => {
+test('all default', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',
@@ -49,6 +49,28 @@ test('all', async t => {
     upgradeable: true,
     access: 'ownable',
     limitations: 'allowlist',
+    explicitImplementations: false,
+    info: {
+      license: 'MIT',
+      securityContact: 'security@contact.com',
+    },
+  };
+  assertHasAllSupportedFields(t, params);
+  await assertAPIEquivalence(t, params, stablecoin.print);
+});
+
+test('all explicit', async t => {
+  const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    burnable: true,
+    pausable: true,
+    premint: '1000000',
+    mintable: true,
+    upgradeable: true,
+    access: 'ownable',
+    limitations: 'allowlist',
+    explicitImplementations: true,
     info: {
       license: 'MIT',
       securityContact: 'security@contact.com',

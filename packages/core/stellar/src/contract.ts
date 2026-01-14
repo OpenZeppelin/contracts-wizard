@@ -185,6 +185,10 @@ export class ContractBuilder implements Contract {
     }
   }
 
+  addTraitForEachFunctions(baseTrait: BaseTraitImplBlock, functions: Record<string, BaseFunction>) {
+    Object.values(functions).forEach(fn => this.addTraitFunction(baseTrait, fn));
+  }
+
   // used for adding a function to a trait implementation block
   addTraitFunction(baseTrait: BaseTraitImplBlock, fn: BaseFunction): ContractFunction {
     const t = this.addTraitImplBlock(baseTrait);
@@ -239,6 +243,11 @@ export class ContractBuilder implements Contract {
   addFunctionTag(fn: BaseFunction, tag: string, baseTrait?: BaseTraitImplBlock): void {
     const existingFn = this.getOrCreateFunction(fn, baseTrait);
     existingFn.tags = [...(existingFn.tags ?? []), tag];
+  }
+
+  setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: BaseTraitImplBlock): void {
+    const existingFn = this.getOrCreateFunction(fn, baseTrait);
+    existingFn.code = [...code];
   }
 
   addConstructorArgument(arg: Argument): void {

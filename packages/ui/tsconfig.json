@@ -18,7 +18,8 @@
   },
   "include": [
     "src/**/*",
-    "../core/*/src/**/*"
+    "../core/*/src/**/*",
+    "../common/src/**/*"
   ],
   "exclude": [
     "node_modules/*",
