@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - stellar-scaffold
+      - master
     paths:
       - "packages/ui/api/**"
   workflow_dispatch:
