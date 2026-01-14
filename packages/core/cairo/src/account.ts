@@ -21,6 +21,7 @@ export const defaults: Required<AccountOptions> = {
   outsideExecution: true,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printAccount(opts: AccountOptions = defaults): string {
@@ -49,9 +50,8 @@ function withDefaults(opts: AccountOptions): Required<AccountOptions> {
 
 export function buildAccount(opts: AccountOptions): Contract {
   const isAccount = true;
-  const c = new ContractBuilder(opts.name, isAccount);
-
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros, isAccount);
 
   switch (allOpts.type) {
     case 'stark':
@@ -59,7 +59,7 @@ export function buildAccount(opts: AccountOptions): Contract {
       c.addComponent(components.AccountComponent, [{ lit: 'public_key' }], true);
       break;
     case 'eth':
-      c.addUseClause('openzeppelin::account::interface', 'EthPublicKey');
+      c.addUseClause('openzeppelin_interfaces::accounts', 'EthPublicKey');
       c.addConstructorArgument({ name: 'public_key', type: 'EthPublicKey' });
       c.addComponent(components.EthAccountComponent, [{ lit: 'public_key' }], true);
       break;
@@ -98,10 +98,12 @@ function addSRC6(c: ContractBuilder, accountType: Account) {
 
   c.addImplToComponent(componentType, {
     name: 'SRC6Impl',
+    embed: true,
     value: `${baseComponent}::SRC6Impl<ContractState>`,
   });
   c.addImplToComponent(componentType, {
     name: 'SRC6CamelOnlyImpl',
+    embed: true,
     value: `${baseComponent}::SRC6CamelOnlyImpl<ContractState>`,
   });
 
@@ -113,6 +115,7 @@ function addDeclarer(c: ContractBuilder, accountType: Account) {
 
   c.addImplToComponent(componentType, {
     name: 'DeclarerImpl',
+    embed: true,
     value: `${baseComponent}::DeclarerImpl<ContractState>`,
   });
 }
@@ -122,6 +125,7 @@ function addDeployer(c: ContractBuilder, accountType: Account) {
 
   c.addImplToComponent(componentType, {
     name: 'DeployableImpl',
+    embed: true,
     value: `${baseComponent}::DeployableImpl<ContractState>`,
   });
 }
@@ -131,16 +135,17 @@ function addPublicKey(c: ContractBuilder, accountType: Account) {
 
   c.addImplToComponent(componentType, {
     name: 'PublicKeyImpl',
+    embed: true,
     value: `${baseComponent}::PublicKeyImpl<ContractState>`,
   });
   c.addImplToComponent(componentType, {
     name: 'PublicKeyCamelImpl',
+    embed: true,
     value: `${baseComponent}::PublicKeyCamelImpl<ContractState>`,
   });
 }
 
 function addOutsideExecution(c: ContractBuilder) {
-  c.addUseClause('openzeppelin::account::extensions', 'SRC9Component');
   c.addComponent(components.SRC9Component, [], true);
 }
 
@@ -151,6 +156,7 @@ function addAccountMixin(c: ContractBuilder, accountType: Account) {
   c.addImplToComponent(componentType, {
     name: `${accountMixinImpl}`,
     value: `${baseComponent}::${accountMixinImpl}<ContractState>`,
+    embed: true,
   });
 
   c.addInterfaceFlag('ISRC5');
@@ -167,7 +173,7 @@ function getBaseCompAndCompType(accountType: Account): [string, typeof component
 
 const components = defineComponents({
   AccountComponent: {
-    path: 'openzeppelin::account',
+    path: 'openzeppelin_account',
     substorage: {
       name: 'account',
       type: 'AccountComponent::Storage',
@@ -185,7 +191,7 @@ const components = defineComponents({
     ],
   },
   EthAccountComponent: {
-    path: 'openzeppelin::account::eth_account',
+    path: 'openzeppelin_account::eth_account',
     substorage: {
       name: 'eth_account',
       type: 'EthAccountComponent::Storage',
@@ -203,7 +209,7 @@ const components = defineComponents({
     ],
   },
   SRC9Component: {
-    path: 'openzeppelin::account::extensions',
+    path: 'openzeppelin_account::extensions',
     substorage: {
       name: 'src9',
       type: 'SRC9Component::Storage',
@@ -215,6 +221,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'OutsideExecutionV2Impl',
+        embed: true,
         value: 'SRC9Component::OutsideExecutionV2Impl<ContractState>',
       },
       {

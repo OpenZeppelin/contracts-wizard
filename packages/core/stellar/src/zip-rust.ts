@@ -25,6 +25,10 @@ Continue your development journey with [Stellar CLI](https://github.com/stellar/
 - See [Git installation guide](https://github.com/git-guides/install-git).
 `;
 
+const gitIgnore = `\
+target/
+`;
+
 export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const zip = new JSZip();
 
@@ -35,6 +39,7 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName));
   zip.file('Cargo.toml', workspaceCargo);
+  zip.file('.gitignore', gitIgnore);
 
   return zip;
 };

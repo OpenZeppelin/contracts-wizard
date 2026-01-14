@@ -1,14 +1,15 @@
-import * as solidityFunctions from '../ai-assistant/function-definitions/solidity.ts';
-import * as polkadotFunctions from '../ai-assistant/function-definitions/polkadot.ts';
-import * as cairoFunctions from '../ai-assistant/function-definitions/cairo.ts';
-import * as cairoAlphaFunctions from '../ai-assistant/function-definitions/cairo-alpha.ts';
-import * as stellarFunctions from '../ai-assistant/function-definitions/stellar.ts';
-import * as stylusFunctions from '../ai-assistant/function-definitions/stylus.ts';
-import { saveChatInRedisIfDoesNotExist } from '../services/redis.ts';
-import type { ChatMessages } from '../services/open-ai.ts';
-import { createOpenAiCompletionStream } from '../services/open-ai.ts';
-import type { AiChatBodyRequest } from '../ai-assistant/types/assistant.ts';
-import type { SupportedLanguage } from '../ai-assistant/types/languages.ts';
+import * as solidityFunctions from './ai-assistant/function-definitions/solidity.ts';
+import * as polkadotFunctions from './ai-assistant/function-definitions/polkadot.ts';
+import * as cairoFunctions from './ai-assistant/function-definitions/cairo.ts';
+import * as cairoAlphaFunctions from './ai-assistant/function-definitions/cairo-alpha.ts';
+import * as stellarFunctions from './ai-assistant/function-definitions/stellar.ts';
+import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
+import * as uniswapHooksFunctions from './ai-assistant/function-definitions/uniswap-hooks.ts';
+import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
+import type { ChatMessages } from './services/open-ai.ts';
+import { createOpenAiCompletionStream } from './services/open-ai.ts';
+import type { AiChatBodyRequest } from './ai-assistant/types/assistant.ts';
+import type { SupportedLanguage } from './ai-assistant/types/languages.ts';
 import type {
   AllContractsAIFunctionDefinitions,
   SimpleAiFunctionDefinition,
@@ -25,6 +26,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     polkadot: polkadotFunctions,
     stellar: stellarFunctions,
     stylus: stylusFunctions,
+    uniswapHooks: uniswapHooksFunctions,
   };
 
   return (Object.values(functionPerLanguages[language] ?? {}) as SimpleAiFunctionDefinition[]).map(

@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stylusCommonFunctionDescription } from './stylus-shared.ts';
 import {
@@ -24,7 +24,7 @@ export const stylusERC20AIFunctionDefinition = {
         description: stylusERC20Descriptions.flashmint,
       },
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'stylus', 'ERC20'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stylus', 'ERC20'>;
@@ -41,7 +41,7 @@ export const stylusERC721AIFunctionDefinition = {
         description: stylusERC721Descriptions.enumerable,
       },
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'stylus', 'ERC721'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stylus', 'ERC721'>;
@@ -58,7 +58,7 @@ export const stylusERC1155AIFunctionDefinition = {
         description: stylusERC1155Descriptions.supply,
       },
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'stylus', 'ERC1155'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stylus', 'ERC1155'>;

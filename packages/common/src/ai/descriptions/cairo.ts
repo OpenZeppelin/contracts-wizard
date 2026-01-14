@@ -16,8 +16,6 @@ export const cairoPrompts = {
 };
 
 export const cairoCommonDescriptions = {
-  access:
-    'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.',
   upgradeable: 'Whether the smart contract is upgradeable.',
   appName:
     'Required when votes is enabled, for hashing and signing typed structured data. Name for domain separator implementing SNIP12Metadata trait. Prevents two applications from producing the same hash.',
@@ -32,12 +30,14 @@ export const cairoMacrosDescriptions = {
   withComponents: 'Whether to use the "with_components" macro for simplified contract structure.',
 };
 
-export const cairoAlphaAccessDescriptions = {
+export const cairoAccessDescriptions = {
   accessType:
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Roles (Default Admin Rules) provides additional enforced security measures on top of standard Roles mechanism for managing the most privileged role: default admin.',
   darInitialDelay: 'The initial delay for the default admin role (in case Roles (Default Admin Rules) is used).',
   darDefaultDelayIncrease:
-    'The default delay increase for the default admin role (in case Roles (Default Admin Rules) is used).',
+    'The default delay increase in seconds for the default admin role (in case Roles (Default Admin Rules) is used).',
+  darMaxTransferDelay:
+    'The maximum delay in seconds for a default admin transfer (in case Roles (Default Admin Rules) is used).',
 };
 
 export const cairoRoyaltyInfoDescriptions = {

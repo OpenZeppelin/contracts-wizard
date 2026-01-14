@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-cairo",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "A boilerplate generator to get started with OpenZeppelin Contracts for Cairo",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -26,8 +26,8 @@
     "@types/semver": "^7.5.7",
     "ava": "^6.0.0",
     "rimraf": "^5.0.0",
+    "semver": "^7.6.0",
     "ts-node": "^10.4.0",
-    "typescript": "^5.0.0",
-    "semver": "^7.6.0"
+    "typescript": "^5.0.0"
   }
 }

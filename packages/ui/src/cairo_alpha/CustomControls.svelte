@@ -54,6 +54,7 @@
   bind:accessType={opts.access.type}
   bind:darInitialDelay={opts.access.darInitialDelay}
   bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  bind:darMaxTransferDelay={opts.access.darMaxTransferDelay}
   required={requireAccessControl}
   {errors}
 />

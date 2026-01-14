@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { commonFunctionDescription } from './solidity-shared.ts';
 import {
@@ -10,7 +10,14 @@ import {
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
   solidityCommonDescriptions,
-} from '../../../../../common/src/ai/descriptions/solidity.ts';
+} from '../../../../common/src/ai/descriptions/solidity.ts';
+import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/solidity/dist/governor';
+import type { ClockMode } from '../../../../core/solidity/dist/set-clock-mode';
+import type { CrossChainBridging } from '../../../../core/solidity/dist/erc20';
+import type { Limitations } from '../../../../core/solidity/dist/stablecoin';
+import type { ERC7579ModulesOptions, SignatureValidationOptions } from '../../../../core/solidity/dist/account';
+import type { SignerOptions } from '../../../../core/solidity/dist/signer';
 
 export const solidityERC20AIFunctionDefinition = {
   name: 'ERC20',
@@ -39,7 +46,7 @@ export const solidityERC20AIFunctionDefinition = {
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false, true] },
-          { type: 'string', enum: ['blocknumber', 'timestamp'] },
+          { type: 'string', enum: extractStringEnumValues<ClockMode>()(['blocknumber', 'timestamp']) },
         ],
         description: solidityERC20Descriptions.votes,
       },
@@ -50,7 +57,7 @@ export const solidityERC20AIFunctionDefinition = {
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['custom', 'superchain'] },
+          { type: 'string', enum: extractStringEnumValues<CrossChainBridging>()(['custom', 'superchain']) },
         ],
         description: solidityERC20Descriptions.crossChainBridging,
       },
@@ -67,7 +74,7 @@ export const solidityERC20AIFunctionDefinition = {
         description: solidityCommonDescriptions.namespacePrefix,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'ERC20'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC20'>;
@@ -104,7 +111,7 @@ export const solidityERC721AIFunctionDefinition = {
       votes: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['blocknumber', 'timestamp'] },
+          { type: 'string', enum: extractStringEnumValues<ClockMode>()(['blocknumber', 'timestamp']) },
         ],
         description: solidityERC721Descriptions.votes,
       },
@@ -113,7 +120,7 @@ export const solidityERC721AIFunctionDefinition = {
         description: solidityCommonDescriptions.namespacePrefix,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'ERC721'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC721'>;
@@ -146,7 +153,7 @@ export const solidityERC1155AIFunctionDefinition = {
         description: solidityERC1155Descriptions.updatableUri,
       },
     },
-    required: ['name', 'uri'],
+    required: contractExactRequiredKeys<'solidity', 'ERC1155'>()(['name', 'uri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'ERC1155'>;
@@ -165,7 +172,7 @@ export const solidityStablecoinAIFunctionDefinition = {
       restrictions: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['allowlist', 'blocklist'] },
+          { type: 'string', enum: extractStringEnumValues<Limitations>()(['allowlist', 'blocklist']) },
         ],
         description: solidityStablecoinDescriptions.restrictions,
       },
@@ -175,7 +182,7 @@ export const solidityStablecoinAIFunctionDefinition = {
         description: 'Upgradeability is not yet available for features that use @openzeppelin/community-contracts',
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'solidity', 'Stablecoin'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Stablecoin'>;
@@ -196,7 +203,7 @@ export const solidityAccountAIFunctionDefinition = {
       signatureValidation: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['ERC1271', 'ERC7739'] },
+          { type: 'string', enum: extractStringEnumValues<SignatureValidationOptions>()(['ERC1271', 'ERC7739']) },
         ],
         description: solidityAccountDescriptions.signatureValidation,
       },
@@ -222,7 +229,10 @@ export const solidityAccountAIFunctionDefinition = {
       ERC7579Modules: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['AccountERC7579', 'AccountERC7579Hooked'] },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<ERC7579ModulesOptions>()(['AccountERC7579', 'AccountERC7579Hooked']),
+          },
         ],
         description: solidityAccountDescriptions.ERC7579Modules,
       },
@@ -232,7 +242,7 @@ export const solidityAccountAIFunctionDefinition = {
         description: 'Access control is not available for an account contract. It always authorizes itself.',
       },
     },
-    required: ['name'],
+    required: contractExactRequiredKeys<'solidity', 'Account'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Account'>;
@@ -266,7 +276,7 @@ export const solidityGovernorAIFunctionDefinition = {
       },
       quorumMode: {
         type: 'string',
-        enum: ['percent', 'absolute'],
+        enum: enumValues<QuorumMode>()(['percent', 'absolute']),
         description: solidityGovernorDescriptions.quorumMode,
       },
       quorumPercent: {
@@ -279,17 +289,17 @@ export const solidityGovernorAIFunctionDefinition = {
       },
       votes: {
         type: 'string',
-        enum: ['erc20votes', 'erc721votes'],
+        enum: enumValues<VotesOptions>()(['erc20votes', 'erc721votes']),
         description: solidityGovernorDescriptions.votes,
       },
       clockMode: {
         type: 'string',
-        enum: ['blocknumber', 'timestamp'],
+        enum: enumValues<ClockMode>()(['blocknumber', 'timestamp']),
         description: solidityGovernorDescriptions.clockMode,
       },
       timelock: {
         anyOf: [
-          { type: 'string', enum: ['openzeppelin', 'compound'] },
+          { type: 'string', enum: extractStringEnumValues<TimelockOptions>()(['openzeppelin', 'compound']) },
           { type: 'boolean', enum: [false] },
         ],
         description: solidityGovernorDescriptions.timelock,
@@ -309,7 +319,7 @@ export const solidityGovernorAIFunctionDefinition = {
           'Access control is not available for a governor contract. Use the `onlyGovernance` modifier to control access to functions that should be restricted to governance.',
       },
     },
-    required: ['name', 'delay', 'period'],
+    required: contractExactRequiredKeys<'solidity', 'Governor'>()(['name', 'delay', 'period']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Governor'>;
@@ -326,7 +336,7 @@ export const solidityCustomAIFunctionDefinition = {
       'upgradeable',
       'info',
     ]),
-    required: ['name'],
+    required: contractExactRequiredKeys<'solidity', 'Custom'>()(['name']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'solidity', 'Custom'>;
