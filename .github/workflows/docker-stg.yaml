@@ -70,7 +70,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
-      DEPLOYMENT_URL: https://wizard-api-stg.openzeppelin.com/
       ROLE_FOR_OIDC: "${{ secrets.ROLE_FOR_OIDC }}"
       ROLE_TO_ASSUME: "${{ secrets.ROLE_TO_ASSUME }}"
       ECS_CLUSTER: ${{ vars.ECS_STG_CLUSTER }}
