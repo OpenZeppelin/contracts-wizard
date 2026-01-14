@@ -9,8 +9,7 @@ on:
       branch:
         description: "Branch to build from"
         required: true
-        # default: master TODO
-        default: "stellar-scaffold"
+        default: master
         type: string
 
 permissions:
