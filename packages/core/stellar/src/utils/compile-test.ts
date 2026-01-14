@@ -1,14 +1,14 @@
-import { tmpdir } from 'os';
 import type { ExecutionContext } from 'ava';
+import { exec } from 'child_process';
+import { mkdir, mkdtemp, rm } from 'fs/promises';
+import { tmpdir } from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { exec } from 'child_process';
 import type { GenericOptions } from '../build-generic';
 import type { Contract } from '../contract';
-import { assertLayout, snapshotZipContents, expandPathsFromFilesPaths, extractPackage } from './zip-test';
-import { mkdtemp, rm, mkdir } from 'fs/promises';
-import { contractOptionsToContractName } from '../zip-shared';
 import { zipRustProject } from '../zip-rust';
+import { contractOptionsToContractName } from '../zip-shared';
+import { assertLayout, expandPathsFromFilesPaths, extractPackage, snapshotZipContents } from './zip-test';
 
 const asyncExec = promisify(exec);
 
@@ -55,6 +55,7 @@ const doRunRustCompilationTest = async (
     `contracts/${scaffoldContractName}/src/lib.rs`,
     `contracts/${scaffoldContractName}/Cargo.toml`,
     'Cargo.toml',
+    '.gitignore',
     'README.md',
   ];
 
