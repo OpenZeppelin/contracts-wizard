@@ -15,6 +15,7 @@ const blueprint = {
   premint: ['1'],
   access: accessOptions,
   info: infoOptions,
+  explicitImplementations: booleans,
 };
 
 export function* generateFungibleOptions(): Generator<Required<FungibleOptions>> {
