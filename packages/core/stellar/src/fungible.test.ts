@@ -98,6 +98,10 @@ testFungible('fungible full - complex name', {
   upgradeable: true,
 });
 
+testFungible('fungible explicit trait implementations', {
+  explicitImplementations: true,
+});
+
 testAPIEquivalence('fungible API default');
 
 testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });

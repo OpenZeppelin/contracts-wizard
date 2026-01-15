@@ -23,6 +23,7 @@ export function registerSolidityERC721(server: McpServer): RegisteredTool {
       votes,
       access,
       upgradeable,
+      namespacePrefix,
       info,
     }) => {
       const opts: ERC721Options = {
@@ -38,6 +39,7 @@ export function registerSolidityERC721(server: McpServer): RegisteredTool {
         votes,
         access,
         upgradeable,
+        namespacePrefix,
         info,
       };
       return {

@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import MintableSection from './MintableSection.svelte';
+  import TraitImplementationSection from './TraitImplementationSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['NonFungible']> = {
@@ -50,6 +51,14 @@
       <input bind:value={opts.symbol} use:error={errors?.symbol} />
     </label>
   </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Token URI
+      <HelpTooltip>Sets the metadata URI that the contract returns from <code>token_uri</code>.</HelpTooltip>
+    </span>
+    <input bind:value={opts.tokenUri} placeholder="https://..." use:error={errors?.tokenUri} />
+  </label>
 </section>
 
 <section class="controls-section">
@@ -100,5 +109,7 @@
 />
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <InfoSection bind:info={opts.info} />

@@ -24,6 +24,7 @@ function _typeAssertions() {
 
 export const commonSchema = {
   access: z.literal('ownable').or(z.literal('roles')).optional().describe(stellarCommonDescriptions.access),
+  explicitImplementations: z.boolean().optional().describe(stellarCommonDescriptions.explicitImplementations),
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
   info: z
     .object({
@@ -57,6 +58,7 @@ export const stablecoinSchema = {
 export const nonFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
+  tokenUri: z.string().optional().describe(stellarNonFungibleDescriptions.tokenUri),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   enumerable: z.boolean().optional().describe(stellarNonFungibleDescriptions.enumerable),
   consecutive: z.boolean().optional().describe(stellarNonFungibleDescriptions.consecutive),

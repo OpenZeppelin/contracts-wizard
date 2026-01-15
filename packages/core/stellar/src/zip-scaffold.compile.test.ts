@@ -27,6 +27,7 @@ const runScaffoldCompilationTest = withTemporaryFolderDo(
 
     const expectedZipFiles = [
       'Cargo.toml',
+      '.gitignore',
       `contracts/${scaffoldContractName}/src/contract.rs`,
       `contracts/${scaffoldContractName}/src/test.rs`,
       `contracts/${scaffoldContractName}/src/lib.rs`,

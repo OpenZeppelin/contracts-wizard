@@ -1,4 +1,4 @@
-import type { AiFunctionDefinition } from '../types/function-definition.ts';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 import {
@@ -8,6 +8,8 @@ import {
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { Limitations } from '../../../../core/stellar/dist/stablecoin';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
@@ -24,13 +26,14 @@ export const stellarFungibleAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       premint: {
         type: 'string',
         description: stellarFungibleDescriptions.premint,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'Fungible'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Fungible'>;
@@ -49,11 +52,12 @@ export const stellarStablecoinAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: ['allowlist', 'blocklist'] },
+          { type: 'string', enum: extractStringEnumValues<Limitations>()(['allowlist', 'blocklist']) },
         ],
         description: stellarStablecoinDescriptions.limitations,
       },
@@ -66,7 +70,7 @@ export const stellarStablecoinAIFunctionDefinition = {
         description: stellarCommonDescriptions.upgradeable,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'Stablecoin'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Stablecoin'>;
@@ -86,6 +90,7 @@ export const stellarNonFungibleAIFunctionDefinition = {
         'mintable',
         'access',
         'info',
+        'explicitImplementations',
       ]),
       enumerable: {
         type: 'boolean',
@@ -99,12 +104,16 @@ export const stellarNonFungibleAIFunctionDefinition = {
         type: 'boolean',
         description: stellarNonFungibleDescriptions.sequential,
       },
+      tokenUri: {
+        type: 'string',
+        description: stellarNonFungibleDescriptions.tokenUri,
+      },
       upgradeable: {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
       },
     },
-    required: ['name', 'symbol'],
+    required: contractExactRequiredKeys<'stellar', 'NonFungible'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'NonFungible'>;

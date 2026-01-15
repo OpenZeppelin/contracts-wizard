@@ -96,6 +96,7 @@ export class HardhatZipGenerator {
   solidity: {
     version: "${SOLIDITY_VERSION}",
     settings: {
+      evmVersion: 'cancun',
       optimizer: {
         enabled: true,
       },

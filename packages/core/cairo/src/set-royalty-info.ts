@@ -13,7 +13,7 @@ export const defaults: RoyaltyInfoOptions = {
   feeDenominator: DEFAULT_FEE_DENOMINATOR.toString(),
 };
 
-export type RoyaltyInfoSubset = 'all' | 'disabled' | 'enabled_default' | 'enabled_custom';
+export type RoyaltyInfoSubset = 'all' | 'disabled' | 'enabled-default' | 'enabled-custom';
 
 export const royaltyInfoOptions = {
   disabled: defaults,
@@ -36,9 +36,9 @@ export function resolveRoyaltyOptionsSubset(subset: RoyaltyInfoSubset): RoyaltyI
       return [disabled, enabledDefault, enabledCustom];
     case 'disabled':
       return [disabled];
-    case 'enabled_default':
+    case 'enabled-default':
       return [enabledDefault];
-    case 'enabled_custom':
+    case 'enabled-custom':
       return [enabledCustom];
     default: {
       const _: never = subset;
@@ -53,18 +53,18 @@ export type RoyaltyInfoOptions = {
   feeDenominator: string;
 };
 
-export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, access: Access): void {
+export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, accessObj: Access): void {
   if (!options.enabled) {
     return;
   }
-  if (access === false) {
-    access = DEFAULT_ACCESS_CONTROL;
+  const access = { ...accessObj }; // make a copy to avoid mutating caller-supplied object
+  if (access.type === false) {
+    access.type = DEFAULT_ACCESS_CONTROL;
   }
   setAccessControl(c, access);
 
   const { defaultRoyaltyFraction, feeDenominator } = getRoyaltyParameters(options);
   const initParams = [{ lit: 'default_royalty_receiver' }, defaultRoyaltyFraction];
-
   c.addComponent(components.ERC2981Component, initParams, true);
   c.addUseClause('starknet', 'ContractAddress');
   c.addConstructorArgument({
@@ -72,28 +72,48 @@ export function setRoyaltyInfo(c: ContractBuilder, options: RoyaltyInfoOptions, 
     type: 'ContractAddress',
   });
 
-  switch (access) {
-    case 'ownable':
+  switch (access.type) {
+    case 'ownable': {
       c.addImplToComponent(components.ERC2981Component, {
         name: 'ERC2981AdminOwnableImpl',
+        embed: true,
         value: `ERC2981Component::ERC2981AdminOwnableImpl<ContractState>`,
       });
       break;
-    case 'roles':
+    }
+    case 'roles': {
       c.addImplToComponent(components.ERC2981Component, {
         name: 'ERC2981AdminAccessControlImpl',
+        embed: true,
         value: `ERC2981Component::ERC2981AdminAccessControlImpl<ContractState>`,
       });
       c.addConstructorArgument({
         name: 'royalty_admin',
         type: 'ContractAddress',
       });
-      c.addConstructorCode('self.accesscontrol._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      c.addConstructorCode('self.access_control._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
       break;
+    }
+    case 'roles-dar': {
+      c.addImplToComponent(components.ERC2981Component, {
+        name: 'ERC2981AdminAccessControlDefaultAdminRulesImpl',
+        embed: true,
+        value: `ERC2981Component::ERC2981AdminAccessControlDefaultAdminRulesImpl<ContractState>`,
+      });
+      c.addConstructorArgument({
+        name: 'royalty_admin',
+        type: 'ContractAddress',
+      });
+      c.addConstructorCode('self.access_control_dar._grant_role(ERC2981Component::ROYALTY_ADMIN_ROLE, royalty_admin)');
+      break;
+    }
+    default: {
+      const _: never = access.type;
+      throw new Error('Unknown access type');
+    }
   }
-
   if (feeDenominator === DEFAULT_FEE_DENOMINATOR) {
-    c.addUseClause('openzeppelin::token::common::erc2981', 'DefaultConfig');
+    c.addUseClause('openzeppelin_token::common::erc2981', 'DefaultConfig', { alias: 'ERC2981DefaultConfig' });
   } else {
     const trait: BaseImplementedTrait = {
       name: 'ERC2981ImmutableConfig',
@@ -130,7 +150,7 @@ function getRoyaltyParameters(opts: Required<RoyaltyInfoOptions>): {
 
 const components = defineComponents({
   ERC2981Component: {
-    path: 'openzeppelin::token::common::erc2981',
+    path: 'openzeppelin_token::common::erc2981',
     substorage: {
       name: 'erc2981',
       type: 'ERC2981Component::Storage',
@@ -142,16 +162,18 @@ const components = defineComponents({
     impls: [
       {
         name: 'ERC2981Impl',
+        embed: true,
         value: 'ERC2981Component::ERC2981Impl<ContractState>',
       },
       {
         name: 'ERC2981InfoImpl',
+        embed: true,
         value: 'ERC2981Component::ERC2981InfoImpl<ContractState>',
       },
       {
         name: 'ERC2981InternalImpl',
-        value: 'ERC2981Component::InternalImpl<ContractState>',
         embed: false,
+        value: 'ERC2981Component::InternalImpl<ContractState>',
       },
     ],
   },

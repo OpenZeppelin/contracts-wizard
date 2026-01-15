@@ -1,0 +1,172 @@
+import type { HookName, ShareOption } from '../../../../core/uniswap-hooks/dist';
+import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/function-definition.ts';
+import { enumValues } from '../types/helpers.ts';
+import { addFunctionPropertiesFrom } from './shared.ts';
+import { commonFunctionDescription } from './solidity-shared.ts';
+import {
+  uniswapHooksPrompts,
+  uniswapHooksDescriptions,
+  uniswapHooksSharesDescriptions,
+  uniswapHooksPermissionDescriptions,
+  uniswapHooksInputsDescriptions,
+  byHooksDescriptions,
+} from '../../../../common/src/ai/descriptions/uniswap-hooks.ts';
+
+//We keep this to type check that byHooksDescriptions has each HookName description as it can not be imported in common
+const _eachHooksDescription = byHooksDescriptions satisfies Record<HookName, string>;
+
+export const uniswapHooksHooksAIFunctionDefinition = {
+  name: 'Hooks',
+  description: uniswapHooksPrompts.Hooks,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(commonFunctionDescription, ['access', 'info', 'name', 'pausable']),
+      hook: {
+        type: 'string',
+        enum: enumValues<HookName>()([
+          'BaseHook',
+          'BaseAsyncSwap',
+          'BaseCustomAccounting',
+          'BaseCustomCurve',
+          'BaseDynamicFee',
+          'BaseOverrideFee',
+          'BaseDynamicAfterFee',
+          'BaseHookFee',
+          'AntiSandwichHook',
+          'LiquidityPenaltyHook',
+          'LimitOrderHook',
+          'ReHypothecationHook',
+          'BaseOracleHook',
+          'OracleHookWithV3Adapters',
+        ]),
+        description: uniswapHooksDescriptions.hook,
+      },
+      currencySettler: {
+        type: 'boolean',
+        description: uniswapHooksDescriptions.currencySettler,
+      },
+      safeCast: {
+        type: 'boolean',
+        description: uniswapHooksDescriptions.safeCast,
+      },
+      transientStorage: {
+        type: 'boolean',
+        description: uniswapHooksDescriptions.transientStorage,
+      },
+      shares: {
+        type: 'object',
+        description: uniswapHooksDescriptions.shares,
+        properties: {
+          options: {
+            anyOf: [
+              { type: 'boolean', enum: [false] },
+              { type: 'string', enum: enumValues<ShareOption>()(['ERC20', 'ERC6909', 'ERC1155']) },
+            ],
+            description: uniswapHooksSharesDescriptions.options,
+          },
+          name: {
+            type: 'string',
+            description: uniswapHooksSharesDescriptions.name,
+          },
+          symbol: {
+            type: 'string',
+            description: uniswapHooksSharesDescriptions.symbol,
+          },
+          uri: {
+            type: 'string',
+            description: uniswapHooksSharesDescriptions.uri,
+          },
+        },
+      },
+      permissions: {
+        type: 'object',
+        description: uniswapHooksDescriptions.permissions,
+        properties: {
+          beforeInitialize: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeInitialize,
+          },
+          afterInitialize: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterInitialize,
+          },
+          beforeAddLiquidity: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeAddLiquidity,
+          },
+          afterAddLiquidity: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterAddLiquidity,
+          },
+          beforeRemoveLiquidity: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeRemoveLiquidity,
+          },
+          afterRemoveLiquidity: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterRemoveLiquidity,
+          },
+          beforeSwap: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeSwap,
+          },
+          afterSwap: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterSwap,
+          },
+          beforeDonate: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeDonate,
+          },
+          afterDonate: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterDonate,
+          },
+          beforeSwapReturnDelta: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.beforeSwapReturnDelta,
+          },
+          afterSwapReturnDelta: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterSwapReturnDelta,
+          },
+          afterAddLiquidityReturnDelta: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterAddLiquidityReturnDelta,
+          },
+          afterRemoveLiquidityReturnDelta: {
+            type: 'boolean',
+            description: uniswapHooksPermissionDescriptions.afterRemoveLiquidityReturnDelta,
+          },
+        },
+      },
+      inputs: {
+        type: 'object',
+        description: uniswapHooksDescriptions.inputs,
+        properties: {
+          blockNumberOffset: {
+            type: 'number',
+            description: uniswapHooksInputsDescriptions.blockNumberOffset,
+          },
+          maxAbsTickDelta: {
+            type: 'number',
+            description: uniswapHooksInputsDescriptions.maxAbsTickDelta,
+          },
+        },
+      },
+    },
+    required: contractExactRequiredKeys<'uniswapHooks', 'Hooks'>()([
+      'name',
+      'hook',
+      'pausable',
+      'currencySettler',
+      'safeCast',
+      'transientStorage',
+      'shares',
+      'permissions',
+      'inputs',
+    ]),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'uniswapHooks', 'Hooks'>;

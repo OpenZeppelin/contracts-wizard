@@ -25,8 +25,8 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
       crossChainBridging,
       access,
       info,
-      limitations,
-      custodian,
+      restrictions,
+      freezable,
     }) => {
       const opts: StablecoinOptions = {
         name,
@@ -43,8 +43,8 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
         crossChainBridging,
         access,
         info,
-        limitations,
-        custodian,
+        restrictions,
+        freezable,
       };
       return {
         content: [

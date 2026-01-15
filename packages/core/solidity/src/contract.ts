@@ -4,12 +4,15 @@ export interface Contract {
   name: string;
   license: string;
   parents: Parent[];
+  topLevelComments: string[];
   natspecTags: NatspecTag[];
+  libraries: Library[];
   imports: ImportContract[];
   functions: ContractFunction[];
+  structs: ContractStruct[];
   constructorCode: string[];
   constructorArgs: FunctionArgument[];
-  variables: string[];
+  variableOrErrorDefinitions: VariableOrErrorDefinition[];
   upgradeable: boolean;
 }
 
@@ -19,6 +22,7 @@ export interface Parent {
   contract: ImportContract;
   params: Value[];
   importOnly?: boolean;
+  constructionOnly?: boolean;
 }
 
 export interface ImportContract extends ReferencedContract {
@@ -30,9 +34,9 @@ export interface ReferencedContract {
   transpiled?: boolean;
 }
 
-export interface Using {
+export interface Library {
   library: ImportContract;
-  usingFor: string;
+  usingFor: Set<string>;
 }
 
 export interface BaseFunction {
@@ -52,7 +56,13 @@ export interface ContractFunction extends BaseFunction {
   comments: string[];
 }
 
-export type FunctionKind = 'internal' | 'public';
+export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
+export interface ContractStruct {
+  name: string;
+  comments: string[];
+  variables: string[];
+}
+
 export type FunctionMutability = (typeof mutabilityRank)[number];
 
 // Order is important
@@ -72,20 +82,27 @@ export interface NatspecTag {
   value: string;
 }
 
+export interface VariableOrErrorDefinition {
+  code: string;
+  comments?: string[];
+}
+
 export class ContractBuilder implements Contract {
   readonly name: string;
   license: string = 'MIT';
   upgradeable = false;
 
-  readonly using: Using[] = [];
+  readonly topLevelComments: string[] = [];
   readonly natspecTags: NatspecTag[] = [];
 
   readonly constructorArgs: FunctionArgument[] = [];
   readonly constructorCode: string[] = [];
-  readonly variableSet: Set<string> = new Set();
 
+  readonly variableOrErrorMap: Map<string, VariableOrErrorDefinition> = new Map<string, VariableOrErrorDefinition>();
   private parentMap: Map<string, Parent> = new Map<string, Parent>();
+  private libraryMap: Map<string, Library> = new Map<string, Library>();
   private functionMap: Map<string, ContractFunction> = new Map();
+  private structMap: Map<string, ContractStruct> = new Map();
 
   constructor(name: string) {
     this.name = toIdentifier(name, true);
@@ -106,31 +123,62 @@ export class ContractBuilder implements Contract {
   }
 
   get imports(): ImportContract[] {
-    return [...[...this.parentMap.values()].map(p => p.contract), ...this.using.map(u => u.library)];
+    const parents = [...this.parentMap.values()].map(p => p.contract);
+    const libraries = [...this.libraryMap.values()].map(l => l.library);
+    return [...parents, ...libraries];
+  }
+
+  get libraries(): Library[] {
+    return [...this.libraryMap.values()];
   }
 
   get functions(): ContractFunction[] {
     return [...this.functionMap.values()];
   }
 
-  get variables(): string[] {
-    return [...this.variableSet];
+  get structs(): ContractStruct[] {
+    return [...this.structMap.values()];
+  }
+
+  get variableOrErrorDefinitions(): VariableOrErrorDefinition[] {
+    return [...this.variableOrErrorMap.values()];
+  }
+
+  private updateParentMap(
+    contract: ImportContract,
+    params: Value[] = [],
+    flags: Partial<Pick<Parent, 'importOnly' | 'constructionOnly'>> = {},
+  ): boolean {
+    const present = this.parentMap.has(contract.name);
+    this.parentMap = new Map(this.parentMap).set(contract.name, { contract, params, ...flags });
+    return !present;
   }
 
   addParent(contract: ImportContract, params: Value[] = []): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, { contract, params });
-    return !present;
+    return this.updateParentMap(contract, params);
   }
 
   addImportOnly(contract: ImportContract): boolean {
-    const present = this.parentMap.has(contract.name);
-    this.parentMap.set(contract.name, {
-      contract,
-      params: [],
-      importOnly: true,
-    });
-    return !present;
+    return this.updateParentMap(contract, [], { importOnly: true });
+  }
+
+  addConstructionOnly(contract: ImportContract, params: Value[] = []): boolean {
+    return this.updateParentMap(contract, params, { constructionOnly: true });
+  }
+
+  addLibrary(library: ImportContract, usingFor: string[]): boolean {
+    let modified = false;
+    if (this.libraryMap.has(library.name)) {
+      const existing = this.libraryMap.get(library.name)!;
+      const initialSize = existing.usingFor.size;
+      usingFor.forEach(type => existing.usingFor.add(type));
+      modified = existing.usingFor.size > initialSize;
+    } else {
+      this.libraryMap.set(library.name, { library, usingFor: new Set(usingFor) });
+      modified = true;
+    }
+
+    return modified;
   }
 
   addOverride(parent: ReferencedContract, baseFn: BaseFunction, mutability?: FunctionMutability) {
@@ -144,6 +192,10 @@ export class ContractBuilder implements Contract {
   addModifier(modifier: string, baseFn: BaseFunction) {
     const fn = this.addFunction(baseFn);
     fn.modifiers.push(modifier);
+  }
+
+  addTopLevelComment(comment: string) {
+    this.topLevelComments.push(comment);
   }
 
   addNatspecTag(key: string, value: string) {
@@ -169,6 +221,19 @@ export class ContractBuilder implements Contract {
       };
       this.functionMap.set(signature, fn);
       return fn;
+    }
+  }
+
+  private addStruct(_struct: ContractStruct): ContractStruct {
+    const got = this.structMap.get(_struct.name);
+    if (got !== undefined) {
+      return got;
+    } else {
+      const struct: ContractStruct = {
+        ..._struct,
+      };
+      this.structMap.set(_struct.name, struct);
+      return struct;
     }
   }
 
@@ -212,11 +277,36 @@ export class ContractBuilder implements Contract {
   }
 
   /**
-   * Note: The type in the variable is not currently transpiled, even if it refers to a contract
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
    */
-  addVariable(code: string): boolean {
-    const present = this.variableSet.has(code);
-    this.variableSet.add(code);
+  addStateVariable(code: string, upgradeable: boolean): boolean {
+    if (upgradeable) {
+      throw new Error('State variables should not be used when upgradeable is true. Set namespaced storage instead.');
+    } else {
+      return this._addVariableOrErrorDefinition({ code });
+    }
+  }
+
+  /**
+   * Note: The type in the code is not currently transpiled, even if it refers to a contract
+   */
+  addConstantOrImmutableOrErrorDefinition(code: string, comments?: string[]): boolean {
+    return this._addVariableOrErrorDefinition({ code, comments });
+  }
+
+  private _addVariableOrErrorDefinition(variableOrErrorDefinition: VariableOrErrorDefinition): boolean {
+    const present = this.variableOrErrorMap.has(variableOrErrorDefinition.code);
+    this.variableOrErrorMap.set(variableOrErrorDefinition.code, variableOrErrorDefinition);
+    return !present;
+  }
+
+  addStructVariable(baseStruct: ContractStruct, code: string): boolean {
+    let struct = this.structMap.get(baseStruct.name);
+    if (!struct) {
+      struct = this.addStruct(baseStruct);
+    }
+    const present = struct.variables.includes(code);
+    if (!present) struct.variables.push(code);
     return !present;
   }
 }

@@ -20,7 +20,14 @@
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard-cairo';
+  import {
+    ContractBuilder,
+    buildGeneric,
+    printContract,
+    sanitizeKind,
+    OptionsError,
+    macrosDefaults,
+  } from '@openzeppelin/wizard-cairo';
   import { postConfig } from '../common/post-config';
 
   import { saveAs } from 'file-saver';
@@ -55,7 +62,9 @@
   let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
   let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
-  let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
+  let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken', {
+    withComponents: macrosDefaults.withComponents,
+  });
 
   $: opts = allOpts[tab];
 
@@ -94,7 +103,6 @@
 
   $: code = printContract(contract);
   $: highlightedCode = injectHyperlinks(hljs.highlight(code, { language: 'cairo' }).value);
-
   $: hasErrors = errors[tab] !== undefined;
 
   const language = 'cairo';
@@ -218,150 +226,9 @@
 </div>
 
 <style lang="postcss">
-  .container {
-    background-color: var(--gray-1);
-    min-width: 32rem;
-  }
-
-  .header {
-    font-size: var(--text-small);
-  }
-
-  .tab {
-    color: var(--gray-5);
-  }
-
-  .tab button,
-  :global(.overflow-btn) {
-    padding: var(--size-2) var(--size-3);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color ease-in-out 0.2s;
-  }
-
-  .tab button,
-  :global(.overflow-btn) {
-    border: 0;
-    background-color: transparent;
-  }
-
-  .tab button:hover,
-  :global(.overflow-btn):hover {
-    background-color: var(--gray-2);
-  }
-
   .tab button.selected {
     background-color: var(--cairo-orange);
     color: white;
     order: -1;
-  }
-
-  :global(.overflow-menu) button.selected {
-    order: unset;
-  }
-
-  :global(.action-button) {
-    padding: 7px;
-    border-radius: 20px;
-    transition: background-color ease-in-out 0.2s;
-
-    background-color: var(--gray-1);
-    border: 1px solid var(--gray-3);
-    color: var(--gray-6);
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--gray-2);
-    }
-
-    &:active,
-    &.active {
-      background-color: var(--gray-2);
-    }
-
-    :global(.icon) {
-      margin: 0 var(--size-1);
-    }
-  }
-
-  :global(.action-button.disabled) {
-    color: var(--gray-4);
-  }
-
-  :global(.with-text) {
-    padding-right: var(--size-3);
-  }
-
-  .controls {
-    background-color: white;
-    padding: var(--size-4);
-  }
-
-  .controls-footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    color: var(--gray-5);
-    margin-top: var(--size-3);
-    padding: 0 var(--size-2);
-    font-size: var(--text-small);
-
-    & > * + * {
-      margin-left: var(--size-3);
-    }
-
-    :global(.icon) {
-      margin-right: 0.2em;
-      opacity: 0.8;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-
-      &:hover {
-        color: var(--text-color);
-      }
-    }
-  }
-
-  .download-option {
-    display: flex;
-    padding: var(--size-2);
-    text-align: left;
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    cursor: pointer;
-
-    :global(.icon) {
-      margin-top: var(--icon-adjust);
-    }
-
-    &:hover,
-    &:focus {
-      background-color: var(--gray-1);
-      border: 1px solid var(--gray-3);
-    }
-
-    & div {
-      display: block;
-    }
-  }
-
-  .download-option-content {
-    margin-left: var(--size-3);
-    font-size: var(--text-small);
-
-    & > :first-child {
-      margin-bottom: var(--size-2);
-      color: var(--gray-6);
-      font-weight: bold;
-    }
-
-    & > :not(:first-child) {
-      margin-top: var(--size-1);
-      color: var(--gray-5);
-    }
   }
 </style>

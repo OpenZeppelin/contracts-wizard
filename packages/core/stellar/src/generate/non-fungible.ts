@@ -8,6 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  tokenUri: ['https://www.mytoken.com'],
   burnable: booleans,
   pausable: booleans,
   upgradeable: booleans,
@@ -17,6 +18,7 @@ const blueprint = {
   mintable: booleans,
   access: accessOptions,
   info: infoOptions,
+  explicitImplementations: booleans,
 };
 
 export function* generateNonFungibleOptions(): Generator<Required<NonFungibleOptions>> {

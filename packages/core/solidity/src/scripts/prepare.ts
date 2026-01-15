@@ -52,6 +52,9 @@ async function main() {
   };
 
   await fs.writeFile('openzeppelin-contracts.json', JSON.stringify(contracts, null, 2));
+
+  // Generate a separate file with only the version field, to be included in the NPM package
+  await fs.writeFile('openzeppelin-contracts-version.json', JSON.stringify({ version }, null, 2));
 }
 
 main().catch(e => {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions } from '@openzeppelin/wizard';
+  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { erc721, infoDefaults } from '@openzeppelin/wizard';
 
   import AccessControlSection from './AccessControlSection.svelte';
@@ -14,6 +14,8 @@
     ...erc721.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
   };
+
+  export let errors: undefined | OptionsErrorMessages;
 
   let wasMintable = opts.mintable;
   let wasIncremental = opts.incremental;
@@ -129,6 +131,11 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
+<UpgradeabilitySection
+  bind:upgradeable={opts.upgradeable}
+  namespaceRequired={opts.upgradeable !== false && opts.mintable && opts.incremental}
+  bind:namespacePrefix={opts.namespacePrefix}
+  {errors}
+/>
 
 <InfoSection bind:info={opts.info} />
