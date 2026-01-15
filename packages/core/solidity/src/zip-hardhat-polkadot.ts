@@ -12,7 +12,15 @@ class HardhatPolkadotZipGenerator extends HardhatZipGenerator {
   protected getHardhatConfigJsonString(): string {
     return `\
 {
-  solidity: '${SOLIDITY_VERSION}',
+  solidity: {
+    version: "${SOLIDITY_VERSION}",
+    settings: {
+      evmVersion: 'cancun',
+      optimizer: {
+        enabled: true,
+      },
+    },
+  },
   resolc: {
     compilerSource: 'npm',
   },
