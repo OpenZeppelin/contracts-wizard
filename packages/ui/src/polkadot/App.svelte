@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import SolidityApp from '../solidity/App.svelte';
   import type { InitialOptions } from '../common/initial-options';
   import type { Overrides } from '../solidity/overrides';
@@ -8,6 +9,8 @@
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
+
+  const dispatch = createEventDispatcher();
 
   // Dynamic import so it only loads when needed
   const zipHardhatPolkadotModule = import('@openzeppelin/wizard/zip-env-hardhat-polkadot');
@@ -40,7 +43,7 @@
 </script>
 
 <div class="polkadot-app">
-  <SolidityApp {initialTab} {initialOpts} {overrides} />
+  <SolidityApp {initialTab} {initialOpts} {overrides} on:tab-change={event => dispatch('tab-change', event.detail)} />
 </div>
 
 <style lang="postcss">
