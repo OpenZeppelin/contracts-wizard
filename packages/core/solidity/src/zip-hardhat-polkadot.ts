@@ -28,7 +28,7 @@ class HardhatPolkadotZipGenerator extends HardhatZipGenerator {
     hardhat: {
       polkavm: true,
       nodeConfig: {
-        nodeBinaryPath: 'INSERT_PATH_TO_SUBSTRATE_NODE',
+        nodeBinaryPath: 'INSERT_PATH_TO_REVIVE_DEV_NODE',
         rpcPort: 8000,
         dev: true,
       },
@@ -68,7 +68,7 @@ Ensure you have the following installed:
     return `\
 ## Setting up a testing environment
 
-Follow the steps in [Polkadot's documentation](https://docs.polkadot.com/develop/smart-contracts/dev-environments/hardhat/#set-up-a-testing-environment) to set up a local development node and replace the placeholder values \`INSERT_PATH_TO_SUBSTRATE_NODE\` and \`INSERT_PATH_TO_ETH_RPC_ADAPTER\` in \`hardhat.config.ts\`.
+Follow the steps in [Polkadot's documentation](https://docs.polkadot.com/smart-contracts/dev-environments/local-dev-node/) to set up a local development node and replace the placeholder values \`INSERT_PATH_TO_REVIVE_DEV_NODE\` and \`INSERT_PATH_TO_ETH_RPC_ADAPTER\` in \`hardhat.config.ts\`.
 
 `;
   }
