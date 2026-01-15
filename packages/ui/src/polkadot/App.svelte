@@ -33,6 +33,8 @@
     remix: {
       label: 'Open in Polkadot Remix',
       url: 'https://remix.polkadot.io',
+      tooltipMessage:
+        '<b>Note:</b> Polkadot Remix may show a compile warning about <code>ecrecover</code> when it is used in some imported contracts. <code>ecrecover</code> works as expected on Polkadot AssetHub despite this warning.',
     },
     sanitizeOmittedFeatures,
     aiAssistant: {

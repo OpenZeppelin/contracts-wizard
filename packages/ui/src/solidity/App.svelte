@@ -273,33 +273,51 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip
-            let:trigger
-            disabled={!(opts?.upgradeable === 'transparent')}
-            theme="light-red border"
-            hideOnClick={false}
-            interactive
-          >
-            <button
-              use:trigger
-              class="action-button with-text"
-              class:disabled={opts?.upgradeable === 'transparent'}
-              on:click={remixHandler}
-            >
+          {#if opts?.upgradeable === 'transparent'}
+            <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+              <button use:trigger class="action-button with-text disabled" on:click={remixHandler}>
+                <RemixIcon />
+                {overrides?.remix?.label ?? 'Open in Remix'}
+              </button>
+              <div slot="content">
+                <p style="margin-bottom: 0.5rem;">
+                  Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability
+                  or use Hardhat or Foundry with
+                  <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
+                    >OpenZeppelin Upgrades</a
+                  >.
+                </p>
+                {#if overrides?.remix?.tooltipMessage}
+                  <p style="margin-bottom: 0.5rem;">
+                    {@html overrides.remix.tooltipMessage}
+                  </p>
+                {/if}
+                <p>
+                  <!-- svelte-ignore a11y-invalid-attribute -->
+                  <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+                </p>
+              </div>
+            </Tooltip>
+          {:else if overrides?.remix?.tooltipMessage}
+            <Tooltip let:trigger theme="light border" trigger="click" hideOnClick={true} interactive>
+              <button use:trigger class="action-button with-text">
+                <RemixIcon />
+                {overrides?.remix?.label ?? 'Open in Remix'}
+              </button>
+              <div slot="content">
+                <p style="margin-bottom: 0.5rem;">
+                  {@html overrides.remix.tooltipMessage}
+                </p>
+                <!-- svelte-ignore a11y-invalid-attribute -->
+                <a href="#" on:click={remixHandler}>{overrides?.remix?.label ?? 'Open in Remix'}</a>.
+              </div>
+            </Tooltip>
+          {:else}
+            <button class="action-button with-text" on:click={remixHandler}>
               <RemixIcon />
               {overrides?.remix?.label ?? 'Open in Remix'}
             </button>
-            <div slot="content">
-              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
-              use Hardhat or Foundry with
-              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
-                >OpenZeppelin Upgrades</a
-              >.
-              <br />
-              <!-- svelte-ignore a11y-invalid-attribute -->
-              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-            </div>
-          </Tooltip>
+          {/if}
         {/if}
 
         <Dropdown let:active>
