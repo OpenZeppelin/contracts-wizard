@@ -1,0 +1,105 @@
+import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
+import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../types/languages.ts';
+import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
+import {
+  cairoCommonDescriptions,
+  cairoMacrosDescriptions,
+  cairoAccessDescriptions,
+  cairoRoyaltyInfoDescriptions,
+} from '../../../../common/src/ai/descriptions/cairo.ts';
+import { cairoAccessDescriptions } from '../../../../../common/src/ai/descriptions/cairo.ts';
+
+const commonContractFunctionDescription = {
+  upgradeable: {
+    type: 'boolean',
+    description: cairoCommonDescriptions.upgradeable,
+  },
+
+  info: {
+    type: 'object',
+    description: infoDescriptions.info,
+    properties: {
+      securityContact: {
+        type: 'string',
+        description: infoDescriptions.securityContact,
+      },
+
+      license: {
+        type: 'string',
+        description: infoDescriptions.license,
+      },
+    },
+  },
+
+  macros: {
+    type: 'object',
+    description: cairoMacrosDescriptions.macros,
+    properties: {
+      withComponents: {
+        type: 'boolean',
+        description: cairoMacrosDescriptions.withComponents,
+      },
+    },
+  },
+
+  access: {
+    type: 'object',
+    properties: {
+      type: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ownable', 'roles', 'roles-dar'] },
+        ],
+        description: cairoAccessDescriptions.accessType,
+      },
+      darInitialDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darInitialDelay,
+      },
+      darDefaultDelayIncrease: {
+        type: 'string',
+        description: cairoAccessDescriptions.darDefaultDelayIncrease,
+      },
+      darMaxTransferDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darMaxTransferDelay,
+      },
+    },
+    description: cairoAccessDescriptions.accessType,
+  },
+} as const satisfies AiFunctionPropertyDefinition<CairoCommonContractOptions>['properties'];
+
+export const cairoSharedFunctionDefinition = {
+  ...commonContractFunctionDescription,
+
+  appName: {
+    type: 'string',
+    description: cairoCommonDescriptions.appName,
+  },
+
+  appVersion: {
+    type: 'string',
+    description: cairoCommonDescriptions.appVersion,
+  },
+
+  royaltyInfo: {
+    type: 'object',
+    description: cairoCommonDescriptions.royaltyInfo,
+    properties: {
+      enabled: {
+        type: 'boolean',
+        description: cairoRoyaltyInfoDescriptions.enabled,
+      },
+      defaultRoyaltyFraction: {
+        type: 'string',
+        description: cairoRoyaltyInfoDescriptions.defaultRoyaltyFraction,
+      },
+      feeDenominator: {
+        type: 'string',
+        description: cairoRoyaltyInfoDescriptions.feeDenominator,
+      },
+    },
+  },
+} as const satisfies AiFunctionPropertyDefinition<
+  { royaltyInfo: CairoRoyaltyInfoOptions } & { appName: string; appVersion: string }
+>['properties'];

@@ -11,6 +11,7 @@
     "type:check:api": "yarn --cwd ./packages/ui type:check:api",
     "dev:ui": "yarn --cwd ./packages/ui dev",
     "dev:api": "yarn --cwd ./packages/ui dev:api",
+    "dev:api:build": "yarn --cwd ./packages/ui dev:api:build",
     "dev": "concurrently --kill-others-on-fail --names \"UI,API\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
     "run:core": "node ./scripts/run-command.mjs",
     "version": "bash scripts/release/version.sh",

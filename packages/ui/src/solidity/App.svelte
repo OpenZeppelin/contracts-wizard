@@ -32,7 +32,7 @@
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
-  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { Language } from '../common/languages-types';

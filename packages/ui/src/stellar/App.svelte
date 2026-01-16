@@ -30,10 +30,11 @@
   import { injectHyperlinks } from './inject-hyperlinks';
   import type { InitialOptions } from '../common/initial-options';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
-  import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import type { AiFunctionCall } from '../../api/ai/ai-assistant/types/assistant';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
-  import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
+
+  const fargateHost = process.env.FARGATE_HOST;
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -79,15 +80,45 @@
 
   $: showButtons = getButtonVisibilities(opts);
 
-  const zipScaffoldModule = import('@openzeppelin/wizard-stellar/zip-env-scaffold');
+  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
+
+  let isDownloadingScaffold = false;
+  let downloadScaffoldError = false;
 
   const downloadScaffoldHandler = async () => {
-    const { zipScaffoldProject } = await zipScaffoldModule;
+    if (!opts) return;
 
-    await downloadZip(zipScaffoldProject, 'download-scaffold', 'stellar', contract, opts);
+    const { zipRustProjectBlob } = await zipRustModule;
+
+    try {
+      downloadScaffoldError = false;
+      isDownloadingScaffold = true;
+
+      const {
+        ok,
+        status,
+        body: scaffoldProject,
+      } = await fetch(`${fargateHost}/stellar/upgrade-scaffold`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: await zipRustProjectBlob(contract, opts),
+      });
+
+      if (!ok) throw new Error(`HTTP ${status}`);
+
+      saveAs(await new Response(scaffoldProject).blob(), 'scaffold-project.zip');
+      await postConfig(opts, 'download-scaffold', language);
+
+      isDownloadingScaffold = false;
+    } catch (error) {
+      console.log(error);
+
+      downloadScaffoldError = true;
+      isDownloadingScaffold = false;
+    }
   };
-
-  const zipRustModule = import('@openzeppelin/wizard-stellar/zip-env-rust');
 
   const downloadRustHandler = async () => {
     const { zipRustProject } = await zipRustModule;
@@ -226,8 +257,20 @@
             <button class="download-option" on:click={downloadScaffoldHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Scaffold Stellar Package</p>
-                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
+                <p>
+                  {downloadScaffoldError
+                    ? 'Could not download Scaffold, check console for details.'
+                    : isDownloadingScaffold
+                      ? 'Building scaffold project...'
+                      : 'Scaffold Stellar Package'}
+                </p>
+                <p>
+                  {downloadScaffoldError
+                    ? '⚠️'
+                    : isDownloadingScaffold
+                      ? '⌛'
+                      : 'Sample Scaffold Stellar project to get started with development and testing.'}
+                </p>
               </div>
             </button>
           {/if}

@@ -5,9 +5,10 @@
   "scripts": {
     "prepare": "echo \"Nothing to prepare\"",
     "build": "node scripts/copy-versions.mjs && rollup -c",
-    "type:check:api": "deno task --config deno.json type:check",
+    "type:check:api": "deno task --config ./api/ai/deno.json type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
-    "dev:api": "ENV=dev deno task dev",
+    "dev:api": "cd api && docker-compose up",
+    "dev:api:build": "cd api && docker-compose up --build",
     "start": "sirv public",
     "validate": "svelte-check",
     "test": "ava"

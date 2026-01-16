@@ -9,6 +9,7 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 - `packages/core` contains the code generation logic for each language under separately named subfolders.
 - `packages/mcp` contains the MCP server.
 - `packages/ui` is the interface built in Svelte.
+- `packages/ui/api` backend API for the UI.
 
 ## Building and testing the project
 
@@ -16,10 +17,7 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 The following prerequisites are required to build the project locally:
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
-- [Deno](https://github.com/denoland/deno?tab=readme-ov-file#installation) (Optional) to run a local API server for the AI Assistant
-  - Note that using the shell installation method is recommended (the `upgrade` command, which allows you to install a specific Deno version, is not always available when installing Deno with other installers).  
-  - To install the version of Deno that matches the Netlify deploy environment, run `deno upgrade --version 1.46.3`.
-  - When adding dependencies for the Deno app add the dependency as a dev dependency using yarn, map the dependency to the Deno equivalent url in import_map.json and import it like a typescript dependency in the app.
+- [Docker](https://www.docker.com/get-started/) (Optional) to run local API for the AI assistant and some language backend process
 
 ### Installing dependencies
 From the root directory:
@@ -56,13 +54,14 @@ From the `packages/ui` directory:
 - Run `yarn dev` to start a local server for the UI.
   - Default port is 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
 
-### Running the AI Assistant (Optional)
+### Running the UI backend (Optional)
 Create a `.env` file at the root directory, set the environment variable `OPENAI_API_KEY` using your OpenAI API key, and configure your OpenAI project limits to allow the `gpt-4o-mini` model or set the environment variable `OPENAI_MODEL` to a specific model.
 
 Then from the `packages/ui` directory:
 - In one terminal, start the UI according to the above section if the UI isn't already running.
-- In another terminal, run `yarn dev:api` to start a local API server which handles AI Assistant functions.
+- In another terminal, run `yarn dev:api` to start a local API server with Docker which handles AI Assistant functions.
   - Default port is 3000. To use another port, set the environment variable `API_PORT`
+  - Run `dev:api:build` to rebuild the Docker container
 
 > [!TIP]
 > You can also start both the UI and API servers simultaneously by running `yarn dev` from the root directory.

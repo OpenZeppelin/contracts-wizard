@@ -1,7 +1,7 @@
 import type { GenericOptions, Kind } from '@openzeppelin/wizard';
 import type { ComponentType } from 'svelte';
-import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
+import type { SupportedLanguage } from '../../api/ai/ai-assistant/types/languages';
 
 /**
  * For ecosystem Wizard apps that inherit the Solidity Wizard, they can override specific features in the UI.

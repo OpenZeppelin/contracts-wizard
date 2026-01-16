@@ -11,14 +11,19 @@
     previousOptions: TOption,
     aiFunctionCall: AiFunctionCall<TLanguage>,
   ): TOption =>
-    Object.keys(previousOptions).reduce(
-      (acc, currentKey) => {
-        if (aiFunctionCall.name === currentKey)
-          //@ts-expect-error currentKey can safely access acc has it was created from previousOptions with Object.key and acc initial value is also previousOptions
-          return { ...acc, [currentKey]: { ...acc[currentKey], ...aiFunctionCall.arguments } };
+    (Object.keys(previousOptions) as Array<keyof TOption>).reduce(
+      (acc: TOption, currentKey: keyof TOption) => {
+        if ((aiFunctionCall.name as unknown as keyof TOption) === currentKey)
+          return {
+            ...acc,
+            [currentKey]: {
+              ...(acc[currentKey] as Record<string, unknown>),
+              ...(aiFunctionCall.arguments as Record<string, unknown>),
+            },
+          } as TOption;
         else return acc;
       },
-      { ...previousOptions },
+      { ...previousOptions } as TOption,
     );
 
   export function createWiz<TLanguage extends AiAssistantLanguage>() {
@@ -52,7 +57,7 @@
     AiFunctionCall,
     AiFunctionCallResponse,
     Chat,
-  } from '../../api/ai-assistant/types/assistant';
+  } from '../../api/ai/ai-assistant/types/assistant';
   import { createEventDispatcher } from 'svelte';
 
   const apiHost = process.env.API_HOST;
