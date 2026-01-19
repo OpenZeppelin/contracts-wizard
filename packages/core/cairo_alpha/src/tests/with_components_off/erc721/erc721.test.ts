@@ -84,6 +84,18 @@ testERC721('enumerable', {
   enumerable: true,
 });
 
+test('wrapper adds component and constructor arg', t => {
+  const code = printContract(
+    buildERC721({
+      name: NAME,
+      symbol: SYMBOL,
+      wrapper: true,
+    }),
+  );
+  t.regex(code, /ERC721WrapperComponent/);
+  t.regex(code, /underlying: ContractAddress/);
+});
+
 testERC721('pausable + enumerable', {
   pausable: true,
   enumerable: true,

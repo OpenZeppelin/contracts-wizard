@@ -24,6 +24,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     baseUri: ['https://example.com/'],
     burnable: booleans,
     enumerable: booleans,
+    wrapper: booleans,
     votes: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],
