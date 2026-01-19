@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.0-alpha.0 (2026-01-19)
+
+- Add ERC20 wrapper option.
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
+
 ## 3.0.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
