@@ -25,7 +25,7 @@
     "@openzeppelin/wizard": "^0.10.4"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^5.5.0",
+    "@openzeppelin/contracts": "^5.6.0-rc.0",
     "@openzeppelin/uniswap-hooks": "^1.2.1",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.7",

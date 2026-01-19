@@ -9,6 +9,7 @@ import {
   defaults as erc20defaults,
   withDefaults as withERC20Defaults,
   functions as erc20functions,
+  isAccessControlRequired as erc20isAccessControlRequired,
 } from './erc20';
 
 export type Limitations = 'allowlist' | 'blocklist';
@@ -41,7 +42,7 @@ export function printStablecoin(opts: StablecoinOptions = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boolean {
-  return opts.mintable || opts.restrictions !== false || opts.freezable || opts.pausable || opts.upgradeable === 'uups';
+  return erc20isAccessControlRequired(opts) || !!opts.restrictions || !!opts.freezable;
 }
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {

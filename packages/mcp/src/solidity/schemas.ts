@@ -65,9 +65,11 @@ export const erc20Schema = {
   flashmint: z.boolean().optional().describe(solidityERC20Descriptions.flashmint),
   crossChainBridging: z
     .literal('custom')
+    .or(z.literal('erc7786native'))
     .or(z.literal('superchain'))
     .optional()
     .describe(solidityERC20Descriptions.crossChainBridging),
+  crossChainLinkAllowOverride: z.boolean().optional().describe(solidityERC20Descriptions.crossChainLinkAllowOverride),
   namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
   ...commonSchema,
 } as const satisfies z.ZodRawShape;

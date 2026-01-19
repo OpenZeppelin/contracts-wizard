@@ -16,7 +16,7 @@ import { OptionsError } from './error';
 import { toUint256, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
-export const crossChainBridgingOptions = [false, 'custom', 'superchain'] as const;
+export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export interface ERC20Options extends CommonOptions {
@@ -36,6 +36,7 @@ export interface ERC20Options extends CommonOptions {
   votes?: boolean | ClockMode;
   flashmint?: boolean;
   crossChainBridging?: CrossChainBridging;
+  crossChainLinkAllowOverride?: boolean;
   namespacePrefix?: string;
 }
 
@@ -53,6 +54,7 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   flashmint: false,
   crossChainBridging: false,
+  crossChainLinkAllowOverride: false,
   namespacePrefix: 'myProject',
 } as const;
 
@@ -70,6 +72,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
     crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    crossChainLinkAllowOverride: opts.crossChainLinkAllowOverride ?? defaults.crossChainLinkAllowOverride,
     namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
@@ -79,7 +82,13 @@ export function printERC20(opts: ERC20Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  return (
+    opts.mintable ||
+    opts.pausable ||
+    opts.upgradeable === 'uups' ||
+    opts.crossChainBridging === 'custom' ||
+    opts.crossChainBridging === 'erc7786native'
+  );
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
@@ -92,7 +101,14 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, access, upgradeable, allOpts.namespacePrefix);
+    addCrossChainBridging(
+      c,
+      allOpts.crossChainBridging,
+      allOpts.crossChainLinkAllowOverride,
+      access,
+      upgradeable,
+      allOpts.namespacePrefix,
+    );
   }
 
   if (allOpts.premint) {
@@ -309,6 +325,40 @@ function addFlashMint(c: ContractBuilder) {
 
 function addCrossChainBridging(
   c: ContractBuilder,
+  crossChainBridging: 'custom' | 'erc7786native' | 'superchain',
+  crossChainLinkAllowOverride: boolean,
+  access: Access,
+  upgradeable: Upgradeable,
+  namespacePrefix: string,
+) {
+  if (crossChainBridging === 'erc7786native') {
+    addERC20Crosschain(c, crossChainLinkAllowOverride, access);
+  } else {
+    addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);
+  }
+}
+
+function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+  c.addParent({
+    name: 'ERC20Crosschain',
+    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
+  });
+
+  c.addConstructionOnly(
+    {
+      name: 'CrosschainLinked',
+      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+    },
+    [{ lit: 'links' }],
+  );
+  c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
+
+  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
+  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
+}
+
+function addERC20Bridgeable(
+  c: ContractBuilder,
   crossChainBridging: 'custom' | 'superchain',
   access: Access,
   upgradeable: Upgradeable,
@@ -339,31 +389,57 @@ function addCrossChainBridging(
 }
 
 function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgradeable, namespacePrefix: string) {
+  if (access === false) {
+    access = 'ownable';
+  }
+
   switch (access) {
-    case false:
     case 'ownable': {
       if (!upgradeable) {
+        const LINES_CHECK_AND_SET_TOKEN_BRIDGE = [
+          `require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`,
+          `tokenBridge = tokenBridge_;`,
+        ];
+
+        // Add variable and constructor logic using state variable
         const addedBridge = c.addStateVariable(`address public tokenBridge;`, false);
         if (addedBridge) {
           c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
-          c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
-          c.addConstructorCode(`tokenBridge = tokenBridge_;`);
+          LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+            c.addConstructorCode(line);
+          });
         }
         c.setFunctionBody([`if (caller != tokenBridge) revert Unauthorized();`], functions._checkTokenBridge, 'view');
+
+        // Add bridge setter
+        requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
+        LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+          c.addFunctionCode(line, functions.setTokenBridge);
+        });
       } else {
+        const LINES_CHECK_AND_SET_TOKEN_BRIDGE = [
+          `require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`,
+          toStorageStructInstantiation(c.name),
+          '$.tokenBridge = tokenBridge_;',
+        ];
+
+        // Add variable and constructor logic using namespaced storage
         setNamespacedStorage(c, ['address tokenBridge;'], namespacePrefix);
 
         c.addConstructorArgument({ type: 'address', name: 'tokenBridge_' });
-        c.addConstructorCode(`require(tokenBridge_ != address(0), "Invalid tokenBridge_ address");`);
-
-        c.addConstructorCode(toStorageStructInstantiation(c.name));
-        c.addConstructorCode(`$.tokenBridge = tokenBridge_;`);
+        LINES_CHECK_AND_SET_TOKEN_BRIDGE.forEach(line => {
+          c.addConstructorCode(line);
+        });
 
         c.setFunctionBody(
           [toStorageStructInstantiation(c.name), `if (caller != $.tokenBridge) revert Unauthorized();`],
           functions._checkTokenBridge,
           'view',
         );
+
+        // Add bridge setter
+        requireAccessControl(c, functions.setTokenBridge, access, 'TOKEN_BRIDGE_SETTER', 'tokenBridgeSetter');
+        c.setFunctionBody(LINES_CHECK_AND_SET_TOKEN_BRIDGE, functions.setTokenBridge);
       }
       break;
     }
@@ -482,5 +558,18 @@ export const functions = defineFunctions({
   _checkTokenBridge: {
     kind: 'internal' as const,
     args: [{ name: 'caller', type: 'address' }],
+  },
+
+  setTokenBridge: {
+    kind: 'public' as const,
+    args: [{ name: 'tokenBridge_', type: 'address' }],
+  },
+
+  setLink: {
+    kind: 'public' as const,
+    args: [
+      { name: 'gateway', type: 'address' },
+      { name: 'counterpart', type: 'bytes memory' },
+    ],
   },
 });

@@ -1,21 +1,32 @@
 import test from 'ava';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { mkdtemp, rm, writeFile } from 'fs/promises';
+import { mkdtemp, rm, writeFile, readFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
 const execAsync = promisify(exec);
 
 async function packPackage(packageRoot: string): Promise<string> {
-  const { stdout: packOutput } = await execAsync('npm pack', { cwd: packageRoot });
-  // npm pack outputs the filename as the last line
-  const lines = packOutput.trim().split('\n');
-  const packedFile = lines[lines.length - 1]?.trim();
-  if (!packedFile) {
-    throw new Error('Failed to get packed filename from npm pack output');
+  const packageJsonPath = join(packageRoot, 'package.json');
+  const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
+  // Temporarily remove prepare script to avoid running it during packing, since it's already a prerequisite for running this test
+  const originalPrepare = packageJson.scripts.prepare;
+  delete packageJson.scripts.prepare;
+  await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  try {
+    const { stdout: packOutput } = await execAsync('npm pack', { cwd: packageRoot });
+    // npm pack outputs the filename as the last line
+    const lines = packOutput.trim().split('\n');
+    const packedFile = lines[lines.length - 1]?.trim();
+    if (!packedFile) {
+      throw new Error('Failed to get packed filename from npm pack output');
+    }
+    return join(packageRoot, packedFile);
+  } finally {
+    packageJson.scripts.prepare = originalPrepare;
+    await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
-  return join(packageRoot, packedFile);
 }
 
 test('packed package can be installed and imported', async t => {
