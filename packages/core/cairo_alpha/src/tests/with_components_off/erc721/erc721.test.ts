@@ -84,6 +84,10 @@ testERC721('enumerable', {
   enumerable: true,
 });
 
+testERC721('wrapper', {
+  wrapper: true,
+});
+
 test('wrapper adds component and constructor arg', t => {
   const code = printContract(
     buildERC721({
