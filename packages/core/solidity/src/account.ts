@@ -68,7 +68,6 @@ export function buildAccount(opts: AccountOptions): Contract {
     c.addImportOnly({
       name: 'PackedUserOperation',
       path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
-      transpiled: false, // PackedUserOperation doesn't start with "I" so its not recognized as an "interface object"
     });
   }
 
@@ -172,9 +171,17 @@ function addERC7579Modules(c: ContractBuilder, opts: AccountOptions): void {
 
   // Accounts that use ERC7579 without a signer must be constructed with at least one module (executor of validation)
   if (!opts.signer) {
+    c.addImportOnly({
+      name: 'MODULE_TYPE_VALIDATOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+    });
+    c.addImportOnly({
+      name: 'MODULE_TYPE_EXECUTOR',
+      path: '@openzeppelin/contracts/interfaces/draft-IERC7579.sol',
+    });
     c.addConstructorArgument({ type: 'uint256', name: 'moduleTypeId' });
     c.addConstructorArgument({ type: 'address', name: 'module' });
-    c.addConstructorArgument({ type: 'bytes calldata', name: 'initData' });
+    c.addConstructorArgument({ type: 'bytes memory', name: 'initData' });
     c.addConstructorCode('require(moduleTypeId == MODULE_TYPE_VALIDATOR || moduleTypeId == MODULE_TYPE_EXECUTOR);');
     c.addConstructorCode('_installModule(moduleTypeId, module, initData);');
   }

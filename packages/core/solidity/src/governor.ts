@@ -249,12 +249,10 @@ function addVotes(c: ContractBuilder) {
   c.addImportOnly({
     name: 'IVotes',
     path: `@openzeppelin/contracts/governance/utils/IVotes.sol`,
-    transpiled: false,
   });
   c.addConstructorArgument({
     type: {
       name: 'IVotes',
-      transpiled: false,
     },
     name: tokenArg,
   });
@@ -324,7 +322,6 @@ const timelockModules = {
     timelockType: {
       name: 'ICompoundTimelock',
       path: `@openzeppelin/contracts/vendor/compound/ICompoundTimelock.sol`,
-      transpiled: false,
     },
     timelockParent: {
       name: 'GovernorTimelockCompound',
