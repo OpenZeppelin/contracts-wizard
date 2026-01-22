@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+
+- Cairo: add ERC721 wrapper description for AI prompts ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
 
 ## 0.4.1 (2026-01-14)
 
