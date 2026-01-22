@@ -1,8 +1,8 @@
 # Changelog
 
-## 4.0.0-alpha.0 (2026-01-19)
+## 3.1.0 (Unreleased)
 
-- Add ERC20 wrapper option.
+- Add ERC1155 wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
