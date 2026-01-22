@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0 (Unreleased)
+
+- Add ERC1155 supply tracking extension () <!-- TODO: Add linked PR>
+
 ## 3.0.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
