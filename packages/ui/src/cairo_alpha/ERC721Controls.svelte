@@ -81,6 +81,13 @@
         ids and all tokens owned by an address.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.wrapper}>
+      <input type="checkbox" bind:checked={opts.wrapper} />
+      Wrapper
+      <HelpTooltip>
+        Wrap an existing ERC721 by depositing underlying token IDs and minting matching wrapped tokens.
+      </HelpTooltip>
+    </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>

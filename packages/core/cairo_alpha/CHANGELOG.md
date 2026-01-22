@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0 (Unreleased)
+
+- Add ERC721 wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
+
 ## 3.0.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))

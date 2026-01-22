@@ -58,6 +58,7 @@ export const cairoERC721Descriptions = {
   baseUri: 'A base uri for the non-fungible token.',
   enumerable:
     'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+  wrapper: 'Whether to include ERC721Wrapper functionality for wrapping an underlying ERC721.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
 };
