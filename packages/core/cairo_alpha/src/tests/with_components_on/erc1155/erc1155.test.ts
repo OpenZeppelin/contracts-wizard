@@ -69,6 +69,10 @@ testERC1155('mintable', {
   mintable: true,
 });
 
+testERC1155('supply tracking', {
+  supply: true,
+});
+
 testERC1155('mintable + roles', {
   mintable: true,
   access: AccessControl.Roles(),

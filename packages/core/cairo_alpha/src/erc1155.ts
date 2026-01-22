@@ -23,6 +23,7 @@ export const defaults: Required<ERC1155Options> = {
   burnable: false,
   pausable: false,
   mintable: false,
+  supply: false,
   updatableUri: true,
   royaltyInfo: royaltyInfoDefaults,
   access: commonDefaults.access,
@@ -41,6 +42,7 @@ export interface ERC1155Options extends CommonContractOptions {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  supply?: boolean;
   updatableUri?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
 }
@@ -52,6 +54,7 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
+    supply: opts.supply ?? defaults.supply,
     updatableUri: opts.updatableUri ?? defaults.updatableUri,
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
   };
@@ -86,6 +89,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addMintable(c, allOpts.access);
   }
 
+  if (allOpts.supply) {
+    addSupply(c);
+  }
+
   if (allOpts.updatableUri) {
     addSetBaseUri(c, allOpts.access);
   }
@@ -101,7 +108,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 }
 
 function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
-  const usesCustomHooks = allOpts.pausable;
+  const usesCustomHooks = allOpts.pausable || allOpts.supply;
   if (usesCustomHooks) {
     const hooksTrait = {
       name: 'ERC1155HooksImpl',
@@ -112,20 +119,43 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
     c.addImplementedTrait(hooksTrait);
     c.addUseClause('starknet', 'ContractAddress');
 
-    c.addFunction(hooksTrait, {
-      name: 'before_update',
-      args: [
-        {
-          name: 'ref self',
-          type: `ERC1155Component::ComponentState<ContractState>`,
-        },
-        { name: 'from', type: 'ContractAddress' },
-        { name: 'to', type: 'ContractAddress' },
-        { name: 'token_ids', type: 'Span<u256>' },
-        { name: 'values', type: 'Span<u256>' },
-      ],
-      code: ['let contract_state = self.get_contract()', 'contract_state.pausable.assert_not_paused()'],
-    });
+    if (allOpts.pausable) {
+      c.addFunction(hooksTrait, {
+        name: 'before_update',
+        args: [
+          {
+            name: 'ref self',
+            type: `ERC1155Component::ComponentState<ContractState>`,
+          },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'to', type: 'ContractAddress' },
+          { name: 'token_ids', type: 'Span<u256>' },
+          { name: 'values', type: 'Span<u256>' },
+        ],
+        code: ['let contract_state = self.get_contract()', 'contract_state.pausable.assert_not_paused()'],
+      });
+    }
+
+    if (allOpts.supply) {
+      const afterUpdateFn = c.addFunction(hooksTrait, {
+        name: 'after_update',
+        args: [
+          {
+            name: 'ref self',
+            type: `ERC1155Component::ComponentState<ContractState>`,
+          },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'to', type: 'ContractAddress' },
+          { name: 'token_ids', type: 'Span<u256>' },
+          { name: 'values', type: 'Span<u256>' },
+        ],
+        code: [],
+      });
+      afterUpdateFn.code.push(
+        'let mut contract_state = self.get_contract_mut();',
+        'contract_state.erc1155_supply.after_update(from, to, token_ids, values);',
+      );
+    }
   } else {
     c.addUseClause('openzeppelin_token::erc1155', 'ERC1155HooksEmptyImpl');
   }
@@ -151,6 +181,10 @@ function addBurnable(c: ContractBuilder) {
   c.addFunction(externalTrait, functions.burn);
   c.addFunction(externalTrait, functions.batch_burn);
   c.addFunction(externalTrait, functions.batchBurn);
+}
+
+function addSupply(c: ContractBuilder) {
+  c.addComponent(components.ERC1155SupplyComponent, [], true);
 }
 
 function addMintable(c: ContractBuilder, access: Access) {
@@ -185,6 +219,29 @@ const components = defineComponents({
         name: 'ERC1155InternalImpl',
         embed: false,
         value: 'ERC1155Component::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC1155SupplyComponent: {
+    path: 'openzeppelin_token::erc1155::extensions',
+    substorage: {
+      name: 'erc1155_supply',
+      type: 'ERC1155SupplyComponent::Storage',
+    },
+    event: {
+      name: 'ERC1155SupplyEvent',
+      type: 'ERC1155SupplyComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC1155SupplyImpl',
+        embed: true,
+        value: 'ERC1155SupplyComponent::ERC1155SupplyImpl<ContractState>',
+      },
+      {
+        name: 'ERC1155SupplyInternalImpl',
+        embed: false,
+        value: 'ERC1155SupplyComponent::InternalImpl<ContractState>',
       },
     ],
   },
