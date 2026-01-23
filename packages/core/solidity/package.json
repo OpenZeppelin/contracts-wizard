@@ -12,7 +12,7 @@
     "/dist",
     "/src",
     "openzeppelin-contracts-version.json",
-    "openzeppelin-contracts-version.d.ts",
+    "openzeppelin-contracts-version.json.d.ts",
     "!**/*.test.*"
   ],
   "scripts": {
