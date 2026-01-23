@@ -19,7 +19,7 @@ async function packPackage(): Promise<string> {
   return join(packageRoot, packedFile);
 }
 
-let packedPath: string | undefined;
+let packedPath: string;
 
 test.before(async () => {
   packedPath = await packPackage();
@@ -35,10 +35,6 @@ test('packed package can be installed and imported with node', async t => {
   const tempDir = await mkdtemp(join(tmpdir(), 'wizard-package-test-'));
 
   try {
-    if (!packedPath) {
-      throw new Error('Packed path was not initialized');
-    }
-
     // Create a test project in temp directory
     await execAsync('npm init -y', { cwd: tempDir });
 
@@ -65,10 +61,6 @@ test('packed package can be bundled with webpack', async t => {
   const tempDir = await mkdtemp(join(tmpdir(), 'wizard-webpack-test-'));
 
   try {
-    if (!packedPath) {
-      throw new Error('Packed path was not initialized');
-    }
-
     await execAsync('npm init -y', { cwd: tempDir });
     await execAsync(`npm install "${packedPath}"`, { cwd: tempDir });
     await execAsync('npm install webpack webpack-cli', { cwd: tempDir });
