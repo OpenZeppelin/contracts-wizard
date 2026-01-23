@@ -18,7 +18,7 @@ async function packPackage(packageRoot: string): Promise<string> {
   return join(packageRoot, packedFile);
 }
 
-test('packed package can be installed and imported', async t => {
+test.serial('packed package can be installed and imported with node', async t => {
   const packageRoot = join(__dirname, '..');
   const tempDir = await mkdtemp(join(tmpdir(), 'wizard-package-test-'));
 
@@ -49,6 +49,51 @@ console.log('SUCCESS');
     }
   } finally {
     // Clean up temp directory
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
+test.serial('packed package can be bundled with webpack', async t => {
+  const packageRoot = join(__dirname, '..');
+  const tempDir = await mkdtemp(join(tmpdir(), 'wizard-webpack-test-'));
+
+  try {
+    const packedPath = await packPackage(packageRoot);
+
+    try {
+      await execAsync('npm init -y', { cwd: tempDir });
+      await execAsync(`npm install "${packedPath}"`, { cwd: tempDir });
+      await execAsync('npm install webpack webpack-cli', { cwd: tempDir });
+
+      const entryScript = `const { erc20 } = require('@openzeppelin/wizard');
+console.log(erc20.getVersionedRemappings({}));
+`;
+      await writeFile(join(tempDir, 'index.js'), entryScript);
+
+      const webpackConfig = `const path = require('path');
+
+module.exports = {
+  mode: 'production',
+  target: 'node',
+  entry: './index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  resolve: {
+    extensions: ['.js'],
+  },
+};
+`;
+      await writeFile(join(tempDir, 'webpack.config.js'), webpackConfig);
+
+      await execAsync('npx webpack --config webpack.config.js', { cwd: tempDir });
+
+      t.pass();
+    } finally {
+      await rm(packedPath, { force: true });
+    }
+  } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
