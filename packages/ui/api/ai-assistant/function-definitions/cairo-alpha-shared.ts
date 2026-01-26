@@ -4,7 +4,7 @@ import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.
 import {
   cairoCommonDescriptions,
   cairoMacrosDescriptions,
-  cairoAlphaAccessDescriptions,
+  cairoAccessDescriptions,
   cairoRoyaltyInfoDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
 
@@ -49,18 +49,22 @@ const commonContractFunctionDescription = {
           { type: 'boolean', enum: [false] },
           { type: 'string', enum: ['ownable', 'roles', 'roles-dar'] },
         ],
-        description: cairoAlphaAccessDescriptions.accessType,
+        description: cairoAccessDescriptions.accessType,
       },
       darInitialDelay: {
         type: 'string',
-        description: cairoAlphaAccessDescriptions.darInitialDelay,
+        description: cairoAccessDescriptions.darInitialDelay,
       },
       darDefaultDelayIncrease: {
         type: 'string',
-        description: cairoAlphaAccessDescriptions.darDefaultDelayIncrease,
+        description: cairoAccessDescriptions.darDefaultDelayIncrease,
+      },
+      darMaxTransferDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darMaxTransferDelay,
       },
     },
-    description: cairoCommonDescriptions.access,
+    description: cairoAccessDescriptions.accessType,
   },
 } as const satisfies AiFunctionPropertyDefinition<CairoAlphaCommonContractOptions>['properties'];
 

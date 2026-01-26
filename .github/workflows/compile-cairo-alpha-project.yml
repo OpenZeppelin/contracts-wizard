@@ -61,6 +61,7 @@ jobs:
                     yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
 
                     echo "Compiling $proj_name..."
+                    scarb clean
                     scarb build
 
                     echo "✅ Compiled $proj_name!"
@@ -70,11 +71,12 @@ jobs:
 
               elif [[ "$kind" == "ERC20" || "$kind" == "Custom" ]]; then
                 for access_option in "${all_access_options[@]}"; do
-                  proj_name="'$kind, access: $access_option' test project"
+                  proj_name="'$kind, macros: $macros_option, access: $access_option' test project"
                   echo "Generating $proj_name..."
-                  yarn run update_scarb_project --kind=$kind --access=$access_option
+                  yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option
 
                   echo "Compiling $proj_name..."
+                  scarb clean
                   scarb build
 
                   echo "✅ Compiled $proj_name!"
@@ -82,12 +84,13 @@ jobs:
                 done
 
               else
-                proj_name="'$kind' test project"
+                proj_name="'$kind, macros: $macros_option' test project"
 
                 echo "Generating $proj_name..."
-                yarn run update_scarb_project --kind=$kind
+                yarn run update_scarb_project --kind=$kind --macros=$macros_option
 
                 echo "Compiling $proj_name..."
+                scarb clean
                 scarb build
 
                 echo "✅ Compiled $proj_name!"

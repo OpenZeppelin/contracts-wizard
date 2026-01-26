@@ -39,7 +39,9 @@
     <label class:checked={access === 'ownable'}>
       <input type="radio" bind:group={access} value="ownable" />
       Ownable
-      <HelpTooltip>Simple mechanism with a single account authorized for all privileged actions.</HelpTooltip>
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-stylus/access-control#ownership-and-ownable">
+        Simple mechanism with a single account authorized for all privileged actions.
+      </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
       <input type="radio" bind:group={access} value="roles" />

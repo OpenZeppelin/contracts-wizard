@@ -27,6 +27,7 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
       appName,
       appVersion,
       info,
+      macros,
     }) => {
       const opts: GovernorOptions = {
         name,
@@ -45,6 +46,7 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
         appName,
         appVersion,
         info,
+        macros,
       };
       return {
         content: [

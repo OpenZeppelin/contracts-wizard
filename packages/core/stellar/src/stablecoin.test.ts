@@ -78,6 +78,16 @@ testStablecoin('stablecoin blocklist', {
   limitations: 'blocklist',
 });
 
+testStablecoin('stablecoin allowlist explicit trait implementations', {
+  limitations: 'allowlist',
+  explicitImplementations: true,
+});
+
+testStablecoin('stablecoin blocklist explicit trait implementations', {
+  limitations: 'blocklist',
+  explicitImplementations: true,
+});
+
 testStablecoin('stablecoin full - ownable, allowlist', {
   premint: '2000',
   access: 'ownable',
@@ -121,6 +131,10 @@ testStablecoin('stablecoin full - complex name', {
   burnable: true,
   mintable: true,
   pausable: true,
+});
+
+testStablecoin('stablecoin explicit trait implementations', {
+  explicitImplementations: true,
 });
 
 testAPIEquivalence('stablecoin API default');

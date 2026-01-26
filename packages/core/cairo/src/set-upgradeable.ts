@@ -19,7 +19,7 @@ function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseI
 
   c.addComponent(components.UpgradeableComponent, [], false);
 
-  c.addUseClause('openzeppelin::upgrades::interface', 'IUpgradeable');
+  c.addUseClause('openzeppelin_interfaces::upgrades', 'IUpgradeable');
   c.addUseClause('starknet', 'ClassHash');
 
   const t: BaseImplementedTrait = {
@@ -43,7 +43,7 @@ export function setUpgradeable(c: ContractBuilder, upgradeable: Upgradeable, acc
 export function setUpgradeableGovernor(c: ContractBuilder, upgradeable: Upgradeable): void {
   const trait = setUpgradeableBase(c, upgradeable);
   if (trait !== undefined) {
-    c.addUseClause('openzeppelin::governance::governor::GovernorComponent', 'InternalExtendedImpl');
+    c.addUseClause('openzeppelin_governance::governor::GovernorComponent', 'InternalExtendedImpl');
     c.addFunctionCodeBefore(trait, functions.upgrade, 'self.governor.assert_only_governance()');
   }
 }
@@ -71,7 +71,7 @@ export function setAccountUpgradeable(c: ContractBuilder, upgradeable: Upgradeab
 
 const components = defineComponents({
   UpgradeableComponent: {
-    path: 'openzeppelin::upgrades',
+    path: 'openzeppelin_upgrades',
     substorage: {
       name: 'upgradeable',
       type: 'UpgradeableComponent::Storage',

@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.4 (2025-11-28)
+
+- Add support for Uniswap Hooks Wizard ([#628](https://github.com/OpenZeppelin/contracts-wizard/pull/628))
+
 ## 0.10.3 (2025-11-26)
 
 - Fix missing dependency for get-versioned-remappings ([#740](https://github.com/OpenZeppelin/contracts-wizard/pull/740))

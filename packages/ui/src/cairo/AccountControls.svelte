@@ -1,15 +1,17 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { account, type Account, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import type { Account, KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
+  import { account, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Account']> = {
     kind: 'Account',
     ...account.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -31,7 +33,7 @@
     <label class:checked={accountType === 'stark'}>
       <input type="radio" bind:group={opts.type} value="stark" />
       Starknet
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/accounts#starknet_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/accounts#starknet_account">
         Starknet account that uses the STARK curve for signature checking.
       </HelpTooltip>
     </label>
@@ -39,7 +41,7 @@
     <label class:checked={accountType === 'eth'}>
       <input type="radio" bind:group={opts.type} value="eth" />
       Ethereum
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/accounts#ethereum_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/accounts#ethereum_account">
         Ethereum-flavored account that uses the Secp256k1 curve for signature checking.
       </HelpTooltip>
     </label>
@@ -69,7 +71,7 @@
     <label class:checked={opts.deploy}>
       <input type="checkbox" bind:checked={opts.deploy} />
       Deployable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/accounts#deploying_an_account">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/accounts#deploying_an_account">
         Enables the account to be counterfactually deployed.
       </HelpTooltip>
     </label>
@@ -82,5 +84,7 @@
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />

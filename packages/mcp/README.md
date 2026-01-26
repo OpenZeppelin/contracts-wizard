@@ -20,6 +20,7 @@ Provides tools to generate smart contract source code for the following language
 | confidential | erc7984 |
 | stellar | fungible, stablecoin, non-fungible |
 | stylus | erc20, erc721, erc1155 |
+| uniswap-hooks | hooks (tool name is just `uniswap-hooks`) |
 
 
 ## Installation

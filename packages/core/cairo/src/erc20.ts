@@ -32,6 +32,7 @@ export const defaults: Required<ERC20Options> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printERC20(opts: ERC20Options = defaults): string {
@@ -71,8 +72,8 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
 }
 
 export function buildERC20(opts: ERC20Options): Contract {
-  const c = new ContractBuilder(opts.name);
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
   const decimals = toUint(allOpts.decimals, 'decimals', 'u8');
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
@@ -177,13 +178,14 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC20Options>) {
       );
     }
   } else {
-    c.addUseClause('openzeppelin::token::erc20', 'ERC20HooksEmptyImpl');
+    c.addUseClause('openzeppelin_token::erc20', 'ERC20HooksEmptyImpl');
   }
 }
 
 function addERC20Mixin(c: ContractBuilder) {
   c.addImplToComponent(components.ERC20Component, {
     name: 'ERC20MixinImpl',
+    embed: true,
     value: 'ERC20Component::ERC20MixinImpl<ContractState>',
   });
 }
@@ -194,7 +196,7 @@ function addBase(c: ContractBuilder, name: string, symbol: string, decimals: big
 
   // Add config with decimals
   if (decimals === DEFAULT_DECIMALS) {
-    c.addUseClause('openzeppelin::token::erc20', 'DefaultConfig', { alias: 'ERC20DefaultConfig' });
+    c.addUseClause('openzeppelin_token::erc20', 'DefaultConfig', { alias: 'ERC20DefaultConfig' });
   } else {
     const trait: BaseImplementedTrait = {
       name: 'ERC20ImmutableConfig',
@@ -281,7 +283,7 @@ function addMintable(c: ContractBuilder, access: Access) {
 
 const components = defineComponents({
   ERC20Component: {
-    path: 'openzeppelin::token::erc20',
+    path: 'openzeppelin_token::erc20',
     substorage: {
       name: 'erc20',
       type: 'ERC20Component::Storage',

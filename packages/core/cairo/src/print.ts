@@ -7,6 +7,7 @@ import type {
   ContractFunction,
   ImplementedTrait,
   UseClause,
+  Variable,
 } from './contract';
 
 import { formatLines, spaceBetween } from './utils/format-lines';
@@ -18,6 +19,23 @@ const DEFAULT_SECTION = '1. with no section';
 const STANDALONE_IMPORTS_GROUP = 'Standalone Imports';
 const MAX_USE_CLAUSE_LINE_LENGTH = 90;
 const TAB = '\t';
+
+function printWithComponentsDirective(contract: Contract): Lines[] {
+  if (!contract.macros.withComponents || contract.components.length === 0) {
+    return [];
+  }
+  const componentsStr = contract.components
+    .map(c => c.name)
+    .map(name => {
+      const idx = name.indexOf('Component');
+      if (idx === -1) {
+        throw new Error(`Component name "${name}" must contain "Component" substring`);
+      }
+      return name.substring(0, idx);
+    })
+    .join(', ');
+  return [`#[with_components(${componentsStr})]`];
+}
 
 export function printContract(contract: Contract): string {
   const contractAttribute = contract.account ? '#[starknet::contract(account)]' : '#[starknet::contract]';
@@ -31,10 +49,11 @@ export function printContract(contract: Contract): string {
       [
         ...printDocumentations(contract.documentations),
         `${contractAttribute}`,
+        ...printWithComponentsDirective(contract),
         `mod ${contract.name} {`,
         spaceBetween(
           printUseClauses(contract),
-          printConstants(contract),
+          printConstants(contract.constants),
           printComponentDeclarations(contract),
           printImpls(contract),
           printStorage(contract),
@@ -135,9 +154,9 @@ function sortUseClauses(contract: Contract): UseClause[] {
   });
 }
 
-function printConstants(contract: Contract): Lines[] {
+function printConstants(constants: Variable[]): Lines[] {
   const lines = [];
-  for (const constant of contract.constants) {
+  for (const constant of constants) {
     // inlineComment is optional, default to false
     const inlineComment = constant.inlineComment ?? false;
     const commented = !!constant.comment;
@@ -155,18 +174,17 @@ function printConstants(contract: Contract): Lines[] {
 }
 
 function printComponentDeclarations(contract: Contract): Lines[] {
-  const lines = [];
-  for (const component of contract.components) {
-    lines.push(
-      `component!(path: ${component.name}, storage: ${component.substorage.name}, event: ${component.event.name});`,
-    );
+  if (contract.macros.withComponents) {
+    return [];
   }
-  return lines;
+  return contract.components.map(
+    c => `component!(path: ${c.name}, storage: ${c.substorage.name}, event: ${c.event.name});`,
+  );
 }
 
 function printImpls(contract: Contract): Lines[] {
-  const impls = contract.components.flatMap(c => c.impls);
-
+  const withComponents = contract.macros.withComponents;
+  const impls = contract.components.flatMap(c => (withComponents ? c.impls.filter(i => i.embed) : c.impls));
   // group by section
   const grouped = impls.reduce((result: { [section: string]: Impl[] }, current: Impl) => {
     // default section depends on embed
@@ -201,35 +219,28 @@ function printImpl(impl: Impl): Lines[] {
 }
 
 function printStorage(contract: Contract): (string | string[])[] {
-  const lines = [];
-  // storage is required regardless of whether there are components
-  lines.push('#[storage]');
-  lines.push('struct Storage {');
+  if (contract.macros.withComponents || contract.components.length === 0) {
+    // storage is required regardless of whether there are components
+    return ['#[storage]', 'struct Storage {}'];
+  }
   const storageLines = [];
   for (const component of contract.components) {
     storageLines.push(`#[substorage(v0)]`);
     storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
   }
-  lines.push(storageLines);
-  lines.push('}');
-  return lines;
+  return ['#[storage]', 'struct Storage {', storageLines, '}'];
 }
 
 function printEvents(contract: Contract): (string | string[])[] {
-  const lines = [];
-  if (contract.components.length > 0) {
-    lines.push('#[event]');
-    lines.push('#[derive(Drop, starknet::Event)]');
-    lines.push('enum Event {');
-    const eventLines = [];
-    for (const component of contract.components) {
-      eventLines.push('#[flat]');
-      eventLines.push(`${component.event.name}: ${component.event.type},`);
-    }
-    lines.push(eventLines);
-    lines.push('}');
+  if (contract.macros.withComponents || contract.components.length === 0) {
+    return [];
   }
-  return lines;
+  const eventLines = [];
+  for (const component of contract.components) {
+    eventLines.push('#[flat]');
+    eventLines.push(`${component.event.name}: ${component.event.type},`);
+  }
+  return ['#[event]', '#[derive(Drop, starknet::Event)]', 'enum Event {', eventLines, '}'];
 }
 
 function printImplementedTraits(contract: Contract): Lines[] {
@@ -284,7 +295,7 @@ function printImplementedTrait(trait: ImplementedTrait): Lines[] {
   implLines.push(...trait.tags.map(t => `#[${t}]`));
   implLines.push(`impl ${trait.name} of ${trait.of} {`);
 
-  const superVars = withSemicolons(trait.superVariables.map(v => `const ${v.name}: ${v.type} = ${v.value}`));
+  const superVars = printConstants(trait.superVariables);
   implLines.push(superVars);
 
   const fns = trait.functions.map(fn => printFunction(fn));

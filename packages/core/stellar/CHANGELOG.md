@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.5 (2026-01-14)
+
+- Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions ([#728](https://github.com/OpenZeppelin/contracts-wizard/pull/728))
+
 ## 0.4.4 (2025-11-26)
 
 - Add tokenUri setting for stellar non fungible model ([#725](https://github.com/OpenZeppelin/contracts-wizard/pull/725))

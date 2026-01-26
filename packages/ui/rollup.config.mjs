@@ -137,7 +137,7 @@ export default [
       commonjs(),
 
       typescript({
-        include: ['src/**/*.ts', '../core/*/src/**/*.ts'],
+        include: ['src/**/*.ts', '../core/*/src/**/*.ts', '../common/src/**/*.ts'],
         sourceMap: true,
         inlineSources: true,
       }),

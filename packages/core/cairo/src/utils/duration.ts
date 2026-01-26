@@ -11,7 +11,7 @@ const month = 30 * day;
 const year = 365 * day;
 const secondsForUnit = { second, minute, hour, day, week, month, year };
 
-export function durationToTimestamp(duration: string): number {
+export function durationToSeconds(duration: string): number {
   const match = duration.trim().match(durationPattern);
 
   if (!match || match.length < 2) {

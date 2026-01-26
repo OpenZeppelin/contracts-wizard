@@ -2,23 +2,23 @@
 name = "test_project"
 version = "0.1.0"
 edition = "2024_07"
-cairo-version = "2.12.2"
-scarb-version = "2.12.2"
+cairo-version = "2.13.1"
+scarb-version = "2.13.1"
 
 [dependencies]
-assert_macros = "2.12.2"
-starknet = "2.12.2"
-openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_account = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_finance = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_interfaces = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_governance = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_security = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_upgrades = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_utils = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
-openzeppelin_macros = { git = "https://github.com/OpenZeppelin/cairo-contracts", tag = "v3.0.0-alpha.3" }
+assert_macros = "2.13.1"
+starknet = "2.13.1"
+openzeppelin_macros = "3.0.0"
+openzeppelin_access = "3.0.0"
+openzeppelin_account = "3.0.0"
+openzeppelin_finance = "3.0.0"
+openzeppelin_interfaces = "2.1.0"
+openzeppelin_governance = "3.0.0"
+openzeppelin_introspection = "3.0.0"
+openzeppelin_security = "3.0.0"
+openzeppelin_token = "3.0.0"
+openzeppelin_upgrades = "3.0.0"
+openzeppelin_utils = "2.1.0"
 
 [lib]
 

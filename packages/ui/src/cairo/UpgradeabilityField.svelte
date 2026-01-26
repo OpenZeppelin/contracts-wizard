@@ -9,7 +9,7 @@
 <label class:checked={upgradeable}>
   <input type="checkbox" bind:checked={upgradeable} />
   Upgradeable
-  <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/upgrades">
+  <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/upgrades">
     Smart contracts are immutable by default unless they include code that allows them to be upgraded.
   </HelpTooltip>
 </label>

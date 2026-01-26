@@ -14,6 +14,7 @@ export type AccessType =
 export type RolesDefaultAdminRulesOptions = {
   darInitialDelay: string;
   darDefaultDelayIncrease: string;
+  darMaxTransferDelay: string;
 };
 
 export type Access = { type: AccessType } & RolesDefaultAdminRulesOptions;
@@ -21,11 +22,13 @@ export type Access = { type: AccessType } & RolesDefaultAdminRulesOptions;
 export const darDefaultOpts: RolesDefaultAdminRulesOptions = {
   darInitialDelay: '1 day',
   darDefaultDelayIncrease: '5 days',
+  darMaxTransferDelay: '30 days',
 };
 
 export const darCustomOpts: RolesDefaultAdminRulesOptions = {
   darInitialDelay: '2 days',
   darDefaultDelayIncrease: '1 week',
+  darMaxTransferDelay: '2 weeks',
 };
 
 type AccessControlFactory = {
@@ -76,6 +79,7 @@ export function resolveAccessControlOptions(subset: AccessSubset): Access[] {
 }
 
 const DEFAULT_ADMIN_DELAY_INCREASE_WAIT = BigInt(5 * 24 * 60 * 60); // 5 days
+const MAXIMUM_DEFAULT_ADMIN_TRANSFER_DELAY = BigInt(30 * 24 * 60 * 60); // 30 days
 
 /// Sets access control for the contract by adding inheritance.
 export function setAccessControl(c: ContractBuilder, access: Access): void {
@@ -174,7 +178,15 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
           'darDefaultDelayIncrease',
           'u64',
         );
-        if (defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT) {
+        const maxDefaultAdminTransferDelay = toUint(
+          getDefaultAdminMaxTransferDelay(access),
+          'darMaxTransferDelay',
+          'u64',
+        );
+        const shouldUseDefaultConfig =
+          defaultAdminDelayIncreaseWait === DEFAULT_ADMIN_DELAY_INCREASE_WAIT &&
+          maxDefaultAdminTransferDelay === MAXIMUM_DEFAULT_ADMIN_TRANSFER_DELAY;
+        if (shouldUseDefaultConfig) {
           c.addUseClause('openzeppelin_access::accesscontrol::extensions', 'DefaultConfig', {
             alias: 'AccessControlDefaultAdminRulesDefaultConfig',
           });
@@ -190,6 +202,13 @@ export function setAccessControl(c: ContractBuilder, access: Access): void {
             type: 'u64',
             value: defaultAdminDelayIncreaseWait.toString(),
             comment: access.darDefaultDelayIncrease,
+            inlineComment: true,
+          });
+          c.addSuperVariableToTrait(trait, {
+            name: 'MAXIMUM_DEFAULT_ADMIN_TRANSFER_DELAY',
+            type: 'u64',
+            value: maxDefaultAdminTransferDelay.toString(),
+            comment: access.darMaxTransferDelay,
             inlineComment: true,
           });
         }
@@ -280,6 +299,20 @@ function getDefaultAdminDelayIncreaseWait(opts: RolesDefaultAdminRulesOptions): 
     if (e instanceof Error) {
       throw new OptionsError({
         darDefaultDelayIncrease: e.message,
+      });
+    } else {
+      throw e;
+    }
+  }
+}
+
+function getDefaultAdminMaxTransferDelay(opts: RolesDefaultAdminRulesOptions): number {
+  try {
+    return durationToSeconds(opts.darMaxTransferDelay);
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new OptionsError({
+        darMaxTransferDelay: e.message,
       });
     } else {
       throw e;

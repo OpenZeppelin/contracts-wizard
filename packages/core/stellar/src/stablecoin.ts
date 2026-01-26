@@ -1,16 +1,16 @@
-import type { Contract, ContractBuilder } from './contract';
-import { defineFunctions } from './utils/define-functions';
 import { getSelfArg } from './common-options';
-import { printContract } from './print';
+import type { Contract, ContractBuilder } from './contract';
 import type { FungibleOptions } from './fungible';
 import {
   buildFungible,
   defaults as fungibleDefaults,
-  withDefaults as withFungibleDefaults,
   functions as fungibleFunctions,
   isAccessControlRequired as fungibleIsAccessControlRequired,
+  withDefaults as withFungibleDefaults,
 } from './fungible';
+import { printContract } from './print';
 import { requireAccessControl, type Access } from './set-access-control';
+import { defineFunctions } from './utils/define-functions';
 
 export const defaults: Required<StablecoinOptions> = {
   ...fungibleDefaults,
@@ -49,13 +49,18 @@ export function buildStablecoin(opts: StablecoinOptions): Contract {
   const c = buildFungible(allOpts);
 
   if (allOpts.limitations) {
-    addLimitations(c, allOpts.access, allOpts.limitations);
+    addLimitations(c, allOpts.access, allOpts.limitations, allOpts.explicitImplementations);
   }
 
   return c;
 }
 
-function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 'blocklist') {
+function addLimitations(
+  c: ContractBuilder,
+  access: Access,
+  mode: 'allowlist' | 'blocklist',
+  explicitImplementations: boolean,
+) {
   const type = mode === 'allowlist';
 
   const limitationsTrait = {
@@ -73,6 +78,8 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
     c.overrideAssocType('FungibleToken', 'type ContractType = BlockList;');
   }
 
+  if (explicitImplementations) overrideFungibleReadonlyFunctionsWithBase(c);
+
   const [getterFn, addFn, removeFn] = type
     ? [functions.allowed, functions.allow_user, functions.disallow_user]
     : [functions.blocked, functions.block_user, functions.unblock_user];
@@ -86,10 +93,32 @@ function addLimitations(c: ContractBuilder, access: Access, mode: 'allowlist' | 
   };
 
   c.addTraitFunction(limitationsTrait, addFn);
-  requireAccessControl(c, limitationsTrait, addFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, addFn, access, accessProps, explicitImplementations);
 
   c.addTraitFunction(limitationsTrait, removeFn);
-  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps);
+  requireAccessControl(c, limitationsTrait, removeFn, access, accessProps, explicitImplementations);
+}
+
+function overrideFungibleReadonlyFunctionsWithBase(c: ContractBuilder) {
+  c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
+  const fungibleTokenTrait = {
+    traitName: 'FungibleToken',
+    structName: c.name,
+    tags: [],
+  };
+
+  const overrides: Array<[(typeof fungibleFunctions)[keyof typeof fungibleFunctions], string[]]> = [
+    [fungibleFunctions.total_supply, ['Self::ContractType::total_supply(e)']],
+    [fungibleFunctions.balance, ['Self::ContractType::balance(e, &account)']],
+    [fungibleFunctions.allowance, ['Self::ContractType::allowance(e, &owner, &spender)']],
+    [fungibleFunctions.decimals, ['Self::ContractType::decimals(e)']],
+    [fungibleFunctions.name, ['Self::ContractType::name(e)']],
+    [fungibleFunctions.symbol, ['Self::ContractType::symbol(e)']],
+  ];
+
+  for (const [fn, code] of overrides) {
+    c.setFunctionCode(fn, code, fungibleTokenTrait);
+  }
 }
 
 const functions = {

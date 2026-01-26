@@ -3,9 +3,10 @@
   import UpgradeabilityField from './UpgradeabilityField.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { multisig, infoDefaults } from '@openzeppelin/wizard-cairo';
+  import { multisig, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo';
 
   import InfoSection from './InfoSection.svelte';
+  import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
   const defaults = multisig.defaults;
@@ -14,6 +15,7 @@
     kind: 'Multisig',
     ...defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
+    macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
@@ -30,7 +32,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Quorum
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/2.x/governance/multisig#signer_management">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/governance/multisig#signer_management">
         The minimal number of confirmations required to approve a transaction.
       </HelpTooltip>
     </span>
@@ -44,5 +46,7 @@
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
+
+<MacrosSection bind:macros={opts.macros} />
 
 <InfoSection bind:info={opts.info} />
