@@ -192,6 +192,7 @@ function addWrappable(c: ContractBuilder) {
   };
   c.addParent(ERC7984ERC20Wrapper, [{ lit: underlyingArg }]);
   c.addOverride(ERC7984ERC20Wrapper, functions.decimals);
+  c.addOverride(ERC7984ERC20Wrapper, functions._update);
 }
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {

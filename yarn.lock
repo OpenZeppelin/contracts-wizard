@@ -872,6 +872,11 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.0.tgz#5e7d08fb19d50109be1cff8a3c7b2ac3645f514b"
   integrity sha512-SccPGH4RgmKNtNBhv6gU85Ek/MT99fuI09o14xN4gd6PBrjEetUoAS01dlevP1lpqbAoyM8oiXshOEJ86M5tyw==
 
+"@openzeppelin/confidential-contracts@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.1.tgz#db381e2c5c590c184acd5804bec9400aef607ab5"
+  integrity sha512-QudxmMktqHE+oUuBKIR0vTceuQnQTtTT7s+iJqTP6c3DLiLNiTSHLrxIG0bd3fVyS1ZSjzhFhCVpcLZdQXsShg==
+
 "@openzeppelin/contracts-upgradeable@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.5.0.tgz#e35b3ededa5ccc13205c2b42e2058cd5cb7d424a"
