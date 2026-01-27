@@ -18,8 +18,8 @@
   <h1 class="flex justify-between pr-2">
     Trait Implementations
     <HelpTooltip>
-      Whether the contract should use explicit trait implementations instead of the <code>#[default_impl]</code> macro to
-      auto-generate trait method bodies.
+      Whether the contract functions should be explicitly implemented or be auto-generated with the defaults provided by
+      the library.
     </HelpTooltip>
   </h1>
   <div class="checkbox-group">
@@ -27,7 +27,8 @@
       <input type="radio" bind:group={implementationMode} value="default" on:change={syncExplicit} />
       Default
       <HelpTooltip
-        >Keep the <code>#[default_impl]</code> attribute so unused trait functions rely on the macro.</HelpTooltip
+        >The <code>#[contractimpl(contracttrait)]</code> attribute generates the contract functions with the defaults provided
+        in the trait. If needed, one can always re-implement some of the functions with custom logic.</HelpTooltip
       >
     </label>
 
@@ -35,7 +36,7 @@
       <input type="radio" bind:group={implementationMode} value="explicit" on:change={syncExplicit} />
       Explicit
       <HelpTooltip
-        >Generate every trait function body explicitly and omit the <code>#[default_impl]</code> attribute. Easier to customize.</HelpTooltip
+        >Generate every trait function body explicitly. Useful when all of them need to be customized.</HelpTooltip
       >
     </label>
   </div>

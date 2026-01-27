@@ -97,24 +97,24 @@ function addBase(
   explicitImplementations: boolean,
 ) {
   // Set metadata
-  c.addConstructorCode(`Base::set_metadata(e, 18, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+  c.addConstructorCode(`Base::set_metadata(e, 7, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
   c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
-  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
+  c.addUseClause('soroban_sdk', 'Symbol');
   c.addUseClause('soroban_sdk', 'Env');
-  if (explicitImplementations || pausable) {
-    c.addUseClause('soroban_sdk', 'Address');
-  }
+  c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'MuxedAddress');
+  c.addUseClause('soroban_sdk', 'Vec');
 
   const fungibleTokenTrait = {
     traitName: 'FungibleToken',
     structName: c.name,
-    tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
     assocType: 'type ContractType = Base;',
   };
 
@@ -134,7 +134,6 @@ function addBase(
 }
 
 function addMintable(c: ContractBuilder, access: Access, pausable: boolean, explicitImplementations: boolean) {
-  c.addUseClause('soroban_sdk', 'Address');
   switch (access) {
     case false:
       break;
@@ -178,12 +177,11 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean, expl
 
 function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::fungible', 'burnable::FungibleBurnable');
-  c.addUseClause('soroban_sdk', 'Address');
 
   const fungibleBurnableTrait = {
     traitName: 'FungibleBurnable',
     structName: c.name,
-    tags: ['contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
     section: 'Extensions',
   };
 
@@ -197,8 +195,6 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
     c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
   } else if (explicitImplementations) c.addTraitForEachFunctions(fungibleBurnableTrait, fungibleBurnableFunctions);
   else {
-    // prepend '#[default_impl]'
-    fungibleBurnableTrait.tags.unshift('default_impl');
     c.addTraitImplBlock(fungibleBurnableTrait);
   }
 }
@@ -214,9 +210,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     }
 
     // TODO: handle signed int?
-    const premintAbsolute = toUint(getInitialSupply(amount, 18), 'premint', 'u128');
-
-    c.addUseClause('soroban_sdk', 'Address');
+    const premintAbsolute = toUint(getInitialSupply(amount, 7), 'premint', 'u128');
 
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
     c.addConstructorCode(`Base::mint(e, &recipient, ${premintAbsolute});`);
@@ -285,7 +279,7 @@ export const functions = defineFunctions({
     args: [
       getSelfArg(),
       { name: 'from', type: 'Address' },
-      { name: 'to', type: 'Address' },
+      { name: 'to', type: 'MuxedAddress' },
       { name: 'amount', type: 'i128' },
     ],
     code: ['Self::ContractType::transfer(e, &from, &to, amount)'],
