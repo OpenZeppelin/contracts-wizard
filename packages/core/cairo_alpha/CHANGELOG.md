@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add ERC721Consecutive extension ([#765](https://github.com/OpenZeppelin/contracts-wizard/pull/765))
+- Add ERC721Consecutive extension ([##769](https://github.com/OpenZeppelin/contracts-wizard/pull/#769))
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
