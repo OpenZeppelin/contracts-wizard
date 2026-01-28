@@ -28,7 +28,7 @@
       Default
       <HelpTooltip
         >The <code>#[contractimpl(contracttrait)]</code> attribute generates the contract functions with the defaults provided
-        in the trait. If needed, one can always re-implement some of the functions with custom logic.</HelpTooltip
+        in the trait. You can re-implement some of the functions with custom logic if needed.</HelpTooltip
       >
     </label>
 
