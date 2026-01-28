@@ -74,7 +74,7 @@
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable} disabled={opts.consecutive} />
+      <input type="checkbox" bind:checked={opts.enumerable} use:error={errors?.enumerable} />
       Enumerable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721EnumerableComponent">
         Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token
@@ -82,13 +82,13 @@
       </HelpTooltip>
     </label>
     <label class:checked={opts.consecutive}>
-      <input type="checkbox" bind:checked={opts.consecutive} disabled={opts.enumerable} />
+      <input type="checkbox" bind:checked={opts.consecutive} use:error={errors?.consecutive} />
       Consecutive
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721ConsecutiveComponent">
         Allows batch minting of consecutive token IDs during construction.
         <span class="block mt-1">
-          CAUTION: ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with
-          enumerability and should not be used together with ERC721Enumerable.
+          <strong>Caution:</strong> ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere
+          with enumerability and should not be used together with ERC721Enumerable.
         </span>
       </HelpTooltip>
     </label>
