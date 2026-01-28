@@ -36,7 +36,7 @@
       <input type="radio" bind:group={implementationMode} value="explicit" on:change={syncExplicit} />
       Explicit
       <HelpTooltip
-        >Generate every trait function body explicitly. Useful when all of them need to be customized.</HelpTooltip
+        >Include every trait function body explicitly. Useful when all of them need to be customized.</HelpTooltip
       >
     </label>
   </div>
