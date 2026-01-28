@@ -58,6 +58,8 @@ export const cairoERC721Descriptions = {
   baseUri: 'A base uri for the non-fungible token.',
   enumerable:
     'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+  consecutive:
+    'Whether to enable batch minting of consecutive token IDs during construction. CAUTION: ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
 };
