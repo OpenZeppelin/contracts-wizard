@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.0 (Unreleased)
+## Unreleased
 
 - Add ERC20 wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
 
