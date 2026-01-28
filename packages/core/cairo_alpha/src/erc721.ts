@@ -26,6 +26,7 @@ export const defaults: Required<ERC721Options> = {
   pausable: false,
   mintable: false,
   enumerable: false,
+  consecutive: false,
   votes: false,
   royaltyInfo: royaltyInfoDefaults,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
@@ -48,6 +49,7 @@ export interface ERC721Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   enumerable?: boolean;
+  consecutive?: boolean;
   votes?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
   appName?: string;
@@ -63,6 +65,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     enumerable: opts.enumerable ?? defaults.enumerable,
+    consecutive: opts.consecutive ?? defaults.consecutive,
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
@@ -78,6 +81,14 @@ export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
 
 export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
+
+  if (allOpts.consecutive && allOpts.enumerable) {
+    throw new OptionsError({
+      consecutive:
+        'ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
+    });
+  }
+
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.baseUri));
@@ -99,6 +110,10 @@ export function buildERC721(opts: ERC721Options): Contract {
     addEnumerable(c);
   }
 
+  if (allOpts.consecutive) {
+    addConsecutive(c);
+  }
+
   setAccessControl(c, allOpts.access);
   setUpgradeable(c, allOpts.upgradeable, allOpts.access);
   setInfo(c, allOpts.info);
@@ -110,7 +125,7 @@ export function buildERC721(opts: ERC721Options): Contract {
 }
 
 function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
-  const usesCustomHooks = opts.pausable || opts.enumerable || opts.votes;
+  const usesCustomHooks = opts.pausable || opts.enumerable || opts.consecutive || opts.votes;
   if (usesCustomHooks) {
     const ERC721HooksTrait: BaseImplementedTrait = {
       name: `ERC721HooksImpl`,
@@ -121,7 +136,7 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
     c.addImplementedTrait(ERC721HooksTrait);
     c.addUseClause('starknet', 'ContractAddress');
 
-    const requiresMutState = opts.enumerable || opts.votes;
+    const requiresMutState = opts.enumerable || opts.consecutive || opts.votes;
     const initStateLine = requiresMutState
       ? 'let mut contract_state = self.get_contract_mut()'
       : 'let contract_state = self.get_contract()';
@@ -131,6 +146,9 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
     }
     if (opts.enumerable) {
       beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
+    }
+    if (opts.consecutive) {
+      beforeUpdateCode.push('contract_state.erc721_consecutive.before_update(to, token_id, auth)');
     }
     if (opts.votes) {
       if (!opts.appName) {
@@ -167,6 +185,27 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       ],
       code: beforeUpdateCode,
     });
+
+    // Add after_update hook for consecutive
+    if (opts.consecutive) {
+      const afterUpdateCode = [
+        'let mut contract_state = self.get_contract_mut()',
+        'contract_state.erc721_consecutive.after_update(to, token_id, auth)',
+      ];
+      c.addFunction(ERC721HooksTrait, {
+        name: 'after_update',
+        args: [
+          {
+            name: 'ref self',
+            type: `ERC721Component::ComponentState<ContractState>`,
+          },
+          { name: 'to', type: 'ContractAddress' },
+          { name: 'token_id', type: 'u256' },
+          { name: 'auth', type: 'ContractAddress' },
+        ],
+        code: afterUpdateCode,
+      });
+    }
   } else {
     c.addUseClause('openzeppelin_token::erc721', 'ERC721HooksEmptyImpl');
   }
@@ -188,6 +227,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: stri
 
 function addEnumerable(c: ContractBuilder) {
   c.addComponent(components.ERC721EnumerableComponent, [], true);
+}
+
+function addConsecutive(c: ContractBuilder) {
+  c.addComponent(components.ERC721ConsecutiveComponent, [], true);
+  c.addUseClause('openzeppelin_token::erc721::extensions::erc721_consecutive', 'DefaultConfig');
 }
 
 function addBurnable(c: ContractBuilder) {
@@ -244,6 +288,24 @@ const components = defineComponents({
         name: 'ERC721EnumerableInternalImpl',
         embed: false,
         value: 'ERC721EnumerableComponent::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC721ConsecutiveComponent: {
+    path: 'openzeppelin_token::erc721::extensions',
+    substorage: {
+      name: 'erc721_consecutive',
+      type: 'ERC721ConsecutiveComponent::Storage',
+    },
+    event: {
+      name: 'ERC721ConsecutiveEvent',
+      type: 'ERC721ConsecutiveComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC721ConsecutiveInternalImpl',
+        embed: false,
+        value: 'ERC721ConsecutiveComponent::InternalImpl<ContractState>',
       },
     ],
   },

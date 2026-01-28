@@ -84,6 +84,30 @@ testERC721('pausable + enumerable', {
   enumerable: true,
 });
 
+testERC721('consecutive', {
+  consecutive: true,
+});
+
+testERC721('pausable + consecutive', {
+  pausable: true,
+  consecutive: true,
+});
+
+test('erc721 consecutive + enumerable should throw', async t => {
+  const error = t.throws(() =>
+    buildERC721({
+      name: NAME,
+      symbol: SYMBOL,
+      consecutive: true,
+      enumerable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.consecutive,
+    'ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
+  );
+});
+
 testERC721('mintable + roles', {
   mintable: true,
   access: AccessControl.Roles(),
@@ -242,4 +266,5 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
+  t.is(erc721.isAccessControlRequired({ consecutive: true }), false);
 });
