@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.5.2 (2026-01-29)
+
+- Updated dependencies [[`86fe280`](https://github.com/OpenZeppelin/contracts-wizard/commit/86fe2803341f09331577b3b1b0bba84a3cd1c617), [`86fe280`](https://github.com/OpenZeppelin/contracts-wizard/commit/86fe2803341f09331577b3b1b0bba84a3cd1c617)]:
+  - @openzeppelin/wizard-common@0.4.2
+  - @openzeppelin/wizard-stellar@0.5.0
+
 ## 0.5.1 (2026-01-14)
 
 - Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions ([#728](https://github.com/OpenZeppelin/contracts-wizard/pull/728))
