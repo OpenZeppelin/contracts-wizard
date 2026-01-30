@@ -13,6 +13,7 @@
     "test": "ava"
   },
   "devDependencies": {
+    "@openzeppelin/confidential-contracts": "^0.3.0",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.8",
     "@rollup/plugin-json": "^6.1.0",
