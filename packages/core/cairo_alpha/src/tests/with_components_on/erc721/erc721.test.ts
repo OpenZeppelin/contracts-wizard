@@ -102,14 +102,8 @@ test('erc721 consecutive + enumerable should throw', async t => {
       enumerable: true,
     }),
   );
-  t.is(
-    (error as OptionsError).messages.consecutive,
-    'Consecutive cannot be used with Enumerable extension',
-  );
-  t.is(
-    (error as OptionsError).messages.enumerable,
-    'Enumerable cannot be used with Consecutive extension',
-  );
+  t.is((error as OptionsError).messages.consecutive, 'Consecutive cannot be used with Enumerable extension');
+  t.is((error as OptionsError).messages.enumerable, 'Enumerable cannot be used with Consecutive extension');
 });
 
 testERC721('mintable + roles', {
