@@ -43,6 +43,10 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         type: 'string',
         description: cairoERC20Descriptions.premint,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC20Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC20Descriptions.votes,
