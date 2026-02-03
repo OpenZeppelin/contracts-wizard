@@ -84,8 +84,8 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (allOpts.consecutive && allOpts.enumerable) {
     throw new OptionsError({
-      consecutive:
-        'ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
+      enumerable: 'Enumerable cannot be used with Consecutive extension',
+      consecutive: 'Consecutive cannot be used with Enumerable extension',
     });
   }
 

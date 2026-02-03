@@ -109,7 +109,11 @@ test('erc721 consecutive + enumerable should throw', async t => {
   );
   t.is(
     (error as OptionsError).messages.consecutive,
-    'ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
+    'Consecutive cannot be used with Enumerable extension',
+  );
+  t.is(
+    (error as OptionsError).messages.enumerable,
+    'Enumerable cannot be used with Consecutive extension',
   );
 });
 
