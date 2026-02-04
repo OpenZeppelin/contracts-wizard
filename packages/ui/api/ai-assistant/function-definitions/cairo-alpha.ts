@@ -82,6 +82,10 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.enumerable,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
