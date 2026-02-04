@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { generateERC20Options } from './erc20';
 import { generateERC721Options } from './erc721';
 import { generateERC1155Options } from './erc1155';
+import { generateERC6909Options } from './erc6909';
 import { generateAccountOptions } from './account';
 import { generateCustomOptions } from './custom';
 import { generateGovernorOptions } from './governor';
@@ -46,6 +47,12 @@ export function* generateOptions(params: {
   if (kind === 'all' || kind === 'ERC1155') {
     for (const kindOpts of generateERC1155Options({ access, royaltyInfo, macros })) {
       yield { kind: 'ERC1155', ...kindOpts };
+    }
+  }
+
+  if (kind === 'all' || kind === 'ERC6909') {
+    for (const kindOpts of generateERC6909Options({ access, macros })) {
+      yield { kind: 'ERC6909', ...kindOpts };
     }
   }
 
@@ -126,6 +133,7 @@ function generateContractSubset(params: {
           case 'ERC20':
           case 'ERC721':
           case 'ERC1155':
+          case 'ERC6909':
           case 'Account':
           case 'Multisig':
           case 'Governor':
@@ -215,6 +223,7 @@ function resolveKindLabel(kind: KindSubset): string {
     case 'ERC20':
     case 'ERC721':
     case 'ERC1155':
+    case 'ERC6909':
     case 'Account':
     case 'Multisig':
     case 'Governor':
@@ -235,6 +244,7 @@ function resolveAccessLabel(kind: KindSubset, access: AccessSubset): string | un
     case 'ERC20':
     case 'ERC721':
     case 'ERC1155':
+    case 'ERC6909':
       return `access: ${access}`;
     case 'Account':
     case 'Multisig':
@@ -259,6 +269,7 @@ function resolveRoyaltyInfoLabel(kind: KindSubset, royaltyInfo: RoyaltyInfoSubse
     case 'ERC1155':
       return `royalty: ${royaltyInfo}`;
     case 'ERC20':
+    case 'ERC6909':
     case 'Account':
     case 'Custom':
     case 'Multisig':
