@@ -26,6 +26,7 @@ export const defaults: Required<ERC721Options> = {
   pausable: false,
   mintable: false,
   enumerable: false,
+  wrapper: false,
   consecutive: false,
   votes: false,
   royaltyInfo: royaltyInfoDefaults,
@@ -49,6 +50,7 @@ export interface ERC721Options extends CommonContractOptions {
   pausable?: boolean;
   mintable?: boolean;
   enumerable?: boolean;
+  wrapper?: boolean;
   consecutive?: boolean;
   votes?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
@@ -65,6 +67,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
     enumerable: opts.enumerable ?? defaults.enumerable,
+    wrapper: opts.wrapper ?? defaults.wrapper,
     consecutive: opts.consecutive ?? defaults.consecutive,
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
@@ -108,6 +111,10 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (allOpts.enumerable) {
     addEnumerable(c);
+  }
+
+  if (allOpts.wrapper) {
+    addWrapper(c);
   }
 
   if (allOpts.consecutive) {
@@ -249,6 +256,12 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunction(externalTrait, functions.safeMint);
 }
 
+function addWrapper(c: ContractBuilder) {
+  c.addUseClause('starknet', 'ContractAddress');
+  c.addConstructorArgument({ name: 'underlying', type: 'ContractAddress' });
+  c.addComponent(components.ERC721WrapperComponent, [{ lit: 'underlying' }], true);
+}
+
 const components = defineComponents({
   ERC721Component: {
     path: 'openzeppelin_token::erc721',
@@ -265,6 +278,34 @@ const components = defineComponents({
         name: 'ERC721InternalImpl',
         embed: false,
         value: 'ERC721Component::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC721WrapperComponent: {
+    path: 'openzeppelin_token::erc721::extensions::erc721_wrapper',
+    substorage: {
+      name: 'erc721_wrapper',
+      type: 'ERC721WrapperComponent::Storage',
+    },
+    event: {
+      name: 'ERC721WrapperEvent',
+      type: 'ERC721WrapperComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC721WrapperImpl',
+        embed: true,
+        value: 'ERC721WrapperComponent::ERC721WrapperImpl<ContractState>',
+      },
+      {
+        name: 'ERC721WrapperReceiverImpl',
+        embed: true,
+        value: 'ERC721WrapperComponent::ERC721WrapperReceiverImpl<ContractState>',
+      },
+      {
+        name: 'ERC721WrapperInternalImpl',
+        embed: false,
+        value: 'ERC721WrapperComponent::InternalImpl<ContractState>',
       },
     ],
   },
