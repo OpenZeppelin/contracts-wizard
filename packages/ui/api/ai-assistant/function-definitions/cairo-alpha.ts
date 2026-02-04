@@ -43,6 +43,10 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         type: 'string',
         description: cairoERC20Descriptions.premint,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC20Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC20Descriptions.votes,
@@ -81,6 +85,10 @@ export const cairoAlphaERC721AIFunctionDefinition = {
       votes: {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
+      },
+      consecutive: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.consecutive,
       },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC721'>()(['name', 'symbol']),

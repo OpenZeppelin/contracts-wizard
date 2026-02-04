@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.5.0 (2026-01-29)
+
+- Refactor Stellar contracts to match the latest v0.6.0 ([#768](https://github.com/OpenZeppelin/contracts-wizard/pull/768))
+  - **Breaking changes**:
+    - Use OpenZeppelin Stellar Soroban Contracts v0.6.0
+    - Use `MuxedAddress` for fungible transfer function
+    - Change order of parameters in access control
+    - Change default fungible decimals to 7
+
 ## 0.4.5 (2026-01-14)
 
 - Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions ([#728](https://github.com/OpenZeppelin/contracts-wizard/pull/728))

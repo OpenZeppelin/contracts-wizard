@@ -22,6 +22,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     burnable: booleans,
     pausable: booleans,
     mintable: booleans,
+    wrapper: booleans,
     premint: ['1'],
     votes: booleans,
     appName: ['MyApp'],
