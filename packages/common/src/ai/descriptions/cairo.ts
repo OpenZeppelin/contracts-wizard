@@ -5,6 +5,7 @@ export const cairoPrompts = {
   ERC20: 'Make a fungible token per the ERC-20 standard.',
   ERC721: 'Make a non-fungible token per the ERC-721 standard.',
   ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
+  ERC6909: 'Make a minimal multi-token per the ERC-6909 standard.',
   Governor: 'Make a contract to implement governance, such as for a DAO.',
   Multisig:
     'Make a multi-signature smart contract, requiring a quorum of registered signers to approve and collectively execute transactions.',
@@ -71,6 +72,8 @@ export const cairoERC1155Descriptions = {
     'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types.',
 };
+
+export const cairoERC6909Descriptions = {};
 
 export const cairoGovernorDescriptions = {
   delay:

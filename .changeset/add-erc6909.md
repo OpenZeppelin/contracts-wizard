@@ -1,5 +1,5 @@
 ---
-"@openzeppelin/wizard-cairo-alpha": minor
+"@openzeppelin/wizard-common": patch
 ---
 
-Cairo: Add ERC6909 token wizard support.
+Cairo: add ERC6909 description for AI prompts
