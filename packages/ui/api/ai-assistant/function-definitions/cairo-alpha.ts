@@ -82,9 +82,17 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.enumerable,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
+      },
+      consecutive: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.consecutive,
       },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC721'>()(['name', 'symbol']),
