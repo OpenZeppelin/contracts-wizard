@@ -29,7 +29,7 @@ export function setAccessControl(c: ContractBuilder, access: Access, explicitImp
         const ownableTrait = {
           traitName: 'Ownable',
           structName: c.name,
-          tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
+          tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
           section: 'Utils',
         };
         if (explicitImplementations) {
@@ -51,7 +51,7 @@ export function setAccessControl(c: ContractBuilder, access: Access, explicitImp
       const accessControlTrait = {
         traitName: 'AccessControl',
         structName: c.name,
-        tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
+        tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
         section: 'Utils',
       };
       if (explicitImplementations) {
@@ -105,8 +105,9 @@ export function requireAccessControl(
 
       if (caller && role) {
         c.addUseClause('soroban_sdk', 'Symbol');
+        c.addUseClause('soroban_sdk', 'Vec');
         c.addConstructorArgument({ name: role, type: 'Address' });
-        c.addConstructorCode(`access_control::grant_role_no_auth(e, &admin, &${role}, &Symbol::new(e, "${role}"));`);
+        c.addConstructorCode(`access_control::grant_role_no_auth(e, &${role}, &Symbol::new(e, "${role}"), &admin);`);
 
         if (useMacro) {
           c.addUseClause('stellar_macros', 'only_role');
@@ -114,7 +115,7 @@ export function requireAccessControl(
         } else {
           c.addFunctionCodeBefore(
             fn,
-            [`access_control::ensure_role(e, ${caller}, &Symbol::new(e, "${role}"));`],
+            [`access_control::ensure_role(e, &Symbol::new(e, "${role}"), ${caller});`],
             trait,
           );
         }
@@ -162,6 +163,11 @@ const accessControlFunctions = defineFunctions({
     returns: 'Option<u32>',
     code: ['access_control::has_role(e, &account, &role)'],
   },
+  get_existing_roles: {
+    args: [getSelfArg()],
+    returns: 'Vec<Symbol>',
+    code: ['access_control::get_existing_roles(e)'],
+  },
   get_role_member_count: {
     args: [getSelfArg(), { name: 'role', type: 'Symbol' }],
     returns: 'u32',
@@ -185,24 +191,24 @@ const accessControlFunctions = defineFunctions({
   grant_role: {
     args: [
       getSelfArg(),
-      { name: 'caller', type: 'Address' },
       { name: 'account', type: 'Address' },
       { name: 'role', type: 'Symbol' },
+      { name: 'caller', type: 'Address' },
     ],
-    code: ['access_control::grant_role(e, &caller, &account, &role);'],
+    code: ['access_control::grant_role(e, &account, &role, &caller);'],
   },
   revoke_role: {
     args: [
       getSelfArg(),
-      { name: 'caller', type: 'Address' },
       { name: 'account', type: 'Address' },
       { name: 'role', type: 'Symbol' },
+      { name: 'caller', type: 'Address' },
     ],
-    code: ['access_control::revoke_role(e, &caller, &account, &role);'],
+    code: ['access_control::revoke_role(e, &account, &role, &caller);'],
   },
   renounce_role: {
-    args: [getSelfArg(), { name: 'caller', type: 'Address' }, { name: 'role', type: 'Symbol' }],
-    code: ['access_control::renounce_role(e, &caller, &role);'],
+    args: [getSelfArg(), { name: 'role', type: 'Symbol' }, { name: 'caller', type: 'Address' }],
+    code: ['access_control::renounce_role(e, &role, &caller);'],
   },
   transfer_admin_role: {
     args: [getSelfArg(), { name: 'new_admin', type: 'Address' }, { name: 'live_until_ledger', type: 'u32' }],

@@ -25,6 +25,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     burnable: booleans,
     enumerable: booleans,
     wrapper: booleans,
+    consecutive: booleans,
     votes: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],

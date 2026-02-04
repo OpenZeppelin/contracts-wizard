@@ -50,6 +50,7 @@ export const cairoRoyaltyInfoDescriptions = {
 export const cairoERC20Descriptions = {
   premint: 'The number of tokens to premint for the deployer.',
   decimals: 'The number of decimals to use for the contract. Defaults to 18.',
+  wrapper: 'Whether to include ERC20Wrapper functionality for depositing and withdrawing an underlying token.',
   votes:
     "Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.",
 };
@@ -59,6 +60,8 @@ export const cairoERC721Descriptions = {
   enumerable:
     'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
   wrapper: 'Whether to include ERC721Wrapper functionality for wrapping an underlying ERC721.',
+  consecutive:
+    'Whether to enable batch minting of consecutive token IDs during construction. CAUTION: ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
 };

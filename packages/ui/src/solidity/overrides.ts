@@ -1,7 +1,8 @@
-import type { GenericOptions, Kind } from '@openzeppelin/wizard';
+import type { Contract, GenericOptions, Kind } from '@openzeppelin/wizard';
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
+import type JSZip from 'jszip';
 
 /**
  * For ecosystem Wizard apps that inherit the Solidity Wizard, they can override specific features in the UI.
@@ -20,7 +21,12 @@ export interface Overrides {
   /**
    * Whether to omit the Download Hardhat package feature
    */
-  omitZipHardhat: boolean;
+  omitZipHardhat: (opts?: GenericOptions) => boolean;
+
+  /**
+   * Override for Download Hardhat package function
+   */
+  overrideZipHardhat: ((c: Contract, opts?: GenericOptions) => Promise<JSZip>) | undefined;
 
   /**
    * Whether to omit the Download Foundry package feature
@@ -30,7 +36,11 @@ export interface Overrides {
   /**
    * Overrides for the Open in Remix feature
    */
-  remix?: { label: string; url: string };
+  remix?: {
+    label: string;
+    url: string;
+    tooltipMessage?: string;
+  };
 
   /**
    * A function to sanitize omitted features from the Solidity Wizard options.
@@ -55,7 +65,8 @@ export interface Overrides {
 export const defaultOverrides: Overrides = {
   omitTabs: [],
   omitFeatures: new Map(),
-  omitZipHardhat: false,
+  omitZipHardhat: () => false,
+  overrideZipHardhat: undefined,
   omitZipFoundry: false,
   remix: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},

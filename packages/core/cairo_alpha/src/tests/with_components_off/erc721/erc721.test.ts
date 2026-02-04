@@ -105,6 +105,28 @@ testERC721('pausable + enumerable', {
   enumerable: true,
 });
 
+testERC721('consecutive', {
+  consecutive: true,
+});
+
+testERC721('pausable + consecutive', {
+  pausable: true,
+  consecutive: true,
+});
+
+test('erc721 consecutive + enumerable should throw', async t => {
+  const error = t.throws(() =>
+    buildERC721({
+      name: NAME,
+      symbol: SYMBOL,
+      consecutive: true,
+      enumerable: true,
+    }),
+  );
+  t.is((error as OptionsError).messages.consecutive, 'Consecutive cannot be used with Enumerable extension');
+  t.is((error as OptionsError).messages.enumerable, 'Enumerable cannot be used with Consecutive extension');
+});
+
 testERC721('mintable + roles', {
   mintable: true,
   access: AccessControl.Roles(),
@@ -263,4 +285,5 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
+  t.is(erc721.isAccessControlRequired({ consecutive: true }), false);
 });
