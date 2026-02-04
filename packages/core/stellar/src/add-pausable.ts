@@ -7,7 +7,6 @@ import { defineFunctions } from './utils/define-functions';
 export function addPausable(c: ContractBuilder, access: Access, explicitImplementations: boolean) {
   c.addUseClause('stellar_contract_utils::pausable', 'self', { alias: 'pausable' });
   c.addUseClause('stellar_contract_utils::pausable', 'Pausable');
-  if (!explicitImplementations) c.addUseClause('stellar_macros', 'default_impl');
 
   const pausableTrait = {
     traitName: 'Pausable',
