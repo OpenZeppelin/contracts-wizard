@@ -125,6 +125,10 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC1155Descriptions.updatableUri,
       },
+      supply: {
+        type: 'boolean',
+        description: cairoERC1155Descriptions.supply,
+      },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC1155'>()(['name', 'baseUri']),
     additionalProperties: false,

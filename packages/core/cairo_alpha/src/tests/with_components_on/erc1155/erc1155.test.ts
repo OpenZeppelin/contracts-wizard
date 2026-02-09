@@ -17,6 +17,7 @@ const allFeaturesON: Partial<ERC1155Options> = {
   mintable: true,
   burnable: true,
   pausable: true,
+  supply: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
   upgradeable: true,
 } as const;
@@ -67,6 +68,10 @@ testERC1155('pausable', {
 
 testERC1155('mintable', {
   mintable: true,
+});
+
+testERC1155('supply tracking', {
+  supply: true,
 });
 
 testERC1155('mintable + roles', {
@@ -192,6 +197,7 @@ test('API isAccessControlRequired', async t => {
     }),
     true,
   );
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, supply: false }), false);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false }), false);
   t.is(erc1155.isAccessControlRequired({}), true); // updatableUri is true by default
 });
