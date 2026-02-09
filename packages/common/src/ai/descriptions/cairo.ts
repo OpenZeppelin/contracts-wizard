@@ -70,6 +70,7 @@ export const cairoERC1155Descriptions = {
   baseUri:
     'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types.',
+  supply: 'Whether to keep track of total supply of tokens.',
 };
 
 export const cairoGovernorDescriptions = {

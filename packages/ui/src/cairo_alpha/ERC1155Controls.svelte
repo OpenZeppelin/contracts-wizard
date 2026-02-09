@@ -56,6 +56,11 @@
       Burnable
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
+    <label class:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply} />
+      Supply Tracking
+      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
+    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
