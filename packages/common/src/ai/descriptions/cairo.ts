@@ -63,6 +63,7 @@ export const cairoERC721Descriptions = {
   wrapper: 'Whether to include ERC721Wrapper functionality for wrapping an underlying ERC721.',
   consecutive:
     'Whether to enable batch minting of consecutive token IDs during construction. CAUTION: ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere with enumerability and should not be used together with ERC721Enumerable.',
+  uriStorage: 'Allows updating token URIs for individual token IDs.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
 };
@@ -72,6 +73,7 @@ export const cairoERC1155Descriptions = {
     'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types.',
   supply: 'Whether to keep track of total supply of tokens.',
+  uriStorage: 'Allows updating token URIs for individual token IDs.',
 };
 
 export const cairoERC6909Descriptions = {};
