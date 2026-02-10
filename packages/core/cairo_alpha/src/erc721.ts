@@ -53,7 +53,7 @@ export interface ERC721Options extends CommonContractOptions {
   enumerable?: boolean;
   wrapper?: boolean;
   consecutive?: boolean;
-  uriStorage?: boolean,
+  uriStorage?: boolean;
   votes?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
   appName?: string;
@@ -81,7 +81,11 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
   return (
-    opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true || opts.uriStorage === true
+    opts.mintable === true ||
+    opts.pausable === true ||
+    opts.upgradeable === true ||
+    opts.royaltyInfo?.enabled === true ||
+    opts.uriStorage === true
   );
 }
 
@@ -458,11 +462,7 @@ const functions = defineFunctions({
     code: ['self.safe_mint(recipient, tokenId, data);'],
   },
   set_token_uri: {
-    args: [
-      getSelfArg(),
-      { name: 'token_id', type: 'u256' },
-      { name: 'token_uri', type: 'ByteArray' },
-    ],
+    args: [getSelfArg(), { name: 'token_id', type: 'u256' }, { name: 'token_uri', type: 'ByteArray' }],
     code: ['self.erc721_uri_storage.set_token_uri(token_id, token_uri);'],
   },
 });

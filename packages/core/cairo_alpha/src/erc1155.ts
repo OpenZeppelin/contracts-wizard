@@ -208,8 +208,22 @@ function addMintable(c: ContractBuilder, access: Access) {
 function addUriSetters(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
   if (allOpts.uriStorage) {
     c.addUseClause('starknet', 'ContractAddress');
-    requireAccessControl(c, externalTrait, uriStorageFunctions.set_base_uri, allOpts.access, 'URI_SETTER', 'uri_setter');
-    requireAccessControl(c, externalTrait, uriStorageFunctions.set_token_uri, allOpts.access, 'URI_SETTER', 'uri_setter');
+    requireAccessControl(
+      c,
+      externalTrait,
+      uriStorageFunctions.set_base_uri,
+      allOpts.access,
+      'URI_SETTER',
+      'uri_setter',
+    );
+    requireAccessControl(
+      c,
+      externalTrait,
+      uriStorageFunctions.set_token_uri,
+      allOpts.access,
+      'URI_SETTER',
+      'uri_setter',
+    );
     return;
   }
   if (allOpts.updatableUri) {
@@ -373,11 +387,7 @@ const uriStorageFunctions = defineFunctions({
     code: ['self.erc1155_uri_storage.set_base_uri(base_uri);'],
   },
   set_token_uri: {
-    args: [
-      getSelfArg(), 
-      { name: 'token_id', type: 'u256' },
-      { name: 'token_uri', type: 'ByteArray' },
-    ],
+    args: [getSelfArg(), { name: 'token_id', type: 'u256' }, { name: 'token_uri', type: 'ByteArray' }],
     code: ['self.erc1155_uri_storage.set_token_uri(token_id, token_uri);'],
   },
 });
