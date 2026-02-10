@@ -25,6 +25,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     pausable: booleans,
     mintable: booleans,
     supply: booleans,
+    uriStorage: booleans,
     updatableUri: booleans,
     upgradeable: upgradeableOptions,
     royaltyInfo: resolveRoyaltyOptionsSubset(opts.royaltyInfo),
