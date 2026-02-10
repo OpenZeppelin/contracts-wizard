@@ -115,6 +115,8 @@ function parseKindSubset(value: string | undefined): KindSubset {
       return 'ERC721';
     case 'erc1155':
       return 'ERC1155';
+    case 'erc6909':
+      return 'ERC6909';
     case 'account':
       return 'Account';
     case 'multisig':
