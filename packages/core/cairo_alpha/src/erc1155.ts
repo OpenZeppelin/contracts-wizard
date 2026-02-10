@@ -100,7 +100,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   addUriSetters(c, allOpts);
 
   if (allOpts.uriStorage) {
-    addURIStorage(c, allOpts.access);
+    addURIStorage(c);
     c.addUseClause('openzeppelin_token::erc1155::extensions::ERC1155URIStorageComponent', 'ERC1155URIStorageImpl');
   } else {
     c.addUseClause('openzeppelin_token::erc1155', 'ERC1155TokenURIDefaultImpl');
