@@ -28,6 +28,7 @@ export const defaults: Required<ERC721Options> = {
   enumerable: false,
   wrapper: false,
   consecutive: false,
+  uriStorage: false,
   votes: false,
   royaltyInfo: royaltyInfoDefaults,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
@@ -52,6 +53,7 @@ export interface ERC721Options extends CommonContractOptions {
   enumerable?: boolean;
   wrapper?: boolean;
   consecutive?: boolean;
+  uriStorage?: boolean,
   votes?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
   appName?: string;
@@ -69,6 +71,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     enumerable: opts.enumerable ?? defaults.enumerable,
     wrapper: opts.wrapper ?? defaults.wrapper,
     consecutive: opts.consecutive ?? defaults.consecutive,
+    uriStorage: opts.uriStorage ?? defaults.uriStorage,
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
@@ -78,7 +81,7 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
   return (
-    opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true
+    opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.royaltyInfo?.enabled === true || opts.uriStorage === true
   );
 }
 
@@ -119,6 +122,16 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (allOpts.consecutive) {
     addConsecutive(c);
+    c.addUseClause('openzeppelin_token::erc721::ERC721Component', 'ConsecutiveERC721TokenOwnerImpl');
+  } else {
+    c.addUseClause('openzeppelin_token::erc721', 'ERC721OwnerOfDefaultImpl');
+  }
+
+  if (allOpts.uriStorage) {
+    addURIStorage(c, allOpts.access);
+    c.addUseClause('openzeppelin_token::erc721::extensions::ERC721URIStorageComponent', 'ERC721TokenURIStorageImpl');
+  } else {
+    c.addUseClause('openzeppelin_token::erc721', 'ERC721TokenURIDefaultImpl');
   }
 
   setAccessControl(c, allOpts.access);
@@ -131,9 +144,29 @@ export function buildERC721(opts: ERC721Options): Contract {
   return c;
 }
 
+/* Base */
+
+function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
+  c.addComponent(components.ERC721Component, [name, symbol, baseUri], true);
+}
+
+function addERC721Mixin(c: ContractBuilder) {
+  c.addImplToComponent(components.ERC721Component, {
+    name: 'ERC721MixinImpl',
+    embed: true,
+    value: 'ERC721Component::ERC721MixinImpl<ContractState>',
+  });
+  c.addInterfaceFlag('ISRC5');
+  addSRC5Component(c);
+}
+
+/* Hooks */
+
 function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
-  const usesCustomHooks = opts.pausable || opts.enumerable || opts.consecutive || opts.votes;
-  if (usesCustomHooks) {
+  const hasBeforeUpdateHook = opts.pausable || opts.enumerable || opts.consecutive || opts.votes;
+  const hasAfterUpdateHook = opts.consecutive || opts.uriStorage;
+  const hasCustomHooks = hasBeforeUpdateHook || hasAfterUpdateHook;
+  if (hasCustomHooks) {
     const ERC721HooksTrait: BaseImplementedTrait = {
       name: `ERC721HooksImpl`,
       of: 'ERC721Component::ERC721HooksTrait<ContractState>',
@@ -143,55 +176,12 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
     c.addImplementedTrait(ERC721HooksTrait);
     c.addUseClause('starknet', 'ContractAddress');
 
-    const requiresMutState = opts.enumerable || opts.consecutive || opts.votes;
-    const initStateLine = requiresMutState
-      ? 'let mut contract_state = self.get_contract_mut()'
-      : 'let contract_state = self.get_contract()';
-    const beforeUpdateCode = [initStateLine];
-    if (opts.pausable) {
-      beforeUpdateCode.push('contract_state.pausable.assert_not_paused()');
+    if (hasBeforeUpdateHook) {
+      addBeforeUpdateHook(c, ERC721HooksTrait, opts);
     }
-    if (opts.enumerable) {
-      beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
+    if (hasAfterUpdateHook) {
+      addAfterUpdateHook(c, ERC721HooksTrait, opts);
     }
-    if (opts.consecutive) {
-      beforeUpdateCode.push('contract_state.erc721_consecutive.before_update(to, token_id, auth)');
-    }
-    if (opts.votes) {
-      if (!opts.appName) {
-        throw new OptionsError({
-          appName: 'Application Name is required when Votes are enabled',
-        });
-      }
-
-      if (!opts.appVersion) {
-        throw new OptionsError({
-          appVersion: 'Application Version is required when Votes are enabled',
-        });
-      }
-
-      addVotesComponent(
-        c,
-        toFelt252(opts.appName, 'appName'),
-        toFelt252(opts.appVersion, 'appVersion'),
-        'SNIP12 Metadata',
-      );
-      beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
-      beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
-    }
-    c.addFunction(ERC721HooksTrait, {
-      name: 'before_update',
-      args: [
-        {
-          name: 'ref self',
-          type: `ERC721Component::ComponentState<ContractState>`,
-        },
-        { name: 'to', type: 'ContractAddress' },
-        { name: 'token_id', type: 'u256' },
-        { name: 'auth', type: 'ContractAddress' },
-      ],
-      code: beforeUpdateCode,
-    });
 
     // Add after_update hook for consecutive
     if (opts.consecutive) {
@@ -218,26 +208,94 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
   }
 }
 
-function addERC721Mixin(c: ContractBuilder) {
-  c.addImplToComponent(components.ERC721Component, {
-    name: 'ERC721MixinImpl',
-    embed: true,
-    value: 'ERC721Component::ERC721MixinImpl<ContractState>',
+function addBeforeUpdateHook(c: ContractBuilder, trait: BaseImplementedTrait, opts: Required<ERC721Options>) {
+  if (!opts.pausable && !opts.enumerable && !opts.consecutive && !opts.votes) {
+    return;
+  }
+  const requiresMutState = opts.enumerable || opts.consecutive || opts.votes;
+  const initStateLine = requiresMutState
+    ? 'let mut contract_state = self.get_contract_mut()'
+    : 'let contract_state = self.get_contract()';
+  const beforeUpdateCode = [initStateLine];
+  if (opts.pausable) {
+    beforeUpdateCode.push('contract_state.pausable.assert_not_paused()');
+  }
+  if (opts.enumerable) {
+    beforeUpdateCode.push('contract_state.erc721_enumerable.before_update(to, token_id)');
+  }
+  if (opts.consecutive) {
+    beforeUpdateCode.push('contract_state.erc721_consecutive.before_update(to, token_id, auth)');
+  }
+  if (opts.votes) {
+    if (!opts.appName) {
+      throw new OptionsError({
+        appName: 'Application Name is required when Votes are enabled',
+      });
+    }
+    if (!opts.appVersion) {
+      throw new OptionsError({
+        appVersion: 'Application Version is required when Votes are enabled',
+      });
+    }
+    addVotesComponent(
+      c,
+      toFelt252(opts.appName, 'appName'),
+      toFelt252(opts.appVersion, 'appVersion'),
+      'SNIP12 Metadata',
+    );
+    beforeUpdateCode.push('let previous_owner = self._owner_of(token_id);');
+    beforeUpdateCode.push('contract_state.votes.transfer_voting_units(previous_owner, to, 1);');
+  }
+  c.addFunction(trait, {
+    name: 'before_update',
+    args: [
+      {
+        name: 'ref self',
+        type: `ERC721Component::ComponentState<ContractState>`,
+      },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'auth', type: 'ContractAddress' },
+    ],
+    code: beforeUpdateCode,
   });
-  c.addInterfaceFlag('ISRC5');
-  addSRC5Component(c);
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, baseUri: string) {
-  c.addComponent(components.ERC721Component, [name, symbol, baseUri], true);
+function addAfterUpdateHook(c: ContractBuilder, trait: BaseImplementedTrait, opts: Required<ERC721Options>) {
+  if (!opts.consecutive && !opts.uriStorage) {
+    return;
+  }
+  const initStateLine = 'let mut contract_state = self.get_contract_mut()';
+  const afterUpdateCode = [initStateLine];
+  if (opts.consecutive) {
+    afterUpdateCode.push('contract_state.erc721_consecutive.after_update(to, token_id, auth)');
+  }
+  if (opts.uriStorage) {
+    afterUpdateCode.push('contract_state.erc721_uri_storage.after_update(to, token_id, auth)');
+  }
+  c.addFunction(trait, {
+    name: 'after_update',
+    args: [
+      {
+        name: 'ref self',
+        type: `ERC721Component::ComponentState<ContractState>`,
+      },
+      { name: 'to', type: 'ContractAddress' },
+      { name: 'token_id', type: 'u256' },
+      { name: 'auth', type: 'ContractAddress' },
+    ],
+    code: afterUpdateCode,
+  });
 }
+
+/* Extensions */
 
 function addEnumerable(c: ContractBuilder) {
   c.addComponent(components.ERC721EnumerableComponent, [], true);
 }
 
 function addConsecutive(c: ContractBuilder) {
-  c.addComponent(components.ERC721ConsecutiveComponent, [], true);
+  c.addComponent(components.ERC721ConsecutiveComponent, [], false);
   c.addUseClause('openzeppelin_token::erc721::extensions::erc721_consecutive', 'DefaultConfig');
 }
 
@@ -254,6 +312,12 @@ function addMintable(c: ContractBuilder, access: Access) {
 
   // Camel case version of safe_mint. Access control and pausable are already set on safe_mint.
   c.addFunction(externalTrait, functions.safeMint);
+}
+
+function addURIStorage(c: ContractBuilder, access: Access) {
+  c.addUseClause('starknet', 'ContractAddress');
+  requireAccessControl(c, externalTrait, functions.set_token_uri, access, 'URI_SETTER', 'uri_setter');
+  c.addComponent(components.ERC721URIStorageComponent, [], false);
 }
 
 function addWrapper(c: ContractBuilder) {
@@ -350,6 +414,24 @@ const components = defineComponents({
       },
     ],
   },
+  ERC721URIStorageComponent: {
+    path: 'openzeppelin_token::erc721::extensions',
+    substorage: {
+      name: 'erc721_uri_storage',
+      type: 'ERC721URIStorageComponent::Storage',
+    },
+    event: {
+      name: 'ERC721URIStorageEvent',
+      type: 'ERC721URIStorageComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC721URIStorageInternalImpl',
+        embed: false,
+        value: 'ERC721URIStorageComponent::InternalImpl<ContractState>',
+      },
+    ],
+  },
 });
 
 const functions = defineFunctions({
@@ -374,5 +456,13 @@ const functions = defineFunctions({
       { name: 'data', type: 'Span<felt252>' },
     ],
     code: ['self.safe_mint(recipient, tokenId, data);'],
+  },
+  set_token_uri: {
+    args: [
+      getSelfArg(),
+      { name: 'token_id', type: 'u256' },
+      { name: 'token_uri', type: 'ByteArray' },
+    ],
+    code: ['self.erc721_uri_storage.set_token_uri(token_id, token_uri);'],
   },
 });
