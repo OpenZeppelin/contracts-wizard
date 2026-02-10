@@ -235,7 +235,7 @@ function addUriSetters(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
   }
 }
 
-function addURIStorage(c: ContractBuilder, access: Access) {
+function addURIStorage(c: ContractBuilder) {
   c.addComponent(components.ERC1155URIStorageComponent, [], false);
 }
 
