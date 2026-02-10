@@ -55,7 +55,7 @@ export function buildERC6909(opts: ERC6909Options): Contract {
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c);
-  addERC6909Mixin(c);
+  addSRC5Component(c);
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
@@ -109,16 +109,6 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC6909Options>) {
   }
 }
 
-function addERC6909Mixin(c: ContractBuilder) {
-  c.addImplToComponent(components.ERC6909Component, {
-    name: 'ERC6909MixinImpl',
-    embed: true,
-    value: 'ERC6909Component::ERC6909MixinImpl<ContractState>',
-  });
-  c.addInterfaceFlag('ISRC5');
-  addSRC5Component(c);
-}
-
 function addBase(c: ContractBuilder) {
   c.addComponent(components.ERC6909Component, [], true);
 }
@@ -146,6 +136,11 @@ const components = defineComponents({
       type: 'ERC6909Component::Event',
     },
     impls: [
+      {
+        name: 'ERC6909Impl',
+        embed: true,
+        value: 'ERC6909Component::ERC6909Impl<ContractState>',
+      },
       {
         name: 'ERC6909InternalImpl',
         embed: false,
