@@ -99,6 +99,13 @@
         </span>
       </HelpTooltip>
     </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721URIStorageComponent">
+        Allows updating token URIs for individual token IDs.
+      </HelpTooltip>
+    </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
