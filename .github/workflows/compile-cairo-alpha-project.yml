@@ -46,7 +46,7 @@ jobs:
           # Exit immediately if a command exits with a non-zero status
           set -e
 
-          declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "Account" "Multisig" "Governor" "Vesting" "Custom")
+          declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "ERC6909" "Account" "Multisig" "Governor" "Vesting" "Custom")
           declare -a all_macros_options=("none" "with_components")
           declare -a all_access_options=("disabled" "ownable" "roles" "roles-dar-default" "roles-dar-custom")
           declare -a all_royalty_options=("disabled" "enabled-default" "enabled-custom")
