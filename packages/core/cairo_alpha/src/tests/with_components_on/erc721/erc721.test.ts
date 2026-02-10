@@ -24,6 +24,8 @@ const allFeaturesON: Partial<ERC721Options> = {
   burnable: true,
   pausable: true,
   enumerable: true,
+  consecutive: false, // conflicts with Enumerable
+  uriStorage: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
   votes: true,
   appName: APP_NAME,
@@ -101,13 +103,49 @@ testERC721('pausable + enumerable', {
   enumerable: true,
 });
 
+testERC721('uri storage + none', {
+  uriStorage: true,
+  access: AccessControl.None(),
+});
+
+testERC721('uri storage + ownable', {
+  uriStorage: true,
+  access: AccessControl.Ownable(),
+});
+
+testERC721('uri storage + roles', {
+  uriStorage: true,
+  access: AccessControl.Roles(),
+});
+
+testERC721('uri storage + roles-DAR (default opts)', {
+  uriStorage: true,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+});
+
+testERC721('uri storage + roles-DAR (custom opts)', {
+  uriStorage: true,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
+});
+
 testERC721('consecutive', {
   consecutive: true,
+});
+
+testERC721('consecutive + uri storage', {
+  consecutive: true,
+  uriStorage: true,
 });
 
 testERC721('pausable + consecutive', {
   pausable: true,
   consecutive: true,
+});
+
+testERC721('pausable + consecutive + uri storage', {
+  pausable: true,
+  consecutive: true,
+  uriStorage: true,
 });
 
 test('erc721 consecutive + enumerable should throw', async t => {
