@@ -186,27 +186,6 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
     if (hasAfterUpdateHook) {
       addAfterUpdateHook(c, ERC721HooksTrait, opts);
     }
-
-    // Add after_update hook for consecutive
-    if (opts.consecutive) {
-      const afterUpdateCode = [
-        'let mut contract_state = self.get_contract_mut()',
-        'contract_state.erc721_consecutive.after_update(to, token_id, auth)',
-      ];
-      c.addFunction(ERC721HooksTrait, {
-        name: 'after_update',
-        args: [
-          {
-            name: 'ref self',
-            type: `ERC721Component::ComponentState<ContractState>`,
-          },
-          { name: 'to', type: 'ContractAddress' },
-          { name: 'token_id', type: 'u256' },
-          { name: 'auth', type: 'ContractAddress' },
-        ],
-        code: afterUpdateCode,
-      });
-    }
   } else {
     c.addUseClause('openzeppelin_token::erc721', 'ERC721HooksEmptyImpl');
   }
