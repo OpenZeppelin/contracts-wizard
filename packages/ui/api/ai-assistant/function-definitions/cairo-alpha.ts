@@ -90,10 +90,6 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
       },
-      consecutive: {
-        type: 'boolean',
-        description: cairoERC721Descriptions.consecutive,
-      },
       uriStorage: {
         type: 'boolean',
         description: cairoERC721Descriptions.uriStorage,

@@ -22,7 +22,6 @@ const allFeaturesON: Partial<ERC721Options> = {
   burnable: true,
   pausable: true,
   enumerable: true,
-  consecutive: false, // conflicts with Enumerable
   uriStorage: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
   votes: true,
@@ -132,37 +131,9 @@ testERC721('uri storage + roles-DAR (custom opts)', {
   access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
 });
 
-testERC721('consecutive', {
-  consecutive: true,
-});
-
-testERC721('consecutive + uri storage', {
-  consecutive: true,
-  uriStorage: true,
-});
-
-testERC721('pausable + consecutive', {
+testERC721('pausable + uri storage', {
   pausable: true,
-  consecutive: true,
-});
-
-testERC721('pausable + consecutive + uri storage', {
-  pausable: true,
-  consecutive: true,
   uriStorage: true,
-});
-
-test('erc721 consecutive + enumerable should throw', async t => {
-  const error = t.throws(() =>
-    buildERC721({
-      name: NAME,
-      symbol: SYMBOL,
-      consecutive: true,
-      enumerable: true,
-    }),
-  );
-  t.is((error as OptionsError).messages.consecutive, 'Consecutive cannot be used with Enumerable extension');
-  t.is((error as OptionsError).messages.enumerable, 'Enumerable cannot be used with Consecutive extension');
 });
 
 testERC721('mintable + roles', {
@@ -324,5 +295,4 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
-  t.is(erc721.isAccessControlRequired({ consecutive: true }), false);
 });
