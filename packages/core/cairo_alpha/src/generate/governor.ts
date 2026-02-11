@@ -1,7 +1,8 @@
 import type { GovernorOptions } from '../governor';
 import { clockModeOptions, quorumModeOptions, timelockOptions, votesOptions } from '../governor';
 import { infoOptions } from '../set-info';
-import { upgradeableOptions } from '../set-upgradeable';
+import type { UpgradeableSubset } from '../set-upgradeable';
+import { resolveUpgradeableOptionsSubset } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 import type { MacrosSubset } from '../set-macros';
 import { resolveMacrosOptions } from '../set-macros';
@@ -9,6 +10,7 @@ import { resolveMacrosOptions } from '../set-macros';
 const booleans = [true, false];
 
 type GeneratorOptions = {
+  upgradeable: UpgradeableSubset;
   macros: MacrosSubset;
 };
 
@@ -28,7 +30,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     settings: booleans,
     appName: ['Openzeppelin Governor'],
     appVersion: ['v1'],
-    upgradeable: upgradeableOptions,
+    upgradeable: resolveUpgradeableOptionsSubset(opts.upgradeable),
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };
