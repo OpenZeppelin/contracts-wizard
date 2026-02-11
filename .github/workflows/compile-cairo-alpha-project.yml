@@ -49,23 +49,26 @@ jobs:
           declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "ERC6909" "Account" "Multisig" "Governor" "Vesting" "Custom")
           declare -a all_macros_options=("none" "with_components")
           declare -a all_access_options=("disabled" "ownable" "roles" "roles-dar-default" "roles-dar-custom")
+          declare -a all_upgradeable_options=("true" "false")
           declare -a all_royalty_options=("disabled" "enabled-default" "enabled-custom")
 
           for macros_option in "${all_macros_options[@]}"; do
             for kind in "${all_kinds[@]}"; do
               if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
                 for access_option in "${all_access_options[@]}"; do
-                  for royalty_option in "${all_royalty_options[@]}"; do
-                    proj_name="'$kind, macros: $macros_option, access: $access_option, royalty: $royalty_option' test project"
-                    echo "Generating $proj_name..."
-                    yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
+                  for upgradeable_option in "${all_upgradeable_options[@]}"; do
+                    for royalty_option in "${all_royalty_options[@]}"; do
+                      proj_name="'$kind, macros: $macros_option, access: $access_option, upgradeable: $upgradeable_option, royalty: $royalty_option' test project"
+                      echo "Generating $proj_name..."
+                      yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --upgradeable=$upgradeable_option --royalty=$royalty_option
 
-                    echo "Compiling $proj_name..."
-                    scarb clean
-                    scarb build
+                      echo "Compiling $proj_name..."
+                      scarb clean
+                      scarb build
 
-                    echo "✅ Compiled $proj_name!"
-                    echo "---------------------------------"
+                      echo "✅ Compiled $proj_name!"
+                      echo "---------------------------------"
+                    done
                   done
                 done
 
