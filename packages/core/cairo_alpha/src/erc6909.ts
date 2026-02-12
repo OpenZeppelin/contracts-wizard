@@ -55,6 +55,7 @@ export function buildERC6909(opts: ERC6909Options): Contract {
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c);
+  c.addInterfaceFlag('ISRC5');
   addSRC5Component(c);
 
   if (allOpts.pausable) {

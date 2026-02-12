@@ -168,7 +168,7 @@ function parseUpgradeableSubset(value: string): UpgradeableSubset {
     case 'disabled':
       return false;
     default:
-      throw new Error(`Failed to resolve access subset from '${value}' value.`);
+      throw new Error(`Failed to resolve upgradeable subset from '${value}' value.`);
   }
 }
 

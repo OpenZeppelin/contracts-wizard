@@ -15,14 +15,14 @@ export type UpgradeableSubset = 'all' | true | false;
 export function resolveUpgradeableOptionsSubset(subset: UpgradeableSubset): boolean[] {
   switch (subset) {
     case 'all':
-      return [true, false];
+      return [false, true];
     case true:
       return [true];
     case false:
       return [false];
     default: {
       const _: never = subset;
-      throw new Error('Unknown RoyaltyInfoSubset');
+      throw new Error('Unknown UpgradeableSubset');
     }
   }
 }
