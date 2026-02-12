@@ -34,15 +34,6 @@ export interface Overrides {
   omitZipFoundry: boolean;
 
   /**
-   * Overrides for the Open in Remix feature
-   */
-  remix?: {
-    label: string;
-    url: string;
-    tooltipMessage?: string;
-  };
-
-  /**
    * A function to sanitize omitted features from the Solidity Wizard options.
    * Removes or modifies the options as appropriate by mutating the input object.
    */
@@ -68,7 +59,6 @@ export const defaultOverrides: Overrides = {
   omitZipHardhat: () => false,
   overrideZipHardhat: undefined,
   omitZipFoundry: false,
-  remix: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,
   aiAssistant: undefined,
