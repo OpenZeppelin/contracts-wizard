@@ -6,6 +6,7 @@ import path from 'path';
 
 import type { KindSubset } from './generate/sources';
 import type { AccessSubset } from './set-access-control';
+import type { UpgradeableSubset } from './set-upgradeable';
 import type { RoyaltyInfoSubset } from './set-royalty-info';
 import type { GenericOptions } from './build-generic';
 import type { MacrosSubset } from './set-macros';
@@ -58,10 +59,11 @@ async function testGenerate(params: {
   ctx: ExecutionContext<Context>;
   kind: KindSubset;
   access?: AccessSubset;
+  upgradeable?: UpgradeableSubset;
   royaltyInfo?: RoyaltyInfoSubset;
   macros?: MacrosSubset;
 }) {
-  const { ctx, kind, access, royaltyInfo, macros } = params;
+  const { ctx, kind, access, upgradeable, royaltyInfo, macros } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
@@ -70,6 +72,7 @@ async function testGenerate(params: {
     uniqueName: true,
     kind,
     access: access || 'all',
+    upgradeable: upgradeable || 'all',
     royaltyInfo: royaltyInfo || 'all',
     macros: macros || 'all',
     logsEnabled: false,
@@ -109,6 +112,7 @@ test('is access control required', async t => {
     uniqueName: false,
     kind: 'all',
     access: 'all',
+    upgradeable: 'all',
     royaltyInfo: 'all',
     macros: 'none',
   });

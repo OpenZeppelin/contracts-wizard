@@ -20,6 +20,7 @@ import type { Contract } from '../contract';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
 import type { MacrosSubset } from '../set-macros';
 import type { AccessSubset } from '../set-access-control';
+import type { UpgradeableSubset } from '../set-upgradeable';
 
 export type Subset = 'all' | 'minimal-cover';
 
@@ -28,48 +29,49 @@ export type KindSubset = 'all' | keyof KindedOptions;
 export function* generateOptions(params: {
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 }): Generator<GenericOptions> {
-  const { kind, access, royaltyInfo, macros } = params;
+  const { kind, access, upgradeable, royaltyInfo, macros } = params;
   if (kind === 'all' || kind === 'ERC20') {
-    for (const kindOpts of generateERC20Options({ access, macros })) {
+    for (const kindOpts of generateERC20Options({ access, upgradeable, macros })) {
       yield { kind: 'ERC20', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC721') {
-    for (const kindOpts of generateERC721Options({ access, royaltyInfo, macros })) {
+    for (const kindOpts of generateERC721Options({ access, upgradeable, royaltyInfo, macros })) {
       yield { kind: 'ERC721', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC1155') {
-    for (const kindOpts of generateERC1155Options({ access, royaltyInfo, macros })) {
+    for (const kindOpts of generateERC1155Options({ access, upgradeable, royaltyInfo, macros })) {
       yield { kind: 'ERC1155', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'ERC6909') {
-    for (const kindOpts of generateERC6909Options({ access, macros })) {
+    for (const kindOpts of generateERC6909Options({ access, upgradeable, macros })) {
       yield { kind: 'ERC6909', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Account') {
-    for (const kindOpts of generateAccountOptions({ macros })) {
+    for (const kindOpts of generateAccountOptions({ upgradeable, macros })) {
       yield { kind: 'Account', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Multisig') {
-    for (const kindOpts of generateMultisigOptions({ macros })) {
+    for (const kindOpts of generateMultisigOptions({ upgradeable, macros })) {
       yield { kind: 'Multisig', ...kindOpts };
     }
   }
 
   if (kind === 'all' || kind === 'Governor') {
-    for (const kindOpts of generateGovernorOptions({ macros })) {
+    for (const kindOpts of generateGovernorOptions({ upgradeable, macros })) {
       yield { kind: 'Governor', ...kindOpts };
     }
   }
@@ -81,7 +83,7 @@ export function* generateOptions(params: {
   }
 
   if (kind === 'all' || kind === 'Custom') {
-    for (const kindOpts of generateCustomOptions({ access, macros })) {
+    for (const kindOpts of generateCustomOptions({ access, upgradeable, macros })) {
       yield { kind: 'Custom', ...kindOpts };
     }
   }
@@ -101,13 +103,14 @@ function generateContractSubset(params: {
   subset: Subset;
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 }): GeneratedContract[] {
-  const { subset, kind, access, royaltyInfo, macros } = params;
+  const { subset, kind, access, upgradeable, royaltyInfo, macros } = params;
   const contracts = [];
 
-  for (const options of generateOptions({ kind, access, royaltyInfo, macros })) {
+  for (const options of generateOptions({ kind, access, upgradeable, royaltyInfo, macros })) {
     const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
     try {
       const contract = buildGeneric(options);
@@ -158,12 +161,13 @@ export function* generateSources(params: {
   uniqueName: boolean;
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 }): Generator<GeneratedSource> {
-  const { subset, uniqueName, kind, access, royaltyInfo, macros } = params;
+  const { subset, uniqueName, kind, access, upgradeable, royaltyInfo, macros } = params;
   let counter = 1;
-  for (const c of generateContractSubset({ subset, kind, access, royaltyInfo, macros })) {
+  for (const c of generateContractSubset({ subset, kind, access, upgradeable, royaltyInfo, macros })) {
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
@@ -178,21 +182,30 @@ export async function writeGeneratedSources(params: {
   uniqueName: boolean;
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
   logsEnabled: boolean;
 }): Promise<string[]> {
-  const { dir, subset, uniqueName, kind, access, royaltyInfo, macros, logsEnabled } = params;
+  const { dir, subset, uniqueName, kind, access, upgradeable, royaltyInfo, macros, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
-  for (const { id, contract, source } of generateSources({ subset, uniqueName, kind, access, royaltyInfo, macros })) {
+  for (const { id, contract, source } of generateSources({
+    subset,
+    uniqueName,
+    kind,
+    access,
+    upgradeable,
+    royaltyInfo,
+    macros,
+  })) {
     const name = uniqueName ? contract.name : id;
     await fs.writeFile(path.format({ dir, name, ext: '.cairo' }), source);
     contractNames.push(name);
   }
   if (logsEnabled) {
-    const sourceLabel = resolveSourceLabel({ kind, access, royaltyInfo, macros });
+    const sourceLabel = resolveSourceLabel({ kind, access, upgradeable, royaltyInfo, macros });
     console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
   }
 
@@ -202,14 +215,16 @@ export async function writeGeneratedSources(params: {
 function resolveSourceLabel(params: {
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 }): string {
-  const { kind, access, royaltyInfo, macros } = params;
+  const { kind, access, upgradeable, royaltyInfo, macros } = params;
   return [
     resolveKindLabel(kind),
     resolveMacrosLabel(macros),
     resolveAccessLabel(kind, access),
+    resolveUpgradeableLabel(kind, upgradeable),
     resolveRoyaltyInfoLabel(kind, royaltyInfo),
   ]
     .filter(elem => elem !== undefined)
@@ -249,6 +264,27 @@ function resolveAccessLabel(kind: KindSubset, access: AccessSubset): string | un
     case 'Account':
     case 'Multisig':
     case 'Governor':
+    case 'Vesting':
+      return undefined;
+    default: {
+      const _: never = kind;
+      throw new Error('Unknown kind');
+    }
+  }
+}
+
+function resolveUpgradeableLabel(kind: KindSubset, upgradeable: UpgradeableSubset): string | undefined {
+  switch (kind) {
+    case 'all':
+    case 'Custom':
+    case 'ERC20':
+    case 'ERC721':
+    case 'ERC1155':
+    case 'ERC6909':
+    case 'Account':
+    case 'Multisig':
+    case 'Governor':
+      return `upgradeable: ${upgradeable}`;
     case 'Vesting':
       return undefined;
     default: {

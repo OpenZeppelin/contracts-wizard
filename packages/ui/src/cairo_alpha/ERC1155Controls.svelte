@@ -70,6 +70,11 @@
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip>Allows updating token URIs for individual token IDs.</HelpTooltip>
+    </label>
     <label class:checked={opts.updatableUri}>
       <input type="checkbox" bind:checked={opts.updatableUri} />
       Updatable URI

@@ -88,15 +88,11 @@
         Wrap an existing ERC721 by depositing underlying token IDs and minting matching wrapped tokens.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.consecutive}>
-      <input type="checkbox" bind:checked={opts.consecutive} use:error={errors?.consecutive} />
-      Consecutive
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721ConsecutiveComponent">
-        Allows batch minting of consecutive token IDs during construction.
-        <span class="block mt-1">
-          <strong>Caution:</strong> ERC721 extensions that implement custom balanceOf logic, such as ERC721Consecutive, interfere
-          with enumerability and should not be used together with ERC721Enumerable.
-        </span>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721URIStorageComponent">
+        Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
