@@ -36,6 +36,9 @@
 
   --stellar-black: #0f0f0f;
 
+  --confidential-black: #000000;
+  --confidential-yellow: #ffd208;
+
   --uniswap-pink: #f50eb4;
 
   /* Dimensions (scale taken from Tailwind) */
