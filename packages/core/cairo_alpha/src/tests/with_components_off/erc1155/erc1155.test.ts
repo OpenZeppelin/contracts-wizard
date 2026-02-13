@@ -15,6 +15,8 @@ const allFeaturesON: Partial<ERC1155Options> = {
   mintable: true,
   burnable: true,
   pausable: true,
+  supply: true,
+  uriStorage: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
   upgradeable: true,
 } as const;
@@ -74,6 +76,10 @@ testERC1155('mintable', {
   mintable: true,
 });
 
+testERC1155('supply tracking', {
+  supply: true,
+});
+
 testERC1155('mintable + roles', {
   mintable: true,
   access: AccessControl.Roles(),
@@ -87,6 +93,36 @@ testERC1155('mintable + roles DAR (default opts)', {
 testERC1155('mintable + roles DAR (custom opts)', {
   mintable: true,
   access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
+});
+
+testERC1155('uri storage + none', {
+  uriStorage: true,
+  access: AccessControl.None(),
+});
+
+testERC1155('uri storage + ownable', {
+  uriStorage: true,
+  access: AccessControl.Ownable(),
+});
+
+testERC1155('uri storage + roles', {
+  uriStorage: true,
+  access: AccessControl.Roles(),
+});
+
+testERC1155('uri storage + roles-DAR', {
+  uriStorage: true,
+  access: AccessControl.RolesDefaultAdminRules(darDefaultOpts),
+});
+
+testERC1155('uri storage + roles-DAR (custom opts)', {
+  uriStorage: true,
+  access: AccessControl.RolesDefaultAdminRules(darCustomOpts),
+});
+
+testERC1155('uri storage + uri updatable', {
+  uriStorage: true,
+  updatableUri: true,
 });
 
 testERC1155('royalty info disabled', {
@@ -183,6 +219,7 @@ test('API assert defaults', async t => {
 test('API isAccessControlRequired', async t => {
   t.is(erc1155.isAccessControlRequired({ updatableUri: false, mintable: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false, pausable: true }), true);
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, uriStorage: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false, upgradeable: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: true }), true);
   t.is(
@@ -197,6 +234,7 @@ test('API isAccessControlRequired', async t => {
     }),
     true,
   );
+  t.is(erc1155.isAccessControlRequired({ updatableUri: false, supply: false }), false);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false }), false);
   t.is(erc1155.isAccessControlRequired({}), true); // updatableUri is true by default
 });

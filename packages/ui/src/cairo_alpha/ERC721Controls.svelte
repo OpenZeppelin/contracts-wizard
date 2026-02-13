@@ -74,11 +74,25 @@
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable} />
+      <input type="checkbox" bind:checked={opts.enumerable} use:error={errors?.enumerable} />
       Enumerable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721EnumerableComponent">
         Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token
         ids and all tokens owned by an address.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.wrapper}>
+      <input type="checkbox" bind:checked={opts.wrapper} />
+      Wrapper
+      <HelpTooltip>
+        Wrap an existing ERC721 by depositing underlying token IDs and minting matching wrapped tokens.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721URIStorageComponent">
+        Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />

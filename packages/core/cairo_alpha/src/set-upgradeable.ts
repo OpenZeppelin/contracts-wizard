@@ -10,6 +10,23 @@ export const upgradeableOptions = [false, true] as const;
 
 export type Upgradeable = (typeof upgradeableOptions)[number];
 
+export type UpgradeableSubset = 'all' | true | false;
+
+export function resolveUpgradeableOptionsSubset(subset: UpgradeableSubset): boolean[] {
+  switch (subset) {
+    case 'all':
+      return [false, true];
+    case true:
+      return [true];
+    case false:
+      return [false];
+    default: {
+      const _: never = subset;
+      throw new Error('Unknown UpgradeableSubset');
+    }
+  }
+}
+
 function setUpgradeableBase(c: ContractBuilder, upgradeable: Upgradeable): BaseImplementedTrait | undefined {
   if (upgradeable === false) {
     return undefined;

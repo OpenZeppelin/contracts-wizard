@@ -2,26 +2,25 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { erc1155, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import { erc6909, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
-  import RoyaltyInfoSection from './RoyaltyInfoSection.svelte';
   import InfoSection from './InfoSection.svelte';
   import MacrosSection from './MacrosSection.svelte';
+  import { error } from '../common/error-tooltip';
 
-  export let opts: Required<KindedOptions['ERC1155']> = {
-    kind: 'ERC1155',
-    ...erc1155.defaults,
-    royaltyInfo: { ...erc1155.defaults.royaltyInfo }, // copy fields
+  export let opts: Required<KindedOptions['ERC6909']> = {
+    kind: 'ERC6909',
+    ...erc6909.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
     macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
-    access: { ...erc1155.defaults.access }, // create new object since Access is nested
+    access: { ...erc6909.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = erc1155.isAccessControlRequired(opts);
+  $: requireAccessControl = erc6909.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -29,16 +28,7 @@
 
   <label class="labeled-input">
     <span>Name</span>
-    <input bind:value={opts.name} />
-  </label>
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Base URI
-      <HelpTooltip
-        >Location of the metadata. Clients will replace any instance of {'{id}'} in this string with the tokenId.</HelpTooltip
-      >
-    </span>
-    <input bind:value={opts.baseUri} placeholder="https://..." />
+    <input bind:value={opts.name} use:error={errors?.name} />
   </label>
 </section>
 
@@ -56,11 +46,6 @@
       Burnable
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
-    <label class:checked={opts.supply}>
-      <input type="checkbox" bind:checked={opts.supply} />
-      Supply Tracking
-      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
-    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
@@ -70,24 +55,9 @@
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
-    <label class:checked={opts.uriStorage}>
-      <input type="checkbox" bind:checked={opts.uriStorage} />
-      URI Storage
-      <HelpTooltip>Allows updating token URIs for individual token IDs.</HelpTooltip>
-    </label>
-    <label class:checked={opts.updatableUri}>
-      <input type="checkbox" bind:checked={opts.updatableUri} />
-      Updatable URI
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc1155#ERC1155Component-set_base_uri">
-        Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {'{id}'}
-        in the URI with the tokenId.
-      </HelpTooltip>
-    </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
-
-<RoyaltyInfoSection bind:opts={opts.royaltyInfo} {errors} />
 
 <AccessControlSection
   bind:accessType={opts.access.type}

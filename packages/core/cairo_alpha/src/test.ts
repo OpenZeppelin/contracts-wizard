@@ -6,11 +6,12 @@ import path from 'path';
 
 import type { KindSubset } from './generate/sources';
 import type { AccessSubset } from './set-access-control';
+import type { UpgradeableSubset } from './set-upgradeable';
 import type { RoyaltyInfoSubset } from './set-royalty-info';
 import type { GenericOptions } from './build-generic';
 import type { MacrosSubset } from './set-macros';
 import { generateSources, writeGeneratedSources } from './generate/sources';
-import { custom, erc20, erc721, erc1155 } from './api';
+import { custom, erc20, erc721, erc1155, erc6909 } from './api';
 
 interface Context {
   generatedSourcesPath: string;
@@ -28,6 +29,10 @@ test.serial('erc721 results generated', async ctx => {
 
 test.serial('erc1155 results generated', async ctx => {
   await testGenerate({ ctx, kind: 'ERC1155', access: 'all', royaltyInfo: 'all' });
+});
+
+test.serial('erc6909 results generated', async ctx => {
+  await testGenerate({ ctx, kind: 'ERC6909', access: 'all' });
 });
 
 test.serial('account results generated', async ctx => {
@@ -54,10 +59,11 @@ async function testGenerate(params: {
   ctx: ExecutionContext<Context>;
   kind: KindSubset;
   access?: AccessSubset;
+  upgradeable?: UpgradeableSubset;
   royaltyInfo?: RoyaltyInfoSubset;
   macros?: MacrosSubset;
 }) {
-  const { ctx, kind, access, royaltyInfo, macros } = params;
+  const { ctx, kind, access, upgradeable, royaltyInfo, macros } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
@@ -66,6 +72,7 @@ async function testGenerate(params: {
     uniqueName: true,
     kind,
     access: access || 'all',
+    upgradeable: upgradeable || 'all',
     royaltyInfo: royaltyInfo || 'all',
     macros: macros || 'all',
     logsEnabled: false,
@@ -83,6 +90,8 @@ function isAccessControlRequired(opts: GenericOptions) {
       return erc721.isAccessControlRequired(opts);
     case 'ERC1155':
       return erc1155.isAccessControlRequired(opts);
+    case 'ERC6909':
+      return erc6909.isAccessControlRequired(opts);
     case 'Custom':
       return custom.isAccessControlRequired(opts);
     case 'Account':
@@ -103,6 +112,7 @@ test('is access control required', async t => {
     uniqueName: false,
     kind: 'all',
     access: 'all',
+    upgradeable: 'all',
     royaltyInfo: 'all',
     macros: 'none',
   });
@@ -119,6 +129,7 @@ test('is access control required', async t => {
       case 'ERC20':
       case 'ERC721':
       case 'ERC1155':
+      case 'ERC6909':
       case 'Custom':
         if (!contract.options.access?.type) {
           if (isAccessControlRequired(contract.options)) {
