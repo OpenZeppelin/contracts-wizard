@@ -24,16 +24,16 @@ test('packed package can be installed and imported', async t => {
   const tempDir = await mkdtemp(join(tmpdir(), 'wizard-package-test-'));
 
   try {
-    // Pack both packages (since hooks wizard depends on solidity wizard)
+    // Pack both packages (this package and dependency on solidity package)
     const solidityPackedPath = await packPackage(solidityPackageRoot);
-    const hooksPackedPath = await packPackage(hooksPackageRoot);
+    const packedPath = await packPackage(hooksPackageRoot);
 
     try {
       // Create a test project in temp directory
       await execAsync('npm init -y', { cwd: tempDir });
 
       // Install both packages
-      await execAsync(`npm install "${solidityPackedPath}" "${hooksPackedPath}"`, { cwd: tempDir });
+      await execAsync(`npm install "${solidityPackedPath}" "${packedPath}"`, { cwd: tempDir });
 
       // Test that the package can be imported
       const testScript = `const { hooks } = require('@openzeppelin/wizard-uniswap-hooks');
@@ -48,7 +48,7 @@ console.log('SUCCESS');
     } finally {
       // Clean up the packed files
       await rm(solidityPackedPath, { force: true });
-      await rm(hooksPackedPath, { force: true });
+      await rm(packedPath, { force: true });
     }
   } finally {
     // Clean up temp directory

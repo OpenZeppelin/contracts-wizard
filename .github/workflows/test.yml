@@ -58,6 +58,7 @@ jobs:
         package:
           - solidity
           - cairo
+          - confidential
           - stellar
           - stylus
           - uniswap-hooks
@@ -69,6 +70,8 @@ jobs:
           - package: solidity
             variant: compile
           - package: cairo
+            variant: compile
+          - package: confidential
             variant: compile
           - package: stylus
             variant: compile

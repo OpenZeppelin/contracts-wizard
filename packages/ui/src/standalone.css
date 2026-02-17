@@ -153,6 +153,13 @@ body {
     contrast(100%);
 }
 
+.nav .switch.switch-confidential.active {
+  --color-2: #000000;
+}
+.nav .switch.switch-confidential.active img {
+  filter: brightness(0);
+}
+
 .nav .switch.switch-uniswap-hooks.active {
   --color-2: var(--uniswap-pink);
 }

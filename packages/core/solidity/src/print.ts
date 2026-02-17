@@ -75,15 +75,20 @@ function printVariableOrErrorDefinitionsWithoutComments(
   return withoutComments.map(v => v.code);
 }
 
+type LibraryDescription = {
+  nameAndVersion: string;
+  alwaysKeepOzPrefix?: boolean;
+};
+
 function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
-  const libraries: string[] = [];
+  const libraryDescriptions: LibraryDescription[] = [];
   if (importsLibrary(contract, '@openzeppelin/contracts')) {
-    libraries.push(`OpenZeppelin Contracts ${compatibleContractsSemver}`);
+    libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Contracts ${compatibleContractsSemver}` });
   }
   if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
-      libraries.push(`Community Contracts commit ${commit}`);
+      libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Community Contracts commit ${commit}` });
     } catch (e) {
       console.error(e);
     }
@@ -91,14 +96,35 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   if (opts?.additionalCompatibleLibraries) {
     for (const library of opts.additionalCompatibleLibraries) {
       if (importsLibrary(contract, library.path)) {
-        libraries.push(`${library.name} ${library.version}`);
+        libraryDescriptions.push({
+          nameAndVersion: `${library.name} ${library.version}`,
+          alwaysKeepOzPrefix: library.alwaysKeepOzPrefix,
+        });
       }
     }
   }
 
-  if (libraries.length === 0) return '';
-  if (libraries.length === 1) return `// Compatible with ${libraries[0]}`;
-  return `// Compatible with ${libraries.slice(0, -1).join(', ')} and ${libraries.slice(-1)}`;
+  if (libraryDescriptions.length === 0) {
+    return '';
+  } else if (libraryDescriptions.length === 1) {
+    return `// Compatible with ${libraryDescriptions[0]!.nameAndVersion}`;
+  } else {
+    const OZ_PREFIX_WITH_SPACE = 'OpenZeppelin ';
+    if (libraryDescriptions[0]!.nameAndVersion.startsWith(OZ_PREFIX_WITH_SPACE)) {
+      for (let i = 1; i < libraryDescriptions.length; i++) {
+        if (
+          libraryDescriptions[i]!.nameAndVersion.startsWith(OZ_PREFIX_WITH_SPACE) &&
+          !libraryDescriptions[i]!.alwaysKeepOzPrefix
+        ) {
+          libraryDescriptions[i]!.nameAndVersion = libraryDescriptions[i]!.nameAndVersion.slice(
+            OZ_PREFIX_WITH_SPACE.length,
+          );
+        }
+      }
+    }
+    const librariesToPrint = libraryDescriptions.map(l => l.nameAndVersion);
+    return `// Compatible with ${librariesToPrint.slice(0, -1).join(', ')} and ${librariesToPrint.slice(-1)}`;
+  }
 }
 
 function printInheritance(contract: Contract, { transformName }: Helpers): [] | [string] {
@@ -334,30 +360,25 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 }
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
-  // Sort imports by name
-  imports.sort((a, b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
+  const itemByPath = new Map<string, Set<string>>();
 
-  const lines: string[] = [];
-  imports.map(p => {
-    const importContract = helpers.transformImport(p);
-    lines.push(`import {${importContract.name}} from "${importContract.path}";`);
-  });
+  for (const p of imports) {
+    const { name, path } = helpers.transformImport(p);
+    const _ = itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+  }
 
-  return lines;
+  return Array.from(itemByPath.keys())
+    .sort()
+    .map(path => `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`);
 }
 
 function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
   if (!contract.libraries || contract.libraries.length === 0) return [];
 
   return contract.libraries
-    .sort((a, b) => a.library.name.localeCompare(b.library.name))
-    .flatMap(lib =>
-      [...lib.usingFor]
-        .sort((a, b) => a.localeCompare(b))
-        .map(type => `using ${transformName(lib.library)} for ${type};`),
-    );
+    .sort((a, b) => a.library.name.localeCompare(b.library.name)) // Sort by import path
+    .map(lib => {
+      const sortedTypes = Array.from(lib.usingFor).sort((a, b) => a.localeCompare(b)); // Sort types
+      return `using ${transformName(lib.library)} for ${sortedTypes.join(', ')};`;
+    });
 }
