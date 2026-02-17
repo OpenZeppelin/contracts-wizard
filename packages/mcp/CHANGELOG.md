@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 0.5.3 (2026-02-17)
+
+- Add support for Confidential Contracts Wizard ([#652](https://github.com/OpenZeppelin/contracts-wizard/pull/652))
+- Updated dependencies [[`79b4aeb`](https://github.com/OpenZeppelin/contracts-wizard/commit/79b4aeb49acc89f30d22199b54161f31f97a73d8), [`17d9de8`](https://github.com/OpenZeppelin/contracts-wizard/commit/17d9de8054d8d783e1a1619798dda83828eb1ae1), [`17d9de8`](https://github.com/OpenZeppelin/contracts-wizard/commit/17d9de8054d8d783e1a1619798dda83828eb1ae1)]:
+  - @openzeppelin/wizard-common@0.4.3
+  - @openzeppelin/wizard-confidential@0.1.0
+  - @openzeppelin/wizard@0.10.6
+
 ## 0.5.2 (2026-01-29)
 
 - Updated dependencies [[`86fe280`](https://github.com/OpenZeppelin/contracts-wizard/commit/86fe2803341f09331577b3b1b0bba84a3cd1c617)]:
