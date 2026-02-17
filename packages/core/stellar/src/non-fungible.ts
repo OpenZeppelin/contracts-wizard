@@ -155,17 +155,16 @@ function addBase(
   c.addUseClause('stellar_tokens::non_fungible', 'Base');
   c.addUseClause('stellar_tokens::non_fungible', 'NonFungibleToken');
   if (explicitImplementations) c.addUseClause('stellar_tokens::non_fungible', 'ContractOverrides');
-  else c.addUseClause('stellar_macros', 'default_impl');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
   c.addUseClause('soroban_sdk', 'Env');
-  if (explicitImplementations || pausable) c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'Address');
 
   const nonFungibleTokenTrait = {
     traitName: 'NonFungibleToken',
     structName: c.name,
-    tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
     assocType: 'type ContractType = Base;',
   };
 
@@ -190,7 +189,7 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
   const nonFungibleBurnableTrait = {
     traitName: 'NonFungibleBurnable',
     structName: c.name,
-    tags: ['contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
     section: 'Extensions',
   };
 
@@ -205,21 +204,17 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
   } else if (explicitImplementations)
     c.addTraitForEachFunctions(nonFungibleBurnableTrait, nonFungibleBurnableFunctions);
   else {
-    // prepend '#[default_impl]'
-    nonFungibleBurnableTrait.tags.unshift('default_impl');
     c.addTraitImplBlock(nonFungibleBurnableTrait);
   }
 }
 
 function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'enumerable::{NonFungibleEnumerable, Enumerable}');
-  if (explicitImplementations) c.addUseClause('soroban_sdk', 'Address');
-  else c.addUseClause('stellar_macros', 'default_impl');
 
   const nonFungibleEnumerableTrait = {
     traitName: 'NonFungibleEnumerable',
     structName: c.name,
-    tags: explicitImplementations ? ['contractimpl'] : ['default_impl', 'contractimpl'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
     section: 'Extensions',
   };
   if (explicitImplementations)
@@ -231,7 +226,6 @@ function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
 
 function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'consecutive::{NonFungibleConsecutive, Consecutive}');
-  c.addUseClause('soroban_sdk', 'Address');
 
   const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
   const nonFungibleConsecutiveTrait = {
@@ -274,7 +268,6 @@ function addMintable(
   access: Access,
   explicitImplementations: boolean,
 ) {
-  c.addUseClause('soroban_sdk', 'Address');
   const accessProps = { useMacro: true, role: 'minter', caller: 'caller' };
   const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
 

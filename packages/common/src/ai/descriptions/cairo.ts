@@ -5,6 +5,7 @@ export const cairoPrompts = {
   ERC20: 'Make a fungible token per the ERC-20 standard.',
   ERC721: 'Make a non-fungible token per the ERC-721 standard.',
   ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
+  ERC6909: 'Make a minimal multi-token per the ERC-6909 standard.',
   Governor: 'Make a contract to implement governance, such as for a DAO.',
   Multisig:
     'Make a multi-signature smart contract, requiring a quorum of registered signers to approve and collectively execute transactions.',
@@ -50,6 +51,7 @@ export const cairoRoyaltyInfoDescriptions = {
 export const cairoERC20Descriptions = {
   premint: 'The number of tokens to premint for the deployer.',
   decimals: 'The number of decimals to use for the contract. Defaults to 18.',
+  wrapper: 'Whether to include ERC20Wrapper functionality for depositing and withdrawing an underlying token.',
   votes:
     "Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.",
 };
@@ -58,6 +60,8 @@ export const cairoERC721Descriptions = {
   baseUri: 'A base uri for the non-fungible token.',
   enumerable:
     'Whether to allow on-chain enumeration of all tokens or those owned by an account. Increases gas cost of transfers.',
+  wrapper: 'Whether to include ERC721Wrapper functionality for wrapping an underlying ERC721.',
+  uriStorage: 'Allows updating token URIs for individual token IDs.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
 };
@@ -66,7 +70,11 @@ export const cairoERC1155Descriptions = {
   baseUri:
     'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types.',
+  supply: 'Whether to keep track of total supply of tokens.',
+  uriStorage: 'Allows updating token URIs for individual token IDs.',
 };
+
+export const cairoERC6909Descriptions = {};
 
 export const cairoGovernorDescriptions = {
   delay:

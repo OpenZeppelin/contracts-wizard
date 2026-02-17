@@ -56,6 +56,11 @@
       Burnable
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
+    <label class:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply} />
+      Supply Tracking
+      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
+    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
@@ -64,6 +69,11 @@
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
       </HelpTooltip>
+    </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip>Allows updating token URIs for individual token IDs.</HelpTooltip>
     </label>
     <label class:checked={opts.updatableUri}>
       <input type="checkbox" bind:checked={opts.updatableUri} />

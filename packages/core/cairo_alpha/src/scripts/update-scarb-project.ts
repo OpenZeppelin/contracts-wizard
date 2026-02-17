@@ -3,6 +3,7 @@ import path from 'path';
 
 import type { KindSubset } from '../generate/sources';
 import type { AccessSubset } from '../set-access-control';
+import type { UpgradeableSubset } from '../set-upgradeable';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
 import type { MacrosSubset } from '../set-macros';
 import { writeGeneratedSources } from '../generate/sources';
@@ -11,15 +12,17 @@ import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/
 type Arguments = {
   kind: KindSubset;
   access: AccessSubset;
+  upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
   macros: MacrosSubset;
 };
 
-const defaults: Arguments = {
+const defaults = {
   kind: 'all',
-  macros: 'all',
   access: 'all',
+  upgradeable: 'all',
   royaltyInfo: 'all',
+  macros: 'all',
 } as const;
 
 export function resolveArguments(): Arguments {
@@ -27,9 +30,10 @@ export function resolveArguments(): Arguments {
   const args = parseCliArgs(cliArgs);
   return {
     kind: parseKindSubset(args.kind ?? defaults.kind),
-    macros: parseMacrosSubset(args.macros ?? defaults.macros),
     access: parseAccessSubset(args.access ?? defaults.access),
+    upgradeable: parseUpgradeableSubset(args.upgradeable ?? defaults.upgradeable),
     royaltyInfo: parseRoyaltyInfoSubset(args.royalty ?? defaults.royaltyInfo),
+    macros: parseMacrosSubset(args.macros ?? defaults.macros),
   };
 }
 
@@ -38,13 +42,14 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, macros, access, royaltyInfo } = resolveArguments();
+  const { kind, access, upgradeable, royaltyInfo, macros } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
     uniqueName: true,
     kind,
     access,
+    upgradeable,
     royaltyInfo,
     macros,
     logsEnabled: true,
@@ -102,10 +107,7 @@ function parseCliArgs(args: string[]): Record<string, string> {
   return result;
 }
 
-function parseKindSubset(value: string | undefined): KindSubset {
-  if (value === undefined) {
-    throw new Error(`Failed to resolve contract kind subset from 'undefined'.`);
-  }
+function parseKindSubset(value: string): KindSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
@@ -115,6 +117,8 @@ function parseKindSubset(value: string | undefined): KindSubset {
       return 'ERC721';
     case 'erc1155':
       return 'ERC1155';
+    case 'erc6909':
+      return 'ERC6909';
     case 'account':
       return 'Account';
     case 'multisig':
@@ -130,10 +134,7 @@ function parseKindSubset(value: string | undefined): KindSubset {
   }
 }
 
-function parseAccessSubset(value: string | undefined): AccessSubset {
-  if (value === undefined) {
-    throw new Error(`Failed to resolve access subset from 'undefined'.`);
-  }
+function parseAccessSubset(value: string): AccessSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
@@ -154,10 +155,24 @@ function parseAccessSubset(value: string | undefined): AccessSubset {
   }
 }
 
-function parseRoyaltyInfoSubset(value: string | undefined): RoyaltyInfoSubset {
-  if (value === undefined) {
-    throw new Error(`Failed to resolve royalty info subset from 'undefined'.`);
+function parseUpgradeableSubset(value: string): UpgradeableSubset {
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'true':
+    case 'on':
+    case 'enabled':
+      return true;
+    case 'false':
+    case 'off':
+    case 'disabled':
+      return false;
+    default:
+      throw new Error(`Failed to resolve upgradeable subset from '${value}' value.`);
   }
+}
+
+function parseRoyaltyInfoSubset(value: string): RoyaltyInfoSubset {
   switch (value.toLowerCase()) {
     case 'all':
       return 'all';
