@@ -867,11 +867,6 @@
   version "0.0.1"
   resolved "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd275a4c5d87ba2ded654b33e08db85094588"
 
-"@openzeppelin/confidential-contracts@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.0.tgz#5e7d08fb19d50109be1cff8a3c7b2ac3645f514b"
-  integrity sha512-SccPGH4RgmKNtNBhv6gU85Ek/MT99fuI09o14xN4gd6PBrjEetUoAS01dlevP1lpqbAoyM8oiXshOEJ86M5tyw==
-
 "@openzeppelin/confidential-contracts@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.1.tgz#db381e2c5c590c184acd5804bec9400aef607ab5"
