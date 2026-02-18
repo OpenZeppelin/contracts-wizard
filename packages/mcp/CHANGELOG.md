@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.5.4 (2026-02-18)
+
+- Export Confidential Contracts tools ([#776](https://github.com/OpenZeppelin/contracts-wizard/pull/776))
+
 ## 0.5.3 (2026-02-17)
 
 - Add support for Confidential Contracts Wizard ([#652](https://github.com/OpenZeppelin/contracts-wizard/pull/652))
