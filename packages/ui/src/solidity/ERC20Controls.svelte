@@ -133,8 +133,7 @@
       <input type="checkbox" bind:checked={opts.permit} />
       Permit
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Permit">
-        Without paying gas, token holders will be able to allow third parties to transfer from their account (or
-        delegate their votes if Votes is enabled).
+        Without paying gas, token holders will be able to allow third parties to transfer from their account.
       </HelpTooltip>
     </label>
 
@@ -153,7 +152,7 @@
   label="Votes"
   bind:value={opts.votes}
   defaultValue="blocknumber"
-  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.<br><strong>Tip:</strong> Enable Permit to allow gasless delegation via signed messages."
+  helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
   helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Votes"
 >
   <div class="checkbox-group">
