@@ -115,8 +115,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
     addCallback(c);
   }
 
-  // Note: Votes requires Permit
-  if (allOpts.permit || allOpts.votes) {
+  if (allOpts.permit) {
     addPermit(c, allOpts.name);
   }
 
@@ -294,10 +293,6 @@ function addPermit(c: ContractBuilder, name: string) {
 }
 
 function addVotes(c: ContractBuilder, clockMode: ClockMode) {
-  if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
-    throw new Error('Missing ERC20Permit requirement for ERC20Votes');
-  }
-
   const ERC20Votes = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',

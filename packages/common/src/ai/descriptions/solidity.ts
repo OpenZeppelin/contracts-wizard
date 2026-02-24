@@ -25,7 +25,7 @@ export const solidityCommonDescriptions = {
 export const solidityERC20Descriptions = {
   premint: 'The number of tokens to premint for the deployer.',
   permit:
-    'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.',
+    'Whether without paying gas, token holders will be able to allow third parties to transfer from their account (or delegate their votes if `votes` is enabled).',
   votes:
     'Whether to keep track of historical balances for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
   flashmint:
