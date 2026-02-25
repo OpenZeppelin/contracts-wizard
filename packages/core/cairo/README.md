@@ -17,8 +17,8 @@ The following contract types are supported:
 - `erc721`
 - `erc1155`
 - `account`
-- `governor`
 - `multisig`
+- `governor`
 - `vesting`
 - `custom`
 

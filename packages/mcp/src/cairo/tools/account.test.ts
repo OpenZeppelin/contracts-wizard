@@ -51,6 +51,9 @@ test('all', async t => {
       license: 'MIT',
       securityContact: 'security@example.com',
     },
+    macros: {
+      withComponents: true,
+    },
   };
   assertHasAllSupportedFields(t, params);
   await assertAPIEquivalence(t, params, account.print);

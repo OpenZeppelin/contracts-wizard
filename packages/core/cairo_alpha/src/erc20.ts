@@ -26,6 +26,7 @@ export const defaults: Required<ERC20Options> = {
   pausable: false,
   premint: '0',
   mintable: false,
+  wrapper: false,
   votes: false,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
@@ -47,6 +48,7 @@ export interface ERC20Options extends CommonContractOptions {
   pausable?: boolean;
   premint?: string;
   mintable?: boolean;
+  wrapper?: boolean;
   votes?: boolean;
   appName?: string;
   appVersion?: string;
@@ -61,6 +63,7 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     mintable: opts.mintable ?? defaults.mintable,
+    wrapper: opts.wrapper ?? defaults.wrapper,
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion,
@@ -76,7 +79,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
   const decimals = toUint(allOpts.decimals, 'decimals', 'u8');
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals, allOpts.wrapper);
   addERC20Mixin(c);
 
   if (allOpts.premint) {
@@ -93,6 +96,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (allOpts.mintable) {
     addMintable(c, allOpts.access);
+  }
+
+  if (allOpts.wrapper) {
+    addWrapper(c);
   }
 
   addHooks(c, allOpts);
@@ -190,7 +197,7 @@ function addERC20Mixin(c: ContractBuilder) {
   });
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, decimals: bigint) {
+function addBase(c: ContractBuilder, name: string, symbol: string, decimals: bigint, usesWrapper: boolean) {
   // Add ERC20 component
   c.addComponent(components.ERC20Component, [name, symbol], true);
 
@@ -281,6 +288,12 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
+function addWrapper(c: ContractBuilder) {
+  c.addUseClause('starknet', 'ContractAddress');
+  c.addConstructorArgument({ name: 'underlying', type: 'ContractAddress' });
+  c.addComponent(components.ERC20WrapperComponent, [{ lit: 'underlying' }], true);
+}
+
 const components = defineComponents({
   ERC20Component: {
     path: 'openzeppelin_token::erc20',
@@ -297,6 +310,29 @@ const components = defineComponents({
         name: 'ERC20InternalImpl',
         embed: false,
         value: 'ERC20Component::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC20WrapperComponent: {
+    path: 'openzeppelin_token::erc20::extensions::erc20_wrapper',
+    substorage: {
+      name: 'erc20_wrapper',
+      type: 'ERC20WrapperComponent::Storage',
+    },
+    event: {
+      name: 'ERC20WrapperEvent',
+      type: 'ERC20WrapperComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC20WrapperImpl',
+        embed: true,
+        value: 'ERC20WrapperComponent::ERC20WrapperImpl<ContractState>',
+      },
+      {
+        name: 'ERC20WrapperInternalImpl',
+        embed: false,
+        value: 'ERC20WrapperComponent::InternalImpl<ContractState>',
       },
     ],
   },

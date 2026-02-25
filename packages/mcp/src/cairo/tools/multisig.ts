@@ -10,12 +10,13 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
     'cairo-multisig',
     makeDetailedPrompt(cairoPrompts.Multisig),
     multisigSchema,
-    async ({ name, quorum, upgradeable, info }) => {
+    async ({ name, quorum, upgradeable, info, macros }) => {
       const opts: MultisigOptions = {
         name,
         quorum,
         upgradeable,
         info,
+        macros,
       };
       return {
         content: [

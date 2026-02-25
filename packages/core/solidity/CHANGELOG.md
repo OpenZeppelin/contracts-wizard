@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 0.10.6 (2026-02-17)
+
+- Add support for Confidential Contracts Wizard ([#652](https://github.com/OpenZeppelin/contracts-wizard/pull/652))
+
+## 0.10.5 (2026-01-27)
+
+- Fix missing dependency for get-versioned-remappings with Webpack ([#766](https://github.com/OpenZeppelin/contracts-wizard/pull/766))
+
 ## 0.10.4 (2025-11-28)
 
 - Add support for Uniswap Hooks Wizard ([#628](https://github.com/OpenZeppelin/contracts-wizard/pull/628))

@@ -97,6 +97,7 @@
     "https://esm.sh/crypto-js@4.2.0/denonext/sha1.mjs": "7c20a11f45d6390bfd5babfb769457ad42775bca38d140dc497e548a94f7745b",
     "https://esm.sh/crypto-js@4.2.0/enc-hex?target=denonext": "e7bbfb366ad3cbea21a865f646e2dd1109398362c4779291bffb03bb6332310f",
     "https://esm.sh/crypto-js@4.2.0/sha1?target=denonext": "60b6e4ce5897826e9f61dcc2a0cbf11a9431ef81cad376f7f1f2810c615e4e68",
+    "https://esm.sh/jszip@3.6.0": "2085fb7d97864c4ce7ded0bba549d64f75bd452e08bf13e63cb2b1b328ee50f7",
     "https://esm.sh/openai@5.13.1": "0ef5984cbbec5b8576ed2f93a37a6bd2af3d44e5b4d57a2a3c9d3db0e255774a",
     "https://esm.sh/openai@5.13.1/denonext/azure.mjs": "a5f84bdea43b3d1441e66403a911493655dfe2bca8633b5f23b56f6ad0447a02",
     "https://esm.sh/openai@5.13.1/denonext/client.mjs": "ef7f5b489fcdfc3e85ddced228a8757f56327b77304391f9353f6b8ca7914996",
@@ -210,6 +211,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@openzeppelin/confidential-contracts@^0.3.1",
         "npm:@rollup/plugin-alias@^5.1.1",
         "npm:@rollup/plugin-commonjs@^28.0.8",
         "npm:@rollup/plugin-json@^6.1.0",

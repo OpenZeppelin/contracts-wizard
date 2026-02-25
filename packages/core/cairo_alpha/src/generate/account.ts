@@ -1,6 +1,7 @@
 import { accountTypes, type AccountOptions } from '../account';
 import { infoOptions } from '../set-info';
-import { upgradeableOptions } from '../set-upgradeable';
+import type { UpgradeableSubset } from '../set-upgradeable';
+import { resolveUpgradeableOptionsSubset } from '../set-upgradeable';
 import { generateAlternatives } from './alternatives';
 import type { MacrosSubset } from '../set-macros';
 import { resolveMacrosOptions } from '../set-macros';
@@ -8,6 +9,7 @@ import { resolveMacrosOptions } from '../set-macros';
 const booleans = [true, false];
 
 type GeneratorOptions = {
+  upgradeable: UpgradeableSubset;
   macros: MacrosSubset;
 };
 
@@ -19,7 +21,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     deploy: booleans,
     pubkey: booleans,
     outsideExecution: booleans,
-    upgradeable: upgradeableOptions,
+    upgradeable: resolveUpgradeableOptionsSubset(opts.upgradeable),
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };

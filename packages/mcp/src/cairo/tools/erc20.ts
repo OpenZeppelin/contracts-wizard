@@ -24,6 +24,7 @@ export function registerCairoERC20(server: McpServer): RegisteredTool {
       access,
       upgradeable,
       info,
+      macros,
     }) => {
       const opts: ERC20Options = {
         name,
@@ -39,6 +40,7 @@ export function registerCairoERC20(server: McpServer): RegisteredTool {
         access,
         upgradeable,
         info,
+        macros,
       };
       return {
         content: [

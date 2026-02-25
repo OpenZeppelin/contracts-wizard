@@ -33,6 +33,7 @@ export const defaults: Required<ERC721Options> = {
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
+  macros: commonDefaults.macros,
 } as const;
 
 export function printERC721(opts: ERC721Options = defaults): string {
@@ -76,9 +77,8 @@ export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
-  const c = new ContractBuilder(opts.name);
-
   const allOpts = withDefaults(opts);
+  const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.baseUri));
   addERC721Mixin(c);
@@ -168,13 +168,14 @@ function addHooks(c: ContractBuilder, opts: Required<ERC721Options>) {
       code: beforeUpdateCode,
     });
   } else {
-    c.addUseClause('openzeppelin::token::erc721', 'ERC721HooksEmptyImpl');
+    c.addUseClause('openzeppelin_token::erc721', 'ERC721HooksEmptyImpl');
   }
 }
 
 function addERC721Mixin(c: ContractBuilder) {
   c.addImplToComponent(components.ERC721Component, {
     name: 'ERC721MixinImpl',
+    embed: true,
     value: 'ERC721Component::ERC721MixinImpl<ContractState>',
   });
   c.addInterfaceFlag('ISRC5');
@@ -206,7 +207,7 @@ function addMintable(c: ContractBuilder, access: Access) {
 
 const components = defineComponents({
   ERC721Component: {
-    path: 'openzeppelin::token::erc721',
+    path: 'openzeppelin_token::erc721',
     substorage: {
       name: 'erc721',
       type: 'ERC721Component::Storage',
@@ -224,7 +225,7 @@ const components = defineComponents({
     ],
   },
   ERC721EnumerableComponent: {
-    path: 'openzeppelin::token::erc721::extensions',
+    path: 'openzeppelin_token::erc721::extensions',
     substorage: {
       name: 'erc721_enumerable',
       type: 'ERC721EnumerableComponent::Storage',
@@ -236,6 +237,7 @@ const components = defineComponents({
     impls: [
       {
         name: 'ERC721EnumerableImpl',
+        embed: true,
         value: 'ERC721EnumerableComponent::ERC721EnumerableImpl<ContractState>',
       },
       {

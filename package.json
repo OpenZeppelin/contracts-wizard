@@ -19,6 +19,7 @@
   "workspaces": {
     "packages": [
       "packages/common",
+      "packages/core/solidity",
       "packages/core/*",
       "packages/mcp",
       "packages/ui"

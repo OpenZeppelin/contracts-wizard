@@ -1,6 +1,47 @@
 # Changelog
 
 
+## 0.5.4 (2026-02-18)
+
+- Export Confidential Contracts tools ([#776](https://github.com/OpenZeppelin/contracts-wizard/pull/776))
+
+## 0.5.3 (2026-02-17)
+
+- Add support for Confidential Contracts Wizard ([#652](https://github.com/OpenZeppelin/contracts-wizard/pull/652))
+- Updated dependencies [[`79b4aeb`](https://github.com/OpenZeppelin/contracts-wizard/commit/79b4aeb49acc89f30d22199b54161f31f97a73d8), [`17d9de8`](https://github.com/OpenZeppelin/contracts-wizard/commit/17d9de8054d8d783e1a1619798dda83828eb1ae1), [`17d9de8`](https://github.com/OpenZeppelin/contracts-wizard/commit/17d9de8054d8d783e1a1619798dda83828eb1ae1)]:
+  - @openzeppelin/wizard-common@0.4.3
+  - @openzeppelin/wizard-confidential@0.1.0
+  - @openzeppelin/wizard@0.10.6
+
+## 0.5.2 (2026-01-29)
+
+- Updated dependencies [[`86fe280`](https://github.com/OpenZeppelin/contracts-wizard/commit/86fe2803341f09331577b3b1b0bba84a3cd1c617)]:
+  - @openzeppelin/wizard-stellar@0.5.0
+  - @openzeppelin/wizard-common@0.4.2
+
+## 0.5.1 (2026-01-14)
+
+- Stellar: add an explicitImplementations flag that switches from using default_impl macro to explicit definitions ([#728](https://github.com/OpenZeppelin/contracts-wizard/pull/728))
+- Updated dependencies [[`aa0f0d2`](https://github.com/OpenZeppelin/contracts-wizard/commit/aa0f0d29c1dcad1297c3a2eea3081c8e93a56df1)]:
+  - @openzeppelin/wizard-stellar@0.4.5
+  - @openzeppelin/wizard-common@0.4.1
+
+## 0.5.0 (2026-01-10)
+
+- Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
+- Add AccessControlDefaultAdminRules. ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v3.0.0. ([#757](https://github.com/OpenZeppelin/contracts-wizard/pull/757))
+  - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.3. ([#688](https://github.com/OpenZeppelin/contracts-wizard/pull/688))
+  - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.2. ([#663](https://github.com/OpenZeppelin/contracts-wizard/pull/663))
+  - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.1. ([#638](https://github.com/OpenZeppelin/contracts-wizard/pull/638))
+  - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.0. ([#623](https://github.com/OpenZeppelin/contracts-wizard/pull/623))
+
+- Updated dependencies [[`53c042a`](https://github.com/OpenZeppelin/contracts-wizard/commit/53c042af852097bace639b47ec2fbfc813e38ac9)]:
+  - @openzeppelin/wizard-cairo@3.0.0
+  - @openzeppelin/wizard-common@0.4.0
+
 ## 0.4.6 (2025-12-12)
 
 - Updated dependencies [[`ce60539`](https://github.com/OpenZeppelin/contracts-wizard/commit/ce6053924898e3ecbc8f80e05502786ddbc5e559)]:

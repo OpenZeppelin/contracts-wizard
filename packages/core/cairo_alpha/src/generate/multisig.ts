@@ -3,8 +3,11 @@ import type { MultisigOptions } from '../multisig';
 import { generateAlternatives } from './alternatives';
 import type { MacrosSubset } from '../set-macros';
 import { resolveMacrosOptions } from '../set-macros';
+import type { UpgradeableSubset } from '../set-upgradeable';
+import { resolveUpgradeableOptionsSubset } from '../set-upgradeable';
 
 type GeneratorOptions = {
+  upgradeable: UpgradeableSubset;
   macros: MacrosSubset;
 };
 
@@ -12,7 +15,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
   return {
     name: ['MyMultisig'],
     quorum: ['1', '2', '42'],
-    upgradeable: [true, false],
+    upgradeable: resolveUpgradeableOptionsSubset(opts.upgradeable),
     info: infoOptions,
     macros: resolveMacrosOptions(opts.macros),
   };

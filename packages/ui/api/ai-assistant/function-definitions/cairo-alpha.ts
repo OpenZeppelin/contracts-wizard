@@ -43,6 +43,10 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         type: 'string',
         description: cairoERC20Descriptions.premint,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC20Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC20Descriptions.votes,
@@ -78,9 +82,17 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.enumerable,
       },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
+      },
+      uriStorage: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.uriStorage,
       },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC721'>()(['name', 'symbol']),
@@ -113,11 +125,41 @@ export const cairoAlphaERC1155AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC1155Descriptions.updatableUri,
       },
+      supply: {
+        type: 'boolean',
+        description: cairoERC1155Descriptions.supply,
+      },
+      uriStorage: {
+        type: 'boolean',
+        description: cairoERC1155Descriptions.uriStorage,
+      },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC1155'>()(['name', 'baseUri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC1155'>;
+
+export const cairoAlphaERC6909AIFunctionDefinition = {
+  name: 'ERC6909',
+  description: cairoPrompts.ERC6909,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(cairoAlphaSharedFunctionDefinition, [
+        'name',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'upgradeable',
+        'info',
+        'macros',
+      ]),
+    },
+    required: contractExactRequiredKeys<'cairoAlpha', 'ERC6909'>()(['name']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'cairoAlpha', 'ERC6909'>;
 
 export const cairoAlphaGovernorAIFunctionDefinition = {
   name: 'Governor',

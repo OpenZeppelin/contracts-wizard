@@ -1,9 +1,11 @@
 import { toIdentifier } from './utils/convert-strings';
+import type { MacrosOptions } from './set-macros';
 
 export interface Contract {
   license: string;
   documentations: string[];
   name: string;
+  macros: MacrosOptions;
   account: boolean;
   useClauses: UseClause[];
   components: Component[];
@@ -46,7 +48,7 @@ export interface Event {
 export interface Impl {
   name: string;
   value: string;
-  embed?: boolean;
+  embed: boolean;
   section?: string;
 }
 
@@ -100,6 +102,7 @@ export interface Argument {
 
 export class ContractBuilder implements Contract {
   readonly name: string;
+  readonly macros: MacrosOptions;
   readonly account: boolean;
   license = 'MIT';
   upgradeable = false;
@@ -116,8 +119,9 @@ export class ContractBuilder implements Contract {
   private useClausesMap: Map<string, UseClause> = new Map();
   private interfaceFlagsSet: Set<string> = new Set();
 
-  constructor(name: string, account: boolean = false) {
+  constructor(name: string, macros: MacrosOptions, account: boolean = false) {
     this.name = toIdentifier(name, true);
+    this.macros = macros;
     this.account = account;
   }
 
@@ -165,7 +169,9 @@ export class ContractBuilder implements Contract {
   }
 
   addComponent(component: Component, params: Value[] = [], initializable: boolean = true): boolean {
-    this.addUseClause(component.path, component.name);
+    if (!this.macros.withComponents) {
+      this.addUseClause(component.path, component.name);
+    }
     const key = component.name;
     const present = this.componentsMap.has(key);
     if (!present) {

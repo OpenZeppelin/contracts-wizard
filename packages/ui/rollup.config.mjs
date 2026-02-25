@@ -99,8 +99,9 @@ export default [
       assetFileNames: '[name][extname]',
     },
     plugins: [
-      // Generate openzeppelin-contracts.js data file
+      // Generate contract library data files
       onStartRun(...'yarn --cwd ../core/solidity prepare'.split(' ')),
+      onStartRun(...'yarn --cwd ../core/confidential prepare'.split(' ')),
 
       svelte(await import('./svelte.config.js')),
 
@@ -136,7 +137,7 @@ export default [
       commonjs(),
 
       typescript({
-        include: ['src/**/*.ts', '../core/*/src/**/*.ts'],
+        include: ['src/**/*.ts', '../core/*/src/**/*.ts', '../common/src/**/*.ts'],
         sourceMap: true,
         inlineSources: true,
       }),

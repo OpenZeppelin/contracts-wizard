@@ -6,6 +6,8 @@
 /packages/core/cairo_alpha @OpenZeppelin/cairo @OpenZeppelin/wizard
 /packages/ui/src/cairo @OpenZeppelin/cairo @OpenZeppelin/wizard
 /packages/ui/src/cairo_alpha @OpenZeppelin/cairo @OpenZeppelin/wizard
+/packages/core/confidential @OpenZeppelin/contracts @OpenZeppelin/wizard
+/packages/ui/src/confidential @OpenZeppelin/contracts @OpenZeppelin/wizard
 /packages/core/stylus @OpenZeppelin/stylus @OpenZeppelin/wizard
 /packages/ui/src/stylus @OpenZeppelin/stylus @OpenZeppelin/wizard
 /packages/core/stellar @OpenZeppelin/stellar @OpenZeppelin/wizard

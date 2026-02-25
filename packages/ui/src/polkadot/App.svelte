@@ -1,12 +1,19 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import SolidityApp from '../solidity/App.svelte';
   import type { InitialOptions } from '../common/initial-options';
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
+  import type { Contract, GenericOptions } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
+
+  const dispatch = createEventDispatcher();
+
+  // Dynamic import so it only loads when needed
+  const zipHardhatPolkadotModule = import('@openzeppelin/wizard/zip-env-hardhat-polkadot');
 
   /**
    * Uses the Solidity Wizard with overrides specific to Polkadot.
@@ -16,10 +23,12 @@
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
-    omitZipHardhat: true, // Disabled until Polkadot-specific config is added for the download package
-    remix: {
-      label: 'Open in Polkadot Remix',
-      url: 'https://remix.polkadot.io',
+    omitZipHardhat: (opts?: GenericOptions) => {
+      return !!opts?.upgradeable;
+    },
+    overrideZipHardhat: async (c: Contract, opts?: GenericOptions) => {
+      const { zipHardhatPolkadot } = await zipHardhatPolkadotModule;
+      return zipHardhatPolkadot(c, opts);
     },
     sanitizeOmittedFeatures,
     aiAssistant: {
@@ -30,7 +39,7 @@
 </script>
 
 <div class="polkadot-app">
-  <SolidityApp {initialTab} {initialOpts} {overrides} />
+  <SolidityApp {initialTab} {initialOpts} {overrides} on:tab-change={event => dispatch('tab-change', event.detail)} />
 </div>
 
 <style lang="postcss">

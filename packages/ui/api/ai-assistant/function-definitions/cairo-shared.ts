@@ -1,9 +1,12 @@
 import type { AiFunctionPropertyDefinition } from '../types/function-definition.ts';
 import type { CairoCommonContractOptions, CairoRoyaltyInfoOptions } from '../types/languages.ts';
 import { infoDescriptions } from '../../../../common/src/ai/descriptions/common.ts';
-import { cairoCommonDescriptions, cairoRoyaltyInfoDescriptions } from '../../../../common/src/ai/descriptions/cairo.ts';
-import { extractStringEnumValues } from '../types/helpers.ts';
-import type { Access } from '../../../../core/cairo/dist/set-access-control';
+import {
+  cairoCommonDescriptions,
+  cairoMacrosDescriptions,
+  cairoAccessDescriptions,
+  cairoRoyaltyInfoDescriptions,
+} from '../../../../common/src/ai/descriptions/cairo.ts';
 
 const commonContractFunctionDescription = {
   upgradeable: {
@@ -27,12 +30,41 @@ const commonContractFunctionDescription = {
     },
   },
 
+  macros: {
+    type: 'object',
+    description: cairoMacrosDescriptions.macros,
+    properties: {
+      withComponents: {
+        type: 'boolean',
+        description: cairoMacrosDescriptions.withComponents,
+      },
+    },
+  },
+
   access: {
-    anyOf: [
-      { type: 'boolean', enum: [false] },
-      { type: 'string', enum: extractStringEnumValues<Access>()(['ownable', 'roles']) },
-    ],
-    description: cairoCommonDescriptions.access,
+    type: 'object',
+    properties: {
+      type: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          { type: 'string', enum: ['ownable', 'roles', 'roles-dar'] },
+        ],
+        description: cairoAccessDescriptions.accessType,
+      },
+      darInitialDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darInitialDelay,
+      },
+      darDefaultDelayIncrease: {
+        type: 'string',
+        description: cairoAccessDescriptions.darDefaultDelayIncrease,
+      },
+      darMaxTransferDelay: {
+        type: 'string',
+        description: cairoAccessDescriptions.darMaxTransferDelay,
+      },
+    },
+    description: cairoAccessDescriptions.accessType,
   },
 } as const satisfies AiFunctionPropertyDefinition<CairoCommonContractOptions>['properties'];
 

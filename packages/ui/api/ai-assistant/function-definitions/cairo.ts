@@ -2,6 +2,7 @@ import { contractExactRequiredKeys, type AiFunctionDefinition } from '../types/f
 import { cairoSharedFunctionDefinition } from './cairo-shared.ts';
 import { addFunctionPropertiesFrom } from './shared.ts';
 import {
+  cairoPrompts,
   cairoERC20Descriptions,
   cairoERC721Descriptions,
   cairoERC1155Descriptions,
@@ -17,7 +18,7 @@ import type { Account } from '../../../../core/cairo/dist/account';
 
 export const cairoERC20AIFunctionDefinition = {
   name: 'ERC20',
-  description: 'Make a fungible token per the ERC-20 standard.',
+  description: cairoPrompts.ERC20,
   parameters: {
     type: 'object',
     properties: {
@@ -30,6 +31,7 @@ export const cairoERC20AIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
         'appName',
         'appVersion',
       ]),
@@ -53,7 +55,7 @@ export const cairoERC20AIFunctionDefinition = {
 
 export const cairoERC721AIFunctionDefinition = {
   name: 'ERC721',
-  description: 'Make a non-fungible token per the ERC-721 standard.',
+  description: cairoPrompts.ERC721,
   parameters: {
     type: 'object',
     properties: {
@@ -66,6 +68,7 @@ export const cairoERC721AIFunctionDefinition = {
         'mintable',
         'upgradeable',
         'info',
+        'macros',
         'royaltyInfo',
         'appName',
         'appVersion',
@@ -87,7 +90,7 @@ export const cairoERC721AIFunctionDefinition = {
 
 export const cairoERC1155AIFunctionDefinition = {
   name: 'ERC1155',
-  description: 'Make a non-fungible token per the ERC-1155 standard.',
+  description: cairoPrompts.ERC1155,
   parameters: {
     type: 'object',
     properties: {
@@ -99,6 +102,7 @@ export const cairoERC1155AIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
         'royaltyInfo',
       ]),
       baseUri: {
@@ -117,7 +121,7 @@ export const cairoERC1155AIFunctionDefinition = {
 
 export const cairoGovernorAIFunctionDefinition = {
   name: 'Governor',
-  description: 'Make a contract to implement governance, such as for a DAO.',
+  description: cairoPrompts.Governor,
   parameters: {
     type: 'object',
     properties: {
@@ -125,6 +129,7 @@ export const cairoGovernorAIFunctionDefinition = {
         'name',
         'upgradeable',
         'info',
+        'macros',
         'appName',
         'appVersion',
       ]),
@@ -186,12 +191,11 @@ export const cairoGovernorAIFunctionDefinition = {
 
 export const cairoVestingAIFunctionDefinition = {
   name: 'Vesting',
-  description:
-    'Make a vesting smart contract that manages the gradual release of ERC-20 tokens to a designated beneficiary based on a predefined vesting schedule',
+  description: cairoPrompts.Vesting,
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'info']),
+      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'info', 'macros']),
       startDate: {
         type: 'string',
         description: cairoVestingDescriptions.startDate,
@@ -223,12 +227,11 @@ export const cairoVestingAIFunctionDefinition = {
 
 export const cairoAccountAIFunctionDefinition = {
   name: 'Account',
-  description:
-    'Make a custom smart contract that represents an account that can be deployed and interacted with other contracts, and can be extended to implement custom logic. An account is a special type of contract that is used to validate and execute transactions',
+  description: cairoPrompts.Account,
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info', 'macros']),
       type: {
         type: 'string',
         enum: enumValues<Account>()(['stark', 'eth']),
@@ -252,11 +255,11 @@ export const cairoAccountAIFunctionDefinition = {
 
 export const cairoMultisigAIFunctionDefinition = {
   name: 'Multisig',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Multisig,
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info']),
+      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, ['name', 'upgradeable', 'info', 'macros']),
       quorum: {
         type: 'string',
         description: cairoMultisigDescriptions.quorum,
@@ -269,7 +272,7 @@ export const cairoMultisigAIFunctionDefinition = {
 
 export const cairoCustomAIFunctionDefinition = {
   name: 'Custom',
-  description: 'Make a custom smart contract',
+  description: cairoPrompts.Custom,
   parameters: {
     type: 'object',
     properties: {
@@ -279,6 +282,7 @@ export const cairoCustomAIFunctionDefinition = {
         'access',
         'upgradeable',
         'info',
+        'macros',
       ]),
     },
     required: contractExactRequiredKeys<'cairo', 'Custom'>()(['name']),

@@ -69,6 +69,15 @@
       </HelpTooltip>
     </label>
 
+    <label class:checked={opts.wrapper}>
+      <input type="checkbox" bind:checked={opts.wrapper} />
+      Wrapper
+      <HelpTooltip>
+        Wrap an existing ERC20 by depositing underlying tokens. The constructor requires the underlying token address
+        and matching decimals.
+      </HelpTooltip>
+    </label>
+
     <label class:checked={opts.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
@@ -121,6 +130,7 @@
   bind:accessType={opts.access.type}
   bind:darInitialDelay={opts.access.darInitialDelay}
   bind:darDefaultDelayIncrease={opts.access.darDefaultDelayIncrease}
+  bind:darMaxTransferDelay={opts.access.darMaxTransferDelay}
   required={requireAccessControl}
   {errors}
 />

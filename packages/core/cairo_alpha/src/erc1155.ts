@@ -23,6 +23,8 @@ export const defaults: Required<ERC1155Options> = {
   burnable: false,
   pausable: false,
   mintable: false,
+  supply: false,
+  uriStorage: false,
   updatableUri: true,
   royaltyInfo: royaltyInfoDefaults,
   access: commonDefaults.access,
@@ -41,6 +43,8 @@ export interface ERC1155Options extends CommonContractOptions {
   burnable?: boolean;
   pausable?: boolean;
   mintable?: boolean;
+  supply?: boolean;
+  uriStorage?: boolean;
   updatableUri?: boolean;
   royaltyInfo?: RoyaltyInfoOptions;
 }
@@ -52,6 +56,8 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     mintable: opts.mintable ?? defaults.mintable,
+    supply: opts.supply ?? defaults.supply,
+    uriStorage: opts.uriStorage ?? defaults.uriStorage,
     updatableUri: opts.updatableUri ?? defaults.updatableUri,
     royaltyInfo: opts.royaltyInfo ?? defaults.royaltyInfo,
   };
@@ -62,6 +68,7 @@ export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean 
     opts.mintable === true ||
     opts.pausable === true ||
     opts.updatableUri !== false ||
+    opts.uriStorage === true ||
     opts.upgradeable === true ||
     opts.royaltyInfo?.enabled === true
   );
@@ -86,8 +93,17 @@ export function buildERC1155(opts: ERC1155Options): Contract {
     addMintable(c, allOpts.access);
   }
 
-  if (allOpts.updatableUri) {
-    addSetBaseUri(c, allOpts.access);
+  if (allOpts.supply) {
+    addSupply(c);
+  }
+
+  addUriSetters(c, allOpts);
+
+  if (allOpts.uriStorage) {
+    addURIStorage(c);
+    c.addUseClause('openzeppelin_token::erc1155::extensions::ERC1155URIStorageComponent', 'ERC1155URIStorageImpl');
+  } else {
+    c.addUseClause('openzeppelin_token::erc1155', 'ERC1155TokenURIDefaultImpl');
   }
 
   setAccessControl(c, allOpts.access);
@@ -101,7 +117,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
 }
 
 function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
-  const usesCustomHooks = allOpts.pausable;
+  const usesCustomHooks = allOpts.pausable || allOpts.supply;
   if (usesCustomHooks) {
     const hooksTrait = {
       name: 'ERC1155HooksImpl',
@@ -112,20 +128,43 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
     c.addImplementedTrait(hooksTrait);
     c.addUseClause('starknet', 'ContractAddress');
 
-    c.addFunction(hooksTrait, {
-      name: 'before_update',
-      args: [
-        {
-          name: 'ref self',
-          type: `ERC1155Component::ComponentState<ContractState>`,
-        },
-        { name: 'from', type: 'ContractAddress' },
-        { name: 'to', type: 'ContractAddress' },
-        { name: 'token_ids', type: 'Span<u256>' },
-        { name: 'values', type: 'Span<u256>' },
-      ],
-      code: ['let contract_state = self.get_contract()', 'contract_state.pausable.assert_not_paused()'],
-    });
+    if (allOpts.pausable) {
+      c.addFunction(hooksTrait, {
+        name: 'before_update',
+        args: [
+          {
+            name: 'ref self',
+            type: `ERC1155Component::ComponentState<ContractState>`,
+          },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'to', type: 'ContractAddress' },
+          { name: 'token_ids', type: 'Span<u256>' },
+          { name: 'values', type: 'Span<u256>' },
+        ],
+        code: ['let contract_state = self.get_contract()', 'contract_state.pausable.assert_not_paused()'],
+      });
+    }
+
+    if (allOpts.supply) {
+      const afterUpdateFn = c.addFunction(hooksTrait, {
+        name: 'after_update',
+        args: [
+          {
+            name: 'ref self',
+            type: `ERC1155Component::ComponentState<ContractState>`,
+          },
+          { name: 'from', type: 'ContractAddress' },
+          { name: 'to', type: 'ContractAddress' },
+          { name: 'token_ids', type: 'Span<u256>' },
+          { name: 'values', type: 'Span<u256>' },
+        ],
+        code: [],
+      });
+      afterUpdateFn.code.push(
+        'let mut contract_state = self.get_contract_mut();',
+        'contract_state.erc1155_supply.after_update(from, to, token_ids, values);',
+      );
+    }
   } else {
     c.addUseClause('openzeppelin_token::erc1155', 'ERC1155HooksEmptyImpl');
   }
@@ -153,6 +192,10 @@ function addBurnable(c: ContractBuilder) {
   c.addFunction(externalTrait, functions.batchBurn);
 }
 
+function addSupply(c: ContractBuilder) {
+  c.addComponent(components.ERC1155SupplyComponent, [], false);
+}
+
 function addMintable(c: ContractBuilder, access: Access) {
   c.addUseClause('starknet', 'ContractAddress');
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
@@ -162,11 +205,38 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunction(externalTrait, functions.batchMint);
 }
 
-function addSetBaseUri(c: ContractBuilder, access: Access) {
-  requireAccessControl(c, externalTrait, functions.set_base_uri, access, 'URI_SETTER', 'uri_setter');
+function addUriSetters(c: ContractBuilder, allOpts: Required<ERC1155Options>) {
+  if (allOpts.uriStorage) {
+    c.addUseClause('starknet', 'ContractAddress');
+    requireAccessControl(
+      c,
+      externalTrait,
+      uriStorageFunctions.set_base_uri,
+      allOpts.access,
+      'URI_SETTER',
+      'uri_setter',
+    );
+    requireAccessControl(
+      c,
+      externalTrait,
+      uriStorageFunctions.set_token_uri,
+      allOpts.access,
+      'URI_SETTER',
+      'uri_setter',
+    );
+    return;
+  }
+  if (allOpts.updatableUri) {
+    c.addUseClause('starknet', 'ContractAddress');
+    requireAccessControl(c, externalTrait, functions.set_base_uri, allOpts.access, 'URI_SETTER', 'uri_setter');
+    // Camel case version of set_base_uri. Access control is already set on set_base_uri.
+    c.addFunction(externalTrait, functions.setBaseUri);
+    return;
+  }
+}
 
-  // Camel case version of set_base_uri. Access control is already set on set_base_uri.
-  c.addFunction(externalTrait, functions.setBaseUri);
+function addURIStorage(c: ContractBuilder) {
+  c.addComponent(components.ERC1155URIStorageComponent, [], false);
 }
 
 const components = defineComponents({
@@ -185,6 +255,47 @@ const components = defineComponents({
         name: 'ERC1155InternalImpl',
         embed: false,
         value: 'ERC1155Component::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC1155SupplyComponent: {
+    path: 'openzeppelin_token::erc1155::extensions',
+    substorage: {
+      name: 'erc1155_supply',
+      type: 'ERC1155SupplyComponent::Storage',
+    },
+    event: {
+      name: 'ERC1155SupplyEvent',
+      type: 'ERC1155SupplyComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC1155SupplyImpl',
+        embed: true,
+        value: 'ERC1155SupplyComponent::ERC1155SupplyImpl<ContractState>',
+      },
+      {
+        name: 'ERC1155SupplyInternalImpl',
+        embed: false,
+        value: 'ERC1155SupplyComponent::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC1155URIStorageComponent: {
+    path: 'openzeppelin_token::erc1155::extensions',
+    substorage: {
+      name: 'erc1155_uri_storage',
+      type: 'ERC1155URIStorageComponent::Storage',
+    },
+    event: {
+      name: 'ERC1155URIStorageEvent',
+      type: 'ERC1155URIStorageComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC1155URIStorageInternalImpl',
+        embed: false,
+        value: 'ERC1155URIStorageComponent::InternalImpl<ContractState>',
       },
     ],
   },
@@ -267,5 +378,16 @@ const functions = defineFunctions({
   setBaseUri: {
     args: [getSelfArg(), { name: 'baseUri', type: 'ByteArray' }],
     code: ['self.set_base_uri(baseUri);'],
+  },
+});
+
+const uriStorageFunctions = defineFunctions({
+  set_base_uri: {
+    args: [getSelfArg(), { name: 'base_uri', type: 'ByteArray' }],
+    code: ['self.erc1155_uri_storage.set_base_uri(base_uri);'],
+  },
+  set_token_uri: {
+    args: [getSelfArg(), { name: 'token_id', type: 'u256' }, { name: 'token_uri', type: 'ByteArray' }],
+    code: ['self.erc1155_uri_storage.set_token_uri(token_id, token_uri);'],
   },
 });

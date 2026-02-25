@@ -10,7 +10,19 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
     'stellar-stablecoin',
     makeDetailedPrompt(stellarPrompts.Stablecoin),
     stablecoinSchema,
-    async ({ name, symbol, burnable, pausable, premint, mintable, upgradeable, access, limitations, info }) => {
+    async ({
+      name,
+      symbol,
+      burnable,
+      pausable,
+      premint,
+      mintable,
+      upgradeable,
+      access,
+      limitations,
+      explicitImplementations,
+      info,
+    }) => {
       const opts: StablecoinOptions = {
         name,
         symbol,
@@ -21,6 +33,7 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
         upgradeable,
         access,
         limitations,
+        explicitImplementations,
         info,
       };
       return {

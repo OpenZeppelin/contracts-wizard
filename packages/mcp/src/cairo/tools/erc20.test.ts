@@ -34,6 +34,12 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'MyToken',
     symbol: 'MTK',
+    access: {
+      type: false,
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
   };
   await assertAPIEquivalence(t, params, erc20.print);
 });
@@ -50,11 +56,19 @@ test('all', async t => {
     votes: true,
     appName: 'MyToken',
     appVersion: 'v1',
-    access: 'roles',
+    access: {
+      type: 'roles',
+      darInitialDelay: '0',
+      darDefaultDelayIncrease: '0',
+      darMaxTransferDelay: '0',
+    },
     upgradeable: true,
     info: {
       license: 'MIT',
       securityContact: 'security@example.com',
+    },
+    macros: {
+      withComponents: true,
     },
   };
   assertHasAllSupportedFields(t, params);

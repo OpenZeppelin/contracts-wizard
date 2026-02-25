@@ -1,5 +1,5 @@
 import type { CommonOptions } from './common-options';
-import contractsVersion from '../openzeppelin-contracts-version';
+import contractsVersion from '../openzeppelin-contracts-version.json';
 
 export function getVersionedRemappings(opts?: CommonOptions): string[] {
   const remappings = [`@openzeppelin/contracts/=@openzeppelin/contracts@${contractsVersion.version}/`];

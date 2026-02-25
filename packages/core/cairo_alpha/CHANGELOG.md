@@ -2,14 +2,35 @@
 
 ## Unreleased
 
+- Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))
+- Add ERC1155URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+- Add ERC1155Supply extension ([#765](https://github.com/OpenZeppelin/contracts-wizard/pull/765))
+- Add ERC721URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+- Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
+- Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
+
+- **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
+
+## 3.0.0 (2026-01-10)
+
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
 - Add AccessControlDefaultAdminRules. ([#698](https://github.com/OpenZeppelin/contracts-wizard/pull/698))
 
 - **Breaking changes**:
+  - Use OpenZeppelin Contracts for Cairo v3.0.0. ([#757](https://github.com/OpenZeppelin/contracts-wizard/pull/757))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.3. ([#688](https://github.com/OpenZeppelin/contracts-wizard/pull/688))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.2. ([#663](https://github.com/OpenZeppelin/contracts-wizard/pull/663))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.1. ([#638](https://github.com/OpenZeppelin/contracts-wizard/pull/638))
   - Use OpenZeppelin Contracts for Cairo v3.0.0-alpha.0. ([#623](https://github.com/OpenZeppelin/contracts-wizard/pull/623))
+
+## 2.1.0 (2025-09-16)
+
+- Support decimals customization for ERC20 Cairo contracts ([#654](https://github.com/OpenZeppelin/contracts-wizard/pull/654))
+
+## 2.0.1 (2025-08-20)
+
+- Fix missing use clause in hooks for ERC20 votes ([#637](https://github.com/OpenZeppelin/contracts-wizard/pull/637))
 
 ## 2.0.0 (2025-06-20)
 
