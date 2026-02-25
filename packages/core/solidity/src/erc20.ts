@@ -121,7 +121,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   if (allOpts.votes) {
     const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-    addVotes(c, clockMode);
+    addVotes(c, allOpts.permit, allOpts.name, clockMode);
   }
 
   if (allOpts.flashmint) {
@@ -292,7 +292,16 @@ function addPermit(c: ContractBuilder, name: string) {
   c.addOverride(ERC20Permit, functions.nonces);
 }
 
-function addVotes(c: ContractBuilder, clockMode: ClockMode) {
+function addVotes(c: ContractBuilder, permit: boolean, name: string, clockMode: ClockMode) {
+  if (!permit) {
+    // ERC20Permit initializes the EIP712 domain separator. If permit is false, we need to do it here.
+    const EIP712 = {
+      name: 'EIP712',
+      path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+    };
+    c.addParent(EIP712, [name, '1']);
+  }
+
   const ERC20Votes = {
     name: 'ERC20Votes',
     path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol',
