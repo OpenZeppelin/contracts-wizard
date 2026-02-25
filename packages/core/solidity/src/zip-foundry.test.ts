@@ -188,7 +188,17 @@ async function extractAndRunPackage(zip: JSZip, c: Contract, t: ExecutionContext
   const test = 'forge test' + (c.upgradeable ? ' --force' : '');
   const script = `forge script script/${c.name}.s.sol` + (c.upgradeable ? ' --force' : '');
 
-  const exec = (cmd: string) => util.promisify(child.exec)(cmd, { env: { ...process.env, NO_COLOR: '' } });
+  // Ignore global/system git config so that user-specific SSH config doesn't cause passphrase prompts
+  const exec = (cmd: string) =>
+    util.promisify(child.exec)(cmd, {
+      env: {
+        ...process.env,
+        NO_COLOR: '',
+        GIT_CONFIG_GLOBAL: '/dev/null',
+        GIT_CONFIG_SYSTEM: '/dev/null',
+        GIT_TERMINAL_PROMPT: '0',
+      },
+    });
 
   const command = `cd "${tempFolder}" && ${setGitUser} && ${setup} && ${test} && ${script}`;
   const result = await exec(command);
