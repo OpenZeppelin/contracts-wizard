@@ -57,9 +57,16 @@ export const solidityERC20AIFunctionDefinition = {
       crossChainBridging: {
         anyOf: [
           { type: 'boolean', enum: [false] },
-          { type: 'string', enum: extractStringEnumValues<CrossChainBridging>()(['custom', 'superchain']) },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<CrossChainBridging>()(['custom', 'erc7786native', 'superchain']),
+          },
         ],
         description: solidityERC20Descriptions.crossChainBridging,
+      },
+      crossChainLinkAllowOverride: {
+        type: 'boolean',
+        description: solidityERC20Descriptions.crossChainLinkAllowOverride,
       },
       premintChainId: {
         type: 'string',
