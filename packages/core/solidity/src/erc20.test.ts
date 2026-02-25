@@ -130,6 +130,11 @@ testERC20('erc20 votes', {
   votes: true,
 });
 
+testERC20('erc20 votes, no permit', {
+  votes: true,
+  permit: false,
+});
+
 testERC20('erc20 votes + blocknumber', {
   votes: 'blocknumber',
 });
