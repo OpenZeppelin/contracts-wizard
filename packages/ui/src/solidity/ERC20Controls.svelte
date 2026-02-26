@@ -134,7 +134,7 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.permit || opts.votes}>
+    <label class:checked={opts.permit}>
       <input type="checkbox" bind:checked={opts.permit} />
       Permit
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Permit">

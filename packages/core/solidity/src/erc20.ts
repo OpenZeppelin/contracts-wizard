@@ -131,14 +131,13 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
     addCallback(c);
   }
 
-  // Note: Votes requires Permit
-  if (allOpts.permit || allOpts.votes) {
+  if (allOpts.permit) {
     addPermit(c, allOpts.name);
   }
 
   if (allOpts.votes) {
     const clockMode = allOpts.votes === true ? clockModeDefault : allOpts.votes;
-    addVotes(c, clockMode);
+    addVotes(c, allOpts.name, clockMode);
   }
 
   if (allOpts.flashmint) {
@@ -309,9 +308,14 @@ function addPermit(c: ContractBuilder, name: string) {
   c.addOverride(ERC20Permit, functions.nonces);
 }
 
-function addVotes(c: ContractBuilder, clockMode: ClockMode) {
+function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   if (!c.parents.some(p => p.contract.name === 'ERC20Permit')) {
-    throw new Error('Missing ERC20Permit requirement for ERC20Votes');
+    // ERC20Permit initializes the EIP712 domain separator. If ERC20Permit is not a parent, we need to do it here.
+    const EIP712 = {
+      name: 'EIP712',
+      path: '@openzeppelin/contracts/utils/cryptography/EIP712.sol',
+    };
+    c.addParent(EIP712, [name, '1']);
   }
 
   const ERC20Votes = {
