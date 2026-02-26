@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.10.7 (2026-02-26)
+
+- Make ERC20Permit optional when ERC20Votes is enabled ([#778](https://github.com/OpenZeppelin/contracts-wizard/pull/778))
+- Solidity `erc20`, `stablecoin`, `realWorldAsset`: Support 'erc7786native' option for `crossChainBridging`. ([#747](https://github.com/OpenZeppelin/contracts-wizard/pull/747))
+  - Uses OpenZeppelin Contracts 5.6.0
+  - **Breaking changes**: Solidity `erc20`, `stablecoin`, `realWorldAsset`: 'custom' option for `crossChainBridging` now requires access control, and adds a function to allow updating the token bridge address after deployment. Constructor/initializer parameter order changed due to access control requirement.
+
 ## 0.10.6 (2026-02-17)
 
 - Add support for Confidential Contracts Wizard ([#652](https://github.com/OpenZeppelin/contracts-wizard/pull/652))

@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.4.4 (2026-02-26)
+
+- Solidity `erc20`, `stablecoin`, `realWorldAsset`: Support 'erc7786native' option for `crossChainBridging`. ([#747](https://github.com/OpenZeppelin/contracts-wizard/pull/747))
+
 ## 0.4.3 (2026-02-17)
 
 - Cairo: added AI prompt descriptions for: ([#774](https://github.com/OpenZeppelin/contracts-wizard/pull/774))
