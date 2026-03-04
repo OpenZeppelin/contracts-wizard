@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 
 import { generateFungibleOptions } from './fungible';
+import { generateGovernorOptions } from './governor';
 import { generateNonFungibleOptions } from './non-fungible';
 import { generateStablecoinOptions } from './stablecoin';
 import type { GenericOptions, KindedOptions } from '../build-generic';
@@ -17,6 +18,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Fungible') {
     for (const kindOpts of generateFungibleOptions()) {
       yield { kind: 'Fungible', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Governor') {
+    for (const kindOpts of generateGovernorOptions()) {
+      yield { kind: 'Governor', ...kindOpts };
     }
   }
 

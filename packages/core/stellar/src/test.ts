@@ -17,6 +17,10 @@ test.serial('fungible result generated', async t => {
   await testGenerate(t, 'Fungible');
 });
 
+test.serial('governor result generated', async t => {
+  await testGenerate(t, 'Governor');
+});
+
 test.serial('non-fungible result generated', async t => {
   await testGenerate(t, 'NonFungible');
 });

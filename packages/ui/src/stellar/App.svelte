@@ -6,6 +6,7 @@
   import JSZip from 'jszip';
 
   import FungibleControls from './FungibleControls.svelte';
+  import GovernorControls from './GovernorControls.svelte';
   import NonFungibleControls from './NonFungibleControls.svelte';
   import StablecoinControls from './StablecoinControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
@@ -122,6 +123,8 @@
           case 'Fungible':
             opts.premint = initialOpts.premint ?? opts.premint;
             break;
+          case 'Governor':
+            break;
           case 'Stablecoin':
             opts.premint = initialOpts.premint ?? opts.premint;
             break;
@@ -191,6 +194,7 @@
     <div class="tab overflow-hidden">
       <OverflowMenu>
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
+        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin </button>
       </OverflowMenu>
@@ -252,6 +256,9 @@
     >
       <div class:hidden={tab !== 'Fungible'}>
         <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
+      </div>
+      <div class:hidden={tab !== 'Governor'}>
+        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class:hidden={tab !== 'NonFungible'}>
         <NonFungibleControls bind:opts={allOpts.NonFungible} errors={errors.NonFungible} />

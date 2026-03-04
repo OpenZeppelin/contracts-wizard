@@ -1,5 +1,6 @@
-import type { CommonContractOptions } from './common-options';
+import type { CommonContractOptions, CommonOptions } from './common-options';
 import type { FungibleOptions } from './fungible';
+import type { GovernorOptions } from './governor';
 import type { NonFungibleOptions } from './non-fungible';
 import type { StablecoinOptions } from './stablecoin';
 import {
@@ -12,13 +13,14 @@ import {
   defaults as fungibledefaults,
   isAccessControlRequired as fungibleIsAccessControlRequired,
 } from './fungible';
+import { printGovernor, defaults as governorDefaults } from './governor';
 import {
   printNonFungible,
   defaults as nonFungibledefaults,
   isAccessControlRequired as nonFungibleIsAccessControlRequired,
 } from './non-fungible';
 
-export interface WizardContractAPI<Options extends CommonContractOptions> {
+export interface WizardContractAPI<Options extends CommonOptions> {
   /**
    * Returns a string representation of a contract generated using the provided options. If opts is not provided, uses `defaults`.
    */
@@ -39,6 +41,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
 }
 
 export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<FungibleOptions>;
+export type Governor = WizardContractAPI<GovernorOptions>;
 export type NonFungible = WizardContractAPI<NonFungibleOptions> & AccessControlAPI<NonFungibleOptions>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
 
@@ -46,6 +49,11 @@ export const fungible: Fungible = {
   print: printFungible,
   defaults: fungibledefaults,
   isAccessControlRequired: fungibleIsAccessControlRequired,
+};
+
+export const governor: Governor = {
+  print: printGovernor,
+  defaults: governorDefaults,
 };
 
 export const nonFungible: NonFungible = {

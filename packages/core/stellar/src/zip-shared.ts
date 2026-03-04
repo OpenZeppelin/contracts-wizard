@@ -43,6 +43,7 @@ export const libDependencies = [
   'stellar-tokens',
   'stellar-access',
   'stellar-contract-utils',
+  'stellar-governance',
   'stellar-macros',
 ] as const;
 

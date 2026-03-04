@@ -71,6 +71,14 @@
       <HelpTooltip>Token holders will be able to destroy their NFTs.</HelpTooltip>
     </label>
 
+    <label class:checked={opts.votes} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} />
+      Votes
+      <HelpTooltip
+        >Adds vote checkpoints and delegation support. Incompatible with Enumerable and Consecutive.</HelpTooltip
+      >
+    </label>
+
     <label class:checked={opts.enumerable} use:error={errors?.enumerable}>
       <input type="checkbox" bind:checked={opts.enumerable} />
       Enumerable

@@ -9,6 +9,7 @@ const blueprint = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
   burnable: booleans,
+  votes: booleans,
   pausable: booleans,
   upgradeable: booleans,
   mintable: booleans,

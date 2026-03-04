@@ -224,3 +224,45 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation nonfungible votes',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      burnable: false,
+      votes: true,
+      enumerable: false,
+      consecutive: false,
+      pausable: false,
+      upgradeable: false,
+      mintable: false,
+      sequential: false,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation nonfungible votes full',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      burnable: true,
+      votes: true,
+      enumerable: false,
+      consecutive: false,
+      pausable: true,
+      upgradeable: true,
+      mintable: true,
+      sequential: true,
+    },
+    { snapshotResult: false },
+  ),
+);

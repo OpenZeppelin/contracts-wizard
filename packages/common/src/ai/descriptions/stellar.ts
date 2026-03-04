@@ -3,6 +3,7 @@
 
 export const stellarPrompts = {
   Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20.',
+  Governor: 'Make a governor contract for on-chain governance using token-based voting.',
   NonFungible:
     'Make a non-fungible token per the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721.',
   Stablecoin: 'Make a stablecoin that uses Fungible Token Standard, compatible with SEP-41.',
@@ -18,6 +19,7 @@ export const stellarCommonDescriptions = {
 
 export const stellarFungibleDescriptions = {
   premint: 'The number of tokens to premint for the deployer.',
+  votes: 'Whether to enable vote checkpoints and delegation for governance.',
 };
 
 export const stellarNonFungibleDescriptions = {
@@ -25,9 +27,19 @@ export const stellarNonFungibleDescriptions = {
   consecutive: 'To batch mint NFTs instead of minting them individually (sequential minting is mandatory).',
   sequential: 'Whether the IDs of the minted NFTs will be sequential.',
   tokenUri: 'The metadata URI returned by the token contract for every NFT.',
+  votes: 'Whether to enable vote checkpoints and delegation for governance.',
 };
 
 export const stellarStablecoinDescriptions = {
   limitations: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them.',
   premint: 'The number of tokens to premint for the deployer.',
+  votes: 'Whether to enable vote checkpoints and delegation for governance.',
+};
+
+export const stellarGovernorDescriptions = {
+  version: 'The semantic version label returned by the governor contract.',
+  votingDelay: 'Number of ledgers between proposal creation and voting start.',
+  votingPeriod: 'Number of ledgers during which voting remains open.',
+  proposalThreshold: 'Minimum voting power required for creating a proposal.',
+  quorum: 'Minimum participation required for a proposal to pass.',
 };

@@ -3,6 +3,7 @@ import test from 'ava';
 import type { StablecoinOptions } from './stablecoin';
 import { buildStablecoin } from './stablecoin';
 import { printContract } from './print';
+import { OptionsError } from './error';
 
 import { stablecoin } from '.';
 
@@ -60,6 +61,10 @@ testStablecoin('stablecoin premint of 0', {
 
 testStablecoin('stablecoin mintable', {
   mintable: true,
+});
+
+testStablecoin('stablecoin votes', {
+  votes: true,
 });
 
 testStablecoin('stablecoin ownable', {
@@ -135,6 +140,22 @@ testStablecoin('stablecoin full - complex name', {
 
 testStablecoin('stablecoin explicit trait implementations', {
   explicitImplementations: true,
+});
+
+test('throws error when votes and limitations are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildStablecoin({
+        name: 'MyStablecoin',
+        symbol: 'MST',
+        votes: true,
+        limitations: 'allowlist',
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.votes, 'Votes extension cannot be used with stablecoin limitations');
+  t.is(error?.messages.limitations, 'Stablecoin limitations cannot be used with Votes extension');
 });
 
 testAPIEquivalence('stablecoin API default');
