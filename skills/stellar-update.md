@@ -11,7 +11,7 @@ Before starting, collect the following from the user:
 
 | Input                 | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |
-| `CONTRACTS_REPO_PATH` | Absolute path to the local `contracts-wizard` repository     |
+| `CONTRACTS_REPO_PATH` | Absolute path to the local `stellar-contracts` repository     |
 | `NEW_TAG`             | Tag or commit SHA of the new `stellar-contracts` release     |
 | `OLD_TAG`             | Tag or commit SHA of the previous release to compare against |
 
