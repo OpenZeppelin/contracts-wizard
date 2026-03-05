@@ -11,7 +11,7 @@ Before starting, collect the following from the user:
 
 | Input                 | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |
-| `CONTRACTS_REPO_PATH` | Absolute path to the local `stellar-contracts` repository     |
+| `CONTRACTS_REPO_PATH` | Absolute path to the local `stellar-contracts` repository    |
 | `NEW_TAG`             | Tag or commit SHA of the new `stellar-contracts` release     |
 | `OLD_TAG`             | Tag or commit SHA of the previous release to compare against |
 
@@ -86,9 +86,10 @@ Produce a structured update plan before touching any code:
 ## Step 4 — Apply the Updates
 
 ### If adding a new contract:
-1. Add a new tab or section in the relevant Wizard UI component
-2. Define the options/configuration the user can set (mirroring the crate's constructor or init parameters)
-3. Implement the code generation logic in `packages/core/stellar` to produce the correct Stellar contract code
+
+1. Define the options/configuration the user can set (mirroring the crate's constructor or init parameters)
+2. Implement the code generation logic in `packages/core/stellar` to produce the correct Stellar contract code
+3. Add a new tab or section in the relevant Wizard UI component
 4. Ensure the generated code uses the correct imports from the new crate
 
 ### If updating an existing contract:
