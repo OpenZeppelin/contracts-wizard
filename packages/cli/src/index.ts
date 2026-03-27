@@ -3,33 +3,28 @@
 import { generateHelp } from './cli-adapter';
 import { registry } from './registry';
 
-const args = process.argv.slice(2);
-const command = args[0];
-
-function isRegistryCommand(value: string): value is keyof typeof registry {
-  return value in registry;
-}
+const [command, ...commandArgs] = process.argv.slice(2);
 
 if (!command || command === '--help' || command === '-h') {
-  const commands = Object.keys(registry);
   process.stdout.write(`Usage: npx @openzeppelin/contracts-cli <command> [options]
 
 Commands:
-  ${commands.join(', ')}
+  ${Object.keys(registry).join(', ')}
 
 Run \`npx @openzeppelin/contracts-cli <command> --help\` for command-specific options.
 `);
   process.exit(0);
 }
 
-if (!isRegistryCommand(command)) {
-  process.stderr.write(`Unknown command: ${command}\n\nRun \`npx @openzeppelin/contracts-cli --help\` for available commands.\n`);
+if (!(command in registry)) {
+  process.stderr.write(`Unknown command: ${command}
+
+Run \`npx @openzeppelin/contracts-cli --help\` for available commands.
+`);
   process.exit(1);
 }
 
-const entry = registry[command];
-
-const commandArgs = args.slice(1);
+const entry = registry[command as keyof typeof registry];
 
 if (commandArgs.includes('--help') || commandArgs.includes('-h')) {
   process.stdout.write(generateHelp(command, entry.schema, entry.description) + '\n');
@@ -39,10 +34,7 @@ if (commandArgs.includes('--help') || commandArgs.includes('-h')) {
 try {
   process.stdout.write(entry.run(commandArgs));
 } catch (e) {
-  if (e instanceof Error) {
-    process.stderr.write(`Error in '${command}': ${e.message}\n`);
-  } else {
-    process.stderr.write(`Error in '${command}': ${e}\n`);
-  }
+  const message = e instanceof Error ? e.message : String(e);
+  process.stderr.write(`Error in '${command}': ${message}\n`);
   process.exit(1);
 }

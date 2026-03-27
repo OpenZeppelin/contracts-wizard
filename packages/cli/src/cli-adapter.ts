@@ -5,6 +5,7 @@ type PrimitiveType = 'string' | 'boolean' | 'number';
 interface BaseTypeInfo {
   type: PrimitiveType | 'object';
   enumValues?: string[];
+  hasLiteralFalse?: boolean;
 }
 
 interface FlagSpec {
@@ -33,19 +34,6 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   }
 }
 
-function getObjectShape(schema: z.ZodTypeAny): z.ZodRawShape | undefined {
-  const unwrapped = unwrapSchema(schema);
-  return unwrapped instanceof z.ZodObject ? unwrapped.shape : undefined;
-}
-
-function getShapeField(shape: z.ZodRawShape, key: string): z.ZodTypeAny {
-  const field = shape[key];
-  if (!field) {
-    throw new Error(`Unknown schema field: ${key}`);
-  }
-  return field;
-}
-
 function getBaseType(schema: z.ZodTypeAny): BaseTypeInfo {
   const unwrapped = unwrapSchema(schema);
 
@@ -54,6 +42,7 @@ function getBaseType(schema: z.ZodTypeAny): BaseTypeInfo {
   if (unwrapped instanceof z.ZodNumber) return { type: 'number' };
   if (unwrapped instanceof z.ZodLiteral) {
     const val = unwrapped._def.value;
+    if (val === false) return { type: 'boolean', hasLiteralFalse: true };
     if (typeof val === 'boolean') return { type: 'boolean' };
     if (typeof val === 'string') return { type: 'string', enumValues: [val] };
     return { type: 'string' };
@@ -65,11 +54,7 @@ function getBaseType(schema: z.ZodTypeAny): BaseTypeInfo {
     for (const option of unwrapped._def.options) {
       const base = getBaseType(option);
       if (base.enumValues) literals.push(...base.enumValues);
-
-      const unwrappedOption = unwrapSchema(option);
-      if (unwrappedOption instanceof z.ZodLiteral && unwrappedOption._def.value === false) {
-        hasFalse = true;
-      }
+      if (base.hasLiteralFalse) hasFalse = true;
     }
     if (literals.length > 0) return { type: 'string', enumValues: hasFalse ? ['false', ...literals] : literals };
     return { type: 'string' };
@@ -94,15 +79,15 @@ function collectFlagSpecs(shape: z.ZodRawShape, pathPrefix: string[] = [], paren
   const specs: FlagSpec[] = [];
 
   for (const key of Object.keys(shape)) {
-    const schema = getShapeField(shape, key);
+    const schema = shape[key]!;
     const base = getBaseType(schema);
     const path = [...pathPrefix, key];
     const required = parentRequired && isRequired(schema);
 
     if (base.type === 'object') {
-      const innerShape = getObjectShape(schema);
-      if (innerShape) {
-        specs.push(...collectFlagSpecs(innerShape, path, required));
+      const unwrapped = unwrapSchema(schema);
+      if (unwrapped instanceof z.ZodObject) {
+        specs.push(...collectFlagSpecs(unwrapped.shape, path, required));
       }
       continue;
     }
@@ -125,23 +110,14 @@ function formatFlag(spec: FlagSpec): string {
   if (spec.type === 'boolean') {
     return `  --${spec.name}`;
   }
-
   const typeStr = spec.enumValues ? spec.enumValues.join('|') : spec.type;
   return `  --${spec.name} <${typeStr}>`;
 }
 
 function parseFlagValue(spec: FlagSpec, value: string): string | number | boolean {
-  if (spec.type === 'number') {
-    return Number(value);
-  }
-  if (spec.hasLiteralFalse && value === 'false') {
-    return false;
-  }
+  if (spec.type === 'number') return Number(value);
+  if (spec.hasLiteralFalse && value === 'false') return false;
   return value;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function setPathValue(target: Record<string, unknown>, path: string[], value: string | number | boolean): void {
@@ -149,25 +125,15 @@ function setPathValue(target: Record<string, unknown>, path: string[], value: st
 
   for (const segment of path.slice(0, -1)) {
     const existing = current[segment];
-
     if (existing === undefined) {
       current[segment] = {};
-    } else if (!isRecord(existing)) {
+    } else if (typeof existing !== 'object' || existing === null || Array.isArray(existing)) {
       throw new Error(`Invalid option nesting: --${path.join('.')}`);
     }
-
-    const next = current[segment];
-    if (!isRecord(next)) {
-      throw new Error(`Invalid option nesting: --${path.join('.')}`);
-    }
-    current = next;
+    current = current[segment] as Record<string, unknown>;
   }
 
-  const leaf = path.at(-1);
-  if (!leaf) {
-    throw new Error('Invalid schema path');
-  }
-  current[leaf] = value;
+  current[path.at(-1)!] = value;
 }
 
 export function generateHelp(commandName: string, shape: z.ZodRawShape, description?: string): string {
@@ -205,10 +171,6 @@ export function generateHelp(commandName: string, shape: z.ZodRawShape, descript
   return lines.join('\n');
 }
 
-/**
- * Manually parses argv against a Zod schema shape.
- * Handles: --flag (boolean true), --flag true|false, --flag value, --flag=value, --key.nested value
- */
 export function parseArgsFromSchema<T extends z.ZodRawShape>(
   shape: T,
   argv: string[],
@@ -249,11 +211,8 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(
 
     if (spec.type === 'boolean') {
       const nextArg = inlineValue ?? argv[i + 1];
-      if (nextArg === 'true') {
-        setPathValue(result, spec.path, true);
-        i += inlineValue ? 1 : 2;
-      } else if (nextArg === 'false') {
-        setPathValue(result, spec.path, false);
+      if (nextArg === 'true' || nextArg === 'false') {
+        setPathValue(result, spec.path, nextArg === 'true');
         i += inlineValue ? 1 : 2;
       } else {
         setPathValue(result, spec.path, true);
