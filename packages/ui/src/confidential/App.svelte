@@ -15,8 +15,9 @@
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-confidential';
+  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-confidential';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-confidential';
+  import { getVersionedRemappings } from '../../../core/confidential/src/get-versioned-remappings';
 
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';

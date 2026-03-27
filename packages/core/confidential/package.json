@@ -11,8 +11,6 @@
     "NOTICE",
     "/dist",
     "/src",
-    "contract-version-pins.json",
-    "contract-version-pins.d.ts",
     "!**/*.test.*"
   ],
   "scripts": {
