@@ -8,7 +8,6 @@
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import RemixIcon from '../common/icons/RemixIcon.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
-  import Tooltip from '../common/Tooltip.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
@@ -16,7 +15,7 @@
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-uniswap-hooks';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import { postConfig } from '../common/post-config';
@@ -51,8 +50,7 @@
   export let initialOpts: InitialOptions = {};
   let initialValuesSet = false;
 
-  // Remove { upgradeable: string } when upgradability gets implemented (kept to safeguard opening remix on transparent if added without check)
-  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> & { upgradeable: string } } = {};
+  let allOpts: { [k in Kind]?: Required<KindedOptions[k]> } = {};
   let errors: { [k in Kind]?: OptionsErrorMessages } = {};
 
   let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyHook');
@@ -123,10 +121,8 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const { getVersionedRemappings } = await import('@openzeppelin/wizard/get-versioned-remappings');
-
     const remappings = getVersionedRemappings(opts);
-    window.open(remixURL(code, remappings, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    window.open(remixURL(code, remappings, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -190,33 +186,10 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip
-            let:trigger
-            disabled={!(opts?.upgradeable === 'transparent')}
-            theme="light-red border"
-            hideOnClick={false}
-            interactive
-          >
-            <button
-              use:trigger
-              class="action-button with-text"
-              class:disabled={opts?.upgradeable === 'transparent'}
-              on:click={remixHandler}
-            >
-              <RemixIcon />
-              Open in Remix
-            </button>
-            <div slot="content">
-              Transparent upgradeable contracts are not supported on Remix. Try using Remix with UUPS upgradability or
-              use Hardhat or Foundry with
-              <a href="https://docs.openzeppelin.com/upgrades-plugins/" target="_blank" rel="noopener noreferrer"
-                >OpenZeppelin Upgrades</a
-              >.
-              <br />
-              <!-- svelte-ignore a11y-invalid-attribute -->
-              <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
-            </div>
-          </Tooltip>
+          <button class="action-button with-text" on:click={remixHandler}>
+            <RemixIcon />
+            Open in Remix
+          </button>
         {/if}
 
         <Dropdown let:active>

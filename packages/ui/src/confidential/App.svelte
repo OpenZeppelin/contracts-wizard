@@ -16,7 +16,7 @@
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-confidential';
+  import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-confidential';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-confidential';
 
   import openzeppelinContracts from '@openzeppelin/wizard/openzeppelin-contracts';
@@ -135,8 +135,6 @@
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
-
-    const { getVersionedRemappings } = await import('@openzeppelin/wizard-confidential/get-versioned-remappings');
 
     const remappings = getVersionedRemappings();
     window.open(remixURL(code, remappings, false).toString(), '_blank', 'noopener,noreferrer');

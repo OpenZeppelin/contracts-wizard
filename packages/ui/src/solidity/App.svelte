@@ -24,7 +24,14 @@
   import Tooltip from '../common/Tooltip.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
+  import {
+    ContractBuilder,
+    buildGeneric,
+    printContract,
+    getVersionedRemappings,
+    sanitizeKind,
+    OptionsError,
+  } from '@openzeppelin/wizard';
   import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
   import { remixURL } from './remix';
@@ -175,8 +182,6 @@
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
-
-    const { getVersionedRemappings } = await import('@openzeppelin/wizard/get-versioned-remappings');
 
     const remappings = getVersionedRemappings(opts);
     window.open(remixURL(code, remappings, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
