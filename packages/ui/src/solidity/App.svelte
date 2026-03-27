@@ -28,10 +28,10 @@
     ContractBuilder,
     buildGeneric,
     printContract,
-    getVersionedRemappings,
     sanitizeKind,
     OptionsError,
   } from '@openzeppelin/wizard';
+  import { getVersionedRemappings } from '../../../core/solidity/src/get-versioned-remappings';
   import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
   import { remixURL } from './remix';
