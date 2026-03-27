@@ -11,10 +11,12 @@
     "NOTICE",
     "/dist",
     "/src",
+    "contract-version-pins.json",
+    "contract-version-pins.d.ts",
     "!**/*.test.*"
   ],
   "scripts": {
-    "prepare": "tsc",
+    "prepare": "tsc && node dist/scripts/prepare.js",
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
     "test": "ava",
     "test:compile": "npm test -- src/test.ts",
