@@ -243,24 +243,6 @@
 </div>
 
 <style lang="postcss">
-  .button-bg:hover {
-    transform: translateX(-2px);
-    transition: transform 300ms;
-  }
-
-  .hide-deploy {
-    transform: translateX(-320px);
-    transition: transform 0.45s;
-  }
-  .hide-deploy button {
-    background-color: white;
-    border: 1px solid white;
-  }
-
-  .hide-deploy:hover {
-    transform: translatex(-318px);
-  }
-
   .container {
     background-color: var(--gray-1);
     min-width: 32rem;
@@ -341,34 +323,6 @@
   .controls {
     background-color: white;
     padding: var(--size-4);
-  }
-
-  .controls-footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    color: var(--gray-5);
-    margin-top: var(--size-3);
-    padding: 0 var(--size-2);
-    font-size: var(--text-small);
-
-    & > * + * {
-      margin-left: var(--size-3);
-    }
-
-    :global(.icon) {
-      margin-right: 0.2em;
-      opacity: 0.8;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-
-      &:hover {
-        color: var(--text-color);
-      }
-    }
   }
 
   .download-option {
