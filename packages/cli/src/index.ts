@@ -40,9 +40,9 @@ try {
   process.stdout.write(entry.run(commandArgs));
 } catch (e) {
   if (e instanceof Error) {
-    process.stderr.write(`Error: ${e.message}\n`);
+    process.stderr.write(`Error in '${command}': ${e.message}\n`);
   } else {
-    process.stderr.write(`Error: ${e}\n`);
+    process.stderr.write(`Error in '${command}': ${e}\n`);
   }
   process.exit(1);
 }

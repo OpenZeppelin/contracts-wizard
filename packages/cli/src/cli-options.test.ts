@@ -29,21 +29,6 @@ test('solidity-erc20: basic', t => {
   t.is(output, erc20.print({ name: 'TestToken', symbol: 'TST' }));
 });
 
-test('solidity-erc20: boolean --flag true/false', t => {
-  const output = run('solidity-erc20', '--name', 'TestToken', '--symbol', 'TST', '--mintable', 'true', '--pausable', 'false');
-  t.is(output, erc20.print({ name: 'TestToken', symbol: 'TST', mintable: true, pausable: false }));
-});
-
-test('solidity-erc20: with options', t => {
-  const output = run('solidity-erc20', '--name', 'TestToken', '--symbol', 'TST', '--mintable', '--pausable', '--votes', 'blocknumber');
-  t.is(output, erc20.print({ name: 'TestToken', symbol: 'TST', mintable: true, pausable: true, votes: 'blocknumber' }));
-});
-
-test('solidity-erc20: info options', t => {
-  const output = run('solidity-erc20', '--name', 'TestToken', '--symbol', 'TST', '--info.license', 'Apache-2.0');
-  t.is(output, erc20.print({ name: 'TestToken', symbol: 'TST', info: { license: 'Apache-2.0' } }));
-});
-
 test('solidity-erc20: most options', t => {
   const opts = {
     name: 'TestToken',

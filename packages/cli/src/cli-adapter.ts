@@ -217,6 +217,7 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(
   const flagSpecsByName = new Map(flagSpecs.map(spec => [spec.name, spec]));
 
   const result: Record<string, unknown> = {};
+  const seen = new Set<string>();
 
   let i = 0;
   while (i < argv.length) {
@@ -241,6 +242,11 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(
       throw new Error(`Unknown option: --${flagName}`);
     }
 
+    if (seen.has(flagName)) {
+      throw new Error(`Duplicate option: --${flagName}`);
+    }
+    seen.add(flagName);
+
     if (spec.type === 'boolean') {
       const nextArg = inlineValue ?? argv[i + 1];
       if (nextArg === 'true') {
@@ -263,5 +269,35 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(
     }
   }
 
-  return z.object(shape).parse(result);
+  const parsed = z.object(shape).safeParse(result);
+  if (!parsed.success) {
+    const missing: string[] = [];
+    const invalid: string[] = [];
+
+    for (const issue of parsed.error.issues) {
+      const name = issue.path.join('.');
+      const spec = flagSpecsByName.get(name);
+      const isMissing = issue.code === 'invalid_type' && issue.received === 'undefined';
+
+      const line = spec
+        ? `  ${formatFlag(spec)}  ${spec.description ?? ''}`
+        : `  --${name}: ${issue.message}`;
+
+      if (isMissing) {
+        missing.push(line);
+      } else {
+        invalid.push(line);
+      }
+    }
+
+    const sections: string[] = [];
+    if (invalid.length > 0) {
+      sections.push(`Invalid values for options:\n${invalid.join('\n')}`);
+    }
+    if (missing.length > 0) {
+      sections.push(`Missing required options:\n${missing.join('\n')}`);
+    }
+    throw new Error(sections.join('\n\n'));
+  }
+  return parsed.data;
 }
