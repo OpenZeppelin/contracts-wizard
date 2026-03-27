@@ -1,3 +1,4 @@
 /cache
 /artifacts
 /contracts/generated
+/contract-version-pins.json
