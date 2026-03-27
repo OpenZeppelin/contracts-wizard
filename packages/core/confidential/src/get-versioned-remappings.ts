@@ -1,5 +1,5 @@
 import contractsVersion from '@openzeppelin/wizard/openzeppelin-contracts-version.json';
-import contractVersionPins from '../contract-version-pins';
+import contractVersionPins from '../contract-version-pins.json';
 
 export function getVersionedRemappings(): string[] {
   return [

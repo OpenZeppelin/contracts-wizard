@@ -1,7 +1,7 @@
 import test from 'ava';
 import { getVersionedRemappings } from './get-versioned-remappings';
 import openzeppelinContracts from '../../solidity/openzeppelin-contracts';
-import contractVersionPins from '../contract-version-pins';
+import contractVersionPins from '../contract-version-pins.json';
 
 test('getVersionedRemappings returns remappings for all confidential dependencies', t => {
   const remappings = getVersionedRemappings();
