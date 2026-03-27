@@ -15,7 +15,12 @@
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-uniswap-hooks';
+  import {
+    sanitizeKind,
+    buildGeneric,
+    printContract,
+    getVersionedRemappings,
+  } from '@openzeppelin/wizard-uniswap-hooks';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import { postConfig } from '../common/post-config';
@@ -97,7 +102,7 @@
 
   const getButtonVisibilities = (opts?: KindedOptions[Kind]): ButtonVisibilities => {
     return {
-      openInRemix: false,
+      openInRemix: true,
       downloadHardhat: false,
       downloadFoundry: false,
     };

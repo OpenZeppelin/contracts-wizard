@@ -5,7 +5,7 @@ import { compatibleContractsSemver } from './utils/version';
 export function getVersionedRemappings(opts?: CommonOptions): string[] {
   const remappings = [
     `@openzeppelin/contracts/=@openzeppelin/contracts@${contracts.version}/`,
-    `@openzeppelin/uniswap-hooks/=@openzeppelin/uniswap-hooks@${compatibleContractsSemver}/`,
+    `@openzeppelin/uniswap-hooks/=@openzeppelin/uniswap-hooks@${compatibleContractsSemver}/src/`,
   ];
   if (opts?.upgradeable) {
     remappings.push(
