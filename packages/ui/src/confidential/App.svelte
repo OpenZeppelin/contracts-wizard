@@ -12,15 +12,11 @@
   import FileIcon from '../common/icons/FileIcon.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
-  import Tooltip from '../common/Tooltip.svelte';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-confidential';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-confidential';
-
-  import openzeppelinContracts from '@openzeppelin/wizard/openzeppelin-contracts';
-  import contractVersionPins from '@openzeppelin/wizard-confidential/contract-version-pins';
 
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
@@ -120,18 +116,6 @@
     }, 1000);
   };
 
-  let copiedRemappings = false;
-  const copyRemappingsHandler = async () => {
-    await navigator.clipboard.writeText(
-      `@openzeppelin/contracts/=@openzeppelin/contracts@${openzeppelinContracts.version}/
-@fhevm/solidity/=@fhevm/solidity@${contractVersionPins.fhevmSolidityVersion}/`,
-    );
-    copiedRemappings = true;
-    setTimeout(() => {
-      copiedRemappings = false;
-    }, 1000);
-  };
-
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
@@ -198,36 +182,10 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip let:trigger theme="light border" interactive trigger="click">
-            <button use:trigger class="action-button with-text">
-              <RemixIcon />
-              Open in Remix
-            </button>
-            <div slot="content">
-              Perform the following steps:
-              <p>
-                <b>1.</b>
-                {#if copiedRemappings}
-                  <CheckIcon />
-                  Copied!
-                {:else}
-                  <button class="link-button" on:click={copyRemappingsHandler} title="Copy remappings">
-                    Copy remappings
-                  </button>
-                  to your clipboard.
-                {/if}
-              </p>
-              <p>
-                <b>2.</b>
-                <button class="link-button" on:click={remixHandler} title="Open in Remix">Open in Remix</button>.
-              </p>
-              <p>
-                <b>3.</b>
-                In Remix's file explorer, create a new file called<br />
-                <code>remappings.txt</code> and paste the remappings into it.
-              </p>
-            </div>
-          </Tooltip>
+          <button class="action-button with-text" on:click={remixHandler}>
+            <RemixIcon />
+            Open in Remix
+          </button>
         {/if}
 
         <Dropdown let:active>
