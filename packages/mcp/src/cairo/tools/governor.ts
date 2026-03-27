@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { GovernorOptions } from '@openzeppelin/wizard-cairo';
 import { governor } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
-import { governorSchema } from '../schemas';
+import { cairoGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
 export function registerCairoGovernor(server: McpServer): RegisteredTool {
   return server.tool(
     'cairo-governor',
     makeDetailedPrompt(cairoPrompts.Governor),
-    governorSchema,
+    cairoGovernorSchema,
     async ({
       name,
       delay,

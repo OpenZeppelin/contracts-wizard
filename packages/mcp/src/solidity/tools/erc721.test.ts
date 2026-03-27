@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC721Options } from '@openzeppelin/wizard';
 import { erc721 } from '@openzeppelin/wizard';
-import { erc721Schema } from '../schemas';
+import { solidityERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof erc721Schema>;
+  schema: z.ZodObject<typeof solidityERC721Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerSolidityERC721(new McpServer(testMcpInfo));
-  t.context.schema = z.object(erc721Schema);
+  t.context.schema = z.object(solidityERC721Schema);
 });
 
 function assertHasAllSupportedFields(
