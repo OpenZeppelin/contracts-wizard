@@ -29,17 +29,9 @@ export {
   stellarNonFungibleSchema,
 } from './stellar';
 
-export {
-  stylusCommonSchema,
-  stylusERC20Schema,
-  stylusERC721Schema,
-  stylusERC1155Schema,
-} from './stylus';
+export { stylusCommonSchema, stylusERC20Schema, stylusERC721Schema, stylusERC1155Schema } from './stylus';
 
-export {
-  confidentialCommonSchema,
-  confidentialERC7984Schema,
-} from './confidential';
+export { confidentialCommonSchema, confidentialERC7984Schema } from './confidential';
 
 export {
   uniswapHooksCommonSchema,

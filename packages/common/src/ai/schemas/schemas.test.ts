@@ -39,7 +39,11 @@ import {
  * Verifies that every field in a Zod schema shape has a .describe() string.
  * Guards against accidentally dropping descriptions when modifying schemas.
  */
-function assertAllFieldsHaveDescriptions(t: { pass: () => void; fail: (msg: string) => void }, shape: z.ZodRawShape, prefix = '') {
+function assertAllFieldsHaveDescriptions(
+  t: { pass: () => void; fail: (msg: string) => void },
+  shape: z.ZodRawShape,
+  prefix = '',
+) {
   for (const [key, schema] of Object.entries(shape)) {
     const zodSchema = schema as z.ZodTypeAny;
     const fullKey = prefix ? `${prefix}.${key}` : key;

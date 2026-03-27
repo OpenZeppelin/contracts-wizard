@@ -123,7 +123,19 @@ test('invalid enum value', t => {
 });
 
 test('invalid number value', t => {
-  t.snapshot(runError('solidity-governor', '--name', 'TestGov', '--delay', '1 day', '--period', '1 week', '--quorumPercent', 'notanumber'));
+  t.snapshot(
+    runError(
+      'solidity-governor',
+      '--name',
+      'TestGov',
+      '--delay',
+      '1 day',
+      '--period',
+      '1 week',
+      '--quorumPercent',
+      'notanumber',
+    ),
+  );
 });
 
 test('duplicate flag', t => {
@@ -163,6 +175,23 @@ test('string values with spaces', t => {
 });
 
 test('nested dot options with multiple fields', t => {
-  const output = run('solidity-erc20', '--name', 'TestToken', '--symbol', 'TST', '--info.license', 'Apache-2.0', '--info.securityContact', 'test@test.com');
-  t.is(output, erc20.print({ name: 'TestToken', symbol: 'TST', info: { license: 'Apache-2.0', securityContact: 'test@test.com' } }));
+  const output = run(
+    'solidity-erc20',
+    '--name',
+    'TestToken',
+    '--symbol',
+    'TST',
+    '--info.license',
+    'Apache-2.0',
+    '--info.securityContact',
+    'test@test.com',
+  );
+  t.is(
+    output,
+    erc20.print({
+      name: 'TestToken',
+      symbol: 'TST',
+      info: { license: 'Apache-2.0', securityContact: 'test@test.com' },
+    }),
+  );
 });

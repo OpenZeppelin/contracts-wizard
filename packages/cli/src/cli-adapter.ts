@@ -171,10 +171,7 @@ export function generateHelp(commandName: string, shape: z.ZodRawShape, descript
   return lines.join('\n');
 }
 
-export function parseArgsFromSchema<T extends z.ZodRawShape>(
-  shape: T,
-  argv: string[],
-): z.infer<z.ZodObject<T>> {
+export function parseArgsFromSchema<T extends z.ZodRawShape>(shape: T, argv: string[]): z.infer<z.ZodObject<T>> {
   const flagSpecs = collectFlagSpecs(shape);
   const flagSpecsByName = new Map(flagSpecs.map(spec => [spec.name, spec]));
 
@@ -238,9 +235,7 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(
       const spec = flagSpecsByName.get(name);
       const isMissing = issue.code === 'invalid_type' && issue.received === 'undefined';
 
-      const line = spec
-        ? `  ${formatFlag(spec)}  ${spec.description ?? ''}`
-        : `  --${name}: ${issue.message}`;
+      const line = spec ? `  ${formatFlag(spec)}  ${spec.description ?? ''}` : `  --${name}: ${issue.message}`;
 
       if (isMissing) {
         missing.push(line);

@@ -11,9 +11,7 @@ function getWorkspacePackages() {
 
   for (const pattern of patterns) {
     // Expand simple globs (e.g. "packages/core/*")
-    const dirs = pattern.includes('*')
-      ? expandGlob(pattern)
-      : [join(root, pattern)];
+    const dirs = pattern.includes('*') ? expandGlob(pattern) : [join(root, pattern)];
 
     for (const dir of dirs) {
       const pkgPath = join(dir, 'package.json');
@@ -22,10 +20,7 @@ function getWorkspacePackages() {
         if (!pkg.name) continue;
         packages.set(pkg.name, {
           dir,
-          deps: new Set([
-            ...Object.keys(pkg.dependencies ?? {}),
-            ...Object.keys(pkg.peerDependencies ?? {}),
-          ]),
+          deps: new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]),
         });
       } catch {
         // no package.json in this dir
@@ -47,7 +42,11 @@ function expandGlob(pattern) {
     return readdirSync(base)
       .map(name => join(base, name))
       .filter(p => {
-        try { return statSync(p).isDirectory(); } catch { return false; }
+        try {
+          return statSync(p).isDirectory();
+        } catch {
+          return false;
+        }
       });
   } catch {
     return [];

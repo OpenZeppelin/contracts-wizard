@@ -44,17 +44,9 @@ import {
   stellarNonFungibleSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
-import {
-  erc20 as stylusErc20,
-  erc721 as stylusErc721,
-  erc1155 as stylusErc1155,
-} from '@openzeppelin/wizard-stylus';
+import { erc20 as stylusErc20, erc721 as stylusErc721, erc1155 as stylusErc1155 } from '@openzeppelin/wizard-stylus';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
-import {
-  stylusERC20Schema,
-  stylusERC721Schema,
-  stylusERC1155Schema,
-} from '@openzeppelin/wizard-common/schemas';
+import { stylusERC20Schema, stylusERC721Schema, stylusERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 
 import { erc7984 } from '@openzeppelin/wizard-confidential';
 import { confidentialPrompts } from '@openzeppelin/wizard-common';
@@ -94,10 +86,18 @@ export const registry = {
   'solidity-erc20': createRegistryEntry(solidityERC20Schema, opts => erc20.print(opts), solidityPrompts.ERC20),
   'solidity-erc721': createRegistryEntry(solidityERC721Schema, opts => erc721.print(opts), solidityPrompts.ERC721),
   'solidity-erc1155': createRegistryEntry(solidityERC1155Schema, opts => erc1155.print(opts), solidityPrompts.ERC1155),
-  'solidity-stablecoin': createRegistryEntry(solidityStablecoinSchema, opts => stablecoin.print(opts), solidityPrompts.Stablecoin),
+  'solidity-stablecoin': createRegistryEntry(
+    solidityStablecoinSchema,
+    opts => stablecoin.print(opts),
+    solidityPrompts.Stablecoin,
+  ),
   'solidity-rwa': createRegistryEntry(solidityRWASchema, opts => realWorldAsset.print(opts), solidityPrompts.RWA),
   'solidity-account': createRegistryEntry(solidityAccountSchema, opts => account.print(opts), solidityPrompts.Account),
-  'solidity-governor': createRegistryEntry(solidityGovernorSchema, opts => governor.print(opts), solidityPrompts.Governor),
+  'solidity-governor': createRegistryEntry(
+    solidityGovernorSchema,
+    opts => governor.print(opts),
+    solidityPrompts.Governor,
+  ),
   'solidity-custom': createRegistryEntry(solidityCustomSchema, opts => custom.print(opts), solidityPrompts.Custom),
 
   // Cairo
@@ -112,8 +112,16 @@ export const registry = {
 
   // Stellar
   'stellar-fungible': createRegistryEntry(stellarFungibleSchema, opts => fungible.print(opts), stellarPrompts.Fungible),
-  'stellar-stablecoin': createRegistryEntry(stellarStablecoinSchema, opts => stellarStablecoin.print(opts), stellarPrompts.Stablecoin),
-  'stellar-non-fungible': createRegistryEntry(stellarNonFungibleSchema, opts => nonFungible.print(opts), stellarPrompts.NonFungible),
+  'stellar-stablecoin': createRegistryEntry(
+    stellarStablecoinSchema,
+    opts => stellarStablecoin.print(opts),
+    stellarPrompts.Stablecoin,
+  ),
+  'stellar-non-fungible': createRegistryEntry(
+    stellarNonFungibleSchema,
+    opts => nonFungible.print(opts),
+    stellarPrompts.NonFungible,
+  ),
 
   // Stylus
   'stylus-erc20': createRegistryEntry(stylusERC20Schema, opts => stylusErc20.print(opts), stylusPrompts.ERC20),
@@ -121,7 +129,11 @@ export const registry = {
   'stylus-erc1155': createRegistryEntry(stylusERC1155Schema, opts => stylusErc1155.print(opts), stylusPrompts.ERC1155),
 
   // Confidential
-  'confidential-erc7984': createRegistryEntry(confidentialERC7984Schema, opts => erc7984.print(opts), confidentialPrompts.ERC7984),
+  'confidential-erc7984': createRegistryEntry(
+    confidentialERC7984Schema,
+    opts => erc7984.print(opts),
+    confidentialPrompts.ERC7984,
+  ),
 
   // Uniswap Hooks
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),

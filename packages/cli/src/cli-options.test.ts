@@ -47,13 +47,23 @@ test('solidity-erc20: most options', t => {
   };
   const output = run(
     'solidity-erc20',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--access', opts.access,
-    '--burnable', '--mintable', '--pausable',
-    '--permit', '--flashmint',
-    '--votes', opts.votes,
-    '--upgradeable', opts.upgradeable,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--access',
+    opts.access,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--permit',
+    '--flashmint',
+    '--votes',
+    opts.votes,
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, erc20.print(opts));
 });
@@ -75,13 +85,24 @@ test('solidity-erc721: most options', t => {
   };
   const output = run(
     'solidity-erc721',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--baseUri', opts.baseUri,
-    '--enumerable', '--uriStorage',
-    '--burnable', '--pausable', '--mintable', '--incremental',
-    '--votes', opts.votes,
-    '--access', opts.access,
-    '--upgradeable', opts.upgradeable,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--baseUri',
+    opts.baseUri,
+    '--enumerable',
+    '--uriStorage',
+    '--burnable',
+    '--pausable',
+    '--mintable',
+    '--incremental',
+    '--votes',
+    opts.votes,
+    '--access',
+    opts.access,
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, erc721.print(opts));
 });
@@ -100,11 +121,19 @@ test('solidity-erc1155: most options', t => {
   };
   const output = run(
     'solidity-erc1155',
-    '--name', opts.name, '--uri', opts.uri,
-    '--burnable', '--pausable', '--mintable',
-    '--supply', '--updatableUri',
-    '--access', opts.access,
-    '--upgradeable', opts.upgradeable,
+    '--name',
+    opts.name,
+    '--uri',
+    opts.uri,
+    '--burnable',
+    '--pausable',
+    '--mintable',
+    '--supply',
+    '--updatableUri',
+    '--access',
+    opts.access,
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, erc1155.print(opts));
 });
@@ -125,12 +154,21 @@ test('solidity-stablecoin: most options', t => {
   };
   const output = run(
     'solidity-stablecoin',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--access', opts.access,
-    '--burnable', '--mintable', '--pausable',
-    '--permit', '--flashmint',
-    '--restrictions', opts.restrictions,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--access',
+    opts.access,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--permit',
+    '--flashmint',
+    '--restrictions',
+    opts.restrictions,
     '--freezable',
   );
   t.is(output, stablecoin.print(opts));
@@ -153,17 +191,28 @@ test('solidity-governor: most options', t => {
   };
   const output = run(
     'solidity-governor',
-    '--name', opts.name,
-    '--delay', opts.delay,
-    '--period', opts.period,
-    '--votes', opts.votes,
-    '--clockMode', opts.clockMode,
-    '--timelock', opts.timelock,
-    '--proposalThreshold', opts.proposalThreshold,
-    '--quorumMode', opts.quorumMode,
-    '--quorumPercent', String(opts.quorumPercent),
-    '--storage', '--settings',
-    '--upgradeable', opts.upgradeable,
+    '--name',
+    opts.name,
+    '--delay',
+    opts.delay,
+    '--period',
+    opts.period,
+    '--votes',
+    opts.votes,
+    '--clockMode',
+    opts.clockMode,
+    '--timelock',
+    opts.timelock,
+    '--proposalThreshold',
+    opts.proposalThreshold,
+    '--quorumMode',
+    opts.quorumMode,
+    '--quorumPercent',
+    String(opts.quorumPercent),
+    '--storage',
+    '--settings',
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, governor.print(opts));
 });
@@ -180,12 +229,17 @@ test('solidity-account: most options', t => {
   };
   const output = run(
     'solidity-account',
-    '--name', opts.name,
-    '--signatureValidation', opts.signatureValidation,
-    '--ERC721Holder', '--ERC1155Holder',
-    '--signer', opts.signer,
+    '--name',
+    opts.name,
+    '--signatureValidation',
+    opts.signatureValidation,
+    '--ERC721Holder',
+    '--ERC1155Holder',
+    '--signer',
+    opts.signer,
     '--batchedExecution',
-    '--upgradeable', opts.upgradeable,
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, account.print(opts));
 });
@@ -205,12 +259,20 @@ test('solidity-rwa: most options', t => {
   };
   const output = run(
     'solidity-rwa',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--burnable', '--mintable', '--pausable',
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--burnable',
+    '--mintable',
+    '--pausable',
     '--permit',
-    '--access', opts.access,
-    '--restrictions', opts.restrictions,
+    '--access',
+    opts.access,
+    '--restrictions',
+    opts.restrictions,
     '--freezable',
   );
   t.is(output, realWorldAsset.print(opts));
@@ -225,10 +287,13 @@ test('solidity-custom: most options', t => {
   };
   const output = run(
     'solidity-custom',
-    '--name', opts.name,
+    '--name',
+    opts.name,
     '--pausable',
-    '--access', opts.access,
-    '--upgradeable', opts.upgradeable,
+    '--access',
+    opts.access,
+    '--upgradeable',
+    opts.upgradeable,
   );
   t.is(output, custom.print(opts));
 });
@@ -255,11 +320,20 @@ test('cairo-erc20: most options', t => {
   };
   const output = run(
     'cairo-erc20',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--burnable', '--mintable', '--pausable',
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--burnable',
+    '--mintable',
+    '--pausable',
     '--votes',
-    '--appName', opts.appName, '--appVersion', opts.appVersion,
+    '--appName',
+    opts.appName,
+    '--appVersion',
+    opts.appVersion,
     '--upgradeable',
   );
   t.is(output, cairoErc20.print(opts));
@@ -278,11 +352,18 @@ test('cairo-erc20: access roles-dar', t => {
   };
   const output = run(
     'cairo-erc20',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--access.type', 'roles-dar',
-    '--access.darInitialDelay', '1 day',
-    '--access.darDefaultDelayIncrease', '1 day',
-    '--access.darMaxTransferDelay', '2 day',
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--access.type',
+    'roles-dar',
+    '--access.darInitialDelay',
+    '1 day',
+    '--access.darDefaultDelayIncrease',
+    '1 day',
+    '--access.darMaxTransferDelay',
+    '2 day',
   );
   t.is(output, cairoErc20.print(opts));
 });
@@ -303,11 +384,21 @@ test('cairo-erc721: most options', t => {
   };
   const output = run(
     'cairo-erc721',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--baseUri', opts.baseUri,
-    '--burnable', '--mintable', '--pausable',
-    '--enumerable', '--votes',
-    '--appName', opts.appName, '--appVersion', opts.appVersion,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--baseUri',
+    opts.baseUri,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--enumerable',
+    '--votes',
+    '--appName',
+    opts.appName,
+    '--appVersion',
+    opts.appVersion,
     '--upgradeable',
   );
   t.is(output, cairoErc721.print(opts));
@@ -325,10 +416,15 @@ test('cairo-erc1155: most options', t => {
   };
   const output = run(
     'cairo-erc1155',
-    '--name', opts.name,
-    '--baseUri', opts.baseUri,
-    '--burnable', '--mintable', '--pausable',
-    '--updatableUri', '--upgradeable',
+    '--name',
+    opts.name,
+    '--baseUri',
+    opts.baseUri,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--updatableUri',
+    '--upgradeable',
   );
   t.is(output, cairoErc1155.print(opts));
 });
@@ -345,10 +441,15 @@ test('cairo-account: most options', t => {
   };
   const output = run(
     'cairo-account',
-    '--name', opts.name,
-    '--type', opts.type,
-    '--declare', '--deploy', '--pubkey',
-    '--outsideExecution', '--upgradeable',
+    '--name',
+    opts.name,
+    '--type',
+    opts.type,
+    '--declare',
+    '--deploy',
+    '--pubkey',
+    '--outsideExecution',
+    '--upgradeable',
   );
   t.is(output, cairoAccount.print(opts));
 });
@@ -371,17 +472,30 @@ test('cairo-governor: most options', t => {
   };
   const output = run(
     'cairo-governor',
-    '--name', opts.name,
-    '--delay', opts.delay,
-    '--period', opts.period,
-    '--votes', opts.votes,
-    '--clockMode', opts.clockMode,
-    '--timelock', opts.timelock,
-    '--proposalThreshold', opts.proposalThreshold,
-    '--quorumMode', opts.quorumMode,
-    '--quorumPercent', String(opts.quorumPercent),
-    '--settings', '--upgradeable',
-    '--appName', opts.appName, '--appVersion', opts.appVersion,
+    '--name',
+    opts.name,
+    '--delay',
+    opts.delay,
+    '--period',
+    opts.period,
+    '--votes',
+    opts.votes,
+    '--clockMode',
+    opts.clockMode,
+    '--timelock',
+    opts.timelock,
+    '--proposalThreshold',
+    opts.proposalThreshold,
+    '--quorumMode',
+    opts.quorumMode,
+    '--quorumPercent',
+    String(opts.quorumPercent),
+    '--settings',
+    '--upgradeable',
+    '--appName',
+    opts.appName,
+    '--appVersion',
+    opts.appVersion,
   );
   t.is(output, cairoGovernor.print(opts));
 });
@@ -392,12 +506,7 @@ test('cairo-multisig: most options', t => {
     quorum: '3',
     upgradeable: true,
   };
-  const output = run(
-    'cairo-multisig',
-    '--name', opts.name,
-    '--quorum', opts.quorum,
-    '--upgradeable',
-  );
+  const output = run('cairo-multisig', '--name', opts.name, '--quorum', opts.quorum, '--upgradeable');
   t.is(output, cairoMultisig.print(opts));
 });
 
@@ -411,11 +520,16 @@ test('cairo-vesting: most options', t => {
   };
   const output = run(
     'cairo-vesting',
-    '--name', opts.name,
-    '--startDate', opts.startDate,
-    '--duration', opts.duration,
-    '--cliffDuration', opts.cliffDuration,
-    '--schedule', opts.schedule,
+    '--name',
+    opts.name,
+    '--startDate',
+    opts.startDate,
+    '--duration',
+    opts.duration,
+    '--cliffDuration',
+    opts.cliffDuration,
+    '--schedule',
+    opts.schedule,
   );
   t.is(output, cairoVesting.print(opts));
 });
@@ -426,11 +540,7 @@ test('cairo-custom: most options', t => {
     pausable: true,
     upgradeable: true,
   };
-  const output = run(
-    'cairo-custom',
-    '--name', opts.name,
-    '--pausable', '--upgradeable',
-  );
+  const output = run('cairo-custom', '--name', opts.name, '--pausable', '--upgradeable');
   t.is(output, cairoCustom.print(opts));
 });
 
@@ -454,10 +564,17 @@ test('stellar-fungible: most options', t => {
   };
   const output = run(
     'stellar-fungible',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--burnable', '--mintable', '--pausable',
-    '--access', opts.access,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--access',
+    opts.access,
     '--upgradeable',
   );
   t.is(output, fungible.print(opts));
@@ -477,12 +594,20 @@ test('stellar-stablecoin: most options', t => {
   };
   const output = run(
     'stellar-stablecoin',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--premint', opts.premint,
-    '--burnable', '--mintable', '--pausable',
-    '--access', opts.access,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--premint',
+    opts.premint,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--access',
+    opts.access,
     '--upgradeable',
-    '--limitations', opts.limitations,
+    '--limitations',
+    opts.limitations,
   );
   t.is(output, stellarStablecoin.print(opts));
 });
@@ -502,11 +627,19 @@ test('stellar-non-fungible: most options', t => {
   };
   const output = run(
     'stellar-non-fungible',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--tokenUri', opts.tokenUri,
-    '--burnable', '--enumerable', '--pausable',
-    '--mintable', '--sequential',
-    '--access', opts.access,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--tokenUri',
+    opts.tokenUri,
+    '--burnable',
+    '--enumerable',
+    '--pausable',
+    '--mintable',
+    '--sequential',
+    '--access',
+    opts.access,
     '--upgradeable',
   );
   t.is(output, nonFungible.print(opts));
@@ -526,11 +659,7 @@ test('stylus-erc20: most options', t => {
     permit: true,
     flashmint: true,
   };
-  const output = run(
-    'stylus-erc20',
-    '--name', opts.name,
-    '--burnable', '--permit', '--flashmint',
-  );
+  const output = run('stylus-erc20', '--name', opts.name, '--burnable', '--permit', '--flashmint');
   t.is(output, stylusErc20.print(opts));
 });
 
@@ -540,11 +669,7 @@ test('stylus-erc721: most options', t => {
     burnable: true,
     enumerable: true,
   };
-  const output = run(
-    'stylus-erc721',
-    '--name', opts.name,
-    '--burnable', '--enumerable',
-  );
+  const output = run('stylus-erc721', '--name', opts.name, '--burnable', '--enumerable');
   t.is(output, stylusErc721.print(opts));
 });
 
@@ -554,19 +679,33 @@ test('stylus-erc1155: most options', t => {
     burnable: true,
     supply: true,
   };
-  const output = run(
-    'stylus-erc1155',
-    '--name', opts.name,
-    '--burnable', '--supply',
-  );
+  const output = run('stylus-erc1155', '--name', opts.name, '--burnable', '--supply');
   t.is(output, stylusErc1155.print(opts));
 });
 
 // --- Confidential ---
 
 test('confidential-erc7984: basic', t => {
-  const output = run('confidential-erc7984', '--name', 'TestToken', '--symbol', 'TST', '--contractURI', 'https://example.com', '--networkConfig', 'zama-ethereum');
-  t.is(output, erc7984.print({ name: 'TestToken', symbol: 'TST', contractURI: 'https://example.com', networkConfig: 'zama-ethereum' }));
+  const output = run(
+    'confidential-erc7984',
+    '--name',
+    'TestToken',
+    '--symbol',
+    'TST',
+    '--contractURI',
+    'https://example.com',
+    '--networkConfig',
+    'zama-ethereum',
+  );
+  t.is(
+    output,
+    erc7984.print({
+      name: 'TestToken',
+      symbol: 'TST',
+      contractURI: 'https://example.com',
+      networkConfig: 'zama-ethereum',
+    }),
+  );
 });
 
 test('confidential-erc7984: most options', t => {
@@ -581,12 +720,19 @@ test('confidential-erc7984: most options', t => {
   };
   const output = run(
     'confidential-erc7984',
-    '--name', opts.name, '--symbol', opts.symbol,
-    '--contractURI', opts.contractURI,
-    '--networkConfig', opts.networkConfig,
-    '--premint', opts.premint,
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--contractURI',
+    opts.contractURI,
+    '--networkConfig',
+    opts.networkConfig,
+    '--premint',
+    opts.premint,
     '--wrappable',
-    '--votes', opts.votes,
+    '--votes',
+    opts.votes,
   );
   t.is(output, erc7984.print(opts));
 });
@@ -623,29 +769,52 @@ test('uniswap-hooks: most options', t => {
   };
   const output = run(
     'uniswap-hooks',
-    '--hook', opts.hook,
-    '--name', opts.name,
-    '--pausable', '--currencySettler', '--safeCast', '--transientStorage',
-    '--shares.options', 'ERC20',
-    '--shares.name', opts.shares.name,
-    '--shares.symbol', opts.shares.symbol,
+    '--hook',
+    opts.hook,
+    '--name',
+    opts.name,
+    '--pausable',
+    '--currencySettler',
+    '--safeCast',
+    '--transientStorage',
+    '--shares.options',
+    'ERC20',
+    '--shares.name',
+    opts.shares.name,
+    '--shares.symbol',
+    opts.shares.symbol,
     '--permissions.beforeInitialize',
-    '--permissions.afterInitialize', 'false',
-    '--permissions.beforeAddLiquidity', 'false',
-    '--permissions.beforeRemoveLiquidity', 'false',
-    '--permissions.afterAddLiquidity', 'false',
-    '--permissions.afterRemoveLiquidity', 'false',
+    '--permissions.afterInitialize',
+    'false',
+    '--permissions.beforeAddLiquidity',
+    'false',
+    '--permissions.beforeRemoveLiquidity',
+    'false',
+    '--permissions.afterAddLiquidity',
+    'false',
+    '--permissions.afterRemoveLiquidity',
+    'false',
     '--permissions.beforeSwap',
-    '--permissions.afterSwap', 'false',
-    '--permissions.beforeDonate', 'false',
-    '--permissions.afterDonate', 'false',
-    '--permissions.beforeSwapReturnDelta', 'false',
-    '--permissions.afterSwapReturnDelta', 'false',
-    '--permissions.afterAddLiquidityReturnDelta', 'false',
-    '--permissions.afterRemoveLiquidityReturnDelta', 'false',
-    '--inputs.blockNumberOffset', '0',
-    '--inputs.maxAbsTickDelta', '0',
-    '--access', opts.access,
+    '--permissions.afterSwap',
+    'false',
+    '--permissions.beforeDonate',
+    'false',
+    '--permissions.afterDonate',
+    'false',
+    '--permissions.beforeSwapReturnDelta',
+    'false',
+    '--permissions.afterSwapReturnDelta',
+    'false',
+    '--permissions.afterAddLiquidityReturnDelta',
+    'false',
+    '--permissions.afterRemoveLiquidityReturnDelta',
+    'false',
+    '--inputs.blockNumberOffset',
+    '0',
+    '--inputs.maxAbsTickDelta',
+    '0',
+    '--access',
+    opts.access,
   );
   t.is(output, hooks.print(opts));
 });
