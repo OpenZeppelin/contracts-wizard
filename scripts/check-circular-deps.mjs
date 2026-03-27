@@ -22,8 +22,8 @@ function getWorkspacePackages() {
           dir,
           deps: new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]),
         });
-      } catch {
-        // no package.json in this dir
+      } catch (e) {
+        if (e.code !== 'ENOENT') throw e;
       }
     }
   }
