@@ -2,13 +2,15 @@ import test from 'ava';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
-import { erc20, erc721, erc1155, stablecoin, governor, account, custom } from '@openzeppelin/wizard';
+import { erc20, erc721, erc1155, stablecoin, realWorldAsset, governor, account, custom } from '@openzeppelin/wizard';
 import {
   erc20 as cairoErc20,
   erc721 as cairoErc721,
   erc1155 as cairoErc1155,
   account as cairoAccount,
+  multisig as cairoMultisig,
   governor as cairoGovernor,
+  vesting as cairoVesting,
   custom as cairoCustom,
 } from '@openzeppelin/wizard-cairo';
 import { fungible, nonFungible, stablecoin as stellarStablecoin } from '@openzeppelin/wizard-stellar';
@@ -188,6 +190,32 @@ test('solidity-account: most options', t => {
   t.is(output, account.print(opts));
 });
 
+test('solidity-rwa: most options', t => {
+  const opts = {
+    name: 'TestRWA',
+    symbol: 'TRWA',
+    premint: '1000000',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    permit: true,
+    access: 'roles' as const,
+    restrictions: 'allowlist' as const,
+    freezable: true,
+  };
+  const output = run(
+    'solidity-rwa',
+    '--name', opts.name, '--symbol', opts.symbol,
+    '--premint', opts.premint,
+    '--burnable', '--mintable', '--pausable',
+    '--permit',
+    '--access', opts.access,
+    '--restrictions', opts.restrictions,
+    '--freezable',
+  );
+  t.is(output, realWorldAsset.print(opts));
+});
+
 test('solidity-custom: most options', t => {
   const opts = {
     name: 'TestCustom',
@@ -334,6 +362,40 @@ test('cairo-governor: most options', t => {
     '--appName', opts.appName, '--appVersion', opts.appVersion,
   );
   t.is(output, cairoGovernor.print(opts));
+});
+
+test('cairo-multisig: most options', t => {
+  const opts = {
+    name: 'TestMultisig',
+    quorum: '3',
+    upgradeable: true,
+  };
+  const output = run(
+    'cairo-multisig',
+    '--name', opts.name,
+    '--quorum', opts.quorum,
+    '--upgradeable',
+  );
+  t.is(output, cairoMultisig.print(opts));
+});
+
+test('cairo-vesting: most options', t => {
+  const opts = {
+    name: 'TestVesting',
+    startDate: '2025-01-01',
+    duration: '30 day',
+    cliffDuration: '7 day',
+    schedule: 'linear' as const,
+  };
+  const output = run(
+    'cairo-vesting',
+    '--name', opts.name,
+    '--startDate', opts.startDate,
+    '--duration', opts.duration,
+    '--cliffDuration', opts.cliffDuration,
+    '--schedule', opts.schedule,
+  );
+  t.is(output, cairoVesting.print(opts));
 });
 
 test('cairo-custom: most options', t => {

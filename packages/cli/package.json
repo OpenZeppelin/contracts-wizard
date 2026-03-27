@@ -20,11 +20,13 @@
   "scripts": {
     "prepare": "tsc",
     "watch": "tsc --watch",
+    "pretest": "tsc",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch"
   },
   "dependencies": {
+    "zod": "^3.25.0",
     "@openzeppelin/wizard-common": "^0.4.4",
     "@openzeppelin/wizard": "^0.10.7",
     "@openzeppelin/wizard-cairo": "^3.0.0",
