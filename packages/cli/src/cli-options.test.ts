@@ -265,6 +265,28 @@ test('cairo-erc20: most options', t => {
   t.is(output, cairoErc20.print(opts));
 });
 
+test('cairo-erc20: access roles-dar', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    access: {
+      type: 'roles-dar' as const,
+      darInitialDelay: '1 day',
+      darDefaultDelayIncrease: '1 day',
+      darMaxTransferDelay: '2 day',
+    },
+  };
+  const output = run(
+    'cairo-erc20',
+    '--name', opts.name, '--symbol', opts.symbol,
+    '--access.type', 'roles-dar',
+    '--access.darInitialDelay', '1 day',
+    '--access.darDefaultDelayIncrease', '1 day',
+    '--access.darMaxTransferDelay', '2 day',
+  );
+  t.is(output, cairoErc20.print(opts));
+});
+
 test('cairo-erc721: most options', t => {
   const opts = {
     name: 'TestNFT',
