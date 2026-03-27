@@ -8,12 +8,15 @@ const decodeBase64 = (b64Payload: string) => {
   return new TextDecoder().decode(bytes);
 };
 
+const getHashParams = (url: URL) => new URLSearchParams(url.hash.replace(/^#/, ''));
+
 test('remixURL encodes code param decodable by decodeBase64', t => {
   const contractSource = 'contract A{}';
 
   const url = remixURL(contractSource);
-  const codeParam = url.searchParams.get('code');
-  t.truthy(codeParam, 'Expected code search param to be set');
+  const hashParams = getHashParams(url);
+  const codeParam = hashParams.get('code');
+  t.truthy(codeParam, 'Expected code hash param to be set');
 
   const decoded = decodeBase64(codeParam!);
   t.is(decoded, contractSource, 'Decoded code should equal original source');
@@ -22,11 +25,31 @@ test('remixURL encodes code param decodable by decodeBase64', t => {
 test('remixURL sets deployProxy flag when upgradeable', t => {
   const contractSource = 'contract A{}';
 
-  const urlTrue = remixURL(contractSource, true);
-  t.is(urlTrue.searchParams.get('deployProxy'), 'true');
+  const urlTrue = remixURL(contractSource, [], true);
+  t.is(getHashParams(urlTrue).get('deployProxy'), 'true');
 
-  const urlFalse = remixURL(contractSource, false);
-  t.is(urlFalse.searchParams.get('deployProxy'), null);
+  const urlFalse = remixURL(contractSource, [], false);
+  t.is(getHashParams(urlFalse).get('deployProxy'), null);
+});
+
+test('remixURL does not set remaps when remappings is empty', t => {
+  const url = remixURL('contract A{}');
+  t.is(getHashParams(url).get('remaps'), null);
+});
+
+test('remixURL encodes remappings into remaps hash param', t => {
+  const remappings = [
+    '@openzeppelin/contracts/=@openzeppelin/contracts@5.4.0/',
+    '@openzeppelin/contracts-upgradeable/=@openzeppelin/contracts-upgradeable@5.4.0/',
+  ];
+
+  const url = remixURL('contract A{}', remappings, true);
+  const hashParams = getHashParams(url);
+  const remapsParam = hashParams.get('remaps');
+  t.truthy(remapsParam, 'Expected remaps hash param to be set');
+
+  const decoded = decodeBase64(remapsParam!);
+  t.is(decoded, remappings.join('\n'), 'Decoded remaps should equal newline-joined remappings');
 });
 
 test('remixURL encodes code param with special characters decodable by decodeBase64', t => {
@@ -58,8 +81,9 @@ contract MyAccount is ERC7739, AccountERC7579 {
 }`;
 
   const url = remixURL(contractSource);
-  const codeParam = url.searchParams.get('code');
-  t.truthy(codeParam, 'Expected code search param to be set');
+  const hashParams = getHashParams(url);
+  const codeParam = hashParams.get('code');
+  t.truthy(codeParam, 'Expected code hash param to be set');
 
   const decoded = decodeBase64(codeParam!);
   t.is(decoded, contractSource, 'Decoded code should equal original source');

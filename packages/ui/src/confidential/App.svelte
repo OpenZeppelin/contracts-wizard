@@ -136,10 +136,10 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const { printContractVersioned } = await import('@openzeppelin/wizard-confidential/print-versioned');
+    const { getVersionedRemappings } = await import('@openzeppelin/wizard-confidential/get-versioned-remappings');
 
-    const versionedCode = printContractVersioned(contract);
-    window.open(remixURL(versionedCode, false).toString(), '_blank', 'noopener,noreferrer');
+    const remappings = getVersionedRemappings();
+    window.open(remixURL(code, remappings, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
