@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/contracts-cli",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "CLI for generating smart contracts using OpenZeppelin Contracts Wizard",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
