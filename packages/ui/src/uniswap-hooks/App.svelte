@@ -126,7 +126,7 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const remappings = getVersionedRemappings(opts);
+    const remappings = getVersionedRemappings();
     window.open(remixURL(code, remappings, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
