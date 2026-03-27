@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "prepare": "yarn workspaces run prepare",
+    "check:circular-deps": "node scripts/check-circular-deps.mjs",
     "lint": "eslint",
     "format:write": "prettier --write \"**/*\"",
     "format:check": "prettier --check \"**/*\"",
