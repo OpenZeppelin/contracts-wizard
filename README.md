@@ -12,6 +12,10 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 [![](./screenshot.png)](https://wizard.openzeppelin.com)
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/openzeppelin-contracts-wizard).
+
 ## Usage
 
 Use the Contracts Wizard at https://wizard.openzeppelin.com
