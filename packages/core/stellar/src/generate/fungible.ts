@@ -12,6 +12,7 @@ const blueprint = {
   pausable: booleans,
   upgradeable: booleans,
   mintable: booleans,
+  votes: booleans,
   premint: ['1'],
   access: accessOptions,
   info: infoOptions,

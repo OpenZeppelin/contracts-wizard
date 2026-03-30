@@ -24,7 +24,9 @@ export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from
 export { fungible } from './api';
 export { nonFungible } from './api';
 export { stablecoin } from './api';
+export { governor } from './api';
 
 export type { FungibleOptions } from './fungible';
 export type { NonFungibleOptions } from './non-fungible';
 export type { StablecoinOptions } from './stablecoin';
+export type { GovernorOptions } from './governor';

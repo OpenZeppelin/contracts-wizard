@@ -161,6 +161,67 @@ testNonFungible('non-fungible custom token uri', {
   tokenUri: 'https://example.com/nfts/',
 });
 
+testNonFungible('non-fungible votes', {
+  votes: true,
+});
+
+testNonFungible('non-fungible votes mintable', {
+  votes: true,
+  mintable: true,
+  access: 'ownable',
+});
+
+testNonFungible('non-fungible votes burnable', {
+  votes: true,
+  burnable: true,
+});
+
+testNonFungible('non-fungible votes full', {
+  votes: true,
+  access: 'ownable',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  upgradeable: true,
+});
+
+testNonFungible('non-fungible votes explicit trait implementations', {
+  votes: true,
+  explicitImplementations: true,
+});
+
+test('throws error when votes and enumerable are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        votes: true,
+        enumerable: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.votes, 'Votes cannot be used with Enumerable extension');
+  t.is(error?.messages.enumerable, 'Enumerable cannot be used with Votes extension');
+});
+
+test('throws error when votes and consecutive are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        votes: true,
+        consecutive: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.votes, 'Votes cannot be used with Consecutive extension');
+  t.is(error?.messages.consecutive, 'Consecutive cannot be used with Votes extension');
+});
+
 testAPIEquivalence('non-fungible API default');
 
 testAPIEquivalence('non-fungible API basic', { name: 'CustomToken', symbol: 'CTK' });

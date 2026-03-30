@@ -16,6 +16,7 @@ const blueprint = {
   consecutive: booleans,
   sequential: booleans,
   mintable: booleans,
+  votes: booleans,
   access: accessOptions,
   info: infoOptions,
   explicitImplementations: booleans,

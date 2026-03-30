@@ -22,7 +22,8 @@ type WithTemporaryFolderTestFunction<Args extends unknown[]> = (
   ...args: [...Args, ExecutionContext, string]
 ) => Promise<void> | void;
 
-export type MakeContract = (opt: GenericOptions) => Contract;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MakeContract = (opt: any) => Contract;
 
 export const withTemporaryFolderDo =
   <Args extends unknown[]>(testFunction: WithTemporaryFolderTestFunction<Args>) =>

@@ -24,6 +24,7 @@ export const defaults: Required<NonFungibleOptions> = {
   upgradeable: false,
   mintable: false,
   sequential: false,
+  votes: false,
   access: commonDefaults.access, // TODO: Determine whether Access Control options should be visible in the UI before they are implemented as modules
   info: commonDefaults.info,
   explicitImplementations: commonDefaults.explicitImplementations,
@@ -44,6 +45,7 @@ export interface NonFungibleOptions extends CommonContractOptions {
   upgradeable?: boolean;
   mintable?: boolean;
   sequential?: boolean;
+  votes?: boolean;
 }
 
 function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
@@ -58,6 +60,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     mintable: opts.mintable ?? defaults.mintable,
     sequential: opts.sequential ?? defaults.sequential,
+    votes: opts.votes ?? defaults.votes,
   };
 }
 
@@ -87,6 +90,16 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     errors.sequential = 'Sequential minting cannot be used with Consecutive extension';
   }
 
+  if (allOpts.votes && allOpts.enumerable) {
+    errors.votes = 'Votes cannot be used with Enumerable extension';
+    errors.enumerable = 'Enumerable cannot be used with Votes extension';
+  }
+
+  if (allOpts.votes && allOpts.consecutive) {
+    errors.votes = 'Votes cannot be used with Consecutive extension';
+    errors.consecutive = 'Consecutive cannot be used with Votes extension';
+  }
+
   if (Object.keys(errors).length > 0) {
     throw new OptionsError(errors);
   }
@@ -100,6 +113,10 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     allOpts.explicitImplementations,
   );
 
+  if (allOpts.votes) {
+    addNonFungibleVotes(c, allOpts.explicitImplementations);
+  }
+
   if (allOpts.pausable) {
     addPausable(c, allOpts.access, allOpts.explicitImplementations);
   }
@@ -109,7 +126,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, allOpts.explicitImplementations);
+    addBurnable(c, allOpts.pausable, allOpts.explicitImplementations, allOpts.votes);
   }
 
   if (allOpts.enumerable) {
@@ -128,6 +145,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
       allOpts.sequential,
       allOpts.access,
       allOpts.explicitImplementations,
+      allOpts.votes,
     );
   }
 
@@ -183,7 +201,7 @@ function addBase(
   }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean) {
+function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean, votes: boolean) {
   c.addUseClause('stellar_tokens::non_fungible', 'burnable::NonFungibleBurnable');
 
   const nonFungibleBurnableTrait = {
@@ -193,14 +211,20 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
     section: 'Extensions',
   };
 
+  const burnFn = votes ? burnableFunctions.burn_votes : burnableFunctions.burn;
+  const burnFromFn = votes ? burnableFunctions.burn_from_votes : burnableFunctions.burn_from;
+
   if (pausable) {
     c.addUseClause('stellar_macros', 'when_not_paused');
 
-    c.addTraitFunction(nonFungibleBurnableTrait, burnableFunctions.burn);
-    c.addFunctionTag(burnableFunctions.burn, 'when_not_paused', nonFungibleBurnableTrait);
+    c.addTraitFunction(nonFungibleBurnableTrait, burnFn);
+    c.addFunctionTag(burnFn, 'when_not_paused', nonFungibleBurnableTrait);
 
-    c.addTraitFunction(nonFungibleBurnableTrait, burnableFunctions.burn_from);
-    c.addFunctionTag(burnableFunctions.burn_from, 'when_not_paused', nonFungibleBurnableTrait);
+    c.addTraitFunction(nonFungibleBurnableTrait, burnFromFn);
+    c.addFunctionTag(burnFromFn, 'when_not_paused', nonFungibleBurnableTrait);
+  } else if (votes) {
+    c.addTraitFunction(nonFungibleBurnableTrait, burnFn);
+    c.addTraitFunction(nonFungibleBurnableTrait, burnFromFn);
   } else if (explicitImplementations)
     c.addTraitForEachFunctions(nonFungibleBurnableTrait, nonFungibleBurnableFunctions);
   else {
@@ -267,6 +291,7 @@ function addMintable(
   sequential: boolean,
   access: Access,
   explicitImplementations: boolean,
+  votes: boolean,
 ) {
   const accessProps = { useMacro: true, role: 'minter', caller: 'caller' };
   const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
@@ -284,6 +309,15 @@ function addMintable(
         effectiveAccess === 'ownable'
           ? enumerableFunctions.non_sequential_mint
           : enumerableFunctions.non_sequential_mint_with_caller;
+    }
+  } else if (votes) {
+    if (sequential) {
+      mintFn =
+        effectiveAccess === 'ownable'
+          ? votesMintFunctions.sequential_mint
+          : votesMintFunctions.sequential_mint_with_caller;
+    } else {
+      mintFn = effectiveAccess === 'ownable' ? votesMintFunctions.mint : votesMintFunctions.mint_with_caller;
     }
   } else {
     if (sequential) {
@@ -433,6 +467,21 @@ const burnableFunctions = defineFunctions({
     ],
     code: ['Self::ContractType::burn_from(e, &spender, &from, token_id)'],
   },
+  burn_votes: {
+    name: 'burn',
+    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'token_id', type: 'u32' }],
+    code: ['NonFungibleVotes::burn(e, &from, token_id)'],
+  },
+  burn_from_votes: {
+    name: 'burn_from',
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'token_id', type: 'u32' },
+    ],
+    code: ['NonFungibleVotes::burn_from(e, &spender, &from, token_id)'],
+  },
 });
 
 const nonFungibleBurnableFunctions = pickKeys(burnableFunctions, ['burn', 'burn_from']);
@@ -485,6 +534,85 @@ const nonFungibleEnumerableTraitFunctions = pickKeys(enumerableFunctions, [
   'get_owner_token_id',
   'get_token_id',
 ]);
+
+function addNonFungibleVotes(c: ContractBuilder, explicitImplementations: boolean) {
+  c.addUseClause('stellar_tokens::non_fungible', 'votes::NonFungibleVotes');
+  c.addUseClause('stellar_governance::votes', '{self as votes, Votes}', { groupable: false });
+
+  c.overrideAssocType('NonFungibleToken', 'type ContractType = NonFungibleVotes;');
+
+  const votesTrait = {
+    traitName: 'Votes',
+    structName: c.name,
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+    section: 'Extensions',
+  };
+
+  if (explicitImplementations) {
+    c.addTraitForEachFunctions(votesTrait, nonFungibleVotesFunctions);
+  } else {
+    c.addTraitImplBlock(votesTrait);
+  }
+}
+
+const nonFungibleVotesFunctions = defineFunctions({
+  get_votes: {
+    args: [getSelfArg(), { name: 'account', type: 'Address' }],
+    returns: 'i128',
+    code: ['votes::get_votes(e, &account)'],
+  },
+  get_votes_at_checkpoint: {
+    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'ledger', type: 'u32' }],
+    returns: 'i128',
+    code: ['votes::get_votes_at_checkpoint(e, &account, ledger)'],
+  },
+  get_total_supply: {
+    args: [getSelfArg()],
+    returns: 'i128',
+    code: ['votes::get_total_supply(e)'],
+  },
+  get_total_supply_at_checkpoint: {
+    args: [getSelfArg(), { name: 'ledger', type: 'u32' }],
+    returns: 'i128',
+    code: ['votes::get_total_supply_at_checkpoint(e, ledger)'],
+  },
+  get_delegate: {
+    args: [getSelfArg(), { name: 'account', type: 'Address' }],
+    returns: 'Option<Address>',
+    code: ['votes::get_delegate(e, &account)'],
+  },
+  delegate: {
+    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'delegatee', type: 'Address' }],
+    code: ['votes::delegate(e, &account, &delegatee)'],
+  },
+});
+
+const votesMintFunctions = defineFunctions({
+  mint: {
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
+    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
+  },
+  mint_with_caller: {
+    name: 'mint',
+    args: [
+      getSelfArg(),
+      { name: 'to', type: 'Address' },
+      { name: 'token_id', type: 'u32' },
+      { name: 'caller', type: 'Address' },
+    ],
+    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
+  },
+  sequential_mint: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }],
+    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
+  },
+  sequential_mint_with_caller: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
+    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
+  },
+});
 
 const consecutiveFunctions = defineFunctions({
   batch_mint: {

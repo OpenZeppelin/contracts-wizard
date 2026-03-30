@@ -6,41 +6,33 @@ import { defineFunctions } from './utils/define-functions';
 
 export function addUpgradeable(c: ContractBuilder, access: Access, explicitImplementations: boolean) {
   const functions = defineFunctions({
-    _require_auth: {
-      args: [getSelfArg(), { name: 'operator', type: '&Address' }],
-      code: ['operator.require_auth();'],
-    },
-    _require_auth_unused_operator: {
-      name: '_require_auth',
-      args: [getSelfArg(), { name: '_operator', type: '&Address' }],
-      code: [],
+    upgrade: {
+      args: [getSelfArg(), { name: 'new_wasm_hash', type: 'BytesN<32>' }, { name: 'operator', type: 'Address' }],
+      code: ['upgradeable::upgrade(e, &new_wasm_hash);'],
     },
   });
 
-  c.addUseClause('stellar_contract_utils::upgradeable', 'UpgradeableInternal');
-  c.addUseClause('stellar_macros', 'Upgradeable');
-
-  c.addDerives('Upgradeable');
+  c.addUseClause('stellar_contract_utils::upgradeable', '{self as upgradeable, Upgradeable}', {
+    groupable: false,
+  });
+  c.addUseClause('soroban_sdk', 'BytesN');
 
   const upgradeableTrait = {
-    traitName: 'UpgradeableInternal',
+    traitName: 'Upgradeable',
     structName: c.name,
-    tags: [],
+    tags: ['contractimpl'],
     section: 'Utils',
   };
 
-  const upgradeFn: BaseFunction =
-    access === 'ownable' ? functions._require_auth_unused_operator : functions._require_auth;
-
-  c.addTraitFunction(upgradeableTrait, upgradeFn);
+  c.addTraitFunction(upgradeableTrait, functions.upgrade);
 
   requireAccessControl(
     c,
     upgradeableTrait,
-    upgradeFn,
+    functions.upgrade,
     access,
     {
-      useMacro: false,
+      useMacro: true,
       role: 'upgrader',
       caller: 'operator',
     },
