@@ -11,6 +11,8 @@ if (!command || command === '--help' || command === '-h') {
 Commands:
   ${Object.keys(registry).join(', ')}
 
+Generated contract source code is printed to stdout.
+
 Run \`npx @openzeppelin/contracts-cli <command> --help\` for command-specific options.
 `);
   process.exit(0);
