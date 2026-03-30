@@ -23,7 +23,7 @@
     "test:watch": "ava --watch"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.11.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@openzeppelin/wizard-common": "^0.4.4",
     "@openzeppelin/wizard": "^0.10.7",
     "@openzeppelin/wizard-stylus": "^0.3.0",
