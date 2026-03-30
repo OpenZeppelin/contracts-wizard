@@ -98,7 +98,8 @@ export const cairoGovernorDescriptions = {
 };
 
 export const cairoVestingDescriptions = {
-  startDate: 'The timestamp marking the beginning of the vesting period. In HTML input datetime-local format, e.g. "2026-03-15T14:30".',
+  startDate:
+    'The timestamp marking the beginning of the vesting period. In HTML input datetime-local format, e.g. "2026-03-15T14:30".',
   duration:
     'The total duration of the vesting period. In readable date time format matching /^(\\d+(?:\\.\\d+)?) +(second|minute|hour|day|week|month|year)s?$/',
   cliffDuration:
