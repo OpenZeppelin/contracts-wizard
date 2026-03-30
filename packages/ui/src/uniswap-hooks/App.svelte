@@ -15,8 +15,12 @@
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
-  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-uniswap-hooks';
-  import { getVersionedRemappings } from '../../../core/uniswap-hooks/src/get-versioned-remappings';
+  import {
+    sanitizeKind,
+    buildGeneric,
+    printContract,
+    getVersionedRemappings,
+  } from '@openzeppelin/wizard-uniswap-hooks';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import { postConfig } from '../common/post-config';
