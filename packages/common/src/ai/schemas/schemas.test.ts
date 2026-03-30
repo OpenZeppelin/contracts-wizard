@@ -39,34 +39,36 @@ import {
  * Verifies that every field in a Zod schema shape has a .describe() string.
  * Guards against accidentally dropping descriptions when modifying schemas.
  */
-function assertAllFieldsHaveDescriptions(
-  t: { pass: () => void; fail: (msg: string) => void },
+function checkAllFieldsHaveDescriptions(
+  t: { fail: (msg: string) => void },
   shape: z.ZodRawShape,
   prefix = '',
-) {
+): boolean {
+  let ok = true;
   for (const [key, schema] of Object.entries(shape)) {
     const zodSchema = schema as z.ZodTypeAny;
     const fullKey = prefix ? `${prefix}.${key}` : key;
 
     // Unwrap optional to check inner type
-    let innerSchema = zodSchema;
-    if (innerSchema._def.typeName === 'ZodOptional') {
-      innerSchema = innerSchema._def.innerType as z.ZodTypeAny;
-    }
+    const innerSchema = zodSchema instanceof z.ZodOptional ? zodSchema.unwrap() : zodSchema;
 
     // For ZodObject fields, recurse into inner fields (the object itself may or may not have a description)
-    if (innerSchema._def.typeName === 'ZodObject') {
-      assertAllFieldsHaveDescriptions(t, (innerSchema as z.ZodObject<z.ZodRawShape>).shape, fullKey);
+    if (innerSchema instanceof z.ZodObject) {
+      if (!checkAllFieldsHaveDescriptions(t, innerSchema.shape, fullKey)) {
+        ok = false;
+      }
       continue;
     }
 
-    const desc = zodSchema.description ?? zodSchema._def?.innerType?.description;
+    const desc =
+      zodSchema.description ??
+      (zodSchema instanceof z.ZodOptional ? (zodSchema.unwrap() as z.ZodTypeAny).description : undefined);
     if (!desc) {
       t.fail(`Field "${fullKey}" is missing a .describe() string`);
-      return;
+      ok = false;
     }
   }
-  t.pass();
+  return ok;
 }
 
 // --- Description presence tests ---
@@ -100,7 +102,9 @@ const allSchemas: [string, z.ZodRawShape][] = [
 
 for (const [name, shape] of allSchemas) {
   test(`${name} schema: all fields have descriptions`, t => {
-    assertAllFieldsHaveDescriptions(t, shape);
+    if (checkAllFieldsHaveDescriptions(t, shape)) {
+      t.pass();
+    }
   });
 }
 
