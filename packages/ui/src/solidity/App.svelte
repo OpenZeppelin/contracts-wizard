@@ -24,8 +24,14 @@
   import Tooltip from '../common/Tooltip.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { ContractBuilder, buildGeneric, printContract, sanitizeKind, OptionsError } from '@openzeppelin/wizard';
-  import { getVersionedRemappings } from '../../../core/solidity/src/get-versioned-remappings';
+  import {
+    ContractBuilder,
+    buildGeneric,
+    printContract,
+    getVersionedRemappings,
+    sanitizeKind,
+    OptionsError,
+  } from '@openzeppelin/wizard';
   import { getImports } from '@openzeppelin/wizard/get-imports';
   import { postConfig } from '../common/post-config';
   import { remixURL } from './remix';
