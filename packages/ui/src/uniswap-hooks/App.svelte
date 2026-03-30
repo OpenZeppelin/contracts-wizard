@@ -14,7 +14,7 @@
   import ZipIcon from '../common/icons/ZipIcon.svelte';
 
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks/src';
+  import type { KindedOptions, Kind } from '@openzeppelin/wizard-uniswap-hooks';
   import {
     sanitizeKind,
     buildGeneric,
