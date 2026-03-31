@@ -43,6 +43,7 @@ jobs:
           commitMode: github-api
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
       - name: Check changesets status
         if: ${{ !inputs.dry_run && steps.changesets.outputs.hasChangesets == 'true' }}
