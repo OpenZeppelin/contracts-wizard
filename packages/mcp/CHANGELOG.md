@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.5.6 (2026-03-30)
+
+- Update `@modelcontextprotocol/sdk` to ^1.29.0 to address security advisories. ([#789](https://github.com/OpenZeppelin/contracts-wizard/pull/789))
+
 ## 0.5.5 (2026-02-26)
 
 - Solidity `erc20`, `stablecoin`, `realWorldAsset`: Support 'erc7786native' option for `crossChainBridging`. ([#747](https://github.com/OpenZeppelin/contracts-wizard/pull/747))
