@@ -2,6 +2,11 @@ name: Publish Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Verify OIDC auth without publishing'
+        type: boolean
+        default: false
 
 concurrency: version-or-publish-${{ github.ref }}
 
@@ -21,7 +26,13 @@ jobs:
           ref: ${{ github.ref }}
       - name: Set up environment
         uses: ./.github/actions/setup
+      - name: Dry run publish
+        if: inputs.dry_run
+        run: NPM_CONFIG_DRY_RUN=true changeset publish --no-git-tag
+        env:
+          NPM_CONFIG_PROVENANCE: true
       - name: Create Prepare Release PR or Publish
+        if: ${{ !inputs.dry_run }}
         id: changesets
         uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
@@ -34,12 +45,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
       - name: Check changesets status
-        if: steps.changesets.outputs.hasChangesets == 'true'
+        if: ${{ !inputs.dry_run && steps.changesets.outputs.hasChangesets == 'true' }}
         run: |
           echo "Changesets found. Merge Prepare Release PR before publishing."
           exit 1
       - name: Check publish status
-        if: steps.changesets.outputs.published == 'false'
+        if: ${{ !inputs.dry_run && steps.changesets.outputs.published == 'false' }}
         run: |
           echo "Publish failed. Check the logs for more details."
           exit 1
