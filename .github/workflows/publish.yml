@@ -26,6 +26,8 @@ jobs:
           ref: ${{ github.ref }}
       - name: Set up environment
         uses: ./.github/actions/setup
+      - name: Install npm 11 for OIDC trusted publishing
+        run: npm install -g npm@11.12.1
       - name: Dry run publish
         if: inputs.dry_run
         run: NPM_CONFIG_DRY_RUN=true changeset publish --no-git-tag
