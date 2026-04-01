@@ -18,7 +18,10 @@ interface FlagSpec {
   hasLiteralFalse: boolean;
 }
 
-function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- zod internal introspection
+type AnySchema = any;
+
+function unwrapSchema(schema: AnySchema): AnySchema {
   let current = schema;
 
   while (true) {
@@ -26,28 +29,24 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
       current = current._def.innerType;
       continue;
     }
-    if (current instanceof z.ZodEffects) {
-      current = current._def.schema;
-      continue;
-    }
     return current;
   }
 }
 
-function getBaseType(schema: z.ZodTypeAny): BaseTypeInfo {
+function getBaseType(schema: AnySchema): BaseTypeInfo {
   const unwrapped = unwrapSchema(schema);
 
   if (unwrapped instanceof z.ZodString) return { type: 'string' };
   if (unwrapped instanceof z.ZodBoolean) return { type: 'boolean' };
   if (unwrapped instanceof z.ZodNumber) return { type: 'number' };
   if (unwrapped instanceof z.ZodLiteral) {
-    const val = unwrapped._def.value;
+    const val = (unwrapped._def as any).values?.[0];
     if (val === false) return { type: 'boolean', hasLiteralFalse: true };
     if (typeof val === 'boolean') return { type: 'boolean' };
     if (typeof val === 'string') return { type: 'string', enumValues: [val] };
     return { type: 'string' };
   }
-  if (unwrapped instanceof z.ZodEnum) return { type: 'string', enumValues: [...unwrapped.options] };
+  if (unwrapped instanceof z.ZodEnum) return { type: 'string', enumValues: (unwrapped.options as string[]) };
   if (unwrapped instanceof z.ZodUnion) {
     const literals: string[] = [];
     let hasFalse = false;
@@ -63,23 +62,23 @@ function getBaseType(schema: z.ZodTypeAny): BaseTypeInfo {
   return { type: 'string' };
 }
 
-function getDescription(schema: z.ZodTypeAny): string | undefined {
-  if (schema.description) return schema.description;
+function getDescription(schema: AnySchema): string | undefined {
+  if (schema.description) return schema.description as string;
   if (schema instanceof z.ZodOptional) {
-    return schema.unwrap().description;
+    return (schema.unwrap() as AnySchema).description;
   }
   return undefined;
 }
 
-function isRequired(schema: z.ZodTypeAny): boolean {
-  return schema._def.typeName !== 'ZodOptional' && schema._def.typeName !== 'ZodDefault';
+function isRequired(schema: AnySchema): boolean {
+  return !(schema instanceof z.ZodOptional) && !(schema instanceof z.ZodDefault);
 }
 
 function collectFlagSpecs(shape: z.ZodRawShape, pathPrefix: string[] = [], parentRequired = true): FlagSpec[] {
   const specs: FlagSpec[] = [];
 
   for (const key of Object.keys(shape)) {
-    const schema = shape[key]!;
+    const schema: AnySchema = shape[key]!;
     const base = getBaseType(schema);
     const path = [...pathPrefix, key];
     const required = parentRequired && isRequired(schema);
@@ -233,7 +232,7 @@ export function parseArgsFromSchema<T extends z.ZodRawShape>(shape: T, argv: str
     for (const issue of parsed.error.issues) {
       const name = issue.path.join('.');
       const spec = flagSpecsByName.get(name);
-      const isMissing = issue.code === 'invalid_type' && issue.received === 'undefined';
+      const isMissing = issue.code === 'invalid_type' && issue.message.includes('undefined');
 
       const line = spec ? `  ${formatFlag(spec)}  ${spec.description ?? ''}` : `  --${name}: ${issue.message}`;
 

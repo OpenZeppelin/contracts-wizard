@@ -29,7 +29,7 @@
     "test:watch": "ava --watch"
   },
   "dependencies": {
-    "zod": "^3.25.0"
+    "zod": "^4.0"
   },
   "devDependencies": {
     "@openzeppelin/wizard": "^0.10.7",
