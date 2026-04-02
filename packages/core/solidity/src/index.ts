@@ -22,6 +22,7 @@ export type { Contract, BaseFunction, Value, ReferencedContract, FunctionArgumen
 export { ContractBuilder } from './contract';
 
 export { printContract } from './print';
+export { getVersionedRemappings } from './get-versioned-remappings';
 
 export type { Access } from './set-access-control';
 export { accessOptions, setAccessControl, requireAccessControl } from './set-access-control';

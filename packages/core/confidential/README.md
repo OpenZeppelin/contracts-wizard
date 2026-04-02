@@ -26,6 +26,20 @@ function print(opts?: ERC7984Options): string
 
 Returns a string representation of a contract generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
 
+#### `getVersionedRemappings`
+```js
+function getVersionedRemappings(): string[]
+```
+
+Returns an array of remappings that map unversioned import prefixes to versioned import prefixes. For example:
+```js
+[
+  "@openzeppelin/contracts/=@openzeppelin/contracts@5.6.0/",
+  "@openzeppelin/confidential-contracts/=@openzeppelin/confidential-contracts@0.3.1/",
+  "@fhevm/solidity/=@fhevm/solidity@0.9.1/"
+]
+```
+
 #### `defaults`
 ```js
 const defaults: Required<ERC7984Options>
