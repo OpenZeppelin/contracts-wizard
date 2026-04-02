@@ -12,15 +12,11 @@
   import FileIcon from '../common/icons/FileIcon.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
-  import Tooltip from '../common/Tooltip.svelte';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
-  import { sanitizeKind, buildGeneric, printContract } from '@openzeppelin/wizard-confidential';
+  import { sanitizeKind, buildGeneric, printContract, getVersionedRemappings } from '@openzeppelin/wizard-confidential';
   import type { KindedOptions, Kind } from '@openzeppelin/wizard-confidential';
-
-  import openzeppelinContracts from '@openzeppelin/wizard/openzeppelin-contracts';
-  import contractVersionPins from '@openzeppelin/wizard-confidential/contract-version-pins';
 
   import { postConfig } from '../common/post-config';
   import { remixURL } from '../solidity/remix';
@@ -120,26 +116,12 @@
     }, 1000);
   };
 
-  let copiedRemappings = false;
-  const copyRemappingsHandler = async () => {
-    await navigator.clipboard.writeText(
-      `@openzeppelin/contracts/=@openzeppelin/contracts@${openzeppelinContracts.version}/
-@fhevm/solidity/=@fhevm/solidity@${contractVersionPins.fhevmSolidityVersion}/`,
-    );
-    copiedRemappings = true;
-    setTimeout(() => {
-      copiedRemappings = false;
-    }, 1000);
-  };
-
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const { printContractVersioned } = await import('@openzeppelin/wizard-confidential/print-versioned');
-
-    const versionedCode = printContractVersioned(contract);
-    window.open(remixURL(versionedCode, false).toString(), '_blank', 'noopener,noreferrer');
+    const remappings = getVersionedRemappings();
+    window.open(remixURL(code, remappings, false).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -200,36 +182,10 @@
         </button>
 
         {#if showButtons.openInRemix}
-          <Tooltip let:trigger theme="light border" interactive trigger="click">
-            <button use:trigger class="action-button with-text">
-              <RemixIcon />
-              Open in Remix
-            </button>
-            <div slot="content">
-              Perform the following steps:
-              <p>
-                <b>1.</b>
-                {#if copiedRemappings}
-                  <CheckIcon />
-                  Copied!
-                {:else}
-                  <button class="link-button" on:click={copyRemappingsHandler} title="Copy remappings">
-                    Copy remappings
-                  </button>
-                  to your clipboard.
-                {/if}
-              </p>
-              <p>
-                <b>2.</b>
-                <button class="link-button" on:click={remixHandler} title="Open in Remix">Open in Remix</button>.
-              </p>
-              <p>
-                <b>3.</b>
-                In Remix's file explorer, create a new file called<br />
-                <code>remappings.txt</code> and paste the remappings into it.
-              </p>
-            </div>
-          </Tooltip>
+          <button class="action-button with-text" on:click={remixHandler}>
+            <RemixIcon />
+            Open in Remix
+          </button>
         {/if}
 
         <Dropdown let:active>
@@ -283,24 +239,6 @@
 </div>
 
 <style lang="postcss">
-  .button-bg:hover {
-    transform: translateX(-2px);
-    transition: transform 300ms;
-  }
-
-  .hide-deploy {
-    transform: translateX(-320px);
-    transition: transform 0.45s;
-  }
-  .hide-deploy button {
-    background-color: white;
-    border: 1px solid white;
-  }
-
-  .hide-deploy:hover {
-    transform: translatex(-318px);
-  }
-
   .container {
     background-color: var(--gray-1);
     min-width: 32rem;
@@ -378,51 +316,9 @@
     padding-right: var(--size-3);
   }
 
-  .link-button {
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--blue-2);
-    text-decoration: underline;
-    cursor: pointer;
-    font: inherit;
-
-    &:hover {
-      color: var(--blue-3);
-    }
-  }
-
   .controls {
     background-color: white;
     padding: var(--size-4);
-  }
-
-  .controls-footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    color: var(--gray-5);
-    margin-top: var(--size-3);
-    padding: 0 var(--size-2);
-    font-size: var(--text-small);
-
-    & > * + * {
-      margin-left: var(--size-3);
-    }
-
-    :global(.icon) {
-      margin-right: 0.2em;
-      opacity: 0.8;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-
-      &:hover {
-        color: var(--text-color);
-      }
-    }
   }
 
   .download-option {

@@ -10,6 +10,11 @@ This package provides a programmatic API. For a web interface, see https://wizar
 
 `npm install @openzeppelin/wizard-uniswap-hooks`
 
+### Contract types
+
+The following contract types are supported:
+- `hooks`
+
 ### Hook templates
 
 The following hook templates are supported:
@@ -25,6 +30,43 @@ The following hook templates are supported:
 - `LimitOrderHook` - Implements limit order functionality
 - `LiquidityPenaltyHook` - Applies penalties to early liquidity removals
 - `ReHypothecationHook` - Enables yield generation from deposited liquidity
+
+### Functions
+
+#### `print`
+```js
+function print(opts?: HooksOptions): string
+```
+
+Returns a string representation of a hook generated using the provided options. If `opts` is not provided, uses [`defaults`](#defaults).
+
+#### `getVersionedRemappings`
+```js
+function getVersionedRemappings(): string[]
+```
+
+Returns an array of remappings that map unversioned import prefixes to versioned import prefixes. For example:
+```js
+[
+  "@openzeppelin/contracts/=@openzeppelin/contracts@5.6.0/",
+  "@openzeppelin/uniswap-hooks/=@openzeppelin/uniswap-hooks@1.2.1/src/"
+]
+```
+
+#### `defaults`
+```js
+const defaults: Required<HooksOptions>
+```
+
+The default options that are used for [`print`](#print).
+
+#### `isAccessControlRequired`
+```js
+function isAccessControlRequired(opts: Partial<HooksOptions>): boolean
+```
+
+Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
+same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
 
 ### Examples
 

@@ -1,0 +1,10 @@
+import openzeppelinContractsVersion from '@openzeppelin/wizard/openzeppelin-contracts-version.json';
+import contractVersionPins from '../contract-version-pins';
+
+export function getVersionedRemappings(): string[] {
+  return [
+    `@openzeppelin/contracts/=@openzeppelin/contracts@${openzeppelinContractsVersion.version}/`,
+    `@openzeppelin/confidential-contracts/=@openzeppelin/confidential-contracts@${contractVersionPins.confidentialContractsVersion}/`,
+    `@fhevm/solidity/=@fhevm/solidity@${contractVersionPins.fhevmSolidityVersion}/`,
+  ];
+}
