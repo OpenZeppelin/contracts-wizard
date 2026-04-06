@@ -79,6 +79,7 @@ type WithTemporaryFolderTestFunction<Args extends unknown[]> = (
   ...args: [...Args, ExecutionContext, string]
 ) => Promise<void> | void;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MakeContract = (opt: any) => Contract;
 
 export const withTemporaryFolderDo =

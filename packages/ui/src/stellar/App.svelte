@@ -194,9 +194,9 @@
     <div class="tab overflow-hidden">
       <OverflowMenu>
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
-        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
         <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin </button>
+        <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
       </OverflowMenu>
     </div>
 

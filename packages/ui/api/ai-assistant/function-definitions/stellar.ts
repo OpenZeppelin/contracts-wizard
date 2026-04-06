@@ -5,6 +5,7 @@ import {
   stellarPrompts,
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
+  stellarGovernorDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
@@ -129,3 +130,36 @@ export const stellarNonFungibleAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'NonFungible'>;
+
+export const stellarGovernorAIFunctionDefinition = {
+  name: 'Governor',
+  description: stellarPrompts.Governor,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, ['name', 'info']),
+      version: {
+        type: 'string',
+        description: stellarGovernorDescriptions.version,
+      },
+      votingDelay: {
+        type: 'string',
+        description: stellarGovernorDescriptions.votingDelay,
+      },
+      votingPeriod: {
+        type: 'string',
+        description: stellarGovernorDescriptions.votingPeriod,
+      },
+      proposalThreshold: {
+        type: 'string',
+        description: stellarGovernorDescriptions.proposalThreshold,
+      },
+      quorum: {
+        type: 'string',
+        description: stellarGovernorDescriptions.quorum,
+      },
+    },
+    required: contractExactRequiredKeys<'stellar', 'Governor'>()(['name']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Governor'>;

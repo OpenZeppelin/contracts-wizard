@@ -8,7 +8,7 @@ import type { GenericOptions } from './build-generic';
 import { contractOptionsToContractName } from './zip-shared';
 import { runCargoTest, withTemporaryFolderDo, type MakeContract } from './utils/compile-test';
 import { assertLayout, expandPathsFromFilesPaths, extractPackage, snapshotZipContents } from './utils/zip-test';
-import { buildFungible } from './fungible';
+import { buildFungible as _buildFungible } from './fungible';
 import test from 'ava';
 
 const asyncExec = util.promisify(child.exec);
@@ -19,7 +19,7 @@ async function runProjectSetUp(t: ExecutionContext, folderPath: string) {
   t.regex(result.stdout, /Installation complete/);
 }
 
-const runScaffoldCompilationTest = withTemporaryFolderDo(
+const _runScaffoldCompilationTest = withTemporaryFolderDo(
   async (makeContract: MakeContract, opts: GenericOptions, test: ExecutionContext, folderPath: string) => {
     test.timeout(3_000_000);
 
@@ -51,7 +51,7 @@ test('placeholder', t => t.assert(true));
 
 // test.serial(
 //   'zip scaffold fungible simple',
-//   runScaffoldCompilationTest(buildFungible, {
+//   _runScaffoldCompilationTest(_buildFungible, {
 //     kind: 'Fungible',
 //     name: 'MyToken',
 //     symbol: 'MTK',
@@ -65,7 +65,7 @@ test('placeholder', t => t.assert(true));
 
 // test.serial(
 //   'zip scaffold fungible full',
-//   runScaffoldCompilationTest(buildFungible, {
+//   _runScaffoldCompilationTest(_buildFungible, {
 //     kind: 'Fungible',
 //     name: 'MyToken',
 //     symbol: 'MTK',
