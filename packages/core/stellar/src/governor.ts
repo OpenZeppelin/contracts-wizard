@@ -10,10 +10,10 @@ import { defineFunctions } from './utils/define-functions';
 export const defaults: Required<GovernorOptions> = {
   name: 'MyGovernor',
   version: '1.0.0',
-  votingDelay: '1',
-  votingPeriod: '17280',
-  proposalThreshold: '1',
-  quorum: '1',
+  votingDelay: '10',
+  votingPeriod: '100',
+  proposalThreshold: '100',
+  quorum: '500',
   info: commonDefaults.info,
 } as const;
 

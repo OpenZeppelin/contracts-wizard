@@ -5,10 +5,10 @@ import { generateAlternatives } from './alternatives';
 const blueprint = {
   name: ['MyGovernor'],
   version: ['1.0.0'],
-  votingDelay: ['1'],
-  votingPeriod: ['17280'],
-  proposalThreshold: ['1'],
-  quorum: ['1'],
+  votingDelay: ['10'],
+  votingPeriod: ['100'],
+  proposalThreshold: ['100'],
+  quorum: ['500'],
   info: infoOptions,
 };
 

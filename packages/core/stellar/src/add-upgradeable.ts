@@ -10,6 +10,11 @@ export function addUpgradeable(c: ContractBuilder, access: Access, explicitImple
       args: [getSelfArg(), { name: 'new_wasm_hash', type: 'BytesN<32>' }, { name: 'operator', type: 'Address' }],
       code: ['upgradeable::upgrade(e, &new_wasm_hash)'],
     },
+    upgrade_unused_operator: {
+      name: 'upgrade',
+      args: [getSelfArg(), { name: 'new_wasm_hash', type: 'BytesN<32>' }, { name: '_operator', type: 'Address' }],
+      code: ['upgradeable::upgrade(e, &new_wasm_hash)'],
+    },
   });
 
   c.addUseClause('soroban_sdk', 'Address');
@@ -24,7 +29,7 @@ export function addUpgradeable(c: ContractBuilder, access: Access, explicitImple
     section: 'Utils',
   };
 
-  const upgradeFn: BaseFunction = functions.upgrade;
+  const upgradeFn: BaseFunction = access === 'ownable' ? functions.upgrade_unused_operator : functions.upgrade;
 
   c.addTraitFunction(upgradeableTrait, upgradeFn);
 
