@@ -32,6 +32,10 @@ export const stellarFungibleAIFunctionDefinition = {
         type: 'string',
         description: stellarFungibleDescriptions.premint,
       },
+      votes: {
+        type: 'boolean',
+        description: stellarFungibleDescriptions.votes,
+      },
     },
     required: contractExactRequiredKeys<'stellar', 'Fungible'>()(['name', 'symbol']),
     additionalProperties: false,
@@ -68,6 +72,10 @@ export const stellarStablecoinAIFunctionDefinition = {
       upgradeable: {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
+      },
+      votes: {
+        type: 'boolean',
+        description: stellarStablecoinDescriptions.votes,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'Stablecoin'>()(['name', 'symbol']),
@@ -111,6 +119,10 @@ export const stellarNonFungibleAIFunctionDefinition = {
       upgradeable: {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
+      },
+      votes: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.votes,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'NonFungible'>()(['name', 'symbol']),
