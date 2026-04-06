@@ -221,6 +221,7 @@ doctest = false
 stellar-tokens = { workspace = true }
 stellar-access = { workspace = true }
 stellar-contract-utils = { workspace = true }
+stellar-governance = { workspace = true }
 stellar-macros = { workspace = true }
 soroban-sdk = { workspace = true }
 

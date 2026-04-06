@@ -116,7 +116,10 @@ const functions = defineFunctions({
     returns: 'BytesN<32>',
     code: [
       'executor.require_auth()',
-      'storage::execute(e, targets, functions, args, &description_hash, Self::proposal_needs_queuing(e))',
+      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let snapshot = storage::get_proposal_snapshot(e, &proposal_id)',
+      'let quorum = Self::quorum(e, snapshot)',
+      'storage::execute(e, targets, functions, args, &description_hash, Self::proposals_need_queuing(e), quorum)',
     ],
   },
   cancel: {
