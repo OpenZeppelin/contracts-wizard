@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## 0.1.0
 
 - Add CLI. ([#785](https://github.com/OpenZeppelin/contracts-wizard/pull/785) [`c405aeb`](https://github.com/OpenZeppelin/contracts-wizard/commit/c405aeb5df1013e08f5762942f111a494f88c58e))
