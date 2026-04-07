@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.5.0 (2026-04-07)
+
+- Move Zod schemas from MCP to common package, add `@openzeppelin/wizard-common/schemas` subpath export. ([#785](https://github.com/OpenZeppelin/contracts-wizard/pull/785))
+  - Uniswap hooks: shorten prompt, move hook descriptions to field-level `describe()` on `--hook` parameter.
+  - Cairo `access` schema field changed from required to optional (loosens validation).
+  - Added `zod` as a dependency.
+  - Add format examples and defaults to duration and date descriptions.
+  - **Breaking change**: Added `exports` field to package.json, restricting imports to declared subpaths (`.` and `./schemas`).
+
 ## 0.4.4 (2026-02-26)
 
 - Solidity `erc20`, `stablecoin`, `realWorldAsset`: Support 'erc7786native' option for `crossChainBridging`. ([#747](https://github.com/OpenZeppelin/contracts-wizard/pull/747))
