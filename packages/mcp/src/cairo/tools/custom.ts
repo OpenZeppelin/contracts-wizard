@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { CustomOptions } from '@openzeppelin/wizard-cairo';
 import { custom } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
-import { customSchema } from '../schemas';
+import { cairoCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
 export function registerCairoCustom(server: McpServer): RegisteredTool {
   return server.tool(
     'cairo-custom',
     makeDetailedPrompt(cairoPrompts.Custom),
-    customSchema,
+    cairoCustomSchema,
     async ({ name, pausable, access, upgradeable, info, macros }) => {
       const opts: CustomOptions = {
         name,

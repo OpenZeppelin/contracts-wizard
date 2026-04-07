@@ -7,6 +7,7 @@ Contributions to OpenZeppelin Contracts Wizard are welcome. Please review the in
 
 - `packages/common` contains common code used internally by some of the below packages.
 - `packages/core` contains the code generation logic for each language under separately named subfolders.
+- `packages/cli` contains the CLI.
 - `packages/mcp` contains the MCP server.
 - `packages/ui` is the interface built in Svelte.
 

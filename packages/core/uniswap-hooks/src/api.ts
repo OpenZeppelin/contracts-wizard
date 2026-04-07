@@ -5,13 +5,13 @@ import {
   isAccessControlRequired as hooksIsAccessControlRequired,
   type HooksOptions,
 } from './hooks';
+import { getVersionedRemappings } from './get-versioned-remappings';
 
 export type Hooks = WizardContractAPI<HooksOptions> & AccessControlAPI<HooksOptions>;
 
 export const hooks: Hooks = {
   print: printHooks,
-  // TODO: Implement when Remix compatibility is added
-  getVersionedRemappings: () => [],
+  getVersionedRemappings: getVersionedRemappings,
   defaults: hooksDefaults,
   isAccessControlRequired: hooksIsAccessControlRequired,
 };

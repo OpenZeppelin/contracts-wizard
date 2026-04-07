@@ -85,7 +85,7 @@ export const solidityAccountDescriptions = {
 export const solidityGovernorDescriptions = {
   delay: 'The delay since proposal is created until voting starts, default is "1 day"',
   period: 'The length of period during which people can cast their vote, default is "1 week"',
-  blockTime: 'The block time of the chain, default is 12',
+  blockTime: 'The block time of the chain in seconds, default is 12',
   proposalThreshold: 'Minimum number of votes an account must have to create a proposal, default is 0.',
   decimals:
     'The number of decimals to use for the contract, default is 18 for ERC20Votes and 0 for ERC721Votes (because it does not apply to ERC721Votes)',

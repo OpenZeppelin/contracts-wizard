@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { VestingOptions } from '@openzeppelin/wizard-cairo';
 import { vesting } from '@openzeppelin/wizard-cairo';
-import { vestingSchema } from '../schemas';
+import { cairoVestingSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof vestingSchema>;
+  schema: z.ZodObject<typeof cairoVestingSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerCairoVesting(new McpServer(testMcpInfo));
-  t.context.schema = z.object(vestingSchema);
+  t.context.schema = z.object(cairoVestingSchema);
 });
 
 function assertHasAllSupportedFields(

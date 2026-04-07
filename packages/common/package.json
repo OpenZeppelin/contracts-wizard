@@ -6,6 +6,15 @@
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
   "main": "dist/index.js",
   "ts:main": "src/index.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schemas": "./dist/ai/schemas/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "schemas": ["dist/ai/schemas/index.d.ts"]
+    }
+  },
   "files": [
     "LICENSE",
     "NOTICE",
@@ -15,10 +24,23 @@
   ],
   "scripts": {
     "prepare": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "test": "ava",
+    "test:watch": "ava --watch"
+  },
+  "dependencies": {
+    "zod": "^4.0"
   },
   "devDependencies": {
+    "@openzeppelin/wizard": "^0.10.7",
+    "@openzeppelin/wizard-cairo": "^3.0.0",
+    "@openzeppelin/wizard-stellar": "^0.5.0",
+    "@openzeppelin/wizard-stylus": "^0.3.0",
+    "@openzeppelin/wizard-confidential": "^0.1.0",
+    "@openzeppelin/wizard-uniswap-hooks": "^0.1.0",
     "@types/node": "^20.0.0",
+    "ava": "^6.0.0",
+    "ts-node": "^10.4.0",
     "typescript": "^5.0.0"
   }
 }

@@ -7,25 +7,9 @@ import {
   uniswapHooksPermissionDescriptions,
   uniswapHooksInputsDescriptions,
   solidityCommonDescriptions,
-} from '@openzeppelin/wizard-common';
-import { HooksNames, ShareOptions, type KindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
+} from '../../index';
 
-/**
- * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
- */
-function _typeAssertions() {
-  const _assertions: {
-    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
-  } = {
-    Hooks: z.object(hooksSchema).parse({}),
-  };
-}
-
-const hookEnum = z.enum(HooksNames);
-
-const sharesOptionsSchema = z.union([z.literal(false), z.enum(ShareOptions)]);
-
-export const commonSchema = {
+export const uniswapHooksCommonSchema = {
   access: z
     .literal('ownable')
     .or(z.literal('roles'))
@@ -41,16 +25,18 @@ export const commonSchema = {
     .describe(infoDescriptions.info),
 } as const satisfies z.ZodRawShape;
 
-const sharesSchema = z
+export const uniswapHooksSharesSchema = z
   .object({
-    options: sharesOptionsSchema.describe(uniswapHooksSharesDescriptions.options),
+    options: z
+      .union([z.literal(false), z.literal('ERC20'), z.literal('ERC1155'), z.literal('ERC6909')])
+      .describe(uniswapHooksSharesDescriptions.options),
     name: z.string().optional().describe(uniswapHooksSharesDescriptions.name),
     symbol: z.string().optional().describe(uniswapHooksSharesDescriptions.symbol),
     uri: z.string().optional().describe(uniswapHooksSharesDescriptions.uri),
   })
   .describe(uniswapHooksDescriptions.shares);
 
-const permissionsSchema = z
+export const uniswapHooksPermissionsSchema = z
   .object({
     beforeInitialize: z.boolean().describe(uniswapHooksPermissionDescriptions.beforeInitialize),
     afterInitialize: z.boolean().describe(uniswapHooksPermissionDescriptions.afterInitialize),
@@ -71,22 +57,39 @@ const permissionsSchema = z
   })
   .describe(uniswapHooksDescriptions.permissions);
 
-const inputsSchema = z
+export const uniswapHooksInputsSchema = z
   .object({
     blockNumberOffset: z.number().describe(uniswapHooksInputsDescriptions.blockNumberOffset),
     maxAbsTickDelta: z.number().describe(uniswapHooksInputsDescriptions.maxAbsTickDelta),
   })
   .describe(uniswapHooksDescriptions.inputs);
 
-export const hooksSchema = {
-  hook: hookEnum.describe(uniswapHooksDescriptions.hook),
+export const uniswapHooksHooksSchema = {
+  hook: z
+    .enum([
+      'BaseHook',
+      'BaseAsyncSwap',
+      'BaseCustomAccounting',
+      'BaseCustomCurve',
+      'BaseDynamicFee',
+      'BaseOverrideFee',
+      'BaseDynamicAfterFee',
+      'BaseHookFee',
+      'AntiSandwichHook',
+      'LiquidityPenaltyHook',
+      'LimitOrderHook',
+      'ReHypothecationHook',
+      'BaseOracleHook',
+      'OracleHookWithV3Adapters',
+    ])
+    .describe(uniswapHooksDescriptions.hook),
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().describe(commonDescriptions.pausable),
   currencySettler: z.boolean().describe(uniswapHooksDescriptions.currencySettler),
   safeCast: z.boolean().describe(uniswapHooksDescriptions.safeCast),
   transientStorage: z.boolean().describe(uniswapHooksDescriptions.transientStorage),
-  shares: sharesSchema,
-  permissions: permissionsSchema,
-  inputs: inputsSchema,
-  ...commonSchema,
+  shares: uniswapHooksSharesSchema,
+  permissions: uniswapHooksPermissionsSchema,
+  inputs: uniswapHooksInputsSchema,
+  ...uniswapHooksCommonSchema,
 } as const satisfies z.ZodRawShape;

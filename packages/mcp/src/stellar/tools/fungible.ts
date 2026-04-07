@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
-import { fungibleSchema } from '../schemas';
+import { stellarFungibleSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStellarFungible(server: McpServer): RegisteredTool {
   return server.tool(
     'stellar-fungible',
     makeDetailedPrompt(stellarPrompts.Fungible),
-    fungibleSchema,
+    stellarFungibleSchema,
     async ({
       name,
       symbol,

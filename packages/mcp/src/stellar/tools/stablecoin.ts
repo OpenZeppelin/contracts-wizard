@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { StablecoinOptions } from '@openzeppelin/wizard-stellar';
 import { stablecoin } from '@openzeppelin/wizard-stellar';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
-import { stablecoinSchema } from '../schemas';
+import { stellarStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStellarStablecoin(server: McpServer): RegisteredTool {
   return server.tool(
     'stellar-stablecoin',
     makeDetailedPrompt(stellarPrompts.Stablecoin),
-    stablecoinSchema,
+    stellarStablecoinSchema,
     async ({
       name,
       symbol,

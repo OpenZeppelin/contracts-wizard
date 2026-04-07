@@ -1,19 +1,7 @@
 import { z } from 'zod';
-import { commonDescriptions, infoDescriptions, confidentialERC7984Descriptions } from '@openzeppelin/wizard-common';
-import type { KindedOptions } from '@openzeppelin/wizard-confidential';
+import { commonDescriptions, infoDescriptions, confidentialERC7984Descriptions } from '../../index';
 
-/**
- * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
- */
-function _typeAssertions() {
-  const _assertions: {
-    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
-  } = {
-    ERC7984: z.object(erc7984Schema).parse({}),
-  };
-}
-
-export const commonSchema = {
+export const confidentialCommonSchema = {
   info: z
     .object({
       securityContact: z.string().optional().describe(infoDescriptions.securityContact),
@@ -23,7 +11,7 @@ export const commonSchema = {
     .describe(infoDescriptions.info),
 } as const satisfies z.ZodRawShape;
 
-export const erc7984Schema = {
+export const confidentialERC7984Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   contractURI: z.string().describe(confidentialERC7984Descriptions.contractURI),
@@ -31,5 +19,5 @@ export const erc7984Schema = {
   networkConfig: z.literal('zama-ethereum').describe(confidentialERC7984Descriptions.networkConfig),
   wrappable: z.boolean().optional().describe(confidentialERC7984Descriptions.wrappable),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(confidentialERC7984Descriptions.votes),
-  ...commonSchema,
+  ...confidentialCommonSchema,
 } as const satisfies z.ZodRawShape;

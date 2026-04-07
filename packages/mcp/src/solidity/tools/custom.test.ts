@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { CustomOptions } from '@openzeppelin/wizard';
 import { custom } from '@openzeppelin/wizard';
-import { customSchema } from '../schemas';
+import { solidityCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof customSchema>;
+  schema: z.ZodObject<typeof solidityCustomSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerSolidityCustom(new McpServer(testMcpInfo));
-  t.context.schema = z.object(customSchema);
+  t.context.schema = z.object(solidityCustomSchema);
 });
 
 function assertHasAllSupportedFields(

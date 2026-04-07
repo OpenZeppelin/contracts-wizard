@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { CustomOptions } from '@openzeppelin/wizard-cairo';
 import { custom } from '@openzeppelin/wizard-cairo';
-import { customSchema } from '../schemas';
+import { cairoCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof customSchema>;
+  schema: z.ZodObject<typeof cairoCustomSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerCairoCustom(new McpServer(testMcpInfo));
-  t.context.schema = z.object(customSchema);
+  t.context.schema = z.object(cairoCustomSchema);
 });
 
 function assertHasAllSupportedFields(
