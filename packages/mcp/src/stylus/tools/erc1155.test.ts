@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC1155Options } from '@openzeppelin/wizard-stylus';
 import { erc1155 } from '@openzeppelin/wizard-stylus';
-import { erc1155Schema } from '../schemas';
+import { stylusERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof erc1155Schema>;
+  schema: z.ZodObject<typeof stylusERC1155Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerStylusERC1155(new McpServer(testMcpInfo));
-  t.context.schema = z.object(erc1155Schema);
+  t.context.schema = z.object(stylusERC1155Schema);
 });
 
 function assertHasAllSupportedFields(

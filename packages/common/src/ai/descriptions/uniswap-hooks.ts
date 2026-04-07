@@ -33,11 +33,7 @@ export const byHooksDescriptions = {
 } as const;
 
 export const uniswapHooksPrompts = {
-  Hooks: `Make a Uniswap v4 hook contract using the OpenZeppelin Uniswap Hooks library. ${Object.entries(
-    byHooksDescriptions,
-  )
-    .map(([hookName, hookDescription]) => `${hookName}: ${hookDescription}`)
-    .join(', ')}`,
+  Hooks: 'Make a Uniswap v4 hook contract using the OpenZeppelin Uniswap Hooks library.',
 };
 
 export const uniswapHooksSharesDescriptions = {
@@ -49,7 +45,9 @@ export const uniswapHooksSharesDescriptions = {
 };
 
 export const uniswapHooksDescriptions = {
-  hook: 'The name of the Uniswap hook',
+  hook: `The name of the Uniswap hook. Available hooks:\n${Object.entries(byHooksDescriptions)
+    .map(([name, desc]) => `        - ${name}: ${desc}`)
+    .join('\n')}`,
   currencySettler:
     'Whether to include the CurrencySettler utility to settle pending deltas with the PoolManager during flash accounting.',
   safeCast: 'Whether to include the SafeCast library for safe integer conversions when handling balances or fees.',
