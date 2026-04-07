@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { ERC721Options } from '@openzeppelin/wizard';
 import { erc721 } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
-import { erc721Schema } from '../schemas';
+import { solidityERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityERC721(server: McpServer): RegisteredTool {
   return server.tool(
     'solidity-erc721',
     makeDetailedPrompt(solidityPrompts.ERC721),
-    erc721Schema,
+    solidityERC721Schema,
     async ({
       name,
       symbol,

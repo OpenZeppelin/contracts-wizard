@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { GovernorOptions } from '@openzeppelin/wizard-cairo';
 import { governor } from '@openzeppelin/wizard-cairo';
-import { governorSchema } from '../schemas';
+import { cairoGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof governorSchema>;
+  schema: z.ZodObject<typeof cairoGovernorSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerCairoGovernor(new McpServer(testMcpInfo));
-  t.context.schema = z.object(governorSchema);
+  t.context.schema = z.object(cairoGovernorSchema);
 });
 
 function assertHasAllSupportedFields(

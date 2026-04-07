@@ -7,18 +7,18 @@ import { z } from 'zod';
 
 import { registerUniswapHooks } from './hooks';
 import { assertAPIEquivalence, testMcpInfo, type DeepRequired } from '../../helpers.test';
-import { hooksSchema } from '../schemas';
+import { uniswapHooksHooksSchema } from '@openzeppelin/wizard-common/schemas';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof hooksSchema>;
+  schema: z.ZodObject<typeof uniswapHooksHooksSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerUniswapHooks(new McpServer(testMcpInfo));
-  t.context.schema = z.object(hooksSchema);
+  t.context.schema = z.object(uniswapHooksHooksSchema);
 });
 
 type SchemaParams = DeepRequired<z.infer<Context['schema']>>;

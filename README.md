@@ -5,6 +5,7 @@
 [![Stellar NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stellar?color=%23e55233&label=%40openzeppelin%2Fwizard-stellar)](https://www.npmjs.com/package/@openzeppelin/wizard-stellar)
 [![Stylus NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stylus?color=%23e55233&label=%40openzeppelin%2Fwizard-stylus)](https://www.npmjs.com/package/@openzeppelin/wizard-stylus)
 [![Uniswap Hooks NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-uniswap-hooks?color=%23e55233&label=%40openzeppelin%2Fwizard-uniswap-hooks)](https://www.npmjs.com/package/@openzeppelin/wizard-uniswap-hooks)
+[![Contracts CLI NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-cli?label=%40openzeppelin%2Fcontracts-cli)](https://www.npmjs.com/package/@openzeppelin/contracts-cli)
 [![Contracts MCP NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-mcp?label=%40openzeppelin%2Fcontracts-mcp)](https://www.npmjs.com/package/@openzeppelin/contracts-mcp)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ca9b53e1-44eb-410d-aac7-31b2f5399b68/deploy-status)](https://app.netlify.com/sites/openzeppelin-contracts-wizard/deploys)
 
@@ -16,16 +17,17 @@ Contracts Wizard is a web application to interactively build a contract out of c
 
 Use the Contracts Wizard at https://wizard.openzeppelin.com
 
+## CLI
+
+Generate contracts from the command line. See the [CLI package](packages/cli/README.md).
+
 ## MCP Servers
 
-MCP Servers allow AI agents to generate smart contracts with the same options as the Contracts Wizard.
-
-For local installation, see the [Contracts MCP Server](packages/mcp/README.md) package.  
-For a hosted version, see [OpenZeppelin MCP Servers](https://mcp.openzeppelin.com).
+Allow AI agents to generate contracts. See the [MCP package](packages/mcp/README.md) for local installation, or [OpenZeppelin MCP Servers](https://mcp.openzeppelin.com) for a hosted version.
 
 ## TypeScript API
 
-You can use the programmatic TypeScript API to generate contracts from your own applications.
+Generate contracts programmatically from your own applications.
 
 View the API documentation for each smart contract language:
 - [Solidity](packages/core/solidity/README.md)

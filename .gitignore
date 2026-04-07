@@ -7,3 +7,6 @@ node_modules
 .vscode/settings.json
 
 fhevmTemp
+
+.claude/*
+!.claude/skills/

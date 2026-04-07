@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { ERC721Options } from '@openzeppelin/wizard-stylus';
 import { erc721 } from '@openzeppelin/wizard-stylus';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
-import { erc721Schema } from '../schemas';
+import { stylusERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStylusERC721(server: McpServer): RegisteredTool {
   return server.tool(
     'stylus-erc721',
     makeDetailedPrompt(stylusPrompts.ERC721),
-    erc721Schema,
+    stylusERC721Schema,
     async ({ name, burnable, enumerable, info }) => {
       const opts: ERC721Options = {
         name,

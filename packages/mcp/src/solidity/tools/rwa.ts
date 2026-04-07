@@ -2,14 +2,14 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { realWorldAsset } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
-import { rwaSchema } from '../schemas';
+import { solidityRWASchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
 
 export function registerSolidityRWA(server: McpServer) {
   return server.tool(
     'solidity-rwa',
     makeDetailedPrompt(solidityPrompts.RWA),
-    rwaSchema,
+    solidityRWASchema,
     async ({
       name,
       symbol,
