@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.5.7 (2026-04-07)
+
+- Use shared Zod schemas from `@openzeppelin/wizard-common/schemas` instead of local schema definitions. ([#785](https://github.com/OpenZeppelin/contracts-wizard/pull/785))
+- Updated dependencies [[`c405aeb`](https://github.com/OpenZeppelin/contracts-wizard/commit/c405aeb5df1013e08f5762942f111a494f88c58e), [`234ab40`](https://github.com/OpenZeppelin/contracts-wizard/commit/234ab409114d81f9d6c429b7dc70c130cf72b5d1)]:
+  - @openzeppelin/wizard-common@0.5.0
+  - @openzeppelin/wizard@0.10.8
+  - @openzeppelin/wizard-confidential@0.1.1
+  - @openzeppelin/wizard-uniswap-hooks@0.1.1
+
 ## 0.5.6 (2026-03-30)
 
 - Update `@modelcontextprotocol/sdk` to ^1.29.0 to address security advisories. ([#789](https://github.com/OpenZeppelin/contracts-wizard/pull/789))

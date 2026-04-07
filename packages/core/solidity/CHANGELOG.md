@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.10.8 (2026-04-07)
+
+- Add package APIs for getting versioned remappings. ([#786](https://github.com/OpenZeppelin/contracts-wizard/pull/786))
+  - Export `getVersionedRemappings` from the Solidity, Confidential, and Uniswap Hooks package roots for internal use by other Wizard packages.
+  - Add `getVersionedRemappings` to the Confidential `erc7984` API and the Uniswap Hooks `hooks` API for consistency with the Solidity contract APIs.
+  - **Internal breaking change**: Removed the internal `print-versioned` entrypoints; internal consumers should use `getVersionedRemappings` instead.
+
 ## 0.10.7 (2026-02-26)
 
 - Make ERC20Permit optional when ERC20Votes is enabled ([#778](https://github.com/OpenZeppelin/contracts-wizard/pull/778))
