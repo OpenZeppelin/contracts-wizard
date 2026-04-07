@@ -42,7 +42,9 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Voting Delay
-      <HelpTooltip>Number of ledgers before voting starts after a proposal is created (17,000 ledgers are approx. 1 day).</HelpTooltip>
+      <HelpTooltip
+        >Number of ledgers before voting starts after a proposal is created (17,000 ledgers are approx. 1 day).</HelpTooltip
+      >
     </span>
     <input bind:value={opts.votingDelay} use:error={errors?.votingDelay} />
   </label>
@@ -50,7 +52,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Voting Period
-      <HelpTooltip>Number of ledgers voting remains open  (120,000 ledgers are approx. 1 week).</HelpTooltip>
+      <HelpTooltip>Number of ledgers voting remains open (120,000 ledgers are approx. 1 week).</HelpTooltip>
     </span>
     <input bind:value={opts.votingPeriod} use:error={errors?.votingPeriod} />
   </label>
