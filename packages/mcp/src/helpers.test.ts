@@ -1,6 +1,7 @@
-import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import type { RegisteredTool, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp';
+import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat';
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol';
-import type { Implementation, ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types';
+import type { Implementation, ServerRequest, ServerNotification, TextContent } from '@modelcontextprotocol/sdk/types';
 import type { ExecutionContext } from 'ava';
 import type { z } from 'zod';
 
@@ -16,7 +17,7 @@ const testMcpContext: RequestHandlerExtra<ServerRequest, ServerNotification> = {
     return;
   },
   sendRequest: async () => {
-    return {};
+    return {} as never;
   },
 };
 
@@ -49,14 +50,15 @@ export async function assertAPIEquivalence<T>(
   wizardApiFunction: (params: T) => string,
   expectError?: boolean,
 ) {
-  const result = await t.context.tool.callback(
+  const result = await (t.context.tool.handler as ToolCallback<ZodRawShapeCompat>)(
     {
       ...params,
       ...testMcpContext,
     },
     testMcpContext,
   );
-  const mcpResult = result?.content[0]?.text as string;
+  const firstContent = result?.content[0] as TextContent;
+  const mcpResult = firstContent.text;
 
   if (expectError) {
     const apiError = t.throws(() => wizardApiFunction(params));

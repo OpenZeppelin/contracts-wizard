@@ -2,6 +2,7 @@ export type { GenericOptions, KindedOptions } from './build-generic';
 export { buildGeneric } from './build-generic';
 
 export { printContract } from './print';
+export { getVersionedRemappings } from './get-versioned-remappings';
 
 export { premintPattern } from './erc7984';
 
