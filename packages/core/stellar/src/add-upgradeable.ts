@@ -39,7 +39,7 @@ export function addUpgradeable(c: ContractBuilder, access: Access, explicitImple
     upgradeFn,
     access,
     {
-      useMacro: false,
+      useMacro: true,
       role: 'upgrader',
       caller: 'operator',
     },
