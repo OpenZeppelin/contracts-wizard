@@ -10,7 +10,19 @@ export function registerStellarGovernor(server: McpServer): RegisteredTool {
     'stellar-governor',
     makeDetailedPrompt(stellarPrompts.Governor),
     governorSchema,
-    async ({ name, version, votingDelay, votingPeriod, proposalThreshold, quorum, info }) => {
+    async ({
+      name,
+      version,
+      votingDelay,
+      votingPeriod,
+      proposalThreshold,
+      quorum,
+      timelock,
+      upgradeable,
+      access,
+      explicitImplementations,
+      info,
+    }) => {
       const opts: GovernorOptions = {
         name,
         version,
@@ -18,6 +30,10 @@ export function registerStellarGovernor(server: McpServer): RegisteredTool {
         votingPeriod,
         proposalThreshold,
         quorum,
+        timelock,
+        upgradeable,
+        access,
+        explicitImplementations,
         info,
       };
       return {

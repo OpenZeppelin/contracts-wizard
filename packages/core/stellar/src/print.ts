@@ -30,6 +30,7 @@ export function printContract(contract: Contract): string {
         printUseClauses(contract),
         printMetadata(contract),
         printVariables(contract),
+        printTopLevelDeclarations(contract),
         printContractStruct(contract),
         printContractErrors(contract),
         printContractFunctions(contract),
@@ -361,6 +362,11 @@ function printArgument(arg: Argument): string {
   } else {
     return `${arg.name}`;
   }
+}
+
+function printTopLevelDeclarations(contract: Contract): Lines[] {
+  if (contract.topLevelDeclarations.length === 0) return [];
+  return spaceBetween(...contract.topLevelDeclarations);
 }
 
 function printDocumentations(documentations: string[]): string[] {

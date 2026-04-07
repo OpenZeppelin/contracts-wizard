@@ -57,7 +57,8 @@ export const governorSchema = {
   votingPeriod: z.string().optional().describe(stellarGovernorDescriptions.votingPeriod),
   proposalThreshold: z.string().optional().describe(stellarGovernorDescriptions.proposalThreshold),
   quorum: z.string().optional().describe(stellarGovernorDescriptions.quorum),
-  info: infoSchema,
+  timelock: z.boolean().optional().describe(stellarGovernorDescriptions.timelock),
+  ...commonSchema,
 } as const satisfies z.ZodRawShape;
 
 export const stablecoinSchema = {

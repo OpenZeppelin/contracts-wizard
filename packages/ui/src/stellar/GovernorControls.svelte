@@ -4,7 +4,9 @@
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { governor, infoDefaults } from '@openzeppelin/wizard-stellar';
 
+  import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import TraitImplementationSection from './TraitImplementationSection.svelte';
   import { error } from '../common/error-tooltip';
 
   export let opts: Required<KindedOptions['Governor']> = {
@@ -14,6 +16,8 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  $: requireAccessControl = governor.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -38,7 +42,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Voting Delay
-      <HelpTooltip>Number of ledgers before voting starts after a proposal is created.</HelpTooltip>
+      <HelpTooltip>Number of ledgers before voting starts after a proposal is created (17,000 ledgers are approx. 1 day).</HelpTooltip>
     </span>
     <input bind:value={opts.votingDelay} use:error={errors?.votingDelay} />
   </label>
@@ -46,7 +50,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Voting Period
-      <HelpTooltip>Number of ledgers voting remains open.</HelpTooltip>
+      <HelpTooltip>Number of ledgers voting remains open  (120,000 ledgers are approx. 1 week).</HelpTooltip>
     </span>
     <input bind:value={opts.votingPeriod} use:error={errors?.votingPeriod} />
   </label>
@@ -67,5 +71,27 @@
     <input bind:value={opts.quorum} use:error={errors?.quorum} />
   </label>
 </section>
+
+<section class="controls-section">
+  <h1>Features</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.timelock}>
+      <input type="checkbox" bind:checked={opts.timelock} />
+      Timelock
+      <HelpTooltip>Adds a timelock mechanism that enforces a delay between proposal queuing and execution.</HelpTooltip>
+    </label>
+
+    <label class:checked={opts.upgradeable}>
+      <input type="checkbox" bind:checked={opts.upgradeable} />
+      Upgradeable
+      <HelpTooltip>Allows the contract to be upgraded by the owner.</HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+
+<TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
 <InfoSection bind:info={opts.info} />

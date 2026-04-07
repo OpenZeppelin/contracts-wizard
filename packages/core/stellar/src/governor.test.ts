@@ -41,6 +41,32 @@ testGovernor('governor custom settings', {
   quorum: '500',
 });
 
+testGovernor('governor upgradeable ownable', {
+  upgradeable: true,
+  access: 'ownable',
+});
+
+testGovernor('governor upgradeable roles', {
+  upgradeable: true,
+  access: 'roles',
+});
+
+testGovernor('governor timelock', {
+  timelock: true,
+});
+
+testGovernor('governor timelock upgradeable ownable', {
+  timelock: true,
+  upgradeable: true,
+  access: 'ownable',
+});
+
+testGovernor('governor timelock upgradeable roles', {
+  timelock: true,
+  upgradeable: true,
+  access: 'roles',
+});
+
 testAPIEquivalence('governor API default');
 
 testAPIEquivalence('governor API custom', {

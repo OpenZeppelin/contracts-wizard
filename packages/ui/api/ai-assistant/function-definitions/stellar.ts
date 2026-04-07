@@ -137,7 +137,13 @@ export const stellarGovernorAIFunctionDefinition = {
   parameters: {
     type: 'object',
     properties: {
-      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, ['name', 'info']),
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'upgradeable',
+        'access',
+        'info',
+        'explicitImplementations',
+      ]),
       version: {
         type: 'string',
         description: stellarGovernorDescriptions.version,
@@ -157,6 +163,10 @@ export const stellarGovernorAIFunctionDefinition = {
       quorum: {
         type: 'string',
         description: stellarGovernorDescriptions.quorum,
+      },
+      timelock: {
+        type: 'boolean',
+        description: stellarGovernorDescriptions.timelock,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'Governor'>()(['name']),

@@ -45,6 +45,10 @@ test('all explicit', async t => {
     votingPeriod: '17280',
     proposalThreshold: '1',
     quorum: '1',
+    timelock: true,
+    upgradeable: true,
+    access: 'roles',
+    explicitImplementations: true,
     info: {
       license: 'MIT',
       securityContact: 'security@contact.com',

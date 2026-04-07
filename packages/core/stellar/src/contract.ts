@@ -10,6 +10,7 @@ export interface Contract {
   constructorArgs: Argument[];
   implementedTraits: TraitImplBlock[];
   freeFunctions: ContractFunction[];
+  topLevelDeclarations: string[][];
   variables: Variable[];
   errors: Error[];
   ownable: boolean;
@@ -81,6 +82,7 @@ export class ContractBuilder implements Contract {
 
   readonly constructorArgs: Argument[] = [];
   readonly constructorCode: string[] = [];
+  readonly topLevelDeclarations: string[][] = [];
 
   private implementedTraitsMap: Map<string, TraitImplBlock> = new Map();
   private freeFunctionsMap: Map<string, ContractFunction> = new Map();
@@ -248,6 +250,10 @@ export class ContractBuilder implements Contract {
   setFunctionCode(fn: BaseFunction, code: string[], baseTrait?: BaseTraitImplBlock): void {
     const existingFn = this.getOrCreateFunction(fn, baseTrait);
     existingFn.code = [...code];
+  }
+
+  addTopLevelDeclaration(lines: string[]): void {
+    this.topLevelDeclarations.push(lines);
   }
 
   addConstructorArgument(arg: Argument): void {

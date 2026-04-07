@@ -38,8 +38,9 @@ export const stellarStablecoinDescriptions = {
 
 export const stellarGovernorDescriptions = {
   version: 'The semantic version label returned by the governor contract.',
-  votingDelay: 'Number of ledgers between proposal creation and voting start.',
-  votingPeriod: 'Number of ledgers during which voting remains open.',
+  votingDelay: 'Number of ledgers between proposal creation and voting start (17,000 ledgers are approx. 1 day).',
+  votingPeriod: 'Number of ledgers during which voting remains open (120,000 ledgers are approx. 1 week).',
   proposalThreshold: 'Minimum voting power required for creating a proposal.',
   quorum: 'Minimum participation required for a proposal to pass.',
+  timelock: 'Whether to add a timelock mechanism that enforces a delay between proposal queuing and execution.',
 };
