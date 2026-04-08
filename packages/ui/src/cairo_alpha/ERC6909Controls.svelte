@@ -55,6 +55,21 @@
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.contentUri}>
+      <input type="checkbox" bind:checked={opts.contentUri} />
+      Content URI
+      <HelpTooltip>Provides contract-level and per-token URI metadata via contractURI() and tokenURI(id).</HelpTooltip>
+    </label>
+    <label class:checked={opts.tokenSupply}>
+      <input type="checkbox" bind:checked={opts.tokenSupply} />
+      Supply Tracking
+      <HelpTooltip>Keeps track of total supply per token ID via totalSupply(id).</HelpTooltip>
+    </label>
+    <label class:checked={opts.metadata}>
+      <input type="checkbox" bind:checked={opts.metadata} />
+      Metadata
+      <HelpTooltip>Provides per-token metadata including name(id), symbol(id), and decimals(id).</HelpTooltip>
+    </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>
