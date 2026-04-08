@@ -36,7 +36,12 @@ import {
   cairoCustomSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
-import { fungible, governor as stellarGovernor, stablecoin as stellarStablecoin, nonFungible } from '@openzeppelin/wizard-stellar';
+import {
+  fungible,
+  governor as stellarGovernor,
+  stablecoin as stellarStablecoin,
+  nonFungible,
+} from '@openzeppelin/wizard-stellar';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 import {
   stellarFungibleSchema,
