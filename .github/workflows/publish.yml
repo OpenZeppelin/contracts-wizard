@@ -21,8 +21,8 @@ jobs:
           ref: ${{ github.ref }}
       - name: Set up environment
         uses: ./.github/actions/setup
-      - name: Install npm 11 for OIDC trusted publishing
-        run: npm install -g npm@11.12.1
+        with:
+          node-version: '24'
       - name: Check for new packages
         id: check-packages
         run: |
@@ -61,10 +61,15 @@ jobs:
             echo "All packages exist on npm — using OIDC trusted publishing"
           fi
           echo "has_new_packages=$has_new_packages" >> "$GITHUB_OUTPUT"
-      - name: Enable NPM token publishing
-        if: steps.check-packages.outputs.has_new_packages == 'true'
-        run: echo "NODE_AUTH_TOKEN=${NPM_TOKEN}" >> "$GITHUB_ENV"
+      - name: Configure npm auth
+        run: |
+          if [ "$HAS_NEW_PACKAGES" = "true" ]; then
+            echo "NODE_AUTH_TOKEN=${NPM_TOKEN}" >> "$GITHUB_ENV"
+          else
+            echo "NODE_AUTH_TOKEN=" >> "$GITHUB_ENV"
+          fi
         env:
+          HAS_NEW_PACKAGES: ${{ steps.check-packages.outputs.has_new_packages }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create Prepare Release PR or Publish
         id: changesets
