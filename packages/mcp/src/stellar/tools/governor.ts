@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { GovernorOptions } from '@openzeppelin/wizard-stellar';
 import { governor } from '@openzeppelin/wizard-stellar';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
-import { governorSchema } from '../schemas';
+import { stellarGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStellarGovernor(server: McpServer): RegisteredTool {
   return server.tool(
     'stellar-governor',
     makeDetailedPrompt(stellarPrompts.Governor),
-    governorSchema,
+    stellarGovernorSchema,
     async ({
       name,
       version,

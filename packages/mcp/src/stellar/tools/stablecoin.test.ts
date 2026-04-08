@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { StablecoinOptions } from '@openzeppelin/wizard-stellar';
 import { stablecoin } from '@openzeppelin/wizard-stellar';
-import { stablecoinSchema } from '../schemas';
+import { stellarStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof stablecoinSchema>;
+  schema: z.ZodObject<typeof stellarStablecoinSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerStellarStablecoin(new McpServer(testMcpInfo));
-  t.context.schema = z.object(stablecoinSchema);
+  t.context.schema = z.object(stellarStablecoinSchema);
 });
 
 function assertHasAllSupportedFields(

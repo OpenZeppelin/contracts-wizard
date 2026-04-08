@@ -7,24 +7,9 @@ import {
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
-} from '@openzeppelin/wizard-common';
-import type { KindedOptions } from '@openzeppelin/wizard-stellar';
+} from '../../index';
 
-/**
- * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
- */
-function _typeAssertions() {
-  const _assertions: {
-    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
-  } = {
-    Fungible: z.object(fungibleSchema).parse({}),
-    Governor: z.object(governorSchema).parse({}),
-    Stablecoin: z.object(stablecoinSchema).parse({}),
-    NonFungible: z.object(nonFungibleSchema).parse({}),
-  };
-}
-
-const infoSchema = z
+export const stellarInfoSchema = z
   .object({
     securityContact: z.string().optional().describe(infoDescriptions.securityContact),
     license: z.string().optional().describe(infoDescriptions.license),
@@ -32,14 +17,14 @@ const infoSchema = z
   .optional()
   .describe(infoDescriptions.info);
 
-export const commonSchema = {
+export const stellarCommonSchema = {
   access: z.literal('ownable').or(z.literal('roles')).optional().describe(stellarCommonDescriptions.access),
   explicitImplementations: z.boolean().optional().describe(stellarCommonDescriptions.explicitImplementations),
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
-  info: infoSchema,
+  info: stellarInfoSchema,
 } as const satisfies z.ZodRawShape;
 
-export const fungibleSchema = {
+export const stellarFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
@@ -47,10 +32,10 @@ export const fungibleSchema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(stellarFungibleDescriptions.premint),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
-  ...commonSchema,
+  ...stellarCommonSchema,
 } as const satisfies z.ZodRawShape;
 
-export const governorSchema = {
+export const stellarGovernorSchema = {
   name: z.string().describe(commonDescriptions.name),
   version: z.string().optional().describe(stellarGovernorDescriptions.version),
   votingDelay: z.string().optional().describe(stellarGovernorDescriptions.votingDelay),
@@ -58,11 +43,11 @@ export const governorSchema = {
   proposalThreshold: z.string().optional().describe(stellarGovernorDescriptions.proposalThreshold),
   quorum: z.string().optional().describe(stellarGovernorDescriptions.quorum),
   timelock: z.boolean().optional().describe(stellarGovernorDescriptions.timelock),
-  ...commonSchema,
+  ...stellarCommonSchema,
 } as const satisfies z.ZodRawShape;
 
-export const stablecoinSchema = {
-  ...fungibleSchema,
+export const stellarStablecoinSchema = {
+  ...stellarFungibleSchema,
   limitations: z
     .literal(false)
     .or(z.literal('allowlist'))
@@ -71,7 +56,7 @@ export const stablecoinSchema = {
     .describe(stellarStablecoinDescriptions.limitations),
 } as const satisfies z.ZodRawShape;
 
-export const nonFungibleSchema = {
+export const stellarNonFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   tokenUri: z.string().optional().describe(stellarNonFungibleDescriptions.tokenUri),
@@ -82,5 +67,5 @@ export const nonFungibleSchema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   sequential: z.boolean().optional().describe(stellarNonFungibleDescriptions.sequential),
-  ...commonSchema,
+  ...stellarCommonSchema,
 } as const satisfies z.ZodRawShape;

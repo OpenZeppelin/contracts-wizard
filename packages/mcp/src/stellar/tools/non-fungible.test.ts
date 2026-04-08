@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { NonFungibleOptions } from '@openzeppelin/wizard-stellar';
 import { nonFungible } from '@openzeppelin/wizard-stellar';
-import { nonFungibleSchema } from '../schemas';
+import { stellarNonFungibleSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof nonFungibleSchema>;
+  schema: z.ZodObject<typeof stellarNonFungibleSchema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerStellarNonFungible(new McpServer(testMcpInfo));
-  t.context.schema = z.object(nonFungibleSchema);
+  t.context.schema = z.object(stellarNonFungibleSchema);
 });
 
 function assertHasAllSupportedFields(
