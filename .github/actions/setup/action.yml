@@ -1,11 +1,16 @@
 name: Setup
 
+inputs:
+  node-version:
+    description: Node.js version to use
+    default: '22'
+
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
-        node-version: 22
+        node-version: ${{ inputs.node-version }}
         cache: yarn
         registry-url: 'https://registry.npmjs.org'
 
