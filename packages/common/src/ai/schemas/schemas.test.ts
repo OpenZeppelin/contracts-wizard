@@ -26,6 +26,7 @@ import {
   cairoVestingSchema,
   cairoCustomSchema,
   stellarFungibleSchema,
+  stellarGovernorSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
   stylusERC20Schema,
@@ -148,6 +149,7 @@ function _stellarTypeAssertions() {
     [K in keyof StellarKindedOptions]: Omit<StellarKindedOptions[K], 'kind'>;
   } = {
     Fungible: z.object(stellarFungibleSchema).parse({}),
+    Governor: z.object(stellarGovernorSchema).parse({}),
     Stablecoin: z.object(stellarStablecoinSchema).parse({}),
     NonFungible: z.object(stellarNonFungibleSchema).parse({}),
   };
