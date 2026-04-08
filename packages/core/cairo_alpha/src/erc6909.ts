@@ -115,7 +115,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC6909Options>) {
     const beforeUpdateFnCode = [];
     if (allOpts.pausable) {
       beforeUpdateFnCode.push('let contract_state = self.get_contract()');
-      beforeUpdateFnCode.push('contract_state.pausable.assert_not_paused()')
+      beforeUpdateFnCode.push('contract_state.pausable.assert_not_paused()');
     }
     if (allOpts.tokenSupply) {
       beforeUpdateFnCode.push('let mut contract_state = self.get_contract_mut()');
@@ -135,7 +135,6 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC6909Options>) {
       ],
       code: beforeUpdateFnCode,
     });
-
   } else {
     c.addUseClause('openzeppelin_token::erc6909', 'ERC6909HooksEmptyImpl');
   }
