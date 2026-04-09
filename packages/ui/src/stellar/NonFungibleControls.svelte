@@ -25,13 +25,23 @@
     if (value) {
       opts.mintable = false;
       opts.enumerable = false;
+      opts.votes = false;
     }
     opts.consecutive = value;
+  }
+
+  function handleVotesChange(value: boolean) {
+    if (value) {
+      opts.enumerable = false;
+      opts.consecutive = false;
+    }
+    opts.votes = value;
   }
 
   function handleEnumerableChange(value: boolean) {
     if (value) {
       opts.consecutive = false;
+      opts.votes = false;
     }
     opts.enumerable = value;
   }
@@ -71,22 +81,45 @@
       <HelpTooltip>Token holders will be able to destroy their NFTs.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes} use:error={errors?.votes}>
-      <input type="checkbox" bind:checked={opts.votes} />
+    <label class:checked={opts.votes} class:disabled={opts.enumerable || opts.consecutive} use:error={errors?.votes}>
+      <input
+        type="checkbox"
+        checked={opts.votes}
+        disabled={opts.enumerable || opts.consecutive}
+        on:change={e => handleVotesChange(e.currentTarget.checked)}
+      />
       Votes
       <HelpTooltip
         >Adds vote checkpoints and delegation support. Incompatible with Enumerable and Consecutive.</HelpTooltip
       >
     </label>
 
-    <label class:checked={opts.enumerable} use:error={errors?.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable} />
+    <label
+      class:checked={opts.enumerable}
+      class:disabled={opts.votes || opts.consecutive}
+      use:error={errors?.enumerable}
+    >
+      <input
+        type="checkbox"
+        checked={opts.enumerable}
+        disabled={opts.votes || opts.consecutive}
+        on:change={e => handleEnumerableChange(e.currentTarget.checked)}
+      />
       Enumerable
       <HelpTooltip>Enable on-chain enumeration of tokens. Cannot be used with Consecutive extensions.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.consecutive} use:error={errors?.consecutive}>
-      <input type="checkbox" bind:checked={opts.consecutive} />
+    <label
+      class:checked={opts.consecutive}
+      class:disabled={opts.votes || opts.enumerable}
+      use:error={errors?.consecutive}
+    >
+      <input
+        type="checkbox"
+        checked={opts.consecutive}
+        disabled={opts.votes || opts.enumerable}
+        on:change={e => handleConsecutiveChange(e.currentTarget.checked)}
+      />
       Consecutive
       <HelpTooltip
         >Use consecutive token IDs instead of unique UUIDs. Incompatible with Enumerable extension.</HelpTooltip
