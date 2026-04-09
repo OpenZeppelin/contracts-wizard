@@ -5,6 +5,8 @@ import { homedir, tmpdir } from 'os';
 import path from 'path';
 import { promisify } from 'util';
 import type { GenericOptions } from '../build-generic';
+import type { CommonContractOptions } from '../common-options';
+import { withCommonContractDefaults } from '../common-options';
 import type { Contract } from '../contract';
 import { zipRustProject } from '../zip-rust';
 import { contractOptionsToContractName } from '../zip-shared';
@@ -145,18 +147,16 @@ export const runRustCompilationTest = withTemporaryFolderDo(
   ) => {
     await doRunRustCompilationTest(makeContract, opts, testOptions, test, `${folderPath}/default`);
 
-    const optsWithExplicit = opts as GenericOptions & { explicitImplementations?: boolean };
-    const supportsExplicitImplementations = 'explicitImplementations' in optsWithExplicit;
+    const mergedOpts = withCommonContractDefaults(opts as GenericOptions & CommonContractOptions);
+    const supportsExplicitImplementations = 'explicitImplementations' in mergedOpts;
     const shouldBeExcludedOrHasAlreadyRun =
-      testOptions.excludeExplicitTraitTest ||
-      !supportsExplicitImplementations ||
-      optsWithExplicit.explicitImplementations;
+      testOptions.excludeExplicitTraitTest || !supportsExplicitImplementations || mergedOpts.explicitImplementations;
     if (shouldBeExcludedOrHasAlreadyRun) return;
 
     try {
       await doRunRustCompilationTest(
         makeContract,
-        { ...optsWithExplicit, explicitImplementations: true } as GenericOptions,
+        { ...opts, explicitImplementations: true } as GenericOptions,
         testOptions,
         test,
         `${folderPath}/explicit`,
