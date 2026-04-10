@@ -92,8 +92,7 @@ function addBase(
 ) {
   c.addUseClause('stellar_governance::governor', 'Governor');
   c.addUseClause('stellar_governance::governor', 'ProposalState');
-  c.addUseClause('stellar_governance::governor', 'storage');
-  c.addUseClause('stellar_governance::governor::storage', 'set_token_contract');
+  c.addUseClause('stellar_governance::governor', 'self', { alias: 'governor' });
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
@@ -105,13 +104,13 @@ function addBase(
   c.addUseClause('soroban_sdk', 'Vec');
 
   c.addConstructorArgument({ name: 'token_contract', type: 'Address' });
-  c.addConstructorCode(`storage::set_name(e, String::from_str(e, "${name}"));`);
-  c.addConstructorCode(`storage::set_version(e, String::from_str(e, "${version}"));`);
-  c.addConstructorCode(`storage::set_voting_delay(e, ${votingDelay});`);
-  c.addConstructorCode(`storage::set_voting_period(e, ${votingPeriod});`);
-  c.addConstructorCode(`storage::set_proposal_threshold(e, ${proposalThreshold});`);
-  c.addConstructorCode(`storage::set_quorum(e, ${quorum});`);
-  c.addConstructorCode('set_token_contract(e, &token_contract);');
+  c.addConstructorCode(`governor::set_name(e, String::from_str(e, "${name}"));`);
+  c.addConstructorCode(`governor::set_version(e, String::from_str(e, "${version}"));`);
+  c.addConstructorCode(`governor::set_voting_delay(e, ${votingDelay});`);
+  c.addConstructorCode(`governor::set_voting_period(e, ${votingPeriod});`);
+  c.addConstructorCode(`governor::set_proposal_threshold(e, ${proposalThreshold});`);
+  c.addConstructorCode(`governor::set_quorum(e, ${quorum});`);
+  c.addConstructorCode('governor::set_token_contract(e, &token_contract);');
 
   const governorTrait = {
     traitName: 'Governor',
@@ -130,8 +129,15 @@ function addBase(
 function addTimelock(c: ContractBuilder, governorTrait: { traitName: string; structName: string; tags: string[] }) {
   c.addUseClause('soroban_sdk', 'contracttype');
   c.addUseClause('soroban_sdk', 'IntoVal');
+  c.addUseClause('stellar_governance::timelock', 'TimelockClient');
 
-  c.addTopLevelDeclaration(['#[contracttype]', 'enum GovernorTimelockKey {', '    Timelock,', '}']);
+  c.addTopLevelDeclaration([
+    '#[contracttype]',
+    'enum GovernorTimelockKey {',
+    '    Timelock,',
+    '    OperationID(BytesN<32>),',
+    '}',
+  ]);
 
   c.addConstructorArgument({ name: 'timelock_contract', type: 'Address' });
   c.addConstructorCode('e.storage().instance().set(&GovernorTimelockKey::Timelock, &timelock_contract);');
@@ -157,10 +163,10 @@ const functions = defineFunctions({
     returns: 'BytesN<32>',
     code: [
       'executor.require_auth()',
-      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
-      'let snapshot = storage::get_proposal_snapshot(e, &proposal_id)',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
       'let quorum = Self::quorum(e, snapshot)',
-      'storage::execute(e, targets, functions, args, &description_hash, Self::proposals_need_queuing(e), quorum)',
+      'governor::execute(e, targets, functions, args, &description_hash, Self::proposals_need_queuing(e), quorum)',
     ],
   },
   cancel: {
@@ -174,11 +180,11 @@ const functions = defineFunctions({
     ],
     returns: 'BytesN<32>',
     code: [
-      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
-      'let proposer = storage::get_proposal_proposer(e, &proposal_id)',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let proposer = governor::get_proposal_proposer(e, &proposal_id)',
       'assert!(operator == proposer)',
       'operator.require_auth()',
-      'storage::cancel(e, targets, functions, args, &description_hash)',
+      'governor::cancel(e, targets, functions, args, &description_hash)',
     ],
   },
 });
@@ -209,18 +215,17 @@ const timelockFunctions = defineFunctions({
     ],
     returns: 'BytesN<32>',
     code: [
-      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
-      'let snapshot = storage::get_proposal_snapshot(e, &proposal_id)',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
       'let quorum = Self::quorum(e, snapshot)',
-      'let proposal_id = storage::queue(e, targets.clone(), functions.clone(), args.clone(), &description_hash, eta, quorum)',
+      'let proposal_id = governor::queue(e, targets.clone(), functions.clone(), args.clone(), &description_hash, eta, quorum)',
+      'let timelock = Self::timelock(e)',
       'let delay = eta.saturating_sub(e.ledger().sequence())',
-      'let current_addr = e.current_contract_address()',
-      'let no_predecessor = BytesN::from_array(e, &[0u8; 32])',
-      'let execute_fn = Symbol::new(e, "execute")',
-      'let execute_args: Vec<Val> = (targets, functions, args, description_hash.clone(), Self::timelock(e)).into_val(e)',
-      'let schedule_op_fn = Symbol::new(e, "schedule_op")',
-      'let schedule_args: Vec<Val> = (current_addr.clone(), execute_fn, execute_args, no_predecessor, description_hash, delay, current_addr).into_val(e)',
-      'e.invoke_contract::<BytesN<32>>(&Self::timelock(e), &schedule_op_fn, schedule_args);',
+      'let execute_args: Vec<Val> = (targets, functions, args, description_hash.clone(), timelock.clone()).into_val(e)',
+      'let timelock_client = TimelockClient::new(e, &timelock)',
+      'let zero_predecessor = BytesN::from_array(e, &[0u8; 32])',
+      'let op_id = timelock_client.schedule(&e.current_contract_address(), &Symbol::new(e, "execute"), &execute_args, &zero_predecessor, &description_hash, &delay, &e.current_contract_address())',
+      'e.storage().persistent().set(&GovernorTimelockKey::OperationID(proposal_id.clone()), &op_id);',
       'proposal_id',
     ],
   },
@@ -238,10 +243,10 @@ const timelockFunctions = defineFunctions({
       'let timelock = Self::timelock(e)',
       'assert!(executor == timelock)',
       'executor.require_auth()',
-      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
-      'let snapshot = storage::get_proposal_snapshot(e, &proposal_id)',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
       'let quorum = Self::quorum(e, snapshot)',
-      'storage::execute(e, targets, functions, args, &description_hash, Self::proposals_need_queuing(e), quorum)',
+      'governor::execute(e, targets, functions, args, &description_hash, Self::proposals_need_queuing(e), quorum)',
     ],
   },
   cancel: {
@@ -255,11 +260,16 @@ const timelockFunctions = defineFunctions({
     ],
     returns: 'BytesN<32>',
     code: [
-      'let proposal_id = storage::hash_proposal(e, &targets, &functions, &args, &description_hash)',
-      'let proposer = storage::get_proposal_proposer(e, &proposal_id)',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let proposer = governor::get_proposal_proposer(e, &proposal_id)',
       'assert!(operator == proposer)',
       'operator.require_auth()',
-      'storage::cancel(e, targets, functions, args, &description_hash)',
+      'if let Some(op_id) = e.storage().persistent().get::<_, BytesN<32>>(&GovernorTimelockKey::OperationID(proposal_id)) {',
+      '    let timelock = Self::timelock(e);',
+      '    let timelock_client = TimelockClient::new(e, &timelock);',
+      '    timelock_client.cancel(&op_id, &e.current_contract_address());',
+      '}',
+      'governor::cancel(e, targets, functions, args, &description_hash)',
     ],
   },
 });
