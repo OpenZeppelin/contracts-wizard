@@ -40,7 +40,7 @@ export const stellarGovernorDescriptions = {
   version: 'The semantic version label returned by the governor contract.',
   votingDelay: 'Number of ledgers between proposal creation and voting start (17,000 ledgers are approx. 1 day).',
   votingPeriod: 'Number of ledgers during which voting remains open (120,000 ledgers are approx. 1 week).',
-  proposalThreshold: 'Minimum voting power required for creating a proposal.',
-  quorum: 'Minimum participation required for a proposal to pass.',
+  proposalThreshold: 'Minimum voting power required for creating a proposal, default is 100.',
+  quorum: 'Minimum number of votes required for a proposal to pass, default is 500.',
   timelock: 'Whether to add a timelock mechanism that enforces a delay between proposal queuing and execution.',
 };
