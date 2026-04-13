@@ -30,7 +30,13 @@
     </label>
 
     <label class="labeled-input">
-      <span>Version</span>
+      <span class="flex justify-between pr-2">
+        Version
+        <HelpTooltip
+          >Semantic version label exposed by the governor's `version()` function. It is informational; has no effect on
+          contract behavior.</HelpTooltip
+        >
+      </span>
       <input bind:value={opts.version} use:error={errors?.version} />
     </label>
   </div>

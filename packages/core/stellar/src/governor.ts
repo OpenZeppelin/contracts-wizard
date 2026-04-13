@@ -68,6 +68,7 @@ export function buildGovernor(opts: GovernorOptions): ContractBuilder {
     toUint(allOpts.proposalThreshold, 'proposalThreshold', 'u128'),
     toUint(allOpts.quorum, 'quorum', 'u128'),
     allOpts.timelock,
+    allOpts.explicitImplementations,
   );
 
   if (allOpts.upgradeable) {
@@ -89,6 +90,7 @@ function addBase(
   proposalThreshold: bigint,
   quorum: bigint,
   timelock: boolean,
+  explicitImplementations: boolean,
 ) {
   c.addUseClause('stellar_governance::governor', 'Governor');
   c.addUseClause('stellar_governance::governor', 'ProposalState');
@@ -115,14 +117,21 @@ function addBase(
   const governorTrait = {
     traitName: 'Governor',
     structName: c.name,
-    tags: ['contractimpl(contracttrait)'],
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
   };
 
+  // Custom impls must be added before the defaults so the deduplication keeps
+  // the custom version when a default-method override exists (e.g. timelock's
+  // `proposals_need_queuing`/`queue` overriding the trait defaults).
   if (timelock) {
     addTimelock(c, governorTrait);
   } else {
     c.addTraitFunction(governorTrait, functions.execute);
     c.addTraitFunction(governorTrait, functions.cancel);
+  }
+
+  if (explicitImplementations) {
+    c.addTraitForEachFunctions(governorTrait, governorTraitDefaultFunctions);
   }
 }
 
@@ -271,5 +280,146 @@ const timelockFunctions = defineFunctions({
       '}',
       'governor::cancel(e, targets, functions, args, &description_hash)',
     ],
+  },
+});
+
+// Explicit-trait variants for every default method on the `Governor` trait.
+// When `explicitImplementations` is enabled, these are emitted as overrides
+// that mirror the upstream defaults — letting users see and customize each
+// method directly. Order matches the trait definition for readability.
+const governorTraitDefaultFunctions = defineFunctions({
+  name: {
+    args: [getSelfArg()],
+    returns: 'String',
+    code: ['governor::get_name(e)'],
+  },
+  version: {
+    args: [getSelfArg()],
+    returns: 'String',
+    code: ['governor::get_version(e)'],
+  },
+  voting_delay: {
+    args: [getSelfArg()],
+    returns: 'u32',
+    code: ['governor::get_voting_delay(e)'],
+  },
+  voting_period: {
+    args: [getSelfArg()],
+    returns: 'u32',
+    code: ['governor::get_voting_period(e)'],
+  },
+  proposal_threshold: {
+    args: [getSelfArg()],
+    returns: 'u128',
+    code: ['governor::get_proposal_threshold(e)'],
+  },
+  get_token_contract: {
+    args: [getSelfArg()],
+    returns: 'Address',
+    code: ['governor::get_token_contract(e)'],
+  },
+  counting_mode: {
+    args: [getSelfArg()],
+    returns: 'Symbol',
+    code: ['governor::counting_mode(e)'],
+  },
+  has_voted: {
+    args: [getSelfArg(), { name: 'proposal_id', type: 'BytesN<32>' }, { name: 'account', type: 'Address' }],
+    returns: 'bool',
+    code: ['governor::has_voted(e, &proposal_id, &account)'],
+  },
+  quorum: {
+    args: [getSelfArg(), { name: 'ledger', type: 'u32' }],
+    returns: 'u128',
+    code: ['governor::get_quorum(e, ledger)'],
+  },
+  proposal_state: {
+    args: [getSelfArg(), { name: 'proposal_id', type: 'BytesN<32>' }],
+    returns: 'ProposalState',
+    code: [
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
+      'let quorum = Self::quorum(e, snapshot)',
+      'governor::get_proposal_state(e, &proposal_id, quorum)',
+    ],
+  },
+  proposal_snapshot: {
+    args: [getSelfArg(), { name: 'proposal_id', type: 'BytesN<32>' }],
+    returns: 'u32',
+    code: ['governor::get_proposal_snapshot(e, &proposal_id)'],
+  },
+  proposal_deadline: {
+    args: [getSelfArg(), { name: 'proposal_id', type: 'BytesN<32>' }],
+    returns: 'u32',
+    code: ['governor::get_proposal_deadline(e, &proposal_id)'],
+  },
+  proposal_proposer: {
+    args: [getSelfArg(), { name: 'proposal_id', type: 'BytesN<32>' }],
+    returns: 'Address',
+    code: ['governor::get_proposal_proposer(e, &proposal_id)'],
+  },
+  get_proposal_id: {
+    args: [
+      getSelfArg(),
+      { name: 'targets', type: 'Vec<Address>' },
+      { name: 'functions', type: 'Vec<Symbol>' },
+      { name: 'args', type: 'Vec<Vec<Val>>' },
+      { name: 'description_hash', type: 'BytesN<32>' },
+    ],
+    returns: 'BytesN<32>',
+    code: ['governor::hash_proposal(e, &targets, &functions, &args, &description_hash)'],
+  },
+  propose: {
+    args: [
+      getSelfArg(),
+      { name: 'targets', type: 'Vec<Address>' },
+      { name: 'functions', type: 'Vec<Symbol>' },
+      { name: 'args', type: 'Vec<Vec<Val>>' },
+      { name: 'description', type: 'String' },
+      { name: 'proposer', type: 'Address' },
+    ],
+    returns: 'BytesN<32>',
+    code: ['proposer.require_auth()', 'governor::propose(e, targets, functions, args, description, &proposer)'],
+  },
+  cast_vote: {
+    args: [
+      getSelfArg(),
+      { name: 'proposal_id', type: 'BytesN<32>' },
+      { name: 'vote_type', type: 'u32' },
+      { name: 'reason', type: 'String' },
+      { name: 'voter', type: 'Address' },
+    ],
+    returns: 'u128',
+    code: [
+      'voter.require_auth()',
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
+      'let quorum = Self::quorum(e, snapshot)',
+      'governor::cast_vote(e, &proposal_id, vote_type, &reason, &voter, quorum)',
+    ],
+  },
+  queue: {
+    args: [
+      getSelfArg(),
+      { name: 'targets', type: 'Vec<Address>' },
+      { name: 'functions', type: 'Vec<Symbol>' },
+      { name: 'args', type: 'Vec<Vec<Val>>' },
+      { name: 'description_hash', type: 'BytesN<32>' },
+      { name: 'eta', type: 'u32' },
+      { name: '_operator', type: 'Address' },
+    ],
+    returns: 'BytesN<32>',
+    code: [
+      'if !Self::proposals_need_queuing(e) {',
+      '    soroban_sdk::panic_with_error!(e, governor::GovernorError::QueueNotEnabled);',
+      '}',
+      'let proposal_id = governor::hash_proposal(e, &targets, &functions, &args, &description_hash)',
+      'let snapshot = governor::get_proposal_snapshot(e, &proposal_id)',
+      'let quorum = Self::quorum(e, snapshot)',
+      'governor::queue(e, targets, functions, args, &description_hash, eta, quorum)',
+    ],
+  },
+  proposals_need_queuing: {
+    args: [{ name: '_e', type: '&Env' }],
+    returns: 'bool',
+    code: ['false'],
   },
 });
