@@ -68,7 +68,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Quorum
-      <HelpTooltip>Minimum participation required for a proposal to pass.</HelpTooltip>
+      <HelpTooltip>Minimum number of votes required for a proposal to pass.</HelpTooltip>
     </span>
     <input bind:value={opts.quorum} use:error={errors?.quorum} />
   </label>
