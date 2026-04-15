@@ -33,8 +33,8 @@
       <span class="flex justify-between pr-2">
         Version
         <HelpTooltip
-          >Semantic version label exposed by the governor's <code>version()</code> function. It is informational; has no effect on
-          contract behavior.</HelpTooltip
+          >Semantic version label exposed by the governor's <code>version()</code> function. It is informational; has no
+          effect on contract behavior.</HelpTooltip
         >
       </span>
       <input bind:value={opts.version} use:error={errors?.version} />
