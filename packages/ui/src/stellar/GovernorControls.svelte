@@ -94,7 +94,7 @@
       <input type="checkbox" bind:checked={opts.upgradeable} />
       Upgradeable
       <HelpTooltip
-        >Allows the contract to be upgraded by the configured authority (owner or accounts with the upgrader role.</HelpTooltip
+        >Allows the contract to be upgraded by the configured authority (owner or accounts with the upgrader role).</HelpTooltip
       >
     </label>
   </div>
