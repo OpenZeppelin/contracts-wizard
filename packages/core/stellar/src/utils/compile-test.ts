@@ -81,8 +81,7 @@ type WithTemporaryFolderTestFunction<Args extends unknown[]> = (
   ...args: [...Args, ExecutionContext, string]
 ) => Promise<void> | void;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MakeContract = (opt: any) => Contract;
+export type MakeContract = (opt: GenericOptions) => Contract;
 
 export const withTemporaryFolderDo =
   <Args extends unknown[]>(testFunction: WithTemporaryFolderTestFunction<Args>) =>
@@ -137,7 +136,7 @@ const doRunRustCompilationTest = async (
   if (testOptions.snapshotResult) await snapshotZipContents(test, zip, expectedZipFiles);
 };
 
-export const runRustCompilationTest = withTemporaryFolderDo(
+const _runRustCompilationTest = withTemporaryFolderDo(
   async (
     makeContract: MakeContract,
     opts: GenericOptions,
@@ -166,3 +165,11 @@ export const runRustCompilationTest = withTemporaryFolderDo(
     }
   },
 );
+
+export function runRustCompilationTest<T extends GenericOptions>(
+  makeContract: (opt: T) => Contract,
+  opts: T,
+  testOptions: { snapshotResult: boolean; excludeExplicitTraitTest?: boolean },
+) {
+  return _runRustCompilationTest(makeContract as MakeContract, opts, testOptions);
+}
