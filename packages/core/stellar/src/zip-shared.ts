@@ -47,6 +47,13 @@ const libDependencies = [
   'stellar-macros',
 ] as const;
 
+// Derives required lib crate dependencies from the contract's use clauses.
+// Each use clause has a containerPath like "stellar_tokens::fungible::Base".
+// We extract the first segment (the crate name), convert underscores to hyphens
+// to match Cargo naming (e.g., stellar_tokens -> stellar-tokens), then filter
+// libDependencies to include only crates the contract actually references.
+// Filtering against the known list preserves stable ordering and ignores
+// non-lib crates like soroban_sdk (which is always added separately).
 export function getRequiredLibDependencies(c: Pick<Contract, 'useClauses'>): string[] {
   const usedCrates = new Set(c.useClauses.map(uc => uc.containerPath.split('::')[0]!.replace(/_/g, '-')));
   return libDependencies.filter(dep => usedCrates.has(dep));
