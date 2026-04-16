@@ -5,6 +5,7 @@ import { printContract, removeCreateLevelAttributes } from './print';
 import {
   contractOptionsToContractName,
   createRustLibFile,
+  getRequiredLibDependencies,
   printContractCargo,
   printRustNameTest,
   workspaceCargo,
@@ -33,12 +34,13 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const zip = new JSZip();
 
   const contractName = contractOptionsToContractName(opts?.kind || 'contract');
+  const requiredLibDeps = getRequiredLibDependencies(c);
 
   zip.file(`contracts/${contractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
   zip.file(`contracts/${contractName}/src/test.rs`, printRustNameTest(c));
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
-  zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName));
-  zip.file('Cargo.toml', workspaceCargo);
+  zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName, requiredLibDeps));
+  zip.file('Cargo.toml', workspaceCargo(requiredLibDeps));
   zip.file('.gitignore', gitIgnore);
 
   return zip;

@@ -39,7 +39,7 @@ fn initial_state() {
 // Add more tests bellow
 `;
 
-export const libDependencies = [
+const libDependencies = [
   'stellar-tokens',
   'stellar-access',
   'stellar-contract-utils',
@@ -47,12 +47,15 @@ export const libDependencies = [
   'stellar-macros',
 ] as const;
 
-export const allDependencies = [...libDependencies, 'soroban-sdk'] as const;
+export function getRequiredLibDependencies(c: Pick<Contract, 'useClauses'>): string[] {
+  const usedCrates = new Set(c.useClauses.map(uc => uc.containerPath.split('::')[0]!.replace(/_/g, '-')));
+  return libDependencies.filter(dep => usedCrates.has(dep));
+}
 
 export const addDependenciesWith = (dependencyValue: string, dependenciesToAdd: string[]) =>
   `${dependenciesToAdd.map(dependency => `${dependency} = ${dependencyValue}\n`).join('')}`;
 
-export const printContractCargo = (scaffoldContractName: string) => `[package]
+export const printContractCargo = (scaffoldContractName: string, requiredLibDeps: readonly string[]) => `[package]
 name = "${scaffoldContractName.replace(/_/, '-')}-contract"
 edition.workspace = true
 license.workspace = true
@@ -67,7 +70,7 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-${addDependenciesWith('{ workspace = true }', [...allDependencies])}
+${addDependenciesWith('{ workspace = true }', [...requiredLibDeps, 'soroban-sdk'])}
 [dev-dependencies]
 ${addDependenciesWith('{ workspace = true, features = ["testutils"] }', ['soroban-sdk'])}`;
 
@@ -78,7 +81,7 @@ mod contract;
 mod test;
 `;
 
-export const workspaceCargo = `[workspace]
+export const workspaceCargo = (requiredLibDeps: readonly string[]) => `[workspace]
 resolver = "2"
 members = ["contracts/*"]
 
@@ -89,7 +92,7 @@ license = "Apache-2.0"
 version = "0.0.1"
 
 [workspace.dependencies]
-${addDependenciesWith(`"${compatibleSorobanVersion}"`, ['soroban-sdk'])}${addDependenciesWith(`"=${contractsVersion}"`, [...libDependencies])}
+${addDependenciesWith(`"${compatibleSorobanVersion}"`, ['soroban-sdk'])}${addDependenciesWith(`"=${contractsVersion}"`, [...requiredLibDeps])}
 
 [profile.release]
 opt-level = "z"
