@@ -9,28 +9,9 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
-} from '@openzeppelin/wizard-common';
-import type { KindedOptions } from '@openzeppelin/wizard';
+} from '../../index';
 
-/**
- * Static type assertions to ensure schemas satisfy the Wizard API types. Not called at runtime.
- */
-function _typeAssertions() {
-  const _assertions: {
-    [K in keyof KindedOptions]: Omit<KindedOptions[K], 'kind'>;
-  } = {
-    ERC20: z.object(erc20Schema).parse({}),
-    ERC721: z.object(erc721Schema).parse({}),
-    ERC1155: z.object(erc1155Schema).parse({}),
-    Stablecoin: z.object(stablecoinSchema).parse({}),
-    RealWorldAsset: z.object(rwaSchema).parse({}),
-    Account: z.object(accountSchema).parse({}),
-    Governor: z.object(governorSchema).parse({}),
-    Custom: z.object(customSchema).parse({}),
-  };
-}
-
-export const commonSchema = {
+export const solidityCommonSchema = {
   access: z
     .literal('ownable')
     .or(z.literal('roles'))
@@ -51,7 +32,7 @@ export const commonSchema = {
     .describe(infoDescriptions.info),
 } as const satisfies z.ZodRawShape;
 
-export const erc20Schema = {
+export const solidityERC20Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
@@ -71,10 +52,10 @@ export const erc20Schema = {
     .describe(solidityERC20Descriptions.crossChainBridging),
   crossChainLinkAllowOverride: z.boolean().optional().describe(solidityERC20Descriptions.crossChainLinkAllowOverride),
   namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
-  ...commonSchema,
+  ...solidityCommonSchema,
 } as const satisfies z.ZodRawShape;
 
-export const erc721Schema = {
+export const solidityERC721Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   baseUri: z.string().optional().describe(solidityERC721Descriptions.baseUri),
@@ -85,11 +66,11 @@ export const erc721Schema = {
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC721Descriptions.votes),
-  ...commonSchema,
+  ...solidityCommonSchema,
   namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
 } as const satisfies z.ZodRawShape;
 
-export const erc1155Schema = {
+export const solidityERC1155Schema = {
   name: z.string().describe(commonDescriptions.name),
   uri: z.string().describe(solidityERC1155Descriptions.uri),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
@@ -97,13 +78,13 @@ export const erc1155Schema = {
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   supply: z.boolean().optional().describe(solidityERC1155Descriptions.supply),
   updatableUri: z.boolean().optional().describe(solidityERC1155Descriptions.updatableUri),
-  ...commonSchema,
+  ...solidityCommonSchema,
 } as const satisfies z.ZodRawShape;
 
-const { upgradeable: _, ...erc20SchemaOmitUpgradeable } = erc20Schema;
+const { upgradeable: _, ...solidityERC20SchemaOmitUpgradeable } = solidityERC20Schema;
 
-export const stablecoinSchema = {
-  ...erc20SchemaOmitUpgradeable,
+export const solidityStablecoinSchema = {
+  ...solidityERC20SchemaOmitUpgradeable,
   restrictions: z
     .literal(false)
     .or(z.literal('allowlist'))
@@ -113,9 +94,9 @@ export const stablecoinSchema = {
   freezable: z.boolean().optional().describe(solidityStablecoinDescriptions.freezable),
 } as const satisfies z.ZodRawShape;
 
-export const rwaSchema = stablecoinSchema;
+export const solidityRWASchema = solidityStablecoinSchema;
 
-export const accountSchema = {
+export const solidityAccountSchema = {
   name: z.string().describe('The name of the account contract'),
   signatureValidation: z
     .literal(false)
@@ -143,11 +124,11 @@ export const accountSchema = {
     .or(z.literal('AccountERC7579Hooked'))
     .optional()
     .describe(solidityAccountDescriptions.ERC7579Modules),
-  info: commonSchema.info,
-  upgradeable: commonSchema.upgradeable,
+  info: solidityCommonSchema.info,
+  upgradeable: solidityCommonSchema.upgradeable,
 } as const satisfies z.ZodRawShape;
 
-export const governorSchema = {
+export const solidityGovernorSchema = {
   name: z.string().describe(commonDescriptions.name),
   delay: z.string().describe(solidityGovernorDescriptions.delay),
   period: z.string().describe(solidityGovernorDescriptions.period),
@@ -175,12 +156,12 @@ export const governorSchema = {
   quorumAbsolute: z.string().optional().describe(solidityGovernorDescriptions.quorumAbsolute),
   storage: z.boolean().optional().describe(solidityGovernorDescriptions.storage),
   settings: z.boolean().optional().describe(solidityGovernorDescriptions.settings),
-  upgradeable: commonSchema.upgradeable,
-  info: commonSchema.info,
+  upgradeable: solidityCommonSchema.upgradeable,
+  info: solidityCommonSchema.info,
 } as const satisfies z.ZodRawShape;
 
-export const customSchema = {
+export const solidityCustomSchema = {
   name: z.string().describe(commonDescriptions.name),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
-  ...commonSchema,
+  ...solidityCommonSchema,
 } as const satisfies z.ZodRawShape;

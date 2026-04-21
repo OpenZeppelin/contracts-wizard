@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { ERC721Options } from '@openzeppelin/wizard-cairo';
 import { erc721 } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
-import { erc721Schema } from '../schemas';
+import { cairoERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
 
 export function registerCairoERC721(server: McpServer): RegisteredTool {
   return server.tool(
     'cairo-erc721',
     makeDetailedPrompt(cairoPrompts.ERC721),
-    erc721Schema,
+    cairoERC721Schema,
     async ({
       name,
       symbol,

@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { ERC1155Options } from '@openzeppelin/wizard-stylus';
 import { erc1155 } from '@openzeppelin/wizard-stylus';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
-import { erc1155Schema } from '../schemas';
+import { stylusERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
 
 export function registerStylusERC1155(server: McpServer): RegisteredTool {
   return server.tool(
     'stylus-erc1155',
     makeDetailedPrompt(stylusPrompts.ERC1155),
-    erc1155Schema,
+    stylusERC1155Schema,
     async ({ name, burnable, supply, info }) => {
       const opts: ERC1155Options = {
         name,
