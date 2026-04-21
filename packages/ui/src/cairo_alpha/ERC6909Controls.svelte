@@ -58,7 +58,8 @@
     <label class:checked={opts.contentUri}>
       <input type="checkbox" bind:checked={opts.contentUri} />
       Content URI
-      <HelpTooltip>Provides contract-level and per-token URI metadata via contract_uri() and token_uri(id).</HelpTooltip>
+      <HelpTooltip>Provides contract-level and per-token URI metadata via contract_uri() and token_uri(id).</HelpTooltip
+      >
     </label>
     <label class:checked={opts.tokenSupply}>
       <input type="checkbox" bind:checked={opts.tokenSupply} />
