@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`78b7319`](https://github.com/OpenZeppelin/contracts-wizard/commit/78b7319858661780392d5c19fe800aba5fb17559)]:
+  - @openzeppelin/wizard-stellar@0.6.0
 
 ## 0.1.0 (2026-04-07)
 
