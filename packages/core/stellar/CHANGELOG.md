@@ -3,10 +3,10 @@
 
 ## 0.6.0 (2026-04-22)
 
-- - Add Governor ([#788](https://github.com/OpenZeppelin/contracts-wizard/pull/788))
-  - Add Upgradeable feature to Governor, requiring Access Control (Ownable or Roles)
-  - Add Timelock feature to Governor, integrating a timelock contract for delayed proposal execution
-  - Refactor contracts to match the latest v0.7.1
+- Add Governor ([#788](https://github.com/OpenZeppelin/contracts-wizard/pull/788))
+- Add Upgradeable feature to Governor, requiring Access Control (Ownable or Roles)
+- Add Timelock feature to Governor, integrating a timelock contract for delayed proposal execution
+- Refactor contracts to match the latest v0.7.1
 
 ## 0.5.0 (2026-01-29)
 
