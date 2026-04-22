@@ -62,6 +62,12 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
+    <label class:checked={opts.votes} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} />
+      Votes
+      <HelpTooltip>Adds vote checkpoints and delegation support. Incompatible with stablecoin limitations.</HelpTooltip>
+    </label>
+
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable

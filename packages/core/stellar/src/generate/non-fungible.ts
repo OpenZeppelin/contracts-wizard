@@ -10,6 +10,7 @@ const blueprint = {
   symbol: ['MTK'],
   tokenUri: ['https://www.mytoken.com'],
   burnable: booleans,
+  votes: booleans,
   pausable: booleans,
   upgradeable: booleans,
   enumerable: booleans,

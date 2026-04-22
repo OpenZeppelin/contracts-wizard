@@ -1,4 +1,4 @@
-import { limitationsOptions, type StablecoinOptions } from '../stablecoin';
+import type { GovernorOptions } from '../governor';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
@@ -6,20 +6,19 @@ import { generateAlternatives } from './alternatives';
 const booleans = [true, false];
 
 const blueprint = {
-  name: ['MyStablecoin'],
-  symbol: ['MST'],
-  burnable: booleans,
-  votes: booleans,
-  pausable: booleans,
+  name: ['MyGovernor'],
+  version: ['1.0.0'],
+  votingDelay: ['10'],
+  votingPeriod: ['100'],
+  proposalThreshold: ['100'],
+  quorum: ['500'],
   upgradeable: booleans,
-  mintable: booleans,
-  premint: ['1'],
+  timelock: booleans,
   access: accessOptions,
-  limitations: limitationsOptions,
   info: infoOptions,
   explicitImplementations: booleans,
 };
 
-export function* generateStablecoinOptions(): Generator<Required<StablecoinOptions>> {
+export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {
   yield* generateAlternatives(blueprint);
 }

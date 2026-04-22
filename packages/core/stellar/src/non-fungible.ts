@@ -18,6 +18,7 @@ export const defaults: Required<NonFungibleOptions> = {
   symbol: 'MTK',
   tokenUri: 'https://www.mytoken.com',
   burnable: false,
+  votes: false,
   enumerable: false,
   consecutive: false,
   pausable: false,
@@ -38,6 +39,7 @@ export interface NonFungibleOptions extends CommonContractOptions {
   symbol: string;
   tokenUri?: string;
   burnable?: boolean;
+  votes?: boolean;
   enumerable?: boolean;
   consecutive?: boolean;
   pausable?: boolean;
@@ -52,6 +54,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     ...withCommonContractDefaults(opts),
     tokenUri: opts.tokenUri ?? defaults.tokenUri,
     burnable: opts.burnable ?? defaults.burnable,
+    votes: opts.votes ?? defaults.votes,
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
     pausable: opts.pausable ?? defaults.pausable,
@@ -87,6 +90,16 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     errors.sequential = 'Sequential minting cannot be used with Consecutive extension';
   }
 
+  if (allOpts.votes && allOpts.enumerable) {
+    errors.votes = 'Votes extension cannot be used with Enumerable extension';
+    errors.enumerable = 'Enumerable extension cannot be used with Votes extension';
+  }
+
+  if (allOpts.votes && allOpts.consecutive) {
+    errors.votes = 'Votes extension cannot be used with Consecutive extension';
+    errors.consecutive = 'Consecutive extension cannot be used with Votes extension';
+  }
+
   if (Object.keys(errors).length > 0) {
     throw new OptionsError(errors);
   }
@@ -96,6 +109,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     toByteArray(allOpts.name),
     toByteArray(allOpts.symbol),
     toByteArray(allOpts.tokenUri),
+    allOpts.votes,
     allOpts.pausable,
     allOpts.explicitImplementations,
   );
@@ -124,6 +138,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     addMintable(
       c,
       allOpts.enumerable,
+      allOpts.votes,
       allOpts.pausable,
       allOpts.sequential,
       allOpts.access,
@@ -142,6 +157,7 @@ function addBase(
   name: string,
   symbol: string,
   tokenUri: string,
+  votes: boolean,
   pausable: boolean,
   explicitImplementations: boolean,
 ) {
@@ -154,6 +170,10 @@ function addBase(
   // Set token functions
   c.addUseClause('stellar_tokens::non_fungible', 'Base');
   c.addUseClause('stellar_tokens::non_fungible', 'NonFungibleToken');
+  if (votes) {
+    c.addUseClause('stellar_governance::votes', 'Votes');
+    c.addUseClause('stellar_tokens::non_fungible', 'votes::NonFungibleVotes');
+  }
   if (explicitImplementations) c.addUseClause('stellar_tokens::non_fungible', 'ContractOverrides');
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
@@ -165,7 +185,7 @@ function addBase(
     traitName: 'NonFungibleToken',
     structName: c.name,
     tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-    assocType: 'type ContractType = Base;',
+    assocType: `type ContractType = ${votes ? 'NonFungibleVotes' : 'Base'};`,
   };
 
   c.addTraitImplBlock(nonFungibleTokenTrait);
@@ -180,6 +200,15 @@ function addBase(
 
     c.addFunctionTag(baseFunctions.transfer_from, 'when_not_paused', nonFungibleTokenTrait);
     c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.transfer_from);
+  }
+
+  if (votes) {
+    c.addTraitImplBlock({
+      traitName: 'Votes',
+      structName: c.name,
+      tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+      section: 'Extensions',
+    });
   }
 }
 
@@ -263,6 +292,7 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
 function addMintable(
   c: ContractBuilder,
   enumerable: boolean,
+  votes: boolean,
   pausable: boolean,
   sequential: boolean,
   access: Access,
@@ -288,9 +318,22 @@ function addMintable(
   } else {
     if (sequential) {
       mintFn =
-        effectiveAccess === 'ownable' ? baseFunctions.sequential_mint : baseFunctions.sequential_mint_with_caller;
+        effectiveAccess === 'ownable'
+          ? votes
+            ? votesMintFunctions.sequential_mint
+            : baseFunctions.sequential_mint
+          : votes
+            ? votesMintFunctions.sequential_mint_with_caller
+            : baseFunctions.sequential_mint_with_caller;
     } else {
-      mintFn = effectiveAccess === 'ownable' ? baseFunctions.mint : baseFunctions.mint_with_caller;
+      mintFn =
+        effectiveAccess === 'ownable'
+          ? votes
+            ? votesMintFunctions.mint
+            : baseFunctions.mint
+          : votes
+            ? votesMintFunctions.mint_with_caller
+            : baseFunctions.mint_with_caller;
     }
   }
 
@@ -402,6 +445,33 @@ const baseFunctions = defineFunctions({
     name: 'mint',
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
     code: ['Base::sequential_mint(e, &to);'],
+  },
+});
+
+const votesMintFunctions = defineFunctions({
+  mint: {
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
+    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
+  },
+  mint_with_caller: {
+    name: 'mint',
+    args: [
+      getSelfArg(),
+      { name: 'to', type: 'Address' },
+      { name: 'token_id', type: 'u32' },
+      { name: 'caller', type: 'Address' },
+    ],
+    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
+  },
+  sequential_mint: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }],
+    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
+  },
+  sequential_mint_with_caller: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
+    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
   },
 });
 

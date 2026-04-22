@@ -6,31 +6,30 @@ import { defineFunctions } from './utils/define-functions';
 
 export function addUpgradeable(c: ContractBuilder, access: Access, explicitImplementations: boolean) {
   const functions = defineFunctions({
-    _require_auth: {
-      args: [getSelfArg(), { name: 'operator', type: '&Address' }],
-      code: ['operator.require_auth();'],
+    upgrade: {
+      args: [getSelfArg(), { name: 'new_wasm_hash', type: 'BytesN<32>' }, { name: 'operator', type: 'Address' }],
+      code: ['upgradeable::upgrade(e, &new_wasm_hash)'],
     },
-    _require_auth_unused_operator: {
-      name: '_require_auth',
-      args: [getSelfArg(), { name: '_operator', type: '&Address' }],
-      code: [],
+    upgrade_unused_operator: {
+      name: 'upgrade',
+      args: [getSelfArg(), { name: 'new_wasm_hash', type: 'BytesN<32>' }, { name: '_operator', type: 'Address' }],
+      code: ['upgradeable::upgrade(e, &new_wasm_hash)'],
     },
   });
 
-  c.addUseClause('stellar_contract_utils::upgradeable', 'UpgradeableInternal');
-  c.addUseClause('stellar_macros', 'Upgradeable');
-
-  c.addDerives('Upgradeable');
+  c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'BytesN');
+  c.addUseClause('stellar_contract_utils::upgradeable', 'self', { alias: 'upgradeable' });
+  c.addUseClause('stellar_contract_utils::upgradeable', 'Upgradeable');
 
   const upgradeableTrait = {
-    traitName: 'UpgradeableInternal',
+    traitName: 'Upgradeable',
     structName: c.name,
-    tags: [],
+    tags: ['contractimpl'],
     section: 'Utils',
   };
 
-  const upgradeFn: BaseFunction =
-    access === 'ownable' ? functions._require_auth_unused_operator : functions._require_auth;
+  const upgradeFn: BaseFunction = access === 'ownable' ? functions.upgrade_unused_operator : functions.upgrade;
 
   c.addTraitFunction(upgradeableTrait, upgradeFn);
 
@@ -40,7 +39,7 @@ export function addUpgradeable(c: ContractBuilder, access: Access, explicitImple
     upgradeFn,
     access,
     {
-      useMacro: false,
+      useMacro: true,
       role: 'upgrader',
       caller: 'operator',
     },

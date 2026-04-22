@@ -36,10 +36,16 @@ import {
   cairoCustomSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
-import { fungible, stablecoin as stellarStablecoin, nonFungible } from '@openzeppelin/wizard-stellar';
+import {
+  fungible,
+  governor as stellarGovernor,
+  stablecoin as stellarStablecoin,
+  nonFungible,
+} from '@openzeppelin/wizard-stellar';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 import {
   stellarFungibleSchema,
+  stellarGovernorSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
 } from '@openzeppelin/wizard-common/schemas';
@@ -112,6 +118,11 @@ export const registry = {
 
   // Stellar
   'stellar-fungible': createRegistryEntry(stellarFungibleSchema, opts => fungible.print(opts), stellarPrompts.Fungible),
+  'stellar-governor': createRegistryEntry(
+    stellarGovernorSchema,
+    opts => stellarGovernor.print(opts),
+    stellarPrompts.Governor,
+  ),
   'stellar-stablecoin': createRegistryEntry(
     stellarStablecoinSchema,
     opts => stellarStablecoin.print(opts),

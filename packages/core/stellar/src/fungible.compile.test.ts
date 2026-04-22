@@ -311,3 +311,41 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation fungible votes',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      votes: true,
+      burnable: false,
+      mintable: false,
+      pausable: false,
+      upgradeable: false,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation fungible votes full',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      votes: true,
+      burnable: true,
+      mintable: true,
+      pausable: true,
+      upgradeable: true,
+    },
+    { snapshotResult: false },
+  ),
+);

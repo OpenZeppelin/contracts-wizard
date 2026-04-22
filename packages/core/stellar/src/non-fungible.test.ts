@@ -85,10 +85,53 @@ test('throws error when consecutive and sequential are both enabled', t => {
   t.is(error?.messages.sequential, 'Sequential minting cannot be used with Consecutive extension');
 });
 
+test('throws error when votes and enumerable are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        votes: true,
+        enumerable: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.votes, 'Votes extension cannot be used with Enumerable extension');
+  t.is(error?.messages.enumerable, 'Enumerable extension cannot be used with Votes extension');
+});
+
+test('throws error when votes and consecutive are both enabled', t => {
+  const error = t.throws(
+    () =>
+      buildNonFungible({
+        name: 'MyToken',
+        symbol: 'MTK',
+        votes: true,
+        consecutive: true,
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.votes, 'Votes extension cannot be used with Consecutive extension');
+  t.is(error?.messages.consecutive, 'Consecutive extension cannot be used with Votes extension');
+});
+
 testNonFungible('basic non-fungible', {});
 
 testNonFungible('non-fungible burnable', {
   burnable: true,
+});
+
+testNonFungible('non-fungible votes', {
+  votes: true,
+});
+
+testNonFungible('non-fungible votes burnable mintable sequential', {
+  votes: true,
+  burnable: true,
+  mintable: true,
+  sequential: true,
 });
 
 testNonFungible('non-fungible pausable', {
@@ -157,6 +200,11 @@ testNonFungible('non-fungible explicit trait implementations', {
   explicitImplementations: true,
 });
 
+testNonFungible('non-fungible votes explicit trait implementations', {
+  votes: true,
+  explicitImplementations: true,
+});
+
 testNonFungible('non-fungible custom token uri', {
   tokenUri: 'https://example.com/nfts/',
 });
@@ -173,6 +221,15 @@ testAPIEquivalence('non-fungible API full', {
   pausable: true,
   enumerable: true,
   upgradeable: true,
+});
+
+testAPIEquivalence('non-fungible API votes', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  votes: true,
 });
 
 test('non-fungible API assert defaults', async t => {
