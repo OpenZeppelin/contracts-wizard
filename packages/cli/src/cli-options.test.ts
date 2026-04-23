@@ -368,6 +368,38 @@ test('cairo-erc20: access roles-dar', t => {
   t.is(output, cairoErc20.print(opts));
 });
 
+// DAR delays are only used for `roles-dar`; non-dar access types should work
+// without requiring them — they fall back to defaults matching `darDefaultOpts`.
+test('cairo-erc20: access roles without dar delays', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    access: {
+      type: 'roles' as const,
+      darInitialDelay: '1 day',
+      darDefaultDelayIncrease: '5 days',
+      darMaxTransferDelay: '30 days',
+    },
+  };
+  const output = run('cairo-erc20', '--name', opts.name, '--symbol', opts.symbol, '--access.type', 'roles');
+  t.is(output, cairoErc20.print(opts));
+});
+
+test('cairo-erc20: access ownable without dar delays', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    access: {
+      type: 'ownable' as const,
+      darInitialDelay: '1 day',
+      darDefaultDelayIncrease: '5 days',
+      darMaxTransferDelay: '30 days',
+    },
+  };
+  const output = run('cairo-erc20', '--name', opts.name, '--symbol', opts.symbol, '--access.type', 'ownable');
+  t.is(output, cairoErc20.print(opts));
+});
+
 test('cairo-erc721: most options', t => {
   const opts = {
     name: 'TestNFT',

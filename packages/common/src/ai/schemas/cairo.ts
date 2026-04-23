@@ -25,9 +25,9 @@ export const cairoCommonSchema = {
         .or(z.literal('roles-dar'))
         .or(z.literal(false))
         .describe(cairoAccessDescriptions.accessType),
-      darInitialDelay: z.string().describe(cairoAccessDescriptions.darInitialDelay),
-      darDefaultDelayIncrease: z.string().describe(cairoAccessDescriptions.darDefaultDelayIncrease),
-      darMaxTransferDelay: z.string().describe(cairoAccessDescriptions.darMaxTransferDelay),
+      darInitialDelay: z.string().default('1 day').describe(cairoAccessDescriptions.darInitialDelay),
+      darDefaultDelayIncrease: z.string().default('5 days').describe(cairoAccessDescriptions.darDefaultDelayIncrease),
+      darMaxTransferDelay: z.string().default('30 days').describe(cairoAccessDescriptions.darMaxTransferDelay),
     })
     .optional(),
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
