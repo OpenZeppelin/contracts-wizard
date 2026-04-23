@@ -5,6 +5,7 @@ import {
   stellarPrompts,
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
+  stellarGovernorDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
@@ -31,6 +32,10 @@ export const stellarFungibleAIFunctionDefinition = {
       premint: {
         type: 'string',
         description: stellarFungibleDescriptions.premint,
+      },
+      votes: {
+        type: 'boolean',
+        description: stellarFungibleDescriptions.votes,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'Fungible'>()(['name', 'symbol']),
@@ -68,6 +73,10 @@ export const stellarStablecoinAIFunctionDefinition = {
       upgradeable: {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
+      },
+      votes: {
+        type: 'boolean',
+        description: stellarStablecoinDescriptions.votes,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'Stablecoin'>()(['name', 'symbol']),
@@ -112,8 +121,55 @@ export const stellarNonFungibleAIFunctionDefinition = {
         type: 'boolean',
         description: stellarCommonDescriptions.upgradeable,
       },
+      votes: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.votes,
+      },
     },
     required: contractExactRequiredKeys<'stellar', 'NonFungible'>()(['name', 'symbol']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'NonFungible'>;
+
+export const stellarGovernorAIFunctionDefinition = {
+  name: 'Governor',
+  description: stellarPrompts.Governor,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'upgradeable',
+        'access',
+        'info',
+        'explicitImplementations',
+      ]),
+      version: {
+        type: 'string',
+        description: stellarGovernorDescriptions.version,
+      },
+      votingDelay: {
+        type: 'string',
+        description: stellarGovernorDescriptions.votingDelay,
+      },
+      votingPeriod: {
+        type: 'string',
+        description: stellarGovernorDescriptions.votingPeriod,
+      },
+      proposalThreshold: {
+        type: 'string',
+        description: stellarGovernorDescriptions.proposalThreshold,
+      },
+      quorum: {
+        type: 'string',
+        description: stellarGovernorDescriptions.quorum,
+      },
+      timelock: {
+        type: 'boolean',
+        description: stellarGovernorDescriptions.timelock,
+      },
+    },
+    required: contractExactRequiredKeys<'stellar', 'Governor'>()(['name']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Governor'>;

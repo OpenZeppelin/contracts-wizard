@@ -103,6 +103,20 @@ test.serial(
 );
 
 test.serial(
+  'compilation stablecoin votes',
+  runRustCompilationTest(
+    buildStablecoin,
+    {
+      kind: 'Stablecoin',
+      name: 'MyStablecoin',
+      symbol: 'MST',
+      votes: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
   'compilation stablecoin ownable',
   runRustCompilationTest(
     buildStablecoin,

@@ -17,6 +17,7 @@ export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
   burnable: false,
+  votes: false,
   pausable: false,
   upgradeable: false,
   premint: '0',
@@ -34,6 +35,7 @@ export interface FungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
   burnable?: boolean;
+  votes?: boolean;
   pausable?: boolean;
   upgradeable?: boolean;
   premint?: string;
@@ -45,6 +47,7 @@ export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     ...opts,
     ...withCommonContractDefaults(opts),
     burnable: opts.burnable ?? defaults.burnable,
+    votes: opts.votes ?? defaults.votes,
     pausable: opts.pausable ?? defaults.pausable,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     premint: opts.premint || defaults.premint,
@@ -61,10 +64,17 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable, allOpts.explicitImplementations);
+  addBase(
+    c,
+    toByteArray(allOpts.name),
+    toByteArray(allOpts.symbol),
+    allOpts.votes,
+    allOpts.pausable,
+    allOpts.explicitImplementations,
+  );
 
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
+    addPremint(c, allOpts.premint, allOpts.votes);
   }
 
   if (allOpts.pausable) {
@@ -76,11 +86,11 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.pausable, allOpts.explicitImplementations);
+    addBurnable(c, allOpts.votes, allOpts.pausable, allOpts.explicitImplementations);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access, allOpts.pausable, allOpts.explicitImplementations);
+    addMintable(c, allOpts.access, allOpts.votes, allOpts.pausable, allOpts.explicitImplementations);
   }
 
   setAccessControl(c, allOpts.access, allOpts.explicitImplementations);
@@ -93,6 +103,7 @@ function addBase(
   c: ContractBuilder,
   name: string,
   symbol: string,
+  votes: boolean,
   pausable: boolean,
   explicitImplementations: boolean,
 ) {
@@ -102,6 +113,11 @@ function addBase(
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
   c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
+  if (votes) {
+    c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
+    c.addUseClause('stellar_governance::votes', 'Votes');
+    c.addUseClause('stellar_tokens::fungible', 'votes::FungibleVotes');
+  }
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'String');
@@ -115,7 +131,7 @@ function addBase(
     traitName: 'FungibleToken',
     structName: c.name,
     tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-    assocType: 'type ContractType = Base;',
+    assocType: `type ContractType = ${votes ? 'FungibleVotes' : 'Base'};`,
   };
 
   c.addTraitImplBlock(fungibleTokenTrait);
@@ -131,29 +147,47 @@ function addBase(
     c.addTraitFunction(fungibleTokenTrait, functions.transfer_from);
     c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
+
+  if (votes) {
+    c.addTraitImplBlock({
+      traitName: 'Votes',
+      structName: c.name,
+      tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+      section: 'Extensions',
+    });
+  }
 }
 
-function addMintable(c: ContractBuilder, access: Access, pausable: boolean, explicitImplementations: boolean) {
+function addMintable(
+  c: ContractBuilder,
+  access: Access,
+  votes: boolean,
+  pausable: boolean,
+  explicitImplementations: boolean,
+) {
+  const mintFn = votes ? votesFunctions.mint : functions.mint;
+  const mintWithCallerFn = votes ? votesFunctions.mint_with_caller : functions.mint_with_caller;
+
   switch (access) {
     case false:
       break;
     case 'ownable': {
-      c.addFreeFunction(functions.mint);
+      c.addFreeFunction(mintFn);
 
-      requireAccessControl(c, undefined, functions.mint, access, undefined, explicitImplementations);
+      requireAccessControl(c, undefined, mintFn, access, undefined, explicitImplementations);
 
       if (pausable) {
-        c.addFunctionTag(functions.mint, 'when_not_paused');
+        c.addFunctionTag(mintFn, 'when_not_paused');
       }
       break;
     }
     case 'roles': {
-      c.addFreeFunction(functions.mint_with_caller);
+      c.addFreeFunction(mintWithCallerFn);
 
       requireAccessControl(
         c,
         undefined,
-        functions.mint_with_caller,
+        mintWithCallerFn,
         access,
         {
           useMacro: true,
@@ -164,7 +198,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean, expl
       );
 
       if (pausable) {
-        c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
+        c.addFunctionTag(mintWithCallerFn, 'when_not_paused');
       }
       break;
     }
@@ -175,7 +209,7 @@ function addMintable(c: ContractBuilder, access: Access, pausable: boolean, expl
   }
 }
 
-function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean) {
+function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::fungible', 'burnable::FungibleBurnable');
 
   const fungibleBurnableTrait = {
@@ -185,23 +219,29 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
     section: 'Extensions',
   };
 
-  if (pausable) {
-    c.addUseClause('stellar_macros', 'when_not_paused');
+  const burnFn = votes ? votesFunctions.burn : functions.burn;
+  const burnFromFn = votes ? votesFunctions.burn_from : functions.burn_from;
 
-    c.addTraitFunction(fungibleBurnableTrait, functions.burn);
-    c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
+  if (pausable || votes || explicitImplementations) {
+    if (pausable) {
+      c.addUseClause('stellar_macros', 'when_not_paused');
+    }
 
-    c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
-    c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
-  } else if (explicitImplementations) c.addTraitForEachFunctions(fungibleBurnableTrait, fungibleBurnableFunctions);
-  else {
+    c.addTraitFunction(fungibleBurnableTrait, burnFn);
+    c.addTraitFunction(fungibleBurnableTrait, burnFromFn);
+
+    if (pausable) {
+      c.addFunctionTag(burnFn, 'when_not_paused', fungibleBurnableTrait);
+      c.addFunctionTag(burnFromFn, 'when_not_paused', fungibleBurnableTrait);
+    }
+  } else {
     c.addTraitImplBlock(fungibleBurnableTrait);
   }
 }
 
 export const premintPattern = /^(\d*\.?\d*)$/;
 
-function addPremint(c: ContractBuilder, amount: string) {
+function addPremint(c: ContractBuilder, amount: string, votes: boolean) {
   if (amount !== undefined && amount !== '0') {
     if (!premintPattern.test(amount)) {
       throw new OptionsError({
@@ -213,7 +253,7 @@ function addPremint(c: ContractBuilder, amount: string) {
     const premintAbsolute = toUint(getInitialSupply(amount, 7), 'premint', 'u128');
 
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
-    c.addConstructorCode(`Base::mint(e, &recipient, ${premintAbsolute});`);
+    c.addConstructorCode(`${votes ? 'FungibleVotes' : 'Base'}::mint(e, &recipient, ${premintAbsolute});`);
   }
 }
 
@@ -350,6 +390,36 @@ export const functions = defineFunctions({
   },
 });
 
+const votesFunctions = defineFunctions({
+  burn: {
+    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'amount', type: 'i128' }],
+    code: ['FungibleVotes::burn(e, &from, amount)'],
+  },
+  burn_from: {
+    args: [
+      getSelfArg(),
+      { name: 'spender', type: 'Address' },
+      { name: 'from', type: 'Address' },
+      { name: 'amount', type: 'i128' },
+    ],
+    code: ['FungibleVotes::burn_from(e, &spender, &from, amount)'],
+  },
+  mint: {
+    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
+    code: ['FungibleVotes::mint(e, &account, amount);'],
+  },
+  mint_with_caller: {
+    name: 'mint',
+    args: [
+      getSelfArg(),
+      { name: 'account', type: 'Address' },
+      { name: 'amount', type: 'i128' },
+      { name: 'caller', type: 'Address' },
+    ],
+    code: ['FungibleVotes::mint(e, &account, amount);'],
+  },
+});
+
 const fungibleTokenTraitFunctions = pickKeys(functions, [
   'total_supply',
   'balance',
@@ -361,5 +431,3 @@ const fungibleTokenTraitFunctions = pickKeys(functions, [
   'name',
   'symbol',
 ]);
-
-const fungibleBurnableFunctions = pickKeys(functions, ['burn', 'burn_from']);

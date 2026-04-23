@@ -1,10 +1,12 @@
 import type { ExecutionContext } from 'ava';
 import { exec } from 'child_process';
-import { mkdir, mkdtemp, rm } from 'fs/promises';
-import { tmpdir } from 'os';
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'fs/promises';
+import { homedir, tmpdir } from 'os';
 import path from 'path';
 import { promisify } from 'util';
 import type { GenericOptions } from '../build-generic';
+import type { CommonContractOptions } from '../common-options';
+import { withCommonContractDefaults } from '../common-options';
 import type { Contract } from '../contract';
 import { zipRustProject } from '../zip-rust';
 import { contractOptionsToContractName } from '../zip-shared';
@@ -17,6 +19,63 @@ export const runCargoTest = async (t: ExecutionContext, temporaryFolder: string)
 
   t.regex(result.stdout, /0 failed/);
 };
+
+const resolvePath = (inputPath: string) =>
+  inputPath.startsWith('~/') ? path.join(homedir(), inputPath.slice(2)) : path.resolve(inputPath);
+const toCargoPath = (inputPath: string) => inputPath.replace(/\\/g, '/');
+
+const localDependencies = [
+  ['stellar-tokens', 'packages/tokens'],
+  ['stellar-access', 'packages/access'],
+  ['stellar-contract-utils', 'packages/contract-utils'],
+  ['stellar-governance', 'packages/governance'],
+  ['stellar-macros', 'packages/macros'],
+] as const;
+
+const workspaceDependenciesPattern = /\[workspace\.dependencies\][\s\S]*?(?=\n\[profile\.release\])/;
+
+async function rewriteWorkspaceCargoForLocalContracts(workspaceCargoPath: string, stellarContractsPath: string) {
+  const absoluteContractsPath = resolvePath(stellarContractsPath);
+  const upstreamCargoPath = path.join(absoluteContractsPath, 'Cargo.toml');
+  const upstreamLockPath = path.join(absoluteContractsPath, 'Cargo.lock');
+  const workspaceDir = path.dirname(workspaceCargoPath);
+
+  const [workspaceCargo, upstreamCargo] = await Promise.all([
+    readFile(workspaceCargoPath, 'utf8'),
+    readFile(upstreamCargoPath, 'utf8'),
+  ]);
+
+  const sorobanMatch = upstreamCargo.match(/^\s*soroban-sdk\s*=\s*"([^"]+)"/m);
+  if (sorobanMatch === null || sorobanMatch[1] === undefined) {
+    throw new Error(`Unable to find soroban-sdk version in ${upstreamCargoPath}`);
+  }
+
+  const dependencyLines = [
+    `soroban-sdk = "${sorobanMatch[1]}"`,
+    ...localDependencies.map(
+      ([crate, relativePath]) =>
+        `${crate} = { path = "${toCargoPath(path.join(absoluteContractsPath, relativePath))}" }`,
+    ),
+  ];
+
+  if (!workspaceDependenciesPattern.test(workspaceCargo)) {
+    throw new Error(`Unable to locate [workspace.dependencies] section in ${workspaceCargoPath}`);
+  }
+
+  const nextCargo = workspaceCargo.replace(
+    workspaceDependenciesPattern,
+    `[workspace.dependencies]\n${dependencyLines.join('\n')}\n`,
+  );
+
+  await writeFile(workspaceCargoPath, nextCargo);
+
+  // Reuse upstream lockfile when available to minimize resolver drift/offline cache misses.
+  try {
+    await copyFile(upstreamLockPath, path.join(workspaceDir, 'Cargo.lock'));
+  } catch {
+    // Ignore if lockfile is unavailable.
+  }
+}
 
 type WithTemporaryFolderTestFunction<Args extends unknown[]> = (
   ...args: [...Args, ExecutionContext, string]
@@ -63,12 +122,21 @@ const doRunRustCompilationTest = async (
 
   assertLayout(test, zip, expandPathsFromFilesPaths(expectedZipFiles));
   await extractPackage(zip, folderPath);
+
+  if (process.env.STELLAR_CONTRACTS_PATH !== undefined) {
+    // Useful for release-candidate validation before crates.io publication.
+    await rewriteWorkspaceCargoForLocalContracts(
+      path.join(folderPath, 'Cargo.toml'),
+      process.env.STELLAR_CONTRACTS_PATH,
+    );
+  }
+
   await runCargoTest(test, folderPath);
 
   if (testOptions.snapshotResult) await snapshotZipContents(test, zip, expectedZipFiles);
 };
 
-export const runRustCompilationTest = withTemporaryFolderDo(
+const _runRustCompilationTest = withTemporaryFolderDo(
   async (
     makeContract: MakeContract,
     opts: GenericOptions,
@@ -78,13 +146,16 @@ export const runRustCompilationTest = withTemporaryFolderDo(
   ) => {
     await doRunRustCompilationTest(makeContract, opts, testOptions, test, `${folderPath}/default`);
 
-    const shouldBeExcludedOrHasAlreadyRun = testOptions.excludeExplicitTraitTest || opts.explicitImplementations;
+    const mergedOpts = withCommonContractDefaults(opts as GenericOptions & CommonContractOptions);
+    const supportsExplicitImplementations = 'explicitImplementations' in mergedOpts;
+    const shouldBeExcludedOrHasAlreadyRun =
+      testOptions.excludeExplicitTraitTest || !supportsExplicitImplementations || mergedOpts.explicitImplementations;
     if (shouldBeExcludedOrHasAlreadyRun) return;
 
     try {
       await doRunRustCompilationTest(
         makeContract,
-        { ...opts, explicitImplementations: true },
+        { ...opts, explicitImplementations: true } as GenericOptions,
         testOptions,
         test,
         `${folderPath}/explicit`,
@@ -94,3 +165,11 @@ export const runRustCompilationTest = withTemporaryFolderDo(
     }
   },
 );
+
+export function runRustCompilationTest<T extends GenericOptions>(
+  makeContract: (opt: T) => Contract,
+  opts: T,
+  testOptions: { snapshotResult: boolean; excludeExplicitTraitTest?: boolean },
+) {
+  return _runRustCompilationTest(makeContract as MakeContract, opts, testOptions);
+}

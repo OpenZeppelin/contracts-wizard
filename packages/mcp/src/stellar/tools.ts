@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerStellarFungible } from './tools/fungible.js';
+import { registerStellarGovernor } from './tools/governor.js';
 import { registerStellarStablecoin } from './tools/stablecoin.js';
 import { registerStellarNonFungible } from './tools/non-fungible.js';
 import type { KindedOptions } from '@openzeppelin/wizard-stellar';
@@ -12,6 +13,7 @@ type StellarToolRegisterFunctions = {
 function getRegisterFunctions(server: McpServer): StellarToolRegisterFunctions {
   return {
     Fungible: () => registerStellarFungible(server),
+    Governor: () => registerStellarGovernor(server),
     Stablecoin: () => registerStellarStablecoin(server),
     NonFungible: () => registerStellarNonFungible(server),
   };

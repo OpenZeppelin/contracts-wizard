@@ -42,6 +42,16 @@ testFungible('fungible burnable', {
   burnable: true,
 });
 
+testFungible('fungible votes', {
+  votes: true,
+});
+
+testFungible('fungible votes burnable mintable', {
+  votes: true,
+  burnable: true,
+  mintable: true,
+});
+
 testFungible('fungible pausable', {
   pausable: true,
 });
@@ -102,6 +112,11 @@ testFungible('fungible explicit trait implementations', {
   explicitImplementations: true,
 });
 
+testFungible('fungible votes explicit trait implementations', {
+  votes: true,
+  explicitImplementations: true,
+});
+
 testAPIEquivalence('fungible API default');
 
 testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
@@ -111,6 +126,7 @@ testAPIEquivalence('fungible API full', {
   symbol: 'CTK',
   premint: '2000',
   burnable: true,
+  votes: true,
   mintable: true,
   pausable: true,
 });

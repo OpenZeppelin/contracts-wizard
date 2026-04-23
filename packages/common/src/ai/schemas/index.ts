@@ -25,7 +25,9 @@ export {
 
 export {
   stellarCommonSchema,
+  stellarGovernorSchema,
   stellarFungibleSchema,
+  stellarInfoSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
 } from './stellar';

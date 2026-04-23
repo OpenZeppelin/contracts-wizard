@@ -4,6 +4,7 @@ import {
   addDependenciesWith,
   contractOptionsToContractName,
   getAddressArgs,
+  getRequiredLibDependencies,
   printContractCargo,
   printRustNameTest,
 } from './zip-shared';
@@ -199,9 +200,9 @@ fn initial_state() {
   t.is(output, expected);
 });
 
-test('printContractCargo output includes all dependencies and dev-dependencies forwarding to workspace', t => {
+test('printContractCargo output includes only required dependencies forwarding to workspace', t => {
   const scaffoldContractName = 'test';
-  const output = printContractCargo(scaffoldContractName);
+  const output = printContractCargo(scaffoldContractName, ['stellar-tokens', 'stellar-access']);
 
   const expected = `[package]
 name = "test-contract"
@@ -220,12 +221,28 @@ doctest = false
 [dependencies]
 stellar-tokens = { workspace = true }
 stellar-access = { workspace = true }
-stellar-contract-utils = { workspace = true }
-stellar-macros = { workspace = true }
 soroban-sdk = { workspace = true }
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
 `;
   t.is(output, expected);
+});
+
+test('getRequiredLibDependencies extracts only crates referenced in use clauses', t => {
+  const contract = {
+    useClauses: [
+      { containerPath: 'stellar_tokens::fungible', name: 'Base' },
+      { containerPath: 'stellar_governance::votes', name: 'Votes' },
+      { containerPath: 'soroban_sdk', name: 'Env' },
+    ],
+  };
+  t.deepEqual(getRequiredLibDependencies(contract), ['stellar-tokens', 'stellar-governance']);
+});
+
+test('getRequiredLibDependencies returns empty array when no lib crates are used', t => {
+  const contract = {
+    useClauses: [{ containerPath: 'soroban_sdk', name: 'Env' }],
+  };
+  t.deepEqual(getRequiredLibDependencies(contract), []);
 });

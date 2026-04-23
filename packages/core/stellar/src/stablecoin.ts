@@ -11,6 +11,7 @@ import {
 import { printContract } from './print';
 import { requireAccessControl, type Access } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
+import { OptionsError } from './error';
 
 export const defaults: Required<StablecoinOptions> = {
   ...fungibleDefaults,
@@ -45,6 +46,13 @@ export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boole
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  if (allOpts.votes && allOpts.limitations) {
+    throw new OptionsError({
+      votes: 'Votes extension cannot be used with stablecoin limitations',
+      limitations: 'Stablecoin limitations cannot be used with Votes extension',
+    });
+  }
 
   const c = buildFungible(allOpts);
 
