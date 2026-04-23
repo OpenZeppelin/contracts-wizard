@@ -114,7 +114,7 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC6909Options>) {
 
     const beforeUpdateFnCode = [];
     const needsMutableState = allOpts.tokenSupply;
-    const stateLine = needsMutableState 
+    const stateLine = needsMutableState
       ? 'let mut contract_state = self.get_contract_mut();'
       : 'let contract_state = self.get_contract();';
     beforeUpdateFnCode.push(stateLine);
