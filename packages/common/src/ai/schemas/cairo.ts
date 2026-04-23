@@ -9,6 +9,7 @@ import {
   cairoERC721Descriptions,
   cairoRoyaltyInfoDescriptions,
   cairoERC1155Descriptions,
+  cairoERC6909Descriptions,
   cairoAccountDescriptions,
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
@@ -96,6 +97,17 @@ export const cairoERC1155Schema = {
     })
     .optional()
     .describe(cairoCommonDescriptions.royaltyInfo),
+  ...cairoCommonSchema,
+} as const satisfies z.ZodRawShape;
+
+export const cairoERC6909Schema = {
+  name: z.string().describe(commonDescriptions.name),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
+  contentUri: z.boolean().optional().describe(cairoERC6909Descriptions.contentUri),
+  tokenSupply: z.boolean().optional().describe(cairoERC6909Descriptions.tokenSupply),
+  metadata: z.boolean().optional().describe(cairoERC6909Descriptions.metadata),
   ...cairoCommonSchema,
 } as const satisfies z.ZodRawShape;
 
