@@ -1,7 +1,7 @@
 import type { Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { Access } from './set-access-control';
-import { requireAccessControl, setAccessControl } from './set-access-control';
+import { DEFAULT_ACCESS_CONTROL, requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
@@ -158,29 +158,108 @@ function addMintable(c: ContractBuilder, access: Access) {
   requireAccessControl(c, externalTrait, functions.mint, access, 'MINTER', 'minter');
 }
 
-function addContentURI(c: ContractBuilder, access: Access) {
+function addContentURI(c: ContractBuilder, accessObj: Access) {
+  const access = { ...accessObj };
+  if (access.type === false) {
+    access.type = DEFAULT_ACCESS_CONTROL;
+  }
+  setAccessControl(c, access);
   c.addComponent(components.ERC6909ContentURIComponent, [], true);
-  requireAccessControl(c, externalTrait, functions.set_contract_uri, access, 'URI_SETTER', 'uri_setter');
-  requireAccessControl(c, externalTrait, functions.set_token_uri, access, 'URI_SETTER', 'uri_setter');
+
+  switch (access.type) {
+    case 'ownable': {
+      c.addImplToComponent(components.ERC6909ContentURIComponent, {
+        name: 'ERC6909ContentURIAdminOwnableImpl',
+        embed: true,
+        value: 'ERC6909ContentURIComponent::ERC6909ContentURIAdminOwnableImpl<ContractState>',
+      });
+      break;
+    }
+    case 'roles': {
+      c.addImplToComponent(components.ERC6909ContentURIComponent, {
+        name: 'ERC6909ContentURIAdminAccessControlImpl',
+        embed: true,
+        value: 'ERC6909ContentURIComponent::ERC6909ContentURIAdminAccessControlImpl<ContractState>',
+      });
+      c.addUseClause('starknet', 'ContractAddress');
+      c.addConstructorArgument({ name: 'content_uri_admin', type: 'ContractAddress' });
+      c.addConstructorCode(
+        'self.access_control._grant_role(ERC6909ContentURIComponent::CONTENT_URI_ADMIN_ROLE, content_uri_admin)',
+      );
+      break;
+    }
+    case 'roles-dar': {
+      c.addImplToComponent(components.ERC6909ContentURIComponent, {
+        name: 'ERC6909ContentURIAdminAccessControlDefaultAdminRulesImpl',
+        embed: true,
+        value: 'ERC6909ContentURIComponent::ERC6909ContentURIAdminAccessControlDefaultAdminRulesImpl<ContractState>',
+      });
+      c.addUseClause('starknet', 'ContractAddress');
+      c.addConstructorArgument({ name: 'content_uri_admin', type: 'ContractAddress' });
+      c.addConstructorCode(
+        'self.access_control_dar._grant_role(ERC6909ContentURIComponent::CONTENT_URI_ADMIN_ROLE, content_uri_admin)',
+      );
+      break;
+    }
+    default: {
+      const _: never = access.type;
+      throw new Error('Unknown access type');
+    }
+  }
 }
 
 function addTokenSupply(c: ContractBuilder) {
   c.addComponent(components.ERC6909TokenSupplyComponent, [], true);
 }
 
-function addMetadata(c: ContractBuilder, access: Access) {
-  c.addComponent(
-    components.ERC6909MetadataComponent,
-    [{ lit: 'token_id' }, { lit: 'token_name' }, { lit: 'token_symbol' }, { lit: 'token_decimals' }],
-    true,
-  );
-  c.addConstructorArgument({ name: 'token_id', type: 'u256' });
-  c.addConstructorArgument({ name: 'token_name', type: 'ByteArray' });
-  c.addConstructorArgument({ name: 'token_symbol', type: 'ByteArray' });
-  c.addConstructorArgument({ name: 'token_decimals', type: 'u8' });
-  requireAccessControl(c, externalTrait, functions.set_token_name, access, 'METADATA_SETTER', 'metadata_setter');
-  requireAccessControl(c, externalTrait, functions.set_token_symbol, access, 'METADATA_SETTER', 'metadata_setter');
-  requireAccessControl(c, externalTrait, functions.set_token_decimals, access, 'METADATA_SETTER', 'metadata_setter');
+function addMetadata(c: ContractBuilder, accessObj: Access) {
+  const access = { ...accessObj };
+  if (access.type === false) {
+    access.type = DEFAULT_ACCESS_CONTROL;
+  }
+  setAccessControl(c, access);
+  c.addComponent(components.ERC6909MetadataComponent, [], true);
+
+  switch (access.type) {
+    case 'ownable': {
+      c.addImplToComponent(components.ERC6909MetadataComponent, {
+        name: 'ERC6909MetadataAdminOwnableImpl',
+        embed: true,
+        value: 'ERC6909MetadataComponent::ERC6909MetadataAdminOwnableImpl<ContractState>',
+      });
+      break;
+    }
+    case 'roles': {
+      c.addImplToComponent(components.ERC6909MetadataComponent, {
+        name: 'ERC6909MetadataAdminAccessControlImpl',
+        embed: true,
+        value: 'ERC6909MetadataComponent::ERC6909MetadataAdminAccessControlImpl<ContractState>',
+      });
+      c.addUseClause('starknet', 'ContractAddress');
+      c.addConstructorArgument({ name: 'metadata_admin', type: 'ContractAddress' });
+      c.addConstructorCode(
+        'self.access_control._grant_role(ERC6909MetadataComponent::METADATA_ADMIN_ROLE, metadata_admin)',
+      );
+      break;
+    }
+    case 'roles-dar': {
+      c.addImplToComponent(components.ERC6909MetadataComponent, {
+        name: 'ERC6909MetadataAdminAccessControlDefaultAdminRulesImpl',
+        embed: true,
+        value: 'ERC6909MetadataComponent::ERC6909MetadataAdminAccessControlDefaultAdminRulesImpl<ContractState>',
+      });
+      c.addUseClause('starknet', 'ContractAddress');
+      c.addConstructorArgument({ name: 'metadata_admin', type: 'ContractAddress' });
+      c.addConstructorCode(
+        'self.access_control_dar._grant_role(ERC6909MetadataComponent::METADATA_ADMIN_ROLE, metadata_admin)',
+      );
+      break;
+    }
+    default: {
+      const _: never = access.type;
+      throw new Error('Unknown access type');
+    }
+  }
 }
 
 const components = defineComponents({
@@ -302,25 +381,5 @@ const functions = defineFunctions({
       { name: 'amount', type: 'u256' },
     ],
     code: ['self.erc6909.mint(account, id, amount);'],
-  },
-  set_contract_uri: {
-    args: [getSelfArg(), { name: 'contract_uri', type: 'ByteArray' }],
-    code: ['self.erc6909_content_uri.set_contract_uri(contract_uri);'],
-  },
-  set_token_uri: {
-    args: [getSelfArg(), { name: 'id', type: 'u256' }, { name: 'token_uri', type: 'ByteArray' }],
-    code: ['self.erc6909_content_uri.set_token_uri(id, token_uri);'],
-  },
-  set_token_name: {
-    args: [getSelfArg(), { name: 'id', type: 'u256' }, { name: 'name', type: 'ByteArray' }],
-    code: ['self.erc6909_metadata.set_token_name(id, name);'],
-  },
-  set_token_symbol: {
-    args: [getSelfArg(), { name: 'id', type: 'u256' }, { name: 'symbol', type: 'ByteArray' }],
-    code: ['self.erc6909_metadata.set_token_symbol(id, symbol);'],
-  },
-  set_token_decimals: {
-    args: [getSelfArg(), { name: 'id', type: 'u256' }, { name: 'decimals', type: 'u8' }],
-    code: ['self.erc6909_metadata.set_token_decimals(id, decimals);'],
   },
 });
