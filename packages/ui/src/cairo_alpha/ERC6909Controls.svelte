@@ -58,18 +58,18 @@
     <label class:checked={opts.contentUri}>
       <input type="checkbox" bind:checked={opts.contentUri} />
       Content URI
-      <HelpTooltip>Provides contract-level and per-token URI metadata via contract_uri() and token_uri(id).</HelpTooltip
+      <HelpTooltip>Provides contract-level and per-token URI metadata via <code>contract_uri()</code> and <code>token_uri(id)</code>.</HelpTooltip
       >
     </label>
     <label class:checked={opts.tokenSupply}>
       <input type="checkbox" bind:checked={opts.tokenSupply} />
       Supply Tracking
-      <HelpTooltip>Keeps track of total supply per token ID via total_supply(id).</HelpTooltip>
+      <HelpTooltip>Keeps track of total supply per token ID via <code>total_supply(id)</code>.</HelpTooltip>
     </label>
     <label class:checked={opts.metadata}>
       <input type="checkbox" bind:checked={opts.metadata} />
       Metadata
-      <HelpTooltip>Provides per-token metadata including name(id), symbol(id), and decimals(id).</HelpTooltip>
+      <HelpTooltip>Provides per-token metadata including <code>name(id)</code>, <code>symbol(id)</code>, and <code>decimals(id)</code>.</HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
