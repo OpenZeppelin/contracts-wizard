@@ -113,13 +113,16 @@ function addHooks(c: ContractBuilder, allOpts: Required<ERC6909Options>) {
     c.addUseClause('starknet', 'ContractAddress');
 
     const beforeUpdateFnCode = [];
+    const needsMutableState = allOpts.tokenSupply;
+    const stateLine = needsMutableState 
+      ? 'let mut contract_state = self.get_contract_mut();'
+      : 'let contract_state = self.get_contract();';
+    beforeUpdateFnCode.push(stateLine);
     if (allOpts.pausable) {
-      beforeUpdateFnCode.push('let contract_state = self.get_contract()');
-      beforeUpdateFnCode.push('contract_state.pausable.assert_not_paused()');
+      beforeUpdateFnCode.push('contract_state.pausable.assert_not_paused();');
     }
     if (allOpts.tokenSupply) {
-      beforeUpdateFnCode.push('let mut contract_state = self.get_contract_mut()');
-      beforeUpdateFnCode.push('contract_state.erc6909_token_supply.update_token_supply(from, recipient, id, amount)');
+      beforeUpdateFnCode.push('contract_state.erc6909_token_supply.update_token_supply(from, recipient, id, amount);');
     }
     c.addFunction(hooksTrait, {
       name: 'before_update',
@@ -166,12 +169,15 @@ function addTokenSupply(c: ContractBuilder) {
 }
 
 function addMetadata(c: ContractBuilder, access: Access) {
-  c.addComponent(components.ERC6909MetadataComponent, [], false);
+  c.addComponent(
+    components.ERC6909MetadataComponent,
+    [{ lit: 'token_id' }, { lit: 'token_name' }, { lit: 'token_symbol' }, { lit: 'token_decimals' }],
+    true,
+  );
   c.addConstructorArgument({ name: 'token_id', type: 'u256' });
   c.addConstructorArgument({ name: 'token_name', type: 'ByteArray' });
   c.addConstructorArgument({ name: 'token_symbol', type: 'ByteArray' });
   c.addConstructorArgument({ name: 'token_decimals', type: 'u8' });
-  c.addConstructorCode('self.erc6909_metadata.initializer(token_id, token_name, token_symbol, token_decimals)');
   requireAccessControl(c, externalTrait, functions.set_token_name, access, 'METADATA_SETTER', 'metadata_setter');
   requireAccessControl(c, externalTrait, functions.set_token_symbol, access, 'METADATA_SETTER', 'metadata_setter');
   requireAccessControl(c, externalTrait, functions.set_token_decimals, access, 'METADATA_SETTER', 'metadata_setter');
