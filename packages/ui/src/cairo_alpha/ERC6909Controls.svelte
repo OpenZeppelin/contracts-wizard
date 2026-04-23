@@ -58,7 +58,9 @@
     <label class:checked={opts.contentUri}>
       <input type="checkbox" bind:checked={opts.contentUri} />
       Content URI
-      <HelpTooltip>Provides contract-level and per-token URI metadata via <code>contract_uri()</code> and <code>token_uri(id)</code>.</HelpTooltip
+      <HelpTooltip
+        >Provides contract-level and per-token URI metadata via <code>contract_uri()</code> and
+        <code>token_uri(id)</code>.</HelpTooltip
       >
     </label>
     <label class:checked={opts.tokenSupply}>
@@ -69,7 +71,10 @@
     <label class:checked={opts.metadata}>
       <input type="checkbox" bind:checked={opts.metadata} />
       Metadata
-      <HelpTooltip>Provides per-token metadata including <code>name(id)</code>, <code>symbol(id)</code>, and <code>decimals(id)</code>.</HelpTooltip>
+      <HelpTooltip
+        >Provides per-token metadata including <code>name(id)</code>, <code>symbol(id)</code>, and
+        <code>decimals(id)</code>.</HelpTooltip
+      >
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
