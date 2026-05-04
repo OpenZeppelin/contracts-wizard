@@ -11,8 +11,12 @@ on:
 jobs:
   validate-cairo:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [ERC20, ERC721, ERC1155, Account, Multisig, Governor, Vesting, Custom]
     concurrency:
-      group: validate-cairo-${{ github.ref }}
+      group: validate-cairo-${{ matrix.kind }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
@@ -42,38 +46,25 @@ jobs:
 
       - name: Generate and compile test project
         working-directory: packages/core/cairo/test_project
+        env:
+          KIND: ${{ matrix.kind }}
         run: |
           # Exit immediately if a command exits with a non-zero status
           set -e
 
-          declare -a all_kinds=("ERC20" "ERC721" "ERC1155" "Account" "Multisig" "Governor" "Vesting" "Custom")
           declare -a all_macros_options=("none" "with_components")
           declare -a all_access_options=("disabled" "ownable" "roles" "roles-dar-default" "roles-dar-custom")
           declare -a all_royalty_options=("disabled" "enabled-default" "enabled-custom")
 
+          kind="$KIND"
+
           for macros_option in "${all_macros_options[@]}"; do
-            for kind in "${all_kinds[@]}"; do
-              if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
-                for access_option in "${all_access_options[@]}"; do
-                  for royalty_option in "${all_royalty_options[@]}"; do
-                    proj_name="'$kind, macros: $macros_option, access: $access_option, royalty: $royalty_option' test project"
-                    echo "Generating $proj_name..."
-                    yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
-
-                    echo "Compiling $proj_name..."
-                    scarb clean
-                    scarb build
-
-                    echo "✅ Compiled $proj_name!"
-                    echo "---------------------------------"
-                  done
-                done
-
-              elif [[ "$kind" == "ERC20" || "$kind" == "Custom" ]]; then
-                for access_option in "${all_access_options[@]}"; do
-                  proj_name="'$kind, macros: $macros_option, access: $access_option' test project"
+            if [[ "$kind" == "ERC721" || "$kind" == "ERC1155" ]]; then
+              for access_option in "${all_access_options[@]}"; do
+                for royalty_option in "${all_royalty_options[@]}"; do
+                  proj_name="'$kind, macros: $macros_option, access: $access_option, royalty: $royalty_option' test project"
                   echo "Generating $proj_name..."
-                  yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option
+                  yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --royalty=$royalty_option
 
                   echo "Compiling $proj_name..."
                   scarb clean
@@ -82,12 +73,13 @@ jobs:
                   echo "✅ Compiled $proj_name!"
                   echo "---------------------------------"
                 done
+              done
 
-              else
-                proj_name="'$kind, macros: $macros_option' test project"
-
+            elif [[ "$kind" == "ERC20" || "$kind" == "Custom" ]]; then
+              for access_option in "${all_access_options[@]}"; do
+                proj_name="'$kind, macros: $macros_option, access: $access_option' test project"
                 echo "Generating $proj_name..."
-                yarn run update_scarb_project --kind=$kind --macros=$macros_option
+                yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option
 
                 echo "Compiling $proj_name..."
                 scarb clean
@@ -95,7 +87,31 @@ jobs:
 
                 echo "✅ Compiled $proj_name!"
                 echo "---------------------------------"
-              fi
-            done
+              done
 
+            else
+              proj_name="'$kind, macros: $macros_option' test project"
+
+              echo "Generating $proj_name..."
+              yarn run update_scarb_project --kind=$kind --macros=$macros_option
+
+              echo "Compiling $proj_name..."
+              scarb clean
+              scarb build
+
+              echo "✅ Compiled $proj_name!"
+              echo "---------------------------------"
+            fi
           done
+
+  validate-cairo-summary:
+    needs: validate-cairo
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check matrix result
+        run: |
+          if [[ "${{ needs.validate-cairo.result }}" != "success" ]]; then
+            echo "validate-cairo matrix result: ${{ needs.validate-cairo.result }}"
+            exit 1
+          fi
