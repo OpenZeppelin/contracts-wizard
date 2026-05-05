@@ -78,7 +78,7 @@ jobs:
                 done
               done
 
-            elif [[ "$kind" == "ERC20" || "$kind" == "Custom" ]]; then
+            elif [[ "$kind" == "ERC20" || "$kind" == "ERC6909" || "$kind" == "Custom" ]]; then
               for access_option in "${all_access_options[@]}"; do
                 proj_name="'$kind, macros: $macros_option, access: $access_option' test project"
                 echo "Generating $proj_name..."
