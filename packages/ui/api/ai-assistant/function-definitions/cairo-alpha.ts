@@ -6,6 +6,7 @@ import {
   cairoERC20Descriptions,
   cairoERC721Descriptions,
   cairoERC1155Descriptions,
+  cairoERC6909Descriptions,
   cairoAccountDescriptions,
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
@@ -155,6 +156,18 @@ export const cairoAlphaERC6909AIFunctionDefinition = {
         'info',
         'macros',
       ]),
+      contentUri: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.contentUri,
+      },
+      tokenSupply: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.tokenSupply,
+      },
+      metadata: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.metadata,
+      },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC6909'>()(['name']),
     additionalProperties: false,

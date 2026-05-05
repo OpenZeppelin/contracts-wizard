@@ -13,6 +13,9 @@ const allFeaturesON: Partial<ERC6909Options> = {
   mintable: true,
   burnable: true,
   pausable: true,
+  contentUri: true,
+  tokenSupply: true,
+  metadata: true,
   upgradeable: true,
 } as const;
 
@@ -59,6 +62,34 @@ testERC6909('pausable', {
 
 testERC6909('mintable', {
   mintable: true,
+});
+
+testERC6909('content uri', {
+  contentUri: true,
+});
+
+testERC6909('token supply', {
+  tokenSupply: true,
+});
+
+testERC6909('metadata', {
+  metadata: true,
+});
+
+testERC6909('token supply + pausable', {
+  tokenSupply: true,
+  pausable: true,
+});
+
+testERC6909('content uri + metadata', {
+  contentUri: true,
+  metadata: true,
+});
+
+testERC6909('all extensions', {
+  contentUri: true,
+  tokenSupply: true,
+  metadata: true,
 });
 
 testERC6909('mintable + roles', {
@@ -131,6 +162,9 @@ test('API isAccessControlRequired', async t => {
   t.is(erc6909.isAccessControlRequired({ mintable: true }), true);
   t.is(erc6909.isAccessControlRequired({ pausable: true }), true);
   t.is(erc6909.isAccessControlRequired({ upgradeable: true }), true);
+  t.is(erc6909.isAccessControlRequired({ contentUri: true }), true);
+  t.is(erc6909.isAccessControlRequired({ metadata: true }), true);
+  t.is(erc6909.isAccessControlRequired({ tokenSupply: true }), false);
   t.is(erc6909.isAccessControlRequired({ burnable: true }), false);
   t.is(erc6909.isAccessControlRequired({}), false);
 });

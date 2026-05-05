@@ -75,7 +75,11 @@ export const cairoERC1155Descriptions = {
   uriStorage: 'Allows updating token URIs for individual token IDs.',
 };
 
-export const cairoERC6909Descriptions = {};
+export const cairoERC6909Descriptions = {
+  contentUri: 'Whether to include Content URI extension for contract-level and per-token URI metadata.',
+  tokenSupply: 'Whether to keep track of total supply per token ID.',
+  metadata: 'Whether to include per-token metadata extension providing name, symbol, and decimals per token ID.',
+};
 
 export const cairoGovernorDescriptions = {
   delay:

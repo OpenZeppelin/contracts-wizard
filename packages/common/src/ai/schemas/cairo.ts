@@ -9,6 +9,7 @@ import {
   cairoERC721Descriptions,
   cairoRoyaltyInfoDescriptions,
   cairoERC1155Descriptions,
+  cairoERC6909Descriptions,
   cairoAccountDescriptions,
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
@@ -24,9 +25,9 @@ export const cairoCommonSchema = {
         .or(z.literal('roles-dar'))
         .or(z.literal(false))
         .describe(cairoAccessDescriptions.accessType),
-      darInitialDelay: z.string().describe(cairoAccessDescriptions.darInitialDelay),
-      darDefaultDelayIncrease: z.string().describe(cairoAccessDescriptions.darDefaultDelayIncrease),
-      darMaxTransferDelay: z.string().describe(cairoAccessDescriptions.darMaxTransferDelay),
+      darInitialDelay: z.string().default('1 day').describe(cairoAccessDescriptions.darInitialDelay),
+      darDefaultDelayIncrease: z.string().default('5 days').describe(cairoAccessDescriptions.darDefaultDelayIncrease),
+      darMaxTransferDelay: z.string().default('30 days').describe(cairoAccessDescriptions.darMaxTransferDelay),
     })
     .optional(),
   upgradeable: z.boolean().optional().describe(cairoCommonDescriptions.upgradeable),
@@ -96,6 +97,17 @@ export const cairoERC1155Schema = {
     })
     .optional()
     .describe(cairoCommonDescriptions.royaltyInfo),
+  ...cairoCommonSchema,
+} as const satisfies z.ZodRawShape;
+
+export const cairoERC6909Schema = {
+  name: z.string().describe(commonDescriptions.name),
+  burnable: z.boolean().optional().describe(commonDescriptions.burnable),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  mintable: z.boolean().optional().describe(commonDescriptions.mintable),
+  contentUri: z.boolean().optional().describe(cairoERC6909Descriptions.contentUri),
+  tokenSupply: z.boolean().optional().describe(cairoERC6909Descriptions.tokenSupply),
+  metadata: z.boolean().optional().describe(cairoERC6909Descriptions.metadata),
   ...cairoCommonSchema,
 } as const satisfies z.ZodRawShape;
 

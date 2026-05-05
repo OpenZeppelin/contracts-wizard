@@ -15,6 +15,7 @@ export {
   cairoERC20Schema,
   cairoERC721Schema,
   cairoERC1155Schema,
+  cairoERC6909Schema,
   cairoAccountSchema,
   cairoMultisigSchema,
   cairoGovernorSchema,
