@@ -83,6 +83,10 @@ export const cairoAlphaERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.enumerable,
       },
+      consecutive: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.consecutive,
+      },
       wrapper: {
         type: 'boolean',
         description: cairoERC721Descriptions.wrapper,

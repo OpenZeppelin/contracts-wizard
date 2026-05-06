@@ -65,6 +65,8 @@ export const cairoERC721Descriptions = {
   uriStorage: 'Allows updating token URIs for individual token IDs.',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps.',
+  consecutive:
+    'Enables gas-efficient batch minting of consecutive token IDs during construction (ERC-2309). The contract owner must call `mint_consecutive` from the constructor to issue the initial batch.',
 };
 
 export const cairoERC1155Descriptions = {

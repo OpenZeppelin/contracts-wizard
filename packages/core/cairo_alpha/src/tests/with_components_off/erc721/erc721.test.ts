@@ -25,6 +25,7 @@ const allFeaturesON: Partial<ERC721Options> = {
   uriStorage: true,
   royaltyInfo: royaltyInfoOptions.enabledDefault,
   votes: true,
+  consecutive: true,
   appName: APP_NAME,
   appVersion: APP_VERSION,
   upgradeable: true,
@@ -83,6 +84,10 @@ testERC721('mintable', {
 
 testERC721('enumerable', {
   enumerable: true,
+});
+
+testERC721('consecutive', {
+  consecutive: true,
 });
 
 testERC721('wrapper', {
@@ -295,4 +300,5 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
+  t.is(erc721.isAccessControlRequired({ consecutive: true }), false);
 });

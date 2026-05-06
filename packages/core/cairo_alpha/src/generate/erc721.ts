@@ -29,6 +29,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     wrapper: booleans,
     uriStorage: booleans,
     votes: booleans,
+    consecutive: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],
     pausable: booleans,

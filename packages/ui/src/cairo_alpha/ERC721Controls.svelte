@@ -81,6 +81,15 @@
         ids and all tokens owned by an address.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.consecutive}>
+      <input type="checkbox" bind:checked={opts.consecutive} />
+      Consecutive
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/alpha/api/erc721#ERC721ConsecutiveComponent">
+        Enables gas-efficient batch minting of consecutive token IDs (ERC-2309). Call <code
+          >self.erc721_consecutive.mint_consecutive(recipient, batch_size)</code
+        > from the constructor to issue the initial batch.
+      </HelpTooltip>
+    </label>
     <label class:checked={opts.wrapper}>
       <input type="checkbox" bind:checked={opts.wrapper} />
       Wrapper
