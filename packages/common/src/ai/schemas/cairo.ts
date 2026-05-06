@@ -68,7 +68,6 @@ export const cairoERC721Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   enumerable: z.boolean().optional().describe(cairoERC721Descriptions.enumerable),
-  consecutive: z.boolean().optional().describe(cairoERC721Descriptions.consecutive),
   votes: z.boolean().optional().describe(cairoERC721Descriptions.votes),
   royaltyInfo: z
     .object({
