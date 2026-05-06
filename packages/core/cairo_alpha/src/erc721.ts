@@ -92,6 +92,13 @@ export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
 export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
 
+  if (allOpts.consecutive && allOpts.enumerable) {
+    throw new OptionsError({
+      consecutive:
+        'Consecutive cannot be combined with Enumerable: batch mints bypass the update hook that Enumerable relies on to track ownership.',
+    });
+  }
+
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.baseUri));
