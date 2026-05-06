@@ -71,6 +71,102 @@ testERC20('erc20 wrapper', {
   wrapper: true,
 });
 
+testERC20('erc20 flash mint', {
+  flashmint: true,
+});
+
+testERC20('erc20 flash mint with custom max', {
+  flashmint: true,
+  flashMintMaxAmount: '1000000',
+});
+
+testERC20('erc20 flash mint with percent fee', {
+  flashmint: true,
+  flashMintFeeMode: 'percent',
+  flashMintFeePercent: '5',
+});
+
+testERC20('erc20 flash mint with fractional percent fee', {
+  flashmint: true,
+  flashMintFeeMode: 'percent',
+  flashMintFeePercent: '0.0013725',
+});
+
+testERC20('erc20 flash mint with percent fee and fee receiver', {
+  flashmint: true,
+  flashMintFeeMode: 'percent',
+  flashMintFeePercent: '5',
+  flashMintFeeDestination: 'fee_receiver',
+});
+
+testERC20('erc20 flash mint with custom fee impl', {
+  flashmint: true,
+  flashMintFeeMode: 'custom',
+});
+
+testERC20('erc20 flash mint with all custom config', {
+  flashmint: true,
+  flashMintMaxAmount: '1000000',
+  flashMintFeeMode: 'percent',
+  flashMintFeePercent: '5',
+  flashMintFeeDestination: 'fee_receiver',
+});
+
+testERC20('erc20 flash mint with max amount of zero', {
+  flashmint: true,
+  flashMintMaxAmount: '0',
+});
+
+test('erc20 flash mint, max amount empty string', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: true,
+      flashMintMaxAmount: '',
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintMaxAmount, 'Must be "max" or a non-negative number');
+});
+
+test('erc20 flash mint, invalid max amount', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: true,
+      flashMintMaxAmount: 'abc',
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintMaxAmount, 'Must be "max" or a non-negative number');
+});
+
+test('erc20 flash mint, invalid percent fee', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: true,
+      flashMintFeeMode: 'percent',
+      flashMintFeePercent: 'abc',
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintFeePercent, 'Must be a number between 0 and 100');
+});
+
+test('erc20 flash mint, percent fee out of range', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: true,
+      flashMintFeeMode: 'percent',
+      flashMintFeePercent: '100.5',
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintFeePercent, 'Must be a number between 0 and 100');
+});
+
 testERC20('erc20 preminted', {
   premint: '1000',
 });

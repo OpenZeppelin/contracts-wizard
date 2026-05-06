@@ -30,6 +30,11 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
+  flashmint: false,
+  flashMintMaxAmount: 'max',
+  flashMintFeeMode: 'percent',
+  flashMintFeePercent: '0',
+  flashMintFeeDestination: 'burn',
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -52,7 +57,15 @@ export interface ERC20Options extends CommonContractOptions {
   votes?: boolean;
   appName?: string;
   appVersion?: string;
+  flashmint?: boolean;
+  flashMintMaxAmount?: string;
+  flashMintFeeMode?: FlashMintFeeMode;
+  flashMintFeePercent?: string;
+  flashMintFeeDestination?: FlashMintFeeDestination;
 }
+
+export type FlashMintFeeMode = 'percent' | 'custom';
+export type FlashMintFeeDestination = 'burn' | 'fee_receiver';
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
@@ -67,6 +80,11 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     votes: opts.votes ?? defaults.votes,
     appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion,
+    flashmint: opts.flashmint ?? defaults.flashmint,
+    flashMintMaxAmount: opts.flashMintMaxAmount ?? defaults.flashMintMaxAmount,
+    flashMintFeeMode: opts.flashMintFeeMode ?? defaults.flashMintFeeMode,
+    flashMintFeePercent: opts.flashMintFeePercent ?? defaults.flashMintFeePercent,
+    flashMintFeeDestination: opts.flashMintFeeDestination ?? defaults.flashMintFeeDestination,
   };
 }
 
@@ -100,6 +118,10 @@ export function buildERC20(opts: ERC20Options): Contract {
 
   if (allOpts.wrapper) {
     addWrapper(c);
+  }
+
+  if (allOpts.flashmint) {
+    addFlashMint(c, allOpts, decimals);
   }
 
   addHooks(c, allOpts);
@@ -294,6 +316,131 @@ function addWrapper(c: ContractBuilder) {
   c.addComponent(components.ERC20WrapperComponent, [{ lit: 'underlying' }], true);
 }
 
+function parseFlashMintMaxAmount(value: string, decimals: bigint): bigint | null {
+  if (value === 'max') {
+    return null;
+  }
+  if (value === '' || !premintPattern.test(value)) {
+    throw new OptionsError({ flashMintMaxAmount: 'Must be "max" or a non-negative number' });
+  }
+  return BigInt(getInitialSupply(value, Number(decimals)));
+}
+
+function parseFlashMintFeePercent(value: string): { numerator: bigint; denominator: bigint } | null {
+  if (value === '') {
+    return null;
+  }
+  if (!premintPattern.test(value)) {
+    throw new OptionsError({ flashMintFeePercent: 'Must be a number between 0 and 100' });
+  }
+  const [intPart = '', fracPart = ''] = value.split('.');
+  const decimalDigits = fracPart.length;
+  const combined = (intPart + fracPart).replace(/^0+/, '');
+  if (combined === '') {
+    return null;
+  }
+  const numerator = BigInt(combined);
+  const decimalScale = 10n ** BigInt(decimalDigits);
+  // value = numerator / decimalScale, must be <= 100
+  if (numerator > 100n * decimalScale) {
+    throw new OptionsError({ flashMintFeePercent: 'Must be a number between 0 and 100' });
+  }
+  // For percent of amount: amount * value / 100 = amount * numerator / (100 * decimalScale)
+  return { numerator, denominator: 100n * decimalScale };
+}
+
+function buildFlashFeeOverrideBody(allOpts: Required<ERC20Options>): string[] | null {
+  switch (allOpts.flashMintFeeMode) {
+    case 'percent': {
+      const parsed = parseFlashMintFeePercent(allOpts.flashMintFeePercent);
+      if (parsed === null) {
+        return null;
+      }
+      return [`amount * ${parsed.numerator} / ${parsed.denominator}`];
+    }
+    case 'custom':
+      return ['// TODO: Must be implemented according to the desired flash fee logic', '0'];
+    default: {
+      const _: never = allOpts.flashMintFeeMode;
+      throw new Error(`Unknown flashMintFeeMode: ${_}`);
+    }
+  }
+}
+
+function addFlashMint(c: ContractBuilder, allOpts: Required<ERC20Options>, decimals: bigint) {
+  c.addComponent(components.ERC20FlashMintComponent, [], true);
+
+  const customMax = parseFlashMintMaxAmount(allOpts.flashMintMaxAmount, decimals);
+  const overridesMax = customMax !== null;
+  const overridesReceiver = allOpts.flashMintFeeDestination === 'fee_receiver';
+  const feeOverrideBody = buildFlashFeeOverrideBody(allOpts);
+  const overridesFee = feeOverrideBody !== null;
+
+  if (!overridesMax && !overridesFee && !overridesReceiver) {
+    c.addUseClause('openzeppelin_token::erc20::extensions::erc20_flash_mint', 'DefaultConfig', {
+      alias: 'ERC20FlashMintDefaultConfig',
+    });
+    return;
+  }
+
+  const flashMintConfigTrait: BaseImplementedTrait = {
+    name: 'FlashMintConfigImpl',
+    of: 'ERC20FlashMintComponent::FlashMintConfigTrait<ContractState>',
+    tags: [],
+  };
+  c.addImplementedTrait(flashMintConfigTrait);
+
+  if (overridesMax || overridesFee || overridesReceiver) {
+    c.addUseClause('starknet', 'ContractAddress');
+  }
+
+  if (overridesMax) {
+    c.addUseClause('starknet', 'get_contract_address');
+    const fn = c.addFunction(flashMintConfigTrait, {
+      name: 'max_flash_loan',
+      args: [
+        { name: 'self', type: '@ERC20FlashMintComponent::ComponentState<ContractState>' },
+        { name: 'token', type: 'ContractAddress' },
+        { name: 'total_supply', type: 'u256' },
+      ],
+      returns: 'u256',
+      code: [],
+    });
+    fn.code.push('if token != get_contract_address() {', '    return 0;', '}', `${customMax!}`);
+  }
+
+  if (overridesFee) {
+    const fn = c.addFunction(flashMintConfigTrait, {
+      name: 'flash_fee',
+      args: [
+        { name: 'self', type: '@ERC20FlashMintComponent::ComponentState<ContractState>' },
+        { name: 'token', type: 'ContractAddress' },
+        { name: 'amount', type: 'u256' },
+      ],
+      returns: 'u256',
+      code: [],
+    });
+    fn.code.push(...feeOverrideBody!);
+  }
+
+  if (overridesReceiver) {
+    c.addUseClause('core::num::traits', 'Zero');
+    c.addUseClause('starknet::storage', 'StoragePointerReadAccess');
+    c.addUseClause('starknet::storage', 'StoragePointerWriteAccess');
+    c.addStorageMember({ name: 'flash_fee_receiver', type: 'ContractAddress' });
+    c.addConstructorArgument({ name: 'flash_fee_receiver', type: 'ContractAddress' });
+    c.addConstructorCode(`assert(!flash_fee_receiver.is_zero(), 'FlashMint: invalid receiver')`);
+    c.addConstructorCode(`self.flash_fee_receiver.write(flash_fee_receiver)`);
+    const fn = c.addFunction(flashMintConfigTrait, {
+      name: 'flash_fee_receiver',
+      args: [{ name: 'self', type: '@ERC20FlashMintComponent::ComponentState<ContractState>' }],
+      returns: 'ContractAddress',
+      code: [],
+    });
+    fn.code.push('self.get_contract().flash_fee_receiver.read()');
+  }
+}
+
 const components = defineComponents({
   ERC20Component: {
     path: 'openzeppelin_token::erc20',
@@ -333,6 +480,24 @@ const components = defineComponents({
         name: 'ERC20WrapperInternalImpl',
         embed: false,
         value: 'ERC20WrapperComponent::InternalImpl<ContractState>',
+      },
+    ],
+  },
+  ERC20FlashMintComponent: {
+    path: 'openzeppelin_token::erc20::extensions::erc20_flash_mint',
+    substorage: {
+      name: 'erc20_flash_mint',
+      type: 'ERC20FlashMintComponent::Storage',
+    },
+    event: {
+      name: 'ERC20FlashMintEvent',
+      type: 'ERC20FlashMintComponent::Event',
+    },
+    impls: [
+      {
+        name: 'ERC20FlashMintImpl',
+        embed: true,
+        value: 'ERC20FlashMintComponent::ERC20FlashMintImpl<ContractState>',
       },
     ],
   },
