@@ -103,7 +103,9 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), toByteArray(allOpts.baseUri));
   addERC721Mixin(c);
-  c.addUseClause('openzeppelin_token::erc721', 'ERC721OwnerOfDefaultImpl');
+  if (!allOpts.consecutive) {
+    c.addUseClause('openzeppelin_token::erc721', 'ERC721OwnerOfDefaultImpl');
+  }
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access);
