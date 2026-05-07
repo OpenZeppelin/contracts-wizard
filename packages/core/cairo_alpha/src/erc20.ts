@@ -18,6 +18,25 @@ import { addVotesComponent } from './common-components';
 
 const DEFAULT_DECIMALS = BigInt(18);
 
+export type FlashMintFeeMode = 'percent' | 'custom';
+export type FlashMintFeeDestination = 'burn' | 'fee_receiver';
+
+export type FlashMintOptions = {
+  enabled: boolean;
+  maxAmount: string;
+  feeMode: FlashMintFeeMode;
+  feePercent: string;
+  feeDestination: FlashMintFeeDestination;
+};
+
+export const flashMintDefaults: FlashMintOptions = {
+  enabled: false,
+  maxAmount: 'max',
+  feeMode: 'percent',
+  feePercent: '0',
+  feeDestination: 'burn',
+};
+
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
@@ -30,11 +49,7 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   appName: '', // Defaults to empty string, but user must provide a non-empty value if votes are enabled
   appVersion: 'v1',
-  flashmint: false,
-  flashMintMaxAmount: 'max',
-  flashMintFeeMode: 'percent',
-  flashMintFeePercent: '0',
-  flashMintFeeDestination: 'burn',
+  flashmint: flashMintDefaults,
   access: commonDefaults.access,
   upgradeable: commonDefaults.upgradeable,
   info: commonDefaults.info,
@@ -57,15 +72,8 @@ export interface ERC20Options extends CommonContractOptions {
   votes?: boolean;
   appName?: string;
   appVersion?: string;
-  flashmint?: boolean;
-  flashMintMaxAmount?: string;
-  flashMintFeeMode?: FlashMintFeeMode;
-  flashMintFeePercent?: string;
-  flashMintFeeDestination?: FlashMintFeeDestination;
+  flashmint?: FlashMintOptions;
 }
-
-export type FlashMintFeeMode = 'percent' | 'custom';
-export type FlashMintFeeDestination = 'burn' | 'fee_receiver';
 
 function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
@@ -81,10 +89,6 @@ function withDefaults(opts: ERC20Options): Required<ERC20Options> {
     appName: opts.appName ?? defaults.appName,
     appVersion: opts.appVersion ?? defaults.appVersion,
     flashmint: opts.flashmint ?? defaults.flashmint,
-    flashMintMaxAmount: opts.flashMintMaxAmount ?? defaults.flashMintMaxAmount,
-    flashMintFeeMode: opts.flashMintFeeMode ?? defaults.flashMintFeeMode,
-    flashMintFeePercent: opts.flashMintFeePercent ?? defaults.flashMintFeePercent,
-    flashMintFeeDestination: opts.flashMintFeeDestination ?? defaults.flashMintFeeDestination,
   };
 }
 
@@ -120,8 +124,8 @@ export function buildERC20(opts: ERC20Options): Contract {
     addWrapper(c);
   }
 
-  if (allOpts.flashmint) {
-    addFlashMint(c, allOpts, decimals);
+  if (allOpts.flashmint.enabled) {
+    addFlashMint(c, allOpts.flashmint, decimals);
   }
 
   addHooks(c, allOpts);
@@ -349,10 +353,10 @@ function parseFlashMintFeePercent(value: string): { numerator: bigint; denominat
   return { numerator, denominator: 100n * decimalScale };
 }
 
-function buildFlashFeeOverrideBody(allOpts: Required<ERC20Options>): string[] | null {
-  switch (allOpts.flashMintFeeMode) {
+function buildFlashFeeOverrideBody(opts: FlashMintOptions): string[] | null {
+  switch (opts.feeMode) {
     case 'percent': {
-      const parsed = parseFlashMintFeePercent(allOpts.flashMintFeePercent);
+      const parsed = parseFlashMintFeePercent(opts.feePercent);
       if (parsed === null) {
         return null;
       }
@@ -361,19 +365,19 @@ function buildFlashFeeOverrideBody(allOpts: Required<ERC20Options>): string[] | 
     case 'custom':
       return ['// TODO: Must be implemented according to the desired flash fee logic', '0'];
     default: {
-      const _: never = allOpts.flashMintFeeMode;
+      const _: never = opts.feeMode;
       throw new Error(`Unknown flashMintFeeMode: ${_}`);
     }
   }
 }
 
-function addFlashMint(c: ContractBuilder, allOpts: Required<ERC20Options>, decimals: bigint) {
+function addFlashMint(c: ContractBuilder, opts: FlashMintOptions, decimals: bigint) {
   c.addComponent(components.ERC20FlashMintComponent, [], true);
 
-  const customMax = parseFlashMintMaxAmount(allOpts.flashMintMaxAmount, decimals);
+  const customMax = parseFlashMintMaxAmount(opts.maxAmount, decimals);
   const overridesMax = customMax !== null;
-  const overridesReceiver = allOpts.flashMintFeeDestination === 'fee_receiver';
-  const feeOverrideBody = buildFlashFeeOverrideBody(allOpts);
+  const overridesReceiver = opts.feeDestination === 'fee_receiver';
+  const feeOverrideBody = buildFlashFeeOverrideBody(opts);
   const overridesFee = feeOverrideBody !== null;
 
   if (!overridesMax && !overridesFee && !overridesReceiver) {

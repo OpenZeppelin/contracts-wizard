@@ -1,8 +1,14 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
-  import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
-  import { premintPattern, erc20, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo-alpha';
+  import type { FlashMintOptions, KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo-alpha';
+  import {
+    premintPattern,
+    erc20,
+    flashMintDefaults,
+    infoDefaults,
+    macrosDefaults,
+  } from '@openzeppelin/wizard-cairo-alpha';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
@@ -19,33 +25,34 @@
     info: { ...infoDefaults }, // create new object since Info is nested
     macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
     access: { ...erc20.defaults.access }, // create new object since Access is nested
+    flashmint: { ...flashMintDefaults }, // create new object since FlashMintOptions is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc20.isAccessControlRequired(opts);
-  $: hasPositiveFlashFee = computeHasPositiveFlashFee(opts);
+  $: hasPositiveFlashFee = opts.flashmint.enabled && computeHasPositiveFlashFee(opts.flashmint);
 
-  function computeHasPositiveFlashFee(o: typeof opts): boolean {
-    switch (o.flashMintFeeMode) {
+  function computeHasPositiveFlashFee(o: FlashMintOptions): boolean {
+    switch (o.feeMode) {
       case 'percent':
-        return parseFloat(o.flashMintFeePercent || '0') > 0;
+        return parseFloat(o.feePercent || '0') > 0;
       case 'custom':
         return true;
     }
   }
 
   // Stash the last custom value so toggling Max → Custom restores what the user previously typed.
-  let lastCustomMax: string = opts.flashMintMaxAmount === 'max' ? '0' : opts.flashMintMaxAmount;
-  $: if (opts.flashMintMaxAmount !== 'max') {
-    lastCustomMax = opts.flashMintMaxAmount;
+  let lastCustomMax: string = opts.flashmint.maxAmount === 'max' ? '0' : opts.flashmint.maxAmount;
+  $: if (opts.flashmint.maxAmount !== 'max') {
+    lastCustomMax = opts.flashmint.maxAmount;
   }
 
   function selectMaxAmountMax() {
-    opts.flashMintMaxAmount = 'max';
+    opts.flashmint.maxAmount = 'max';
   }
   function selectMaxAmountCustom() {
-    opts.flashMintMaxAmount = lastCustomMax;
+    opts.flashmint.maxAmount = lastCustomMax;
   }
 </script>
 
@@ -152,7 +159,7 @@
 
 <ExpandableCheckbox
   label="Flash Mint"
-  bind:checked={opts.flashmint}
+  bind:checked={opts.flashmint.enabled}
   helpContent="Allow flash loans of tokens compliant with ERC-3156."
   error={errors?.flashMintMaxAmount || errors?.flashMintFeePercent}
 >
@@ -161,37 +168,37 @@
       Max Flash Loan
       <HelpTooltip>
         Maximum amount of tokens that can be flash-loaned in a single call. <code>Max</code> inherits the default (the
-        maximum representable amount minus the current total supply). <code>Custom</code> lets you set a non-negative
-        cap; setting it to 0 effectively disables flash loans.
+        maximum representable amount minus the current total supply). <code>Custom</code> lets you set a non-negative cap;
+        setting it to 0 effectively disables flash loans.
       </HelpTooltip>
     </span>
     <div class="checkbox-group">
-      <label class:checked={opts.flashMintMaxAmount === 'max'}>
+      <label class:checked={opts.flashmint.maxAmount === 'max'}>
         <input
           type="radio"
           name="flash-mint-max-amount-mode"
-          checked={opts.flashMintMaxAmount === 'max'}
+          checked={opts.flashmint.maxAmount === 'max'}
           on:change={selectMaxAmountMax}
-          disabled={!opts.flashmint}
+          disabled={!opts.flashmint.enabled}
         />
         Max
       </label>
-      <label class:checked={opts.flashMintMaxAmount !== 'max'}>
+      <label class:checked={opts.flashmint.maxAmount !== 'max'}>
         <input
           type="radio"
           name="flash-mint-max-amount-mode"
-          checked={opts.flashMintMaxAmount !== 'max'}
+          checked={opts.flashmint.maxAmount !== 'max'}
           on:change={selectMaxAmountCustom}
-          disabled={!opts.flashmint}
+          disabled={!opts.flashmint.enabled}
         />
         Custom
-        {#if opts.flashMintMaxAmount !== 'max'}
+        {#if opts.flashmint.maxAmount !== 'max'}
           <input
             class="input-inline ml-auto"
-            bind:value={opts.flashMintMaxAmount}
+            bind:value={opts.flashmint.maxAmount}
             use:error={errors?.flashMintMaxAmount}
             use:resizeToFit
-            disabled={!opts.flashmint}
+            disabled={!opts.flashmint.enabled}
             pattern={premintPattern.source}
           />
         {/if}
@@ -208,18 +215,18 @@
       </HelpTooltip>
     </span>
     <div class="checkbox-group">
-      <label class:checked={opts.flashMintFeeMode === 'percent'}>
-        <input type="radio" bind:group={opts.flashMintFeeMode} value="percent" disabled={!opts.flashmint} />
+      <label class:checked={opts.flashmint.feeMode === 'percent'}>
+        <input type="radio" bind:group={opts.flashmint.feeMode} value="percent" disabled={!opts.flashmint.enabled} />
         Percent
-        {#if opts.flashMintFeeMode === 'percent'}
+        {#if opts.flashmint.feeMode === 'percent'}
           <span class="ml-auto flex items-center">
             <input
               class="input-inline"
               type="text"
-              bind:value={opts.flashMintFeePercent}
+              bind:value={opts.flashmint.feePercent}
               use:error={errors?.flashMintFeePercent}
               use:resizeToFit
-              disabled={!opts.flashmint}
+              disabled={!opts.flashmint.enabled}
               pattern={premintPattern.source}
               placeholder="0"
             />
@@ -227,8 +234,8 @@
           </span>
         {/if}
       </label>
-      <label class:checked={opts.flashMintFeeMode === 'custom'}>
-        <input type="radio" bind:group={opts.flashMintFeeMode} value="custom" disabled={!opts.flashmint} />
+      <label class:checked={opts.flashmint.feeMode === 'custom'}>
+        <input type="radio" bind:group={opts.flashmint.feeMode} value="custom" disabled={!opts.flashmint.enabled} />
         Custom
       </label>
     </div>
@@ -243,17 +250,22 @@
         </HelpTooltip>
       </span>
       <div class="checkbox-group">
-        <label class:checked={opts.flashMintFeeDestination === 'burn'}>
-          <input type="radio" bind:group={opts.flashMintFeeDestination} value="burn" disabled={!opts.flashmint} />
+        <label class:checked={opts.flashmint.feeDestination === 'burn'}>
+          <input
+            type="radio"
+            bind:group={opts.flashmint.feeDestination}
+            value="burn"
+            disabled={!opts.flashmint.enabled}
+          />
           Burn
           <HelpTooltip>The flash loan fee is sent to the zero address and effectively burnt.</HelpTooltip>
         </label>
-        <label class:checked={opts.flashMintFeeDestination === 'fee_receiver'}>
+        <label class:checked={opts.flashmint.feeDestination === 'fee_receiver'}>
           <input
             type="radio"
-            bind:group={opts.flashMintFeeDestination}
+            bind:group={opts.flashmint.feeDestination}
             value="fee_receiver"
-            disabled={!opts.flashmint}
+            disabled={!opts.flashmint.enabled}
           />
           Fee receiver
           <HelpTooltip>

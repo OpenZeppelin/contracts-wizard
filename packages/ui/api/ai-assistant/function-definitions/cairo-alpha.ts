@@ -53,26 +53,32 @@ export const cairoAlphaERC20AIFunctionDefinition = {
         description: cairoERC20Descriptions.votes,
       },
       flashmint: {
-        type: 'boolean',
+        type: 'object',
         description: cairoERC20Descriptions.flashmint,
-      },
-      flashMintMaxAmount: {
-        type: 'string',
-        description: cairoERC20Descriptions.flashMintMaxAmount,
-      },
-      flashMintFeeMode: {
-        type: 'string',
-        enum: ['percent', 'custom'],
-        description: cairoERC20Descriptions.flashMintFeeMode,
-      },
-      flashMintFeePercent: {
-        type: 'string',
-        description: cairoERC20Descriptions.flashMintFeePercent,
-      },
-      flashMintFeeDestination: {
-        type: 'string',
-        enum: ['burn', 'fee_receiver'],
-        description: cairoERC20Descriptions.flashMintFeeDestination,
+        properties: {
+          enabled: {
+            type: 'boolean',
+            description: cairoERC20Descriptions.flashMintEnabled,
+          },
+          maxAmount: {
+            type: 'string',
+            description: cairoERC20Descriptions.flashMintMaxAmount,
+          },
+          feeMode: {
+            type: 'string',
+            enum: ['percent', 'custom'],
+            description: cairoERC20Descriptions.flashMintFeeMode,
+          },
+          feePercent: {
+            type: 'string',
+            description: cairoERC20Descriptions.flashMintFeePercent,
+          },
+          feeDestination: {
+            type: 'string',
+            enum: ['burn', 'fee_receiver'],
+            description: cairoERC20Descriptions.flashMintFeeDestination,
+          },
+        },
       },
     },
     required: contractExactRequiredKeys<'cairoAlpha', 'ERC20'>()(['name', 'symbol']),
