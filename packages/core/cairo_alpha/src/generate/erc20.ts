@@ -21,13 +21,6 @@ const flashMintAlternatives: FlashMintOptions[] = [
     feePercent: '0.5',
     feeDestination: 'fee_receiver',
   },
-  {
-    enabled: true,
-    maxAmount: 'max',
-    feeMode: 'custom',
-    feePercent: '0',
-    feeDestination: 'fee_receiver',
-  },
 ];
 
 type GeneratorOptions = {
