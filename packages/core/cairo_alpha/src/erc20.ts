@@ -327,7 +327,7 @@ function parseFlashMintMaxAmount(value: string, decimals: bigint): bigint | null
   if (value === '' || !premintPattern.test(value)) {
     throw new OptionsError({ flashMintMaxAmount: 'Must be "max" or a non-negative number' });
   }
-  return BigInt(getInitialSupply(value, Number(decimals)));
+  return toUint(getInitialSupply(value, Number(decimals)), 'flashMintMaxAmount', 'u256');
 }
 
 function parseFlashMintFeePercent(value: string): { numerator: bigint; denominator: bigint } | null {
@@ -349,8 +349,12 @@ function parseFlashMintFeePercent(value: string): { numerator: bigint; denominat
   if (numerator > 100n * decimalScale) {
     throw new OptionsError({ flashMintFeePercent: 'Must be a number between 0 and 100' });
   }
-  // For percent of amount: amount * value / 100 = amount * numerator / (100 * decimalScale)
-  return { numerator, denominator: 100n * decimalScale };
+  // For percent of amount: amount * value / 100 = amount * numerator / (100 * decimalScale).
+  // Both literals are emitted into Cairo and must fit u256; numerator <= denominator from the
+  // check above, so bounding the denominator is sufficient.
+  const denominator = 100n * decimalScale;
+  toUint(denominator.toString(), 'flashMintFeePercent', 'u256');
+  return { numerator, denominator };
 }
 
 function buildFlashFeeOverrideBody(opts: FlashMintOptions): string[] | null {
