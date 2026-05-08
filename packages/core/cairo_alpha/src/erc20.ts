@@ -404,6 +404,7 @@ function addFlashMint(c: ContractBuilder, opts: FlashMintOptions, decimals: bigi
 
   if (overridesMax) {
     c.addUseClause('starknet', 'get_contract_address');
+    c.addUseClause('core::num::traits', 'Bounded');
     const fn = c.addFunction(flashMintConfigTrait, {
       name: 'max_flash_loan',
       args: [
@@ -414,7 +415,16 @@ function addFlashMint(c: ContractBuilder, opts: FlashMintOptions, decimals: bigi
       returns: 'u256',
       code: [],
     });
-    fn.code.push('if token != get_contract_address() {', '    return 0;', '}', `${customMax!}`);
+    // Clamp the configured cap to the remaining mint headroom so the loan size we report is
+    // never larger than what the underlying mint path can actually honor.
+    fn.code.push(
+      'if token != get_contract_address() {',
+      '    return 0;',
+      '}',
+      'let headroom = Bounded::<u256>::MAX - total_supply;',
+      `let cap: u256 = ${customMax!};`,
+      'if cap < headroom { cap } else { headroom }',
+    );
   }
 
   if (overridesFee) {
