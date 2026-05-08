@@ -372,7 +372,7 @@ function buildFlashFeeOverrideBody(opts: FlashMintOptions): string[] | null {
 }
 
 function addFlashMint(c: ContractBuilder, opts: FlashMintOptions, decimals: bigint) {
-  c.addComponent(components.ERC20FlashMintComponent, [], true);
+  c.addComponent(components.ERC20FlashMintComponent, [], false);
 
   const customMax = parseFlashMintMaxAmount(opts.maxAmount, decimals);
   const overridesMax = customMax !== null;
