@@ -37,6 +37,47 @@ export const flashMintDefaults: FlashMintOptions = {
   feeDestination: 'burn',
 };
 
+export type FlashMintSubset = 'all' | 'disabled' | 'enabled-default' | 'enabled-percent-fee' | 'enabled-custom-fee';
+
+export const flashMintOptions = {
+  disabled: flashMintDefaults,
+  enabledDefault: { ...flashMintDefaults, enabled: true } satisfies FlashMintOptions,
+  enabledPercentFee: {
+    enabled: true,
+    maxAmount: '1000000',
+    feeMode: 'percent',
+    feePercent: '0.5',
+    feeDestination: 'fee_receiver',
+  } satisfies FlashMintOptions,
+  enabledCustomFee: {
+    enabled: true,
+    maxAmount: 'max',
+    feeMode: 'custom',
+    feePercent: '0',
+    feeDestination: 'fee_receiver',
+  } satisfies FlashMintOptions,
+};
+
+export function resolveFlashMintOptionsSubset(subset: FlashMintSubset): FlashMintOptions[] {
+  const { disabled, enabledDefault, enabledPercentFee, enabledCustomFee } = flashMintOptions;
+  switch (subset) {
+    case 'all':
+      return [disabled, enabledDefault, enabledPercentFee, enabledCustomFee];
+    case 'disabled':
+      return [disabled];
+    case 'enabled-default':
+      return [enabledDefault];
+    case 'enabled-percent-fee':
+      return [enabledPercentFee];
+    case 'enabled-custom-fee':
+      return [enabledCustomFee];
+    default: {
+      const _: never = subset;
+      throw new Error('Unknown FlashMintSubset');
+    }
+  }
+}
+
 export const defaults: Required<ERC20Options> = {
   name: 'MyToken',
   symbol: 'MTK',
