@@ -47,6 +47,15 @@
     "prettier-plugin-svelte": "^3.3.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.29.0"
+  },
+  "packageManager": "pnpm@11.1.0",
+  "engines": {
+    "pnpm": ">=11"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 10080,
+    "minimumReleaseAgeExclude": [
+      "@openzeppelin/*"
+    ]
   }
 }
-
