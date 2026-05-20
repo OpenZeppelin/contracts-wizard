@@ -3,7 +3,7 @@
 
 ## 0.10.9 (2026-05-20)
 
-- Escape `opts.name` and `opts.uri` when generating Hardhat and Foundry test files. Only affects callers of `zipHardhat` / `zipFoundry`; these functions are not part of the documented public API.
+- Escape `opts.name` and `opts.uri` when generating Hardhat and Foundry test files. Only affects callers of `zipHardhat` / `zipFoundry`; these functions are not part of the documented public API. Fixes [GHSA-4x76-22x2-rx8v](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-4x76-22x2-rx8v). ([ec12c44](https://github.com/OpenZeppelin/contracts-wizard/commit/ec12c44f8d9e0491eba31037f95b36e98ec58b5f))
 
 ## 0.10.8 (2026-04-07)
 
