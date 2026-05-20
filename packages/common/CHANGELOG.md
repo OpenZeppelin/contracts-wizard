@@ -5,7 +5,7 @@
 
 - Cairo: Add ERC721Consecutive extension. ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
 - Cairo: Add ERC6909Metadata, ERC6909ContentURI, ERC6909TokenSupply extensions. ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
-  Cairo: Default DAR delay fields in the `access` schema so callers don't need to supply them for non-`roles-dar` access types.
+- Cairo: Default DAR delay fields in the `access` schema so callers don't need to supply them for non-`roles-dar` access types.
 
 ## 0.5.0 (2026-04-07)
 
