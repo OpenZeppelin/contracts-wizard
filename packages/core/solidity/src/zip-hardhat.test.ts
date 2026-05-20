@@ -121,6 +121,26 @@ test.serial('custom upgradeable', async t => {
   await runDeployScriptTest(c, t, opts);
 });
 
+test.serial('erc20 name containing double quotes', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My "Token"',
+    symbol: 'MTK',
+  };
+  const c = buildERC20(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('erc1155 uri containing double quotes', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://example.com/"id"/{id}',
+  };
+  const c = buildERC1155(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
 async function runDeployScriptTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipHardhat(c, opts);
 

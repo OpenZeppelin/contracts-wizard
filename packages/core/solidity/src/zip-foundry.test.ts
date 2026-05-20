@@ -147,6 +147,36 @@ test.serial('custom transparent, managed', async t => {
   await runTest(c, t, opts);
 });
 
+test.serial('erc20 name containing double quotes', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My "Token"',
+    symbol: 'MTK',
+  };
+  const c = buildERC20(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('erc1155 uri containing double quotes', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC1155',
+    name: 'My Token',
+    uri: 'https://example.com/"id"/{id}',
+  };
+  const c = buildERC1155(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('erc20 name containing unicode, backslash, and double quotes', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'é\\")Token',
+    symbol: 'MTK',
+  };
+  const c = buildERC20(opts);
+  await runTest(c, t, opts);
+});
+
 async function runTest(c: Contract, t: ExecutionContext<Context>, opts: GenericOptions) {
   const zip = await zipFoundry(c, opts);
 

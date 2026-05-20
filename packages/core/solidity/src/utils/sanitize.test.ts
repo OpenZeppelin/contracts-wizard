@@ -38,6 +38,51 @@ test('stringifyUnicodeSafe', t => {
       expected: 'unicode"MyTokeć"',
       description: 'should handle string with mixed ASCII and unicode characters',
     },
+    {
+      input: 'Path\\file',
+      expected: '"Path\\\\file"',
+      description: 'should escape backslash in ASCII branch',
+    },
+    {
+      input: 'é\\");',
+      expected: 'unicode"é\\\\\\");"',
+      description: 'should escape backslash and quote together in unicode branch (no breakout)',
+    },
+    {
+      input: '😀',
+      expected: 'unicode"😀"',
+      description: 'should pass non-BMP characters through raw (no surrogate escapes)',
+    },
+    {
+      input: '\x7F',
+      expected: 'unicode"\x7F"',
+      description: 'should pass DEL through raw (allowed by unicode literal grammar)',
+    },
+    {
+      input: '\x00',
+      expected: 'unicode"\x00"',
+      description: 'should pass NUL through raw (allowed by unicode literal grammar)',
+    },
+    {
+      input: '\x08',
+      expected: 'unicode"\x08"',
+      description: 'should pass backspace through raw (no Solidity \\b escape exists)',
+    },
+    {
+      input: 'a\nb',
+      expected: 'unicode"a\\nb"',
+      description: 'should escape LF (excluded from raw unicode literal body)',
+    },
+    {
+      input: 'a\rb',
+      expected: 'unicode"a\\rb"',
+      description: 'should escape CR (excluded from raw unicode literal body)',
+    },
+    {
+      input: 'a\x0bb',
+      expected: 'unicode"a\\x0bb"',
+      description: 'should escape vertical tab (Solidity lexer treats it as a line terminator)',
+    },
   ];
 
   for (const { input, expected, description } of cases) {

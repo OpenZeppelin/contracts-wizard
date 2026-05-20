@@ -45,9 +45,9 @@ class TestGenerator {
       switch (opts.kind) {
         case 'ERC20':
         case 'ERC721':
-          return [`expect(await instance.name()).to.equal("${opts.name}");`];
+          return [`expect(await instance.name()).to.equal(${JSON.stringify(opts.name)});`];
         case 'ERC1155':
-          return [`expect(await instance.uri(0)).to.equal("${opts.uri}");`];
+          return [`expect(await instance.uri(0)).to.equal(${JSON.stringify(opts.uri)});`];
         case 'Account':
         case 'Governor':
         case 'Custom':
