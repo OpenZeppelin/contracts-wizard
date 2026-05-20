@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/wizard-common",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Common library for OpenZeppelin Contracts Wizard components. Used internally.",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -34,7 +34,7 @@
     "zod": "^4.0"
   },
   "devDependencies": {
-    "@openzeppelin/wizard": "^0.10.8",
+    "@openzeppelin/wizard": "^0.10.9",
     "@openzeppelin/wizard-cairo": "^3.0.0",
     "@openzeppelin/wizard-stellar": "^0.6.0",
     "@openzeppelin/wizard-stylus": "^0.3.0",

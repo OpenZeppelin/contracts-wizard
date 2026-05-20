@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.9 (2026-05-20)
+
+- Escape `opts.name` and `opts.uri` when generating Hardhat and Foundry test files. Only affects callers of `zipHardhat` / `zipFoundry`; these functions are not part of the documented public API.
+
 ## 0.10.8 (2026-04-07)
 
 - Add package APIs for getting versioned remappings. ([#786](https://github.com/OpenZeppelin/contracts-wizard/pull/786))
