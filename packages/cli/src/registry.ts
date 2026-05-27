@@ -1,8 +1,18 @@
 import type { z } from 'zod';
 import { parseArgsFromSchema } from './cli-adapter';
 
-import { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from '@openzeppelin/wizard';
-import { solidityPrompts } from '@openzeppelin/wizard-common';
+import {
+  erc20,
+  erc721,
+  erc1155,
+  stablecoin,
+  realWorldAsset,
+  account,
+  governor,
+  custom,
+  rewriteForTron,
+} from '@openzeppelin/wizard';
+import { solidityPrompts, tronPrompts } from '@openzeppelin/wizard-common';
 import {
   solidityERC20Schema,
   solidityERC721Schema,
@@ -148,4 +158,37 @@ export const registry = {
 
   // Uniswap Hooks
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),
+
+  // TRON (Solidity post-processed for @openzeppelin/tron-contracts + TRC* token names)
+  'tron-trc20': createRegistryEntry(solidityERC20Schema, opts => rewriteForTron(erc20.print(opts)), tronPrompts.TRC20),
+  'tron-trc721': createRegistryEntry(
+    solidityERC721Schema,
+    opts => rewriteForTron(erc721.print(opts)),
+    tronPrompts.TRC721,
+  ),
+  'tron-trc1155': createRegistryEntry(
+    solidityERC1155Schema,
+    opts => rewriteForTron(erc1155.print(opts)),
+    tronPrompts.TRC1155,
+  ),
+  'tron-stablecoin': createRegistryEntry(
+    solidityStablecoinSchema,
+    opts => rewriteForTron(stablecoin.print(opts)),
+    tronPrompts.Stablecoin,
+  ),
+  'tron-rwa': createRegistryEntry(
+    solidityRWASchema,
+    opts => rewriteForTron(realWorldAsset.print(opts)),
+    tronPrompts.RWA,
+  ),
+  'tron-governor': createRegistryEntry(
+    solidityGovernorSchema,
+    opts => rewriteForTron(governor.print(opts)),
+    tronPrompts.Governor,
+  ),
+  'tron-custom': createRegistryEntry(
+    solidityCustomSchema,
+    opts => rewriteForTron(custom.print(opts)),
+    tronPrompts.Custom,
+  ),
 } satisfies Record<string, RegistryEntry>;
