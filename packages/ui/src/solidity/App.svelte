@@ -119,7 +119,9 @@
     }
   }
 
-  $: code = printContract(contract);
+  $: code = overrides.transformPrintedContract
+    ? overrides.transformPrintedContract(printContract(contract))
+    : printContract(contract);
   $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
   $: hasErrors = errors[tab] !== undefined;
@@ -156,6 +158,9 @@
     if (overrides.omitZipFoundry) {
       result.downloadFoundry = false;
     }
+    if (overrides.omitOpenInRemix) {
+      result.openInRemix = false;
+    }
     return result;
   };
 
@@ -183,7 +188,9 @@
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
-    const remappings = getVersionedRemappings(opts);
+    const remappings = overrides.overrideVersionedRemappings
+      ? overrides.overrideVersionedRemappings(opts)
+      : getVersionedRemappings(opts);
     window.open(remixURL(code, remappings, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
@@ -216,12 +223,17 @@
   const zipFoundryModule = import('@openzeppelin/wizard/zip-env-foundry');
 
   const downloadFoundryHandler = async () => {
-    const { zipFoundry } = await zipFoundryModule;
-    const zip = await zipFoundry(contract, opts);
+    const zip =
+      overrides.overrideZipFoundry !== undefined
+        ? await overrides.overrideZipFoundry(contract, opts)
+        : await (async () => {
+            const { zipFoundry } = await zipFoundryModule;
+            return zipFoundry(contract, opts);
+          })();
     const blob = await zip.generateAsync({ type: 'blob' });
     saveAs(blob, 'project.zip');
     if (opts) {
-      await postConfig(opts, 'download-foundry', language);
+      await postConfig(opts, overrides.secondaryDownloadAction ?? 'download-foundry', language);
     }
   };
 
@@ -246,9 +258,15 @@
   <div class="header flex flex-row justify-between">
     <div class="tab overflow-hidden whitespace-nowrap">
       <OverflowMenu>
-        <button class:selected={tab === 'ERC20'} on:click={() => (tab = 'ERC20')}> ERC20 </button>
-        <button class:selected={tab === 'ERC721'} on:click={() => (tab = 'ERC721')}> ERC721 </button>
-        <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}> ERC1155 </button>
+        <button class:selected={tab === 'ERC20'} on:click={() => (tab = 'ERC20')}>
+          {overrides.tabLabels?.ERC20 ?? 'ERC20'}
+        </button>
+        <button class:selected={tab === 'ERC721'} on:click={() => (tab = 'ERC721')}>
+          {overrides.tabLabels?.ERC721 ?? 'ERC721'}
+        </button>
+        <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}>
+          {overrides.tabLabels?.ERC1155 ?? 'ERC1155'}
+        </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin* </button>
         <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
           Real-World Asset*
@@ -331,8 +349,11 @@
             <button class="download-option" on:click={downloadFoundryHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Development Package (Foundry)</p>
-                <p>Sample Foundry project to get started with development and testing.</p>
+                <p>{overrides.secondaryDownloadLabel?.title ?? 'Development Package (Foundry)'}</p>
+                <p>
+                  {overrides.secondaryDownloadLabel?.description ??
+                    'Sample Foundry project to get started with development and testing.'}
+                </p>
               </div>
             </button>
           {/if}

@@ -2,6 +2,7 @@ import type { Contract, GenericOptions, Kind } from '@openzeppelin/wizard';
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
+import type { DownloadAction } from '../common/post-config';
 import type JSZip from 'jszip';
 
 /**
@@ -12,6 +13,14 @@ export interface Overrides {
    * Contract kinds to omit
    */
   omitTabs: Kind[];
+
+  /**
+   * Display-only labels for the kind tabs. Internal kind values stay the same
+   * (ERC20/ERC721/ERC1155/...) — only what users see changes. Used for
+   * ecosystems whose contract library renames the token standards
+   * (e.g. TRON uses TRC20/TRC721/TRC1155).
+   */
+  tabLabels?: Partial<Record<Kind, string>>;
 
   /**
    * Map from contract kind to features to omit
@@ -32,6 +41,51 @@ export interface Overrides {
    * Whether to omit the Download Foundry package feature
    */
   omitZipFoundry: boolean;
+
+  /**
+   * Override for the second download tab (originally "Foundry"). When set,
+   * this function is called instead of the default `zipFoundry`; the tab
+   * label can be customized via `secondaryDownloadLabel`.
+   */
+  overrideZipFoundry?: (c: Contract, opts?: GenericOptions) => Promise<JSZip>;
+
+  /**
+   * Label overrides for the secondary (originally "Foundry") download tab.
+   * Set when an ecosystem replaces Foundry with a different toolchain
+   * (e.g. TronBox).
+   */
+  secondaryDownloadLabel?: {
+    title: string;
+    description: string;
+  };
+
+  /**
+   * Analytics action emitted when the secondary download tab is used.
+   * Defaults to `'download-foundry'` to preserve the existing telemetry.
+   */
+  secondaryDownloadAction?: DownloadAction;
+
+  /**
+   * Whether to omit the "Open in Remix" action. Useful for ecosystems whose
+   * import paths or contracts library Remix cannot resolve.
+   */
+  omitOpenInRemix?: boolean;
+
+  /**
+   * Override the remappings passed to Remix when "Open in Remix" is used.
+   * Defaults to `@openzeppelin/wizard`'s `getVersionedRemappings(opts)`.
+   * Set this when the generated source uses a non-default contracts
+   * library (e.g. `@openzeppelin/tron-contracts`).
+   */
+  overrideVersionedRemappings?: (opts?: GenericOptions) => string[];
+
+  /**
+   * Transform applied to the printed Solidity source before it is displayed,
+   * copied, downloaded as a single file, or written into a zip by the
+   * wizard's UI layer. Each ecosystem zip generator must apply its own
+   * transform internally; this hook only affects the UI-side rendering.
+   */
+  transformPrintedContract?: (source: string) => string;
 
   /**
    * A function to sanitize omitted features from the Solidity Wizard options.
@@ -55,10 +109,17 @@ export interface Overrides {
 
 export const defaultOverrides: Overrides = {
   omitTabs: [],
+  tabLabels: undefined,
   omitFeatures: new Map(),
   omitZipHardhat: () => false,
   overrideZipHardhat: undefined,
   omitZipFoundry: false,
+  overrideZipFoundry: undefined,
+  secondaryDownloadLabel: undefined,
+  secondaryDownloadAction: undefined,
+  omitOpenInRemix: false,
+  overrideVersionedRemappings: undefined,
+  transformPrintedContract: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,
   aiAssistant: undefined,
