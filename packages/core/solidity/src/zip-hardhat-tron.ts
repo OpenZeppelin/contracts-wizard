@@ -118,6 +118,8 @@ This project demonstrates a TRON-targeted Hardhat use case using \`@openzeppelin
 
 ${this.getReadmePrerequisitesSection()}## Installing dependencies
 
+> :warning: Temporary limitation: this template depends on \`@openzeppelin/hardhat-tron\` and \`@openzeppelin/tron-contracts\`, which may not yet be available on the public npm registry. If \`npm install\` fails with a 404 for either package, retry after they are published, or install them from a local checkout / git URL in the meantime.
+
 \`\`\`
 npm install
 \`\`\`

@@ -64,24 +64,12 @@ test('preserves the entire program when no TRON-relevant tokens present', t => {
 
 test('caps pragma at 0.8.26 (the current tron-solc maximum)', t => {
   // Above the cap — downgraded.
-  t.is(
-    rewriteForTron('pragma solidity ^0.8.27;\ncontract Foo {}\n'),
-    'pragma solidity ^0.8.26;\ncontract Foo {}\n',
-  );
-  t.is(
-    rewriteForTron('pragma solidity ^0.8.30;\ncontract Foo {}\n'),
-    'pragma solidity ^0.8.26;\ncontract Foo {}\n',
-  );
+  t.is(rewriteForTron('pragma solidity ^0.8.27;\ncontract Foo {}\n'), 'pragma solidity ^0.8.26;\ncontract Foo {}\n');
+  t.is(rewriteForTron('pragma solidity ^0.8.30;\ncontract Foo {}\n'), 'pragma solidity ^0.8.26;\ncontract Foo {}\n');
   // At the cap — unchanged.
-  t.is(
-    rewriteForTron('pragma solidity ^0.8.26;\ncontract Foo {}\n'),
-    'pragma solidity ^0.8.26;\ncontract Foo {}\n',
-  );
+  t.is(rewriteForTron('pragma solidity ^0.8.26;\ncontract Foo {}\n'), 'pragma solidity ^0.8.26;\ncontract Foo {}\n');
   // Below the cap — unchanged.
-  t.is(
-    rewriteForTron('pragma solidity ^0.8.20;\ncontract Foo {}\n'),
-    'pragma solidity ^0.8.20;\ncontract Foo {}\n',
-  );
+  t.is(rewriteForTron('pragma solidity ^0.8.20;\ncontract Foo {}\n'), 'pragma solidity ^0.8.20;\ncontract Foo {}\n');
 });
 
 test('handles a realistic ERC20 wizard output', t => {

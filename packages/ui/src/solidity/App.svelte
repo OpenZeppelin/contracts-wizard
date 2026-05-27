@@ -155,7 +155,7 @@
     if (overrides.omitZipHardhat(opts)) {
       result.downloadHardhat = false;
     }
-    if (overrides.omitZipFoundry) {
+    if (overrides.omitZipFoundry(opts)) {
       result.downloadFoundry = false;
     }
     if (overrides.omitOpenInRemix) {

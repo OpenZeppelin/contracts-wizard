@@ -38,9 +38,12 @@ export interface Overrides {
   overrideZipHardhat: ((c: Contract, opts?: GenericOptions) => Promise<JSZip>) | undefined;
 
   /**
-   * Whether to omit the Download Foundry package feature
+   * Whether to omit the Download Foundry package feature.
+   * Accepts the current generic options so ecosystems can gate on, for example,
+   * `opts.upgradeable` when their downstream toolchain doesn't support it
+   * (matches the shape of `omitZipHardhat`).
    */
-  omitZipFoundry: boolean;
+  omitZipFoundry: (opts?: GenericOptions) => boolean;
 
   /**
    * Override for the second download tab (originally "Foundry"). When set,
@@ -113,7 +116,7 @@ export const defaultOverrides: Overrides = {
   omitFeatures: new Map(),
   omitZipHardhat: () => false,
   overrideZipHardhat: undefined,
-  omitZipFoundry: false,
+  omitZipFoundry: () => false,
   overrideZipFoundry: undefined,
   secondaryDownloadLabel: undefined,
   secondaryDownloadAction: undefined,

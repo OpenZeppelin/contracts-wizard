@@ -228,6 +228,8 @@ This project demonstrates a basic TronBox use case. It comes with a contract gen
 
 ## Installing dependencies
 
+> :warning: Temporary limitation: this template depends on \`@openzeppelin/tron-contracts\`, which may not yet be available on the public npm registry. If \`npm install\` fails with a 404 for that package, retry after it is published, or install it from a local checkout / git URL in the meantime.
+
 \`\`\`
 npm install
 \`\`\`

@@ -35,7 +35,9 @@
       const { zipHardhatTron } = await zipHardhatTronModule;
       return zipHardhatTron(c, opts);
     },
-    omitZipFoundry: false,
+    // Mirror the hardhat gate: TronBox doesn't have an upgradeable flow either,
+    // so hide the second download button when the user has opted into upgradeable.
+    omitZipFoundry: (opts?: GenericOptions) => !!opts?.upgradeable,
     overrideZipFoundry: async (c: Contract, opts?: GenericOptions) => {
       const { zipTronbox } = await zipTronboxModule;
       return zipTronbox(c, opts);
