@@ -25,7 +25,7 @@ export function injectHyperlinks(code: string) {
     )
     .replace(
       importTronContractsRegex,
-      `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/tron-contracts/blob/main/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+      `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/tron-contracts/blob/master/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
     );
 
   if (compatibleCommunityContractsGitCommit !== undefined) {
