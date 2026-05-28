@@ -8,7 +8,7 @@
   // Rewrite ERC20/721/1155/4626 to TRC* and @openzeppelin/contracts to
   // @openzeppelin/tron-contracts for the in-page display + single-file download.
   // The zip generators apply the same transform internally.
-  import { rewriteForTron, type Contract, type GenericOptions } from '@openzeppelin/wizard';
+  import { rewriteForTron, TRON_DEFAULT_BLOCK_TIME, type Contract, type GenericOptions } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
@@ -54,6 +54,10 @@
     transformPrintedContract: rewriteForTron,
     sanitizeOmittedFeatures,
     postConfigLanguage: 'tron-solidity',
+    // TRON SR consensus produces a block every ~3s, so the Governor's
+    // "1 block = N seconds" field should default to 3 here instead of
+    // inheriting Ethereum's 12.
+    defaultBlockTime: TRON_DEFAULT_BLOCK_TIME,
     aiAssistant: {
       svelteComponent: createWiz<'tron'>(),
       language: 'tron',

@@ -108,6 +108,13 @@ export interface Overrides {
     svelteComponent: ComponentType;
     language: SupportedLanguage;
   };
+
+  /**
+   * Override the default `blockTime` (seconds per block) that the Governor
+   * controls display and use for block-number-based voting durations. When
+   * unset, the Solidity default (12) is used. TRON sets this to 3.
+   */
+  defaultBlockTime?: number;
 }
 
 export const defaultOverrides: Overrides = {
@@ -126,4 +133,5 @@ export const defaultOverrides: Overrides = {
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,
   aiAssistant: undefined,
+  defaultBlockTime: undefined,
 };

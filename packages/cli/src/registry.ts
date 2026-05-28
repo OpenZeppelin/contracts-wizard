@@ -11,6 +11,7 @@ import {
   governor,
   custom,
   rewriteForTron,
+  TRON_DEFAULT_BLOCK_TIME,
 } from '@openzeppelin/wizard';
 import { solidityPrompts, tronPrompts } from '@openzeppelin/wizard-common';
 import {
@@ -183,7 +184,7 @@ export const registry = {
   ),
   'tron-governor': createRegistryEntry(
     solidityGovernorSchema,
-    opts => rewriteForTron(governor.print(opts)),
+    opts => rewriteForTron(governor.print({ ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME })),
     tronPrompts.Governor,
   ),
   'tron-custom': createRegistryEntry(

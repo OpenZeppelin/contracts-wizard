@@ -397,7 +397,11 @@
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
       </div>
       <div class:hidden={tab !== 'Governor'}>
-        <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
+        <GovernorControls
+          bind:opts={allOpts.Governor}
+          errors={errors.Governor}
+          defaultBlockTime={overrides.defaultBlockTime}
+        />
       </div>
       <div class:hidden={tab !== 'Custom'}>
         <CustomControls bind:opts={allOpts.Custom} />

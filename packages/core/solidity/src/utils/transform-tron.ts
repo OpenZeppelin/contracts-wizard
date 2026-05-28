@@ -23,6 +23,11 @@
 // Bump this when tron-solc catches up to the mainline Wizard's Solidity version.
 const TRON_SOLC_MAX_MINOR = 26;
 
+// TRON blocks are produced every 3 seconds (SR consensus), versus Ethereum's
+// ~12s. Used wherever the Governor's `blockTime` would otherwise inherit the
+// Solidity default of 12 (UI, CLI registry, and MCP tron-governor tool).
+export const TRON_DEFAULT_BLOCK_TIME = 3;
+
 const PATH_ROOT_PATTERN = /@openzeppelin\/contracts\//g;
 const TOKEN_ERC20_DIR_PATTERN = /\/token\/ERC20\//g;
 const TOKEN_ERC721_DIR_PATTERN = /\/token\/ERC721\//g;
