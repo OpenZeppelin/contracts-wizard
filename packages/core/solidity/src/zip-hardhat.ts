@@ -319,7 +319,7 @@ ${c.upgradeable ? 'npx hardhat run --network <network-name> scripts/deploy.ts' :
  * Generates the `test/test.ts` file for a Hardhat 3 project, using AVA as the test runner.
  *
  * Unlike Hardhat 2 (where `ethers` and `upgrades` are imported directly from `"hardhat"`), Hardhat 3
- * exposes them through a network connection: `ethers` comes from `hre.network.connect()` and the
+ * exposes them through a network connection: `ethers` comes from `hre.network.create()` and the
  * upgrades API is obtained via `upgrades(hre, connection)`.
  */
 class Hardhat3TestGenerator {
@@ -346,7 +346,7 @@ class Hardhat3TestGenerator {
   }
 
   private getConnectionSetup(c: Contract): Lines[] {
-    const lines = ['const connection = await hre.network.connect();', 'const { ethers } = connection as any;'];
+    const lines = ['const connection = await hre.network.create();', 'const { ethers } = connection as any;'];
     if (c.upgradeable) {
       lines.push('const upgradesApi = await upgrades(hre, connection);');
     }
@@ -427,7 +427,7 @@ class Hardhat3TestGenerator {
  * Generates a Hardhat 3 sample project. Used for the standard Solidity download (see {@link zipHardhat}).
  *
  * Differs from the Hardhat 2 base class in that it uses `defineConfig` with an explicit `plugins` array,
- * AVA + tsx as the (ESM) test runner, and the `hre.network.connect()` connection pattern. Upgradeable
+ * AVA + tsx as the (ESM) test runner, and the `hre.network.create()` connection pattern. Upgradeable
  * projects use `@openzeppelin/hardhat-upgrades` v4 (which targets Hardhat 3).
  */
 export class Hardhat3ZipGenerator extends HardhatZipGenerator {
@@ -484,7 +484,7 @@ import hre from "hardhat";
 import { upgrades } from "@openzeppelin/hardhat-upgrades";
 
 async function main() {
-  const connection = await hre.network.connect();
+  const connection = await hre.network.create();
   const { ethers } = connection;
   const upgradesApi = await upgrades(hre, connection);
 
