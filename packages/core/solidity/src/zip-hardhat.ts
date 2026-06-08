@@ -85,6 +85,13 @@ class TestGenerator {
   }
 }
 
+/**
+ * Generates a Hardhat 2 sample project.
+ *
+ * This base class is retained for the Polkadot (`@parity/hardhat-polkadot`) and Confidential
+ * (`@fhevm/hardhat-plugin`) variants, whose plugins still target Hardhat 2. The standard Solidity
+ * download uses {@link Hardhat3ZipGenerator} instead (see {@link zipHardhat}).
+ */
 export class HardhatZipGenerator {
   protected getAdditionalHardhatImports(): string[] {
     return [];
@@ -308,6 +315,246 @@ ${c.upgradeable ? 'npx hardhat run --network <network-name> scripts/deploy.ts' :
   }
 }
 
+/**
+ * Generates the `test/test.ts` file for a Hardhat 3 project, using AVA as the test runner.
+ *
+ * Unlike Hardhat 2 (where `ethers` and `upgrades` are imported directly from `"hardhat"`), Hardhat 3
+ * exposes them through a network connection: `ethers` comes from `hre.network.connect()` and the
+ * upgrades API is obtained via `upgrades(hre, connection)`.
+ */
+class Hardhat3TestGenerator {
+  constructor(private parent: Hardhat3ZipGenerator) {}
+
+  getContent(c: Contract, opts?: GenericOptions): string {
+    return formatLinesWithSpaces(
+      2,
+      ...spaceBetween(
+        this.getImports(c),
+        this.getConnectionSetup(c),
+        ['test.after.always(() => connection.close());'],
+        this.getTestCase(c, opts),
+      ),
+    );
+  }
+
+  private getImports(c: Contract): Lines[] {
+    const imports = ['import test from "ava";', 'import hre from "hardhat";'];
+    if (c.upgradeable) {
+      imports.push('import { upgrades } from "@openzeppelin/hardhat-upgrades";');
+    }
+    return imports;
+  }
+
+  private getConnectionSetup(c: Contract): Lines[] {
+    const lines = ['const connection = await hre.network.connect();', 'const { ethers } = connection as any;'];
+    if (c.upgradeable) {
+      lines.push('const upgradesApi = await upgrades(hre, connection);');
+    }
+    return lines;
+  }
+
+  private getTestCase(c: Contract, opts?: GenericOptions): Lines[] {
+    const argNames = c.constructorArgs.map(a => a.name);
+    return [
+      `test("${c.name}", async t => {`,
+      spaceBetween(
+        [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
+        this.declareVariables(c.constructorArgs),
+        this.getDeployLines(c, argNames),
+        this.getAssertions(c, opts),
+      ),
+      '});',
+    ];
+  }
+
+  private getAssertions(c: Contract, opts?: GenericOptions): Lines[] {
+    if (c.constructorArgs.some(a => a.type !== 'address')) {
+      // The deployment is commented out until the user fills in the missing constructor arguments,
+      // so there is no `instance` to assert against yet. `t.pass()` keeps AVA happy in the meantime.
+      return ['t.pass();'];
+    }
+    const expects = this.getExpects(opts);
+    // AVA fails a test that runs no assertions, so fall back to a deployment sanity check.
+    return expects.length > 0 ? expects : ['t.truthy(await instance.getAddress());'];
+  }
+
+  private getExpects(opts?: GenericOptions): Lines[] {
+    if (opts !== undefined) {
+      switch (opts.kind) {
+        case 'ERC20':
+        case 'ERC721':
+          return [`t.is(await instance.name(), ${JSON.stringify(opts.name)});`];
+        case 'ERC1155':
+          return [`t.is(await instance.uri(0), ${JSON.stringify(opts.uri)});`];
+        case 'Account':
+        case 'Governor':
+        case 'Custom':
+          break;
+        default:
+          throw new Error('Unknown ERC');
+      }
+    }
+    return [];
+  }
+
+  private declareVariables(args: FunctionArgument[]): Lines[] {
+    return args.flatMap((arg, i) => {
+      if (arg.type === 'address') {
+        return [`const ${arg.name} = (await ethers.getSigners())[${i}].address;`];
+      } else {
+        return [`// TODO: Set the following constructor argument`, `// const ${arg.name} = ...;`];
+      }
+    });
+  }
+
+  private getDeployLines(c: Contract, argNames: string[]): Lines[] {
+    if (c.constructorArgs.some(a => a.type !== 'address')) {
+      return [
+        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
+        `// const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
+        `// await instance.waitForDeployment();`,
+      ];
+    } else {
+      return [
+        `const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
+        'await instance.waitForDeployment();',
+      ];
+    }
+  }
+}
+
+/**
+ * Generates a Hardhat 3 sample project. Used for the standard Solidity download (see {@link zipHardhat}).
+ *
+ * Differs from the Hardhat 2 base class in that it uses `defineConfig` with an explicit `plugins` array,
+ * AVA + tsx as the (ESM) test runner, and the `hre.network.connect()` connection pattern. Upgradeable
+ * projects use `@openzeppelin/hardhat-upgrades` v4 (which targets Hardhat 3).
+ */
+export class Hardhat3ZipGenerator extends HardhatZipGenerator {
+  protected getHardhatConfig(upgradeable: boolean): string {
+    const { imports, plugins } = upgradeable
+      ? {
+          imports: 'import hardhatUpgrades from "@openzeppelin/hardhat-upgrades";',
+          plugins: '[hardhatUpgrades]',
+        }
+      : {
+          imports:
+            'import hardhatEthers from "@nomicfoundation/hardhat-ethers";\n' +
+            'import hardhatIgnitionEthers from "@nomicfoundation/hardhat-ignition-ethers";',
+          plugins: '[hardhatEthers, hardhatIgnitionEthers]',
+        };
+
+    return `\
+import { defineConfig } from "hardhat/config";
+${imports}
+
+export default defineConfig({
+  plugins: ${plugins},
+  solidity: {
+    version: "${SOLIDITY_VERSION}",
+    settings: {
+      evmVersion: 'cancun',
+      optimizer: {
+        enabled: true,
+      },
+    },
+  },
+});
+`;
+  }
+
+  protected getTest(c: Contract, opts?: GenericOptions): string {
+    return new Hardhat3TestGenerator(this).getContent(c, opts);
+  }
+
+  public getDeploymentCall(c: Contract, args: string[]): string {
+    // TODO: remove that selector when the upgrades plugin supports @custom:oz-upgrades-unsafe-allow-reachable
+    const unsafeAllowConstructor = c.parents.find(p => ['EIP712'].includes(p.contract.name)) !== undefined;
+
+    return !c.upgradeable
+      ? `ContractFactory.deploy(${args.join(', ')})`
+      : unsafeAllowConstructor
+        ? `upgradesApi.deployProxy(ContractFactory, [${args.join(', ')}], { unsafeAllow: ['constructor'] })`
+        : `upgradesApi.deployProxy(ContractFactory, [${args.join(', ')}])`;
+  }
+
+  protected getScript(c: Contract): string {
+    return `\
+import hre from "hardhat";
+import { upgrades } from "@openzeppelin/hardhat-upgrades";
+
+async function main() {
+  const connection = await hre.network.connect();
+  const { ethers } = connection;
+  const upgradesApi = await upgrades(hre, connection);
+
+  const ContractFactory = await ethers.getContractFactory("${c.name}");
+
+  ${c.constructorArgs.length > 0 ? '// TODO: Set values for the constructor arguments below' : ''}
+  const instance = await ${this.getDeploymentCall(
+    c,
+    c.constructorArgs.map(a => a.name),
+  )};
+  await instance.waitForDeployment();
+
+  console.log(\`Proxy deployed to \${await instance.getAddress()}\`);
+}
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+`;
+  }
+
+  protected getTsConfig(): string {
+    return `\
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "Node16",
+    "lib": ["es2020"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node16",
+    "noEmit": true
+  },
+  "include": ["./scripts", "./test", "./ignition", "./hardhat.config.ts"],
+  "exclude": ["node_modules"]
+}
+`;
+  }
+
+  protected getReadmePrerequisitesSection(): string {
+    return `\
+## Prerequisites
+
+This project uses [Hardhat 3](https://hardhat.org/), which requires [Node.js](https://nodejs.org/) v22 or later.
+
+`;
+  }
+
+  protected getAvaConfig(): string {
+    return `\
+export default {
+  files: ['test/**/*.ts'],
+  extensions: { ts: 'module' },
+  nodeArguments: ['--import', 'tsx'],
+  timeout: '60s',
+};
+`;
+  }
+
+  async zipHardhat(c: Contract, opts?: GenericOptions): Promise<JSZip> {
+    const zip = await super.zipHardhat(c, opts);
+    zip.file('ava.config.js', this.getAvaConfig());
+    return zip;
+  }
+}
+
 export async function zipHardhat(c: Contract, opts?: GenericOptions): Promise<JSZip> {
-  return new HardhatZipGenerator().zipHardhat(c, opts);
+  return new Hardhat3ZipGenerator().zipHardhat(c, opts);
 }
