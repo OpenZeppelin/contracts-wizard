@@ -81,6 +81,56 @@
   let contract: Contract = new ContractBuilder(initialOpts.name ?? 'MyToken');
 
   let showCode = true;
+  const previousCodeForDiff = new Map<Kind, string>();
+  let highlightedLineNumbers = new Set<number>();
+
+  function changedLineNumbers(previousCode: string, nextCode: string) {
+    if (previousCode === '') {
+      return new Set<number>();
+    }
+    const previousLines = previousCode.split('\n');
+    const nextLines = nextCode.split('\n');
+    const lengths = Array.from({ length: previousLines.length + 1 }, () => Array(nextLines.length + 1).fill(0));
+    for (let i = 0; i < previousLines.length; i++) {
+      for (let j = 0; j < nextLines.length; j++) {
+        lengths[i + 1][j + 1] =
+          previousLines[i] === nextLines[j] ? lengths[i][j] + 1 : Math.max(lengths[i + 1][j], lengths[i][j + 1]);
+      }
+    }
+    const unchangedNextLines = new Set<number>();
+    let i = previousLines.length;
+    let j = nextLines.length;
+    while (i > 0 && j > 0) {
+      if (previousLines[i - 1] === nextLines[j - 1]) {
+        unchangedNextLines.add(j);
+        i -= 1;
+        j -= 1;
+      } else if (lengths[i - 1][j] >= lengths[i][j - 1]) {
+        i -= 1;
+      } else {
+        j -= 1;
+      }
+    }
+    return new Set(
+      nextLines
+        .map((line, index) => ({ line, index: index + 1 }))
+        .filter(({ line, index }) => line.trim() !== '' && !unchangedNextLines.has(index))
+        .map(({ index }) => index),
+    );
+  }
+
+  function highlightChangedLinesFromSource(source: string) {
+    if (highlightedLineNumbers.size === 0) {
+      return injectHyperlinks(hljs.highlight('solidity', source).value);
+    }
+    return source
+      .split('\n')
+      .map((line, index) => {
+        const htmlLine = injectHyperlinks(hljs.highlight('solidity', line).value) || '&nbsp;';
+        return highlightedLineNumbers.has(index + 1) ? `<span class="code-line-changed">${htmlLine}</span>` : htmlLine;
+      })
+      .join('\n');
+  }
 
   $: opts = allOpts[tab];
 
@@ -106,7 +156,11 @@
         initialValuesSet = true;
       }
       try {
-        contract = buildGeneric(opts);
+        const nextContract = buildGeneric(opts);
+        const nextCode = printContract(nextContract);
+        highlightedLineNumbers = changedLineNumbers(previousCodeForDiff.get(opts.kind) ?? '', nextCode);
+        previousCodeForDiff.set(opts.kind, nextCode);
+        contract = nextContract;
         errors[tab] = undefined;
       } catch (e: unknown) {
         if (e instanceof OptionsError) {
@@ -120,7 +174,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+  $: highlightedCode = highlightChangedLinesFromSource(code);
 
   $: hasErrors = errors[tab] !== undefined;
 
@@ -396,6 +450,14 @@
 </div>
 
 <style lang="postcss">
+  :global(.code-line-changed) {
+    display: block;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    background: rgba(250, 204, 21, 0.18);
+    border-left: 3px solid rgb(234, 179, 8);
+  }
+
   .tab button.selected {
     background-color: var(--solidity-blue-2);
     color: white;
