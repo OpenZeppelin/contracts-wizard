@@ -109,7 +109,7 @@ test('erc7984 premint incompatible with wrappable', async t => {
   );
   t.is(
     (error as OptionsError).messages.premint,
-    'Premint cannot be used with the Wrappable extension. Preminted tokens would not be backed by the underlying token',
+    'Premint cannot be used with Wrappable. Preminted tokens would not be backed by the underlying token',
   );
   t.is(
     (error as OptionsError).messages.wrappable,
