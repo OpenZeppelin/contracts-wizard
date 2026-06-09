@@ -9,10 +9,12 @@ export const confidentialPrompts = {
 export const confidentialERC7984Descriptions = {
   contractURI:
     'The metadata URI for the token. Should follow the schema defined in [ERC-7572](https://eips.ethereum.org/EIPS/eip-7572).',
-  decimals: 'The number of decimals used to represent token amounts. Defaults to 6.',
+  decimals:
+    'The number of decimals used to represent token amounts. Defaults to 6. Incompatible with the wrappable extension, which uses the decimals of the underlying token.',
   premint: 'The number of tokens to premint for the deployer.',
   networkConfig: 'Specify the provider and network configuration to use for FHEVM contracts.',
-  wrappable: 'Whether to allow wrapping an ERC20 token into a confidential fungible token.',
+  wrappable:
+    'Whether to allow wrapping an ERC20 token into a confidential fungible token. Uses the decimals of the underlying token, so it cannot be used with custom decimals.',
   votes:
     'Whether to keep track of historical balances for voting in on-chain governance. Voting durations must be expressed as block numbers or timestamps.',
 };

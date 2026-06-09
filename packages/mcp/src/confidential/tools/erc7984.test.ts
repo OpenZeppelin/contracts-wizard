@@ -60,3 +60,18 @@ test('all', async t => {
 
   await assertAPIEquivalence(t, params, erc7984.print);
 });
+
+test('wrappable with custom decimals', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    contractURI: 'https://example.com',
+    networkConfig: 'zama-ethereum',
+    decimals: '9',
+    wrappable: true,
+  };
+
+  // Asserts that the API throws because custom decimals are incompatible with wrappable,
+  // and that the MCP result contains the error messages.
+  await assertAPIEquivalence(t, params, erc7984.print, true);
+});
