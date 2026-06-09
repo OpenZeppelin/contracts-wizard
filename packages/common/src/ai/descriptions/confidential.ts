@@ -9,6 +9,7 @@ export const confidentialPrompts = {
 export const confidentialERC7984Descriptions = {
   contractURI:
     'The metadata URI for the token. Should follow the schema defined in [ERC-7572](https://eips.ethereum.org/EIPS/eip-7572).',
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 6.',
   premint: 'The number of tokens to premint for the deployer.',
   networkConfig: 'Specify the provider and network configuration to use for FHEVM contracts.',
   wrappable: 'Whether to allow wrapping an ERC20 token into a confidential fungible token.',

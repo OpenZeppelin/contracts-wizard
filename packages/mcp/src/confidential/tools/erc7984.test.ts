@@ -45,9 +45,10 @@ test('all', async t => {
     name: 'TestToken',
     symbol: 'TST',
     contractURI: 'https://example.com',
+    decimals: '9',
     premint: '1000',
     networkConfig: 'zama-ethereum',
-    wrappable: true,
+    wrappable: false,
     votes: 'blocknumber',
     info: {
       license: 'MIT',

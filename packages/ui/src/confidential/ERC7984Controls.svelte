@@ -17,6 +17,21 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  // Decimals does not apply to wrappable tokens: the wrapper uses the underlying token's decimals.
+  // Reset it to the default while Wrappable is enabled, and restore the previous value when it is
+  // disabled again.
+  let savedDecimals = opts.decimals;
+  let previousWrappable = opts.wrappable;
+  $: if (opts.wrappable !== previousWrappable) {
+    if (opts.wrappable) {
+      savedDecimals = opts.decimals;
+      opts.decimals = erc7984.defaults.decimals;
+    } else {
+      opts.decimals = savedDecimals;
+    }
+    previousWrappable = opts.wrappable;
+  }
 </script>
 
 <section class="controls-section">
@@ -40,6 +55,18 @@
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7572">The metadata URI for the token.</HelpTooltip>
     </span>
     <input bind:value={opts.contractURI} placeholder="https://..." />
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Decimals
+      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 6.</HelpTooltip>
+    </span>
+    {#if opts.wrappable}
+      <input disabled />
+    {:else}
+      <input bind:value={opts.decimals} use:error={errors?.decimals} />
+    {/if}
   </label>
 
   <label class="labeled-input">
@@ -71,10 +98,12 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.wrappable}>
+    <label class:checked={opts.wrappable} use:error={errors?.wrappable}>
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
-      <HelpTooltip>Allows wrapping an ERC20 token into a confidential fungible token.</HelpTooltip>
+      <HelpTooltip>
+        Allows wrapping an ERC20 token into a confidential fungible token. Uses the underlying token's decimals.
+      </HelpTooltip>
     </label>
   </div>
 </section>

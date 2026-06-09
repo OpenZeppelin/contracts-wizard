@@ -69,6 +69,26 @@ testFungible('fungible premint of 0', {
   premint: '0',
 });
 
+testFungible('fungible custom decimals', {
+  decimals: '18',
+});
+
+testFungible('fungible custom decimals with premint', {
+  decimals: '18',
+  premint: '1000.5',
+});
+
+test('fungible decimals too large', async t => {
+  const error = t.throws(() =>
+    buildFungible({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '4294967296',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than u32 max value');
+});
+
 testFungible('fungible mintable', {
   mintable: true,
 });

@@ -51,6 +51,80 @@ testERC7984('erc7984 premint of 0', {
   premint: '0',
 });
 
+testERC7984('erc7984 custom decimals', {
+  decimals: '9',
+});
+
+testERC7984('erc7984 default decimals omits override', {
+  decimals: '6',
+});
+
+testERC7984('erc7984 custom decimals with premint', {
+  decimals: '9',
+  premint: '1000.5',
+});
+
+test('erc7984 decimals too large', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '256',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than uint8 max value');
+});
+
+test('erc7984 custom decimals incompatible with wrappable', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '9',
+      wrappable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.decimals,
+    'Custom decimals cannot be used with the Wrappable extension. Wrappable uses the decimals of the underlying token',
+  );
+  t.is(
+    (error as OptionsError).messages.wrappable,
+    'Wrappable cannot be used with custom decimals. Wrappable uses the decimals of the underlying token',
+  );
+});
+
+test('erc7984 default decimals allowed with wrappable', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '6',
+      wrappable: true,
+    }),
+  );
+});
+
+test('erc7984 premint more precise than decimals', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '2',
+      premint: '1.555',
+    }),
+  );
+  t.is((error as OptionsError).messages.premint, 'Too many decimals');
+});
+
 function testPremint(scenario: string, premint: string, expectedError?: string) {
   test(`erc7984 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {

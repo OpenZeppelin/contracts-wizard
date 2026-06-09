@@ -1,4 +1,4 @@
-import { type ERC7984Options } from '../erc7984';
+import { DEFAULT_DECIMALS, type ERC7984Options } from '../erc7984';
 import { clockModeOptions, infoOptions, generateAlternatives } from '@openzeppelin/wizard';
 
 const booleans = [true, false];
@@ -7,6 +7,7 @@ const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   contractURI: ['http://example.com'],
+  decimals: ['6', '18'],
   votes: [false, ...clockModeOptions] as const,
   premint: ['1'],
   info: infoOptions,
@@ -15,5 +16,11 @@ const blueprint = {
 };
 
 export function* generateERC7984Options(): Generator<Required<ERC7984Options>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    // Custom decimals is incompatible with the wrappable extension, which uses the underlying token's decimals
+    if (opts.wrappable && opts.decimals !== DEFAULT_DECIMALS.toString()) {
+      continue;
+    }
+    yield opts;
+  }
 }
