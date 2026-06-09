@@ -69,6 +69,14 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   addNetworkConfig(c, allOpts.networkConfig);
 
   if (allOpts.premint) {
+    if (allOpts.wrappable && calculateERC20Premint(allOpts.premint) !== undefined) {
+      throw new OptionsError({
+        premint:
+          'Premint cannot be used with the Wrappable extension. Preminted tokens would not be backed by the underlying token',
+        wrappable:
+          'Wrappable cannot be used with premint. Preminted tokens would not be backed by the underlying token',
+      });
+    }
     addPremint(c, allOpts.premint);
   }
 
