@@ -90,7 +90,7 @@ test('erc7984 custom decimals incompatible with wrappable', async t => {
   );
   t.is(
     (error as OptionsError).messages.decimals,
-    'Custom decimals cannot be used with the Wrappable extension. Wrappable uses the decimals of the underlying token',
+    'Custom decimals cannot be used with Wrappable. Wrappable uses the decimals of the underlying token',
   );
   t.is(
     (error as OptionsError).messages.wrappable,
