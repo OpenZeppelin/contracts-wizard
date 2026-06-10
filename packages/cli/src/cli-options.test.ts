@@ -747,7 +747,6 @@ test('confidential-erc7984: most options', t => {
     contractURI: 'https://example.com',
     networkConfig: 'zama-ethereum' as const,
     premint: '1000',
-    wrappable: true,
     votes: 'blocknumber' as const,
   };
   const output = run(
@@ -762,7 +761,6 @@ test('confidential-erc7984: most options', t => {
     opts.networkConfig,
     '--premint',
     opts.premint,
-    '--wrappable',
     '--votes',
     opts.votes,
   );
