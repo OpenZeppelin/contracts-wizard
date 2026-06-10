@@ -479,6 +479,10 @@ export default defineConfig({
   }
 
   protected getScript(c: Contract): string {
+    // Deploy scripts are only generated for upgradeable contracts; non-upgradeable
+    // projects use a Hardhat Ignition module instead (see zipHardhat).
+    if (!c.upgradeable) throw new Error('Deploy script is only used for upgradeable contracts');
+
     return `\
 import hre from "hardhat";
 import { upgrades } from "@openzeppelin/hardhat-upgrades";
