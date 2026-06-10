@@ -77,8 +77,10 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   const decimals = Number(toUint(allOpts.decimals, 'decimals', 'uint8'));
   if (allOpts.wrappable && decimals !== DEFAULT_DECIMALS) {
     throw new OptionsError({
-      decimals: 'Custom decimals cannot be used with Wrappable. Wrappable uses the decimals of the underlying token',
-      wrappable: 'Wrappable cannot be used with custom decimals. Wrappable uses the decimals of the underlying token',
+      decimals:
+        'Custom decimals cannot be used with Wrappable. Wrappable derives its decimals from the underlying token (capped at 6)',
+      wrappable:
+        'Wrappable cannot be used with custom decimals. Wrappable derives its decimals from the underlying token (capped at 6)',
     });
   }
   if (decimals !== DEFAULT_DECIMALS) {

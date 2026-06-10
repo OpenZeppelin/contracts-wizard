@@ -18,8 +18,8 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  // Decimals and premint do not apply to wrappable tokens: the wrapper uses the underlying token's
-  // decimals, and preminted tokens would not be backed by the underlying token. Reset them to
+  // Decimals and premint do not apply to wrappable tokens: the wrapper derives its decimals from the
+  // underlying token, and preminted tokens would not be backed by the underlying token. Reset them to
   // defaults while Wrappable is enabled, and restore the previous values when it is disabled again.
   let savedDecimals = opts.decimals;
   let savedPremint = opts.premint;
@@ -112,8 +112,8 @@
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
       <HelpTooltip>
-        Allows wrapping an ERC20 token into a confidential fungible token. Uses the underlying token's decimals and
-        cannot be preminted.
+        Allows wrapping an ERC20 token into a confidential fungible token. Derives its decimals from the underlying
+        token (capped at 6) and cannot be preminted.
       </HelpTooltip>
     </label>
   </div>
