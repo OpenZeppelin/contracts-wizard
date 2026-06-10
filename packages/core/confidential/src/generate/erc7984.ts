@@ -8,12 +8,18 @@ const blueprint = {
   symbol: ['MTK'],
   contractURI: ['http://example.com'],
   votes: [false, ...clockModeOptions] as const,
-  premint: ['1'],
+  premint: ['0', '1'],
   info: infoOptions,
   networkConfig: ['zama-ethereum'] as const,
   wrappable: booleans,
 };
 
 export function* generateERC7984Options(): Generator<Required<ERC7984Options>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    // Preminted tokens would not be backed by the underlying token of the wrappable extension
+    if (opts.wrappable && opts.premint !== '0') {
+      continue;
+    }
+    yield opts;
+  }
 }

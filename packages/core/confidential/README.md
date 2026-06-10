@@ -68,6 +68,6 @@ const contract = erc7984.print({
   contractURI: 'https://example.com',
   networkConfig: 'zama-ethereum',
   premint: '1000000',
-  wrappable: true,
+  votes: 'blocknumber',
 });
 ```

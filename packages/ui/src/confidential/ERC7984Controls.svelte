@@ -17,6 +17,21 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+
+  // Premint does not apply to wrappable tokens, since preminted tokens would not be backed by the
+  // underlying token. Reset it while Wrappable is enabled, and restore the previous value when it
+  // is disabled again.
+  let savedPremint = opts.premint;
+  let previousWrappable = opts.wrappable;
+  $: if (opts.wrappable !== previousWrappable) {
+    if (opts.wrappable) {
+      savedPremint = opts.premint;
+      opts.premint = '';
+    } else {
+      opts.premint = savedPremint;
+    }
+    previousWrappable = opts.wrappable;
+  }
 </script>
 
 <section class="controls-section">
@@ -47,7 +62,13 @@
       Premint
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint} />
+    <input
+      bind:value={opts.premint}
+      placeholder="0"
+      pattern={premintPattern.source}
+      disabled={opts.wrappable}
+      use:error={errors?.premint}
+    />
   </label>
 
   <div class="labeled-input">
@@ -71,10 +92,10 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.wrappable}>
+    <label class:checked={opts.wrappable} use:error={errors?.wrappable}>
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
-      <HelpTooltip>Allows wrapping an ERC20 token into a confidential fungible token.</HelpTooltip>
+      <HelpTooltip>Allows wrapping an ERC20 token into a confidential fungible token. Cannot be preminted.</HelpTooltip>
     </label>
   </div>
 </section>
