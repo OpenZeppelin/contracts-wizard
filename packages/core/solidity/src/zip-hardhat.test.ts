@@ -162,6 +162,7 @@ function assertDeployScriptLayout(zip: JSZip, c: Contract, t: ExecutionContext<C
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
+    'ava.config.js',
     'contracts/',
     `contracts/${c.name}.sol`,
     'hardhat.config.ts',
@@ -180,6 +181,7 @@ function assertIgnitionLayout(zip: JSZip, c: Contract, t: ExecutionContext<Conte
   t.deepEqual(sorted, [
     '.gitignore',
     'README.md',
+    'ava.config.js',
     'contracts/',
     `contracts/${c.name}.sol`,
     'hardhat.config.ts',
@@ -218,7 +220,7 @@ function extractAndRun(makeDeployCommand: (c: Contract) => string | null) {
     const exec = util.promisify(child.exec);
     const result = await exec(command);
 
-    t.regex(result.stdout, /1 passing/);
+    t.regex(result.stdout, /1 test passed/);
     if (c.constructorArgs === undefined) {
       t.regex(result.stdout, /deployed to/);
     }
