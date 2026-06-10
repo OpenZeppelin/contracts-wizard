@@ -86,6 +86,13 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   }
 
   if (allOpts.premint) {
+    if (allOpts.wrappable && calculateERC20Premint(allOpts.premint) !== undefined) {
+      throw new OptionsError({
+        premint: 'Premint cannot be used with Wrappable. Preminted tokens would not be backed by the underlying token',
+        wrappable:
+          'Wrappable cannot be used with premint. Preminted tokens would not be backed by the underlying token',
+      });
+    }
     addPremint(c, allOpts.premint, decimals);
   }
 

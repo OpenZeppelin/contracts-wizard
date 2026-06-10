@@ -18,17 +18,21 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  // Decimals does not apply to wrappable tokens: the wrapper uses the underlying token's decimals.
-  // Reset it to the default while Wrappable is enabled, and restore the previous value when it is
-  // disabled again.
+  // Decimals and premint do not apply to wrappable tokens: the wrapper uses the underlying token's
+  // decimals, and preminted tokens would not be backed by the underlying token. Reset them to
+  // defaults while Wrappable is enabled, and restore the previous values when it is disabled again.
   let savedDecimals = opts.decimals;
+  let savedPremint = opts.premint;
   let previousWrappable = opts.wrappable;
   $: if (opts.wrappable !== previousWrappable) {
     if (opts.wrappable) {
       savedDecimals = opts.decimals;
+      savedPremint = opts.premint;
       opts.decimals = erc7984.defaults.decimals;
+      opts.premint = '';
     } else {
       opts.decimals = savedDecimals;
+      opts.premint = savedPremint;
     }
     previousWrappable = opts.wrappable;
   }
@@ -74,7 +78,13 @@
       Premint
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
-    <input bind:value={opts.premint} placeholder="0" pattern={premintPattern.source} use:error={errors?.premint} />
+    <input
+      bind:value={opts.premint}
+      placeholder="0"
+      pattern={premintPattern.source}
+      disabled={opts.wrappable}
+      use:error={errors?.premint}
+    />
   </label>
 
   <div class="labeled-input">
@@ -102,7 +112,8 @@
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
       <HelpTooltip>
-        Allows wrapping an ERC20 token into a confidential fungible token. Uses the underlying token's decimals.
+        Allows wrapping an ERC20 token into a confidential fungible token. Uses the underlying token's decimals and
+        cannot be preminted.
       </HelpTooltip>
     </label>
   </div>

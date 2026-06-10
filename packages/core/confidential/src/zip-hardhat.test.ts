@@ -49,7 +49,7 @@ test.serial('erc7984 full', async t => {
     networkConfig: 'zama-ethereum',
     symbol: 'MTK',
     decimals: '6',
-    premint: '2000',
+    premint: '0',
     wrappable: true,
     votes: 'timestamp',
     info: {

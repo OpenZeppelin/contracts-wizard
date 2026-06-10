@@ -170,6 +170,40 @@ testERC7984('erc7984 wrappable', {
   wrappable: true,
 });
 
+test('erc7984 premint incompatible with wrappable', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      premint: '1000',
+      wrappable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.premint,
+    'Premint cannot be used with Wrappable. Preminted tokens would not be backed by the underlying token',
+  );
+  t.is(
+    (error as OptionsError).messages.wrappable,
+    'Wrappable cannot be used with premint. Preminted tokens would not be backed by the underlying token',
+  );
+});
+
+test('erc7984 zero premint allowed with wrappable', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      premint: '0',
+      wrappable: true,
+    }),
+  );
+});
+
 testERC7984('erc7984 votes + blocknumber', {
   votes: 'blocknumber',
 });
@@ -179,14 +213,12 @@ testERC7984('erc7984 votes + timestamp', {
 });
 
 testERC7984('erc7984 full zama-ethereum', {
-  premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
   networkConfig: 'zama-ethereum',
 });
 
 testERC7984('erc7984 full with timestamp votes', {
-  premint: '2000',
   wrappable: true,
   votes: 'timestamp',
   networkConfig: 'zama-ethereum',
@@ -206,7 +238,6 @@ testAPIEquivalence('erc7984 API full', {
   symbol: 'CTK',
   contractURI: 'https://custom.example.com/token',
   networkConfig: 'zama-ethereum',
-  premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
 });
