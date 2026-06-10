@@ -346,7 +346,7 @@ class Hardhat3TestGenerator {
   }
 
   private getConnectionSetup(c: Contract): Lines[] {
-    const lines = ['const connection = await hre.network.create();', 'const { ethers } = connection as any;'];
+    const lines = ['const connection = await hre.network.create();', 'const { ethers } = connection;'];
     if (c.upgradeable) {
       lines.push('const upgradesApi = await upgrades(hre, connection);');
     }
