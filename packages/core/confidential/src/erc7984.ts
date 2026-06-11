@@ -78,7 +78,7 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   const decimals = Number(toUint(allOpts.decimals, 'decimals', 'uint8'));
   if (decimals > MAX_DECIMALS) {
     throw new OptionsError({
-      decimals: `Decimals must not be greater than ${MAX_DECIMALS}. Confidential token amounts are represented as uint64, so higher decimals would make the maximum total supply too limited`,
+      decimals: `Decimals must not be greater than ${MAX_DECIMALS}`,
     });
   }
   if (allOpts.wrappable && decimals !== DEFAULT_DECIMALS) {

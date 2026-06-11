@@ -89,7 +89,7 @@ test('erc7984 decimals greater than max', async t => {
   );
   t.is(
     (error as OptionsError).messages.decimals,
-    'Decimals must not be greater than 10. Confidential token amounts are represented as uint64, so higher decimals would make the maximum total supply too limited',
+    'Decimals must not be greater than 10',
   );
 });
 
