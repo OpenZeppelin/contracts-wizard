@@ -87,10 +87,7 @@ test('erc7984 decimals greater than max', async t => {
       decimals: '11',
     }),
   );
-  t.is(
-    (error as OptionsError).messages.decimals,
-    'Decimals must not be greater than 10',
-  );
+  t.is((error as OptionsError).messages.decimals, 'Decimals must not be greater than 10');
 });
 
 test('erc7984 max decimals allowed', async t => {
