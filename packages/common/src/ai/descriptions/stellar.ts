@@ -18,6 +18,7 @@ export const stellarCommonDescriptions = {
 };
 
 export const stellarFungibleDescriptions = {
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
 };
@@ -32,6 +33,7 @@ export const stellarNonFungibleDescriptions = {
 
 export const stellarStablecoinDescriptions = {
   limitations: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them.',
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
 };
