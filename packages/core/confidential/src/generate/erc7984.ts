@@ -7,7 +7,7 @@ const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
   contractURI: ['http://example.com'],
-  decimals: ['6', '18'],
+  decimals: ['6', '10'],
   votes: [false, ...clockModeOptions] as const,
   premint: ['0', '1'],
   info: infoOptions,

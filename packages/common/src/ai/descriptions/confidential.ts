@@ -10,7 +10,7 @@ export const confidentialERC7984Descriptions = {
   contractURI:
     'The metadata URI for the token. Should follow the schema defined in [ERC-7572](https://eips.ethereum.org/EIPS/eip-7572).',
   decimals:
-    'The number of decimals used to represent token amounts. Defaults to 6. Incompatible with wrappable, which derives its decimals from the underlying token (capped at 6).',
+    'The number of decimals used to represent token amounts. Defaults to 6, with a maximum of 10, since confidential token amounts are represented as uint64 and higher decimals would make the maximum total supply too limited. Incompatible with wrappable, which derives its decimals from the underlying token (capped at 6).',
   premint:
     'The number of tokens to premint for the deployer. Cannot be used with wrappable, since preminted tokens would not be backed by the underlying token.',
   networkConfig: 'Specify the provider and network configuration to use for FHEVM contracts.',

@@ -21,6 +21,7 @@ export const networkConfigOptions = ['zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
 
 export const DEFAULT_DECIMALS = 6;
+export const MAX_DECIMALS = 10;
 
 export interface ERC7984Options extends CommonOptions {
   name: string;
@@ -75,6 +76,11 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   addNetworkConfig(c, allOpts.networkConfig);
 
   const decimals = Number(toUint(allOpts.decimals, 'decimals', 'uint8'));
+  if (decimals > MAX_DECIMALS) {
+    throw new OptionsError({
+      decimals: `Decimals must not be greater than ${MAX_DECIMALS}. Confidential token amounts are represented as uint64, so higher decimals would make the maximum total supply too limited`,
+    });
+  }
   if (allOpts.wrappable && decimals !== DEFAULT_DECIMALS) {
     throw new OptionsError({
       decimals:

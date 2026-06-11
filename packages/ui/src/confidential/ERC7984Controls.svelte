@@ -64,7 +64,10 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Decimals
-      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 6.</HelpTooltip>
+      <HelpTooltip>
+        The number of decimals used to represent token amounts. Defaults to 6, with a maximum of 10, since confidential
+        token amounts are represented as uint64.
+      </HelpTooltip>
     </span>
     {#if opts.wrappable}
       <input disabled />

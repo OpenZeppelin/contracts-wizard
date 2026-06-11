@@ -77,6 +77,34 @@ test('erc7984 decimals too large', async t => {
   t.is((error as OptionsError).messages.decimals, 'Value is greater than uint8 max value');
 });
 
+test('erc7984 decimals greater than max', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '11',
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.decimals,
+    'Decimals must not be greater than 10. Confidential token amounts are represented as uint64, so higher decimals would make the maximum total supply too limited',
+  );
+});
+
+test('erc7984 max decimals allowed', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '10',
+    }),
+  );
+});
+
 test('erc7984 custom decimals incompatible with wrappable', async t => {
   const error = t.throws(() =>
     buildERC7984({
