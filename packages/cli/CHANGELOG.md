@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.2
+
+### Patch Changes
+
+- [#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812) [`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9) Thanks [@ericglau](https://github.com/ericglau)! - Add `decimals` to the AI schemas, MCP tools, and CLI for Solidity `erc20`, `stablecoin`, `realWorldAsset`, Confidential `erc7984`, and Stellar `fungible`, `stablecoin`.
+
+- Updated dependencies [[`d0bc91f`](https://github.com/OpenZeppelin/contracts-wizard/commit/d0bc91fa1d43909ddca69591d2a2eff2f34d6e29), [`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9), [`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9), [`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9), [`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9), [`e54703a`](https://github.com/OpenZeppelin/contracts-wizard/commit/e54703a4958cd959757c3acb38335e3f903c193a), [`55b0dac`](https://github.com/OpenZeppelin/contracts-wizard/commit/55b0dacbdf581094498d9c621f602f641d50ba58)]:
+  - @openzeppelin/wizard-stellar@0.6.1
+  - @openzeppelin/wizard-confidential@0.1.2
+  - @openzeppelin/wizard-common@0.5.2
+  - @openzeppelin/wizard@0.10.10
+
 ## 0.1.1 (2026-04-22)
 
 - Updated dependencies [[`78b7319`](https://github.com/OpenZeppelin/contracts-wizard/commit/78b7319858661780392d5c19fe800aba5fb17559)]:
