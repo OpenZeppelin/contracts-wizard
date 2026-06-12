@@ -8,6 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  decimals: ['7', '18'],
   burnable: booleans,
   votes: booleans,
   pausable: booleans,

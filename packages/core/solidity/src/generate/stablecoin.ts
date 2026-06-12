@@ -9,6 +9,7 @@ const booleans = [true, false];
 const erc20Basic = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
+  decimals: ['6'],
   burnable: [false] as const,
   pausable: [false] as const,
   mintable: [false] as const,
@@ -28,6 +29,7 @@ const erc20Basic = {
 const erc20Full = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
+  decimals: ['18'],
   burnable: [true] as const,
   pausable: [true] as const,
   mintable: [true] as const,

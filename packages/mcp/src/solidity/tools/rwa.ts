@@ -13,6 +13,7 @@ export function registerSolidityRWA(server: McpServer) {
     async ({
       name,
       symbol,
+      decimals,
       burnable,
       pausable,
       premint,
@@ -32,6 +33,7 @@ export function registerSolidityRWA(server: McpServer) {
       const opts: StablecoinOptions = {
         name,
         symbol,
+        decimals,
         burnable,
         pausable,
         premint,

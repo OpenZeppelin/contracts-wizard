@@ -18,16 +18,20 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  // Premint does not apply to wrappable tokens, since preminted tokens would not be backed by the
-  // underlying token. Reset it while Wrappable is enabled, and restore the previous value when it
-  // is disabled again.
+  // Decimals and premint do not apply to wrappable tokens: the wrapper derives its decimals from the
+  // underlying token, and preminted tokens would not be backed by the underlying token. Reset them to
+  // defaults while Wrappable is enabled, and restore the previous values when it is disabled again.
+  let savedDecimals = opts.decimals;
   let savedPremint = opts.premint;
   let previousWrappable = opts.wrappable;
   $: if (opts.wrappable !== previousWrappable) {
     if (opts.wrappable) {
+      savedDecimals = opts.decimals;
       savedPremint = opts.premint;
+      opts.decimals = erc7984.defaults.decimals;
       opts.premint = '';
     } else {
+      opts.decimals = savedDecimals;
       opts.premint = savedPremint;
     }
     previousWrappable = opts.wrappable;
@@ -55,6 +59,21 @@
       <HelpTooltip link="https://eips.ethereum.org/EIPS/eip-7572">The metadata URI for the token.</HelpTooltip>
     </span>
     <input bind:value={opts.contractURI} placeholder="https://..." />
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Decimals
+      <HelpTooltip>
+        The number of decimals used to represent token amounts. Defaults to 6, with a maximum of 10, since confidential
+        token amounts are represented as uint64.
+      </HelpTooltip>
+    </span>
+    {#if opts.wrappable}
+      <input disabled />
+    {:else}
+      <input bind:value={opts.decimals} use:error={errors?.decimals} />
+    {/if}
   </label>
 
   <label class="labeled-input">
@@ -95,7 +114,10 @@
     <label class:checked={opts.wrappable} use:error={errors?.wrappable}>
       <input type="checkbox" bind:checked={opts.wrappable} />
       Wrappable
-      <HelpTooltip>Allows wrapping an ERC20 token into a confidential fungible token. Cannot be preminted.</HelpTooltip>
+      <HelpTooltip>
+        Allows wrapping an ERC20 token into a confidential fungible token. Derives its decimals from the underlying
+        token (capped at 6) and cannot be preminted.
+      </HelpTooltip>
     </label>
   </div>
 </section>

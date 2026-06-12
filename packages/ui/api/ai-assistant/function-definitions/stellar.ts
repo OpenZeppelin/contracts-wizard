@@ -29,6 +29,10 @@ export const stellarFungibleAIFunctionDefinition = {
         'info',
         'explicitImplementations',
       ]),
+      decimals: {
+        type: 'string',
+        description: stellarFungibleDescriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: stellarFungibleDescriptions.premint,
@@ -59,6 +63,10 @@ export const stellarStablecoinAIFunctionDefinition = {
         'info',
         'explicitImplementations',
       ]),
+      decimals: {
+        type: 'string',
+        description: stellarStablecoinDescriptions.decimals,
+      },
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },

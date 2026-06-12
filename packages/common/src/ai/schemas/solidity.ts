@@ -35,6 +35,7 @@ export const solidityCommonSchema = {
 export const solidityERC20Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
+  decimals: z.string().optional().describe(solidityERC20Descriptions.decimals),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(solidityERC20Descriptions.premint),

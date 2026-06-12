@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.6.1 (2026-06-11)
+
+- Update Stellar Contracts to v0.7.2 and Soroban SDK to v26.1.0. ([#815](https://github.com/OpenZeppelin/contracts-wizard/pull/815))
+- Add optional `decimals` to `fungible` and `stablecoin`, which sets the token's metadata decimals. Defaults to 7 as before. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
+
 ## 0.6.0 (2026-04-22)
 
 - Add Governor ([#788](https://github.com/OpenZeppelin/contracts-wizard/pull/788))

@@ -42,6 +42,7 @@ test('all default', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',
+    decimals: '18',
     burnable: true,
     votes: false,
     pausable: true,
@@ -64,6 +65,7 @@ test('all explicit', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestToken',
     symbol: 'TST',
+    decimals: '18',
     burnable: true,
     votes: false,
     pausable: true,
