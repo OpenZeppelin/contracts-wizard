@@ -3,10 +3,11 @@ import { OptionsError } from './error';
 
 export const SECURITY_CONTACT_DOCUMENTATION = `Security contact: `;
 
-// Line terminators (and characters that source lexers may treat as such).
-// These are disallowed in single-line metadata fields so an embedded line
-// break cannot escape the generated SPDX/comment line and inject source.
-const LINE_TERMINATOR = /[\n\r\u2028\u2029\u0085\v\f]/u;
+// These values are printed into a // comment line in the generated Cairo. LF
+// ends that comment, letting following text become source. CR and U+2028/U+2029
+// are rejected as defense in depth (review tools render U+2028/U+2029 as line
+// breaks).
+const LINE_TERMINATOR = /[\n\r\u2028\u2029]/u;
 
 function checkSingleLine(value: string, field: string): void {
   if (LINE_TERMINATOR.test(value)) {

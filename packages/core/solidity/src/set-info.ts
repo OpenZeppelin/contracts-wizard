@@ -3,10 +3,11 @@ import { OptionsError } from './error';
 
 export const TAG_SECURITY_CONTACT = `@custom:security-contact`;
 
-// Line terminators (and characters that source lexers may treat as such).
-// These are disallowed in single-line metadata fields so an embedded line
-// break cannot escape the generated SPDX/comment line and inject source.
-const LINE_TERMINATOR = /[\n\r\u2028\u2029\u0085\v\f]/u;
+// LF and CR end a line comment in solc, letting following text escape the
+// generated comment line and become source. U+2028/U+2029 are also rejected:
+// solc errors on them, and review tools render them as line breaks. Other
+// control chars (VT/FF/NEL) error in solc too but cannot silently inject.
+const LINE_TERMINATOR = /[\n\r\u2028\u2029]/u;
 
 function checkSingleLine(value: string, field: string): void {
   if (LINE_TERMINATOR.test(value)) {

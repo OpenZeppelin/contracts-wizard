@@ -10,9 +10,6 @@ const lineBreaks: [string, string][] = [
   ['CRLF', '\r\n'],
   ['LS', '\u2028'],
   ['PS', '\u2029'],
-  ['NEL', '\u0085'],
-  ['VT', '\v'],
-  ['FF', '\f'],
 ];
 
 for (const [name, ch] of lineBreaks) {
