@@ -71,7 +71,7 @@
 
 <style lang="postcss">
   .tron-app :global(.tab button.selected) {
-    background-color: #ff060a !important;
+    background-color: var(--tron-red) !important;
     color: white;
     order: -1;
   }

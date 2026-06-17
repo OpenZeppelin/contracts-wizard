@@ -14,3 +14,11 @@ export const tronPrompts = {
   Governor: 'Make a contract to implement governance, such as for a DAO, targeting the TRON Virtual Machine.',
   Custom: 'Make a custom smart contract, targeting the TRON Virtual Machine.',
 };
+
+// TRON-specific overrides of the Solidity Governor descriptions. Only the
+// fields that differ from `solidityGovernorDescriptions` are listed here; the
+// rest are reused. TRON's SR consensus produces a block every ~3s (vs ~12s on
+// Ethereum), so the Governor's "block time" field defaults to 3 here.
+export const tronGovernorDescriptions = {
+  blockTime: 'The block time of the chain in seconds, default is 3.',
+};

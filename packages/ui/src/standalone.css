@@ -146,7 +146,7 @@ body {
 }
 
 .nav .switch.switch-tron.active {
-  --color-2: #ff060a;
+  --color-2: var(--tron-red);
 }
 
 .nav .switch.switch-stellar.active {

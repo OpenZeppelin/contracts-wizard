@@ -11,13 +11,13 @@ import { rewriteForTron } from './utils/transform-tron';
 const TRON_SOLIDITY_VERSION = '0.8.26';
 
 class HardhatTronZipGenerator extends HardhatZipGenerator {
-  protected getAdditionalHardhatImports(): string[] {
+  protected override getAdditionalHardhatImports(): string[] {
     // hardhat-tron does NOT use @nomicfoundation/hardhat-toolbox; the plugin
     // composes the smaller ethers + chai-matchers plugins that it actually needs.
     return ['@nomicfoundation/hardhat-ethers', '@nomicfoundation/hardhat-chai-matchers', '@openzeppelin/hardhat-tron'];
   }
 
-  protected getHardhatConfigJsonString(): string {
+  protected override getHardhatConfigJsonString(): string {
     return `\
 {
   solidity: {
@@ -48,7 +48,7 @@ class HardhatTronZipGenerator extends HardhatZipGenerator {
 }`;
   }
 
-  protected getHardhatConfig(_upgradeable: boolean): string {
+  protected override getHardhatConfig(_upgradeable: boolean): string {
     // hardhat-tron-based projects use a non-upgradeable single config; the
     // `@openzeppelin/hardhat-upgrades` plugin is not used here. The hardhat
     // config is also emitted as a CommonJS .cjs file in the README sample,
@@ -66,13 +66,13 @@ export default config;
 `;
   }
 
-  protected async getPackageJson(c: Contract): Promise<unknown> {
+  protected override async getPackageJson(c: Contract): Promise<unknown> {
     const { default: packageJson } = await import('./environments/hardhat/tron/package.json');
     packageJson.license = c.license;
     return packageJson;
   }
 
-  protected async getPackageLock(_c: Contract): Promise<unknown> {
+  protected override async getPackageLock(_c: Contract): Promise<unknown> {
     // Not used. The TRON variant skips emitting a package-lock.json because
     // @openzeppelin/hardhat-tron and @openzeppelin/tron-contracts are not yet
     // published to the npm registry, so a lockfile would dangle. `npm install`
@@ -80,7 +80,7 @@ export default config;
     return undefined;
   }
 
-  protected getReadmePrerequisitesSection(): string {
+  protected override getReadmePrerequisitesSection(): string {
     return `\
 ## Prerequisites
 
@@ -91,7 +91,7 @@ Ensure you have the following installed:
 `;
   }
 
-  protected getReadmeTestingEnvironmentSetupSection(): string {
+  protected override getReadmeTestingEnvironmentSetupSection(): string {
     return `\
 ## TRON Runtime Environment
 
@@ -100,17 +100,17 @@ Ensure you have the following installed:
 `;
   }
 
-  protected getGitIgnoreHardhatIgnition(): string {
+  protected override getGitIgnoreHardhatIgnition(): string {
     // hardhat-ignition is not in scope for the TRON variant — we emit a plain
     // ethers script instead. Nothing to gitignore here.
     return '';
   }
 
-  protected getPrintContract(c: Contract): string {
+  protected override getPrintContract(c: Contract): string {
     return rewriteForTron(printContract(c));
   }
 
-  protected getReadme(c: Contract): string {
+  protected override getReadme(c: Contract): string {
     return `\
 # Sample TRON Hardhat Project (${c.name})
 

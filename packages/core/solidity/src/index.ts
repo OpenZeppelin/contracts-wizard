@@ -54,4 +54,4 @@ export { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 export { findCover } from './utils/find-cover';
 export type { PremintCalculation } from './erc20';
 export { calculatePremint as calculateERC20Premint, scaleByPowerOfTen } from './erc20';
-export { rewriteForTron, TRON_DEFAULT_BLOCK_TIME } from './utils/transform-tron';
+export { rewriteForTron, sanitizeTronOptions, TRON_DEFAULT_BLOCK_TIME } from './utils/transform-tron';

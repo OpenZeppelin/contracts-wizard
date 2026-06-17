@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract, FunctionArgument } from './contract';
+import type { Contract } from './contract';
 import { printContract } from './print';
 import { rewriteForTron } from './utils/transform-tron';
 import { stringifyUnicodeSafe } from './utils/sanitize';
@@ -17,13 +17,16 @@ import { stringifyUnicodeSafe } from './utils/sanitize';
 const TRON_SOLIDITY_VERSION = '0.8.26';
 
 function getDeploymentArgs(c: Contract): string[] {
-  return c.constructorArgs.map(arg => placeholderForArg(arg));
+  // The arg name doubles as the local variable identifier declared above the
+  // deploy call (see declareArgPlaceholders).
+  return c.constructorArgs.map(arg => arg.name);
 }
 
-function placeholderForArg(arg: FunctionArgument): string {
-  // Use the arg name as a local variable identifier; we declare placeholders
-  // above the deploy call so the user knows what to fill in.
-  return arg.name;
+// Non-address args have no usable placeholder value, so the user must fill them
+// in before deploying. Address args get the obviously-invalid '<TRON address>'
+// sentinel, which compiles but fails loudly at deploy time if left unedited.
+function hasUnsetArgs(c: Contract): boolean {
+  return c.constructorArgs.some(arg => arg.type !== 'address');
 }
 
 function declareArgPlaceholders(c: Contract): string[] {
@@ -31,7 +34,9 @@ function declareArgPlaceholders(c: Contract): string[] {
     if (arg.type === 'address') {
       return `// TODO: Replace with a real address (e.g. tronWeb.defaultAddress.base58).\n  const ${arg.name} = '<TRON address>';`;
     }
-    return `// TODO: Set value for the ${arg.name} constructor argument.\n  const ${arg.name} = undefined;`;
+    // No safe default — emit a commented-out declaration so the migration can
+    // never silently deploy an `undefined` value.
+    return `// TODO: Set the ${arg.name} constructor argument, then uncomment it and the deploy call below.\n  // const ${arg.name} = /* ... */;`;
   });
 }
 
@@ -67,8 +72,18 @@ function deployMigration(c: Contract): string {
   const argList = getDeploymentArgs(c);
 
   const declarations = argDecls.length > 0 ? argDecls.join('\n  ') + '\n\n  ' : '';
-  const deployCall =
-    argList.length > 0 ? `deployer.deploy(${c.name}, ${argList.join(', ')});` : `deployer.deploy(${c.name});`;
+
+  let deployCall: string;
+  if (argList.length === 0) {
+    deployCall = `deployer.deploy(${c.name});`;
+  } else if (hasUnsetArgs(c)) {
+    // At least one argument has no usable placeholder; leave the deploy call
+    // commented out so an unedited `tronbox migrate` is a no-op rather than
+    // deploying with missing values.
+    deployCall = `// TODO: Uncomment once the constructor arguments above are set.\n  // deployer.deploy(${c.name}, ${argList.join(', ')});`;
+  } else {
+    deployCall = `deployer.deploy(${c.name}, ${argList.join(', ')});`;
+  }
 
   return `\
 const ${c.name} = artifacts.require('./${c.name}.sol');
@@ -203,7 +218,7 @@ function packageJson(c: Contract): unknown {
       tronbox: '^4.1.0',
     },
     dependencies: {
-      '@openzeppelin/tron-contracts': '^0.1.0',
+      '@openzeppelin/tron-contracts': '^0.0.1',
     },
   };
 }

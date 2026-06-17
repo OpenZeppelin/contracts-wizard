@@ -2,14 +2,14 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { GovernorOptions } from '@openzeppelin/wizard';
 import { governor, rewriteForTron, TRON_DEFAULT_BLOCK_TIME } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
-import { solidityGovernorSchema } from '@openzeppelin/wizard-common/schemas';
+import { tronGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
 
 export function registerTronGovernor(server: McpServer): RegisteredTool {
   return server.tool(
     'tron-governor',
     makeDetailedPrompt(tronPrompts.Governor),
-    solidityGovernorSchema,
+    tronGovernorSchema,
     async ({
       name,
       delay,

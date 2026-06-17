@@ -36,6 +36,22 @@ const INTERFACE_PATTERN = /\bIERC(20|721|1155|4626)/g;
 const SYMBOL_PATTERN = /\bERC(20|721|1155|4626)/g;
 const PRAGMA_PATTERN = /(pragma\s+solidity\s+\^0\.8\.)(\d+)(\s*;)/g;
 
+// `superchain` cross-chain bridging is OP Stack-specific: it pulls in
+// `draft-ERC20Bridgeable` plus the hardcoded OP-Stack `0x42...0028` predeploy,
+// neither of which exists on the TVM. The UI form hides the option, but the CLI
+// and MCP surfaces reuse the full Solidity schemas, so they funnel options
+// through this gate to downgrade `superchain` to `custom` before printing.
+// Mutates in place (to match the UI's `sanitizeOmittedFeatures` override
+// contract) and returns the same object for ergonomic use at call sites.
+type TronSanitizableOptions = { crossChainBridging?: false | 'custom' | 'erc7786native' | 'superchain' };
+
+export function sanitizeTronOptions<T extends TronSanitizableOptions>(opts: T): T {
+  if (opts.crossChainBridging === 'superchain') {
+    opts.crossChainBridging = 'custom';
+  }
+  return opts;
+}
+
 export function rewriteForTron(source: string): string {
   return source
     .replace(PATH_ROOT_PATTERN, '@openzeppelin/tron-contracts/')

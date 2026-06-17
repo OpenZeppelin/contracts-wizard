@@ -1,13 +1,10 @@
 import type { GenericOptions, Kind } from '@openzeppelin/wizard';
+import { sanitizeTronOptions } from '@openzeppelin/wizard';
 
 /**
  * Features that don't apply on TRON.
  *
  * `superchain` cross-chain bridging is OP Stack-specific (not relevant for TRON).
- * Upgradeable contracts: `@openzeppelin/tron-contracts` doesn't yet ship the
- * transpiled `*Upgradeable` variants, so the upgradeable downloads are hidden
- * via `omitZipHardhat`/`omitZipFoundry` in tron/App.svelte rather than being
- * removed from the UI form.
  */
 export function defineOmitFeatures(): Map<Kind, string[]> {
   const omitFeatures: Map<Kind, string[]> = new Map();
@@ -17,10 +14,12 @@ export function defineOmitFeatures(): Map<Kind, string[]> {
   return omitFeatures;
 }
 
+// Shared with the CLI and MCP TRON surfaces via `@openzeppelin/wizard` so all
+// three gate `superchain` the same way. Only ERC20/Stablecoin/RWA carry a
+// `crossChainBridging` field, so the kind guard both narrows the type for
+// `sanitizeTronOptions` and skips the no-op kinds.
 export function sanitizeOmittedFeatures(opts: GenericOptions) {
   if (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') {
-    if (opts.crossChainBridging === 'superchain') {
-      opts.crossChainBridging = 'custom';
-    }
+    sanitizeTronOptions(opts);
   }
 }

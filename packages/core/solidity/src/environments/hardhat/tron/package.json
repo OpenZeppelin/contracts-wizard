@@ -11,8 +11,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-ethers": "^3.0.9",
-    "@openzeppelin/hardhat-tron": "^1.0.0",
-    "@openzeppelin/tron-contracts": "^0.1.0",
+    "@openzeppelin/hardhat-tron": "^0.1.0",
+    "@openzeppelin/tron-contracts": "^0.0.1",
     "ethers": "^6.14.0",
     "hardhat": "^2.26.0"
   }

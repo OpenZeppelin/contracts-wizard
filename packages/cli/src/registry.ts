@@ -11,6 +11,7 @@ import {
   governor,
   custom,
   rewriteForTron,
+  sanitizeTronOptions,
   TRON_DEFAULT_BLOCK_TIME,
 } from '@openzeppelin/wizard';
 import { solidityPrompts, tronPrompts } from '@openzeppelin/wizard-common';
@@ -23,6 +24,7 @@ import {
   solidityAccountSchema,
   solidityGovernorSchema,
   solidityCustomSchema,
+  tronGovernorSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
 import {
@@ -161,7 +163,11 @@ export const registry = {
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),
 
   // TRON (Solidity post-processed for @openzeppelin/tron-contracts + TRC* token names)
-  'tron-trc20': createRegistryEntry(solidityERC20Schema, opts => rewriteForTron(erc20.print(opts)), tronPrompts.TRC20),
+  'tron-trc20': createRegistryEntry(
+    solidityERC20Schema,
+    opts => rewriteForTron(erc20.print(sanitizeTronOptions(opts))),
+    tronPrompts.TRC20,
+  ),
   'tron-trc721': createRegistryEntry(
     solidityERC721Schema,
     opts => rewriteForTron(erc721.print(opts)),
@@ -174,16 +180,16 @@ export const registry = {
   ),
   'tron-stablecoin': createRegistryEntry(
     solidityStablecoinSchema,
-    opts => rewriteForTron(stablecoin.print(opts)),
+    opts => rewriteForTron(stablecoin.print(sanitizeTronOptions(opts))),
     tronPrompts.Stablecoin,
   ),
   'tron-rwa': createRegistryEntry(
     solidityRWASchema,
-    opts => rewriteForTron(realWorldAsset.print(opts)),
+    opts => rewriteForTron(realWorldAsset.print(sanitizeTronOptions(opts))),
     tronPrompts.RWA,
   ),
   'tron-governor': createRegistryEntry(
-    solidityGovernorSchema,
+    tronGovernorSchema,
     opts => rewriteForTron(governor.print({ ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME })),
     tronPrompts.Governor,
   ),
