@@ -42,7 +42,9 @@ export type LanguagesContractsOptions = {
   cairoAlpha: CairoAlphaKindedOptions;
   confidential: ConfidentialKindedOptions;
   polkadot: Omit<SolidityContractsOptions, 'Account'>;
-  tron: Omit<SolidityContractsOptions, 'Account'>;
+  // Stablecoin + RealWorldAsset depend on @openzeppelin/community-contracts, which
+  // is not ported to TRON; Account's ERC-4337 EntryPoint is out of TRON scope.
+  tron: Omit<SolidityContractsOptions, 'Account' | 'Stablecoin' | 'RealWorldAsset'>;
   stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin' | 'Governor'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;

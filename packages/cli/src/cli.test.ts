@@ -229,14 +229,6 @@ test('tron-trc20 caps pragma at 0.8.26', t => {
   t.false(output.includes('pragma solidity ^0.8.27'), 'pragma should not be 0.8.27 (above tron-solc max)');
 });
 
-test('tron-stablecoin preserves stablecoin features', t => {
-  const output = run('tron-stablecoin', '--name', 'TestStable', '--symbol', 'TSTB');
-  t.is(
-    output,
-    printContract(buildGeneric({ kind: 'Stablecoin', name: 'TestStable', symbol: 'TSTB' }), tronPrintProfile),
-  );
-});
-
 test('tron-trc20 renames the library but never user name/symbol literals', t => {
   // A name and symbol that embed a token standard: only the inherited base is
   // renamed to TRC20; the user's deployed name() and symbol() are untouched.

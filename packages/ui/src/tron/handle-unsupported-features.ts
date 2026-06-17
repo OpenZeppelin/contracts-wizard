@@ -8,18 +8,17 @@ import { sanitizeTronOptions } from '@openzeppelin/wizard';
  */
 export function defineOmitFeatures(): Map<Kind, string[]> {
   const omitFeatures: Map<Kind, string[]> = new Map();
+  // ERC20 is the only TRON tab with a `crossChainBridging` field (Stablecoin and
+  // RealWorldAsset are hidden — they depend on @openzeppelin/community-contracts).
   omitFeatures.set('ERC20', ['superchain']);
-  omitFeatures.set('Stablecoin', ['superchain']);
-  omitFeatures.set('RealWorldAsset', ['superchain']);
   return omitFeatures;
 }
 
 // Shared with the CLI and MCP TRON surfaces via `@openzeppelin/wizard` so all
-// three gate `superchain` the same way. Only ERC20/Stablecoin/RWA carry a
-// `crossChainBridging` field, so the kind guard both narrows the type for
-// `sanitizeTronOptions` and skips the no-op kinds.
+// three gate `superchain` the same way. The kind guard narrows the type for
+// `sanitizeTronOptions` and skips kinds without a `crossChainBridging` field.
 export function sanitizeOmittedFeatures(opts: GenericOptions) {
-  if (opts.kind === 'ERC20' || opts.kind === 'Stablecoin' || opts.kind === 'RealWorldAsset') {
+  if (opts.kind === 'ERC20') {
     sanitizeTronOptions(opts);
   }
 }

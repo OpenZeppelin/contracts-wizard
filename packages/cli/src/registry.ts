@@ -184,16 +184,8 @@ export const registry = {
     opts => printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile),
     tronPrompts.TRC1155,
   ),
-  'tron-stablecoin': createRegistryEntry(
-    solidityStablecoinSchema,
-    opts => printContract(buildGeneric({ kind: 'Stablecoin', ...sanitizeTronOptions(opts) }), tronPrintProfile),
-    tronPrompts.Stablecoin,
-  ),
-  'tron-rwa': createRegistryEntry(
-    solidityRWASchema,
-    opts => printContract(buildGeneric({ kind: 'RealWorldAsset', ...sanitizeTronOptions(opts) }), tronPrintProfile),
-    tronPrompts.RWA,
-  ),
+  // Stablecoin and RealWorldAsset are intentionally not exposed on TRON — they
+  // depend on @openzeppelin/community-contracts, which is not ported to TRON.
   'tron-governor': createRegistryEntry(
     tronGovernorSchema,
     opts =>

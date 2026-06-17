@@ -26,12 +26,14 @@
   //  - replace the second download tab (originally Foundry) with TronBox
   //  - remap the @openzeppelin/tron-contracts packages when opening in Remix (TVM is EVM-compatible enough)
   //  - hide Account tab (ERC-4337 EntryPoint not deployed on TRON in scope here)
+  //  - hide Stablecoin + RealWorldAsset tabs (they rely on @openzeppelin/community-contracts,
+  //    which is not being ported to TRON)
   //
   // Upgradeable contracts are fully supported: the generated source imports from
   // @openzeppelin/tron-contracts-upgradeable, and the Hardhat/TronBox downloads
   // deploy the proxy by hand (the OZ Upgrades plugins don't target TRON).
   const overrides: Overrides = {
-    omitTabs: ['Account'],
+    omitTabs: ['Account', 'Stablecoin', 'RealWorldAsset'],
     tabLabels: { ERC20: 'TRC20', ERC721: 'TRC721', ERC1155: 'TRC1155' },
     omitFeatures: defineOmitFeatures(),
     // Both downloads are shown for every option, upgradeable included — the
