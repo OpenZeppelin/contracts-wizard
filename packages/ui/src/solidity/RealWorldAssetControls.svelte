@@ -274,4 +274,4 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

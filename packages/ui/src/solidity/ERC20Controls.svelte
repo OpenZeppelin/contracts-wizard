@@ -240,4 +240,4 @@
   {errors}
 />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

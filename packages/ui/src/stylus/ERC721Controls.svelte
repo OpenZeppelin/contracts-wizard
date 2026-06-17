@@ -63,4 +63,4 @@
 <!-- TODO: uncomment once Stylus constructors are supported -->
 <!-- <AccessControlSection bind:access={opts.access} required={requireAccessControl} /> -->
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />
