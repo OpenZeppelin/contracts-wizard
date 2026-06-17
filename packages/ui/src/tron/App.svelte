@@ -5,10 +5,10 @@
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
-  // Rewrite ERC20/721/1155/4626 to TRC* and @openzeppelin/contracts to
-  // @openzeppelin/tron-contracts for the in-page display + single-file download.
-  // The zip generators apply the same transform internally.
-  import { rewriteForTron, TRON_DEFAULT_BLOCK_TIME, type Contract, type GenericOptions } from '@openzeppelin/wizard';
+  // The TRON library profile renders TRC* token names + @openzeppelin/tron-contracts
+  // import paths structurally (via printContract), for the in-page display and
+  // single-file download. The zip generators apply the same profile internally.
+  import { tronPrintProfile, TRON_DEFAULT_BLOCK_TIME, type Contract, type GenericOptions } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
@@ -59,7 +59,7 @@
       '@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable/',
       '@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts/',
     ],
-    transformPrintedContract: rewriteForTron,
+    printOptions: tronPrintProfile,
     sanitizeOmittedFeatures,
     postConfigLanguage: 'tron-solidity',
     // TRON SR consensus produces a block every ~3s, so the Governor's

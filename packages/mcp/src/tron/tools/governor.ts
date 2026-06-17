@@ -1,6 +1,6 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard';
-import { governor, rewriteForTron, TRON_DEFAULT_BLOCK_TIME } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile, TRON_DEFAULT_BLOCK_TIME } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { tronGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
@@ -53,7 +53,9 @@ export function registerTronGovernor(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintSolidityCodeBlock(() => rewriteForTron(governor.print(opts))),
+            text: safePrintSolidityCodeBlock(() =>
+              printContract(buildGeneric({ kind: 'Governor', ...opts }), tronPrintProfile),
+            ),
           },
         ],
       };

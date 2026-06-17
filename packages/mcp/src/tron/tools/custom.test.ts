@@ -6,7 +6,7 @@ import { registerTronCustom } from './custom';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { CustomOptions } from '@openzeppelin/wizard';
-import { custom, rewriteForTron } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { solidityCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
@@ -30,7 +30,7 @@ function assertHasAllSupportedFields(
   t.pass();
 }
 
-const tronPrint = (opts: CustomOptions) => rewriteForTron(custom.print(opts));
+const tronPrint = (opts: CustomOptions) => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile);
 
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {

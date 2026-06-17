@@ -1,4 +1,4 @@
-import type { Contract, GenericOptions, Kind } from '@openzeppelin/wizard';
+import type { Contract, GenericOptions, Kind, Options as PrintOptions } from '@openzeppelin/wizard';
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
@@ -83,12 +83,13 @@ export interface Overrides {
   overrideVersionedRemappings?: (opts?: GenericOptions) => string[];
 
   /**
-   * Transform applied to the printed Solidity source before it is displayed,
-   * copied, downloaded as a single file, or written into a zip by the
-   * wizard's UI layer. Each ecosystem zip generator must apply its own
-   * transform internally; this hook only affects the UI-side rendering.
+   * Print options passed to `printContract` when the UI renders the source for
+   * display, copy, and single-file download. Ecosystems use this to apply a
+   * structured library profile (e.g. TRON's TRC* names + import paths) instead
+   * of post-processing rendered text. Each ecosystem zip generator applies the
+   * same profile internally; this hook only affects the UI-side rendering.
    */
-  transformPrintedContract?: (source: string) => string;
+  printOptions?: PrintOptions;
 
   /**
    * A function to sanitize omitted features from the Solidity Wizard options.
@@ -129,7 +130,7 @@ export const defaultOverrides: Overrides = {
   secondaryDownloadAction: undefined,
   omitOpenInRemix: false,
   overrideVersionedRemappings: undefined,
-  transformPrintedContract: undefined,
+  printOptions: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,
   aiAssistant: undefined,

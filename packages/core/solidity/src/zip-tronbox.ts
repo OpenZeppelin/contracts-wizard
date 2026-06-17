@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract } from './print';
-import { rewriteForTron } from './utils/transform-tron';
+import { tronPrintProfile, TRON_SOLIDITY_VERSION } from './utils/transform-tron';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import { tronProxyFor, tronProxyHelperSource } from './utils/tron-upgradeable';
 
@@ -14,8 +14,8 @@ import { tronProxyFor, tronProxyHelperSource } from './utils/tron-upgradeable';
 //   - `tronbox-config.js` configured for local TRE + Shasta/Nile/mainnet,
 //   - `package.json` with TronBox + the OZ TRON contracts library.
 
-// Matches the README of @openzeppelin/hardhat-tron so both download flavours stay aligned.
-const TRON_SOLIDITY_VERSION = '0.8.26';
+// TRON_SOLIDITY_VERSION (imported) matches the printed pragma and the
+// @openzeppelin/hardhat-tron README, so both download flavours stay aligned.
 
 function getDeploymentArgs(c: Contract): string[] {
   // The arg name doubles as the local variable identifier declared above the
@@ -375,7 +375,7 @@ This will run the Mocha test in \`test/${c.name}.js\` against the configured net
 export async function zipTronbox(c: Contract, opts?: GenericOptions): Promise<JSZip> {
   const zip = new JSZip();
 
-  zip.file(`contracts/${c.name}.sol`, rewriteForTron(printContract(c)));
+  zip.file(`contracts/${c.name}.sol`, printContract(c, tronPrintProfile));
   zip.file('contracts/Migrations.sol', migrationsContract);
   if (c.upgradeable) {
     // Pull the proxy into the build so the migration can deploy ${c.name} behind it.

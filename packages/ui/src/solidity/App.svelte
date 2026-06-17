@@ -119,9 +119,7 @@
     }
   }
 
-  $: code = overrides.transformPrintedContract
-    ? overrides.transformPrintedContract(printContract(contract))
-    : printContract(contract);
+  $: code = printContract(contract, overrides.printOptions);
   $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
 
   $: hasErrors = errors[tab] !== undefined;

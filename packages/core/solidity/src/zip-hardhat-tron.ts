@@ -3,13 +3,12 @@ import type { Contract } from './contract';
 import { HardhatZipGenerator } from './zip-hardhat';
 import type { GenericOptions } from './build-generic';
 import { printContract } from './print';
-import { rewriteForTron } from './utils/transform-tron';
+import { tronPrintProfile, TRON_SOLIDITY_VERSION } from './utils/transform-tron';
 import { tronProxyFor, tronProxyHelperSource, hasUnsetInitArgs } from './utils/tron-upgradeable';
 
-// Solidity version used by @openzeppelin/hardhat-tron and openzeppelin/tron-contracts.
-// `tron-solc` 0.8.26 + cancun + viaIR is what the TRON Democritus hardfork
-// (post-GreatVoyage 4.7) targets, and matches the README of OpenZeppelin/hardhat-tron.
-const TRON_SOLIDITY_VERSION = '0.8.26';
+// `tron-solc` (TRON_SOLIDITY_VERSION) + cancun + viaIR is what the TRON
+// Democritus hardfork (post-GreatVoyage 4.7) targets, and matches the README of
+// OpenZeppelin/hardhat-tron. Sourced from the same constant as the printed pragma.
 
 class HardhatTronZipGenerator extends HardhatZipGenerator {
   protected override getAdditionalHardhatImports(): string[] {
@@ -115,7 +114,7 @@ Ensure you have the following installed:
   }
 
   protected override getPrintContract(c: Contract): string {
-    return rewriteForTron(printContract(c));
+    return printContract(c, tronPrintProfile);
   }
 
   protected override getReadme(c: Contract): string {

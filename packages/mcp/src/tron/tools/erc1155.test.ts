@@ -6,7 +6,7 @@ import { registerTronTRC1155 } from './erc1155';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC1155Options } from '@openzeppelin/wizard';
-import { erc1155, rewriteForTron } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { solidityERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
@@ -30,7 +30,7 @@ function assertHasAllSupportedFields(
   t.pass();
 }
 
-const tronPrint = (opts: ERC1155Options) => rewriteForTron(erc1155.print(opts));
+const tronPrint = (opts: ERC1155Options) => printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile);
 
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {

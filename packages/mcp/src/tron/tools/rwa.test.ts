@@ -6,7 +6,7 @@ import { registerTronRWA } from './rwa';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
-import { realWorldAsset, rewriteForTron } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { solidityRWASchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
@@ -30,7 +30,8 @@ function assertHasAllSupportedFields(
   t.pass();
 }
 
-const tronPrint = (opts: StablecoinOptions) => rewriteForTron(realWorldAsset.print(opts));
+const tronPrint = (opts: StablecoinOptions) =>
+  printContract(buildGeneric({ kind: 'RealWorldAsset', ...opts }), tronPrintProfile);
 
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {

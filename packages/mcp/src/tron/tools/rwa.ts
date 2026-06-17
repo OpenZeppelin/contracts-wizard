@@ -1,6 +1,6 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
-import { realWorldAsset, rewriteForTron, sanitizeTronOptions } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityRWASchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
@@ -52,7 +52,9 @@ export function registerTronRWA(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintSolidityCodeBlock(() => rewriteForTron(realWorldAsset.print(sanitizeTronOptions(opts)))),
+            text: safePrintSolidityCodeBlock(() =>
+              printContract(buildGeneric({ kind: 'RealWorldAsset', ...sanitizeTronOptions(opts) }), tronPrintProfile),
+            ),
           },
         ],
       };

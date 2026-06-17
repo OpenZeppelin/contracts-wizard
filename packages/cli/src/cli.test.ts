@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { erc20, erc721, erc1155, stablecoin, rewriteForTron } from '@openzeppelin/wizard';
+import { erc20, stablecoin, buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { registry } from './registry';
 
 const CLI = join(__dirname, '..', 'dist', 'index.js');
@@ -200,7 +200,7 @@ test('nested dot options with multiple fields', t => {
 
 test('tron-trc20 rewrites ERC20 to TRC20', t => {
   const output = run('tron-trc20', '--name', 'TestToken', '--symbol', 'TST');
-  t.is(output, rewriteForTron(erc20.print({ name: 'TestToken', symbol: 'TST' })));
+  t.is(output, printContract(buildGeneric({ kind: 'ERC20', name: 'TestToken', symbol: 'TST' }), tronPrintProfile));
   t.true(output.includes('TRC20'), 'output should contain TRC20');
   t.true(
     output.includes('@openzeppelin/tron-contracts/token/TRC20/TRC20.sol'),
@@ -210,13 +210,16 @@ test('tron-trc20 rewrites ERC20 to TRC20', t => {
 
 test('tron-trc721 rewrites ERC721 to TRC721', t => {
   const output = run('tron-trc721', '--name', 'TestNFT', '--symbol', 'TNFT');
-  t.is(output, rewriteForTron(erc721.print({ name: 'TestNFT', symbol: 'TNFT' })));
+  t.is(output, printContract(buildGeneric({ kind: 'ERC721', name: 'TestNFT', symbol: 'TNFT' }), tronPrintProfile));
   t.true(output.includes('TRC721'), 'output should contain TRC721');
 });
 
 test('tron-trc1155 rewrites ERC1155 to TRC1155', t => {
   const output = run('tron-trc1155', '--name', 'TestMulti', '--uri', 'ipfs://example/{id}');
-  t.is(output, rewriteForTron(erc1155.print({ name: 'TestMulti', uri: 'ipfs://example/{id}' })));
+  t.is(
+    output,
+    printContract(buildGeneric({ kind: 'ERC1155', name: 'TestMulti', uri: 'ipfs://example/{id}' }), tronPrintProfile),
+  );
   t.true(output.includes('TRC1155'), 'output should contain TRC1155');
 });
 
@@ -228,5 +231,16 @@ test('tron-trc20 caps pragma at 0.8.26', t => {
 
 test('tron-stablecoin preserves stablecoin features', t => {
   const output = run('tron-stablecoin', '--name', 'TestStable', '--symbol', 'TSTB');
-  t.is(output, rewriteForTron(stablecoin.print({ name: 'TestStable', symbol: 'TSTB' })));
+  t.is(
+    output,
+    printContract(buildGeneric({ kind: 'Stablecoin', name: 'TestStable', symbol: 'TSTB' }), tronPrintProfile),
+  );
+});
+
+test('tron-trc20 renames the library but never user name/symbol literals', t => {
+  // A name and symbol that embed a token standard: only the inherited base is
+  // renamed to TRC20; the user's deployed name() and symbol() are untouched.
+  const output = run('tron-trc20', '--name', 'My ERC20 Token', '--symbol', 'ERC20');
+  t.true(output.includes('contract MyERC20Token is TRC20'), 'base renamed, contract name kept');
+  t.true(output.includes('TRC20("My ERC20 Token", "ERC20")'), 'name/symbol literals preserved');
 });

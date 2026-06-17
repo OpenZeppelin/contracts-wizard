@@ -33,7 +33,7 @@ export function printContract(contract: Contract, opts?: Options): string {
       [
         `// SPDX-License-Identifier: ${contract.license}`,
         printCompatibleLibraryVersions(contract, opts),
-        `pragma solidity ^${SOLIDITY_VERSION};`,
+        `pragma solidity ^${opts?.solidityVersion ?? SOLIDITY_VERSION};`,
       ],
 
       printImports(contract.imports, helpers),
@@ -220,7 +220,10 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
   const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
-  const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
+  // The transpiled initializer keeps the base name (`__ERC20_init`), so it uses
+  // transformInitName (no `Upgradeable` suffix); a plain parent constructor call
+  // matches the inheritance list, so it uses the full transformName.
+  const fn = useTranspiled ? `__${helpers.transformInitName(contract)}_init` : helpers.transformName(contract);
   if (useTranspiled || params.length > 0) {
     return [fn + '(' + params.map(printValue).join(', ') + ')'];
   } else {

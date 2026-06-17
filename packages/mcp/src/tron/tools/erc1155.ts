@@ -1,6 +1,6 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC1155Options } from '@openzeppelin/wizard';
-import { erc1155, rewriteForTron } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
@@ -27,7 +27,9 @@ export function registerTronTRC1155(server: McpServer): RegisteredTool {
         content: [
           {
             type: 'text',
-            text: safePrintSolidityCodeBlock(() => rewriteForTron(erc1155.print(opts))),
+            text: safePrintSolidityCodeBlock(() =>
+              printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile),
+            ),
           },
         ],
       };

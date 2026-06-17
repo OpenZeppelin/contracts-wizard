@@ -10,7 +10,9 @@ import {
   account,
   governor,
   custom,
-  rewriteForTron,
+  buildGeneric,
+  printContract,
+  tronPrintProfile,
   sanitizeTronOptions,
   TRON_DEFAULT_BLOCK_TIME,
 } from '@openzeppelin/wizard';
@@ -162,40 +164,48 @@ export const registry = {
   // Uniswap Hooks
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),
 
-  // TRON (Solidity post-processed for @openzeppelin/tron-contracts + TRC* token names)
+  // TRON: build the structured contract, then render through the TRON library
+  // profile (TRC* token names + @openzeppelin/tron-contracts import paths). Going
+  // through printContract(buildGeneric(...), tronPrintProfile) — rather than
+  // post-processing rendered text — keeps user data (name/symbol/securityContact)
+  // and the contract name untouched.
   'tron-trc20': createRegistryEntry(
     solidityERC20Schema,
-    opts => rewriteForTron(erc20.print(sanitizeTronOptions(opts))),
+    opts => printContract(buildGeneric({ kind: 'ERC20', ...sanitizeTronOptions(opts) }), tronPrintProfile),
     tronPrompts.TRC20,
   ),
   'tron-trc721': createRegistryEntry(
     solidityERC721Schema,
-    opts => rewriteForTron(erc721.print(opts)),
+    opts => printContract(buildGeneric({ kind: 'ERC721', ...opts }), tronPrintProfile),
     tronPrompts.TRC721,
   ),
   'tron-trc1155': createRegistryEntry(
     solidityERC1155Schema,
-    opts => rewriteForTron(erc1155.print(opts)),
+    opts => printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile),
     tronPrompts.TRC1155,
   ),
   'tron-stablecoin': createRegistryEntry(
     solidityStablecoinSchema,
-    opts => rewriteForTron(stablecoin.print(sanitizeTronOptions(opts))),
+    opts => printContract(buildGeneric({ kind: 'Stablecoin', ...sanitizeTronOptions(opts) }), tronPrintProfile),
     tronPrompts.Stablecoin,
   ),
   'tron-rwa': createRegistryEntry(
     solidityRWASchema,
-    opts => rewriteForTron(realWorldAsset.print(sanitizeTronOptions(opts))),
+    opts => printContract(buildGeneric({ kind: 'RealWorldAsset', ...sanitizeTronOptions(opts) }), tronPrintProfile),
     tronPrompts.RWA,
   ),
   'tron-governor': createRegistryEntry(
     tronGovernorSchema,
-    opts => rewriteForTron(governor.print({ ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME })),
+    opts =>
+      printContract(
+        buildGeneric({ kind: 'Governor', ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME }),
+        tronPrintProfile,
+      ),
     tronPrompts.Governor,
   ),
   'tron-custom': createRegistryEntry(
     solidityCustomSchema,
-    opts => rewriteForTron(custom.print(opts)),
+    opts => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile),
     tronPrompts.Custom,
   ),
 } satisfies Record<string, RegistryEntry>;

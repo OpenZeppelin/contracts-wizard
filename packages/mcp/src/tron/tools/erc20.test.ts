@@ -6,7 +6,7 @@ import { registerTronTRC20 } from './erc20';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC20Options } from '@openzeppelin/wizard';
-import { erc20, rewriteForTron } from '@openzeppelin/wizard';
+import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
@@ -30,9 +30,9 @@ function assertHasAllSupportedFields(
   t.pass();
 }
 
-// The TRON tool output is the Solidity Wizard's ERC20 source piped through
-// `rewriteForTron`, so we use the same helper but pre-transform the expected.
-const tronPrint = (opts: ERC20Options) => rewriteForTron(erc20.print(opts));
+// The TRON tool renders the Solidity ERC20 contract through the TRON library
+// profile, so the expected output goes through the same structured transform.
+const tronPrint = (opts: ERC20Options) => printContract(buildGeneric({ kind: 'ERC20', ...opts }), tronPrintProfile);
 
 test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
