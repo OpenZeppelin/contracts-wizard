@@ -1,5 +1,5 @@
 import test from 'ava';
-import { rewriteForTron } from './transform-tron';
+import { rewriteForTron, sanitizeTronOptions } from './transform-tron';
 
 test('rewrites @openzeppelin/contracts path root', t => {
   t.is(
@@ -54,6 +54,29 @@ test('does NOT rewrite digit-adjacent unrelated standards', t => {
   );
   // ERC6909 is NOT renamed in tron-contracts (only ERC20/721/1155/4626 are).
   t.is(rewritten[3], 'import "@openzeppelin/tron-contracts/token/ERC6909/ERC6909.sol";', 'ERC6909 must stay verbatim');
+});
+
+test('rewrites the upgradeable package, keeping base proxy utils on tron-contracts', t => {
+  // Transpiled parents resolve from tron-contracts-upgradeable; the stateless
+  // proxy utilities (Initializable, UUPSUpgradeable) stay on the base package.
+  t.is(
+    rewriteForTron(
+      'import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";',
+    ),
+    'import {TRC20Upgradeable} from "@openzeppelin/tron-contracts-upgradeable/token/TRC20/TRC20Upgradeable.sol";',
+  );
+  t.is(
+    rewriteForTron('import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";'),
+    'import {UUPSUpgradeable} from "@openzeppelin/tron-contracts/proxy/utils/UUPSUpgradeable.sol";',
+  );
+});
+
+test('sanitizeTronOptions downgrades superchain bridging to custom', t => {
+  t.deepEqual(sanitizeTronOptions({ crossChainBridging: 'superchain' }), { crossChainBridging: 'custom' });
+  // Other values (and the absence of the field) pass through untouched.
+  t.deepEqual(sanitizeTronOptions({ crossChainBridging: 'erc7786native' }), { crossChainBridging: 'erc7786native' });
+  t.deepEqual(sanitizeTronOptions({ crossChainBridging: 'custom' }), { crossChainBridging: 'custom' });
+  t.deepEqual(sanitizeTronOptions({}), {});
 });
 
 test('preserves the entire program when no TRON-relevant tokens present', t => {

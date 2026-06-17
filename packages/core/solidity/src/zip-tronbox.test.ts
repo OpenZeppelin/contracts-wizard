@@ -6,6 +6,7 @@ import { zipTronbox } from './zip-tronbox';
 import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
+import { buildGovernor } from './governor';
 import type { Contract } from './contract';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
@@ -59,6 +60,48 @@ test.serial('erc1155 basic', async t => {
   await runSnapshotTest(c, t, opts);
 });
 
+// Upgradeable contracts deploy behind a manually-deployed proxy (the OZ Upgrades
+// plugins don't target TRON), so the project also ships a `contracts/Proxy.sol`.
+test.serial('erc20 uups upgradeable - proxy migration scaffolding', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    mintable: true,
+    access: 'ownable',
+    upgradeable: 'uups',
+  };
+  const c = buildERC20(opts);
+  await runSnapshotTest(c, t, opts);
+});
+
+test.serial('erc20 transparent upgradeable - proxy migration scaffolding', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    mintable: true,
+    access: 'ownable',
+    upgradeable: 'transparent',
+  };
+  const c = buildERC20(opts);
+  await runSnapshotTest(c, t, opts);
+});
+
+test.serial('governor uups upgradeable - non-address init args are gated', async t => {
+  const opts: GenericOptions = {
+    kind: 'Governor',
+    name: 'My Governor',
+    delay: '1 day',
+    period: '1 week',
+    votes: 'erc20votes',
+    timelock: 'openzeppelin',
+    upgradeable: 'uups',
+  };
+  const c = buildGovernor(opts);
+  await runSnapshotTest(c, t, opts);
+});
+
 async function runSnapshotTest(c: Contract, t: ExecutionContext, opts: GenericOptions) {
   const zip = await zipTronbox(c, opts);
 
@@ -68,12 +111,13 @@ async function runSnapshotTest(c: Contract, t: ExecutionContext, opts: GenericOp
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
   const sorted = Object.keys(zip.files).sort();
-  t.deepEqual(sorted, [
+  const expected = [
     '.gitignore',
     'README.md',
     'contracts/',
     'contracts/Migrations.sol',
     `contracts/${c.name}.sol`,
+    ...(c.upgradeable ? ['contracts/Proxy.sol'] : []),
     'migrations/',
     'migrations/1_initial_migration.js',
     `migrations/2_deploy_${c.name}.js`,
@@ -81,13 +125,15 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
     'test/',
     `test/${c.name}.js`,
     'tronbox-config.js',
-  ]);
+  ].sort();
+  t.deepEqual(sorted, expected);
 }
 
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
     await getItemString(zip, 'contracts/Migrations.sol'),
+    ...(c.upgradeable ? [await getItemString(zip, 'contracts/Proxy.sol')] : []),
     await getItemString(zip, 'migrations/1_initial_migration.js'),
     await getItemString(zip, `migrations/2_deploy_${c.name}.js`),
     await getItemString(zip, `test/${c.name}.js`),

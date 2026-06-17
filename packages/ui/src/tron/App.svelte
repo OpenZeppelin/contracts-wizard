@@ -21,23 +21,27 @@
 
   // Uses the Solidity Wizard with overrides specific to TRON:
   //  - rewrite generated source to TRC token names + @openzeppelin/tron-contracts paths
+  //    (incl. @openzeppelin/tron-contracts-upgradeable for upgradeable contracts)
   //  - swap Hardhat download for the @openzeppelin/hardhat-tron-based one
   //  - replace the second download tab (originally Foundry) with TronBox
-  //  - hide upgradeable downloads (tron-contracts upgradeable variants not yet shipped)
-  //  - remap @openzeppelin/tron-contracts when opening in Remix (TVM is EVM-compatible enough)
+  //  - remap the @openzeppelin/tron-contracts packages when opening in Remix (TVM is EVM-compatible enough)
   //  - hide Account tab (ERC-4337 EntryPoint not deployed on TRON in scope here)
+  //
+  // Upgradeable contracts are fully supported: the generated source imports from
+  // @openzeppelin/tron-contracts-upgradeable, and the Hardhat/TronBox downloads
+  // deploy the proxy by hand (the OZ Upgrades plugins don't target TRON).
   const overrides: Overrides = {
     omitTabs: ['Account'],
     tabLabels: { ERC20: 'TRC20', ERC721: 'TRC721', ERC1155: 'TRC1155' },
     omitFeatures: defineOmitFeatures(),
-    omitZipHardhat: (opts?: GenericOptions) => !!opts?.upgradeable,
+    // Both downloads are shown for every option, upgradeable included — the
+    // generators emit a manual proxy-deploy project for upgradeable contracts.
+    omitZipHardhat: () => false,
     overrideZipHardhat: async (c: Contract, opts?: GenericOptions) => {
       const { zipHardhatTron } = await zipHardhatTronModule;
       return zipHardhatTron(c, opts);
     },
-    // Mirror the hardhat gate: TronBox doesn't have an upgradeable flow either,
-    // so hide the second download button when the user has opted into upgradeable.
-    omitZipFoundry: (opts?: GenericOptions) => !!opts?.upgradeable,
+    omitZipFoundry: () => false,
     overrideZipFoundry: async (c: Contract, opts?: GenericOptions) => {
       const { zipTronbox } = await zipTronboxModule;
       return zipTronbox(c, opts);
@@ -48,9 +52,13 @@
     },
     secondaryDownloadAction: 'download-tronbox',
     // Remix supports the TRON contracts source as-is (TVM is EVM-compatible),
-    // provided we point its npm resolver at the right package.
+    // provided we point its npm resolver at the right packages. List the
+    // upgradeable package first so its longer prefix is matched ahead of the base.
     omitOpenInRemix: false,
-    overrideVersionedRemappings: () => ['@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts/'],
+    overrideVersionedRemappings: () => [
+      '@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable/',
+      '@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts/',
+    ],
     transformPrintedContract: rewriteForTron,
     sanitizeOmittedFeatures,
     postConfigLanguage: 'tron-solidity',

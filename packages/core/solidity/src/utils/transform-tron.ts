@@ -28,6 +28,14 @@ const TRON_SOLC_MAX_MINOR = 26;
 // Solidity default of 12 (UI, CLI registry, and MCP tron-governor tool).
 export const TRON_DEFAULT_BLOCK_TIME = 3;
 
+// Upgradeable contracts import their transpiled (`*Upgradeable`) parents from
+// `@openzeppelin/contracts-upgradeable`, while stateless proxy utilities
+// (`Initializable`, `UUPSUpgradeable`) and interfaces still come from the base
+// `@openzeppelin/contracts`. The TRON ecosystem mirrors that split:
+// `@openzeppelin/tron-contracts-upgradeable` (the upgradeable build) plus
+// `@openzeppelin/tron-contracts` as its peer. This pattern must run before the
+// base-package pattern below so the longer `-upgradeable` root is matched first.
+const UPGRADEABLE_PATH_ROOT_PATTERN = /@openzeppelin\/contracts-upgradeable\//g;
 const PATH_ROOT_PATTERN = /@openzeppelin\/contracts\//g;
 const TOKEN_ERC20_DIR_PATTERN = /\/token\/ERC20\//g;
 const TOKEN_ERC721_DIR_PATTERN = /\/token\/ERC721\//g;
@@ -54,6 +62,7 @@ export function sanitizeTronOptions<T extends TronSanitizableOptions>(opts: T): 
 
 export function rewriteForTron(source: string): string {
   return source
+    .replace(UPGRADEABLE_PATH_ROOT_PATTERN, '@openzeppelin/tron-contracts-upgradeable/')
     .replace(PATH_ROOT_PATTERN, '@openzeppelin/tron-contracts/')
     .replace(TOKEN_ERC20_DIR_PATTERN, '/token/TRC20/')
     .replace(TOKEN_ERC721_DIR_PATTERN, '/token/TRC721/')
