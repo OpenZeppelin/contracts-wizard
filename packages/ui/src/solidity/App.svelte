@@ -356,7 +356,7 @@
         <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} />
+        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155} />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
         <StablecoinControls
@@ -379,7 +379,7 @@
         <GovernorControls bind:opts={allOpts.Governor} errors={errors.Governor} />
       </div>
       <div class:hidden={tab !== 'Custom'}>
-        <CustomControls bind:opts={allOpts.Custom} />
+        <CustomControls bind:opts={allOpts.Custom} errors={errors.Custom} />
       </div>
     </div>
 

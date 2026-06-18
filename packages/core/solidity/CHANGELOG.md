@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.11 (2026-06-18)
+
+- Reject line terminators in `info.securityContact` and `info.license` to prevent breaking out of the generated comment lines. Fixes [GHSA-9wxg-vf3r-56hc](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-9wxg-vf3r-56hc). ([#818](https://github.com/OpenZeppelin/contracts-wizard/pull/818))
+
 ## 0.10.10 (2026-06-11)
 
 - Add optional `decimals` to `erc20`, `stablecoin`, and `realWorldAsset`, which overrides `decimals()` when set to a non-default value. Defaults to 18 as before. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
