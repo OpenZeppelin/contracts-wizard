@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 3.0.1 (2026-06-18)
+
+- Reject line terminators in `info.securityContact` and `info.license` to prevent breaking out of the generated comment lines. Fixes [GHSA-9wxg-vf3r-56hc](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-9wxg-vf3r-56hc). ([#818](https://github.com/OpenZeppelin/contracts-wizard/pull/818))
+
 ## 3.0.0 (2026-01-10)
 
 - Add support for `with_components` macro. ([#703](https://github.com/OpenZeppelin/contracts-wizard/pull/703))
