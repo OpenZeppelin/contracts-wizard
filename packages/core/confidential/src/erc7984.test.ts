@@ -51,6 +51,105 @@ testERC7984('erc7984 premint of 0', {
   premint: '0',
 });
 
+testERC7984('erc7984 custom decimals', {
+  decimals: '9',
+});
+
+testERC7984('erc7984 default decimals omits override', {
+  decimals: '6',
+});
+
+testERC7984('erc7984 custom decimals with premint', {
+  decimals: '9',
+  premint: '1000.5',
+});
+
+test('erc7984 decimals too large', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '256',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than uint8 max value');
+});
+
+test('erc7984 decimals greater than max', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '11',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Decimals must not be greater than 10');
+});
+
+test('erc7984 max decimals allowed', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '10',
+    }),
+  );
+});
+
+test('erc7984 custom decimals incompatible with wrappable', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '9',
+      wrappable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.decimals,
+    'Custom decimals cannot be used with Wrappable. Wrappable derives its decimals from the underlying token (capped at 6)',
+  );
+  t.is(
+    (error as OptionsError).messages.wrappable,
+    'Wrappable cannot be used with custom decimals. Wrappable derives its decimals from the underlying token (capped at 6)',
+  );
+});
+
+test('erc7984 default decimals allowed with wrappable', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '6',
+      wrappable: true,
+    }),
+  );
+});
+
+test('erc7984 premint more precise than decimals', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      decimals: '2',
+      premint: '1.555',
+    }),
+  );
+  t.is((error as OptionsError).messages.premint, 'Too many decimals');
+});
+
 function testPremint(scenario: string, premint: string, expectedError?: string) {
   test(`erc7984 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {
@@ -96,6 +195,40 @@ testERC7984('erc7984 wrappable', {
   wrappable: true,
 });
 
+test('erc7984 premint incompatible with wrappable', async t => {
+  const error = t.throws(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      premint: '1000',
+      wrappable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.premint,
+    'Premint cannot be used with Wrappable. Preminted tokens would not be backed by the underlying token',
+  );
+  t.is(
+    (error as OptionsError).messages.wrappable,
+    'Wrappable cannot be used with premint. Preminted tokens would not be backed by the underlying token',
+  );
+});
+
+test('erc7984 zero premint allowed with wrappable', async t => {
+  t.notThrows(() =>
+    buildERC7984({
+      name: 'MyToken',
+      symbol: 'MTK',
+      contractURI: 'https://example.com/token',
+      networkConfig: 'zama-ethereum',
+      premint: '0',
+      wrappable: true,
+    }),
+  );
+});
+
 testERC7984('erc7984 votes + blocknumber', {
   votes: 'blocknumber',
 });
@@ -105,14 +238,12 @@ testERC7984('erc7984 votes + timestamp', {
 });
 
 testERC7984('erc7984 full zama-ethereum', {
-  premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
   networkConfig: 'zama-ethereum',
 });
 
 testERC7984('erc7984 full with timestamp votes', {
-  premint: '2000',
   wrappable: true,
   votes: 'timestamp',
   networkConfig: 'zama-ethereum',
@@ -132,7 +263,6 @@ testAPIEquivalence('erc7984 API full', {
   symbol: 'CTK',
   contractURI: 'https://custom.example.com/token',
   networkConfig: 'zama-ethereum',
-  premint: '2000',
   wrappable: true,
   votes: 'blocknumber',
 });

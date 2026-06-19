@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.5.2 (2026-06-11)
+
+- Add `decimals` to the AI schemas, MCP tools, and CLI for Solidity `erc20`, `stablecoin`, `realWorldAsset`, Confidential `erc7984`, and Stellar `fungible`, `stablecoin`. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
+
 ## 0.5.1 (2026-05-20)
 
 - Cairo: Add ERC721Consecutive extension. ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))

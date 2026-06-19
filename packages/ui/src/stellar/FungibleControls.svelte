@@ -38,6 +38,14 @@
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
+      Decimals
+      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 7.</HelpTooltip>
+    </span>
+    <input bind:value={opts.decimals} use:error={errors?.decimals} />
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
       Premint
       <HelpTooltip>Create an initial amount of tokens for the owner.</HelpTooltip>
     </span>
@@ -87,4 +95,4 @@
 
 <TraitImplementationSection bind:explicitImplementations={opts.explicitImplementations} />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

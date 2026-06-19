@@ -45,9 +45,10 @@ test('all', async t => {
     name: 'TestToken',
     symbol: 'TST',
     contractURI: 'https://example.com',
+    decimals: '9',
     premint: '1000',
     networkConfig: 'zama-ethereum',
-    wrappable: true,
+    wrappable: false,
     votes: 'blocknumber',
     info: {
       license: 'MIT',
@@ -58,4 +59,34 @@ test('all', async t => {
   assertHasAllSupportedFields(t, params);
 
   await assertAPIEquivalence(t, params, erc7984.print);
+});
+
+test('wrappable with custom decimals', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    contractURI: 'https://example.com',
+    networkConfig: 'zama-ethereum',
+    decimals: '9',
+    wrappable: true,
+  };
+
+  // Asserts that the API throws because custom decimals are incompatible with wrappable,
+  // and that the MCP result contains the error messages.
+  await assertAPIEquivalence(t, params, erc7984.print, true);
+});
+
+test('wrappable with premint', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    contractURI: 'https://example.com',
+    networkConfig: 'zama-ethereum',
+    premint: '1000',
+    wrappable: true,
+  };
+
+  // Asserts that the API throws because premint is incompatible with wrappable,
+  // and that the MCP result contains the error messages.
+  await assertAPIEquivalence(t, params, erc7984.print, true);
 });

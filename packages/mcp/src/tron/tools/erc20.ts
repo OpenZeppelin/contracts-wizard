@@ -13,6 +13,7 @@ export function registerTronTRC20(server: McpServer): RegisteredTool {
     async ({
       name,
       symbol,
+      decimals,
       burnable,
       pausable,
       premint,
@@ -31,6 +32,7 @@ export function registerTronTRC20(server: McpServer): RegisteredTool {
       const opts: ERC20Options = {
         name,
         symbol,
+        decimals,
         burnable,
         pausable,
         premint,

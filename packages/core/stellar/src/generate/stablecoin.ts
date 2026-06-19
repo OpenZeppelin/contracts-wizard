@@ -8,6 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
+  decimals: ['7', '18'],
   burnable: booleans,
   votes: booleans,
   pausable: booleans,

@@ -83,6 +83,14 @@
 
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
+      Decimals
+      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 18.</HelpTooltip>
+    </span>
+    <input bind:value={opts.decimals} use:error={errors?.decimals} />
+  </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
       Premint
       <HelpTooltip>Create an initial amount of tokens for the deployer.</HelpTooltip>
     </span>
@@ -266,4 +274,4 @@
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

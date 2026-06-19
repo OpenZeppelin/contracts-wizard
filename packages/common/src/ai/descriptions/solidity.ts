@@ -23,6 +23,7 @@ export const solidityCommonDescriptions = {
 };
 
 export const solidityERC20Descriptions = {
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 18.',
   premint: 'The number of tokens to premint for the deployer.',
   permit:
     'Whether without paying gas, token holders will be able to allow third parties to transfer from their account.',

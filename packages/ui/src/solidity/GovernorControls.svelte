@@ -265,4 +265,4 @@
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

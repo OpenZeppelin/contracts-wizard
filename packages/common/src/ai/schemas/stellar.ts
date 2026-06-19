@@ -27,6 +27,7 @@ export const stellarCommonSchema = {
 export const stellarFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
+  decimals: z.string().optional().describe(stellarFungibleDescriptions.decimals),
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   votes: z.boolean().optional().describe(stellarFungibleDescriptions.votes),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),

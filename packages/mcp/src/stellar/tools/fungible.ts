@@ -13,6 +13,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
     async ({
       name,
       symbol,
+      decimals,
       burnable,
       votes,
       pausable,
@@ -26,6 +27,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
       const opts: FungibleOptions = {
         name,
         symbol,
+        decimals,
         burnable,
         votes,
         pausable,

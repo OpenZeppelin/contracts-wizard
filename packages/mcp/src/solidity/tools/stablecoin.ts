@@ -13,6 +13,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
     async ({
       name,
       symbol,
+      decimals,
       burnable,
       pausable,
       premint,
@@ -32,6 +33,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
       const opts: StablecoinOptions = {
         name,
         symbol,
+        decimals,
         burnable,
         pausable,
         premint,

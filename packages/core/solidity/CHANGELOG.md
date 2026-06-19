@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.10.11 (2026-06-18)
+
+- Reject line terminators in `info.securityContact` and `info.license` to prevent breaking out of the generated comment lines. Fixes [GHSA-9wxg-vf3r-56hc](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-9wxg-vf3r-56hc). ([#818](https://github.com/OpenZeppelin/contracts-wizard/pull/818))
+
+## 0.10.10 (2026-06-11)
+
+- Add optional `decimals` to `erc20`, `stablecoin`, and `realWorldAsset`, which overrides `decimals()` when set to a non-default value. Defaults to 18 as before. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
+- Update the downloadable Hardhat sample project to Hardhat 3. Only affects the output of `zipHardhat`, which is not part of the documented public API. ([#810](https://github.com/OpenZeppelin/contracts-wizard/pull/810))
+
 ## 0.10.9 (2026-05-20)
 
 - Escape `opts.name` and `opts.uri` when generating Hardhat and Foundry test files. Only affects callers of `zipHardhat` / `zipFoundry`; these functions are not part of the documented public API. Fixes [GHSA-4x76-22x2-rx8v](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-4x76-22x2-rx8v). ([ec12c44](https://github.com/OpenZeppelin/contracts-wizard/commit/ec12c44f8d9e0491eba31037f95b36e98ec58b5f))

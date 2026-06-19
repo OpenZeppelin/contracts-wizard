@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { toUint256, toBigInt, validateUint256, UINT256_MAX } from './convert-strings';
+import { toUint, toBigInt, UINT256_MAX } from './convert-strings';
 import { OptionsError } from '../error';
 
 test('toBigInt', t => {
@@ -17,30 +17,36 @@ test('toBigInt - negative', t => {
   t.is(error.messages.foo, 'Not a valid number');
 });
 
-test('validateUint256', t => {
-  t.is(validateUint256(BigInt(123), 'foo'), BigInt(123));
+test('toUint - uint256', t => {
+  t.is(toUint('123', 'foo', 'uint256'), BigInt(123));
 });
 
-test('validateUint256 - too large', t => {
-  const error = t.throws(() => validateUint256(UINT256_MAX + BigInt(1), 'foo'), { instanceOf: OptionsError });
-  t.is(error.messages.foo, 'Value is greater than uint256 max value');
+test('toUint - uint256 max', t => {
+  t.is(toUint(String(UINT256_MAX), 'foo', 'uint256'), UINT256_MAX);
 });
 
-test('toUint256', t => {
-  t.is(toUint256('123', 'foo'), BigInt(123));
-});
-
-test('toUint256 - not number', t => {
-  const error = t.throws(() => toUint256('abc', 'foo'), { instanceOf: OptionsError });
+test('toUint - not number', t => {
+  const error = t.throws(() => toUint('abc', 'foo', 'uint256'), { instanceOf: OptionsError });
   t.is(error.messages.foo, 'Not a valid number');
 });
 
-test('toUint256 - negative', t => {
-  const error = t.throws(() => toUint256('-1', 'foo'), { instanceOf: OptionsError });
+test('toUint - negative', t => {
+  const error = t.throws(() => toUint('-1', 'foo', 'uint256'), { instanceOf: OptionsError });
   t.is(error.messages.foo, 'Not a valid number');
 });
 
-test('toUint256 - too large', t => {
-  const error = t.throws(() => toUint256(String(UINT256_MAX + BigInt(1)), 'foo'), { instanceOf: OptionsError });
+test('toUint - uint256 too large', t => {
+  const error = t.throws(() => toUint(String(UINT256_MAX + BigInt(1)), 'foo', 'uint256'), {
+    instanceOf: OptionsError,
+  });
   t.is(error.messages.foo, 'Value is greater than uint256 max value');
+});
+
+test('toUint - uint8', t => {
+  t.is(toUint('255', 'foo', 'uint8'), BigInt(255));
+});
+
+test('toUint - uint8 too large', t => {
+  const error = t.throws(() => toUint('256', 'foo', 'uint8'), { instanceOf: OptionsError });
+  t.is(error.messages.foo, 'Value is greater than uint8 max value');
 });
