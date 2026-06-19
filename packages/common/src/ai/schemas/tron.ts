@@ -4,7 +4,7 @@ import { solidityGovernorSchema } from './solidity';
 
 // TRON tools reuse the Solidity schemas almost verbatim — the options are
 // identical and only the generated standard names / import paths differ
-// (handled downstream by `rewriteForTron`). The one exception is the Governor's
+// (handled downstream by `tronPrintProfile`). The one exception is the Governor's
 // `blockTime`, whose description must mention TRON's ~3s default without
 // leaking that note into the shared Solidity (and Polkadot) schemas.
 export const tronGovernorSchema = {

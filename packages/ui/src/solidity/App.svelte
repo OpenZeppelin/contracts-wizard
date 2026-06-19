@@ -57,6 +57,10 @@
   export let tab: Kind = sanitizeKind(initialTab);
   $: {
     tab = sanitizeKind(tab);
+    // A `?tab=`/`#kind` URL can select a tab this ecosystem omits; clamp it back.
+    if (overrides.omitTabs.includes(tab)) {
+      tab = 'ERC20';
+    }
     allowRendering();
     dispatch('tab-change', tab);
   }
@@ -265,10 +269,14 @@
         <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}>
           {overrides.tabLabels?.ERC1155 ?? 'ERC1155'}
         </button>
-        <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin* </button>
-        <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
-          Real-World Asset*
-        </button>
+        {#if !overrides.omitTabs.includes('Stablecoin')}
+          <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin* </button>
+        {/if}
+        {#if !overrides.omitTabs.includes('RealWorldAsset')}
+          <button class:selected={tab === 'RealWorldAsset'} on:click={() => (tab = 'RealWorldAsset')}>
+            Real-World Asset*
+          </button>
+        {/if}
         {#if !overrides.omitTabs.includes('Account')}
           <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
         {/if}

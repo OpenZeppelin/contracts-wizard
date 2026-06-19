@@ -3,7 +3,7 @@
 
 // TRON prompts. Used by MCP + CLI tron-* tools. Options are otherwise
 // identical to the Solidity ecosystem; only the standard names + library
-// import paths differ in the output (handled by `rewriteForTron`).
+// import paths differ in the output (handled by `tronPrintProfile`).
 export const tronPrompts = {
   TRC20: 'Make a fungible token per the TRC-20 standard, targeting the TRON Virtual Machine.',
   TRC721: 'Make a non-fungible token per the TRC-721 standard, targeting the TRON Virtual Machine.',
