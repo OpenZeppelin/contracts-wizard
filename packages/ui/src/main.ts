@@ -24,6 +24,7 @@ import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import { compatibleContractsSemver as uniswapHooksSemver } from '@openzeppelin/wizard-uniswap-hooks';
 import type { InitialOptions } from './common/initial-options';
+import { tronKindToUrlTab, tronUrlTabToKind } from './tron/url-tab-alias';
 
 function postResize() {
   const { height } = document.documentElement.getBoundingClientRect();
@@ -200,7 +201,8 @@ if (!selection.compatible) {
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'tron':
-      app = new TronApp({ target: document.body, props: { initialTab, initialOpts } });
+      // TRON URLs use TRC-branded tab tokens (e.g. `#trc20`); map back to the internal kind.
+      app = new TronApp({ target: document.body, props: { initialTab: tronUrlTabToKind(initialTab), initialOpts } });
       break;
     case 'confidential':
       app = new ConfidentialApp({ target: document.body, props: { initialTab, initialOpts } });
@@ -222,7 +224,12 @@ if (!selection.compatible) {
 }
 
 app.$on('tab-change', (e: CustomEvent) => {
-  postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
+  let tab: string = e.detail;
+  if (selection.compatible && selection.appType === 'tron') {
+    // TRON surfaces the TRC-branded token in the URL/host (e.g. `ERC20` -> `trc20`).
+    tab = tronKindToUrlTab(tab);
+  }
+  postMessage({ kind: 'oz-wizard-tab-change', tab: tab.toLowerCase() });
 });
 
 export default app;
