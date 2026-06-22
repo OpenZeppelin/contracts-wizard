@@ -2,21 +2,27 @@
 // ecosystem. It plugs into `printContract(contract, tronPrintProfile)` via the
 // `transformName` / `transformImport` hooks, so it only ever rewrites
 // OpenZeppelin library symbols and import paths — never user-supplied data
-// (contract name, token name/symbol literals, securityContact). That's the key
-// difference from a regex over rendered source, which can't tell them apart.
+// (contract name, token name/symbol literals, securityContact).
 //
 // `@openzeppelin/tron-contracts` mirrors `@openzeppelin/contracts` with two
 // systematic differences, applied here structurally:
 //
 //   1. Path root: `@openzeppelin/contracts/...` -> `@openzeppelin/tron-contracts/...`
 //      (and `-upgradeable/...` -> `tron-contracts-upgradeable/...`)
-//   2. Token standards are renamed to the TRC family:
-//        ERC20   -> TRC20,  ERC721  -> TRC721,
-//        ERC1155 -> TRC1155, ERC4626 -> TRC4626   (incl. IERC* -> ITRC*)
+//   2. Standards are renamed to the TRON family: ERC -> TRC, IERC -> ITRC,
+//      EIP -> TIP (e.g. ERC20 -> TRC20, ERC1363 -> TRC1363, EIP712 -> TIP712).
+//      tron-contracts adopts every standard as a TRC, so this is a blanket
+//      prefix swap.
 //
-// Every other identifier (ERC1363, ERC2981, ERC4337, ERC6909, EIP712, Ownable,
-// AccessControl, etc.) is kept verbatim, matching how `@openzeppelin/tron-contracts`
-// ships those files.
+// Non-standard identifiers (Ownable, AccessControl, etc.) stay verbatim. The
+// rename is case-sensitive and only touches symbols/imports, so lowercase
+// annotation strings are unaffected — notably the `erc7201:` storage-location
+// tag emitted for upgradeable contracts (see set-namespaced-storage.ts).
+//
+// TODO(tron): the `erc7201:` storage-location tag stays as-is rather than
+// TIP-7201's `trc7201:`. It's a build-time comment the symbol rename here
+// doesn't touch, and it's inert on TRON (nothing in the deploy flow reads it).
+// Revisit if `trc7201:` becomes the convention.
 
 import type { Options } from '../options';
 import type { ImportContract } from '../contract';
@@ -45,10 +51,14 @@ function capTronSolidityVersion(version: string): string {
 // Solidity default of 12 (UI, CLI registry, and MCP tron-governor tool).
 export const TRON_DEFAULT_BLOCK_TIME = 3;
 
-// Renames an OpenZeppelin token-standard symbol to its TRC counterpart. Applied
-// only to library symbol names and import paths (both free of user data).
+// Renames an OpenZeppelin standard symbol to its TRON counterpart (see file
+// header): ERC->TRC, IERC->ITRC, EIP->TIP. Case-sensitive and applied only to
+// library symbols and import paths, never user data or lowercase annotations.
 function renameTronSymbol(name: string): string {
-  return name.replace(/\bIERC(20|721|1155|4626)/g, 'ITRC$1').replace(/\bERC(20|721|1155|4626)/g, 'TRC$1');
+  return name
+    .replace(/\bIERC(\d+)/g, 'ITRC$1')
+    .replace(/\bERC(\d+)/g, 'TRC$1')
+    .replace(/\bEIP(\d+)/g, 'TIP$1');
 }
 
 function rewriteTronImportPath(path: string): string {
@@ -64,8 +74,7 @@ function rewriteTronImportPath(path: string): string {
 
 /**
  * TRON library profile for `printContract`. Routes every surface (UI display,
- * zip generators, CLI, MCP) through one definition instead of post-processing
- * rendered text.
+ * zip generators, CLI, MCP) through one definition.
  */
 export const tronPrintProfile: Options = {
   transformName: renameTronSymbol,

@@ -12,7 +12,7 @@ test('renames token standards in imports and inheritance', t => {
   t.true(source.includes('@openzeppelin/tron-contracts/token/TRC20/extensions/TRC20Permit.sol'));
   t.regex(source, /contract MyToken is TRC20, TRC20Permit, TRC20Votes/);
   // No bare ERC token standards leak through.
-  t.false(/\b(I)?ERC(20|721|1155|4626)/.test(source));
+  t.false(/\b(I)?ERC\d+/.test(source));
 });
 
 test('maps the upgradeable package, keeping base proxy utils on tron-contracts', t => {
@@ -54,13 +54,18 @@ test('does NOT corrupt a user contract name that contains a token standard', t =
   t.true(source.includes('contract ERC20Token'), 'contract name preserved verbatim');
 });
 
-test('leaves unrelated standards (ERC1363/ERC2981/ERC6909) verbatim', t => {
-  // Path-root still maps to tron-contracts, but these symbols are not renamed.
-  const source = printContract(buildERC20({ name: 'T', symbol: 'T', callback: true }), tronPrintProfile);
-  if (source.includes('1363')) {
-    t.true(source.includes('ERC1363'), 'ERC1363 stays verbatim');
-  }
-  t.pass();
+test('renames standards beyond the core token set (TRC1363, TIP712)', t => {
+  // `callback` pulls in ERC1363 and `votes` without `permit` pulls in EIP712, so
+  // this exercises the rename on standards outside the core token set.
+  const source = printContract(
+    buildERC20({ name: 'My Token', symbol: 'MTK', callback: true, votes: true, permit: false }),
+    tronPrintProfile,
+  );
+  t.true(source.includes('TRC1363'), 'ERC1363 -> TRC1363');
+  t.true(source.includes('@openzeppelin/tron-contracts/utils/cryptography/TIP712.sol'), 'EIP712 import -> TIP712.sol');
+  t.regex(source, /\bTIP712\b/, 'EIP712 symbol -> TIP712');
+  t.false(/\b(I)?ERC\d+/.test(source), 'no bare ERC standard leaks through');
+  t.false(/\bEIP\d+/.test(source), 'no bare EIP standard leaks through');
 });
 
 test('renames the governor initializer base names to TRC where applicable', t => {
