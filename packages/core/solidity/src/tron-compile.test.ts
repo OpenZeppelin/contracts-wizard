@@ -14,7 +14,13 @@ import { tronPrintProfile, sanitizeTronOptions } from './utils/transform-tron';
 // Contract kinds offered on TRON. Account (ERC-4337 EntryPoint is out of scope) and
 // Stablecoin / RealWorldAsset (depend on @openzeppelin/community-contracts, not ported
 // to TRON) are intentionally excluded, mirroring the CLI / MCP / UI surfaces.
-const TRON_KINDS = ['ERC20', 'ERC721', 'ERC1155', 'Governor', 'Custom'] as const satisfies readonly (keyof KindedOptions)[];
+const TRON_KINDS = [
+  'ERC20',
+  'ERC721',
+  'ERC1155',
+  'Governor',
+  'Custom',
+] as const satisfies readonly (keyof KindedOptions)[];
 
 // TRON analogue of `testCompile` in test.ts: generate every option combination for the
 // TRON-eligible kinds, run each through the TRON sanitizer + print profile, and verify
