@@ -181,3 +181,24 @@ export const stellarGovernorAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Governor'>;
+
+export const stellarVaultAIFunctionDefinition = {
+  name: 'Vault',
+  description: stellarPrompts.Vault,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'symbol',
+        'pausable',
+        'upgradeable',
+        'access',
+        'info',
+        'explicitImplementations',
+      ]),
+    },
+    required: contractExactRequiredKeys<'stellar', 'Vault'>()(['name', 'symbol']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Vault'>;

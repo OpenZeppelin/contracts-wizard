@@ -3,11 +3,17 @@ import type { FungibleOptions } from './fungible';
 import type { GovernorOptions } from './governor';
 import type { NonFungibleOptions } from './non-fungible';
 import type { StablecoinOptions } from './stablecoin';
+import type { VaultOptions } from './vault';
 import {
   printStablecoin,
   defaults as stablecoinDefaults,
   isAccessControlRequired as stablecoinIsAccessControlRequired,
 } from './stablecoin';
+import {
+  printVault,
+  defaults as vaultDefaults,
+  isAccessControlRequired as vaultIsAccessControlRequired,
+} from './vault';
 import {
   printFungible,
   defaults as fungibledefaults,
@@ -48,6 +54,7 @@ export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<Fun
 export type Governor = WizardContractAPI<GovernorOptions> & AccessControlAPI<GovernorOptions>;
 export type NonFungible = WizardContractAPI<NonFungibleOptions> & AccessControlAPI<NonFungibleOptions>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
+export type Vault = WizardContractAPI<VaultOptions> & AccessControlAPI<VaultOptions>;
 
 export const fungible: Fungible = {
   print: printFungible,
@@ -71,4 +78,10 @@ export const stablecoin: Stablecoin = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
+};
+
+export const vault: Vault = {
+  print: printVault,
+  defaults: vaultDefaults,
+  isAccessControlRequired: vaultIsAccessControlRequired,
 };

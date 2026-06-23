@@ -57,6 +57,13 @@ export const stellarStablecoinSchema = {
     .describe(stellarStablecoinDescriptions.limitations),
 } as const satisfies z.ZodRawShape;
 
+export const stellarVaultSchema = {
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  ...stellarCommonSchema,
+} as const satisfies z.ZodRawShape;
+
 export const stellarNonFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
