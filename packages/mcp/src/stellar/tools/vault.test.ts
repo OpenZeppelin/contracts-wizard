@@ -42,6 +42,7 @@ test('all default', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestVault',
     symbol: 'TVT',
+    decimalsOffset: '2',
     pausable: true,
     upgradeable: true,
     access: 'ownable',
@@ -59,6 +60,7 @@ test('all explicit', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'TestVault',
     symbol: 'TVT',
+    decimalsOffset: '2',
     pausable: true,
     upgradeable: true,
     access: 'roles',

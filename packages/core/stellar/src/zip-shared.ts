@@ -39,18 +39,16 @@ fn initial_state() {
 // Add more tests bellow
 `;
 
-// The vault's constructor wires an underlying asset and a virtual decimals
-// offset, and derives its own decimals by calling into that asset contract. A
-// generated address would have no `decimals()` to call, so the test deploys a
-// minimal mock fungible asset first and registers the vault against it.
+// The vault's constructor takes an underlying asset address and derives its own
+// decimals by calling into that asset contract. A generated address would have
+// no `decimals()` to call, so the test deploys a minimal mock fungible asset
+// first and registers the vault against it. A single-element tuple needs a
+// trailing comma in Rust.
 export const printVaultRustTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => {
-  const registerArgs = (c.constructorArgs || [])
-    .map(arg => {
-      if (arg.name === 'asset') return 'asset_address.clone()';
-      if (arg.name === 'decimals_offset') return 'decimals_offset';
-      return 'Address::generate(&env)';
-    })
-    .join(', ');
+  const registerArgs = (c.constructorArgs || []).map(arg =>
+    arg.name === 'asset' ? 'asset_address.clone()' : 'Address::generate(&env)',
+  );
+  const registerTuple = `(${registerArgs.join(', ')}${registerArgs.length === 1 ? ',' : ''})`;
 
   return `#![cfg(test)]
 
@@ -92,8 +90,7 @@ fn initial_state() {
     let admin = Address::generate(&env);
     let asset_address = env.register(MockAssetContract, (1_000_000_000i128, admin));
 
-    let decimals_offset = 0u32;
-    let contract_addr = env.register(${c.name}, (${registerArgs}));
+    let contract_addr = env.register(${c.name}, ${registerTuple});
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.query_asset(), asset_address);

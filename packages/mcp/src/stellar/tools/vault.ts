@@ -10,10 +10,11 @@ export function registerStellarVault(server: McpServer): RegisteredTool {
     'stellar-vault',
     makeDetailedPrompt(stellarPrompts.Vault),
     stellarVaultSchema,
-    async ({ name, symbol, pausable, upgradeable, access, explicitImplementations, info }) => {
+    async ({ name, symbol, decimalsOffset, pausable, upgradeable, access, explicitImplementations, info }) => {
       const opts: VaultOptions = {
         name,
         symbol,
+        decimalsOffset,
         pausable,
         upgradeable,
         access,

@@ -8,6 +8,7 @@ const booleans = [true, false];
 const blueprint = {
   name: ['MyVault'],
   symbol: ['MTK'],
+  decimalsOffset: ['0', '2'],
   pausable: booleans,
   upgradeable: booleans,
   access: accessOptions,

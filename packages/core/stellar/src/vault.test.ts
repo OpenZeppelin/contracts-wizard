@@ -3,6 +3,7 @@ import test from 'ava';
 import type { VaultOptions } from './vault';
 import { buildVault } from './vault';
 import { printContract } from './print';
+import { OptionsError } from './error';
 
 import { vault } from '.';
 
@@ -36,6 +37,10 @@ function testAPIEquivalence(title: string, opts?: VaultOptions) {
 }
 
 testVault('basic vault', {});
+
+testVault('vault custom decimals offset', {
+  decimalsOffset: '6',
+});
 
 testVault('vault pausable', {
   pausable: true,
@@ -89,6 +94,20 @@ testVault('vault full - complex name', {
   access: 'ownable',
   pausable: true,
   upgradeable: true,
+});
+
+test('throws error when decimals offset exceeds maximum', t => {
+  const error = t.throws(
+    () =>
+      buildVault({
+        name: 'MyVault',
+        symbol: 'MTK',
+        decimalsOffset: '11',
+      }),
+    { instanceOf: OptionsError },
+  );
+
+  t.is(error?.messages.decimalsOffset, 'Maximum decimals offset is 10');
 });
 
 testAPIEquivalence('vault API default');

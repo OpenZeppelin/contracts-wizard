@@ -39,6 +39,11 @@ export const stellarStablecoinDescriptions = {
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
 };
 
+export const stellarVaultDescriptions = {
+  decimalsOffset:
+    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals. Higher values increase resistance to inflation (donation) attacks. Must be between 0 and 10. Defaults to 0.',
+};
+
 export const stellarGovernorDescriptions = {
   version: 'The semantic version label returned by the governor contract.',
   votingDelay: 'Number of ledgers between proposal creation and voting start (17,000 ledgers are approx. 1 day).',

@@ -35,11 +35,16 @@
     </label>
   </div>
 
-  <p class="text-sm">
-    A tokenized vault issues shares for an underlying Fungible Token asset (ERC-4626 style). The underlying
-    <code>asset</code> address and the virtual <code>decimals_offset</code> are constructor arguments, set when the
-    contract is deployed. The vault's decimals are derived from the asset's decimals plus the offset.
-  </p>
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Decimals offset
+      <HelpTooltip>
+        Virtual offset added to the underlying asset's decimals to derive the vault share decimals. A higher value
+        increases resistance to inflation (donation) attacks. Must be between 0 and 10. Defaults to 0.
+      </HelpTooltip>
+    </span>
+    <input bind:value={opts.decimalsOffset} use:error={errors?.decimalsOffset} />
+  </label>
 </section>
 
 <section class="controls-section">

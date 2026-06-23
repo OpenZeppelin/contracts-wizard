@@ -9,12 +9,18 @@ import { withCommonContractDefaults, getSelfArg } from './common-options';
 import { setInfo } from './set-info';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
-import { toByteArray } from './utils/convert-strings';
+import { toByteArray, toUint } from './utils/convert-strings';
+import { OptionsError } from './error';
 import { pickKeys } from '@openzeppelin/wizard-common';
+
+// Upper bound enforced by the library's `Vault::set_decimals_offset`
+// (`stellar_tokens::vault::MAX_DECIMALS_OFFSET`); a larger value panics on deploy.
+const MAX_DECIMALS_OFFSET = 10;
 
 export const defaults: Required<VaultOptions> = {
   name: 'MyVault',
   symbol: 'MTK',
+  decimalsOffset: '0',
   pausable: false,
   upgradeable: false,
   access: commonDefaults.access,
@@ -29,6 +35,7 @@ export function printVault(opts: VaultOptions = defaults): string {
 export interface VaultOptions extends CommonContractOptions {
   name: string;
   symbol: string;
+  decimalsOffset?: string;
   pausable?: boolean;
   upgradeable?: boolean;
 }
@@ -37,6 +44,7 @@ export function withDefaults(opts: VaultOptions): Required<VaultOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
+    decimalsOffset: opts.decimalsOffset ?? defaults.decimalsOffset,
     pausable: opts.pausable ?? defaults.pausable,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
   };
@@ -51,7 +59,21 @@ export function buildVault(opts: VaultOptions): ContractBuilder {
 
   const allOpts = withDefaults(opts);
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), allOpts.pausable, allOpts.explicitImplementations);
+  const decimalsOffset = toUint(allOpts.decimalsOffset, 'decimalsOffset', 'u32');
+  if (decimalsOffset > MAX_DECIMALS_OFFSET) {
+    throw new OptionsError({
+      decimalsOffset: `Maximum decimals offset is ${MAX_DECIMALS_OFFSET}`,
+    });
+  }
+
+  addBase(
+    c,
+    toByteArray(allOpts.name),
+    toByteArray(allOpts.symbol),
+    decimalsOffset,
+    allOpts.pausable,
+    allOpts.explicitImplementations,
+  );
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access, allOpts.explicitImplementations);
@@ -76,14 +98,21 @@ export function buildVault(opts: VaultOptions): ContractBuilder {
   return c;
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, pausable: boolean, explicitImplementations: boolean) {
-  // Configure the underlying asset and virtual decimals offset, then set the
-  // metadata. The decimals offset must be set before metadata initialization
-  // because the vault derives its decimals from the underlying asset + offset.
+function addBase(
+  c: ContractBuilder,
+  name: string,
+  symbol: string,
+  decimalsOffset: bigint,
+  pausable: boolean,
+  explicitImplementations: boolean,
+) {
+  // The underlying asset is supplied at deployment, while the virtual decimals
+  // offset is a baked-in configuration value. The offset must be set before the
+  // metadata because the vault derives its decimals from the underlying asset's
+  // decimals plus the offset.
   c.addConstructorArgument({ name: 'asset', type: 'Address' });
-  c.addConstructorArgument({ name: 'decimals_offset', type: 'u32' });
   c.addConstructorCode('Vault::set_asset(e, asset);');
-  c.addConstructorCode('Vault::set_decimals_offset(e, decimals_offset);');
+  c.addConstructorCode(`Vault::set_decimals_offset(e, ${decimalsOffset});`);
   c.addConstructorCode(
     `Base::set_metadata(e, Self::decimals(e), String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`,
   );
