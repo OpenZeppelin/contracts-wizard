@@ -55,6 +55,18 @@ export const cairoERC20Descriptions = {
   wrapper: 'Whether to include ERC20Wrapper functionality for depositing and withdrawing an underlying token.',
   votes:
     "Whether to keep track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account.",
+  flashmint:
+    'Configuration object for the ERC20FlashMint extension (ERC-3156 flash loans). The extension is included only when `enabled` is true; the other fields tune the loan limit, fee, and fee destination.',
+  flashMintEnabled:
+    'Whether to include ERC20FlashMint functionality, allowing flash loans of tokens compliant with ERC-3156.',
+  flashMintMaxAmount:
+    'Maximum amount of tokens that can be flash-loaned in a single call. Use the literal string "max" to inherit the default (the maximum representable u256 minus the current total supply), or a non-negative number in the token\'s decimal units to set a custom cap. A value of 0 effectively disables flash loans without removing the extension.',
+  flashMintFeeMode:
+    "Mode for the flash loan fee. 'percent' charges a percentage of the loaned amount (value provided via feePercent). 'custom' emits a TODO stub for the caller to implement.",
+  flashMintFeePercent:
+    'Percentage of the loan amount charged as the flash loan fee. Number between 0 and 100, fractional values supported (e.g. "0.0013725"). Used when feeMode is \'percent\'. Defaults to 0 (no fee).',
+  flashMintFeeDestination:
+    "Where the flash loan fee is sent. 'burn' sends it to the zero address (effectively burning it). 'fee_receiver' adds a constructor argument that the deployer must populate with a non-zero address; the address is stored on-chain and validated at deploy time.",
 };
 
 export const cairoERC721Descriptions = {

@@ -15,6 +15,12 @@ export interface Contract {
   upgradeable: boolean;
   implementedTraits: ImplementedTrait[];
   superVariables: Variable[];
+  storageMembers: StorageMember[];
+}
+
+export interface StorageMember {
+  name: string;
+  type: string;
 }
 
 export type Value = string | number | bigint | { lit: string } | { note: string; value: Value };
@@ -118,6 +124,7 @@ export class ContractBuilder implements Contract {
   private constantsMap: Map<string, Variable> = new Map();
   private useClausesMap: Map<string, UseClause> = new Map();
   private interfaceFlagsSet: Set<string> = new Set();
+  private storageMembersMap: Map<string, StorageMember> = new Map();
 
   constructor(name: string, macros: MacrosOptions, account: boolean = false) {
     this.name = toIdentifier(name, true);
@@ -143,6 +150,24 @@ export class ContractBuilder implements Contract {
 
   get useClauses(): UseClause[] {
     return [...this.useClausesMap.values()];
+  }
+
+  get storageMembers(): StorageMember[] {
+    return [...this.storageMembersMap.values()];
+  }
+
+  addStorageMember(member: StorageMember): boolean {
+    const existing = this.storageMembersMap.get(member.name);
+    if (existing !== undefined) {
+      if (existing.type !== member.type) {
+        throw new Error(
+          `Tried to add duplicate storage member ${member.name} with different type: ${member.type} instead of ${existing.type}.`,
+        );
+      }
+      return false;
+    }
+    this.storageMembersMap.set(member.name, member);
+    return true;
   }
 
   /**

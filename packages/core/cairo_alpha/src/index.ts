@@ -13,7 +13,8 @@ export type { Info } from './set-info';
 export type { RoyaltyInfoOptions } from './set-royalty-info';
 export type { MacrosOptions } from './set-macros';
 
-export { premintPattern } from './erc20';
+export { premintPattern, flashMintDefaults } from './erc20';
+export type { FlashMintOptions, FlashMintFeeMode, FlashMintFeeDestination } from './erc20';
 
 export { defaults as infoDefaults } from './set-info';
 export { defaults as royaltyInfoDefaults } from './set-royalty-info';
