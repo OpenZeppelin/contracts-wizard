@@ -41,7 +41,7 @@ export const stellarStablecoinDescriptions = {
 
 export const stellarVaultDescriptions = {
   decimalsOffset:
-    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals. Higher values increase resistance to inflation (donation) attacks. Must be between 0 and 10. Defaults to 0.',
+    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals, used to mitigate inflation (donation) attacks via virtual shares. The default of 0 is already safe: it makes such attacks non-profitable. Higher values make attacks orders of magnitude more costly, at the cost of virtual shares absorbing a tiny portion of the value accrued to the vault. Must be between 0 and 10.',
 };
 
 export const stellarGovernorDescriptions = {

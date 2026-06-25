@@ -78,12 +78,14 @@ testVault('vault pausable explicit trait implementations', {
 });
 
 testVault('vault full - ownable', {
+  decimalsOffset: '2',
   access: 'ownable',
   pausable: true,
   upgradeable: true,
 });
 
 testVault('vault full - roles', {
+  decimalsOffset: '2',
   access: 'roles',
   pausable: true,
   upgradeable: true,
@@ -91,6 +93,7 @@ testVault('vault full - roles', {
 
 testVault('vault full - complex name', {
   name: 'Custom  $ Vault',
+  decimalsOffset: '2',
   access: 'ownable',
   pausable: true,
   upgradeable: true,
