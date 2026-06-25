@@ -84,6 +84,8 @@ export const tronPrintProfile: Options = {
     path: rewriteTronImportPath(parent.path),
   }),
   solidityVersion: TRON_SOLIDITY_VERSION,
+  // trc7201 uses the same slot derivation as erc7201; only the annotation label differs.
+  formulaId: 'trc7201',
 };
 
 // `superchain` cross-chain bridging is OP Stack-specific: it pulls in

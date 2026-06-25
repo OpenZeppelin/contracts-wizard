@@ -41,6 +41,12 @@ export interface Options {
    */
   solidityVersion?: string;
   /**
+   * ERC-7201 `<FORMULA_ID>` written in the `@custom:storage-location` annotation
+   * of namespaced storage structs (defaults to `erc7201`). This only sets the
+   * annotation label, not the slot derivation — see `computeNamespacedStorageSlot`.
+   */
+  formulaId?: string;
+  /**
    * Add additional libraries to the compatibility banner printed at the top of the contract.
    *
    * If `alwaysKeepOzPrefix` is true, the library name will always keep the "OpenZeppelin " prefix, even if there are multiple libraries from OpenZeppelin being imported.
@@ -59,6 +65,8 @@ export interface Helpers {
    */
   transformInitName: (name: ReferencedContract) => string;
   transformImport: (name: ImportContract) => ImportContract;
+  /** ERC-7201 `<FORMULA_ID>` for namespaced storage annotations (`Options.formulaId`, default `erc7201`). */
+  formulaId: string;
   additionalCompatibleLibraries: NonNullable<Options['additionalCompatibleLibraries']>;
 }
 
@@ -76,6 +84,7 @@ export function withHelpers(contract: Contract, opts: Options = {}): Helpers {
       const p2 = contractUpgradeable && inferTranspiled(p1) ? upgradeableImport(p1) : p1;
       return opts.transformImport?.(p2) ?? p2;
     },
+    formulaId: opts.formulaId ?? 'erc7201',
     additionalCompatibleLibraries: opts.additionalCompatibleLibraries ?? [],
   };
 }

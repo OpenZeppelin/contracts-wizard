@@ -2,7 +2,13 @@ import { keccak256 } from 'ethereum-cryptography/keccak';
 import { hexToBytes, toHex, utf8ToBytes } from 'ethereum-cryptography/utils';
 
 /**
- * Returns the ERC-7201 storage location for a given namespace id
+ * Returns the ERC-7201 storage location for a given namespace id.
+ *
+ * This is the only namespaced-storage slot derivation. `Options.formulaId` sets
+ * the `@custom:storage-location` annotation label but does NOT select a
+ * derivation, so every supported formula id must share this computation. A
+ * formula whose derivation actually differs would have to change this function
+ * and be computed at print time (formulaId is only available to the printer).
  */
 export function computeNamespacedStorageSlot(id: string): string {
   const innerHash = keccak256(utf8ToBytes(id));

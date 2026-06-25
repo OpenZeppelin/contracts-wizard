@@ -2,6 +2,7 @@ import test from 'ava';
 
 import { printContract } from '../print';
 import { buildERC20 } from '../erc20';
+import { buildERC721 } from '../erc721';
 import { buildGovernor } from '../governor';
 import { buildCustom } from '../custom';
 import { tronPrintProfile, sanitizeTronOptions } from './transform-tron';
@@ -83,4 +84,16 @@ test('sanitizeTronOptions downgrades superchain bridging to custom', t => {
   t.deepEqual(sanitizeTronOptions({ crossChainBridging: 'erc7786native' }), { crossChainBridging: 'erc7786native' });
   t.deepEqual(sanitizeTronOptions({ crossChainBridging: 'custom' }), { crossChainBridging: 'custom' });
   t.deepEqual(sanitizeTronOptions({}), {});
+});
+
+test('uses the TRON formula id (trc7201) for namespaced storage annotations', t => {
+  // Upgradeable ERC721 with incremental ids uses namespaced storage, whose struct
+  // carries a `@custom:storage-location <formulaId>:<namespaceId>` annotation. On
+  // TRON the formula id is `trc7201` (TIP-7201) rather than `erc7201`.
+  const source = printContract(
+    buildERC721({ name: 'My NFT', symbol: 'NFT', mintable: true, incremental: true, upgradeable: 'uups' }),
+    tronPrintProfile,
+  );
+  t.regex(source, /@custom:storage-location trc7201:/, 'uses the trc7201 formula id');
+  t.false(source.includes('erc7201:'), 'no erc7201 formula id leaks through');
 });

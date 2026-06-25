@@ -25,7 +25,7 @@ import { getCommunityContractsGitCommit } from './utils/community-contracts-git-
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
-  const structs = contract.structs.map(_struct => printStruct(_struct));
+  const structs = contract.structs.map(_struct => printStruct(_struct, helpers));
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
   const hasOverrides = fns.override.some(l => l.length > 0);
   return formatLines(
@@ -323,9 +323,11 @@ function printFunction2(
   return fn;
 }
 
-function printStruct(_struct: ContractStruct): Lines[] {
+function printStruct(_struct: ContractStruct, { formulaId }: Helpers): Lines[] {
   const [comments, kindedName, code] = [_struct.comments, _struct.name, _struct.variables];
-  const struct: Lines[] = [...comments];
+  const storageLocation =
+    _struct.namespaceId !== undefined ? [`/// @custom:storage-location ${formulaId}:${_struct.namespaceId}`] : [];
+  const struct: Lines[] = [...storageLocation, ...comments];
 
   const braces = code.length > 0 ? '{' : '{}';
   struct.push([`struct ${kindedName}`, braces].join(' '));
