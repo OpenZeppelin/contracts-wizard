@@ -59,6 +59,12 @@ export interface ContractFunction extends BaseFunction {
 export type FunctionKind = 'private' | 'internal' | 'public' | 'external';
 export interface ContractStruct {
   name: string;
+  /**
+   * ERC-7201 `<NAMESPACE_ID>`. When set, the struct is printed with a
+   * `@custom:storage-location <FORMULA_ID>:<NAMESPACE_ID>` annotation, where
+   * `<FORMULA_ID>` comes from `Options.formulaId` (defaults to `erc7201`).
+   */
+  namespaceId?: string;
   comments: string[];
   variables: string[];
 }

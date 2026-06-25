@@ -62,7 +62,8 @@ function makeStorageFunction(name: string): BaseFunction {
 function makeStorageStruct(name: string, namespaceId: string) {
   const struct: ContractStruct = {
     name: `${name}Storage`,
-    comments: [`/// @custom:storage-location erc7201:${namespaceId}`],
+    namespaceId,
+    comments: [],
     variables: [],
   };
   return struct;

@@ -13,9 +13,17 @@
 
   const defaults = governor.defaults;
 
+  // Ecosystems that inherit the Solidity Wizard (e.g. TRON) can override the
+  // assumed block time so the voting delay/period are computed against their
+  // chain's cadence (TRON ~3s vs Ethereum ~12s).
+  export let defaultBlockTime: number | undefined = undefined;
+
+  const effectiveBlockTime = defaultBlockTime ?? defaults.blockTime;
+
   export let opts: Required<KindedOptions['Governor']> = {
     kind: 'Governor',
     ...defaults,
+    blockTime: effectiveBlockTime,
     proposalThreshold: '', // default to empty in UI
     quorumAbsolute: '', // default to empty in UI
     info: { ...infoDefaults }, // create new object since Info is nested
@@ -203,7 +211,7 @@
         <input
           type="number"
           step="0.01"
-          placeholder={defaults.blockTime.toString()}
+          placeholder={effectiveBlockTime.toString()}
           bind:value={opts.blockTime}
           class="input-inline"
           disabled={opts.clockMode === 'timestamp'}

@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { erc20, stablecoin } from '@openzeppelin/wizard';
+import { erc20, stablecoin, buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { registry } from './registry';
 
 const CLI = join(__dirname, '..', 'dist', 'index.js');
@@ -194,4 +194,45 @@ test('nested dot options with multiple fields', t => {
       info: { license: 'Apache-2.0', securityContact: 'test@test.com' },
     }),
   );
+});
+
+// --- TRON ---
+
+test('tron-trc20 rewrites ERC20 to TRC20', t => {
+  const output = run('tron-trc20', '--name', 'TestToken', '--symbol', 'TST');
+  t.is(output, printContract(buildGeneric({ kind: 'ERC20', name: 'TestToken', symbol: 'TST' }), tronPrintProfile));
+  t.true(output.includes('TRC20'), 'output should contain TRC20');
+  t.true(
+    output.includes('@openzeppelin/tron-contracts/token/TRC20/TRC20.sol'),
+    'output should import from @openzeppelin/tron-contracts',
+  );
+});
+
+test('tron-trc721 rewrites ERC721 to TRC721', t => {
+  const output = run('tron-trc721', '--name', 'TestNFT', '--symbol', 'TNFT');
+  t.is(output, printContract(buildGeneric({ kind: 'ERC721', name: 'TestNFT', symbol: 'TNFT' }), tronPrintProfile));
+  t.true(output.includes('TRC721'), 'output should contain TRC721');
+});
+
+test('tron-trc1155 rewrites ERC1155 to TRC1155', t => {
+  const output = run('tron-trc1155', '--name', 'TestMulti', '--uri', 'ipfs://example/{id}');
+  t.is(
+    output,
+    printContract(buildGeneric({ kind: 'ERC1155', name: 'TestMulti', uri: 'ipfs://example/{id}' }), tronPrintProfile),
+  );
+  t.true(output.includes('TRC1155'), 'output should contain TRC1155');
+});
+
+test('tron-trc20 caps pragma at 0.8.26', t => {
+  const output = run('tron-trc20', '--name', 'TestToken', '--symbol', 'TST');
+  t.true(output.includes('pragma solidity ^0.8.26;'), 'pragma should be capped at 0.8.26');
+  t.false(output.includes('pragma solidity ^0.8.27'), 'pragma should not be 0.8.27 (above tron-solc max)');
+});
+
+test('tron-trc20 renames the library but never user name/symbol literals', t => {
+  // A name and symbol that embed a token standard: only the inherited base is
+  // renamed to TRC20; the user's deployed name() and symbol() are untouched.
+  const output = run('tron-trc20', '--name', 'My ERC20 Token', '--symbol', 'ERC20');
+  t.true(output.includes('contract MyERC20Token is TRC20'), 'base renamed, contract name kept');
+  t.true(output.includes('TRC20("My ERC20 Token", "ERC20")'), 'name/symbol literals preserved');
 });

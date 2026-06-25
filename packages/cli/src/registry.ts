@@ -1,8 +1,22 @@
 import type { z } from 'zod';
 import { parseArgsFromSchema } from './cli-adapter';
 
-import { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from '@openzeppelin/wizard';
-import { solidityPrompts } from '@openzeppelin/wizard-common';
+import {
+  erc20,
+  erc721,
+  erc1155,
+  stablecoin,
+  realWorldAsset,
+  account,
+  governor,
+  custom,
+  buildGeneric,
+  printContract,
+  tronPrintProfile,
+  sanitizeTronOptions,
+  TRON_DEFAULT_BLOCK_TIME,
+} from '@openzeppelin/wizard';
+import { solidityPrompts, tronPrompts } from '@openzeppelin/wizard-common';
 import {
   solidityERC20Schema,
   solidityERC721Schema,
@@ -12,6 +26,7 @@ import {
   solidityAccountSchema,
   solidityGovernorSchema,
   solidityCustomSchema,
+  tronGovernorSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
 import {
@@ -148,4 +163,41 @@ export const registry = {
 
   // Uniswap Hooks
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),
+
+  // TRON: build the structured contract, then render through the TRON library
+  // profile (TRC* token names + @openzeppelin/tron-contracts import paths). Going
+  // through printContract(buildGeneric(...), tronPrintProfile) — rather than
+  // post-processing rendered text — keeps user data (name/symbol/securityContact)
+  // and the contract name untouched.
+  'tron-trc20': createRegistryEntry(
+    solidityERC20Schema,
+    opts => printContract(buildGeneric({ kind: 'ERC20', ...sanitizeTronOptions(opts) }), tronPrintProfile),
+    tronPrompts.TRC20,
+  ),
+  'tron-trc721': createRegistryEntry(
+    solidityERC721Schema,
+    opts => printContract(buildGeneric({ kind: 'ERC721', ...opts }), tronPrintProfile),
+    tronPrompts.TRC721,
+  ),
+  'tron-trc1155': createRegistryEntry(
+    solidityERC1155Schema,
+    opts => printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile),
+    tronPrompts.TRC1155,
+  ),
+  // Stablecoin and RealWorldAsset are intentionally not exposed on TRON — they
+  // depend on @openzeppelin/community-contracts, which is not ported to TRON.
+  'tron-governor': createRegistryEntry(
+    tronGovernorSchema,
+    opts =>
+      printContract(
+        buildGeneric({ kind: 'Governor', ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME }),
+        tronPrintProfile,
+      ),
+    tronPrompts.Governor,
+  ),
+  'tron-custom': createRegistryEntry(
+    solidityCustomSchema,
+    opts => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile),
+    tronPrompts.Custom,
+  ),
 } satisfies Record<string, RegistryEntry>;

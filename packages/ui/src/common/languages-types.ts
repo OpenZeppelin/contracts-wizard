@@ -23,4 +23,5 @@ export type Language =
   | 'polkadot-solidity'
   | 'stellar'
   | 'stylus'
+  | 'tron-solidity'
   | 'uniswap-hooks-solidity';

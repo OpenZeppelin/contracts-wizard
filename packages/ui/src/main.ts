@@ -7,6 +7,7 @@ import ConfidentialApp from './confidential/App.svelte';
 import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
+import TronApp from './tron/App.svelte';
 import UniswapHooksApp from './uniswap-hooks/App.svelte';
 import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
@@ -23,6 +24,7 @@ import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import { compatibleContractsSemver as uniswapHooksSemver } from '@openzeppelin/wizard-uniswap-hooks';
 import type { InitialOptions } from './common/initial-options';
+import { tronKindToUrlTab, tronUrlTabToKind } from './tron/url-tab-alias';
 
 function postResize() {
   const { height } = document.documentElement.getBoundingClientRect();
@@ -48,7 +50,16 @@ const initialOpts: InitialOptions = {
 
 interface CompatibleSelection {
   compatible: true;
-  appType: 'solidity' | 'cairo' | 'cairo_alpha' | 'confidential' | 'polkadot' | 'stellar' | 'stylus' | 'uniswap-hooks';
+  appType:
+    | 'solidity'
+    | 'cairo'
+    | 'cairo_alpha'
+    | 'confidential'
+    | 'polkadot'
+    | 'stellar'
+    | 'stylus'
+    | 'tron'
+    | 'uniswap-hooks';
 }
 
 interface IncompatibleSelection {
@@ -95,6 +106,14 @@ function evaluateSelection(
       // Use Solidity Contracts semver
       if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
         return { compatible: true, appType: 'polkadot' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: soliditySemver };
+      }
+    }
+    case 'tron': {
+      // Use Solidity Contracts semver — `@openzeppelin/tron-contracts` mirrors `@openzeppelin/contracts`.
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, soliditySemver)) {
+        return { compatible: true, appType: 'tron' };
       } else {
         return { compatible: false, compatibleVersionsSemver: soliditySemver };
       }
@@ -181,6 +200,10 @@ if (!selection.compatible) {
     case 'stylus':
       app = new StylusApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
+    case 'tron':
+      // TRON URLs use TRC-branded tab tokens (e.g. `#trc20`); map back to the internal kind.
+      app = new TronApp({ target: document.body, props: { initialTab: tronUrlTabToKind(initialTab), initialOpts } });
+      break;
     case 'confidential':
       app = new ConfidentialApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
@@ -201,7 +224,12 @@ if (!selection.compatible) {
 }
 
 app.$on('tab-change', (e: CustomEvent) => {
-  postMessage({ kind: 'oz-wizard-tab-change', tab: e.detail.toLowerCase() });
+  let tab: string = e.detail;
+  if (selection.compatible && selection.appType === 'tron') {
+    // TRON surfaces the TRC-branded token in the URL/host (e.g. `ERC20` -> `trc20`).
+    tab = tronKindToUrlTab(tab);
+  }
+  postMessage({ kind: 'oz-wizard-tab-change', tab: tab.toLowerCase() });
 });
 
 export default app;

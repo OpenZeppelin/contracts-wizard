@@ -145,6 +145,10 @@ body {
   --color-2: #e3126f;
 }
 
+.nav .switch.switch-tron.active {
+  --color-2: var(--tron-red);
+}
+
 .nav .switch.switch-stellar.active {
   --color-2: #0f0f0f;
 }

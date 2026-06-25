@@ -3,4 +3,5 @@ export { registerCairoTools } from './cairo/tools';
 export { registerConfidentialTools } from './confidential/tools';
 export { registerStellarTools } from './stellar/tools';
 export { registerStylusTools } from './stylus/tools';
+export { registerTronTools } from './tron/tools';
 export { registerUniswapHooksTools } from './uniswap-hooks/tools';
