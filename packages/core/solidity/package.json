@@ -27,7 +27,7 @@
     "ethereum-cryptography": "^3.2.0"
   },
   "devDependencies": {
-    "@openzeppelin/community-contracts": "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#b0ddd27",
+    "@openzeppelin/community-contracts": "git+https://github.com/OpenZeppelin/openzeppelin-community-contracts.git#f7e5f08",
     "@openzeppelin/contracts": "^5.6.0",
     "@openzeppelin/contracts-upgradeable": "^5.6.0",
     "@types/node": "^20.0.0",
