@@ -25,8 +25,10 @@ export { fungible } from './api';
 export { governor } from './api';
 export { nonFungible } from './api';
 export { stablecoin } from './api';
+export { vault } from './api';
 
 export type { FungibleOptions } from './fungible';
 export type { GovernorOptions } from './governor';
 export type { NonFungibleOptions } from './non-fungible';
 export type { StablecoinOptions } from './stablecoin';
+export type { VaultOptions } from './vault';

@@ -7,6 +7,7 @@ export const stellarPrompts = {
   NonFungible:
     'Make a non-fungible token per the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721.',
   Stablecoin: 'Make a stablecoin that uses Fungible Token Standard, compatible with SEP-41.',
+  Vault: 'Make a tokenized vault that issues Fungible Token shares for an underlying asset, similar to ERC-4626.',
 };
 
 export const stellarCommonDescriptions = {
@@ -36,6 +37,11 @@ export const stellarStablecoinDescriptions = {
   decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
+};
+
+export const stellarVaultDescriptions = {
+  decimalsOffset:
+    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals, used to mitigate inflation (donation) attacks via virtual shares. The default of 0 is already safe: it makes such attacks non-profitable. Higher values make attacks orders of magnitude more costly, at the cost of virtual shares absorbing a tiny portion of the value accrued to the vault. Must be between 0 and 10.',
 };
 
 export const stellarGovernorDescriptions = {

@@ -7,6 +7,7 @@ import {
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
+  stellarVaultDescriptions,
 } from '../../index';
 
 export const stellarInfoSchema = z
@@ -55,6 +56,14 @@ export const stellarStablecoinSchema = {
     .or(z.literal('blocklist'))
     .optional()
     .describe(stellarStablecoinDescriptions.limitations),
+} as const satisfies z.ZodRawShape;
+
+export const stellarVaultSchema = {
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  decimalsOffset: z.string().optional().describe(stellarVaultDescriptions.decimalsOffset),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  ...stellarCommonSchema,
 } as const satisfies z.ZodRawShape;
 
 export const stellarNonFungibleSchema = {
