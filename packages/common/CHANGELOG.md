@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.5.3 (2026-06-26)
+
+- Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821))
+
 ## 0.5.2 (2026-06-11)
 
 - Add `decimals` to the AI schemas, MCP tools, and CLI for Solidity `erc20`, `stablecoin`, `realWorldAsset`, Confidential `erc7984`, and Stellar `fungible`, `stablecoin`. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
