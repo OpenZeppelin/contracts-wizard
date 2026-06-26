@@ -1,10 +1,8 @@
 # Changelog
 
-## 0.1.3
+## 0.1.3 (2026-06-26)
 
-### Patch Changes
-
-- [#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821) [`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379) Thanks [@ozgunozerk](https://github.com/ozgunozerk)! - Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options.
+- Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821)) ([`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379))
 
 - Updated dependencies [[`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379)]:
   - @openzeppelin/wizard-stellar@0.6.3
