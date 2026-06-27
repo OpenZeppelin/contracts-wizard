@@ -41,6 +41,7 @@ import {
   governor as stellarGovernor,
   stablecoin as stellarStablecoin,
   nonFungible,
+  vault as stellarVault,
 } from '@openzeppelin/wizard-stellar';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 import {
@@ -48,6 +49,7 @@ import {
   stellarGovernorSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
+  stellarVaultSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
 import { erc20 as stylusErc20, erc721 as stylusErc721, erc1155 as stylusErc1155 } from '@openzeppelin/wizard-stylus';
@@ -133,6 +135,7 @@ export const registry = {
     opts => nonFungible.print(opts),
     stellarPrompts.NonFungible,
   ),
+  'stellar-vault': createRegistryEntry(stellarVaultSchema, opts => stellarVault.print(opts), stellarPrompts.Vault),
 
   // Stylus
   'stylus-erc20': createRegistryEntry(stylusERC20Schema, opts => stylusErc20.print(opts), stylusPrompts.ERC20),

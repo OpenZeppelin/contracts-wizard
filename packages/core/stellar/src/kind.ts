@@ -18,6 +18,7 @@ function isKind<T>(value: Kind | T): value is Kind {
     case 'Governor':
     case 'NonFungible':
     case 'Stablecoin':
+    case 'Vault':
       return true;
 
     default: {

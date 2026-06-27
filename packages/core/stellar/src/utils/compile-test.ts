@@ -45,7 +45,11 @@ async function rewriteWorkspaceCargoForLocalContracts(workspaceCargoPath: string
     readFile(upstreamCargoPath, 'utf8'),
   ]);
 
-  const sorobanMatch = upstreamCargo.match(/^\s*soroban-sdk\s*=\s*"([^"]+)"/m);
+  // Match both the bare-string form (`soroban-sdk = "26.1.0"`) and the table
+  // form (`soroban-sdk = { version = "26.1.0", features = [...] }`).
+  const sorobanMatch =
+    upstreamCargo.match(/^\s*soroban-sdk\s*=\s*"([^"]+)"/m) ??
+    upstreamCargo.match(/^\s*soroban-sdk\s*=\s*\{[^}]*?version\s*=\s*"([^"]+)"/m);
   if (sorobanMatch === null || sorobanMatch[1] === undefined) {
     throw new Error(`Unable to find soroban-sdk version in ${upstreamCargoPath}`);
   }

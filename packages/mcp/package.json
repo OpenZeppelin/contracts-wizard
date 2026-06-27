@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/contracts-mcp",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "description": "OpenZeppelin Contracts MCP Server",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -24,10 +24,10 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@openzeppelin/wizard-common": "^0.5.2",
+    "@openzeppelin/wizard-common": "^0.5.3",
     "@openzeppelin/wizard": "^0.10.10",
     "@openzeppelin/wizard-stylus": "^0.3.0",
-    "@openzeppelin/wizard-stellar": "^0.6.1",
+    "@openzeppelin/wizard-stellar": "^0.6.3",
     "@openzeppelin/wizard-cairo": "^3.0.0",
     "@openzeppelin/wizard-confidential": "^0.1.2",
     "@openzeppelin/wizard-uniswap-hooks": "^0.1.1"
