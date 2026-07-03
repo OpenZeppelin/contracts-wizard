@@ -230,6 +230,36 @@ fn initial_state() {
   t.is(output, expected);
 });
 
+test('printRustNameTest escapes quotes and backslashes in token name within assertion', t => {
+  const contract = {
+    name: 'MyToken',
+    constructorArgs: [],
+  };
+  const output = printRustNameTest(contract, 'My "Cool" \\Token');
+
+  const expected = `#![cfg(test)]
+
+extern crate std;
+
+use soroban_sdk::{ Env, String };
+
+use crate::contract::{ MyToken, MyTokenClient };
+
+#[test]
+fn initial_state() {
+    let env = Env::default();
+
+    let contract_addr = env.register(MyToken, ());
+    let client = MyTokenClient::new(&env, &contract_addr);
+
+    assert_eq!(client.name(), String::from_str(&env, "My \\\"Cool\\\" \\\\Token"));
+}
+
+// Add more tests bellow
+`;
+  t.is(output, expected);
+});
+
 test('printContractCargo output includes only required dependencies forwarding to workspace', t => {
   const scaffoldContractName = 'test';
   const output = printContractCargo(scaffoldContractName, ['stellar-tokens', 'stellar-access']);

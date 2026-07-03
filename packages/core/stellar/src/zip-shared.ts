@@ -16,6 +16,10 @@ export function getAddressArgs(c: Pick<Contract, 'constructorArgs'>): string[] {
     .map(constructorArg => constructorArg.name);
 }
 
+function escapeRustString(str: string): string {
+  return str.replace(/(\\|")/g, '\\$1');
+}
+
 export const printRustNameTest = (c: Pick<Contract, 'constructorArgs' | 'name'>, tokenName: string) => `#![cfg(test)]
 
 extern crate std;
@@ -33,7 +37,7 @@ fn initial_state() {
       .join(',')}${getAddressArgs(c).length === 1 ? ',' : ''}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
-    assert_eq!(client.name(), String::from_str(&env, "${tokenName}"));
+    assert_eq!(client.name(), String::from_str(&env, "${escapeRustString(tokenName)}"));
 }
 
 // Add more tests bellow
@@ -94,7 +98,7 @@ fn initial_state() {
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.query_asset(), asset_address);
-    assert_eq!(client.name(), String::from_str(&env, "${tokenName}"));
+    assert_eq!(client.name(), String::from_str(&env, "${escapeRustString(tokenName)}"));
 }
 
 // Add more tests bellow
