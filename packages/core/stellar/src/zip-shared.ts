@@ -16,7 +16,7 @@ export function getAddressArgs(c: Pick<Contract, 'constructorArgs'>): string[] {
     .map(constructorArg => constructorArg.name);
 }
 
-export const printRustNameTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => `#![cfg(test)]
+export const printRustNameTest = (c: Pick<Contract, 'constructorArgs' | 'name'>, tokenName: string) => `#![cfg(test)]
 
 extern crate std;
 
@@ -33,7 +33,7 @@ fn initial_state() {
       .join(',')}${getAddressArgs(c).length === 1 ? ',' : ''}));
     let client = ${c.name}Client::new(&env, &contract_addr);
 
-    assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
+    assert_eq!(client.name(), String::from_str(&env, "${tokenName}"));
 }
 
 // Add more tests bellow
@@ -44,7 +44,7 @@ fn initial_state() {
 // no `decimals()` to call, so the test deploys a minimal mock fungible asset
 // first and registers the vault against it. A single-element tuple needs a
 // trailing comma in Rust.
-export const printVaultRustTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => {
+export const printVaultRustTest = (c: Pick<Contract, 'constructorArgs' | 'name'>, tokenName: string) => {
   const registerArgs = (c.constructorArgs || []).map(arg =>
     arg.name === 'asset' ? 'asset_address.clone()' : 'Address::generate(&env)',
   );
@@ -94,7 +94,7 @@ fn initial_state() {
     let client = ${c.name}Client::new(&env, &contract_addr);
 
     assert_eq!(client.query_asset(), asset_address);
-    assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
+    assert_eq!(client.name(), String::from_str(&env, "${tokenName}"));
 }
 
 // Add more tests bellow

@@ -115,7 +115,7 @@ test('printRustNameTest generates test code with address args', t => {
       { name: 'admin', type: 'Address' },
     ],
   };
-  const output = printRustNameTest(contract);
+  const output = printRustNameTest(contract, contract.name);
 
   const expected = `#![cfg(test)]
 
@@ -145,7 +145,7 @@ test('printRustNameTest generates test code without address args', t => {
     name: 'NoArgs',
     constructorArgs: [],
   };
-  const output = printRustNameTest(contract);
+  const output = printRustNameTest(contract, contract.name);
 
   const expected = `#![cfg(test)]
 
@@ -175,7 +175,7 @@ test('printRustNameTest handles single address arg', t => {
     name: 'SingleArg',
     constructorArgs: [{ name: 'owner', type: 'Address' }],
   };
-  const output = printRustNameTest(contract);
+  const output = printRustNameTest(contract, contract.name);
 
   const expected = `#![cfg(test)]
 
@@ -193,6 +193,36 @@ fn initial_state() {
     let client = SingleArgClient::new(&env, &contract_addr);
 
     assert_eq!(client.name(), String::from_str(&env, "SingleArg"));
+}
+
+// Add more tests bellow
+`;
+  t.is(output, expected);
+});
+
+test('printRustNameTest uses raw token name with spaces in assertion', t => {
+  const contract = {
+    name: 'MyToken',
+    constructorArgs: [],
+  };
+  const output = printRustNameTest(contract, 'My Token');
+
+  const expected = `#![cfg(test)]
+
+extern crate std;
+
+use soroban_sdk::{ Env, String };
+
+use crate::contract::{ MyToken, MyTokenClient };
+
+#[test]
+fn initial_state() {
+    let env = Env::default();
+
+    let contract_addr = env.register(MyToken, ());
+    let client = MyTokenClient::new(&env, &contract_addr);
+
+    assert_eq!(client.name(), String::from_str(&env, "My Token"));
 }
 
 // Add more tests bellow
