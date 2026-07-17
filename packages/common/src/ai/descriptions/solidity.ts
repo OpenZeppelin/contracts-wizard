@@ -49,7 +49,7 @@ export const solidityERC721Descriptions = {
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
   crossChainBridging:
-    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Outbound transfers burn the token on the source chain, and inbound transfers mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the token on the source chain and mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
   crossChainLinkAllowOverride:
     'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
 };
@@ -59,7 +59,7 @@ export const solidityERC1155Descriptions = {
   supply: 'Whether to keep track of total supply of tokens',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types',
   crossChainBridging:
-    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Outbound transfers burn the tokens on the source chain, and inbound transfers mint them on the destination chain.',
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the tokens on the source chain and mint them on the destination chain.',
   crossChainLinkAllowOverride:
     'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
 };
