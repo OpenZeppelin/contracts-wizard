@@ -67,14 +67,8 @@ export const solidityERC721Schema = {
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   incremental: z.boolean().optional().describe(solidityERC721Descriptions.incremental),
   votes: z.literal('blocknumber').or(z.literal('timestamp')).optional().describe(solidityERC721Descriptions.votes),
-  crossChainBridging: z
-    .literal('erc7786native')
-    .optional()
-    .describe(solidityERC721Descriptions.crossChainBridging),
-  crossChainLinkAllowOverride: z
-    .boolean()
-    .optional()
-    .describe(solidityERC721Descriptions.crossChainLinkAllowOverride),
+  crossChainBridging: z.literal('erc7786native').optional().describe(solidityERC721Descriptions.crossChainBridging),
+  crossChainLinkAllowOverride: z.boolean().optional().describe(solidityERC721Descriptions.crossChainLinkAllowOverride),
   ...solidityCommonSchema,
   namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
 } as const satisfies z.ZodRawShape;
@@ -87,14 +81,8 @@ export const solidityERC1155Schema = {
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   supply: z.boolean().optional().describe(solidityERC1155Descriptions.supply),
   updatableUri: z.boolean().optional().describe(solidityERC1155Descriptions.updatableUri),
-  crossChainBridging: z
-    .literal('erc7786native')
-    .optional()
-    .describe(solidityERC1155Descriptions.crossChainBridging),
-  crossChainLinkAllowOverride: z
-    .boolean()
-    .optional()
-    .describe(solidityERC1155Descriptions.crossChainLinkAllowOverride),
+  crossChainBridging: z.literal('erc7786native').optional().describe(solidityERC1155Descriptions.crossChainBridging),
+  crossChainLinkAllowOverride: z.boolean().optional().describe(solidityERC1155Descriptions.crossChainLinkAllowOverride),
   ...solidityCommonSchema,
 } as const satisfies z.ZodRawShape;
 
