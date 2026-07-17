@@ -22,11 +22,27 @@ const blueprint = {
   info: infoOptions,
 };
 
+// crossChainBridging x upgradeable is excluded from the exhaustive matrix above to limit its size,
+// so cross it against a reduced blueprint to still get compile coverage of the transpiled variants.
+const crossChainBridgingUpgradeableBlueprint = {
+  ...blueprint,
+  burnable: [false],
+  pausable: [false],
+  mintable: [false],
+  supply: [false],
+  updatableUri: [false],
+  crossChainBridging: ['erc7786native'] as const,
+  upgradeable: ['transparent', 'uups'] as const,
+  info: [{}],
+};
+
 export function* generateERC1155Options(): Generator<Required<ERC1155Options>> {
   for (const opts of generateAlternatives(blueprint)) {
-    // crossChainBridging does not currently support upgradeable
+    // crossChainBridging x upgradeable is covered by the reduced blueprint below
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
     }
   }
+
+  yield* generateAlternatives(crossChainBridgingUpgradeableBlueprint);
 }

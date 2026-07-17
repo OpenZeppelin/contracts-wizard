@@ -513,6 +513,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
       c.addImportOnly({
         name: 'AuthorityUtils',
         path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+        transpiled: false,
       });
       c.setFunctionBody(
         [
