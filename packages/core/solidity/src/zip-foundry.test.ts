@@ -8,6 +8,7 @@ import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
 import { buildAccount } from './account';
 import { buildCustom } from './custom';
+import { buildGovernor } from './governor';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -115,6 +116,29 @@ test.serial('erc1155 transparent, ownable', async t => {
     access: 'ownable',
   };
   const c = buildERC1155(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('erc721 crossChainBridging erc7786native', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+    access: 'ownable',
+    crossChainBridging: 'erc7786native',
+  };
+  const c = buildERC721(opts);
+  await runTest(c, t, opts);
+});
+
+test.serial('governor', async t => {
+  const opts: GenericOptions = {
+    kind: 'Governor',
+    name: 'My Governor',
+    delay: '1 day',
+    period: '1 week',
+  };
+  const c = buildGovernor(opts);
   await runTest(c, t, opts);
 });
 
