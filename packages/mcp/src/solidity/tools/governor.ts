@@ -25,6 +25,7 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
       quorumAbsolute,
       storage,
       settings,
+      crossChainExecution,
       upgradeable,
       info,
     }) => {
@@ -43,6 +44,7 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
         quorumAbsolute,
         storage,
         settings,
+        crossChainExecution,
         upgradeable,
         info,
       };

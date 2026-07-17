@@ -1,4 +1,5 @@
 import type { ERC721Options } from '../erc721';
+import { crossChainBridgingOptions } from '../erc721';
 import { accessOptions } from '../set-access-control';
 import { clockModeOptions } from '../set-clock-mode';
 import { infoOptions } from '../set-info';
@@ -17,6 +18,8 @@ const blueprint = {
   pausable: booleans,
   mintable: booleans,
   incremental: booleans,
+  crossChainBridging: crossChainBridgingOptions,
+  crossChainLinkAllowOverride: [false],
   access: accessOptions,
   upgradeable: upgradeableOptions,
   namespacePrefix: ['myProject'],
@@ -25,5 +28,10 @@ const blueprint = {
 };
 
 export function* generateERC721Options(): Generator<Required<ERC721Options>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    // crossChainBridging does not currently support upgradeable
+    if (!(opts.crossChainBridging && opts.upgradeable)) {
+      yield opts;
+    }
+  }
 }

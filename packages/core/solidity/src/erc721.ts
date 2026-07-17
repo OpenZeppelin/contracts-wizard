@@ -15,6 +15,9 @@ import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
+export const crossChainBridgingOptions = [false, 'erc7786native'] as const;
+export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
+
 export interface ERC721Options extends CommonOptions {
   name: string;
   symbol: string;
@@ -30,6 +33,8 @@ export interface ERC721Options extends CommonOptions {
    * Setting `true` is equivalent to 'blocknumber'. Setting a clock mode implies voting is enabled.
    */
   votes?: boolean | ClockMode;
+  crossChainBridging?: CrossChainBridging;
+  crossChainLinkAllowOverride?: boolean;
   namespacePrefix?: string;
 }
 
@@ -45,6 +50,8 @@ export const defaults: Required<ERC721Options> = {
   mintable: false,
   incremental: false,
   votes: false,
+  crossChainBridging: false,
+  crossChainLinkAllowOverride: false,
   namespacePrefix: 'myProject',
 } as const;
 
@@ -60,6 +67,8 @@ function withDefaults(opts: ERC721Options): Required<ERC721Options> {
     mintable: opts.mintable ?? defaults.mintable,
     incremental: opts.incremental ?? defaults.incremental,
     votes: opts.votes ?? defaults.votes,
+    crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    crossChainLinkAllowOverride: opts.crossChainLinkAllowOverride ?? defaults.crossChainLinkAllowOverride,
     namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
 }
@@ -69,7 +78,7 @@ export function printERC721(opts: ERC721Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
-  return opts.mintable || opts.pausable || opts.upgradeable === 'uups';
+  return opts.mintable || opts.pausable || opts.upgradeable === 'uups' || opts.crossChainBridging === 'erc7786native';
 }
 
 export function buildERC721(opts: ERC721Options): Contract {
@@ -83,6 +92,10 @@ export function buildERC721(opts: ERC721Options): Contract {
 
   if (allOpts.baseUri) {
     addBaseURI(c, allOpts.baseUri);
+  }
+
+  if (allOpts.crossChainBridging) {
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.crossChainLinkAllowOverride, access);
   }
 
   if (allOpts.enumerable) {
@@ -209,6 +222,42 @@ function addMintable(
   if (incremental) c.addFunctionCode('return tokenId;', fn);
 }
 
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: boolean,
+  access: Access,
+) {
+  switch (crossChainBridging) {
+    case 'erc7786native':
+      addERC721Crosschain(c, crossChainLinkAllowOverride, access);
+      break;
+    default: {
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
+    }
+  }
+}
+
+function addERC721Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+  c.addParent({
+    name: 'ERC721Crosschain',
+    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Crosschain.sol',
+  });
+
+  c.addConstructionOnly(
+    {
+      name: 'CrosschainLinked',
+      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+    },
+    [{ lit: 'links' }],
+  );
+  c.addConstructorArgument({ type: { name: 'CrosschainLinked.Link[] memory' }, name: 'links' });
+
+  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
+  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
+}
+
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
   const EIP712 = {
     name: 'EIP712',
@@ -258,6 +307,14 @@ const functions = defineFunctions({
     args: [
       { name: 'account', type: 'address' },
       { name: 'value', type: 'uint128' },
+    ],
+  },
+
+  setLink: {
+    kind: 'public' as const,
+    args: [
+      { name: 'gateway', type: 'address' },
+      { name: 'counterpart', type: 'bytes memory' },
     ],
   },
 });

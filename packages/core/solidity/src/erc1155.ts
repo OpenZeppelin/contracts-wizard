@@ -11,6 +11,9 @@ import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 
+export const crossChainBridgingOptions = [false, 'erc7786native'] as const;
+export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
+
 export interface ERC1155Options extends CommonOptions {
   name: string;
   uri: string;
@@ -19,6 +22,8 @@ export interface ERC1155Options extends CommonOptions {
   mintable?: boolean;
   supply?: boolean;
   updatableUri?: boolean;
+  crossChainBridging?: CrossChainBridging;
+  crossChainLinkAllowOverride?: boolean;
 }
 
 export const defaults: Required<ERC1155Options> = {
@@ -30,6 +35,8 @@ export const defaults: Required<ERC1155Options> = {
   mintable: false,
   supply: false,
   updatableUri: true,
+  crossChainBridging: false,
+  crossChainLinkAllowOverride: false,
 } as const;
 
 function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
@@ -41,6 +48,8 @@ function withDefaults(opts: ERC1155Options): Required<ERC1155Options> {
     mintable: opts.mintable ?? defaults.mintable,
     supply: opts.supply ?? defaults.supply,
     updatableUri: opts.updatableUri ?? defaults.updatableUri,
+    crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    crossChainLinkAllowOverride: opts.crossChainLinkAllowOverride ?? defaults.crossChainLinkAllowOverride,
   };
 }
 
@@ -49,7 +58,13 @@ export function printERC1155(opts: ERC1155Options = defaults): string {
 }
 
 export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean {
-  return opts.mintable || opts.pausable || opts.updatableUri !== false || opts.upgradeable === 'uups';
+  return (
+    opts.mintable ||
+    opts.pausable ||
+    opts.updatableUri !== false ||
+    opts.upgradeable === 'uups' ||
+    opts.crossChainBridging === 'erc7786native'
+  );
 }
 
 export function buildERC1155(opts: ERC1155Options): Contract {
@@ -60,6 +75,10 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   const { access, upgradeable, info } = allOpts;
 
   addBase(c, allOpts.uri);
+
+  if (allOpts.crossChainBridging) {
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.crossChainLinkAllowOverride, access);
+  }
 
   if (allOpts.updatableUri) {
     addSetUri(c, access);
@@ -124,6 +143,42 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: boolean,
+  access: Access,
+) {
+  switch (crossChainBridging) {
+    case 'erc7786native':
+      addERC1155Crosschain(c, crossChainLinkAllowOverride, access);
+      break;
+    default: {
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
+    }
+  }
+}
+
+function addERC1155Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+  c.addParent({
+    name: 'ERC1155Crosschain',
+    path: '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Crosschain.sol',
+  });
+
+  c.addConstructionOnly(
+    {
+      name: 'CrosschainLinked',
+      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+    },
+    [{ lit: 'links' }],
+  );
+  c.addConstructorArgument({ type: { name: 'CrosschainLinked.Link[] memory' }, name: 'links' });
+
+  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
+  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
+}
+
 function addSetUri(c: ContractBuilder, access: Access) {
   requireAccessControl(c, functions.setURI, access, 'URI_SETTER', undefined);
   c.addFunctionCode('_setURI(newuri);', functions.setURI);
@@ -171,6 +226,14 @@ const functions = defineFunctions({
       { name: 'ids', type: 'uint256[] memory' },
       { name: 'amounts', type: 'uint256[] memory' },
       { name: 'data', type: 'bytes memory' },
+    ],
+  },
+
+  setLink: {
+    kind: 'public' as const,
+    args: [
+      { name: 'gateway', type: 'address' },
+      { name: 'counterpart', type: 'bytes memory' },
     ],
   },
 });

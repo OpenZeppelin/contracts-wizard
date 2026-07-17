@@ -142,6 +142,26 @@ testGovernor('governor with erc20votes, upgradable', {
   upgradeable: 'uups',
 });
 
+testGovernor('governor with crossChainExecution', {
+  crossChainExecution: true,
+});
+
+testGovernor('governor with crossChainExecution, no timelock', {
+  crossChainExecution: true,
+  timelock: false,
+});
+
+testGovernor('governor with crossChainExecution, storage, settings', {
+  crossChainExecution: true,
+  storage: true,
+  settings: true,
+});
+
+testGovernor('governor with crossChainExecution, upgradable', {
+  crossChainExecution: true,
+  upgradeable: 'uups',
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', {

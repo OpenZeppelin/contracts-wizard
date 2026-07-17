@@ -48,12 +48,20 @@ export const solidityERC721Descriptions = {
   incremental: 'Whether new tokens will be automatically assigned an incremental id',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
+  crossChainBridging:
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Outbound transfers burn the token on the source chain, and inbound transfers mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
+  crossChainLinkAllowOverride:
+    'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
 };
 
 export const solidityERC1155Descriptions = {
   uri: 'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   supply: 'Whether to keep track of total supply of tokens',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types',
+  crossChainBridging:
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Outbound transfers burn the tokens on the source chain, and inbound transfers mint them on the destination chain.',
+  crossChainLinkAllowOverride:
+    'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
 };
 
 export const solidityStablecoinDescriptions = {
@@ -99,4 +107,6 @@ export const solidityGovernorDescriptions = {
   timelock: 'The type of timelock to use',
   storage: 'Enable storage of proposal details and enumerability of proposals',
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
+  crossChainExecution:
+    'Whether passed proposals can relay execution to other chains through ERC-7786 gateways. Requires a CrosschainRemoteExecutor contract, controlled by this governor, deployed on each target chain. The gateway and executor are chosen per proposal as arguments to the relayCrosschain function.',
 };

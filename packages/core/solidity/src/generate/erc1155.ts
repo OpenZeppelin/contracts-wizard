@@ -1,4 +1,5 @@
 import type { ERC1155Options } from '../erc1155';
+import { crossChainBridgingOptions } from '../erc1155';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import { upgradeableOptions } from '../set-upgradeable';
@@ -14,11 +15,18 @@ const blueprint = {
   mintable: booleans,
   supply: booleans,
   updatableUri: booleans,
+  crossChainBridging: crossChainBridgingOptions,
+  crossChainLinkAllowOverride: [false],
   access: accessOptions,
   upgradeable: upgradeableOptions,
   info: infoOptions,
 };
 
 export function* generateERC1155Options(): Generator<Required<ERC1155Options>> {
-  yield* generateAlternatives(blueprint);
+  for (const opts of generateAlternatives(blueprint)) {
+    // crossChainBridging does not currently support upgradeable
+    if (!(opts.crossChainBridging && opts.upgradeable)) {
+      yield opts;
+    }
+  }
 }

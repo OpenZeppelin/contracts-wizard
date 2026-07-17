@@ -34,6 +34,39 @@
   }
 
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
+
+  // Show notice when Auto Increment Ids is combined with Cross-Chain Bridging
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+  import { crosschainIncrementalTooltipProps } from './crosschain-incremental-tooltip';
+
+  let incrementalLabel: HTMLElement;
+  let bridgingLabel: HTMLElement;
+  let incrementalTooltip: TippyInstance | undefined;
+  let bridgingTooltip: TippyInstance | undefined;
+  onMount(() => {
+    incrementalTooltip = tippy(incrementalLabel, crosschainIncrementalTooltipProps);
+    bridgingTooltip = tippy(bridgingLabel, crosschainIncrementalTooltipProps);
+  });
+
+  let hadIncremental = opts.incremental;
+  let hadCrossChainBridging = opts.crossChainBridging;
+  $: {
+    if (opts.incremental && opts.crossChainBridging === 'erc7786native') {
+      if (!hadIncremental) {
+        incrementalTooltip?.show();
+      } else if (hadCrossChainBridging === false) {
+        bridgingTooltip?.show();
+      }
+    }
+    hadIncremental = opts.incremental;
+    hadCrossChainBridging = opts.crossChainBridging;
+  }
+
+  let showAllowOverride = false;
+  $: {
+    showAllowOverride = opts.crossChainBridging === 'erc7786native';
+  }
 </script>
 
 <section class="controls-section">
@@ -67,7 +100,7 @@
       Mintable
       <HelpTooltip>Privileged accounts will be able to emit new tokens.</HelpTooltip>
     </label>
-    <label class:checked={opts.incremental} class="subcontrol">
+    <label class:checked={opts.incremental} class="subcontrol" bind:this={incrementalLabel}>
       <input type="checkbox" bind:checked={opts.incremental} />
       Auto Increment Ids
       <HelpTooltip>New tokens will be automatically assigned an incremental id.</HelpTooltip>
@@ -126,6 +159,34 @@
         Uses voting durations expressed as timestamps.
       </HelpTooltip>
     </label>
+  </div>
+</ExpandableToggleRadio>
+
+<ExpandableToggleRadio
+  label="Cross-Chain Bridging"
+  bind:value={opts.crossChainBridging}
+  defaultValue="erc7786native"
+  helpContent="Makes the token natively crosschain: outbound transfers burn the token on the source chain, and inbound transfers mint it on the destination chain."
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
+>
+  <div class="checkbox-group">
+    <label class:checked={opts.crossChainBridging === 'erc7786native'} bind:this={bridgingLabel}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
+      ERC-7786 Native
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
+        >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
+      >
+    </label>
+
+    {#if showAllowOverride}
+      <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+        <label class="text-sm flex-1">
+          <input type="checkbox" bind:checked={opts.crossChainLinkAllowOverride} />
+          Allow Link Overrides
+        </label>
+        <HelpTooltip>Whether to allow replacing a crosschain link that has already been registered.</HelpTooltip>
+      </p>
+    {/if}
   </div>
 </ExpandableToggleRadio>
 

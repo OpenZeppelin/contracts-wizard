@@ -7,6 +7,7 @@
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
+  import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
   export let opts: Required<KindedOptions['ERC1155']> = {
     kind: 'ERC1155',
@@ -17,6 +18,11 @@
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = erc1155.isAccessControlRequired(opts);
+
+  let showAllowOverride = false;
+  $: {
+    showAllowOverride = opts.crossChainBridging === 'erc7786native';
+  }
 </script>
 
 <section class="controls-section">
@@ -76,6 +82,34 @@
     </label>
   </div>
 </section>
+
+<ExpandableToggleRadio
+  label="Cross-Chain Bridging"
+  bind:value={opts.crossChainBridging}
+  defaultValue="erc7786native"
+  helpContent="Makes the token natively crosschain: outbound transfers burn the tokens on the source chain, and inbound transfers mint them on the destination chain."
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Crosschain"
+>
+  <div class="checkbox-group">
+    <label class:checked={opts.crossChainBridging === 'erc7786native'}>
+      <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
+      ERC-7786 Native
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Crosschain"
+        >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
+      >
+    </label>
+
+    {#if showAllowOverride}
+      <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+        <label class="text-sm flex-1">
+          <input type="checkbox" bind:checked={opts.crossChainLinkAllowOverride} />
+          Allow Link Overrides
+        </label>
+        <HelpTooltip>Whether to allow replacing a crosschain link that has already been registered.</HelpTooltip>
+      </p>
+    {/if}
+  </div>
+</ExpandableToggleRadio>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

@@ -5,6 +5,7 @@
   import { governor, infoDefaults } from '@openzeppelin/wizard';
 
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
+  import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
   import UpgradeabilitySection from './UpgradeabilitySection.svelte';
   import InfoSection from './InfoSection.svelte';
 
@@ -254,6 +255,13 @@
     </label>
   </div>
 </ExpandableToggleRadio>
+
+<ExpandableCheckbox
+  label="Cross-Chain Execution"
+  bind:checked={opts.crossChainExecution}
+  helpContent="Lets passed proposals relay execution to other chains through ERC-7786 gateways. Requires a CrosschainRemoteExecutor contract, controlled by this governor, deployed on each target chain."
+  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/governance#GovernorCrosschain"
+/>
 
 <UpgradeabilitySection bind:upgradeable={opts.upgradeable} />
 

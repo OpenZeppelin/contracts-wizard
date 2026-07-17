@@ -882,10 +882,15 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.1.tgz#db381e2c5c590c184acd5804bec9400aef607ab5"
   integrity sha512-QudxmMktqHE+oUuBKIR0vTceuQnQTtTT7s+iJqTP6c3DLiLNiTSHLrxIG0bd3fVyS1ZSjzhFhCVpcLZdQXsShg==
 
-"@openzeppelin/contracts-upgradeable@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.6.0.tgz#4165c73dba817fd0a5129fd84c4233cc6d892f0e"
-  integrity sha512-pJ4Qb4EGjemdvP/pbBZ+etXDB5PQJJf1tbIBDQqfQZMK3Lk8UuNCK+cWDluHZ28UfwH2WAwJLftyhJid4w63QA==
+"@openzeppelin/contracts-upgradeable@5.7.0-rc.0":
+  version "5.7.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.7.0-rc.0.tgz#00c297a5508649cb5937bd0a5d90412b3b0436bb"
+  integrity sha512-fYn/2vq3dJEO7qlt3duhLEEFoL6DP2XoGJ10iELfUdh12GuZvaukRJWwY5kocTs/JySw34098vDfk5xsX3k8pA==
+
+"@openzeppelin/contracts@5.7.0-rc.0":
+  version "5.7.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.7.0-rc.0.tgz#a3581adfed996aae198833c2e0e6a2358091c30e"
+  integrity sha512-5f2aVCxqAAcYy2cmcjnvnUM/HqPXrBpNGOpE5nwAO9wHFUVsVVFBVHh/kZ5YBANr0cjgSpzG7AjZTRo0tKPK8A==
 
 "@openzeppelin/contracts@^5.4.0":
   version "5.4.0"

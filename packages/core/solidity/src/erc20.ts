@@ -398,7 +398,7 @@ function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boo
     },
     [{ lit: 'links' }],
   );
-  c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
+  c.addConstructorArgument({ type: { name: 'CrosschainLinked.Link[] memory' }, name: 'links' });
 
   requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
   c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);

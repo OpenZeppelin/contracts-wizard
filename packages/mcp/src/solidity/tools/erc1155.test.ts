@@ -47,6 +47,8 @@ test('all', async t => {
     mintable: true,
     supply: true,
     updatableUri: true,
+    crossChainBridging: 'erc7786native',
+    crossChainLinkAllowOverride: true,
     access: 'roles',
     upgradeable: 'uups',
     info: {

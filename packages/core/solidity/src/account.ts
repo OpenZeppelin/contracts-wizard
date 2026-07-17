@@ -67,7 +67,7 @@ export function buildAccount(opts: AccountOptions): Contract {
   if (opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'PackedUserOperation',
-      path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
+      path: '@openzeppelin/contracts/interfaces/IERC4337.sol',
       transpiled: false, // PackedUserOperation doesn't start with "I" so its not recognized as an "interface object"
     });
   }
