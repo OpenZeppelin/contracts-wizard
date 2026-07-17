@@ -166,7 +166,7 @@
   label="Cross-Chain Bridging"
   bind:value={opts.crossChainBridging}
   defaultValue="erc7786native"
-  helpContent="Makes the token natively crosschain: outbound transfers burn the token on the source chain, and inbound transfers mint it on the destination chain."
+  helpContent="Allows the token to be sent to other chains through ERC-7786 gateways."
   helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
 >
   <div class="checkbox-group">
@@ -174,7 +174,8 @@
       <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
       ERC-7786 Native
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
-        >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
+        >Embeds a bridge directly in the token contract: cross-chain transfers burn tokens on the source chain and mint
+        them on the destination chain.</HelpTooltip
       >
     </label>
 
