@@ -27,6 +27,7 @@ const toCargoPath = (inputPath: string) => inputPath.replace(/\\/g, '/');
 const localDependencies = [
   ['stellar-tokens', 'packages/tokens'],
   ['stellar-access', 'packages/access'],
+  ['stellar-accounts', 'packages/accounts'],
   ['stellar-contract-utils', 'packages/contract-utils'],
   ['stellar-governance', 'packages/governance'],
   ['stellar-macros', 'packages/macros'],

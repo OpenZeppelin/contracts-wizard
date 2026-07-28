@@ -42,7 +42,10 @@ export type LanguagesContractsOptions = {
   cairoAlpha: CairoAlphaKindedOptions;
   confidential: ConfidentialKindedOptions;
   polkadot: Omit<SolidityContractsOptions, 'Account'>;
-  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin' | 'Vault' | 'Governor'> & {
+  stellar: Omit<StellarKindedOptions, 'Account' | 'Fungible' | 'NonFungible' | 'Stablecoin' | 'Vault' | 'Governor'> & {
+    // A smart account has no `access` option, so it cannot take
+    // `StellarCommonContractOptions` wholesale.
+    Account: StellarKindedOptions['Account'] & { upgradeable?: false };
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
     Stablecoin: StellarKindedOptions['Stablecoin'] & StellarCommonContractOptions;
