@@ -4,12 +4,18 @@ import { vesting } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoVestingSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoVesting(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-vesting',
-    makeDetailedPrompt(cairoPrompts.Vesting),
-    cairoVestingSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Vesting),
+      inputSchema: cairoVestingSchema,
+      languageApp: 'cairo-vesting',
+      title: 'Cairo Vesting',
+    },
     async ({ name, startDate, duration, cliffDuration, schedule, info, macros }) => {
       const opts: VestingOptions = {
         name,
@@ -20,14 +26,12 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => vesting.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = vesting.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => vesting.print(opts)), undefined, true);
+      }
     },
   );
 }

@@ -18,6 +18,13 @@ function toPascalCase(value: string) {
 // Languages that do not need MCP tools
 const MCP_EXCLUDED_LANGUAGES: string[] = ['cairo_alpha'];
 
+/** Non-language folders under packages/mcp/src */
+const MCP_NON_LANGUAGE_DIRS: string[] = ['apps'];
+
+function listLanguageDirs(dirNames: string[]) {
+  return dirNames.filter(name => !MCP_NON_LANGUAGE_DIRS.includes(name));
+}
+
 test('each core language has mcp tools folder', async t => {
   // Get all directories in packages/core
   const coreEntries = await readdir(PACKAGES_CORE_PATH, { withFileTypes: true });
@@ -28,7 +35,7 @@ test('each core language has mcp tools folder', async t => {
 
   // Get all directories in packages/mcp/src
   const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+  const mcpDirs = listLanguageDirs(mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name));
 
   // Assert that each core directory has a corresponding mcp directory
   for (const coreDir of coreDirs) {
@@ -42,7 +49,7 @@ test('each core language has mcp tools folder', async t => {
 test('each mcp tools folder is exported from index.ts', async t => {
   // Get all directories in packages/mcp/src
   const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+  const mcpDirs = listLanguageDirs(mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name));
 
   // Read index.ts content
   const indexContent = await readFile(INDEX_TS_PATH, 'utf-8');
@@ -61,7 +68,7 @@ test('each mcp tools folder is exported from index.ts', async t => {
 test('each mcp tools folder is registered in server.ts', async t => {
   // Get all directories in packages/mcp/src
   const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+  const mcpDirs = listLanguageDirs(mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name));
 
   // Read server.ts content
   const serverContent = await readFile(SERVER_TS_PATH, 'utf-8');

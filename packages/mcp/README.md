@@ -18,9 +18,15 @@ Provides tools to generate smart contract source code for the following language
 | solidity | erc20, erc721, erc1155, stablecoin, rwa, account, governor, custom |
 | cairo | erc20, erc721, erc1155, account, multisig, governor, vesting, custom |
 | confidential | erc7984 |
-| stellar | fungible, stablecoin, non-fungible |
+| stellar | fungible, stablecoin, non-fungible, governor, vault |
 | stylus | erc20, erc721, erc1155 |
 | uniswap-hooks | hooks (tool name is just `uniswap-hooks`) |
+
+### MCP Apps
+
+Hosts that support the [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) extension (for example Cursor and Claude) can render an interactive Wizard UI for each tool: the same options as the web Wizard for that contract kind, a live code preview, and a **Use this contract** button that sends the source back to the agent. Language and kind pickers are omitted because the tool name already selects them.
+
+Clients without Apps support continue to work — tools still return source code as Markdown text.
 
 
 ## Installation

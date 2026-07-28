@@ -1,0 +1,111 @@
+<script lang="ts">
+  import { tick } from 'svelte';
+  import type { App } from '@modelcontextprotocol/ext-apps';
+
+  import KindShell from '../KindShell.svelte';
+  import ERC20Controls from '../../cairo/ERC20Controls.svelte';
+  import ERC721Controls from '../../cairo/ERC721Controls.svelte';
+  import ERC1155Controls from '../../cairo/ERC1155Controls.svelte';
+  import CustomControls from '../../cairo/CustomControls.svelte';
+  import AccountControls from '../../cairo/AccountControls.svelte';
+  import MultisigControls from '../../cairo/MultisigControls.svelte';
+  import GovernorControls from '../../cairo/GovernorControls.svelte';
+  import VestingControls from '../../cairo/VestingControls.svelte';
+
+  import hljs from '../../cairo/highlightjs';
+  import { injectHyperlinks } from '../../cairo/inject-hyperlinks';
+
+  import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
+  import {
+    ContractBuilder,
+    buildGeneric,
+    printContract,
+    OptionsError,
+    macrosDefaults,
+  } from '@openzeppelin/wizard-cairo';
+
+  export let kind: Kind;
+  export let mcpApp: App;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let opts: any = undefined;
+  let errors: OptionsErrorMessages | undefined;
+  let contract: Contract = new ContractBuilder('MyToken', {
+    withComponents: macrosDefaults.withComponents,
+  });
+  let showCode = true;
+
+  function mergeHostOpts(incoming: Record<string, unknown> | undefined) {
+    if (!incoming) return;
+    opts = { ...(opts ?? {}), ...incoming, kind };
+  }
+
+  mcpApp.ontoolinput = params => {
+    mergeHostOpts(params.arguments as Record<string, unknown> | undefined);
+  };
+
+  mcpApp.ontoolresult = result => {
+    const structured = result.structuredContent as { opts?: Record<string, unknown> } | undefined;
+    if (structured?.opts) {
+      mergeHostOpts(structured.opts);
+    }
+  };
+
+  async function allowRendering() {
+    showCode = false;
+    await tick();
+    showCode = true;
+  }
+
+  $: if (opts) {
+    try {
+      contract = buildGeneric(opts as KindedOptions[Kind]);
+      errors = undefined;
+    } catch (e: unknown) {
+      if (e instanceof OptionsError) {
+        errors = e.messages;
+      } else {
+        throw e;
+      }
+    }
+    allowRendering();
+  }
+
+  $: code = printContract(contract);
+  $: highlightedCode = injectHyperlinks(hljs.highlight('cairo', code).value);
+  $: hasErrors = errors !== undefined;
+
+  async function onUseContract(currentCode: string) {
+    await mcpApp.updateModelContext({
+      content: [{ type: 'text', text: currentCode }],
+    });
+    await mcpApp.sendMessage({
+      role: 'user',
+      content: [{ type: 'text', text: 'Use this generated contract in the project.' }],
+    });
+  }
+</script>
+
+{#if showCode}
+  <KindShell {highlightedCode} {hasErrors} {code} highlightClass="-cairo" {onUseContract}>
+    <svelte:fragment slot="controls">
+      {#if kind === 'ERC20'}
+        <ERC20Controls bind:opts {errors} />
+      {:else if kind === 'ERC721'}
+        <ERC721Controls bind:opts {errors} />
+      {:else if kind === 'ERC1155'}
+        <ERC1155Controls bind:opts {errors} />
+      {:else if kind === 'Account'}
+        <AccountControls bind:opts {errors} />
+      {:else if kind === 'Multisig'}
+        <MultisigControls bind:opts {errors} />
+      {:else if kind === 'Governor'}
+        <GovernorControls bind:opts {errors} />
+      {:else if kind === 'Vesting'}
+        <VestingControls bind:opts {errors} />
+      {:else if kind === 'Custom'}
+        <CustomControls bind:opts {errors} />
+      {/if}
+    </svelte:fragment>
+  </KindShell>
+{/if}

@@ -4,12 +4,18 @@ import { erc20 } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoERC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-erc20',
-    makeDetailedPrompt(cairoPrompts.ERC20),
-    cairoERC20Schema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.ERC20),
+      inputSchema: cairoERC20Schema,
+      languageApp: 'cairo-erc20',
+      title: 'Cairo ERC20',
+    },
     async ({
       name,
       symbol,
@@ -42,14 +48,12 @@ export function registerCairoERC20(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => erc20.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = erc20.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => erc20.print(opts)), undefined, true);
+      }
     },
   );
 }

@@ -4,12 +4,18 @@ import { multisig } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoMultisigSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoMultisig(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-multisig',
-    makeDetailedPrompt(cairoPrompts.Multisig),
-    cairoMultisigSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Multisig),
+      inputSchema: cairoMultisigSchema,
+      languageApp: 'cairo-multisig',
+      title: 'Cairo Multisig',
+    },
     async ({ name, quorum, upgradeable, info, macros }) => {
       const opts: MultisigOptions = {
         name,
@@ -18,14 +24,12 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => multisig.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = multisig.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => multisig.print(opts)), undefined, true);
+      }
     },
   );
 }

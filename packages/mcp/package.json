@@ -13,9 +13,11 @@
     "NOTICE",
     "/dist",
     "/src",
+    "/apps",
     "!**/*.test.*"
   ],
   "scripts": {
+    "build:apps": "yarn --cwd ../ui build:mcp-apps",
     "prepare": "tsc",
     "watch": "tsc --watch",
     "test": "ava",

@@ -4,12 +4,18 @@ import { account } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoAccountSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoAccount(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-account',
-    makeDetailedPrompt(cairoPrompts.Account),
-    cairoAccountSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Account),
+      inputSchema: cairoAccountSchema,
+      languageApp: 'cairo-account',
+      title: 'Cairo Account',
+    },
     async ({ name, type, declare, deploy, pubkey, outsideExecution, upgradeable, info, macros }) => {
       const opts: AccountOptions = {
         name,
@@ -22,14 +28,12 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => account.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = account.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => account.print(opts)), undefined, true);
+      }
     },
   );
 }

@@ -4,12 +4,18 @@ import { stablecoin } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-stablecoin',
-    makeDetailedPrompt(solidityPrompts.Stablecoin),
-    solidityStablecoinSchema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.Stablecoin),
+      inputSchema: solidityStablecoinSchema,
+      languageApp: 'solidity-stablecoin',
+      title: 'Solidity Stablecoin',
+    },
     async ({
       name,
       symbol,
@@ -50,14 +56,12 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
         restrictions,
         freezable,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => stablecoin.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = stablecoin.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => stablecoin.print(opts)), undefined, true);
+      }
     },
   );
 }

@@ -4,12 +4,18 @@ import { governor } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerSolidityGovernor(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-governor',
-    makeDetailedPrompt(solidityPrompts.Governor),
-    solidityGovernorSchema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.Governor),
+      inputSchema: solidityGovernorSchema,
+      languageApp: 'solidity-governor',
+      title: 'Solidity Governor',
+    },
     async ({
       name,
       delay,
@@ -46,14 +52,12 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => governor.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = governor.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => governor.print(opts)), undefined, true);
+      }
     },
   );
 }

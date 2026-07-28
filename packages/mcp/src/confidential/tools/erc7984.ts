@@ -4,12 +4,18 @@ import { erc7984 } from '@openzeppelin/wizard-confidential';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { confidentialERC7984Schema } from '@openzeppelin/wizard-common/schemas';
 import { confidentialPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'erc7984',
-    makeDetailedPrompt(confidentialPrompts.ERC7984),
-    confidentialERC7984Schema,
+    {
+      description: makeDetailedPrompt(confidentialPrompts.ERC7984),
+      inputSchema: confidentialERC7984Schema,
+      languageApp: 'erc7984',
+      title: 'ERC7984',
+    },
     async ({ name, symbol, contractURI, decimals, premint, networkConfig, wrappable, votes, info }) => {
       const opts: ERC7984Options = {
         name,
@@ -22,14 +28,12 @@ export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
         votes,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => erc7984.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = erc7984.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => erc7984.print(opts)), undefined, true);
+      }
     },
   );
 }

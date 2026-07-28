@@ -4,12 +4,18 @@ import { erc20 } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerSolidityERC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-erc20',
-    makeDetailedPrompt(solidityPrompts.ERC20),
-    solidityERC20Schema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.ERC20),
+      inputSchema: solidityERC20Schema,
+      languageApp: 'solidity-erc20',
+      title: 'Solidity ERC20',
+    },
     async ({
       name,
       symbol,
@@ -48,14 +54,12 @@ export function registerSolidityERC20(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => erc20.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = erc20.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => erc20.print(opts)), undefined, true);
+      }
     },
   );
 }

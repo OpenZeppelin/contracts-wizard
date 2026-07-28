@@ -4,12 +4,18 @@ import { custom } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoCustom(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-custom',
-    makeDetailedPrompt(cairoPrompts.Custom),
-    cairoCustomSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Custom),
+      inputSchema: cairoCustomSchema,
+      languageApp: 'cairo-custom',
+      title: 'Cairo Custom',
+    },
     async ({ name, pausable, access, upgradeable, info, macros }) => {
       const opts: CustomOptions = {
         name,
@@ -19,14 +25,12 @@ export function registerCairoCustom(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => custom.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = custom.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => custom.print(opts)), undefined, true);
+      }
     },
   );
 }

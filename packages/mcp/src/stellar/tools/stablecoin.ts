@@ -4,12 +4,18 @@ import { stablecoin } from '@openzeppelin/wizard-stellar';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
 import { stellarStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerStellarStablecoin(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stellar-stablecoin',
-    makeDetailedPrompt(stellarPrompts.Stablecoin),
-    stellarStablecoinSchema,
+    {
+      description: makeDetailedPrompt(stellarPrompts.Stablecoin),
+      inputSchema: stellarStablecoinSchema,
+      languageApp: 'stellar-stablecoin',
+      title: 'Stellar Stablecoin',
+    },
     async ({
       name,
       symbol,
@@ -40,14 +46,12 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
         explicitImplementations,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => stablecoin.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = stablecoin.print(opts);
+        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintRustCodeBlock(() => stablecoin.print(opts)), undefined, true);
+      }
     },
   );
 }

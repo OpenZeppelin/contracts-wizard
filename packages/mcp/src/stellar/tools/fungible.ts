@@ -4,12 +4,18 @@ import { fungible } from '@openzeppelin/wizard-stellar';
 import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
 import { stellarFungibleSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerStellarFungible(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stellar-fungible',
-    makeDetailedPrompt(stellarPrompts.Fungible),
-    stellarFungibleSchema,
+    {
+      description: makeDetailedPrompt(stellarPrompts.Fungible),
+      inputSchema: stellarFungibleSchema,
+      languageApp: 'stellar-fungible',
+      title: 'Stellar Fungible',
+    },
     async ({
       name,
       symbol,
@@ -38,14 +44,12 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
         info,
         explicitImplementations,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => fungible.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = fungible.print(opts);
+        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintRustCodeBlock(() => fungible.print(opts)), undefined, true);
+      }
     },
   );
 }

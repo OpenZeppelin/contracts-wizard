@@ -4,12 +4,18 @@ import { governor } from '@openzeppelin/wizard-cairo';
 import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
 import { cairoGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerCairoGovernor(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-governor',
-    makeDetailedPrompt(cairoPrompts.Governor),
-    cairoGovernorSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Governor),
+      inputSchema: cairoGovernorSchema,
+      languageApp: 'cairo-governor',
+      title: 'Cairo Governor',
+    },
     async ({
       name,
       delay,
@@ -48,14 +54,12 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => governor.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = governor.print(opts);
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintCairoCodeBlock(() => governor.print(opts)), undefined, true);
+      }
     },
   );
 }

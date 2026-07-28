@@ -4,12 +4,18 @@ import { account } from '@openzeppelin/wizard';
 import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
 import { solidityAccountSchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerSolidityAccount(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-account',
-    makeDetailedPrompt(solidityPrompts.Account),
-    solidityAccountSchema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.Account),
+      inputSchema: solidityAccountSchema,
+      languageApp: 'solidity-account',
+      title: 'Solidity Account',
+    },
     async ({
       name,
       signatureValidation,
@@ -32,14 +38,12 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
         info,
         upgradeable,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => account.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = account.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => account.print(opts)), undefined, true);
+      }
     },
   );
 }

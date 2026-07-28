@@ -3,12 +3,18 @@ import { hooks, type HooksOptions } from '@openzeppelin/wizard-uniswap-hooks';
 import { uniswapHooksHooksSchema } from '@openzeppelin/wizard-common/schemas';
 import { makeDetailedPrompt, safePrintSolidityCodeBlock } from '../../utils';
 import { uniswapHooksPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
 
 export function registerUniswapHooks(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'uniswap-hooks',
-    makeDetailedPrompt(uniswapHooksPrompts.Hooks),
-    uniswapHooksHooksSchema,
+    {
+      description: makeDetailedPrompt(uniswapHooksPrompts.Hooks),
+      inputSchema: uniswapHooksHooksSchema,
+      languageApp: 'uniswap-hooks',
+      title: 'Uniswap Hooks',
+    },
     async ({
       hook,
       name,
@@ -35,15 +41,12 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
         access,
         info,
       };
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => hooks.print(opts)),
-          },
-        ],
-      };
+      try {
+        const code = hooks.print(opts);
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+      } catch {
+        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => hooks.print(opts)), undefined, true);
+      }
     },
   );
 }
