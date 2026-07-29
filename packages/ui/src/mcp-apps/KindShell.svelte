@@ -19,8 +19,7 @@
 
   $: sendSupported = canSendToHost(hostSendCaps);
   $: copyOnly = hostConnected && !sendSupported;
-  $: buttonDisabled =
-    hasErrors || sending || !code || !hostConnected || !!hostConnectError || !!doneLabel;
+  $: buttonDisabled = hasErrors || sending || !code || !hostConnected || !!hostConnectError || !!doneLabel;
 
   function flashDone(label: string) {
     if (doneTimer) clearTimeout(doneTimer);

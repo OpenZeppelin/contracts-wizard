@@ -43,9 +43,18 @@ export function registerStellarGovernor(server: McpServer): RegisteredTool {
       };
       try {
         const code = governor.print(opts);
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => governor.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => governor.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

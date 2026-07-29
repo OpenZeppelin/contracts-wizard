@@ -49,9 +49,18 @@ export function registerSolidityERC721(server: McpServer): RegisteredTool {
       };
       try {
         const code = erc721.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => erc721.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => erc721.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

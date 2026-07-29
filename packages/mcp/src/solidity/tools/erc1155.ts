@@ -30,9 +30,18 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
       };
       try {
         const code = erc1155.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => erc1155.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => erc1155.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

@@ -45,9 +45,18 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
       };
       try {
         const code = fungible.print(opts);
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => fungible.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => fungible.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

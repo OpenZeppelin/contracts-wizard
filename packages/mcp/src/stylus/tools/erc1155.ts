@@ -24,9 +24,18 @@ export function registerStylusERC1155(server: McpServer): RegisteredTool {
       };
       try {
         const code = erc1155.print(opts);
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => erc1155.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => erc1155.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

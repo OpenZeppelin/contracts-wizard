@@ -42,9 +42,18 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
       };
       try {
         const code = hooks.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => hooks.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => hooks.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

@@ -41,11 +41,7 @@ export function readAppHtml(toolName: string): string {
 }
 
 /** Register an MCP App UI resource for a tool. */
-export function registerWizardAppResource(
-  server: McpServer,
-  toolName: string,
-  options?: { title?: string },
-): void {
+export function registerWizardAppResource(server: McpServer, toolName: string, options?: { title?: string }): void {
   const uri = appResourceUri(toolName);
   // Fail closed: do not register a UI resource that cannot be served.
   resolveAppHtmlPath(toolName);

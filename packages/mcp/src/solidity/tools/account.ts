@@ -39,9 +39,18 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
       };
       try {
         const code = account.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => account.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => account.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

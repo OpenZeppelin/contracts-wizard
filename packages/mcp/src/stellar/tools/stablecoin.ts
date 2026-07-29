@@ -47,9 +47,18 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
       };
       try {
         const code = stablecoin.print(opts);
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => stablecoin.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => stablecoin.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

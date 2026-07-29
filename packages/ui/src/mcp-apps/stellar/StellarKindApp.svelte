@@ -52,7 +52,7 @@
         errors = e.messages;
       } else {
         const message = e instanceof Error ? e.message : String(e);
-        errors = { _: message || "Failed to build contract" };
+        errors = { _: message || 'Failed to build contract' };
       }
     }
   }

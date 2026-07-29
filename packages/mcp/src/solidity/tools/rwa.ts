@@ -57,9 +57,18 @@ export function registerSolidityRWA(server: McpServer): RegisteredTool {
       };
       try {
         const code = realWorldAsset.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => realWorldAsset.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => realWorldAsset.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

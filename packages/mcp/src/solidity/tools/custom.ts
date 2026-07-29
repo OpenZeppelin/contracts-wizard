@@ -25,9 +25,18 @@ export function registerSolidityCustom(server: McpServer): RegisteredTool {
       };
       try {
         const code = custom.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => custom.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => custom.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

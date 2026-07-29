@@ -63,7 +63,7 @@
         errors = e.messages;
       } else {
         const message = e instanceof Error ? e.message : String(e);
-        errors = { _: message || "Failed to build contract" };
+        errors = { _: message || 'Failed to build contract' };
       }
     }
   }
@@ -95,7 +95,7 @@
     {:else if kind === 'ERC1155'}
       <ERC1155Controls bind:opts {errors} />
     {:else if kind === 'Account'}
-      <AccountControls bind:opts {errors} />
+      <AccountControls bind:opts {errors} accountType={opts?.type} />
     {:else if kind === 'Multisig'}
       <MultisigControls bind:opts {errors} />
     {:else if kind === 'Governor'}

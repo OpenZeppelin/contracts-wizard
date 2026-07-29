@@ -1,12 +1,7 @@
 import test from 'ava';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { testMcpInfo } from '../helpers.test';
-import {
-  appResourceUri,
-  readAppHtml,
-  registerWizardAppTool,
-  RESOURCE_MIME_TYPE,
-} from './register';
+import { appResourceUri, readAppHtml, registerWizardAppTool, RESOURCE_MIME_TYPE } from './register';
 import { registerSolidityERC20 } from '../solidity/tools/erc20';
 
 test('solidity-erc20 registers UI metadata', t => {

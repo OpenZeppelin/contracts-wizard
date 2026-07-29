@@ -53,9 +53,18 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
       };
       try {
         const code = governor.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => governor.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => governor.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

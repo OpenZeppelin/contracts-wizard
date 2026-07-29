@@ -51,9 +51,18 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
       };
       try {
         const code = erc721.print(opts);
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => erc721.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => erc721.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

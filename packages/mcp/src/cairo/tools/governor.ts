@@ -55,9 +55,18 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
       };
       try {
         const code = governor.print(opts);
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => governor.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => governor.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

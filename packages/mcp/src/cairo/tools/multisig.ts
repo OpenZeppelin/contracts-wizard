@@ -25,9 +25,18 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
       };
       try {
         const code = multisig.print(opts);
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => multisig.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => multisig.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

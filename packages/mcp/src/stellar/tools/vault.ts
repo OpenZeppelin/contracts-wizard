@@ -28,9 +28,18 @@ export function registerStellarVault(server: McpServer): RegisteredTool {
       };
       try {
         const code = vault.print(opts);
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintRustCodeBlock(() => vault.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintRustCodeBlock(() => vault.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

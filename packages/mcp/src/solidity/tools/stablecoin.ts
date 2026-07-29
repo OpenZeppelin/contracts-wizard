@@ -57,9 +57,18 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
       };
       try {
         const code = stablecoin.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => stablecoin.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => stablecoin.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

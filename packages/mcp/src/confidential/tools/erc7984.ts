@@ -29,9 +29,18 @@ export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
       };
       try {
         const code = erc7984.print(opts);
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintSolidityCodeBlock(() => erc7984.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintSolidityCodeBlock(() => erc7984.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );

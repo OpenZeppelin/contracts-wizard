@@ -29,9 +29,18 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
       };
       try {
         const code = account.print(opts);
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => code), code);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => code),
+          code,
+        );
       } catch {
-        return wizardAppResult(opts, safePrintCairoCodeBlock(() => account.print(opts)), undefined, true);
+        return wizardAppResult(
+          opts,
+          safePrintCairoCodeBlock(() => account.print(opts)),
+          undefined,
+          true,
+        );
       }
     },
   );
