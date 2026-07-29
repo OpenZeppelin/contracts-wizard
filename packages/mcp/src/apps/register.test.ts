@@ -1,7 +1,7 @@
 import test from 'ava';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { testMcpInfo } from '../helpers.test';
-import { appResourceUri, readAppHtml, registerWizardAppTool, RESOURCE_MIME_TYPE } from './register';
+import { appResourceUri, readAppHtml, registerWizardAppTool, RESOURCE_MIME_TYPE, wizardAppResult } from './register';
 import { registerSolidityERC20 } from '../solidity/tools/erc20';
 
 test('solidity-erc20 registers UI metadata', t => {
@@ -59,4 +59,16 @@ test('registerWizardAppTool fails closed when HTML missing', t => {
   t.true(err instanceof Error);
   t.regex((err as Error).message, /MCP App HTML missing/);
   t.regex((err as Error).message, /build:apps/);
+});
+
+test('wizardAppResult sets top-level isError on failure', t => {
+  const ok = wizardAppResult({ name: 'A' }, '```solidity\ncode\n```', 'code');
+  t.falsy('isError' in ok && ok.isError);
+  t.is(ok.structuredContent.code, 'code');
+
+  const fail = wizardAppResult({ name: 'A' }, 'bad options', undefined, true);
+  t.true(fail.isError);
+  t.is(fail.content[0]?.text, 'bad options');
+  t.is(fail.structuredContent.code, undefined);
+  t.is(fail.structuredContent.error, 'bad options');
 });

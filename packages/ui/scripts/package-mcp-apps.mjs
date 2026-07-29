@@ -12,8 +12,6 @@ const mcpBuildDir = path.join(__dirname, '..', 'public', 'build', 'mcp');
 const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
 
-fs.mkdirSync(outDir, { recursive: true });
-
 if (!fs.existsSync(mcpBuildDir)) {
   console.error(`Missing MCP build dir: ${mcpBuildDir}`);
   process.exit(1);
@@ -25,15 +23,23 @@ const expectedNames = fs
   .map(f => path.basename(f, '.ts'))
   .sort();
 
-const jsFiles = fs.readdirSync(mcpBuildDir).filter(f => f.endsWith('.js'));
-if (jsFiles.length === 0) {
-  console.error('No MCP App JS bundles found');
+if (expectedNames.length === 0) {
+  console.error(`No MCP App entries found in ${entriesDir}`);
   process.exit(1);
 }
 
-for (const file of jsFiles) {
-  const name = path.basename(file, '.js');
-  const js = fs.readFileSync(path.join(mcpBuildDir, file), 'utf-8');
+// Drop prior packaged HTML so renamed/deleted entries cannot leave stale artifacts.
+fs.rmSync(outDir, { recursive: true, force: true });
+fs.mkdirSync(outDir, { recursive: true });
+
+const missingJs = expectedNames.filter(name => !fs.existsSync(path.join(mcpBuildDir, `${name}.js`)));
+if (missingJs.length > 0) {
+  console.error(`MCP App JS bundles missing for entries:\n  ${missingJs.join('\n  ')}`);
+  process.exit(1);
+}
+
+for (const name of expectedNames) {
+  const js = fs.readFileSync(path.join(mcpBuildDir, `${name}.js`), 'utf-8');
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,23 +63,6 @@ ${js}
   const outPath = path.join(outDir, `${name}.html`);
   fs.writeFileSync(outPath, html);
   console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
-}
-
-const missing = expectedNames.filter(name => !fs.existsSync(path.join(outDir, `${name}.html`)));
-if (missing.length > 0) {
-  console.error(`MCP App HTML missing after packaging:\n  ${missing.join('\n  ')}`);
-  process.exit(1);
-}
-
-const builtNames = fs
-  .readdirSync(outDir)
-  .filter(f => f.endsWith('.html'))
-  .map(f => path.basename(f, '.html'))
-  .sort();
-const unexpected = builtNames.filter(name => !expectedNames.includes(name));
-if (unexpected.length > 0) {
-  console.error(`Unexpected MCP App HTML (no entry):\n  ${unexpected.join('\n  ')}`);
-  process.exit(1);
 }
 
 console.log(`Verified ${expectedNames.length} MCP App HTML artifacts match entries.`);

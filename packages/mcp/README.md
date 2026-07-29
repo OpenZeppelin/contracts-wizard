@@ -28,7 +28,7 @@ Hosts that support the [MCP Apps](https://modelcontextprotocol.io/extensions/app
 
 **Send to Agent** checks host MCP Apps capabilities:
 - `message` (e.g. Claude): sends a chat message that includes the full current source so the agent sees option changes. Also best-effort stages via `updateModelContext` when advertised (some hosts do not attach silent context to draft-injected messages, so the message itself must be self-contained).
-- Neither `message` nor `updateModelContext` (e.g. Cursor today): the button is **Copy to Clipboard** (same idea as the web Wizard copy action).
+- No `message` capability (e.g. Cursor today, including hosts that only advertise `updateModelContext`): the button is **Copy to Clipboard** (same idea as the web Wizard copy action).
 
 Clients without Apps support continue to work — tools still return source code as Markdown text. The server always returns tool text; hosts that do not implement MCP Apps simply ignore the UI metadata.
 

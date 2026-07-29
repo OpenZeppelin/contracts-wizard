@@ -61,6 +61,7 @@ export async function assertAPIEquivalence<T>(
   const mcpResult = firstContent.text;
 
   if (expectError) {
+    t.true(result?.isError === true, 'Expected tool result isError: true for Wizard options errors');
     const apiError = t.throws(() => wizardApiFunction(params));
     t.true(
       mcpResult.includes(apiError.message),
@@ -77,6 +78,7 @@ export async function assertAPIEquivalence<T>(
     }
     t.snapshot(mcpResult);
   } else {
+    t.falsy(result?.isError, 'Expected successful tool result without isError');
     t.true(
       mcpResult.includes(wizardApiFunction(params)),
       `\

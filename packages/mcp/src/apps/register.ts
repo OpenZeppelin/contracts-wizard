@@ -121,5 +121,6 @@ export function wizardAppResult(opts: unknown, markdownText: string, rawCode?: s
       code: isError ? undefined : rawCode,
       error: isError ? markdownText : undefined,
     },
+    ...(isError ? { isError: true as const } : {}),
   };
 }
