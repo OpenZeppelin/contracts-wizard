@@ -19,14 +19,22 @@ export function canSendToHost(caps: HostSendCaps): boolean {
 
 const SHORT_TRIGGER = 'Use this generated contract in the project.';
 
+function messageWithCode(fence: string, code: string): string {
+  // Keep single newlines; some hosts turn blank lines into paragraph spacing in the draft.
+  return `${SHORT_TRIGGER}\n\n\`\`\`${fence}\n${code.trimEnd()}\n\`\`\``;
+}
+
 /**
  * Deliver the current contract source to the host agent.
  *
+ * Always put the full source in `sendMessage` when `message` is available. Some hosts
+ * (notably Claude's compose-draft flow) advertise `updateModelContext` but do not attach
+ * that silent context to the user message the app injects — so a short trigger alone
+ * leaves the agent without the contract.
+ *
  * Capability matrix:
- * - message + updateModelContext: stage full source silently, send a short chat trigger
- *   (best UX — Claude today).
- * - message only: put full source in the chat message (self-contained; future hosts that
- *   add message without context).
+ * - message (+ optional updateModelContext): self-contained chat message with full source;
+ *   also best-effort stage via updateModelContext when advertised.
  * - updateModelContext only: stage source, then error so the UI can copy — host cannot
  *   start a model turn.
  * - neither: caller/UI falls back to clipboard (Cursor today).
@@ -49,32 +57,16 @@ export async function deliverContractToHost(
       });
     } catch (e) {
       console.warn('[mcp-apps] updateModelContext failed', e);
-      // If message exists, still try a self-contained chat send below.
       if (!caps.message) {
         throw e instanceof Error ? e : new Error(String(e));
       }
-      await app.sendMessage({
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: `${SHORT_TRIGGER}\n\n\`\`\`${fence}\n${code}\n\`\`\``,
-          },
-        ],
-      });
-      return { mode: 'message' };
     }
   }
 
   if (caps.message) {
-    const text =
-      caps.updateModelContext
-        ? SHORT_TRIGGER
-        : `${SHORT_TRIGGER}\n\n\`\`\`${fence}\n${code}\n\`\`\``;
-
     await app.sendMessage({
       role: 'user',
-      content: [{ type: 'text', text }],
+      content: [{ type: 'text', text: messageWithCode(fence, code) }],
     });
     return { mode: caps.updateModelContext ? 'context-and-message' : 'message' };
   }
