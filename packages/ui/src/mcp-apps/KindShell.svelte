@@ -7,43 +7,51 @@
   export let highlightClass = '-solidity';
   export let code = '';
   export let onUseContract: (code: string) => void | Promise<void> = () => {};
-  export let useLabel = 'Send updated contract';
+  export let useLabel = 'Send to Agent';
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
   export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
 
   let sending = false;
-  let statusMessage: string | undefined = undefined;
-  let statusIsError = false;
+  let doneLabel: string | undefined = undefined;
+  let errorMessage: string | undefined = undefined;
+  let doneTimer: ReturnType<typeof setTimeout> | undefined;
 
   $: sendSupported = canSendToHost(hostSendCaps);
-  $: buttonDisabled = hasErrors || sending || !code || !hostConnected || !!hostConnectError;
+  $: copyOnly = hostConnected && !sendSupported;
+  $: buttonDisabled =
+    hasErrors || sending || !code || !hostConnected || !!hostConnectError || !!doneLabel;
 
-  function setStatus(message: string, isError: boolean) {
-    statusMessage = message;
-    statusIsError = isError;
+  function flashDone(label: string) {
+    if (doneTimer) clearTimeout(doneTimer);
+    doneLabel = label;
+    doneTimer = setTimeout(() => {
+      doneLabel = undefined;
+      doneTimer = undefined;
+    }, 1000);
   }
 
   async function handleUse() {
     if (buttonDisabled) return;
-    statusMessage = undefined;
+    errorMessage = undefined;
     sending = true;
     try {
-      if (!sendSupported) {
+      if (copyOnly) {
         await copyContractToClipboard(code);
-        setStatus('Copied contract to clipboard — paste it into the chat.', false);
+        flashDone('Copied');
         return;
       }
       await onUseContract(code);
-      setStatus('Sent updated contract to the agent.', false);
+      flashDone('Sent');
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[mcp-apps] Send updated contract failed', e);
+      console.error('[mcp-apps] Send to Agent failed', e);
       try {
         await copyContractToClipboard(code);
-        setStatus(`${message} Copied to clipboard instead.`, true);
+        flashDone('Copied');
+        errorMessage = message;
       } catch {
-        setStatus(message, true);
+        errorMessage = message;
       }
     } finally {
       sending = false;
@@ -75,24 +83,25 @@
       class="use-button"
       class:disabled={buttonDisabled}
       disabled={buttonDisabled}
+      title={copyOnly ? 'Copy to Clipboard' : undefined}
       on:click={handleUse}
     >
       {#if !hostConnected && !hostConnectError}
         Connecting…
       {:else if sending}
-        Sending…
-      {:else if hostConnected && !sendSupported}
-        Copy contract
+        {copyOnly ? 'Copying…' : 'Sending…'}
+      {:else if doneLabel}
+        {doneLabel}
+      {:else if copyOnly}
+        Copy to Clipboard
       {:else}
         {useLabel}
       {/if}
     </button>
     {#if hostConnectError}
       <p class="status error">Could not connect to host: {hostConnectError}</p>
-    {:else if statusMessage}
-      <p class="status" class:error={statusIsError}>{statusMessage}</p>
-    {:else if hostConnected && !sendSupported}
-      <p class="status">This host cannot send to chat — copy and paste the contract instead.</p>
+    {:else if errorMessage}
+      <p class="status error">{errorMessage}</p>
     {/if}
   </div>
 </div>
@@ -126,7 +135,6 @@
     margin: 0;
     max-width: 100%;
     font-size: 0.75rem;
-    color: var(--gray-5, #6b7280);
     text-align: right;
   }
 
