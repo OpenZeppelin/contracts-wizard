@@ -7,7 +7,7 @@
   export let highlightClass = '-solidity';
   export let code = '';
   export let onUseContract: (code: string) => void | Promise<void> = () => {};
-  export let useLabel = 'Send to Agent';
+  export let useLabel = 'Send Updates to Agent';
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
   export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
@@ -44,7 +44,7 @@
       flashDone('Sent');
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[mcp-apps] Send to Agent failed', e);
+      console.error('[mcp-apps] Send Updates to Agent failed', e);
       try {
         await copyContractToClipboard(code);
         flashDone('Copied');

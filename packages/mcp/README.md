@@ -26,7 +26,7 @@ Provides tools to generate smart contract source code for the following language
 
 Hosts that support the [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) extension (for example Cursor and Claude) can render an interactive Wizard UI for each tool: the same options as the web Wizard for that contract kind, a live code preview, and a button to hand the current source back to the agent. Language and kind pickers are omitted because the tool name already selects them.
 
-**Send to Agent** checks host MCP Apps capabilities:
+**Send Updates to Agent** checks host MCP Apps capabilities:
 - `message` (e.g. Claude): sends a chat message that includes the full current source so the agent sees option changes. Also best-effort stages via `updateModelContext` when advertised (some hosts do not attach silent context to draft-injected messages, so the message itself must be self-contained).
 - No `message` capability (e.g. Cursor today, including hosts that only advertise `updateModelContext`): the button is **Copy to Clipboard** (same idea as the web Wizard copy action).
 
