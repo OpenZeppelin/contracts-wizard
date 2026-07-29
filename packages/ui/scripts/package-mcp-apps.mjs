@@ -34,8 +34,10 @@ for (const file of jsFiles) {
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>OpenZeppelin ${name}</title>
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; background: #f9fafb; }
-    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    /* Do not use height:100% — MCP Apps autoResize measures with max-content and
+       percentage heights collapse to ~0, which shrinks the host iframe over time. */
+    html, body { margin: 0; padding: 0; background: #f9fafb; }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; min-height: 560px; }
   </style>
 </head>
 <body>

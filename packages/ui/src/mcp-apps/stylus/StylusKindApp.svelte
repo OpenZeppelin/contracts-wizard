@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { tick } from 'svelte';
   import type { App } from '@modelcontextprotocol/ext-apps';
 
   import KindShell from '../KindShell.svelte';
@@ -20,7 +19,6 @@
   let opts: any = undefined;
   let errors: OptionsErrorMessages | undefined;
   let contract: Contract = new ContractBuilder('MyToken');
-  let showCode = true;
 
   function mergeHostOpts(incoming: Record<string, unknown> | undefined) {
     if (!incoming) return;
@@ -38,12 +36,6 @@
     }
   };
 
-  async function allowRendering() {
-    showCode = false;
-    await tick();
-    showCode = true;
-  }
-
   $: if (opts) {
     try {
       contract = buildGeneric(opts as KindedOptions[Kind]);
@@ -55,7 +47,6 @@
         throw e;
       }
     }
-    allowRendering();
   }
 
   $: code = printContract(contract);
@@ -73,16 +64,14 @@
   }
 </script>
 
-{#if showCode}
-  <KindShell {highlightedCode} {hasErrors} {code} highlightClass="-stylus" {onUseContract}>
-    <svelte:fragment slot="controls">
-      {#if kind === 'ERC20'}
-        <ERC20Controls bind:opts {errors} />
-      {:else if kind === 'ERC721'}
-        <ERC721Controls bind:opts {errors} />
-      {:else if kind === 'ERC1155'}
-        <ERC1155Controls bind:opts {errors} />
-      {/if}
-    </svelte:fragment>
-  </KindShell>
-{/if}
+<KindShell {highlightedCode} {hasErrors} {code} highlightClass="-stylus" {onUseContract}>
+  <svelte:fragment slot="controls">
+    {#if kind === 'ERC20'}
+      <ERC20Controls bind:opts {errors} />
+    {:else if kind === 'ERC721'}
+      <ERC721Controls bind:opts {errors} />
+    {:else if kind === 'ERC1155'}
+      <ERC1155Controls bind:opts {errors} />
+    {/if}
+  </svelte:fragment>
+</KindShell>

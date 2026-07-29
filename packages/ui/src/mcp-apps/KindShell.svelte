@@ -19,7 +19,7 @@
   }
 </script>
 
-<div class="mcp-shell flex flex-col gap-3 p-3 h-full min-h-0">
+<div class="mcp-shell flex flex-col gap-3 p-3 min-h-0">
   <div class="flex flex-row grow min-h-0 overflow-hidden rounded-2xl border border-[var(--gray-3)]">
     <div
       class="controls min-w-64 w-72 max-w-[45%] flex flex-col shrink-0 overflow-auto border-r border-[var(--gray-3)]"
@@ -29,9 +29,11 @@
 
     <div class="output flex flex-col grow min-w-0 overflow-hidden">
       <pre class="flex flex-col grow basis-0 overflow-auto m-0">
-        <code class="hljs {highlightClass} grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
-          >{@html highlightedCode}</code
-        >
+        {#key highlightedCode}
+          <code class="hljs {highlightClass} grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
+            >{@html highlightedCode}</code
+          >
+        {/key}
       </pre>
     </div>
   </div>
@@ -50,6 +52,9 @@
 
 <style lang="postcss">
   .mcp-shell {
+    /* Fixed height avoids MCP Apps autoResize collapse with height:100% (ext-apps#143). */
+    height: 560px;
+    min-height: 560px;
     background-color: var(--gray-1);
     box-sizing: border-box;
   }
