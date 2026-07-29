@@ -19,6 +19,7 @@
   "scripts": {
     "build:apps": "yarn --cwd ../ui build:mcp-apps",
     "prepare": "tsc",
+    "prepublishOnly": "yarn build:apps",
     "watch": "tsc --watch",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",

@@ -25,7 +25,27 @@ export function resolveAppHtmlPath(toolName: string, languageApp?: string): stri
       return langPath;
     }
   }
-  throw new Error(`MCP App HTML not found for tool ${toolName} (looked in ${appsDir})`);
+  throw missingAppHtmlError(toolName, appsDir);
+}
+
+function missingAppHtmlError(toolName: string, appsDir: string): Error {
+  return new Error(
+    `MCP App HTML missing for ${toolName} (looked in ${appsDir}). ` +
+      `Run: yarn --cwd packages/mcp build:apps ` +
+      `(npm consumers: reinstall the package or report a packaging bug).`,
+  );
+}
+
+/** True when the per-tool (or language fallback) App HTML artifact exists on disk. */
+export function appHtmlExists(toolName: string, languageApp?: string): boolean {
+  const appsDir = path.join(__dirname, '..', '..', 'apps');
+  if (fs.existsSync(path.join(appsDir, `${toolName}.html`))) {
+    return true;
+  }
+  if (languageApp && fs.existsSync(path.join(appsDir, `${languageApp}.html`))) {
+    return true;
+  }
+  return false;
 }
 
 export function readAppHtml(toolName: string, languageApp?: string): string {
@@ -43,6 +63,8 @@ export function registerWizardAppResource(
 ): void {
   const uri = appResourceUri(toolName);
   const languageApp = options?.languageApp;
+  // Fail closed: do not register a UI resource that cannot be served.
+  resolveAppHtmlPath(toolName, languageApp);
   server.registerResource(
     options?.title ?? `${toolName} UI`,
     uri,
@@ -72,6 +94,9 @@ type AppToolConfig<Args extends ZodRawShapeCompat> = {
 /**
  * Register a generation tool with MCP Apps UI metadata and a matching UI resource.
  * Uses SDK `registerTool` / `registerResource` (CJS-safe; no ESM ext-apps import).
+ *
+ * Requires App HTML on disk (fail closed). Tool callbacks still return markdown text so
+ * hosts without MCP Apps support continue to work once the server has started.
  */
 export function registerWizardAppTool<Args extends ZodRawShapeCompat>(
   server: McpServer,
@@ -80,6 +105,10 @@ export function registerWizardAppTool<Args extends ZodRawShapeCompat>(
   cb: ToolCallback<Args>,
 ): RegisteredTool {
   const resourceUri = appResourceUri(toolName);
+  // Fail closed before advertising UI meta if artifacts are missing.
+  if (!appHtmlExists(toolName, config.languageApp)) {
+    throw missingAppHtmlError(toolName, path.join(__dirname, '..', '..', 'apps'));
+  }
   registerWizardAppResource(server, toolName, {
     languageApp: config.languageApp,
     title: config.title,

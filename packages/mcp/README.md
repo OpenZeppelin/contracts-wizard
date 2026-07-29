@@ -30,7 +30,15 @@ Hosts that support the [MCP Apps](https://modelcontextprotocol.io/extensions/app
 - `message` (e.g. Claude): sends a chat message that includes the full current source so the agent sees option changes. Also best-effort stages via `updateModelContext` when advertised (some hosts do not attach silent context to draft-injected messages, so the message itself must be self-contained).
 - Neither `message` nor `updateModelContext` (e.g. Cursor today): the button is **Copy to Clipboard** (same idea as the web Wizard copy action).
 
-Clients without Apps support continue to work — tools still return source code as Markdown text.
+Clients without Apps support continue to work — tools still return source code as Markdown text. The server always returns tool text; hosts that do not implement MCP Apps simply ignore the UI metadata.
+
+#### App HTML artifacts
+
+Interactive App HTML is **not** committed to git. It is generated into `packages/mcp/apps/` and included in the published npm tarball.
+
+- **Published package (`npm` / `npx`)**: Apps HTML is already in the package; no extra build step.
+- **Local checkout** (Cursor/Claude pointed at `packages/mcp/dist/cli.js`, or a `file:` dependency): run `yarn --cwd packages/mcp build:apps` after cloning or changing MCP App UI sources. If HTML is missing, the server fails closed at startup with a message to run that command (npm consumers should reinstall or report a packaging bug).
+- **CI / publish**: CI builds Apps before MCP tests; `prepublishOnly` builds Apps before npm publish.
 
 
 ## Installation

@@ -33,3 +33,10 @@ test('MCP App HTML artifacts exist for Wizard-backed tools', t => {
 test('RESOURCE_MIME_TYPE is the MCP Apps profile', t => {
   t.is(RESOURCE_MIME_TYPE, 'text/html;profile=mcp-app');
 });
+
+test('missing App HTML fails closed with build:apps guidance', t => {
+  const err = t.throws(() => readAppHtml('definitely-missing-tool-xyz'));
+  t.true(err instanceof Error);
+  t.regex((err as Error).message, /MCP App HTML missing/);
+  t.regex((err as Error).message, /build:apps/);
+});
