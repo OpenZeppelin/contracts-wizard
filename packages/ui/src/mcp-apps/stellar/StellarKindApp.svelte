@@ -2,6 +2,8 @@
   import type { App } from '@modelcontextprotocol/ext-apps';
 
   import KindShell from '../KindShell.svelte';
+  import type { HostSendCaps } from '../deliver-contract';
+  import { deliverContractToHost } from '../deliver-contract';
   import FungibleControls from '../../stellar/FungibleControls.svelte';
   import NonFungibleControls from '../../stellar/NonFungibleControls.svelte';
   import StablecoinControls from '../../stellar/StablecoinControls.svelte';
@@ -16,6 +18,9 @@
 
   export let kind: Kind;
   export let mcpApp: App;
+  export let hostConnected = false;
+  export let hostConnectError: string | undefined = undefined;
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let opts: any = undefined;
@@ -56,17 +61,20 @@
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
-    await mcpApp.updateModelContext({
-      content: [{ type: 'text', text: currentCode }],
-    });
-    await mcpApp.sendMessage({
-      role: 'user',
-      content: [{ type: 'text', text: 'Use this generated contract in the project.' }],
-    });
+    await deliverContractToHost(mcpApp, currentCode, 'rust');
   }
 </script>
 
-<KindShell {highlightedCode} {hasErrors} {code} highlightClass="-stellar" {onUseContract}>
+<KindShell
+  {highlightedCode}
+  {hasErrors}
+  {code}
+  highlightClass="-stellar"
+  {onUseContract}
+  {hostConnected}
+  {hostConnectError}
+  {hostSendCaps}
+>
   <svelte:fragment slot="controls">
     {#if kind === 'Fungible'}
       <FungibleControls bind:opts {errors} />

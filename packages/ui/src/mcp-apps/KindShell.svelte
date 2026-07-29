@@ -1,18 +1,50 @@
 <script lang="ts">
+  import type { HostSendCaps } from './deliver-contract';
+  import { canSendToHost, copyContractToClipboard } from './deliver-contract';
+
   export let highlightedCode: string;
   export let hasErrors = false;
   export let highlightClass = '-solidity';
   export let code = '';
   export let onUseContract: (code: string) => void | Promise<void> = () => {};
   export let useLabel = 'Use this contract';
+  export let hostConnected = false;
+  export let hostConnectError: string | undefined = undefined;
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
 
   let sending = false;
+  let statusMessage: string | undefined = undefined;
+  let statusIsError = false;
+
+  $: sendSupported = canSendToHost(hostSendCaps);
+  $: buttonDisabled = hasErrors || sending || !code || !hostConnected || !!hostConnectError;
+
+  function setStatus(message: string, isError: boolean) {
+    statusMessage = message;
+    statusIsError = isError;
+  }
 
   async function handleUse() {
-    if (hasErrors || sending || !code) return;
+    if (buttonDisabled) return;
+    statusMessage = undefined;
     sending = true;
     try {
+      if (!sendSupported) {
+        await copyContractToClipboard(code);
+        setStatus('Copied contract to clipboard — paste it into the chat.', false);
+        return;
+      }
       await onUseContract(code);
+      setStatus('Sent to the agent.', false);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error('[mcp-apps] Use this contract failed', e);
+      try {
+        await copyContractToClipboard(code);
+        setStatus(`${message} Copied to clipboard instead.`, true);
+      } catch {
+        setStatus(message, true);
+      }
     } finally {
       sending = false;
     }
@@ -38,15 +70,30 @@
     </div>
   </div>
 
-  <div class="flex flex-row justify-end shrink-0">
+  <div class="flex flex-col items-end gap-1 shrink-0">
     <button
       class="use-button"
-      class:disabled={hasErrors || sending || !code}
-      disabled={hasErrors || sending || !code}
+      class:disabled={buttonDisabled}
+      disabled={buttonDisabled}
       on:click={handleUse}
     >
-      {sending ? 'Sending…' : useLabel}
+      {#if !hostConnected && !hostConnectError}
+        Connecting…
+      {:else if sending}
+        Sending…
+      {:else if hostConnected && !sendSupported}
+        Copy contract
+      {:else}
+        {useLabel}
+      {/if}
     </button>
+    {#if hostConnectError}
+      <p class="status error">Could not connect to host: {hostConnectError}</p>
+    {:else if statusMessage}
+      <p class="status" class:error={statusIsError}>{statusMessage}</p>
+    {:else if hostConnected && !sendSupported}
+      <p class="status">This host cannot send to chat — copy and paste the contract instead.</p>
+    {/if}
   </div>
 </div>
 
@@ -73,6 +120,18 @@
   .use-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .status {
+    margin: 0;
+    max-width: 100%;
+    font-size: 0.75rem;
+    color: var(--gray-5, #6b7280);
+    text-align: right;
+  }
+
+  .status.error {
+    color: #b91c1c;
   }
 
   .no-select {

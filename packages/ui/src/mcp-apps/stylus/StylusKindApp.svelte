@@ -2,6 +2,8 @@
   import type { App } from '@modelcontextprotocol/ext-apps';
 
   import KindShell from '../KindShell.svelte';
+  import type { HostSendCaps } from '../deliver-contract';
+  import { deliverContractToHost } from '../deliver-contract';
   import ERC20Controls from '../../stylus/ERC20Controls.svelte';
   import ERC721Controls from '../../stylus/ERC721Controls.svelte';
   import ERC1155Controls from '../../stylus/ERC1155Controls.svelte';
@@ -14,6 +16,9 @@
 
   export let kind: Kind;
   export let mcpApp: App;
+  export let hostConnected = false;
+  export let hostConnectError: string | undefined = undefined;
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let opts: any = undefined;
@@ -54,17 +59,20 @@
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
-    await mcpApp.updateModelContext({
-      content: [{ type: 'text', text: currentCode }],
-    });
-    await mcpApp.sendMessage({
-      role: 'user',
-      content: [{ type: 'text', text: 'Use this generated contract in the project.' }],
-    });
+    await deliverContractToHost(mcpApp, currentCode, 'rust');
   }
 </script>
 
-<KindShell {highlightedCode} {hasErrors} {code} highlightClass="-stylus" {onUseContract}>
+<KindShell
+  {highlightedCode}
+  {hasErrors}
+  {code}
+  highlightClass="-stylus"
+  {onUseContract}
+  {hostConnected}
+  {hostConnectError}
+  {hostSendCaps}
+>
   <svelte:fragment slot="controls">
     {#if kind === 'ERC20'}
       <ERC20Controls bind:opts {errors} />
