@@ -13,7 +13,6 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.Account),
       inputSchema: cairoAccountSchema,
-      languageApp: 'cairo-account',
       title: 'Cairo Account',
     },
     async ({ name, type, declare, deploy, pubkey, outsideExecution, upgradeable, info, macros }) => {

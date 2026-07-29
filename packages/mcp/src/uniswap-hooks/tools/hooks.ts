@@ -12,7 +12,6 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(uniswapHooksPrompts.Hooks),
       inputSchema: uniswapHooksHooksSchema,
-      languageApp: 'uniswap-hooks',
       title: 'Uniswap Hooks',
     },
     async ({

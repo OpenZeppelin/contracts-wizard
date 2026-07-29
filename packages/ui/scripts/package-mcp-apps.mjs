@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mcpBuildDir = path.join(__dirname, '..', 'public', 'build', 'mcp');
+const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
 
 fs.mkdirSync(outDir, { recursive: true });
@@ -17,6 +18,12 @@ if (!fs.existsSync(mcpBuildDir)) {
   console.error(`Missing MCP build dir: ${mcpBuildDir}`);
   process.exit(1);
 }
+
+const expectedNames = fs
+  .readdirSync(entriesDir)
+  .filter(f => f.endsWith('.ts'))
+  .map(f => path.basename(f, '.ts'))
+  .sort();
 
 const jsFiles = fs.readdirSync(mcpBuildDir).filter(f => f.endsWith('.js'));
 if (jsFiles.length === 0) {
@@ -51,3 +58,22 @@ ${js}
   fs.writeFileSync(outPath, html);
   console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
 }
+
+const missing = expectedNames.filter(name => !fs.existsSync(path.join(outDir, `${name}.html`)));
+if (missing.length > 0) {
+  console.error(`MCP App HTML missing after packaging:\n  ${missing.join('\n  ')}`);
+  process.exit(1);
+}
+
+const builtNames = fs
+  .readdirSync(outDir)
+  .filter(f => f.endsWith('.html'))
+  .map(f => path.basename(f, '.html'))
+  .sort();
+const unexpected = builtNames.filter(name => !expectedNames.includes(name));
+if (unexpected.length > 0) {
+  console.error(`Unexpected MCP App HTML (no entry):\n  ${unexpected.join('\n  ')}`);
+  process.exit(1);
+}
+
+console.log(`Verified ${expectedNames.length} MCP App HTML artifacts match entries.`);

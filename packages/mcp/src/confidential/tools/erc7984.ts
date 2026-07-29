@@ -13,7 +13,6 @@ export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(confidentialPrompts.ERC7984),
       inputSchema: confidentialERC7984Schema,
-      languageApp: 'erc7984',
       title: 'ERC7984',
     },
     async ({ name, symbol, contractURI, decimals, premint, networkConfig, wrappable, votes, info }) => {

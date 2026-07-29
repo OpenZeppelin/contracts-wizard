@@ -49,7 +49,8 @@
       if (e instanceof OptionsError) {
         errors = e.messages;
       } else {
-        throw e;
+        const message = e instanceof Error ? e.message : String(e);
+        errors = { _: message || "Failed to build contract" };
       }
     }
   }

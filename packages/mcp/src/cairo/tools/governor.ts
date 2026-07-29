@@ -13,7 +13,6 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.Governor),
       inputSchema: cairoGovernorSchema,
-      languageApp: 'cairo-governor',
       title: 'Cairo Governor',
     },
     async ({

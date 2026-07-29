@@ -13,7 +13,6 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.Multisig),
       inputSchema: cairoMultisigSchema,
-      languageApp: 'cairo-multisig',
       title: 'Cairo Multisig',
     },
     async ({ name, quorum, upgradeable, info, macros }) => {

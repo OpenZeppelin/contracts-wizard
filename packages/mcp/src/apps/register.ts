@@ -12,18 +12,12 @@ export function appResourceUri(toolName: string): string {
   return `ui://openzeppelin/${toolName}.html`;
 }
 
-/** Resolve HTML for a tool; falls back to language-level shared app when present. */
-export function resolveAppHtmlPath(toolName: string, languageApp?: string): string {
+/** Resolve HTML for a tool. */
+export function resolveAppHtmlPath(toolName: string): string {
   const appsDir = path.join(__dirname, '..', '..', 'apps');
   const toolPath = path.join(appsDir, `${toolName}.html`);
   if (fs.existsSync(toolPath)) {
     return toolPath;
-  }
-  if (languageApp) {
-    const langPath = path.join(appsDir, `${languageApp}.html`);
-    if (fs.existsSync(langPath)) {
-      return langPath;
-    }
   }
   throw missingAppHtmlError(toolName, appsDir);
 }
@@ -36,35 +30,25 @@ function missingAppHtmlError(toolName: string, appsDir: string): Error {
   );
 }
 
-/** True when the per-tool (or language fallback) App HTML artifact exists on disk. */
-export function appHtmlExists(toolName: string, languageApp?: string): boolean {
+/** True when the per-tool App HTML artifact exists on disk. */
+export function appHtmlExists(toolName: string): boolean {
   const appsDir = path.join(__dirname, '..', '..', 'apps');
-  if (fs.existsSync(path.join(appsDir, `${toolName}.html`))) {
-    return true;
-  }
-  if (languageApp && fs.existsSync(path.join(appsDir, `${languageApp}.html`))) {
-    return true;
-  }
-  return false;
+  return fs.existsSync(path.join(appsDir, `${toolName}.html`));
 }
 
-export function readAppHtml(toolName: string, languageApp?: string): string {
-  return fs.readFileSync(resolveAppHtmlPath(toolName, languageApp), 'utf-8');
+export function readAppHtml(toolName: string): string {
+  return fs.readFileSync(resolveAppHtmlPath(toolName), 'utf-8');
 }
 
-/**
- * Register an MCP App UI resource. Prefer language-level shared HTML via `languageApp`
- * (e.g. `solidity`) so all tools in a language share one bundle; URI remains per-tool.
- */
+/** Register an MCP App UI resource for a tool. */
 export function registerWizardAppResource(
   server: McpServer,
   toolName: string,
-  options?: { languageApp?: string; title?: string },
+  options?: { title?: string },
 ): void {
   const uri = appResourceUri(toolName);
-  const languageApp = options?.languageApp;
   // Fail closed: do not register a UI resource that cannot be served.
-  resolveAppHtmlPath(toolName, languageApp);
+  resolveAppHtmlPath(toolName);
   server.registerResource(
     options?.title ?? `${toolName} UI`,
     uri,
@@ -77,7 +61,7 @@ export function registerWizardAppResource(
         {
           uri,
           mimeType: RESOURCE_MIME_TYPE,
-          text: readAppHtml(toolName, languageApp),
+          text: readAppHtml(toolName),
         },
       ],
     }),
@@ -87,7 +71,6 @@ export function registerWizardAppResource(
 type AppToolConfig<Args extends ZodRawShapeCompat> = {
   description: string;
   inputSchema: Args;
-  languageApp?: string;
   title?: string;
 };
 
@@ -106,11 +89,10 @@ export function registerWizardAppTool<Args extends ZodRawShapeCompat>(
 ): RegisteredTool {
   const resourceUri = appResourceUri(toolName);
   // Fail closed before advertising UI meta if artifacts are missing.
-  if (!appHtmlExists(toolName, config.languageApp)) {
+  if (!appHtmlExists(toolName)) {
     throw missingAppHtmlError(toolName, path.join(__dirname, '..', '..', 'apps'));
   }
   registerWizardAppResource(server, toolName, {
-    languageApp: config.languageApp,
     title: config.title,
   });
 

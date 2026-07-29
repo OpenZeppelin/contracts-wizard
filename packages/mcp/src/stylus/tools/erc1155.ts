@@ -13,7 +13,6 @@ export function registerStylusERC1155(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stylusPrompts.ERC1155),
       inputSchema: stylusERC1155Schema,
-      languageApp: 'stylus-erc1155',
       title: 'Stylus ERC1155',
     },
     async ({ name, burnable, supply, info }) => {

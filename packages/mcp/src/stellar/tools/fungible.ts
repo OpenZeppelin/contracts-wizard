@@ -13,7 +13,6 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stellarPrompts.Fungible),
       inputSchema: stellarFungibleSchema,
-      languageApp: 'stellar-fungible',
       title: 'Stellar Fungible',
     },
     async ({

@@ -13,7 +13,6 @@ export function registerCairoCustom(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.Custom),
       inputSchema: cairoCustomSchema,
-      languageApp: 'cairo-custom',
       title: 'Cairo Custom',
     },
     async ({ name, pausable, access, upgradeable, info, macros }) => {

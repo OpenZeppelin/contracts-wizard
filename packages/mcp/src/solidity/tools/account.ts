@@ -13,7 +13,6 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.Account),
       inputSchema: solidityAccountSchema,
-      languageApp: 'solidity-account',
       title: 'Solidity Account',
     },
     async ({

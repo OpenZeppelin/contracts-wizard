@@ -13,7 +13,6 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.Stablecoin),
       inputSchema: solidityStablecoinSchema,
-      languageApp: 'solidity-stablecoin',
       title: 'Solidity Stablecoin',
     },
     async ({

@@ -13,7 +13,6 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.ERC1155),
       inputSchema: solidityERC1155Schema,
-      languageApp: 'solidity-erc1155',
       title: 'Solidity ERC1155',
     },
     async ({ name, uri, burnable, pausable, mintable, supply, updatableUri, access, upgradeable, info }) => {

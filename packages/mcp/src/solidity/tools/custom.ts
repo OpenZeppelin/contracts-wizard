@@ -13,7 +13,6 @@ export function registerSolidityCustom(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.Custom),
       inputSchema: solidityCustomSchema,
-      languageApp: 'solidity-custom',
       title: 'Solidity Custom',
     },
     async ({ name, pausable, access, upgradeable, info }) => {

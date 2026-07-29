@@ -13,7 +13,6 @@ export function registerStellarGovernor(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stellarPrompts.Governor),
       inputSchema: stellarGovernorSchema,
-      languageApp: 'stellar-governor',
       title: 'Stellar Governor',
     },
     async ({

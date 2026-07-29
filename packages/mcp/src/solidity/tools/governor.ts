@@ -13,7 +13,6 @@ export function registerSolidityGovernor(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.Governor),
       inputSchema: solidityGovernorSchema,
-      languageApp: 'solidity-governor',
       title: 'Solidity Governor',
     },
     async ({

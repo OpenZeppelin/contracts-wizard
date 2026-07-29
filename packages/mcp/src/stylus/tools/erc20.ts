@@ -13,7 +13,6 @@ export function registerStylusERC20(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stylusPrompts.ERC20),
       inputSchema: stylusERC20Schema,
-      languageApp: 'stylus-erc20',
       title: 'Stylus ERC20',
     },
     async ({ name, burnable, permit, flashmint, info }) => {

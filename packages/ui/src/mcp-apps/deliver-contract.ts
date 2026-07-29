@@ -13,8 +13,9 @@ export function readHostSendCaps(app: App): HostSendCaps {
   };
 }
 
+/** Send requires `message`; context-only hosts use Copy to Clipboard. */
 export function canSendToHost(caps: HostSendCaps): boolean {
-  return caps.message || caps.updateModelContext;
+  return caps.message;
 }
 
 const SHORT_TRIGGER =
@@ -36,9 +37,7 @@ function messageWithCode(fence: string, code: string): string {
  * Capability matrix:
  * - message (+ optional updateModelContext): self-contained chat message with full source;
  *   also best-effort stage via updateModelContext when advertised.
- * - updateModelContext only: stage source, then error so the UI can copy — host cannot
- *   start a model turn.
- * - neither: caller/UI falls back to clipboard (Cursor today).
+ * - otherwise: caller/UI falls back to clipboard (Cursor today; context-only hosts too).
  */
 export async function deliverContractToHost(
   app: App,
@@ -58,23 +57,14 @@ export async function deliverContractToHost(
       });
     } catch (e) {
       console.warn('[mcp-apps] updateModelContext failed', e);
-      if (!caps.message) {
-        throw e instanceof Error ? e : new Error(String(e));
-      }
     }
   }
 
-  if (caps.message) {
-    await app.sendMessage({
-      role: 'user',
-      content: [{ type: 'text', text: messageWithCode(fence, code) }],
-    });
-    return { mode: caps.updateModelContext ? 'context-and-message' : 'message' };
-  }
-
-  throw new Error(
-    'Host stored the contract in model context but cannot send a chat message. Copy the source and paste it into the chat.',
-  );
+  await app.sendMessage({
+    role: 'user',
+    content: [{ type: 'text', text: messageWithCode(fence, code) }],
+  });
+  return { mode: caps.updateModelContext ? 'context-and-message' : 'message' };
 }
 
 export async function copyContractToClipboard(code: string): Promise<void> {

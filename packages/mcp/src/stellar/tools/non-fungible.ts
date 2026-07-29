@@ -13,7 +13,6 @@ export function registerStellarNonFungible(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stellarPrompts.NonFungible),
       inputSchema: stellarNonFungibleSchema,
-      languageApp: 'stellar-non-fungible',
       title: 'Stellar Non-Fungible',
     },
     async ({

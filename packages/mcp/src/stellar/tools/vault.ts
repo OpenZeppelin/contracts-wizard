@@ -13,7 +13,6 @@ export function registerStellarVault(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stellarPrompts.Vault),
       inputSchema: stellarVaultSchema,
-      languageApp: 'stellar-vault',
       title: 'Stellar Vault',
     },
     async ({ name, symbol, decimalsOffset, pausable, upgradeable, access, explicitImplementations, info }) => {

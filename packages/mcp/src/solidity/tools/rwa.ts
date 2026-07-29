@@ -13,7 +13,6 @@ export function registerSolidityRWA(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.RWA),
       inputSchema: solidityRWASchema,
-      languageApp: 'solidity-rwa',
       title: 'Solidity RWA',
     },
     async ({

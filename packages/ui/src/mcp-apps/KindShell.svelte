@@ -69,11 +69,9 @@
 
     <div class="output flex flex-col grow min-w-0 overflow-hidden">
       <pre class="flex flex-col grow basis-0 overflow-auto m-0">
-        {#key highlightedCode}
-          <code class="hljs {highlightClass} grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
-            >{@html highlightedCode}</code
-          >
-        {/key}
+        <code class="hljs {highlightClass} grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
+          >{@html highlightedCode}</code
+        >
       </pre>
     </div>
   </div>

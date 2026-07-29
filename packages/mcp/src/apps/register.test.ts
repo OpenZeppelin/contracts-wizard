@@ -1,7 +1,12 @@
 import test from 'ava';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { testMcpInfo } from '../helpers.test';
-import { appResourceUri, readAppHtml, RESOURCE_MIME_TYPE } from './register';
+import {
+  appResourceUri,
+  readAppHtml,
+  registerWizardAppTool,
+  RESOURCE_MIME_TYPE,
+} from './register';
 import { registerSolidityERC20 } from '../solidity/tools/erc20';
 
 test('solidity-erc20 registers UI metadata', t => {
@@ -36,6 +41,26 @@ test('RESOURCE_MIME_TYPE is the MCP Apps profile', t => {
 
 test('missing App HTML fails closed with build:apps guidance', t => {
   const err = t.throws(() => readAppHtml('definitely-missing-tool-xyz'));
+  t.true(err instanceof Error);
+  t.regex((err as Error).message, /MCP App HTML missing/);
+  t.regex((err as Error).message, /build:apps/);
+});
+
+test('registerWizardAppTool fails closed when HTML missing', t => {
+  const server = new McpServer(testMcpInfo);
+  const err = t.throws(() =>
+    registerWizardAppTool(
+      server,
+      'definitely-missing-tool-xyz',
+      {
+        description: 'missing app',
+        inputSchema: {},
+      },
+      async () => ({
+        content: [{ type: 'text', text: 'unused' }],
+      }),
+    ),
+  );
   t.true(err instanceof Error);
   t.regex((err as Error).message, /MCP App HTML missing/);
   t.regex((err as Error).message, /build:apps/);

@@ -13,7 +13,6 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(stellarPrompts.Stablecoin),
       inputSchema: stellarStablecoinSchema,
-      languageApp: 'stellar-stablecoin',
       title: 'Stellar Stablecoin',
     },
     async ({

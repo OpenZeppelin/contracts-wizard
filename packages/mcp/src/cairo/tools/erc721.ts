@@ -13,7 +13,6 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.ERC721),
       inputSchema: cairoERC721Schema,
-      languageApp: 'cairo-erc721',
       title: 'Cairo ERC721',
     },
     async ({

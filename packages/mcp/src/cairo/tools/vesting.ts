@@ -13,7 +13,6 @@ export function registerCairoVesting(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(cairoPrompts.Vesting),
       inputSchema: cairoVestingSchema,
-      languageApp: 'cairo-vesting',
       title: 'Cairo Vesting',
     },
     async ({ name, startDate, duration, cliffDuration, schedule, info, macros }) => {

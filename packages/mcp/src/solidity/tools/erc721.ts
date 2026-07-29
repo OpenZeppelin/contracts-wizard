@@ -13,7 +13,6 @@ export function registerSolidityERC721(server: McpServer): RegisteredTool {
     {
       description: makeDetailedPrompt(solidityPrompts.ERC721),
       inputSchema: solidityERC721Schema,
-      languageApp: 'solidity-erc721',
       title: 'Solidity ERC721',
     },
     async ({
