@@ -11,7 +11,6 @@
   import VaultControls from '../../stellar/VaultControls.svelte';
 
   import hljs from '../../stellar/highlightjs';
-  import { injectHyperlinks } from '../../stellar/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { ContractBuilder, buildGeneric, printContract, OptionsError } from '@openzeppelin/wizard-stellar';
@@ -58,7 +57,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('rust', code).value);
+  $: highlightedCode = hljs.highlight('rust', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {

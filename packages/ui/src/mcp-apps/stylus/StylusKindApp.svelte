@@ -9,7 +9,6 @@
   import ERC1155Controls from '../../stylus/ERC1155Controls.svelte';
 
   import hljs from '../../stylus/highlightjs';
-  import { injectHyperlinks } from '../../stylus/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stylus';
   import { ContractBuilder, buildGeneric, printContract, OptionsError } from '@openzeppelin/wizard-stylus';
@@ -56,7 +55,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('rust', code).value);
+  $: highlightedCode = hljs.highlight('rust', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {

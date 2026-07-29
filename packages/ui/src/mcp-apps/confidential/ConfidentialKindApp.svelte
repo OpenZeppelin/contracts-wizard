@@ -7,7 +7,6 @@
   import ERC7984Controls from '../../confidential/ERC7984Controls.svelte';
 
   import hljs from '../../solidity/highlightjs';
-  import { injectHyperlinks } from '../../confidential/inject-hyperlinks';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
@@ -56,7 +55,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+  $: highlightedCode = hljs.highlight('solidity', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {

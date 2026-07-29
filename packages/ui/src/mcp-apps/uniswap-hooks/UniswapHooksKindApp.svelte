@@ -7,7 +7,6 @@
   import HooksControls from '../../uniswap-hooks/HooksControls.svelte';
 
   import hljs from '../../solidity/highlightjs';
-  import { injectHyperlinks } from '../../uniswap-hooks/inject-hyperlinks';
 
   import { ContractBuilder, OptionsError } from '@openzeppelin/wizard';
   import type { Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
@@ -56,7 +55,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+  $: highlightedCode = hljs.highlight('solidity', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {

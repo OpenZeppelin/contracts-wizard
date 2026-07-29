@@ -14,7 +14,6 @@
   import VestingControls from '../../cairo/VestingControls.svelte';
 
   import hljs from '../../cairo/highlightjs';
-  import { injectHyperlinks } from '../../cairo/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import {
@@ -69,7 +68,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('cairo', code).value);
+  $: highlightedCode = hljs.highlight('cairo', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {

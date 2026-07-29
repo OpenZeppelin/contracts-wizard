@@ -14,7 +14,6 @@
   import CustomControls from '../../solidity/CustomControls.svelte';
 
   import hljs from '../../solidity/highlightjs';
-  import { injectHyperlinks } from '../../solidity/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { ContractBuilder, buildGeneric, printContract, OptionsError } from '@openzeppelin/wizard';
@@ -62,7 +61,7 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = injectHyperlinks(hljs.highlight('solidity', code).value);
+  $: highlightedCode = hljs.highlight('solidity', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
