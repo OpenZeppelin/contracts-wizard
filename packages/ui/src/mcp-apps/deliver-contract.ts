@@ -17,7 +17,8 @@ export function canSendToHost(caps: HostSendCaps): boolean {
   return caps.message || caps.updateModelContext;
 }
 
-const SHORT_TRIGGER = 'Use this generated contract in the project.';
+const SHORT_TRIGGER =
+  'I refined this contract in the Wizard UI beyond the initial MCP tool result. Here is the current generated source.';
 
 function messageWithCode(fence: string, code: string): string {
   // Keep single newlines; some hosts turn blank lines into paragraph spacing in the draft.

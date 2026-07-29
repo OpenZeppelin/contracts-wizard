@@ -7,7 +7,7 @@
   export let highlightClass = '-solidity';
   export let code = '';
   export let onUseContract: (code: string) => void | Promise<void> = () => {};
-  export let useLabel = 'Use this contract';
+  export let useLabel = 'Send updated contract';
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
   export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
@@ -35,10 +35,10 @@
         return;
       }
       await onUseContract(code);
-      setStatus('Sent to the agent.', false);
+      setStatus('Sent updated contract to the agent.', false);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[mcp-apps] Use this contract failed', e);
+      console.error('[mcp-apps] Send updated contract failed', e);
       try {
         await copyContractToClipboard(code);
         setStatus(`${message} Copied to clipboard instead.`, true);
