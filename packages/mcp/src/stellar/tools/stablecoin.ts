@@ -13,6 +13,7 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
     async ({
       name,
       symbol,
+      decimals,
       burnable,
       votes,
       pausable,
@@ -27,6 +28,7 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
       const opts: StablecoinOptions = {
         name,
         symbol,
+        decimals,
         burnable,
         votes,
         pausable,

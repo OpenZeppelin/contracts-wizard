@@ -85,6 +85,10 @@ testERC721('enumerable', {
   enumerable: true,
 });
 
+testERC721('consecutive', {
+  consecutive: true,
+});
+
 testERC721('wrapper', {
   wrapper: true,
 });
@@ -248,6 +252,21 @@ test('erc721 votes, empty version', async t => {
   t.is((error as OptionsError).messages.appVersion, 'Application Version is required when Votes are enabled');
 });
 
+test('erc721 consecutive + enumerable is not allowed', async t => {
+  const error = t.throws(() =>
+    buildERC721({
+      name: NAME,
+      symbol: SYMBOL,
+      consecutive: true,
+      enumerable: true,
+    }),
+  );
+  t.is(
+    (error as OptionsError).messages.consecutive,
+    'Consecutive cannot be combined with Enumerable: batch mints bypass the update hook that Enumerable relies on to track ownership.',
+  );
+});
+
 testERC721('erc721 votes, non-upgradeable', {
   votes: true,
   appName: APP_NAME,
@@ -295,4 +314,5 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc721.isAccessControlRequired({ burnable: true }), false);
   t.is(erc721.isAccessControlRequired({ enumerable: true }), false);
+  t.is(erc721.isAccessControlRequired({ consecutive: true }), false);
 });

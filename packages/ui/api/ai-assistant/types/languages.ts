@@ -42,10 +42,11 @@ export type LanguagesContractsOptions = {
   cairoAlpha: CairoAlphaKindedOptions;
   confidential: ConfidentialKindedOptions;
   polkadot: Omit<SolidityContractsOptions, 'Account'>;
-  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin' | 'Governor'> & {
+  stellar: Omit<StellarKindedOptions, 'Fungible' | 'NonFungible' | 'Stablecoin' | 'Vault' | 'Governor'> & {
     Fungible: StellarKindedOptions['Fungible'] & StellarCommonContractOptions;
     NonFungible: StellarKindedOptions['NonFungible'] & StellarCommonContractOptions;
     Stablecoin: StellarKindedOptions['Stablecoin'] & StellarCommonContractOptions;
+    Vault: StellarKindedOptions['Vault'] & StellarCommonContractOptions;
     Governor: StellarKindedOptions['Governor'] & StellarCommonContractOptions;
   };
   stylus: Omit<StylusKindedOptions, 'ERC20' | 'ERC721' | 'ERC1155'> & {

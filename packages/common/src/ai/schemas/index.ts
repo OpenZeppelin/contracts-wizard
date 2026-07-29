@@ -30,6 +30,7 @@ export {
   stellarInfoSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
+  stellarVaultSchema,
 } from './stellar';
 
 export { stylusCommonSchema, stylusERC20Schema, stylusERC721Schema, stylusERC1155Schema } from './stylus';

@@ -10,6 +10,7 @@ const booleans = [true, false];
 const blueprintWithoutBasicFeatures = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  decimals: ['6', '18'],
   pausable: booleans,
   mintable: booleans,
   votes: [...booleans, ...clockModeOptions] as const,

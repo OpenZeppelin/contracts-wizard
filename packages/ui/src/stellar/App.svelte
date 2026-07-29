@@ -9,6 +9,7 @@
   import GovernorControls from './GovernorControls.svelte';
   import NonFungibleControls from './NonFungibleControls.svelte';
   import StablecoinControls from './StablecoinControls.svelte';
+  import VaultControls from './VaultControls.svelte';
   import CopyIcon from '../common/icons/CopyIcon.svelte';
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
@@ -130,6 +131,8 @@
             break;
           case 'NonFungible':
             break;
+          case 'Vault':
+            break;
         }
         initialValuesSet = true;
       }
@@ -196,6 +199,7 @@
         <button class:selected={tab === 'Fungible'} on:click={() => (tab = 'Fungible')}> Fungible </button>
         <button class:selected={tab === 'NonFungible'} on:click={() => (tab = 'NonFungible')}> NonFungible </button>
         <button class:selected={tab === 'Stablecoin'} on:click={() => (tab = 'Stablecoin')}> Stablecoin </button>
+        <button class:selected={tab === 'Vault'} on:click={() => (tab = 'Vault')}> Vault </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
       </OverflowMenu>
     </div>
@@ -265,6 +269,9 @@
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
         <StablecoinControls bind:opts={allOpts.Stablecoin} errors={errors.Stablecoin} />
+      </div>
+      <div class:hidden={tab !== 'Vault'}>
+        <VaultControls bind:opts={allOpts.Vault} errors={errors.Vault} />
       </div>
     </div>
     <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">

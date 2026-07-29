@@ -52,6 +52,7 @@ test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
     name: 'MyRWA',
     symbol: 'RWA',
+    decimals: '6',
     premint: '2000',
     access: 'roles',
     burnable: true,

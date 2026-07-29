@@ -1,6 +1,28 @@
 import { OptionsError } from '../error';
 
-export const UINT256_MAX = BigInt(2) ** BigInt(256) - BigInt(1);
+function maxValueOfUint(bits: number): bigint {
+  if (bits <= 0) {
+    throw new Error(`Number of bits must be positive (actual '${bits}').`);
+  }
+  if (bits % 8 !== 0) {
+    throw new Error(`The number of bits must be a multiple of 8 (actual '${bits}').`);
+  }
+  const bytes = bits / 8;
+  return BigInt('0x' + 'ff'.repeat(bytes));
+}
+
+const UINT_MAX_VALUES = {
+  uint8: maxValueOfUint(8),
+  uint16: maxValueOfUint(16),
+  uint32: maxValueOfUint(32),
+  uint64: maxValueOfUint(64),
+  uint128: maxValueOfUint(128),
+  uint256: maxValueOfUint(256),
+} as const;
+
+export type UintType = keyof typeof UINT_MAX_VALUES;
+
+export const UINT256_MAX = UINT_MAX_VALUES.uint256;
 
 /**
  * Checks that a string is a valid number, and convert to bigint.
@@ -21,31 +43,20 @@ export function toBigInt(value: string, field: string): bigint {
 }
 
 /**
- * Checks that a bigint value fits within `uint256`.
- *
- * @param numValue The value to check.
- * @param field The field name to use in the error if the value is invalid.
- * @throws OptionsError if the value is greater than the maximum value for `uint256`.
- * @returns The value as a bigint.
- */
-export function validateUint256(numValue: bigint, field: string): bigint {
-  if (numValue > UINT256_MAX) {
-    throw new OptionsError({
-      [field]: 'Value is greater than uint256 max value',
-    });
-  }
-  return numValue;
-}
-
-/**
- * Checks that a string is a valid number, and fits within `uint256`.
- * Convenience function that calls `toBigInt` and `validateUint256`.
+ * Checks that a string is a valid number, and fits within the given `uint` type.
  *
  * @param value The value to check.
  * @param field The field name to use in the error if the value is invalid.
- * @throws OptionsError if the value is not a valid number or is greater than the maximum value for `uint256`.
+ * @param type The Solidity `uint` type the value must fit within.
+ * @throws OptionsError if the value is not a valid number or is greater than the maximum value for the given type.
  * @returns The value as a bigint.
  */
-export function toUint256(value: string, field: string): bigint {
-  return validateUint256(toBigInt(value, field), field);
+export function toUint(value: string, field: string, type: UintType): bigint {
+  const numValue = toBigInt(value, field);
+  if (numValue > UINT_MAX_VALUES[type]) {
+    throw new OptionsError({
+      [field]: `Value is greater than ${type} max value`,
+    });
+  }
+  return numValue;
 }

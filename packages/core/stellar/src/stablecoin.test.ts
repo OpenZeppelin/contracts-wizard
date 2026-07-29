@@ -59,6 +59,11 @@ testStablecoin('stablecoin premint of 0', {
   premint: '0',
 });
 
+testStablecoin('stablecoin custom decimals with premint', {
+  decimals: '18',
+  premint: '1000',
+});
+
 testStablecoin('stablecoin mintable', {
   mintable: true,
 });

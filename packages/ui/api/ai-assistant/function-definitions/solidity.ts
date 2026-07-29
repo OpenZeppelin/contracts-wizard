@@ -35,6 +35,10 @@ export const solidityERC20AIFunctionDefinition = {
         'upgradeable',
         'info',
       ]),
+      decimals: {
+        type: 'string',
+        description: solidityERC20Descriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: solidityERC20Descriptions.premint,

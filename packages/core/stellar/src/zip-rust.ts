@@ -8,6 +8,7 @@ import {
   getRequiredLibDependencies,
   printContractCargo,
   printRustNameTest,
+  printVaultRustTest,
   workspaceCargo,
 } from './zip-shared';
 
@@ -37,7 +38,10 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const requiredLibDeps = getRequiredLibDependencies(c);
 
   zip.file(`contracts/${contractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
-  zip.file(`contracts/${contractName}/src/test.rs`, printRustNameTest(c));
+  zip.file(
+    `contracts/${contractName}/src/test.rs`,
+    opts?.kind === 'Vault' ? printVaultRustTest(c) : printRustNameTest(c),
+  );
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName, requiredLibDeps));
   zip.file('Cargo.toml', workspaceCargo(requiredLibDeps));

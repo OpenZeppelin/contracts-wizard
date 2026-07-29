@@ -29,6 +29,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     wrapper: booleans,
     uriStorage: booleans,
     votes: booleans,
+    consecutive: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],
     pausable: booleans,
@@ -43,5 +44,10 @@ function prepareBlueprint(opts: GeneratorOptions) {
 
 export function* generateERC721Options(opts: GeneratorOptions): Generator<Required<ERC721Options>> {
   const blueprint = prepareBlueprint(opts);
-  yield* generateAlternatives(blueprint);
+  for (const option of generateAlternatives(blueprint)) {
+    // Consecutive batch mints bypass the ERC721Component update hook that Enumerable depends on,
+    // so the combination is forbidden by buildERC721. Skip these to avoid invalid generated sources.
+    if (option.consecutive && option.enumerable) continue;
+    yield option;
+  }
 }

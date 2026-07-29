@@ -71,6 +71,57 @@ testERC20('erc20 premint of 0', {
   premint: '0',
 });
 
+testERC20('erc20 custom decimals', {
+  decimals: '6',
+});
+
+testERC20('erc20 default decimals omits override', {
+  decimals: '18',
+});
+
+testERC20('erc20 custom decimals with premint', {
+  decimals: '6',
+  premint: '1000.5',
+});
+
+testERC20('erc20 zero decimals', {
+  decimals: '0',
+});
+
+test('erc20 decimals too large', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '256',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Value is greater than uint8 max value');
+});
+
+test('erc20 decimals not a number', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: 'abc',
+    }),
+  );
+  t.is((error as OptionsError).messages.decimals, 'Not a valid number');
+});
+
+test('erc20 premint more precise than decimals', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '2',
+      premint: '1.555',
+    }),
+  );
+  t.is((error as OptionsError).messages.premint, 'Too many decimals');
+});
+
 function testPremint(scenario: string, premint: string, expectedError?: string) {
   test(`erc20 premint - ${scenario} - ${expectedError ? 'invalid' : 'valid'}`, async t => {
     if (expectedError) {

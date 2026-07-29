@@ -13,15 +13,18 @@ import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
-import { toUint256, UINT256_MAX } from './utils/convert-strings';
+import { toUint, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 
 export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
+export const DEFAULT_DECIMALS = 18;
+
 export interface ERC20Options extends CommonOptions {
   name: string;
   symbol: string;
+  decimals?: string;
   burnable?: boolean;
   pausable?: boolean;
   premint?: string;
@@ -44,6 +47,7 @@ export const defaults: Required<ERC20Options> = {
   ...commonDefaults,
   name: 'MyToken',
   symbol: 'MTK',
+  decimals: DEFAULT_DECIMALS.toString(),
   burnable: false,
   pausable: false,
   premint: '0',
@@ -62,6 +66,7 @@ export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    decimals: opts.decimals ?? defaults.decimals,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
@@ -100,6 +105,11 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
 
   addBase(c, allOpts.name, allOpts.symbol);
 
+  const decimals = Number(toUint(allOpts.decimals, 'decimals', 'uint8'));
+  if (decimals !== DEFAULT_DECIMALS) {
+    addDecimals(c, decimals);
+  }
+
   if (allOpts.crossChainBridging) {
     addCrossChainBridging(
       c,
@@ -112,7 +122,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   }
 
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint, allOpts.premintChainId, allOpts.crossChainBridging);
+    addPremint(c, allOpts.premint, allOpts.premintChainId, allOpts.crossChainBridging, decimals);
   }
 
   if (allOpts.burnable) {
@@ -151,15 +161,21 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   return c;
 }
 
+const ERC20 = {
+  name: 'ERC20',
+  path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
+};
+
 function addBase(c: ContractBuilder, name: string, symbol: string) {
-  const ERC20 = {
-    name: 'ERC20',
-    path: '@openzeppelin/contracts/token/ERC20/ERC20.sol',
-  };
   c.addParent(ERC20, [name, symbol]);
 
   c.addOverride(ERC20, functions._update);
   c.addOverride(ERC20, functions._approve); // allows override from stablecoin
+}
+
+function addDecimals(c: ContractBuilder, decimals: number) {
+  c.addOverride(ERC20, functions.decimals);
+  c.setFunctionBody([`return ${decimals};`], functions.decimals);
 }
 
 function addPausableExtension(c: ContractBuilder, access: Access) {
@@ -231,6 +247,7 @@ function addPremint(
   amount: string,
   premintChainId: string,
   crossChainBridging: CrossChainBridging,
+  decimals: number,
 ) {
   const premintCalculation = calculatePremint(amount);
   if (premintCalculation === undefined) {
@@ -239,8 +256,14 @@ function addPremint(
 
   const { units, exp, decimalPlace } = premintCalculation;
 
-  const validatedBaseUnits = toUint256(units, 'premint');
-  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
+  if (decimalPlace > decimals) {
+    throw new OptionsError({
+      premint: 'Too many decimals',
+    });
+  }
+
+  const validatedBaseUnits = toUint(units, 'premint', 'uint256');
+  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace, decimals);
 
   c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
@@ -268,14 +291,15 @@ function addPremint(
 }
 
 /**
- * Check for potential premint overflow assuming the user's contract has decimals() = 18
+ * Check for potential premint overflow based on the contract's `decimals()` value
  *
  * @param baseUnits The base units of the token, before applying power of 10
  * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `baseUnits`. Ignored if <= 0.
+ * @param decimals The number of decimals that the token's `decimals()` returns
  * @throws OptionsError if the calculated value would overflow uint256
  */
-function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
-  const assumedExp = decimalPlace <= 0 ? 18 : 18 - decimalPlace;
+function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number, decimals: number) {
+  const assumedExp = decimalPlace <= 0 ? decimals : decimals - decimalPlace;
   const calculatedValue = scaleByPowerOfTen(baseUnits, assumedExp);
 
   if (calculatedValue > UINT256_MAX) {
@@ -529,6 +553,13 @@ function addSuperchainERC20(c: ContractBuilder) {
 }
 
 export const functions = defineFunctions({
+  decimals: {
+    kind: 'public' as const,
+    args: [],
+    returns: ['uint8'],
+    mutability: 'pure' as const,
+  },
+
   _update: {
     kind: 'internal' as const,
     args: [

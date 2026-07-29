@@ -6,6 +6,7 @@ import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import { stringifyUnicodeSafe } from './utils/sanitize';
 import type { Upgradeable } from './set-upgradeable';
 
 function getHeader(c: Contract) {
@@ -118,10 +119,18 @@ const test = (c: Contract, opts?: GenericOptions) => {
       switch (opts.kind) {
         case 'ERC20':
         case 'ERC721':
-          return ['function testName() public view {', [`assertEq(instance.name(), "${opts.name}");`], '}'];
+          return [
+            'function testName() public view {',
+            [`assertEq(instance.name(), ${stringifyUnicodeSafe(opts.name)});`],
+            '}',
+          ];
 
         case 'ERC1155':
-          return ['function testUri() public view {', [`assertEq(instance.uri(0), "${opts.uri}");`], '}'];
+          return [
+            'function testUri() public view {',
+            [`assertEq(instance.uri(0), ${stringifyUnicodeSafe(opts.uri)});`],
+            '}',
+          ];
 
         case 'Account':
         case 'Governor':

@@ -90,4 +90,4 @@
 
 <MacrosSection bind:macros={opts.macros} />
 
-<InfoSection bind:info={opts.info} />
+<InfoSection bind:info={opts.info} {errors} />

@@ -17,6 +17,10 @@ export const confidentialERC7984AIFunctionDefinition = {
         type: 'string',
         description: confidentialERC7984Descriptions.contractURI,
       },
+      decimals: {
+        type: 'string',
+        description: confidentialERC7984Descriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: confidentialERC7984Descriptions.premint,

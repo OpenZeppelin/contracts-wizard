@@ -8,6 +8,7 @@ import {
   stellarGovernorDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
+  stellarVaultDescriptions,
 } from '../../../../common/src/ai/descriptions/stellar.ts';
 import { extractStringEnumValues } from '../types/helpers.ts';
 import type { Limitations } from '../../../../core/stellar/dist/stablecoin';
@@ -29,6 +30,10 @@ export const stellarFungibleAIFunctionDefinition = {
         'info',
         'explicitImplementations',
       ]),
+      decimals: {
+        type: 'string',
+        description: stellarFungibleDescriptions.decimals,
+      },
       premint: {
         type: 'string',
         description: stellarFungibleDescriptions.premint,
@@ -59,6 +64,10 @@ export const stellarStablecoinAIFunctionDefinition = {
         'info',
         'explicitImplementations',
       ]),
+      decimals: {
+        type: 'string',
+        description: stellarStablecoinDescriptions.decimals,
+      },
       limitations: {
         anyOf: [
           { type: 'boolean', enum: [false] },
@@ -173,3 +182,28 @@ export const stellarGovernorAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Governor'>;
+
+export const stellarVaultAIFunctionDefinition = {
+  name: 'Vault',
+  description: stellarPrompts.Vault,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, [
+        'name',
+        'symbol',
+        'pausable',
+        'upgradeable',
+        'access',
+        'info',
+        'explicitImplementations',
+      ]),
+      decimalsOffset: {
+        type: 'string',
+        description: stellarVaultDescriptions.decimalsOffset,
+      },
+    },
+    required: contractExactRequiredKeys<'stellar', 'Vault'>()(['name', 'symbol']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Vault'>;

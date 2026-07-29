@@ -13,9 +13,12 @@ import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
 import { pickKeys } from '@openzeppelin/wizard-common';
 
+const DEFAULT_DECIMALS = 7;
+
 export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
   symbol: 'MTK',
+  decimals: DEFAULT_DECIMALS.toString(),
   burnable: false,
   votes: false,
   pausable: false,
@@ -34,6 +37,7 @@ export function printFungible(opts: FungibleOptions = defaults): string {
 export interface FungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
+  decimals?: string;
   burnable?: boolean;
   votes?: boolean;
   pausable?: boolean;
@@ -46,6 +50,7 @@ export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   return {
     ...opts,
     ...withCommonContractDefaults(opts),
+    decimals: opts.decimals ?? defaults.decimals,
     burnable: opts.burnable ?? defaults.burnable,
     votes: opts.votes ?? defaults.votes,
     pausable: opts.pausable ?? defaults.pausable,
@@ -64,17 +69,20 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
 
   const allOpts = withDefaults(opts);
 
+  const decimals = toUint(allOpts.decimals, 'decimals', 'u32');
+
   addBase(
     c,
     toByteArray(allOpts.name),
     toByteArray(allOpts.symbol),
+    decimals,
     allOpts.votes,
     allOpts.pausable,
     allOpts.explicitImplementations,
   );
 
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint, allOpts.votes);
+    addPremint(c, allOpts.premint, decimals, allOpts.votes);
   }
 
   if (allOpts.pausable) {
@@ -103,12 +111,15 @@ function addBase(
   c: ContractBuilder,
   name: string,
   symbol: string,
+  decimals: bigint,
   votes: boolean,
   pausable: boolean,
   explicitImplementations: boolean,
 ) {
   // Set metadata
-  c.addConstructorCode(`Base::set_metadata(e, 7, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`);
+  c.addConstructorCode(
+    `Base::set_metadata(e, ${decimals}, String::from_str(e, "${name}"), String::from_str(e, "${symbol}"));`,
+  );
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
@@ -241,7 +252,7 @@ function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, expl
 
 export const premintPattern = /^(\d*\.?\d*)$/;
 
-function addPremint(c: ContractBuilder, amount: string, votes: boolean) {
+function addPremint(c: ContractBuilder, amount: string, decimals: bigint, votes: boolean) {
   if (amount !== undefined && amount !== '0') {
     if (!premintPattern.test(amount)) {
       throw new OptionsError({
@@ -250,7 +261,7 @@ function addPremint(c: ContractBuilder, amount: string, votes: boolean) {
     }
 
     // TODO: handle signed int?
-    const premintAbsolute = toUint(getInitialSupply(amount, 7), 'premint', 'u128');
+    const premintAbsolute = toUint(getInitialSupply(amount, Number(decimals)), 'premint', 'u128');
 
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
     c.addConstructorCode(`${votes ? 'FungibleVotes' : 'Base'}::mint(e, &recipient, ${premintAbsolute});`);

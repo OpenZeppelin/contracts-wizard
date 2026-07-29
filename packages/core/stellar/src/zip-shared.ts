@@ -39,6 +39,68 @@ fn initial_state() {
 // Add more tests bellow
 `;
 
+// The vault's constructor takes an underlying asset address and derives its own
+// decimals by calling into that asset contract. A generated address would have
+// no `decimals()` to call, so the test deploys a minimal mock fungible asset
+// first and registers the vault against it. A single-element tuple needs a
+// trailing comma in Rust.
+export const printVaultRustTest = (c: Pick<Contract, 'constructorArgs' | 'name'>) => {
+  const registerArgs = (c.constructorArgs || []).map(arg =>
+    arg.name === 'asset' ? 'asset_address.clone()' : 'Address::generate(&env)',
+  );
+  const registerTuple = `(${registerArgs.join(', ')}${registerArgs.length === 1 ? ',' : ''})`;
+
+  return `#![cfg(test)]
+
+extern crate std;
+
+use soroban_sdk::{
+    contract, contractimpl, testutils::Address as _, Address, Env, MuxedAddress, String,
+};
+use stellar_tokens::fungible::{Base, FungibleToken};
+
+use crate::contract::{ ${c.name}, ${c.name}Client };
+
+// Mock asset contract: a minimal fungible token used as the vault's underlying asset.
+#[contract]
+pub struct MockAssetContract;
+
+#[contractimpl]
+impl MockAssetContract {
+    pub fn __constructor(e: &Env, initial_supply: i128, admin: Address) {
+        Base::set_metadata(
+            e,
+            18,
+            String::from_str(e, "Mock Asset Token"),
+            String::from_str(e, "MAT"),
+        );
+        Base::mint(e, &admin, initial_supply);
+    }
+}
+
+#[contractimpl(contracttrait)]
+impl FungibleToken for MockAssetContract {
+    type ContractType = Base;
+}
+
+#[test]
+fn initial_state() {
+    let env = Env::default();
+
+    let admin = Address::generate(&env);
+    let asset_address = env.register(MockAssetContract, (1_000_000_000i128, admin));
+
+    let contract_addr = env.register(${c.name}, ${registerTuple});
+    let client = ${c.name}Client::new(&env, &contract_addr);
+
+    assert_eq!(client.query_asset(), asset_address);
+    assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
+}
+
+// Add more tests bellow
+`;
+};
+
 const libDependencies = [
   'stellar-tokens',
   'stellar-access',

@@ -10,11 +10,12 @@ export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
     'erc7984',
     makeDetailedPrompt(confidentialPrompts.ERC7984),
     confidentialERC7984Schema,
-    async ({ name, symbol, contractURI, premint, networkConfig, wrappable, votes, info }) => {
+    async ({ name, symbol, contractURI, decimals, premint, networkConfig, wrappable, votes, info }) => {
       const opts: ERC7984Options = {
         name,
         symbol,
         contractURI,
+        decimals,
         premint,
         networkConfig,
         wrappable,

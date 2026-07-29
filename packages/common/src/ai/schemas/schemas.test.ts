@@ -30,6 +30,7 @@ import {
   stellarGovernorSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
+  stellarVaultSchema,
   stylusERC20Schema,
   stylusERC721Schema,
   stylusERC1155Schema,
@@ -96,6 +97,7 @@ const allSchemas: [string, z.ZodRawShape][] = [
   ['stellarFungible', stellarFungibleSchema],
   ['stellarStablecoin', stellarStablecoinSchema],
   ['stellarNonFungible', stellarNonFungibleSchema],
+  ['stellarVault', stellarVaultSchema],
   ['stylusERC20', stylusERC20Schema],
   ['stylusERC721', stylusERC721Schema],
   ['stylusERC1155', stylusERC1155Schema],
@@ -154,6 +156,7 @@ function _stellarTypeAssertions() {
     Governor: z.object(stellarGovernorSchema).parse({}),
     Stablecoin: z.object(stellarStablecoinSchema).parse({}),
     NonFungible: z.object(stellarNonFungibleSchema).parse({}),
+    Vault: z.object(stellarVaultSchema).parse({}),
   };
 }
 

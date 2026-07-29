@@ -10,6 +10,7 @@ import {
   requireAccessControl,
   calculateERC20Premint,
   scaleByPowerOfTen,
+  toUint,
   type ClockMode,
   supportsInterface,
 } from '@openzeppelin/wizard';
@@ -19,11 +20,15 @@ import { printContract } from './print';
 export const networkConfigOptions = ['zama-ethereum'] as const;
 export type NetworkConfig = (typeof networkConfigOptions)[number];
 
+export const DEFAULT_DECIMALS = 6;
+export const MAX_DECIMALS = 10;
+
 export interface ERC7984Options extends CommonOptions {
   name: string;
   symbol: string;
   contractURI: string;
   networkConfig: NetworkConfig;
+  decimals?: string;
   premint?: string;
   wrappable?: boolean;
   /**
@@ -38,6 +43,7 @@ export const defaults: Required<ERC7984Options> = {
   symbol: 'MTK',
   contractURI: '',
   networkConfig: 'zama-ethereum',
+  decimals: DEFAULT_DECIMALS.toString(),
   premint: '0',
   wrappable: false,
   votes: false,
@@ -48,6 +54,7 @@ export function withDefaults(opts: ERC7984Options): Required<ERC7984Options> {
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    decimals: opts.decimals ?? defaults.decimals,
     premint: opts.premint || defaults.premint,
     wrappable: opts.wrappable ?? defaults.wrappable,
     votes: opts.votes ?? defaults.votes,
@@ -68,8 +75,33 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   addBase(c, allOpts.name, allOpts.symbol, allOpts.contractURI);
   addNetworkConfig(c, allOpts.networkConfig);
 
+  const decimals = Number(toUint(allOpts.decimals, 'decimals', 'uint8'));
+  if (decimals > MAX_DECIMALS) {
+    throw new OptionsError({
+      decimals: `Decimals must not be greater than ${MAX_DECIMALS}`,
+    });
+  }
+  if (allOpts.wrappable && decimals !== DEFAULT_DECIMALS) {
+    throw new OptionsError({
+      decimals:
+        'Custom decimals cannot be used with Wrappable. Wrappable derives its decimals from the underlying token (capped at 6)',
+      wrappable:
+        'Wrappable cannot be used with custom decimals. Wrappable derives its decimals from the underlying token (capped at 6)',
+    });
+  }
+  if (decimals !== DEFAULT_DECIMALS) {
+    addDecimals(c, decimals);
+  }
+
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint);
+    if (allOpts.wrappable && calculateERC20Premint(allOpts.premint) !== undefined) {
+      throw new OptionsError({
+        premint: 'Premint cannot be used with Wrappable. Preminted tokens would not be backed by the underlying token',
+        wrappable:
+          'Wrappable cannot be used with premint. Preminted tokens would not be backed by the underlying token',
+      });
+    }
+    addPremint(c, allOpts.premint, decimals);
   }
 
   if (allOpts.wrappable) {
@@ -85,11 +117,12 @@ export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   return c;
 }
 
+const ERC7984 = {
+  name: 'ERC7984',
+  path: '@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol',
+};
+
 function addBase(c: ContractBuilder, name: string, symbol: string, contractURI: string) {
-  const ERC7984 = {
-    name: 'ERC7984',
-    path: '@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol',
-  };
   c.addParent(ERC7984, [name, symbol, contractURI]);
   c.addOverride(ERC7984, supportsInterface);
 
@@ -100,6 +133,11 @@ function addBase(c: ContractBuilder, name: string, symbol: string, contractURI: 
   c.addOverride(ERC7984, functions._update);
   c.addOverride(ERC7984, functions.confidentialTotalSupply);
   c.addOverride(ERC7984, functions.decimals);
+}
+
+function addDecimals(c: ContractBuilder, decimals: number) {
+  c.addOverride(ERC7984, functions.decimals);
+  c.setFunctionBody([`return ${decimals};`], functions.decimals, 'pure');
 }
 
 function addNetworkConfig(c: ContractBuilder, network: NetworkConfig) {
@@ -130,7 +168,7 @@ export function validateUint64(numValue: bigint, field: string): bigint {
   return numValue;
 }
 
-function addPremint(c: ContractBuilder, amount: string) {
+function addPremint(c: ContractBuilder, amount: string, decimals: number) {
   const premintCalculation = calculateERC20Premint(amount);
   if (premintCalculation === undefined) {
     return;
@@ -138,8 +176,14 @@ function addPremint(c: ContractBuilder, amount: string) {
 
   const { units, exp, decimalPlace } = premintCalculation;
 
+  if (decimalPlace > decimals) {
+    throw new OptionsError({
+      premint: 'Too many decimals',
+    });
+  }
+
   const validatedBaseUnits = validateUint64(toBigInt(units, 'premint'), 'premint');
-  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace);
+  checkPotentialPremintOverflow(validatedBaseUnits, decimalPlace, decimals);
 
   c.addConstructorArgument({ type: 'address', name: 'recipient' });
 
@@ -157,19 +201,20 @@ function addPremint(c: ContractBuilder, amount: string) {
 }
 
 /**
- * Check for potential premint overflow assuming the user's contract has decimals() = 6
+ * Check for potential premint overflow based on the contract's `decimals()` value
  *
  * @param baseUnits The base units of the token, before applying power of 10
  * @param decimalPlace If positive, the number of assumed decimal places in the least significant digits of `validatedBaseUnits`. Ignored if <= 0.
+ * @param decimals The number of decimals that the token's `decimals()` returns
  * @throws OptionsError if the calculated value would overflow uint64
  */
-function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number) {
-  const assumedExp = decimalPlace <= 0 ? 6 : 6 - decimalPlace;
+function checkPotentialPremintOverflow(baseUnits: bigint, decimalPlace: number, decimals: number) {
+  const assumedExp = decimalPlace <= 0 ? decimals : decimals - decimalPlace;
   const calculatedValue = scaleByPowerOfTen(baseUnits, assumedExp);
 
   if (calculatedValue > UINT64_MAX) {
     throw new OptionsError({
-      premint: 'Amount would overflow uint64 after applying decimals, assuming 6 decimals',
+      premint: `Amount would overflow uint64 after applying decimals, assuming ${decimals} decimals`,
     });
   }
 }

@@ -15,6 +15,7 @@ export const confidentialERC7984Schema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   contractURI: z.string().describe(confidentialERC7984Descriptions.contractURI),
+  decimals: z.string().optional().describe(confidentialERC7984Descriptions.decimals),
   premint: z.string().optional().describe(confidentialERC7984Descriptions.premint),
   networkConfig: z.literal('zama-ethereum').describe(confidentialERC7984Descriptions.networkConfig),
   wrappable: z.boolean().optional().describe(confidentialERC7984Descriptions.wrappable),
