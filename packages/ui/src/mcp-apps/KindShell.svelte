@@ -197,4 +197,17 @@
   .no-select {
     user-select: none;
   }
+
+  /*
+   * Tippy mounts on document.body, so it does not inherit .mcp-shell density.
+   * These rules only ship in MCP App bundles (KindShell is not used by the web Wizard).
+   */
+  :global(.tippy-box) {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  :global(.tippy-box .tippy-content) {
+    padding: 0.35rem 0.5rem;
+  }
 </style>
