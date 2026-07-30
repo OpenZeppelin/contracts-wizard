@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { setContext } from 'svelte';
+  import { onMount, setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import type { App } from '@modelcontextprotocol/ext-apps';
   import type { HostSendCaps } from './deliver-contract';
@@ -77,6 +77,17 @@
     }
   }
 
+  async function openHrefViaHost(event: MouseEvent, href: string, logLabel: string) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!hostSendCaps.openLinks) return;
+    try {
+      await openExternalLink(mcpApp, href);
+    } catch (e) {
+      console.warn(`[mcp-apps] ${logLabel} openLink failed`, e);
+    }
+  }
+
   async function handleCodeClick(event: MouseEvent) {
     if (!hostSendCaps.openLinks) return;
     const target = event.target;
@@ -85,13 +96,25 @@
     if (!anchor) return;
     const href = anchor.getAttribute('href');
     if (!href || href.startsWith('#')) return;
-    event.preventDefault();
-    try {
-      await openExternalLink(mcpApp, href);
-    } catch (e) {
-      console.warn('[mcp-apps] code preview openLink failed', e);
-    }
+    await openHrefViaHost(event, href, 'code preview');
   }
+
+  // Tippy content mounts on document.body (outside .mcp-shell), so in-app click handlers never see it.
+  // Capture outbound <a href> clicks from any tippy HTML content and route through host openLink.
+  function handleTippyClick(event: MouseEvent) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const anchor = target.closest('.tippy-box a[href]');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    void openHrefViaHost(event, href, 'tippy');
+  }
+
+  onMount(() => {
+    document.addEventListener('click', handleTippyClick, true);
+    return () => document.removeEventListener('click', handleTippyClick, true);
+  });
 </script>
 
 <div class="mcp-shell flex flex-col gap-2 p-2 min-h-0">
