@@ -11,6 +11,7 @@
   import VaultControls from '../../stellar/VaultControls.svelte';
 
   import hljs from '../../stellar/highlightjs';
+  import { injectHyperlinks } from '../../stellar/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { ContractBuilder, buildGeneric, printContract, OptionsError } from '@openzeppelin/wizard-stellar';
@@ -19,7 +20,7 @@
   export let mcpApp: App;
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
-  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let opts: any = undefined;
@@ -57,7 +58,9 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = hljs.highlight('rust', code).value;
+  $: highlightedCode = hostSendCaps.openLinks
+    ? injectHyperlinks(hljs.highlight('rust', code).value)
+    : hljs.highlight('rust', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
@@ -74,6 +77,7 @@
   {hostConnected}
   {hostConnectError}
   {hostSendCaps}
+  {mcpApp}
 >
   <svelte:fragment slot="controls">
     {#if kind === 'Fungible'}

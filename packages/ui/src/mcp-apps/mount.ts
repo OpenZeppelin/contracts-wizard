@@ -39,7 +39,7 @@ export async function mountKindApp<Props extends KindAppProps>(
       mcpApp: app,
       hostConnected: false,
       hostConnectError: undefined,
-      hostSendCaps: { message: false, updateModelContext: false },
+      hostSendCaps: { message: false, updateModelContext: false, openLinks: false },
     } as Props,
   });
 
@@ -56,7 +56,7 @@ export async function mountKindApp<Props extends KindAppProps>(
       });
       await app.sendSizeChanged({ height: MCP_APP_HEIGHT_PX });
     })
-    .catch(err => {
+    .catch((err: unknown) => {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`[mcp-apps] connect failed for ${kind}`, err);
       component.$set({

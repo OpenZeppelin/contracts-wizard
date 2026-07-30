@@ -14,6 +14,7 @@
   import CustomControls from '../../solidity/CustomControls.svelte';
 
   import hljs from '../../solidity/highlightjs';
+  import { injectHyperlinks } from '../../solidity/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard';
   import { ContractBuilder, buildGeneric, printContract, OptionsError } from '@openzeppelin/wizard';
@@ -22,7 +23,7 @@
   export let mcpApp: App;
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
-  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
 
   // Bound by the active Controls component (same pattern as App.svelte allOpts[tab])
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,7 +62,9 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = hljs.highlight('solidity', code).value;
+  $: highlightedCode = hostSendCaps.openLinks
+    ? injectHyperlinks(hljs.highlight('solidity', code).value)
+    : hljs.highlight('solidity', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
@@ -78,6 +81,7 @@
   {hostConnected}
   {hostConnectError}
   {hostSendCaps}
+  {mcpApp}
 >
   <svelte:fragment slot="controls">
     {#if kind === 'ERC20'}

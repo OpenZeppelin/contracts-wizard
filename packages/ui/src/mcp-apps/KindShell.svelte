@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { setContext } from 'svelte';
+  import { writable } from 'svelte/store';
+  import type { App } from '@modelcontextprotocol/ext-apps';
   import type { HostSendCaps } from './deliver-contract';
-  import { canSendToHost, copyContractToClipboard } from './deliver-contract';
+  import { canSendToHost, copyContractToClipboard, openExternalLink } from './deliver-contract';
+  import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinks } from './external-links';
 
   export let highlightedCode: string;
   export let hasErrors = false;
@@ -10,12 +14,28 @@
   export let useLabel = 'Send Updates to Agent';
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
-  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
+  export let mcpApp: App;
 
   let sending = false;
   let doneLabel: string | undefined = undefined;
   let errorMessage: string | undefined = undefined;
   let doneTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const externalLinks = writable<McpExternalLinks>({
+    canOpen: false,
+    open: async () => {
+      throw new Error('Host link bridge is not ready.');
+    },
+  });
+  setContext(MCP_EXTERNAL_LINKS_CONTEXT, externalLinks);
+
+  $: externalLinks.set({
+    canOpen: hostSendCaps.openLinks,
+    open: async (url: string) => {
+      await openExternalLink(mcpApp, url);
+    },
+  });
 
   $: sendSupported = canSendToHost(hostSendCaps);
   $: copyOnly = hostConnected && !sendSupported;
@@ -56,6 +76,22 @@
       sending = false;
     }
   }
+
+  async function handleCodeClick(event: MouseEvent) {
+    if (!hostSendCaps.openLinks) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const anchor = target.closest('a[href]');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    event.preventDefault();
+    try {
+      await openExternalLink(mcpApp, href);
+    } catch (e) {
+      console.warn('[mcp-apps] code preview openLink failed', e);
+    }
+  }
 </script>
 
 <div class="mcp-shell flex flex-col gap-2 p-2 min-h-0">
@@ -67,7 +103,9 @@
     </div>
 
     <div class="output flex flex-col grow min-w-0 overflow-hidden">
-      <pre class="flex flex-col grow basis-0 overflow-auto m-0">
+      <!-- Click delegation for import hyperlinks → host openLink (keyboard via real anchors when present). -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <pre class="flex flex-col grow basis-0 overflow-auto m-0" on:click={handleCodeClick}>
         <code class="hljs {highlightClass} grow overflow-auto p-2 {hasErrors ? 'no-select' : ''}"
           >{@html highlightedCode}</code
         >

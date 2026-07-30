@@ -14,6 +14,7 @@
   import VestingControls from '../../cairo/VestingControls.svelte';
 
   import hljs from '../../cairo/highlightjs';
+  import { injectHyperlinks } from '../../cairo/inject-hyperlinks';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
   import {
@@ -28,7 +29,7 @@
   export let mcpApp: App;
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
-  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false };
+  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let opts: any = undefined;
@@ -68,7 +69,9 @@
   }
 
   $: code = printContract(contract);
-  $: highlightedCode = hljs.highlight('cairo', code).value;
+  $: highlightedCode = hostSendCaps.openLinks
+    ? injectHyperlinks(hljs.highlight('cairo', code).value)
+    : hljs.highlight('cairo', code).value;
   $: hasErrors = errors !== undefined;
 
   async function onUseContract(currentCode: string) {
@@ -85,6 +88,7 @@
   {hostConnected}
   {hostConnectError}
   {hostSendCaps}
+  {mcpApp}
 >
   <svelte:fragment slot="controls">
     {#if kind === 'ERC20'}

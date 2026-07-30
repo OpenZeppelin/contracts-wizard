@@ -1,8 +1,36 @@
 <script lang="ts">
+  import { getContext, onDestroy } from 'svelte';
   import Tooltip from './Tooltip.svelte';
+  import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinksStore } from '../mcp-apps/external-links';
 
   export let link: string | undefined = undefined;
   export let placement: 'top' | 'bottom' | 'left' | 'right' = 'right';
+
+  // MCP Apps set a writable store; web Wizard leaves context unset and uses normal <a> tags.
+  const externalLinks = getContext<McpExternalLinksStore | undefined>(MCP_EXTERNAL_LINKS_CONTEXT);
+  const inMcpApp = externalLinks != null;
+
+  // Mirror store into locals so Svelte re-renders when openLinks arrives after connect.
+  let canOpenLinks = false;
+  let openExternal: (url: string) => Promise<void> = async () => {};
+
+  if (externalLinks) {
+    const unsubscribe = externalLinks.subscribe(value => {
+      canOpenLinks = value.canOpen;
+      openExternal = value.open;
+    });
+    onDestroy(unsubscribe);
+  }
+
+  async function handleReadMore(event: MouseEvent) {
+    if (!link || !canOpenLinks) return;
+    event.preventDefault();
+    try {
+      await openExternal(link);
+    } catch (e) {
+      console.warn('[mcp-apps] Read more openLink failed', e);
+    }
+  }
 </script>
 
 <Tooltip let:trigger interactive {placement} theme="light border" maxWidth="22em">
@@ -16,8 +44,13 @@
   <div slot="content">
     <slot></slot>
     {#if link}
-      <br />
-      <a target="_blank" rel="noopener noreferrer" href={link}>Read more.</a>
+      {#if !inMcpApp}
+        <br />
+        <a target="_blank" rel="noopener noreferrer" href={link}>Read more.</a>
+      {:else if canOpenLinks}
+        <br />
+        <a href={link} on:click={handleReadMore}>Read more.</a>
+      {/if}
     {/if}
   </div>
 </Tooltip>

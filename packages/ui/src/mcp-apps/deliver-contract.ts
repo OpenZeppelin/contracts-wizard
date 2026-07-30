@@ -3,6 +3,7 @@ import type { App } from '@modelcontextprotocol/ext-apps';
 export type HostSendCaps = {
   message: boolean;
   updateModelContext: boolean;
+  openLinks: boolean;
 };
 
 export function readHostSendCaps(app: App): HostSendCaps {
@@ -10,12 +11,20 @@ export function readHostSendCaps(app: App): HostSendCaps {
   return {
     message: caps?.message != null,
     updateModelContext: caps?.updateModelContext != null,
+    openLinks: caps?.openLinks != null,
   };
 }
 
 /** Send requires `message`; context-only hosts use Copy to Clipboard. */
 export function canSendToHost(caps: HostSendCaps): boolean {
   return caps.message;
+}
+
+export async function openExternalLink(app: App, url: string): Promise<void> {
+  const result = await app.openLink({ url });
+  if (result.isError) {
+    throw new Error('Host denied opening the link.');
+  }
 }
 
 const SHORT_TRIGGER =
