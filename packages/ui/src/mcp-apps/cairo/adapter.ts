@@ -27,7 +27,7 @@ const controls: Record<Kind, ComponentType> = {
   Custom: CustomControls,
 };
 
-export const cairoAdapter: KindAdapter = {
+export const cairoAdapter = {
   emptyContract: () => new ContractBuilder('MyToken', { withComponents: macrosDefaults.withComponents }),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -38,4 +38,4 @@ export const cairoAdapter: KindAdapter = {
   fence: 'cairo',
   controls,
   controlProps: (kind, opts) => (kind === 'Account' ? { accountType: opts?.type } : {}),
-};
+} satisfies KindAdapter;

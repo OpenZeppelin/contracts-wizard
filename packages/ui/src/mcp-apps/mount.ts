@@ -19,9 +19,11 @@ export const MCP_APP_HEIGHT_PX = 560;
  * After connect, sets `hostConnected` / `hostSendCaps` / `hostConnectError` on the
  * component so Use-this-contract can wait for a live host and check capabilities.
  */
-export async function mountKindApp(
-  adapter: KindAdapter,
-  kind: string,
+export async function mountKindApp<Adapter extends KindAdapter>(
+  adapter: Adapter,
+  // Adapters are declared with `satisfies KindAdapter`, so their `controls` keys stay literal and
+  // a kind this language does not have is a compile error rather than a blank controls pane.
+  kind: Extract<keyof Adapter['controls'], string>,
   target: HTMLElement = document.body,
 ): Promise<{ app: App; component: SvelteComponent }> {
   const app = new App({ name: `OpenZeppelin ${kind}`, version: '1.0.0' }, {}, { autoResize: false });

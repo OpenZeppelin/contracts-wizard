@@ -14,7 +14,7 @@ const controls: Record<Kind, ComponentType> = {
   ERC7984: ERC7984Controls,
 };
 
-export const confidentialAdapter: KindAdapter = {
+export const confidentialAdapter = {
   emptyContract: () => new ContractBuilder('MyToken'),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -24,4 +24,4 @@ export const confidentialAdapter: KindAdapter = {
   highlightClass: '-solidity',
   fence: 'solidity',
   controls,
-};
+} satisfies KindAdapter;

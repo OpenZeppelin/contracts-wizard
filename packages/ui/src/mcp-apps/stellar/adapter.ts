@@ -21,7 +21,7 @@ const controls: Record<Kind, ComponentType> = {
   Vault: VaultControls,
 };
 
-export const stellarAdapter: KindAdapter = {
+export const stellarAdapter = {
   emptyContract: () => new ContractBuilder('MyToken'),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -31,4 +31,4 @@ export const stellarAdapter: KindAdapter = {
   highlightClass: '-stellar',
   fence: 'rust',
   controls,
-};
+} satisfies KindAdapter;

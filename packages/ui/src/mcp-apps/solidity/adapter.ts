@@ -27,7 +27,7 @@ const controls: Record<Kind, ComponentType> = {
   Custom: CustomControls,
 };
 
-export const solidityAdapter: KindAdapter = {
+export const solidityAdapter = {
   emptyContract: () => new ContractBuilder('MyToken'),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -37,4 +37,4 @@ export const solidityAdapter: KindAdapter = {
   highlightClass: '-solidity',
   fence: 'solidity',
   controls,
-};
+} satisfies KindAdapter;

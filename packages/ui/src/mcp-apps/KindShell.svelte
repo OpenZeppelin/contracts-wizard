@@ -87,25 +87,31 @@
     }
   }
 
-  /** Route outbound `<a href>` clicks matching `selector` through the host's openLink. */
-  function anchorClickHandler(selector: string) {
+  /**
+   * Route outbound `<a href>` clicks matching `selector` through the host's openLink.
+   * `source` names the click origin in failure logs — the host console is the only place these
+   * surface, so keep it human-readable rather than echoing the selector.
+   */
+  function anchorClickHandler(selector: string, source: string) {
     return (event: MouseEvent) => {
       const target = event.target;
       const href = target instanceof Element ? target.closest(selector)?.getAttribute('href') : undefined;
       if (!href || href.startsWith('#')) return;
-      // Outbound links are host-routed only: swallow the click even when the host cannot open
-      // links, so a raw target="_blank" anchor in tippy HTML never navigates the app iframe.
+      // Swallow the click even when the host cannot open links, so a raw target="_blank" anchor in
+      // tippy HTML never navigates the app iframe. This is unconditional for the code preview too,
+      // which is safe only because KindApp applies injectHyperlinks solely when openLinks is on —
+      // un-gate that and outbound clicks in the preview would start being dropped silently.
       event.preventDefault();
       event.stopPropagation();
       if (!hostSendCaps.openLinks) return;
-      void openExternalLink(mcpApp, href).catch(e => console.warn(`[mcp-apps] ${selector} openLink failed`, e));
+      void openExternalLink(mcpApp, href).catch(e => console.warn(`[mcp-apps] ${source} openLink failed`, e));
     };
   }
 
-  const handleCodeClick = anchorClickHandler('a[href]');
+  const handleCodeClick = anchorClickHandler('a[href]', 'code preview');
   // Tippy content mounts on document.body (outside .mcp-shell), so in-app click handlers never see it.
   // Capture outbound <a href> clicks from any tippy HTML content and route through host openLink.
-  const handleTippyClick = anchorClickHandler('.tippy-box a[href]');
+  const handleTippyClick = anchorClickHandler('.tippy-box a[href]', 'tippy');
 
   onMount(() => {
     document.addEventListener('click', handleTippyClick, true);

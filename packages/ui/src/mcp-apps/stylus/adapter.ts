@@ -17,7 +17,7 @@ const controls: Record<Kind, ComponentType> = {
   ERC1155: ERC1155Controls,
 };
 
-export const stylusAdapter: KindAdapter = {
+export const stylusAdapter = {
   emptyContract: () => new ContractBuilder('MyToken'),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -27,4 +27,4 @@ export const stylusAdapter: KindAdapter = {
   highlightClass: '-stylus',
   fence: 'rust',
   controls,
-};
+} satisfies KindAdapter;

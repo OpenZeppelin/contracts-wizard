@@ -14,7 +14,7 @@ const controls: Record<Kind, ComponentType> = {
   Hooks: HooksControls,
 };
 
-export const uniswapHooksAdapter: KindAdapter = {
+export const uniswapHooksAdapter = {
   emptyContract: () => new ContractBuilder('MyHook'),
   build: opts => buildGeneric(opts as KindedOptions[Kind]),
   print: contract => printContract(contract as Parameters<typeof printContract>[0]),
@@ -24,4 +24,4 @@ export const uniswapHooksAdapter: KindAdapter = {
   highlightClass: '-solidity',
   fence: 'solidity',
   controls,
-};
+} satisfies KindAdapter;
