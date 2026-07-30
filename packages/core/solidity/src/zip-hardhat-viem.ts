@@ -47,7 +47,11 @@ class Hardhat3ViemTestGenerator {
     const argNames = c.constructorArgs.map(a => a.name);
     return [
       `test("${c.name}", async t => {`,
-      spaceBetween(this.declareVariables(c.constructorArgs), this.getDeployLines(c, argNames), this.getAssertions(c, opts)),
+      spaceBetween(
+        this.declareVariables(c.constructorArgs),
+        this.getDeployLines(c, argNames),
+        this.getAssertions(c, opts),
+      ),
       '});',
     ];
   }
@@ -155,9 +159,7 @@ export default defineConfig({
     const argsList = args.join(', ');
 
     if (!c.upgradeable) {
-      return args.length === 0
-        ? `viem.deployContract("${c.name}")`
-        : `viem.deployContract("${c.name}", [${argsList}])`;
+      return args.length === 0 ? `viem.deployContract("${c.name}")` : `viem.deployContract("${c.name}", [${argsList}])`;
     }
 
     return unsafeAllowConstructor
