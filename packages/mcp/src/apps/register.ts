@@ -36,6 +36,10 @@ function resolveAppHtmlPath(toolName: string): string {
  *
  * The in-flight promise is cached so concurrent first reads share a single disk read, and a failed
  * read is evicted so a transient error cannot poison a tool for the process lifetime.
+ *
+ * Both properties are asserted by `App HTML reads are async and memoized per tool` in
+ * register.test.ts — a synchronous or per-request read is a deliberate test failure, not a
+ * refactor. See that test for why the hosted server depends on them.
  */
 const htmlCache = new Map<string, Promise<string>>();
 

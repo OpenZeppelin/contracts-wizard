@@ -31,6 +31,21 @@ test('MCP App HTML artifacts exist for Wizard-backed tools', async t => {
   }
 });
 
+/**
+ * Guards the two properties the hosted server depends on. mcp.openzeppelin.com consumes this
+ * package as a library, so one long-lived process serves many sessions: the read must not block
+ * the shared event loop, and a bundle must be held once per tool rather than re-read and
+ * re-allocated per `resources/read`. Both are invisible to every other test, so without this a
+ * refactor back to a synchronous or per-request read would pass CI.
+ */
+test('App HTML reads are async and memoized per tool', t => {
+  const first = readAppHtml('solidity-erc20');
+  const second = readAppHtml('solidity-erc20');
+
+  t.true(first instanceof Promise, 'readAppHtml must return a promise, not perform a blocking read');
+  t.is(first, second, 'repeated reads of one tool must share a single cached read');
+});
+
 test('RESOURCE_MIME_TYPE is the MCP Apps profile', t => {
   t.is(RESOURCE_MIME_TYPE, 'text/html;profile=mcp-app');
 });
