@@ -8,6 +8,7 @@ import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import type { Upgradeable } from './set-upgradeable';
+import { withHelpers } from './options';
 
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
@@ -30,7 +31,37 @@ function getImports(c: Contract, prepopulateImports: string[]): string[] {
     );
   }
   result.push(`import {${c.name}} from "src/${c.name}.sol";`);
+  result.push(...getConstructorArgTypeImports(c));
   return result;
+}
+
+/**
+ * Imports needed by the types that non-address constructor arguments are declared with,
+ * for example `CrosschainLinked` for a `CrosschainLinked.Link[] memory` argument. Without
+ * these, uncommenting the generated deployment would not compile.
+ */
+function getConstructorArgTypeImports(c: Contract): string[] {
+  const { transformImport } = withHelpers(c);
+  const statements = new Set<string>();
+
+  for (const arg of c.constructorArgs) {
+    if (typeof arg.type === 'string') {
+      continue; // primitive type, nothing to import
+    }
+    const baseName = getBaseTypeName(arg.type.name);
+    const imported = c.imports.find(i => i.name === baseName);
+    if (imported !== undefined) {
+      const { name, path } = transformImport(imported);
+      statements.add(`import {${name}} from "${path}";`);
+    }
+  }
+
+  return Array.from(statements).sort();
+}
+
+// The contract name that a declared type refers to, e.g. `CrosschainLinked.Link[] memory` -> `CrosschainLinked`.
+function getBaseTypeName(type: string): string {
+  return type.split(/[.[\s]/)[0]!;
 }
 
 function getDeploymentCode(
@@ -109,7 +140,7 @@ const test = (c: Contract, opts?: GenericOptions) => {
       if (arg.type === 'address') {
         vars.push(`address ${arg.name} = vm.addr(${i++});`);
       } else {
-        vars.push(`${getLocalVariableType(arg)} ${arg.name} = <Set ${arg.name} here>;`);
+        vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);
       }
     }
     return vars;
@@ -160,8 +191,10 @@ function hasNonAddressArgs(c: Contract): boolean {
 }
 
 // Type to use when declaring a constructor argument as a local variable.
-function getLocalVariableType(arg: FunctionArgument): string {
-  const type = typeof arg.type === 'string' ? arg.type : arg.type.name;
+// Uses the same name transformation as the contract itself, so that upgradeable
+// contracts refer to the transpiled type (e.g. `CrosschainLinkedUpgradeable.Link[]`).
+function getLocalVariableType(c: Contract, arg: FunctionArgument): string {
+  const type = typeof arg.type === 'string' ? arg.type : withHelpers(c).transformName(arg.type);
   return type.replace(/\bcalldata\b/, 'memory');
 }
 
@@ -223,7 +256,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
       if (arg.type === 'address') {
         vars.push(`address ${arg.name} = <Set ${arg.name} address here>;`);
       } else {
-        vars.push(`${getLocalVariableType(arg)} ${arg.name} = <Set ${arg.name} here>;`);
+        vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);
       }
     }
     return vars;
