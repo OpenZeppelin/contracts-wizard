@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract } from './contract';
+import type { Contract, FunctionArgument } from './contract';
 import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
@@ -178,22 +178,32 @@ function getArgNames(c: Contract): string[] {
  */
 function getVariables(c: Contract, opts: GenericOptions | undefined, addressValue: (name: string) => string): Lines[] {
   const vars = [];
-  // The `initialOwner` for the transparent proxy admin, unless the constructor already has an argument with that name.
-  if (c.upgradeable && opts?.upgradeable === 'transparent' && !c.constructorArgs.some(a => a.name === 'initialOwner')) {
+  if (needsInitialOwnerVariable(c, opts)) {
     vars.push(`address initialOwner = ${addressValue('initialOwner')};`);
   }
-  const { transformName } = withHelpers(c);
   for (const arg of c.constructorArgs) {
     if (arg.type === 'address') {
       vars.push(`address ${arg.name} = ${addressValue(arg.name)};`);
     } else {
-      // Use the same name transformation as the contract itself, so that upgradeable contracts
-      // refer to the transpiled type (e.g. `CrosschainLinkedUpgradeable.Link[]`).
-      const type = typeof arg.type === 'string' ? arg.type : transformName(arg.type);
-      vars.push(`${type.replace(/\bcalldata\b/, 'memory')} ${arg.name} = <Set ${arg.name} here>;`);
+      vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);
     }
   }
   return vars;
+}
+
+// Type to use when declaring a constructor argument as a local variable.
+// Uses the same name transformation as the contract itself, so that upgradeable
+// contracts refer to the transpiled type (e.g. `CrosschainLinkedUpgradeable.Link[]`).
+function getLocalVariableType(c: Contract, arg: FunctionArgument): string {
+  const type = typeof arg.type === 'string' ? arg.type : withHelpers(c).transformName(arg.type);
+  return type.replace(/\bcalldata\b/, 'memory');
+}
+
+// The `initialOwner` for the transparent proxy admin, unless the constructor already has an argument with that name.
+function needsInitialOwnerVariable(c: Contract, opts?: GenericOptions): boolean {
+  return (
+    c.upgradeable && opts?.upgradeable === 'transparent' && !c.constructorArgs.some(arg => arg.name === 'initialOwner')
+  );
 }
 
 const script = (c: Contract, opts?: GenericOptions) => {
