@@ -4,6 +4,7 @@
   import KindShell from '../KindShell.svelte';
   import type { HostSendCaps } from '../deliver-contract';
   import { deliverContractToHost } from '../deliver-contract';
+  import { cloneOpts, nextInitialOpts, optsEqual } from '../opts-snapshot';
   import ERC20Controls from '../../cairo/ERC20Controls.svelte';
   import ERC721Controls from '../../cairo/ERC721Controls.svelte';
   import ERC1155Controls from '../../cairo/ERC1155Controls.svelte';
@@ -33,24 +34,29 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let opts: any = undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initialOpts: any = undefined;
+  let drifted = false;
   let errors: OptionsErrorMessages | undefined;
   let contract: Contract = new ContractBuilder('MyToken', {
     withComponents: macrosDefaults.withComponents,
   });
 
-  function mergeHostOpts(incoming: Record<string, unknown> | undefined) {
+  function mergeHostOpts(incoming: Record<string, unknown> | undefined, source: 'input' | 'result') {
     if (!incoming) return;
+    const previous = opts;
     opts = { ...(opts ?? {}), ...incoming, kind };
+    initialOpts = nextInitialOpts(initialOpts, previous, opts, source);
   }
 
   mcpApp.ontoolinput = params => {
-    mergeHostOpts(params.arguments as Record<string, unknown> | undefined);
+    mergeHostOpts(params.arguments as Record<string, unknown> | undefined, 'input');
   };
 
   mcpApp.ontoolresult = result => {
     const structured = result.structuredContent as { opts?: Record<string, unknown> } | undefined;
     if (structured?.opts) {
-      mergeHostOpts(structured.opts);
+      mergeHostOpts(structured.opts, 'result');
     }
   };
 
@@ -66,6 +72,9 @@
         errors = { _: message || 'Failed to build contract' };
       }
     }
+    drifted = initialOpts != null && !optsEqual(opts, initialOpts);
+  } else {
+    drifted = false;
   }
 
   $: code = printContract(contract);
@@ -73,6 +82,11 @@
     ? injectHyperlinks(hljs.highlight('cairo', code).value)
     : hljs.highlight('cairo', code).value;
   $: hasErrors = errors !== undefined;
+
+  function restoreOriginal() {
+    if (initialOpts == null) return;
+    opts = cloneOpts(initialOpts);
+  }
 
   async function onUseContract(currentCode: string) {
     await deliverContractToHost(mcpApp, currentCode, 'cairo');
@@ -89,6 +103,8 @@
   {hostConnectError}
   {hostSendCaps}
   {mcpApp}
+  {drifted}
+  onRestoreOriginal={restoreOriginal}
 >
   <svelte:fragment slot="controls">
     {#if kind === 'ERC20'}

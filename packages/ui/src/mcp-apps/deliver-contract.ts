@@ -6,6 +6,14 @@ export type HostSendCaps = {
   openLinks: boolean;
 };
 
+/** Host rejected or user dismissed sendMessage (e.g. Claude replace-draft confirm → No). */
+export class HandoffCancelledError extends Error {
+  constructor(message = 'Update cancelled') {
+    super(message);
+    this.name = 'HandoffCancelledError';
+  }
+}
+
 export function readHostSendCaps(app: App): HostSendCaps {
   const caps = app.getHostCapabilities();
   return {
@@ -69,10 +77,13 @@ export async function deliverContractToHost(
     }
   }
 
-  await app.sendMessage({
+  const result = await app.sendMessage({
     role: 'user',
     content: [{ type: 'text', text: messageWithCode(fence, code) }],
   });
+  if (result.isError) {
+    throw new HandoffCancelledError();
+  }
   return { mode: caps.updateModelContext ? 'context-and-message' : 'message' };
 }
 

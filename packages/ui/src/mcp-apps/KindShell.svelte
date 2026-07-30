@@ -3,7 +3,12 @@
   import { writable } from 'svelte/store';
   import type { App } from '@modelcontextprotocol/ext-apps';
   import type { HostSendCaps } from './deliver-contract';
-  import { canSendToHost, copyContractToClipboard, openExternalLink } from './deliver-contract';
+  import {
+    canSendToHost,
+    copyContractToClipboard,
+    HandoffCancelledError,
+    openExternalLink,
+  } from './deliver-contract';
   import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinks } from './external-links';
 
   export let highlightedCode: string;
@@ -16,10 +21,14 @@
   export let hostConnectError: string | undefined = undefined;
   export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
   export let mcpApp: App;
+  /** True when options differ from the opening tool-run snapshot. */
+  export let drifted = false;
+  export let onRestoreOriginal: (() => void) | undefined = undefined;
 
   let sending = false;
   let doneLabel: string | undefined = undefined;
   let errorMessage: string | undefined = undefined;
+  let statusMessage: string | undefined = undefined;
   let doneTimer: ReturnType<typeof setTimeout> | undefined;
 
   const externalLinks = writable<McpExternalLinks>({
@@ -53,6 +62,7 @@
   async function handleUse() {
     if (buttonDisabled) return;
     errorMessage = undefined;
+    statusMessage = undefined;
     sending = true;
     try {
       if (copyOnly) {
@@ -63,6 +73,10 @@
       await onUseContract(code);
       flashDone('Sent');
     } catch (e: unknown) {
+      if (e instanceof HandoffCancelledError) {
+        statusMessage = e.message;
+        return;
+      }
       const message = e instanceof Error ? e.message : String(e);
       console.error('[mcp-apps] Send Updates to Agent failed', e);
       try {
@@ -136,30 +150,46 @@
     </div>
   </div>
 
-  <div class="flex flex-col items-end gap-1 shrink-0">
-    <button
-      class="use-button"
-      class:disabled={buttonDisabled}
-      disabled={buttonDisabled}
-      title={copyOnly ? 'Copy to Clipboard' : undefined}
-      on:click={handleUse}
-    >
-      {#if !hostConnected && !hostConnectError}
-        Connecting…
-      {:else if sending}
-        {copyOnly ? 'Copying…' : 'Sending…'}
-      {:else if doneLabel}
-        {doneLabel}
-      {:else if copyOnly}
-        Copy to Clipboard
-      {:else}
-        {useLabel}
-      {/if}
-    </button>
+  <div class="footer shrink-0">
+    {#if drifted}
+      <div class="drift-notice">
+        <p class="drift-text">
+          Preview differs from the original tool run. The agent's reply from that run still matches the original settings.
+          Send updates to the agent for it to see the new code.
+        </p>
+        {#if onRestoreOriginal}
+          <button type="button" class="restore-button" on:click={onRestoreOriginal}>Restore original</button>
+        {/if}
+      </div>
+    {/if}
+    <div class="actions">
+      <button
+        class="use-button"
+        class:disabled={buttonDisabled}
+        class:drifted
+        disabled={buttonDisabled}
+        title={copyOnly ? 'Copy to Clipboard' : undefined}
+        on:click={handleUse}
+      >
+        {#if !hostConnected && !hostConnectError}
+          Connecting…
+        {:else if sending}
+          {copyOnly ? 'Copying…' : 'Sending…'}
+        {:else if doneLabel}
+          {doneLabel}
+        {:else if copyOnly}
+          Copy to Clipboard
+        {:else}
+          {useLabel}
+        {/if}
+      </button>
+    </div>
     {#if hostConnectError}
       <p class="status error">Could not connect to host: {hostConnectError}</p>
     {:else if errorMessage}
       <p class="status error">{errorMessage}</p>
+    {:else if statusMessage}
+      <p class="status hint">{statusMessage}</p>
     {/if}
   </div>
 </div>
@@ -189,6 +219,55 @@
     line-height: 1.35;
   }
 
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .drift-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--gray-3);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--gray-2, #e5e7eb) 65%, transparent);
+  }
+
+  .drift-text {
+    margin: 0;
+    flex: 1 1 12rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--gray-5, #4b5563);
+    text-align: left;
+  }
+
+  .restore-button {
+    flex: 0 0 auto;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--gray-3);
+    border-radius: 12px;
+    background: white;
+    color: var(--gray-5, #4b5563);
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+
+  .restore-button:hover {
+    border-color: var(--gray-4, #9ca3af);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .use-button {
     padding: 0.45rem 0.9rem;
     border-radius: 16px;
@@ -198,6 +277,10 @@
     font-weight: 600;
     font-size: 0.75rem;
     cursor: pointer;
+  }
+
+  .use-button.drifted:not(.disabled):not(:disabled) {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--solidity-blue-2, #4e5de4) 35%, transparent);
   }
 
   .use-button.disabled,
@@ -211,6 +294,10 @@
     max-width: 100%;
     font-size: 0.75rem;
     text-align: right;
+  }
+
+  .status.hint {
+    color: var(--gray-4, #6b7280);
   }
 
   .status.error {
