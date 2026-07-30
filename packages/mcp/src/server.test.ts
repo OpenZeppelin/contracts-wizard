@@ -22,10 +22,9 @@ function toKebabCase(value: string): string {
     .toLowerCase();
 }
 
-/** Tool names that do not follow `<language>-<kebab kind>`. */
+/** Tool names that do not follow `<language>-<kebab kind>`, as documented in the README. */
 const MCP_TOOL_NAME_OVERRIDES: Record<string, string> = {
   'solidity:RealWorldAsset': 'solidity-rwa',
-  'confidential:ERC7984': 'erc7984',
   'uniswap-hooks:Hooks': 'uniswap-hooks',
 };
 

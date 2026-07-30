@@ -9,11 +9,11 @@ import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register
 export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
     server,
-    'erc7984',
+    'confidential-erc7984',
     {
       description: makeDetailedPrompt(confidentialPrompts.ERC7984),
       inputSchema: confidentialERC7984Schema,
-      title: 'ERC7984',
+      title: 'Confidential ERC7984',
     },
     async ({ name, symbol, contractURI, decimals, premint, networkConfig, wrappable, votes, info }) => {
       const opts: ERC7984Options = {

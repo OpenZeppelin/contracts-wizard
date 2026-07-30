@@ -20,7 +20,7 @@ test('MCP App HTML artifacts exist for Wizard-backed tools', async t => {
     'cairo-erc20',
     'stellar-fungible',
     'stylus-erc20',
-    'erc7984',
+    'confidential-erc7984',
     'uniswap-hooks',
   ];
   for (const tool of tools) {
