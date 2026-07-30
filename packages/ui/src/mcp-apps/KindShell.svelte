@@ -30,6 +30,9 @@
   let errorMessage: string | undefined = undefined;
   let statusMessage: string | undefined = undefined;
   let doneTimer: ReturnType<typeof setTimeout> | undefined;
+  let restoreConfirming = false;
+
+  $: if (!drifted) restoreConfirming = false;
 
   const externalLinks = writable<McpExternalLinks>({
     canOpen: false,
@@ -157,12 +160,27 @@
           Preview differs from the original tool run. The agent's reply from that run still matches the original settings.
           Send updates to the agent for it to see the new code.
         </p>
-        {#if onRestoreOriginal}
-          <button type="button" class="restore-button" on:click={onRestoreOriginal}>Restore original</button>
-        {/if}
       </div>
     {/if}
-    <div class="actions">
+    <div class="actions" class:drifted>
+      {#if drifted && onRestoreOriginal}
+        {#if restoreConfirming}
+          <span class="restore-confirm">
+            Restore original settings?
+            <button type="button" class="restore-confirm-btn" on:click={() => {
+              restoreConfirming = false;
+              onRestoreOriginal();
+            }}>Confirm</button>
+            <button type="button" class="restore-confirm-btn cancel" on:click={() => (restoreConfirming = false)}
+              >Cancel</button
+            >
+          </span>
+        {:else}
+          <button type="button" class="restore-link" on:click={() => (restoreConfirming = true)}
+            >Restore original</button
+          >
+        {/if}
+      {/if}
       <button
         class="use-button"
         class:disabled={buttonDisabled}
@@ -226,11 +244,6 @@
   }
 
   .drift-notice {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.35rem 0.75rem;
     padding: 0.4rem 0.55rem;
     border: 1px solid var(--gray-3);
     border-radius: 8px;
@@ -239,33 +252,62 @@
 
   .drift-text {
     margin: 0;
-    flex: 1 1 12rem;
     font-size: 0.75rem;
     line-height: 1.4;
     color: var(--gray-5, #4b5563);
     text-align: left;
   }
 
-  .restore-button {
-    flex: 0 0 auto;
-    padding: 0.25rem 0.55rem;
-    border: 1px solid var(--gray-3);
-    border-radius: 12px;
-    background: white;
-    color: var(--gray-5, #4b5563);
-    font: inherit;
-    font-weight: 600;
-    font-size: 0.7rem;
-    cursor: pointer;
-  }
-
-  .restore-button:hover {
-    border-color: var(--gray-4, #9ca3af);
-  }
-
   .actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .actions.drifted {
+    justify-content: space-between;
+  }
+
+  .restore-link {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--gray-4, #6b7280);
+    font: inherit;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .restore-link:hover {
+    color: var(--gray-5, #4b5563);
+  }
+
+  .restore-confirm {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--gray-5, #4b5563);
+  }
+
+  .restore-confirm-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--solidity-blue-2, #4e5de4);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .restore-confirm-btn.cancel {
+    color: var(--gray-4, #6b7280);
+    font-weight: 500;
   }
 
   .use-button {
