@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract, FunctionArgument } from './contract';
+import type { Contract } from './contract';
 import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import contracts from '../openzeppelin-contracts';
@@ -9,6 +9,7 @@ import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import type { Upgradeable } from './set-upgradeable';
 import { withHelpers } from './options';
+import { addTodoAndCommentOut, hasNonAddressArgs } from './zip-shared';
 
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
@@ -116,38 +117,22 @@ const test = (c: Contract, opts?: GenericOptions) => {
   );
 
   function getTestCase(c: Contract) {
-    const args = getArgNames(c);
-    const needsManualArgs = hasNonAddressArgs(c);
-    const setUpLines = [...getVariables(c), ...getDeploymentCode(c, args, false, opts?.upgradeable)];
+    let i = 1; // private key index starts from 1 since it must be non-zero
+    const variables = getVariables(c, opts, () => `vm.addr(${i++})`);
+    const setUpLines = [...variables, ...getDeploymentCode(c, getArgNames(c), false, opts?.upgradeable)];
     return [
       `contract ${c.name}Test is Test {`,
       spaceBetween(
         [`${c.name} public instance;`],
-        ['function setUp() public {', needsManualArgs ? addTodoAndCommentOut(setUpLines) : setUpLines, '}'],
-        getContractSpecificTestFunction(needsManualArgs),
+        ['function setUp() public {', hasNonAddressArgs(c) ? addTodoAndCommentOut(c, setUpLines) : setUpLines, '}'],
+        getContractSpecificTestFunction(),
       ),
       '}',
     ];
   }
 
-  function getVariables(c: Contract): Lines[] {
-    const vars = [];
-    let i = 1; // private key index starts from 1 since it must be non-zero
-    if (needsInitialOwnerVariable(c, opts)) {
-      vars.push(`address initialOwner = vm.addr(${i++});`);
-    }
-    for (const arg of c.constructorArgs) {
-      if (arg.type === 'address') {
-        vars.push(`address ${arg.name} = vm.addr(${i++});`);
-      } else {
-        vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);
-      }
-    }
-    return vars;
-  }
-
-  function getContractSpecificTestFunction(needsManualArgs: boolean): Lines[] {
-    if (needsManualArgs) {
+  function getContractSpecificTestFunction(): Lines[] {
+    if (hasNonAddressArgs(c)) {
       // The deployment in setUp is commented out until the user fills in the missing
       // constructor arguments, so there is no `instance` to test against yet.
       return ['function testSomething() public {', ['// Add your test here'], '}'];
@@ -186,32 +171,29 @@ function getArgNames(c: Contract): string[] {
   return c.constructorArgs.map(arg => arg.name);
 }
 
-function hasNonAddressArgs(c: Contract): boolean {
-  return c.constructorArgs.some(arg => arg.type !== 'address');
-}
-
-// Type to use when declaring a constructor argument as a local variable.
-// Uses the same name transformation as the contract itself, so that upgradeable
-// contracts refer to the transpiled type (e.g. `CrosschainLinkedUpgradeable.Link[]`).
-function getLocalVariableType(c: Contract, arg: FunctionArgument): string {
-  const type = typeof arg.type === 'string' ? arg.type : withHelpers(c).transformName(arg.type);
-  return type.replace(/\bcalldata\b/, 'memory');
-}
-
-// The `initialOwner` for the transparent proxy admin, unless the constructor already has an argument with that name.
-function needsInitialOwnerVariable(c: Contract, opts?: GenericOptions): boolean {
-  return (
-    c.upgradeable && opts?.upgradeable === 'transparent' && !c.constructorArgs.some(arg => arg.name === 'initialOwner')
-  );
-}
-
-function addTodoAndCommentOut(lines: Lines[], onlyAddresses: boolean = false) {
-  return [
-    `// TODO: Set ${onlyAddresses ? 'addresses' : 'values'} for the variables below, then uncomment the following section:`,
-    '/*',
-    ...lines,
-    '*/',
-  ];
+/**
+ * Local variable declarations for the transparent proxy admin owner (when needed) and for each
+ * constructor argument. `addressValue` renders the initializer for `address` arguments, which
+ * differs between the test (deterministic `vm.addr`) and the script (a placeholder to fill in).
+ */
+function getVariables(c: Contract, opts: GenericOptions | undefined, addressValue: (name: string) => string): Lines[] {
+  const vars = [];
+  // The `initialOwner` for the transparent proxy admin, unless the constructor already has an argument with that name.
+  if (c.upgradeable && opts?.upgradeable === 'transparent' && !c.constructorArgs.some(a => a.name === 'initialOwner')) {
+    vars.push(`address initialOwner = ${addressValue('initialOwner')};`);
+  }
+  const { transformName } = withHelpers(c);
+  for (const arg of c.constructorArgs) {
+    if (arg.type === 'address') {
+      vars.push(`address ${arg.name} = ${addressValue(arg.name)};`);
+    } else {
+      // Use the same name transformation as the contract itself, so that upgradeable contracts
+      // refer to the transpiled type (e.g. `CrosschainLinkedUpgradeable.Link[]`).
+      const type = typeof arg.type === 'string' ? arg.type : transformName(arg.type);
+      vars.push(`${type.replace(/\bcalldata\b/, 'memory')} ${arg.name} = <Set ${arg.name} here>;`);
+    }
+  }
+  return vars;
 }
 
 const script = (c: Contract, opts?: GenericOptions) => {
@@ -228,7 +210,7 @@ const script = (c: Contract, opts?: GenericOptions) => {
     const args = getArgNames(c);
     const deploymentLines = [
       'vm.startBroadcast();',
-      ...getVariables(c),
+      ...getVariables(c, opts, name => `<Set ${name} address here>`),
       ...getDeploymentCode(c, args, true, opts?.upgradeable),
       `console.log("${c.upgradeable ? 'Proxy' : 'Contract'} deployed to %s", address(instance));`,
       'vm.stopBroadcast();',
@@ -237,29 +219,10 @@ const script = (c: Contract, opts?: GenericOptions) => {
       `contract ${c.name}Script is Script {`,
       spaceBetween(
         ['function setUp() public {}'],
-        [
-          'function run() public {',
-          args.length > 0 ? addTodoAndCommentOut(deploymentLines, !hasNonAddressArgs(c)) : deploymentLines,
-          '}',
-        ],
+        ['function run() public {', args.length > 0 ? addTodoAndCommentOut(c, deploymentLines) : deploymentLines, '}'],
       ),
       '}',
     ];
-  }
-
-  function getVariables(c: Contract): Lines[] {
-    const vars = [];
-    if (needsInitialOwnerVariable(c, opts)) {
-      vars.push('address initialOwner = <Set initialOwner address here>;');
-    }
-    for (const arg of c.constructorArgs) {
-      if (arg.type === 'address') {
-        vars.push(`address ${arg.name} = <Set ${arg.name} address here>;`);
-      } else {
-        vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);
-      }
-    }
-    return vars;
   }
 };
 

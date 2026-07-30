@@ -5,6 +5,7 @@ import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import { addTodoAndCommentOut, hasNonAddressArgs } from './zip-shared';
 
 class TestGenerator {
   constructor(private parent: HardhatZipGenerator) {}
@@ -37,7 +38,7 @@ class TestGenerator {
   }
 
   private getAssertions(c: Contract, opts?: GenericOptions): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
+    if (hasNonAddressArgs(c)) {
       // The deployment is commented out until the user fills in the missing constructor arguments,
       // so there is no `instance` to assert against yet.
       return [];
@@ -82,16 +83,8 @@ function getDeploymentSteps(c: Contract, generator: HardhatZipGenerator): Lines[
     `const instance = await ${generator.getDeploymentCall(c, argNames)};`,
     'await instance.waitForDeployment();',
   ];
-  if (c.constructorArgs.some(a => a.type !== 'address')) {
-    return [
-      [
-        '// TODO: Set values for the variables below, then uncomment the following section:',
-        '/*',
-        ...declarations,
-        ...deployment,
-        '*/',
-      ],
-    ];
+  if (hasNonAddressArgs(c)) {
+    return [addTodoAndCommentOut(c, [...declarations, ...deployment])];
   }
   return [declarations, deployment];
 }
@@ -377,7 +370,7 @@ class Hardhat3TestGenerator {
   }
 
   private getAssertions(c: Contract, opts?: GenericOptions): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
+    if (hasNonAddressArgs(c)) {
       // The deployment is commented out until the user fills in the missing constructor arguments,
       // so there is no `instance` to assert against yet. `t.pass()` keeps AVA happy in the meantime.
       return ['t.pass();'];

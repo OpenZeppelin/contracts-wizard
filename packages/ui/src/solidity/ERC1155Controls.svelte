@@ -19,10 +19,7 @@
 
   $: requireAccessControl = erc1155.isAccessControlRequired(opts);
 
-  let showAllowOverride = false;
-  $: {
-    showAllowOverride = opts.crossChainBridging === 'erc7786native';
-  }
+  $: showAllowOverride = opts.crossChainBridging === 'erc7786native';
 </script>
 
 <section class="controls-section">

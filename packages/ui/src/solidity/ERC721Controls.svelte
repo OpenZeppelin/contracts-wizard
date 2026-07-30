@@ -9,6 +9,10 @@
   import InfoSection from './InfoSection.svelte';
   import ExpandableToggleRadio from '../common/ExpandableToggleRadio.svelte';
 
+  import tippy, { type Instance as TippyInstance } from 'tippy.js';
+  import { onMount } from 'svelte';
+  import { crosschainIncrementalTooltipProps } from './crosschain-incremental-tooltip';
+
   export let opts: Required<KindedOptions['ERC721']> = {
     kind: 'ERC721',
     ...erc721.defaults,
@@ -36,10 +40,6 @@
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
 
   // Show notice when Auto Increment Ids is combined with Cross-Chain Bridging
-  import tippy, { type Instance as TippyInstance } from 'tippy.js';
-  import { onMount } from 'svelte';
-  import { crosschainIncrementalTooltipProps } from './crosschain-incremental-tooltip';
-
   let incrementalLabel: HTMLElement;
   let bridgingLabel: HTMLElement;
   let incrementalTooltip: TippyInstance | undefined;
@@ -63,10 +63,7 @@
     hadCrossChainBridging = opts.crossChainBridging;
   }
 
-  let showAllowOverride = false;
-  $: {
-    showAllowOverride = opts.crossChainBridging === 'erc7786native';
-  }
+  $: showAllowOverride = opts.crossChainBridging === 'erc7786native';
 </script>
 
 <section class="controls-section">

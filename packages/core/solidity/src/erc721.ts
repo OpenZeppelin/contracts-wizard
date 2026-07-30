@@ -14,6 +14,7 @@ import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
+import { addCrosschainLinked } from './set-crosschain-linked';
 
 export const crossChainBridgingOptions = [false, 'erc7786native'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -95,7 +96,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.crossChainLinkAllowOverride, access);
+    addCrossChainBridging(c, allOpts.crossChainLinkAllowOverride, access);
   }
 
   if (allOpts.enumerable) {
@@ -222,40 +223,16 @@ function addMintable(
   if (incremental) c.addFunctionCode('return tokenId;', fn);
 }
 
-function addCrossChainBridging(
-  c: ContractBuilder,
-  crossChainBridging: 'erc7786native',
-  crossChainLinkAllowOverride: boolean,
-  access: Access,
-) {
-  switch (crossChainBridging) {
-    case 'erc7786native':
-      addERC721Crosschain(c, crossChainLinkAllowOverride, access);
-      break;
-    default: {
-      const _: never = crossChainBridging;
-      throw new Error('Unknown value for `crossChainBridging`');
-    }
-  }
-}
-
-function addERC721Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
-  c.addParent({
-    name: 'ERC721Crosschain',
-    path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Crosschain.sol',
-  });
-
-  c.addConstructionOnly(
+function addCrossChainBridging(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+  addCrosschainLinked(
+    c,
     {
-      name: 'CrosschainLinked',
-      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+      name: 'ERC721Crosschain',
+      path: '@openzeppelin/contracts/token/ERC721/extensions/ERC721Crosschain.sol',
     },
-    [{ lit: 'links' }],
+    crossChainLinkAllowOverride,
+    access,
   );
-  c.addConstructorArgument({ type: { name: 'CrosschainLinked.Link[] memory' }, name: 'links' });
-
-  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
-  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
 }
 
 function addVotes(c: ContractBuilder, name: string, clockMode: ClockMode) {
@@ -307,14 +284,6 @@ const functions = defineFunctions({
     args: [
       { name: 'account', type: 'address' },
       { name: 'value', type: 'uint128' },
-    ],
-  },
-
-  setLink: {
-    kind: 'public' as const,
-    args: [
-      { name: 'gateway', type: 'address' },
-      { name: 'counterpart', type: 'bytes memory' },
     ],
   },
 });
