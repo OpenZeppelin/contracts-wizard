@@ -1,5 +1,4 @@
-import '../styles';
 import { mountKindApp } from '../mount';
-import StylusKindApp from '../stylus/StylusKindApp.svelte';
+import { stylusAdapter } from '../stylus/adapter';
 
-void mountKindApp(StylusKindApp, 'ERC1155');
+void mountKindApp(stylusAdapter, 'ERC1155');

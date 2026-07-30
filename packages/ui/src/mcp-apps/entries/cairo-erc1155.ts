@@ -1,5 +1,4 @@
-import '../styles';
 import { mountKindApp } from '../mount';
-import CairoKindApp from '../cairo/CairoKindApp.svelte';
+import { cairoAdapter } from '../cairo/adapter';
 
-void mountKindApp(CairoKindApp, 'ERC1155');
+void mountKindApp(cairoAdapter, 'ERC1155');

@@ -1,10 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC721Options } from '@openzeppelin/wizard-stylus';
 import { erc721 } from '@openzeppelin/wizard-stylus';
-import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { stylusERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
-import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerStylusERC721(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
@@ -22,21 +22,7 @@ export function registerStylusERC721(server: McpServer): RegisteredTool {
         enumerable,
         info,
       };
-      try {
-        const code = erc721.print(opts);
-        return wizardAppResult(
-          opts,
-          safePrintRustCodeBlock(() => code),
-          code,
-        );
-      } catch {
-        return wizardAppResult(
-          opts,
-          safePrintRustCodeBlock(() => erc721.print(opts)),
-          undefined,
-          true,
-        );
-      }
+      return wizardAppPrintResult(opts, () => erc721.print(opts), 'rust');
     },
   );
 }

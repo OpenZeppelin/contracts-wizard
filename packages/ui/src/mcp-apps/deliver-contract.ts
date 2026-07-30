@@ -6,6 +6,9 @@ export type HostSendCaps = {
   openLinks: boolean;
 };
 
+/** Pre-connect state: nothing is available until the host reports its capabilities. */
+export const NO_HOST_SEND_CAPS: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
+
 /** Host rejected or user dismissed sendMessage (e.g. Claude replace-draft confirm → No). */
 export class HandoffCancelledError extends Error {
   constructor(message = 'Update cancelled') {
@@ -56,11 +59,7 @@ function messageWithCode(fence: string, code: string): string {
  *   also best-effort stage via updateModelContext when advertised.
  * - otherwise: caller/UI falls back to clipboard (Cursor today; context-only hosts too).
  */
-export async function deliverContractToHost(
-  app: App,
-  code: string,
-  fence: string,
-): Promise<{ mode: 'message' | 'context-and-message' }> {
+export async function deliverContractToHost(app: App, code: string, fence: string): Promise<void> {
   const caps = readHostSendCaps(app);
 
   if (!canSendToHost(caps)) {
@@ -84,7 +83,6 @@ export async function deliverContractToHost(
   if (result.isError) {
     throw new HandoffCancelledError();
   }
-  return { mode: caps.updateModelContext ? 'context-and-message' : 'message' };
 }
 
 export async function copyContractToClipboard(code: string): Promise<void> {

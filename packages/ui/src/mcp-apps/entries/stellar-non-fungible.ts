@@ -1,5 +1,4 @@
-import '../styles';
 import { mountKindApp } from '../mount';
-import StellarKindApp from '../stellar/StellarKindApp.svelte';
+import { stellarAdapter } from '../stellar/adapter';
 
-void mountKindApp(StellarKindApp, 'NonFungible');
+void mountKindApp(stellarAdapter, 'NonFungible');

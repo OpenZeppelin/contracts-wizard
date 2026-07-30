@@ -6,20 +6,22 @@
   import {
     canSendToHost,
     copyContractToClipboard,
+    deliverContractToHost,
     HandoffCancelledError,
+    NO_HOST_SEND_CAPS,
     openExternalLink,
   } from './deliver-contract';
-  import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinks } from './external-links';
+  import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinks } from '../common/external-links';
 
   export let highlightedCode: string;
   export let hasErrors = false;
   export let highlightClass = '-solidity';
   export let code = '';
-  export let onUseContract: (code: string) => void | Promise<void> = () => {};
-  export let useLabel = 'Send Updates to Agent';
+  /** Markdown fence language used when handing the contract to the agent. */
+  export let fence: string;
   export let hostConnected = false;
   export let hostConnectError: string | undefined = undefined;
-  export let hostSendCaps: HostSendCaps = { message: false, updateModelContext: false, openLinks: false };
+  export let hostSendCaps: HostSendCaps = NO_HOST_SEND_CAPS;
   export let mcpApp: App;
   /** True when options differ from the opening tool-run snapshot. */
   export let drifted = false;
@@ -34,20 +36,12 @@
 
   $: if (!drifted) restoreConfirming = false;
 
-  const externalLinks = writable<McpExternalLinks>({
-    canOpen: false,
-    open: async () => {
-      throw new Error('Host link bridge is not ready.');
-    },
-  });
+  // Outbound anchors are routed by the capture-phase delegate below, so consumers
+  // (HelpTooltip) only need to know whether an outbound link can be opened at all.
+  const externalLinks = writable<McpExternalLinks>({ canOpen: false });
   setContext(MCP_EXTERNAL_LINKS_CONTEXT, externalLinks);
 
-  $: externalLinks.set({
-    canOpen: hostSendCaps.openLinks,
-    open: async (url: string) => {
-      await openExternalLink(mcpApp, url);
-    },
-  });
+  $: externalLinks.set({ canOpen: hostSendCaps.openLinks });
 
   $: sendSupported = canSendToHost(hostSendCaps);
   $: copyOnly = hostConnected && !sendSupported;
@@ -73,60 +67,45 @@
         flashDone('Copied');
         return;
       }
-      await onUseContract(code);
+      await deliverContractToHost(mcpApp, code, fence);
       flashDone('Sent');
     } catch (e: unknown) {
       if (e instanceof HandoffCancelledError) {
         statusMessage = e.message;
         return;
       }
-      const message = e instanceof Error ? e.message : String(e);
       console.error('[mcp-apps] Send Updates to Agent failed', e);
+      errorMessage = e instanceof Error ? e.message : String(e);
       try {
         await copyContractToClipboard(code);
         flashDone('Copied');
-        errorMessage = message;
       } catch {
-        errorMessage = message;
+        // Clipboard unavailable; the send failure is already reported.
       }
     } finally {
       sending = false;
     }
   }
 
-  async function openHrefViaHost(event: MouseEvent, href: string, logLabel: string) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!hostSendCaps.openLinks) return;
-    try {
-      await openExternalLink(mcpApp, href);
-    } catch (e) {
-      console.warn(`[mcp-apps] ${logLabel} openLink failed`, e);
-    }
+  /** Route outbound `<a href>` clicks matching `selector` through the host's openLink. */
+  function anchorClickHandler(selector: string) {
+    return (event: MouseEvent) => {
+      const target = event.target;
+      const href = target instanceof Element ? target.closest(selector)?.getAttribute('href') : undefined;
+      if (!href || href.startsWith('#')) return;
+      // Outbound links are host-routed only: swallow the click even when the host cannot open
+      // links, so a raw target="_blank" anchor in tippy HTML never navigates the app iframe.
+      event.preventDefault();
+      event.stopPropagation();
+      if (!hostSendCaps.openLinks) return;
+      void openExternalLink(mcpApp, href).catch(e => console.warn(`[mcp-apps] ${selector} openLink failed`, e));
+    };
   }
 
-  async function handleCodeClick(event: MouseEvent) {
-    if (!hostSendCaps.openLinks) return;
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const anchor = target.closest('a[href]');
-    if (!anchor) return;
-    const href = anchor.getAttribute('href');
-    if (!href || href.startsWith('#')) return;
-    await openHrefViaHost(event, href, 'code preview');
-  }
-
+  const handleCodeClick = anchorClickHandler('a[href]');
   // Tippy content mounts on document.body (outside .mcp-shell), so in-app click handlers never see it.
   // Capture outbound <a href> clicks from any tippy HTML content and route through host openLink.
-  function handleTippyClick(event: MouseEvent) {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const anchor = target.closest('.tippy-box a[href]');
-    if (!anchor) return;
-    const href = anchor.getAttribute('href');
-    if (!href || href.startsWith('#')) return;
-    void openHrefViaHost(event, href, 'tippy');
-  }
+  const handleTippyClick = anchorClickHandler('.tippy-box a[href]');
 
   onMount(() => {
     document.addEventListener('click', handleTippyClick, true);
@@ -157,8 +136,8 @@
     {#if drifted}
       <div class="drift-notice">
         <p class="drift-text">
-          Preview differs from the original tool run. The agent's reply from that run still matches the original settings.
-          Send updates to the agent for it to see the new code.
+          Preview differs from the original tool run. The agent's reply from that run still matches the original
+          settings. Send updates to the agent for it to see the new code.
         </p>
       </div>
     {/if}
@@ -167,10 +146,14 @@
         {#if restoreConfirming}
           <span class="restore-confirm">
             Restore original settings?
-            <button type="button" class="restore-confirm-btn" on:click={() => {
-              restoreConfirming = false;
-              onRestoreOriginal();
-            }}>Confirm</button>
+            <button
+              type="button"
+              class="restore-confirm-btn"
+              on:click={() => {
+                restoreConfirming = false;
+                onRestoreOriginal();
+              }}>Confirm</button
+            >
             <button type="button" class="restore-confirm-btn cancel" on:click={() => (restoreConfirming = false)}
               >Cancel</button
             >
@@ -198,7 +181,7 @@
         {:else if copyOnly}
           Copy to Clipboard
         {:else}
-          {useLabel}
+          Send Updates to Agent
         {/if}
       </button>
     </div>
@@ -214,9 +197,11 @@
 
 <style lang="postcss">
   .mcp-shell {
-    /* Fixed height avoids MCP Apps autoResize collapse with height:100% (ext-apps#143). */
-    height: 560px;
-    min-height: 560px;
+    /* Fixed height avoids MCP Apps autoResize collapse with height:100% (ext-apps#143).
+       --mcp-app-height is set from MCP_APP_HEIGHT_PX by mount.ts, which reports the same
+       value to the host, so the shell and the iframe cannot disagree. */
+    height: var(--mcp-app-height);
+    min-height: var(--mcp-app-height);
     background-color: var(--gray-1);
     box-sizing: border-box;
     /* Apps-only density: rem tokens inherit into Controls without touching web Wizard. */
@@ -247,14 +232,14 @@
     padding: 0.4rem 0.55rem;
     border: 1px solid var(--gray-3);
     border-radius: 8px;
-    background: color-mix(in srgb, var(--gray-2, #e5e7eb) 65%, transparent);
+    background: color-mix(in srgb, var(--gray-2) 65%, transparent);
   }
 
   .drift-text {
     margin: 0;
     font-size: 0.75rem;
     line-height: 1.4;
-    color: var(--gray-5, #4b5563);
+    color: var(--gray-5);
     text-align: left;
   }
 
@@ -273,7 +258,7 @@
     padding: 0;
     border: none;
     background: none;
-    color: var(--gray-4, #6b7280);
+    color: var(--gray-4);
     font: inherit;
     font-size: 0.75rem;
     text-decoration: underline;
@@ -281,7 +266,7 @@
   }
 
   .restore-link:hover {
-    color: var(--gray-5, #4b5563);
+    color: var(--gray-5);
   }
 
   .restore-confirm {
@@ -290,14 +275,14 @@
     align-items: center;
     gap: 0.35rem 0.5rem;
     font-size: 0.75rem;
-    color: var(--gray-5, #4b5563);
+    color: var(--gray-5);
   }
 
   .restore-confirm-btn {
     padding: 0;
     border: none;
     background: none;
-    color: var(--solidity-blue-2, #4e5de4);
+    color: var(--solidity-blue-2);
     font: inherit;
     font-size: 0.75rem;
     font-weight: 600;
@@ -306,7 +291,7 @@
   }
 
   .restore-confirm-btn.cancel {
-    color: var(--gray-4, #6b7280);
+    color: var(--gray-4);
     font-weight: 500;
   }
 
@@ -314,7 +299,7 @@
     padding: 0.45rem 0.9rem;
     border-radius: 16px;
     border: 1px solid var(--gray-3);
-    background-color: var(--solidity-blue-2, #4e5de4);
+    background-color: var(--solidity-blue-2);
     color: white;
     font-weight: 600;
     font-size: 0.75rem;
@@ -322,7 +307,7 @@
   }
 
   .use-button.drifted:not(.disabled):not(:disabled) {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--solidity-blue-2, #4e5de4) 35%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--solidity-blue-2) 35%, transparent);
   }
 
   .use-button.disabled,
@@ -339,11 +324,11 @@
   }
 
   .status.hint {
-    color: var(--gray-4, #6b7280);
+    color: var(--gray-4);
   }
 
   .status.error {
-    color: #b91c1c;
+    color: var(--red-3);
   }
 
   .no-select {

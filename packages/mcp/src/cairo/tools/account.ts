@@ -1,10 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AccountOptions } from '@openzeppelin/wizard-cairo';
 import { account } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoAccountSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
-import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoAccount(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
@@ -27,21 +27,7 @@ export function registerCairoAccount(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      try {
-        const code = account.print(opts);
-        return wizardAppResult(
-          opts,
-          safePrintCairoCodeBlock(() => code),
-          code,
-        );
-      } catch {
-        return wizardAppResult(
-          opts,
-          safePrintCairoCodeBlock(() => account.print(opts)),
-          undefined,
-          true,
-        );
-      }
+      return wizardAppPrintResult(opts, () => account.print(opts), 'cairo');
     },
   );
 }

@@ -1,5 +1,4 @@
-import '../styles';
 import { mountKindApp } from '../mount';
-import ConfidentialKindApp from '../confidential/ConfidentialKindApp.svelte';
+import { confidentialAdapter } from '../confidential/adapter';
 
-void mountKindApp(ConfidentialKindApp, 'ERC7984');
+void mountKindApp(confidentialAdapter, 'ERC7984');

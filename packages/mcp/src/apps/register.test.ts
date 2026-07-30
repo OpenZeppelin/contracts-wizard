@@ -13,6 +13,7 @@ test('solidity-erc20 registers UI metadata', t => {
 });
 
 test('MCP App HTML artifacts exist for Wizard-backed tools', t => {
+  // One tool per language; registerWizardAppTool fails closed for the rest at server start.
   const tools = [
     'solidity-erc20',
     'solidity-erc721',

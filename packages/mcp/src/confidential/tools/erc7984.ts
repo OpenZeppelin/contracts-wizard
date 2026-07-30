@@ -1,10 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC7984Options } from '@openzeppelin/wizard-confidential';
 import { erc7984 } from '@openzeppelin/wizard-confidential';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { confidentialERC7984Schema } from '@openzeppelin/wizard-common/schemas';
 import { confidentialPrompts } from '@openzeppelin/wizard-common';
-import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
@@ -27,21 +27,7 @@ export function registerConfidentialERC7984(server: McpServer): RegisteredTool {
         votes,
         info,
       };
-      try {
-        const code = erc7984.print(opts);
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => code),
-          code,
-        );
-      } catch {
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => erc7984.print(opts)),
-          undefined,
-          true,
-        );
-      }
+      return wizardAppPrintResult(opts, () => erc7984.print(opts), 'solidity');
     },
   );
 }

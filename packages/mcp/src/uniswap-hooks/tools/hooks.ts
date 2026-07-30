@@ -1,9 +1,9 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { hooks, type HooksOptions } from '@openzeppelin/wizard-uniswap-hooks';
 import { uniswapHooksHooksSchema } from '@openzeppelin/wizard-common/schemas';
-import { makeDetailedPrompt, safePrintSolidityCodeBlock } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { uniswapHooksPrompts } from '@openzeppelin/wizard-common';
-import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerUniswapHooks(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
@@ -40,21 +40,7 @@ export function registerUniswapHooks(server: McpServer): RegisteredTool {
         access,
         info,
       };
-      try {
-        const code = hooks.print(opts);
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => code),
-          code,
-        );
-      } catch {
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => hooks.print(opts)),
-          undefined,
-          true,
-        );
-      }
+      return wizardAppPrintResult(opts, () => hooks.print(opts), 'solidity');
     },
   );
 }

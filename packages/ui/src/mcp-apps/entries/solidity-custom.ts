@@ -1,5 +1,4 @@
-import '../styles';
 import { mountKindApp } from '../mount';
-import SolidityKindApp from '../solidity/SolidityKindApp.svelte';
+import { solidityAdapter } from '../solidity/adapter';
 
-void mountKindApp(SolidityKindApp, 'Custom');
+void mountKindApp(solidityAdapter, 'Custom');

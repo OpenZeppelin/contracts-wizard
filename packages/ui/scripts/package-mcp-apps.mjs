@@ -6,6 +6,7 @@
  * Optional: SINGLE_APP=<entry-name> packages only that app (keeps other HTML).
  */
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -37,12 +38,11 @@ if (expectedNames.length === 0) {
   process.exit(1);
 }
 
-fs.mkdirSync(outDir, { recursive: true });
 if (!only) {
   // Full builds drop prior HTML so renamed/deleted entries cannot leave stale artifacts.
   fs.rmSync(outDir, { recursive: true, force: true });
-  fs.mkdirSync(outDir, { recursive: true });
 }
+fs.mkdirSync(outDir, { recursive: true });
 
 const missingJs = expectedNames.filter(name => !fs.existsSync(path.join(mcpBuildDir, `${name}.js`)));
 if (missingJs.length > 0) {
@@ -50,9 +50,16 @@ if (missingJs.length > 0) {
   process.exit(1);
 }
 
-for (const name of expectedNames) {
-  const js = fs.readFileSync(path.join(mcpBuildDir, `${name}.js`), 'utf-8');
-  const html = `<!DOCTYPE html>
+// Keep in sync with MCP_APP_HEIGHT_PX in src/mcp-apps/mount.ts, which reports this
+// height to the host and sets it as --mcp-app-height once the bundle runs. This only
+// has to hold the iframe open until then.
+const INITIAL_HEIGHT_PX = 560;
+
+// Each app is independent, so read/write them concurrently rather than one at a time.
+await Promise.all(
+  expectedNames.map(async name => {
+    const js = await fsp.readFile(path.join(mcpBuildDir, `${name}.js`), 'utf-8');
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -62,7 +69,7 @@ for (const name of expectedNames) {
     /* Do not use height:100% — MCP Apps autoResize measures with max-content and
        percentage heights collapse to ~0, which shrinks the host iframe over time. */
     html, body { margin: 0; padding: 0; background: #f9fafb; }
-    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; min-height: 560px; }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; min-height: ${INITIAL_HEIGHT_PX}px; }
   </style>
 </head>
 <body>
@@ -72,10 +79,11 @@ ${js}
 </body>
 </html>
 `;
-  const outPath = path.join(outDir, `${name}.html`);
-  fs.writeFileSync(outPath, html);
-  console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
-}
+    const outPath = path.join(outDir, `${name}.html`);
+    await fsp.writeFile(outPath, html);
+    console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
+  }),
+);
 
 if (only) {
   console.log(`Packaged MCP App "${only}" (other apps left unchanged).`);

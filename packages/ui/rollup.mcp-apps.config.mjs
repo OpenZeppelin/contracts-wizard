@@ -12,7 +12,6 @@ import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const production = true;
 process.env.NODE_ENV = 'production';
 
 const entriesDir = path.join(__dirname, 'src/mcp-apps/entries');
@@ -83,7 +82,7 @@ export default entryFiles.map(file => {
         inlineSources: false,
       }),
 
-      production && terser(),
+      terser(),
     ],
   };
 });

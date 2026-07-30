@@ -2,46 +2,47 @@ import fs from 'fs';
 import path from 'path';
 import type { McpServer, RegisteredTool, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
+import { codeBlock, formatPrintError } from '../utils';
 
 /** MIME type for MCP Apps HTML resources. */
 export const RESOURCE_MIME_TYPE = 'text/html;profile=mcp-app';
 
 const RESOURCE_URI_META_KEY = 'ui/resourceUri';
 
+const APPS_DIR = path.join(__dirname, '..', '..', 'apps');
+
 export function appResourceUri(toolName: string): string {
   return `ui://openzeppelin/${toolName}.html`;
 }
 
-/** Resolve HTML for a tool. */
-export function resolveAppHtmlPath(toolName: string): string {
-  const appsDir = path.join(__dirname, '..', '..', 'apps');
-  const toolPath = path.join(appsDir, `${toolName}.html`);
+/** Resolve HTML for a tool, throwing build guidance when the artifact is missing. */
+function resolveAppHtmlPath(toolName: string): string {
+  const toolPath = path.join(APPS_DIR, `${toolName}.html`);
   if (fs.existsSync(toolPath)) {
     return toolPath;
   }
-  throw missingAppHtmlError(toolName, appsDir);
-}
-
-function missingAppHtmlError(toolName: string, appsDir: string): Error {
-  return new Error(
-    `MCP App HTML missing for ${toolName} (looked in ${appsDir}). ` +
+  throw new Error(
+    `MCP App HTML missing for ${toolName} (looked in ${APPS_DIR}). ` +
       `Run: yarn --cwd packages/mcp build:apps ` +
       `(npm consumers: reinstall the package or report a packaging bug).`,
   );
 }
 
-/** True when the per-tool App HTML artifact exists on disk. */
-export function appHtmlExists(toolName: string): boolean {
-  const appsDir = path.join(__dirname, '..', '..', 'apps');
-  return fs.existsSync(path.join(appsDir, `${toolName}.html`));
-}
+// App HTML is an immutable build artifact, so each bundle is read from disk at most once.
+const htmlCache = new Map<string, string>();
 
 export function readAppHtml(toolName: string): string {
-  return fs.readFileSync(resolveAppHtmlPath(toolName), 'utf-8');
+  const cached = htmlCache.get(toolName);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const html = fs.readFileSync(resolveAppHtmlPath(toolName), 'utf-8');
+  htmlCache.set(toolName, html);
+  return html;
 }
 
 /** Register an MCP App UI resource for a tool. */
-export function registerWizardAppResource(server: McpServer, toolName: string, options?: { title?: string }): void {
+function registerWizardAppResource(server: McpServer, toolName: string, options?: { title?: string }): void {
   const uri = appResourceUri(toolName);
   // Fail closed: do not register a UI resource that cannot be served.
   resolveAppHtmlPath(toolName);
@@ -84,10 +85,7 @@ export function registerWizardAppTool<Args extends ZodRawShapeCompat>(
   cb: ToolCallback<Args>,
 ): RegisteredTool {
   const resourceUri = appResourceUri(toolName);
-  // Fail closed before advertising UI meta if artifacts are missing.
-  if (!appHtmlExists(toolName)) {
-    throw missingAppHtmlError(toolName, path.join(__dirname, '..', '..', 'apps'));
-  }
+  // Fail closed before advertising UI meta: the resource registration resolves the HTML first.
   registerWizardAppResource(server, toolName, {
     title: config.title,
   });
@@ -105,6 +103,19 @@ export function registerWizardAppTool<Args extends ZodRawShapeCompat>(
     },
     cb,
   );
+}
+
+/**
+ * Print a contract and build the tool result: a Markdown code block plus raw code for the App on
+ * success, or the formatted options error with `isError` on failure. `print` runs exactly once.
+ */
+export function wizardAppPrintResult(opts: unknown, print: () => string, syntaxHighlightingLanguage: string) {
+  try {
+    const code = print();
+    return wizardAppResult(opts, codeBlock(code, syntaxHighlightingLanguage), code);
+  } catch (e: unknown) {
+    return wizardAppResult(opts, formatPrintError(e), undefined, true);
+  }
 }
 
 /** Build a standard tool result with text for non-Apps hosts and structured data for the App. */

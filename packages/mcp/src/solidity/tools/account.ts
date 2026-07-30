@@ -1,10 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AccountOptions } from '@openzeppelin/wizard';
 import { account } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityAccountSchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
-import { registerWizardAppTool, wizardAppResult } from '../../apps/register';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerSolidityAccount(server: McpServer): RegisteredTool {
   return registerWizardAppTool(
@@ -37,21 +37,7 @@ export function registerSolidityAccount(server: McpServer): RegisteredTool {
         info,
         upgradeable,
       };
-      try {
-        const code = account.print(opts);
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => code),
-          code,
-        );
-      } catch {
-        return wizardAppResult(
-          opts,
-          safePrintSolidityCodeBlock(() => account.print(opts)),
-          undefined,
-          true,
-        );
-      }
+      return wizardAppPrintResult(opts, () => account.print(opts), 'solidity');
     },
   );
 }
