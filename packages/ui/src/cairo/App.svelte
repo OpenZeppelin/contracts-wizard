@@ -17,6 +17,7 @@
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
+  import DownloadOption from '../common/DownloadOption.svelte';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
@@ -174,13 +175,10 @@
             Download
           </button>
 
-          <button class="download-option" on:click={downloadCairoHandler}>
-            <FileIcon />
-            <div class="download-option-content">
-              <p>Single file</p>
-              <p>Requires a Scarb project with <code>openzeppelin</code> as a dependency.</p>
-            </div>
-          </button>
+          <DownloadOption title="Single file" on:click={downloadCairoHandler}>
+            <FileIcon slot="icon" />
+            <span slot="description">Requires a Scarb project with <code>openzeppelin</code> as a dependency</span>
+          </DownloadOption>
         </Dropdown>
       </div>
     {/if}

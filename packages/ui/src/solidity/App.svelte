@@ -19,6 +19,7 @@
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
+  import DownloadOption from '../common/DownloadOption.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
@@ -327,59 +328,27 @@
             Download
           </button>
 
-          <button class="download-option download-command-option" on:click={downloadNpmHandler}>
-            <span class="download-command-type-icon">
-              <FileIcon />
-            </span>
-            <span class="download-command-copy">
-              <span class="download-command-title">Single file</span>
-              <span class="download-command-description">Requires <code>@openzeppelin/contracts</code></span>
-            </span>
-            <span class="download-command-action">
-              <DownloadIcon />
-            </span>
-          </button>
+          <DownloadOption title="Single file" on:click={downloadNpmHandler}>
+            <FileIcon slot="icon" />
+            <span slot="description">Requires <code>@openzeppelin/contracts</code></span>
+          </DownloadOption>
 
           {#if showButtons.downloadHardhat}
-            <button class="download-option download-command-option" on:click={downloadHardhatHandler}>
-              <span class="download-command-type-icon">
-                <ZipIcon />
-              </span>
-              <span class="download-command-copy">
-                <span class="download-command-title">Hardhat project · ethers.js</span>
-              </span>
-              <span class="download-command-action">
-                <DownloadIcon />
-              </span>
-            </button>
+            <DownloadOption title="Hardhat project · ethers.js" on:click={downloadHardhatHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
 
           {#if showButtons.downloadHardhatViem}
-            <button class="download-option download-command-option" on:click={downloadHardhatViemHandler}>
-              <span class="download-command-type-icon">
-                <ZipIcon />
-              </span>
-              <span class="download-command-copy">
-                <span class="download-command-title">Hardhat project · viem</span>
-              </span>
-              <span class="download-command-action">
-                <DownloadIcon />
-              </span>
-            </button>
+            <DownloadOption title="Hardhat project · viem" on:click={downloadHardhatViemHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
 
           {#if showButtons.downloadFoundry}
-            <button class="download-option download-command-option" on:click={downloadFoundryHandler}>
-              <span class="download-command-type-icon">
-                <ZipIcon />
-              </span>
-              <span class="download-command-copy">
-                <span class="download-command-title">Foundry project</span>
-              </span>
-              <span class="download-command-action">
-                <DownloadIcon />
-              </span>
-            </button>
+            <DownloadOption title="Foundry project" on:click={downloadFoundryHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
         </Dropdown>
       </div>
@@ -445,51 +414,5 @@
     background-color: var(--solidity-blue-2);
     color: white;
     order: -1;
-  }
-
-  .download-command-option {
-    align-items: center;
-    width: 100%;
-    gap: var(--size-3);
-    color: var(--gray-6);
-  }
-
-  .download-command-type-icon,
-  .download-command-action {
-    display: flex;
-    flex: none;
-    align-items: center;
-  }
-
-  .download-command-type-icon :global(.icon),
-  .download-command-action :global(.icon) {
-    margin-top: 0;
-  }
-
-  .download-command-copy {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .download-command-title {
-    display: block;
-    font-size: var(--text-small);
-    font-weight: bold;
-  }
-
-  .download-command-description {
-    display: block;
-    margin-top: var(--size-1);
-    color: var(--gray-5);
-    font-size: var(--text-small);
-  }
-
-  .download-command-action {
-    color: var(--gray-4);
-  }
-
-  .download-command-option:hover .download-command-action,
-  .download-command-option:focus .download-command-action {
-    color: var(--gray-6);
   }
 </style>

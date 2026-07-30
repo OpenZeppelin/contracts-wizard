@@ -16,6 +16,7 @@
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
+  import DownloadOption from '../common/DownloadOption.svelte';
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
 
   import type { KindedOptions, Kind, Contract, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
@@ -222,32 +223,23 @@
             Download
           </button>
 
-          <button class="download-option" on:click={downloadFileHandler}>
-            <FileIcon />
-            <div class="download-option-content">
-              <p>Single file</p>
-              <p>Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</p>
-            </div>
-          </button>
+          <DownloadOption title="Single file" on:click={downloadFileHandler}>
+            <FileIcon slot="icon" />
+            <span slot="description"
+              >Requires a Rust project with dependencies on OpenZeppelin Stellar Soroban Contracts.</span
+            >
+          </DownloadOption>
 
           {#if showButtons.downloadScaffold}
-            <button class="download-option" on:click={downloadScaffoldHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Scaffold Stellar Package</p>
-                <p>Sample Scaffold Stellar project to get started with development and testing.</p>
-              </div>
-            </button>
+            <DownloadOption title="Scaffold Stellar package" on:click={downloadScaffoldHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
 
           {#if showButtons.downloadRust}
-            <button class="download-option" on:click={downloadRustHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Rust Development Package</p>
-                <p>Sample Rust project to get started with development and testing.</p>
-              </div>
-            </button>
+            <DownloadOption title="Rust development package" on:click={downloadRustHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
         </Dropdown>
       </div>
