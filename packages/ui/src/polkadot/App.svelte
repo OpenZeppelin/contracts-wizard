@@ -23,6 +23,7 @@
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
     omitZipFoundry: true,
+    omitZipHardhatViem: true,
     omitZipHardhat: (opts?: GenericOptions) => {
       return !!opts?.upgradeable;
     },

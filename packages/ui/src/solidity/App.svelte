@@ -129,6 +129,7 @@
   interface ButtonVisibilities {
     openInRemix: boolean;
     downloadHardhat: boolean;
+    downloadHardhatViem: boolean;
     downloadFoundry: boolean;
   }
 
@@ -136,22 +137,28 @@
     const result = {
       openInRemix: true,
       downloadHardhat: true,
+      downloadHardhatViem: true,
       downloadFoundry: true,
     };
     switch (opts?.kind) {
       case 'Governor':
         result.downloadHardhat = false;
+        result.downloadHardhatViem = false;
         result.downloadFoundry = false;
         break;
       case 'Stablecoin':
       case 'RealWorldAsset':
         result.openInRemix = false;
         result.downloadHardhat = false;
+        result.downloadHardhatViem = false;
         result.downloadFoundry = false;
         break;
     }
     if (overrides.omitZipHardhat(opts)) {
       result.downloadHardhat = false;
+    }
+    if (overrides.omitZipHardhatViem) {
+      result.downloadHardhatViem = false;
     }
     if (overrides.omitZipFoundry) {
       result.downloadFoundry = false;
@@ -210,6 +217,18 @@
     saveAs(blob, 'project.zip');
     if (opts) {
       await postConfig(opts, 'download-hardhat', language);
+    }
+  };
+
+  const zipHardhatViemModule = import('@openzeppelin/wizard/zip-env-hardhat-viem');
+
+  const downloadHardhatViemHandler = async () => {
+    const { zipHardhatViem } = await zipHardhatViemModule;
+    const zip = await zipHardhatViem(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    saveAs(blob, 'project.zip');
+    if (opts) {
+      await postConfig(opts, 'download-hardhat-viem', language);
     }
   };
 
@@ -321,7 +340,17 @@
             <button class="download-option" on:click={downloadHardhatHandler}>
               <ZipIcon />
               <div class="download-option-content">
-                <p>Development Package (Hardhat)</p>
+                <p>Development Package (Hardhat + ethers)</p>
+                <p>Sample Hardhat project to get started with development and testing.</p>
+              </div>
+            </button>
+          {/if}
+
+          {#if showButtons.downloadHardhatViem}
+            <button class="download-option" on:click={downloadHardhatViemHandler}>
+              <ZipIcon />
+              <div class="download-option-content">
+                <p>Development Package (Hardhat + viem)</p>
                 <p>Sample Hardhat project to get started with development and testing.</p>
               </div>
             </button>

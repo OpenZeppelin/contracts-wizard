@@ -19,12 +19,17 @@ export interface Overrides {
   omitFeatures: Map<Kind, string[]>;
 
   /**
-   * Whether to omit the Download Hardhat package feature
+   * Whether to omit the Download Hardhat (ethers) package feature
    */
   omitZipHardhat: (opts?: GenericOptions) => boolean;
 
   /**
-   * Override for Download Hardhat package function
+   * Whether to omit the Download Hardhat (viem) package feature
+   */
+  omitZipHardhatViem: boolean;
+
+  /**
+   * Override for Download Hardhat (ethers) package function
    */
   overrideZipHardhat: ((c: Contract, opts?: GenericOptions) => Promise<JSZip>) | undefined;
 
@@ -57,6 +62,7 @@ export const defaultOverrides: Overrides = {
   omitTabs: [],
   omitFeatures: new Map(),
   omitZipHardhat: () => false,
+  omitZipHardhatViem: false,
   overrideZipHardhat: undefined,
   omitZipFoundry: false,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
