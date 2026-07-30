@@ -28,17 +28,28 @@ function resolveAppHtmlPath(toolName: string): string {
   );
 }
 
-// App HTML is an immutable build artifact, so each bundle is read from disk at most once.
-const htmlCache = new Map<string, string>();
+/**
+ * App HTML is an immutable build artifact, so it is read from disk at most once per tool and then
+ * served from memory. Keyed by tool name rather than per request or per session, so the hosted
+ * server holds one copy no matter how many sessions open the same app; memory is bounded by the
+ * number of tools, not by traffic.
+ *
+ * The in-flight promise is cached so concurrent first reads share a single disk read, and a failed
+ * read is evicted so a transient error cannot poison a tool for the process lifetime.
+ */
+const htmlCache = new Map<string, Promise<string>>();
 
-export function readAppHtml(toolName: string): string {
+export function readAppHtml(toolName: string): Promise<string> {
   const cached = htmlCache.get(toolName);
   if (cached !== undefined) {
     return cached;
   }
-  const html = fs.readFileSync(resolveAppHtmlPath(toolName), 'utf-8');
-  htmlCache.set(toolName, html);
-  return html;
+  const pending = fs.promises.readFile(resolveAppHtmlPath(toolName), 'utf-8').catch((e: unknown) => {
+    htmlCache.delete(toolName);
+    throw e;
+  });
+  htmlCache.set(toolName, pending);
+  return pending;
 }
 
 /** Register an MCP App UI resource for a tool. */
@@ -58,7 +69,7 @@ function registerWizardAppResource(server: McpServer, toolName: string, options?
         {
           uri,
           mimeType: RESOURCE_MIME_TYPE,
-          text: readAppHtml(toolName),
+          text: await readAppHtml(toolName),
         },
       ],
     }),

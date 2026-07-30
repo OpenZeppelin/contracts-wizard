@@ -12,7 +12,7 @@ test('solidity-erc20 registers UI metadata', t => {
   t.is(tool._meta?.['ui/resourceUri'], appResourceUri('solidity-erc20'));
 });
 
-test('MCP App HTML artifacts exist for Wizard-backed tools', t => {
+test('MCP App HTML artifacts exist for Wizard-backed tools', async t => {
   // One tool per language; registerWizardAppTool fails closed for the rest at server start.
   const tools = [
     'solidity-erc20',
@@ -24,7 +24,7 @@ test('MCP App HTML artifacts exist for Wizard-backed tools', t => {
     'uniswap-hooks',
   ];
   for (const tool of tools) {
-    const html = readAppHtml(tool);
+    const html = await readAppHtml(tool);
     t.true(html.includes('<!DOCTYPE html>'), `${tool} missing doctype`);
     t.true(html.includes('<script>'), `${tool} missing script`);
     t.true(html.length > 10_000, `${tool} HTML unexpectedly small`);
