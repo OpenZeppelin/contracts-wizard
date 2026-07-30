@@ -43,6 +43,11 @@
 
   $: externalLinks.set({ canOpen: hostSendCaps.openLinks });
 
+  // Some tippy content is raw HTML handed straight to tippy (the Superchain notice), so it cannot
+  // read the context above and hide its own link. Flag the unopenable case on the root element and
+  // hide those links in CSS, so a link is never shown that the capture delegate would swallow.
+  $: document.documentElement.classList.toggle('mcp-no-open-links', !hostSendCaps.openLinks);
+
   $: sendSupported = canSendToHost(hostSendCaps);
   $: copyOnly = hostConnected && !sendSupported;
   $: buttonDisabled = hasErrors || sending || !code || !hostConnected || !!hostConnectError || !!doneLabel;
@@ -352,5 +357,10 @@
 
   :global(.tippy-box .tippy-content) {
     padding: 0.35rem 0.5rem;
+  }
+
+  /* Host cannot open outbound links, so do not offer any. HelpTooltip already omits its own. */
+  :global(html.mcp-no-open-links .tippy-box a[href]) {
+    display: none;
   }
 </style>
