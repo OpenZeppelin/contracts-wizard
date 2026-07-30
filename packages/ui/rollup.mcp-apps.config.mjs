@@ -16,7 +16,14 @@ const production = true;
 process.env.NODE_ENV = 'production';
 
 const entriesDir = path.join(__dirname, 'src/mcp-apps/entries');
-const entryFiles = fs.readdirSync(entriesDir).filter(f => f.endsWith('.ts'));
+const only = process.env.SINGLE_APP?.trim();
+const entryFiles = fs
+  .readdirSync(entriesDir)
+  .filter(f => f.endsWith('.ts'))
+  .filter(f => !only || path.basename(f, '.ts') === only);
+if (entryFiles.length === 0) {
+  throw new Error(only ? `No MCP App entry matching SINGLE_APP="${only}"` : `No MCP App entries in ${entriesDir}`);
+}
 
 const svelteConfig = (await import('./svelte.config.js')).default;
 

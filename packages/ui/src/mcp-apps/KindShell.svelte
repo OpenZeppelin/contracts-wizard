@@ -58,17 +58,17 @@
   }
 </script>
 
-<div class="mcp-shell flex flex-col gap-3 p-3 min-h-0">
-  <div class="flex flex-row grow min-h-0 overflow-hidden rounded-2xl border border-[var(--gray-3)]">
+<div class="mcp-shell flex flex-col gap-2 p-2 min-h-0">
+  <div class="flex flex-row grow min-h-0 overflow-hidden rounded-xl border border-[var(--gray-3)]">
     <div
-      class="controls min-w-64 w-72 max-w-[45%] flex flex-col shrink-0 overflow-auto border-r border-[var(--gray-3)]"
+      class="controls min-w-[14rem] w-60 max-w-[42%] flex flex-col shrink-0 overflow-auto border-r border-[var(--gray-3)]"
     >
       <slot name="controls" />
     </div>
 
     <div class="output flex flex-col grow min-w-0 overflow-hidden">
       <pre class="flex flex-col grow basis-0 overflow-auto m-0">
-        <code class="hljs {highlightClass} grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
+        <code class="hljs {highlightClass} grow overflow-auto p-2 {hasErrors ? 'no-select' : ''}"
           >{@html highlightedCode}</code
         >
       </pre>
@@ -110,15 +110,32 @@
     min-height: 560px;
     background-color: var(--gray-1);
     box-sizing: border-box;
+    /* Apps-only density: rem tokens inherit into Controls without touching web Wizard. */
+    font-size: 12px;
+    --text-small: 0.75rem;
+    --size-1: 0.2rem;
+    --size-2: 0.35rem;
+    --size-3: 0.55rem;
+    --size-4: 0.7rem;
+  }
+
+  .mcp-shell :global(.controls) {
+    padding: var(--size-3);
+  }
+
+  .mcp-shell :global(pre code.hljs) {
+    font-size: 0.7rem;
+    line-height: 1.35;
   }
 
   .use-button {
-    padding: 0.6rem 1.25rem;
-    border-radius: 20px;
+    padding: 0.45rem 0.9rem;
+    border-radius: 16px;
     border: 1px solid var(--gray-3);
     background-color: var(--solidity-blue-2, #4e5de4);
     color: white;
     font-weight: 600;
+    font-size: 0.75rem;
     cursor: pointer;
   }
 

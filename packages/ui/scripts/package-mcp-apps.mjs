@@ -2,6 +2,8 @@
 /**
  * After Rollup builds IIFE bundles under public/build/mcp/*.js,
  * produce single-file HTML documents with inlined JS for MCP resources/read.
+ *
+ * Optional: SINGLE_APP=<entry-name> packages only that app (keeps other HTML).
  */
 import fs from 'fs';
 import path from 'path';
@@ -11,26 +13,36 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mcpBuildDir = path.join(__dirname, '..', 'public', 'build', 'mcp');
 const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
+const only = process.env.SINGLE_APP?.trim();
 
 if (!fs.existsSync(mcpBuildDir)) {
   console.error(`Missing MCP build dir: ${mcpBuildDir}`);
   process.exit(1);
 }
 
-const expectedNames = fs
+const allEntryNames = fs
   .readdirSync(entriesDir)
   .filter(f => f.endsWith('.ts'))
   .map(f => path.basename(f, '.ts'))
   .sort();
 
-if (expectedNames.length === 0) {
+if (allEntryNames.length === 0) {
   console.error(`No MCP App entries found in ${entriesDir}`);
   process.exit(1);
 }
 
-// Drop prior packaged HTML so renamed/deleted entries cannot leave stale artifacts.
-fs.rmSync(outDir, { recursive: true, force: true });
+const expectedNames = only ? allEntryNames.filter(name => name === only) : allEntryNames;
+if (expectedNames.length === 0) {
+  console.error(`No MCP App entry matching SINGLE_APP="${only}"`);
+  process.exit(1);
+}
+
 fs.mkdirSync(outDir, { recursive: true });
+if (!only) {
+  // Full builds drop prior HTML so renamed/deleted entries cannot leave stale artifacts.
+  fs.rmSync(outDir, { recursive: true, force: true });
+  fs.mkdirSync(outDir, { recursive: true });
+}
 
 const missingJs = expectedNames.filter(name => !fs.existsSync(path.join(mcpBuildDir, `${name}.js`)));
 if (missingJs.length > 0) {
@@ -65,4 +77,8 @@ ${js}
   console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
 }
 
-console.log(`Verified ${expectedNames.length} MCP App HTML artifacts match entries.`);
+if (only) {
+  console.log(`Packaged MCP App "${only}" (other apps left unchanged).`);
+} else {
+  console.log(`Verified ${expectedNames.length} MCP App HTML artifacts match entries.`);
+}
