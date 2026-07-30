@@ -78,7 +78,7 @@ export function buildERC1155(opts: ERC1155Options): Contract {
   addBase(c, allOpts.uri);
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainLinkAllowOverride, access);
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.crossChainLinkAllowOverride, access);
   }
 
   if (allOpts.updatableUri) {
@@ -144,7 +144,24 @@ function addMintable(c: ContractBuilder, access: Access) {
   c.addFunctionCode('_mintBatch(to, ids, amounts, data);', functions.mintBatch);
 }
 
-function addCrossChainBridging(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: boolean,
+  access: Access,
+) {
+  switch (crossChainBridging) {
+    case 'erc7786native':
+      addERC1155Crosschain(c, crossChainLinkAllowOverride, access);
+      break;
+    default: {
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
+    }
+  }
+}
+
+function addERC1155Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
   addCrosschainLinked(
     c,
     {

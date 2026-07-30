@@ -96,7 +96,7 @@ export function buildERC721(opts: ERC721Options): Contract {
   }
 
   if (allOpts.crossChainBridging) {
-    addCrossChainBridging(c, allOpts.crossChainLinkAllowOverride, access);
+    addCrossChainBridging(c, allOpts.crossChainBridging, allOpts.crossChainLinkAllowOverride, access);
   }
 
   if (allOpts.enumerable) {
@@ -223,7 +223,24 @@ function addMintable(
   if (incremental) c.addFunctionCode('return tokenId;', fn);
 }
 
-function addCrossChainBridging(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
+function addCrossChainBridging(
+  c: ContractBuilder,
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: boolean,
+  access: Access,
+) {
+  switch (crossChainBridging) {
+    case 'erc7786native':
+      addERC721Crosschain(c, crossChainLinkAllowOverride, access);
+      break;
+    default: {
+      const _: never = crossChainBridging;
+      throw new Error('Unknown value for `crossChainBridging`');
+    }
+  }
+}
+
+function addERC721Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
   addCrosschainLinked(
     c,
     {
