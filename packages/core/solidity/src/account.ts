@@ -247,7 +247,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     const signerBaseName = signers[opts.signer].name;
     const signerName = opts.upgradeable ? upgradeableName(signerBaseName) : signerBaseName;
 
-    // WebAuthnSigner depends inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
+    // WebAuthnSigner inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
     if (opts.signer !== 'WebAuthn') {
       c.addImportOnly({
         name: 'AbstractSigner',
