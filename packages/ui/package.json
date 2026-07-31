@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "echo \"Nothing to prepare\"",
     "build": "node scripts/copy-versions.mjs && rollup -c",
+    "build:mcp-apps": "node scripts/copy-versions.mjs && rollup -c rollup.mcp-apps.config.mjs && node scripts/package-mcp-apps.mjs",
     "type:check:api": "deno task --config deno.json type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
     "dev:api": "ENV=dev deno task dev",
@@ -45,6 +46,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@modelcontextprotocol/ext-apps": "1.7.5",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.11.1",
     "highlightjs-cairo": "^0.4.0",

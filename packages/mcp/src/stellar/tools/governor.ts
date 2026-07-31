@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard-stellar';
 import { governor } from '@openzeppelin/wizard-stellar';
-import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { stellarGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerStellarGovernor(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stellar-governor',
-    makeDetailedPrompt(stellarPrompts.Governor),
-    stellarGovernorSchema,
+    {
+      description: makeDetailedPrompt(stellarPrompts.Governor),
+      inputSchema: stellarGovernorSchema,
+      title: 'Stellar Governor',
+    },
     async ({
       name,
       version,
@@ -36,14 +41,7 @@ export function registerStellarGovernor(server: McpServer): RegisteredTool {
         explicitImplementations,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => governor.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => governor.print(opts), 'rust');
     },
   );
 }

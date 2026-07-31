@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC20Options } from '@openzeppelin/wizard';
 import { erc20 } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerSolidityERC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-erc20',
-    makeDetailedPrompt(solidityPrompts.ERC20),
-    solidityERC20Schema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.ERC20),
+      inputSchema: solidityERC20Schema,
+      title: 'Solidity ERC20',
+    },
     async ({
       name,
       symbol,
@@ -48,14 +53,7 @@ export function registerSolidityERC20(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => erc20.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => erc20.print(opts), 'solidity');
     },
   );
 }
