@@ -3,7 +3,7 @@
 
 ## 0.6.0 (2026-07-31)
 
-- - **Breaking changes**: Renamed the `erc7984` tool to `confidential-erc7984`. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
+- **Breaking changes**: Renamed the `erc7984` tool to `confidential-erc7984`. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
 - Fix MCP App false "preview differs" when tool options imply other options. ([#832](https://github.com/OpenZeppelin/contracts-wizard/pull/832))
 - Add MCP Apps interactive UIs for Wizard-backed generation tools. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
   - Each tool serves a fixed-kind Wizard controls + code preview App with Send Updates to Agent / Copy to Clipboard.
