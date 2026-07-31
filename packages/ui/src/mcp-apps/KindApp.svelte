@@ -4,7 +4,7 @@
   import KindShell from './KindShell.svelte';
   import type { HostSendCaps } from './deliver-contract';
   import { NO_HOST_SEND_CAPS } from './deliver-contract';
-  import { cloneOpts, nextBaseline, shouldCaptureBaseline } from './opts-snapshot';
+  import { cloneOpts, isDrifted, nextBaseline, shouldCaptureBaseline } from './opts-snapshot';
   import type { KindAdapter, KindErrors } from './adapter';
 
   /** Supplies everything language-specific; see `adapter.ts`. */
@@ -30,15 +30,16 @@
     try {
       return adapter.print(adapter.build(candidate));
     } catch {
-      // Partial or invalid host arguments (e.g. streamed toolinput); a later apply retries.
+      // Options the agent sent that do not build; the tool run itself errors too. A later
+      // apply retries, and `nextBaseline` recovers if only the accumulated merge is at fault.
       return undefined;
     }
   }
 
   function mergeHostOpts(incoming: Record<string, unknown> | undefined, source: 'input' | 'result') {
     if (!incoming) return;
-    // Judged against the pre-merge preview, so a user edit blocks a toolresult recapture.
-    const captureBaseline = shouldCaptureBaseline(originalCode, code, source);
+    // Read before the merge, so an edit the user already made blocks a toolresult recapture.
+    const captureBaseline = shouldCaptureBaseline(originalCode, drifted, source);
     const merged = { ...(opts ?? {}), ...incoming, kind };
     opts = merged;
     if (!captureBaseline) return;
@@ -81,10 +82,8 @@
     ? adapter.injectHyperlinks(adapter.highlight(code))
     : adapter.highlight(code);
   $: hasErrors = errors !== undefined;
-  // `hasErrors` counts as drift on its own: the tool run's own options build, so an invalid
-  // form is always a user edit, and `contract` (hence `code`) is stale while the build fails.
   /** True once the user edits away from the source the opening tool run asked for. */
-  $: drifted = originalCode !== undefined && (hasErrors || code !== originalCode);
+  $: drifted = isDrifted({ originalCode, code, hasErrors });
 
   function restoreOriginal() {
     if (originalOpts == null) return;
