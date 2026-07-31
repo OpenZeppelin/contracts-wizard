@@ -3,42 +3,57 @@ export function cloneOpts<T>(value: T): T {
   return structuredClone(value);
 }
 
-export function optsEqual(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
-}
-
 /**
- * Whether this host apply should replace the "original" baseline.
- * First apply always; a later toolresult may refresh only while the UI is still
- * at that original (no user drift yet).
+ * Whether this host apply should (re)capture the original-options baseline.
+ *
+ * The first apply always captures. A later toolresult may recapture only while the
+ * preview still prints the baseline source; once the user has edited, the opening
+ * tool run stays the reference point.
+ *
+ * Both codes come from the currently loaded generator, so this compares generated
+ * source rather than options objects: UI coercions that leave the source unchanged
+ * (e.g. required `access: false` → `ownable`) do not count as a user edit.
  */
-export function shouldRefreshInitial(
-  initial: unknown | undefined,
-  previousOpts: unknown | undefined,
+export function shouldCaptureBaseline(
+  baselineCode: string | undefined,
+  currentCode: string | undefined,
   source: 'input' | 'result',
 ): boolean {
-  if (initial == null) {
+  if (baselineCode === undefined) {
     return true;
   }
-  if (source === 'result' && (previousOpts == null || optsEqual(previousOpts, initial))) {
-    return true;
-  }
-  return false;
+  return source === 'result' && currentCode === baselineCode;
 }
 
+export type Baseline<T> = {
+  /** The original options, to build the baseline source and to restore from. */
+  opts: T;
+  code: string;
+  /** The merged options do not build, so `opts` replaces them rather than only baselining them. */
+  supersedesOpts: boolean;
+};
+
 /**
- * Capture / refresh the "original" options from the opening tool run.
- * Prefer calling this with opts *after* Controls have settled (UI coercions such
- * as required access → ownable), so the baseline matches what the form shows.
+ * The baseline for this host apply: the merged options if they build, else the incoming
+ * options alone.
+ *
+ * The fallback matters because host applies accumulate. One unbuildable apply (a host that
+ * streams partial toolinput arguments) would otherwise poison every later merge, leaving the
+ * baseline unset and drift undetectable for the rest of the session. An apply that does build
+ * supersedes those stale arguments. Undefined when neither builds; a later apply retries.
  */
-export function nextInitialOpts(
-  initial: unknown | undefined,
-  previousOpts: unknown | undefined,
-  nextOpts: unknown,
-  source: 'input' | 'result',
-): unknown {
-  if (!shouldRefreshInitial(initial, previousOpts, source)) {
-    return initial;
+export function nextBaseline<T>(
+  merged: T,
+  incoming: T,
+  print: (opts: T) => string | undefined,
+): Baseline<T> | undefined {
+  const mergedCode = print(merged);
+  if (mergedCode !== undefined) {
+    return { opts: cloneOpts(merged), code: mergedCode, supersedesOpts: false };
   }
-  return cloneOpts(nextOpts);
+  const incomingCode = print(incoming);
+  if (incomingCode !== undefined) {
+    return { opts: cloneOpts(incoming), code: incomingCode, supersedesOpts: true };
+  }
+  return undefined;
 }
