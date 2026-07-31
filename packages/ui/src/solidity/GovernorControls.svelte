@@ -157,7 +157,7 @@
       Cross-Chain Execution
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/governance#GovernorCrosschain">
         Lets passed proposals relay execution to other chains through ERC-7786 gateways. Requires a
-        CrosschainRemoteExecutor contract, controlled by this governor, deployed on each target chain.
+        <code>CrosschainRemoteExecutor</code> contract, controlled by this governor, deployed on each target chain.
       </HelpTooltip>
     </label>
   </div>
