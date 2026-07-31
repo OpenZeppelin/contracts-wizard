@@ -1,5 +1,16 @@
-import type { Contract } from './contract';
+import type { Contract, FunctionArgument } from './contract';
 import type { Lines } from './utils/format-lines';
+
+/**
+ * Whether a constructor argument can be given a default value in a generated project.
+ *
+ * The generators fill these in with a signer, so this must agree everywhere it is used: an argument
+ * that is treated as an address in one place but not another would leave an unset placeholder in
+ * code that is not commented out.
+ */
+export function isAddressType(arg: FunctionArgument): boolean {
+  return arg.type === 'address';
+}
 
 /**
  * Whether any constructor argument cannot be given a default value in a generated project.
@@ -9,7 +20,7 @@ import type { Lines } from './utils/format-lines';
  * is commented out and there is no deployed instance for the generated tests to assert against.
  */
 export function hasNonAddressArgs(c: Contract): boolean {
-  return c.constructorArgs.some(arg => arg.type !== 'address');
+  return !c.constructorArgs.every(isAddressType);
 }
 
 /**

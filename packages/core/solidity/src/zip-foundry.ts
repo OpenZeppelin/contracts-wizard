@@ -9,7 +9,7 @@ import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import type { Upgradeable } from './set-upgradeable';
 import { withHelpers } from './options';
-import { addTodoAndCommentOut, hasNonAddressArgs } from './zip-shared';
+import { addTodoAndCommentOut, hasNonAddressArgs, isAddressType } from './zip-shared';
 
 function getHeader(c: Contract) {
   return [`// SPDX-License-Identifier: ${c.license}`, `pragma solidity ^${SOLIDITY_VERSION};`];
@@ -182,7 +182,7 @@ function getVariables(c: Contract, opts: GenericOptions | undefined, addressValu
     vars.push(`address initialOwner = ${addressValue('initialOwner')};`);
   }
   for (const arg of c.constructorArgs) {
-    if (arg.type === 'address') {
+    if (isAddressType(arg)) {
       vars.push(`address ${arg.name} = ${addressValue(arg.name)};`);
     } else {
       vars.push(`${getLocalVariableType(c, arg)} ${arg.name} = <Set ${arg.name} here>;`);

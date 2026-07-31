@@ -5,7 +5,7 @@ import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
-import { addTodoAndCommentOut, hasNonAddressArgs } from './zip-shared';
+import { addTodoAndCommentOut, hasNonAddressArgs, isAddressType } from './zip-shared';
 
 class TestGenerator {
   constructor(private parent: HardhatZipGenerator) {}
@@ -75,9 +75,7 @@ class TestGenerator {
 function getDeploymentSteps(c: Contract, generator: HardhatZipGenerator): Lines[][] {
   const argNames = c.constructorArgs.map(a => a.name);
   const declarations = c.constructorArgs.map((arg, i) =>
-    arg.type === 'address'
-      ? `const ${arg.name} = (await ethers.getSigners())[${i}].address;`
-      : `const ${arg.name} = ...;`,
+    isAddressType(arg) ? `const ${arg.name} = (await ethers.getSigners())[${i}].address;` : `const ${arg.name} = ...;`,
   );
   const deployment = [
     `const instance = await ${generator.getDeploymentCall(c, argNames)};`,
