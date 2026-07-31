@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { stablecoin } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'solidity-stablecoin',
-    makeDetailedPrompt(solidityPrompts.Stablecoin),
-    solidityStablecoinSchema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.Stablecoin),
+      inputSchema: solidityStablecoinSchema,
+      title: 'Solidity Stablecoin',
+    },
     async ({
       name,
       symbol,
@@ -50,14 +55,7 @@ export function registerSolidityStablecoin(server: McpServer): RegisteredTool {
         restrictions,
         freezable,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => stablecoin.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => stablecoin.print(opts), 'solidity');
     },
   );
 }

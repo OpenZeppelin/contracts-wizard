@@ -1,8 +1,20 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { readable } from 'svelte/store';
   import Tooltip from './Tooltip.svelte';
+  import { MCP_EXTERNAL_LINKS_CONTEXT, type McpExternalLinks, type McpExternalLinksStore } from './external-links';
 
   export let link: string | undefined = undefined;
   export let placement: 'top' | 'bottom' | 'left' | 'right' = 'right';
+
+  // MCP Apps set a writable store; web Wizard leaves context unset and uses normal <a> tags.
+  const context = getContext<McpExternalLinksStore | undefined>(MCP_EXTERNAL_LINKS_CONTEXT);
+  const inMcpApp = context != null;
+
+  // Auto-subscribed so the link re-renders when openLinks arrives after connect. In an MCP
+  // App the click itself is handled by KindShell's capture-phase delegate.
+  const externalLinks = context ?? readable<McpExternalLinks>({ canOpen: false });
+  $: showLink = link != null && (!inMcpApp || $externalLinks.canOpen);
 </script>
 
 <Tooltip let:trigger interactive {placement} theme="light border" maxWidth="22em">
@@ -15,9 +27,11 @@
 
   <div slot="content">
     <slot></slot>
-    {#if link}
+    {#if showLink}
       <br />
-      <a target="_blank" rel="noopener noreferrer" href={link}>Read more.</a>
+      <a href={link} target={inMcpApp ? undefined : '_blank'} rel={inMcpApp ? undefined : 'noopener noreferrer'}
+        >Read more.</a
+      >
     {/if}
   </div>
 </Tooltip>
