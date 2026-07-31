@@ -15,6 +15,7 @@ import { supportsInterface } from './common-functions';
 import { OptionsError } from './error';
 import { toUint, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
+import { addCrosschainLinked } from './set-crosschain-linked';
 
 export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -386,22 +387,15 @@ function addCrossChainBridging(
 }
 
 function addERC20Crosschain(c: ContractBuilder, crossChainLinkAllowOverride: boolean, access: Access) {
-  c.addParent({
-    name: 'ERC20Crosschain',
-    path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
-  });
-
-  c.addConstructionOnly(
+  addCrosschainLinked(
+    c,
     {
-      name: 'CrosschainLinked',
-      path: '@openzeppelin/contracts/crosschain/CrosschainLinked.sol',
+      name: 'ERC20Crosschain',
+      path: '@openzeppelin/contracts/token/ERC20/extensions/ERC20Crosschain.sol',
     },
-    [{ lit: 'links' }],
+    crossChainLinkAllowOverride,
+    access,
   );
-  c.addConstructorArgument({ type: 'CrosschainLinked.Link[] memory', name: 'links' });
-
-  requireAccessControl(c, functions.setLink, access, 'CROSSCHAIN_LINKER', 'crosschainLinker');
-  c.addFunctionCode(`_setLink(gateway, counterpart, ${crossChainLinkAllowOverride});`, functions.setLink);
 }
 
 function addERC20Bridgeable(
@@ -513,6 +507,7 @@ function addCustomBridging(c: ContractBuilder, access: Access, upgradeable: Upgr
       c.addImportOnly({
         name: 'AuthorityUtils',
         path: `@openzeppelin/contracts/access/manager/AuthorityUtils.sol`,
+        transpiled: false,
       });
       c.setFunctionBody(
         [
@@ -617,13 +612,5 @@ export const functions = defineFunctions({
   setTokenBridge: {
     kind: 'public' as const,
     args: [{ name: 'tokenBridge_', type: 'address' }],
-  },
-
-  setLink: {
-    kind: 'public' as const,
-    args: [
-      { name: 'gateway', type: 'address' },
-      { name: 'counterpart', type: 'bytes memory' },
-    ],
   },
 });

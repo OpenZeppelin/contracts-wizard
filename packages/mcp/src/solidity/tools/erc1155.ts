@@ -15,7 +15,20 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
       inputSchema: solidityERC1155Schema,
       title: 'Solidity ERC1155',
     },
-    async ({ name, uri, burnable, pausable, mintable, supply, updatableUri, access, upgradeable, info }) => {
+    async ({
+      name,
+      uri,
+      burnable,
+      pausable,
+      mintable,
+      supply,
+      updatableUri,
+      crossChainBridging,
+      crossChainLinkAllowOverride,
+      access,
+      upgradeable,
+      info,
+    }) => {
       const opts: ERC1155Options = {
         name,
         uri,
@@ -24,6 +37,8 @@ export function registerSolidityERC1155(server: McpServer): RegisteredTool {
         mintable,
         supply,
         updatableUri,
+        crossChainBridging,
+        crossChainLinkAllowOverride,
         access,
         upgradeable,
         info,

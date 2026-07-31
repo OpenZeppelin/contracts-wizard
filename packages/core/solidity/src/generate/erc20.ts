@@ -40,19 +40,36 @@ const basicFeatures = {
   },
 };
 
+// crossChainBridging x upgradeable is excluded from the exhaustive matrix above to limit its size,
+// so cross it against a reduced blueprint to still get compile coverage of the transpiled variants
+// (including the ERC-7201 namespaced storage used by 'custom' bridging when upgradeable).
+const crossChainBridgingUpgradeableBlueprint = {
+  ...blueprintWithoutBasicFeatures,
+  ...basicFeatures.OFF,
+  decimals: ['18'],
+  pausable: [false],
+  mintable: [false],
+  votes: [false] as const,
+  crossChainBridging: ['custom', 'erc7786native', 'superchain'] as const,
+  upgradeable: ['transparent', 'uups'] as const,
+  info: [{}],
+};
+
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
   // Separate generation steps with basic features OFF and ON to avoid having too many combinations
   for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.OFF })) {
-    // crossChainBridging does not currently support upgradeable
+    // crossChainBridging x upgradeable is covered by the reduced blueprint below
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
     }
   }
 
   for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.ON })) {
-    // crossChainBridging does not currently support upgradeable
+    // crossChainBridging x upgradeable is covered by the reduced blueprint below
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
     }
   }
+
+  yield* generateAlternatives(crossChainBridgingUpgradeableBlueprint);
 }
