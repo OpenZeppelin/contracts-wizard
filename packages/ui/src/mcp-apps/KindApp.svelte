@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import type { App } from '@modelcontextprotocol/ext-apps';
 
   import KindShell from './KindShell.svelte';
   import type { HostSendCaps } from './deliver-contract';
   import { NO_HOST_SEND_CAPS } from './deliver-contract';
-  import { cloneOpts, nextInitialOpts, optsEqual } from './opts-snapshot';
+  import { cloneOpts, optsEqual, shouldRefreshInitial } from './opts-snapshot';
   import type { KindAdapter, KindErrors } from './adapter';
 
   /** Supplies everything language-specific; see `adapter.ts`. */
@@ -20,24 +21,40 @@
   let opts: any = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let initialOpts: any = undefined;
+  /** False while waiting for Controls to coerce required fields into the baseline. */
+  let baselineReady = false;
+  let settleGeneration = 0;
   let errors: KindErrors | undefined;
   let contract: unknown = adapter.emptyContract();
 
-  function mergeHostOpts(incoming: Record<string, unknown> | undefined, source: 'input' | 'result') {
+  async function mergeHostOpts(incoming: Record<string, unknown> | undefined, source: 'input' | 'result') {
     if (!incoming) return;
     const previous = opts;
+    const refreshBaseline = shouldRefreshInitial(initialOpts, previous, source);
     opts = { ...(opts ?? {}), ...incoming, kind };
-    initialOpts = nextInitialOpts(initialOpts, previous, opts, source);
+    if (!refreshBaseline) {
+      return;
+    }
+
+    // Defer the baseline until AccessControlSection (and similar) apply required
+    // coercions (e.g. access: false → ownable when mintable/pausable). Otherwise
+    // we false-positive "drifted" against the raw agent opts.
+    const gen = ++settleGeneration;
+    baselineReady = false;
+    await tick();
+    if (gen !== settleGeneration) return;
+    initialOpts = cloneOpts(opts);
+    baselineReady = true;
   }
 
   mcpApp.ontoolinput = params => {
-    mergeHostOpts(params.arguments as Record<string, unknown> | undefined, 'input');
+    void mergeHostOpts(params.arguments as Record<string, unknown> | undefined, 'input');
   };
 
   mcpApp.ontoolresult = result => {
     const structured = result.structuredContent as { opts?: Record<string, unknown> } | undefined;
     if (structured?.opts) {
-      mergeHostOpts(structured.opts, 'result');
+      void mergeHostOpts(structured.opts, 'result');
     }
   };
 
@@ -51,8 +68,8 @@
     }
   }
 
-  /** True once the user edits away from the opening tool-run snapshot. */
-  $: drifted = opts != null && initialOpts != null && !optsEqual(opts, initialOpts);
+  /** True once the user edits away from the settled tool-run baseline. */
+  $: drifted = baselineReady && opts != null && initialOpts != null && !optsEqual(opts, initialOpts);
   $: code = adapter.print(contract);
   $: highlightedCode = hostSendCaps.openLinks
     ? adapter.injectHyperlinks(adapter.highlight(code))
