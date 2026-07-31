@@ -16,3 +16,5 @@ public/
 remappings.txt
 *.cairo
 *.sh
+# Generated single-file MCP App documents with an inlined bundle (yarn build:apps)
+packages/mcp/apps/

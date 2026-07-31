@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.4 (2026-07-31)
+
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825)) ([`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a))
+  - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
+  - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
+  - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
+  - Fix compile errors in upgradeable ERC20 `crossChainBridging` variants.
+  - **Potentially breaking change**: Update to OpenZeppelin Contracts 5.7.0.
+- Updated dependencies [[`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a)]:
+  - @openzeppelin/wizard@0.10.12
+  - @openzeppelin/wizard-common@0.5.4
+
 ## 0.1.3 (2026-06-26)
 
 - Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821)) ([`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379))

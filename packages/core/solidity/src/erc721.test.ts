@@ -181,6 +181,55 @@ testERC721('full upgradeable uups + managed + incremental + empty namespacePrefi
   namespacePrefix: '',
 });
 
+testERC721('erc721 crossChainBridging erc7786native', {
+  crossChainBridging: 'erc7786native',
+});
+
+testERC721('erc721 crossChainBridging erc7786native allowOverride', {
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: true,
+});
+
+testERC721('erc721 crossChainBridging erc7786native ownable', {
+  crossChainBridging: 'erc7786native',
+  access: 'ownable',
+});
+
+testERC721('erc721 crossChainBridging erc7786native ownable mintable burnable', {
+  crossChainBridging: 'erc7786native',
+  access: 'ownable',
+  mintable: true,
+  burnable: true,
+});
+
+testERC721('erc721 crossChainBridging erc7786native mintable incremental', {
+  crossChainBridging: 'erc7786native',
+  mintable: true,
+  incremental: true,
+});
+
+testERC721('erc721 crossChainBridging erc7786native roles', {
+  crossChainBridging: 'erc7786native',
+  access: 'roles',
+});
+
+testERC721('erc721 crossChainBridging erc7786native managed', {
+  crossChainBridging: 'erc7786native',
+  access: 'managed',
+});
+
+testERC721('erc721 crossChainBridging erc7786native pausable votes enumerable', {
+  crossChainBridging: 'erc7786native',
+  pausable: true,
+  votes: true,
+  enumerable: true,
+});
+
+testERC721('erc721 crossChainBridging erc7786native upgradeable', {
+  crossChainBridging: 'erc7786native',
+  upgradeable: 'transparent',
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', { name: 'CustomToken', symbol: 'CTK' });
@@ -205,4 +254,6 @@ test('API isAccessControlRequired', async t => {
   t.is(erc721.isAccessControlRequired({ pausable: true }), true);
   t.is(erc721.isAccessControlRequired({ upgradeable: 'uups' }), true);
   t.is(erc721.isAccessControlRequired({ upgradeable: 'transparent' }), false);
+  t.is(erc721.isAccessControlRequired({ crossChainBridging: 'erc7786native' }), true);
+  t.is(erc721.isAccessControlRequired({ crossChainBridging: false }), false);
 });

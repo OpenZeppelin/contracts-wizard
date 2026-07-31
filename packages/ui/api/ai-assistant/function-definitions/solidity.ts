@@ -15,6 +15,8 @@ import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
 import type { QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/solidity/dist/governor';
 import type { ClockMode } from '../../../../core/solidity/dist/set-clock-mode';
 import type { CrossChainBridging } from '../../../../core/solidity/dist/erc20';
+import type { CrossChainBridging as ERC721CrossChainBridging } from '../../../../core/solidity/dist/erc721';
+import type { CrossChainBridging as ERC1155CrossChainBridging } from '../../../../core/solidity/dist/erc1155';
 import type { Limitations } from '../../../../core/solidity/dist/stablecoin';
 import type { ERC7579ModulesOptions, SignatureValidationOptions } from '../../../../core/solidity/dist/account';
 import type { SignerOptions } from '../../../../core/solidity/dist/signer';
@@ -126,6 +128,20 @@ export const solidityERC721AIFunctionDefinition = {
         ],
         description: solidityERC721Descriptions.votes,
       },
+      crossChainBridging: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<ERC721CrossChainBridging>()(['erc7786native']),
+          },
+        ],
+        description: solidityERC721Descriptions.crossChainBridging,
+      },
+      crossChainLinkAllowOverride: {
+        type: 'boolean',
+        description: solidityERC721Descriptions.crossChainLinkAllowOverride,
+      },
       namespacePrefix: {
         type: 'string',
         description: solidityCommonDescriptions.namespacePrefix,
@@ -162,6 +178,20 @@ export const solidityERC1155AIFunctionDefinition = {
       updatableUri: {
         type: 'boolean',
         description: solidityERC1155Descriptions.updatableUri,
+      },
+      crossChainBridging: {
+        anyOf: [
+          { type: 'boolean', enum: [false] },
+          {
+            type: 'string',
+            enum: extractStringEnumValues<ERC1155CrossChainBridging>()(['erc7786native']),
+          },
+        ],
+        description: solidityERC1155Descriptions.crossChainBridging,
+      },
+      crossChainLinkAllowOverride: {
+        type: 'boolean',
+        description: solidityERC1155Descriptions.crossChainLinkAllowOverride,
       },
     },
     required: contractExactRequiredKeys<'solidity', 'ERC1155'>()(['name', 'uri']),
@@ -322,6 +352,10 @@ export const solidityGovernorAIFunctionDefinition = {
       settings: {
         type: 'boolean',
         description: solidityGovernorDescriptions.settings,
+      },
+      crossChainExecution: {
+        type: 'boolean',
+        description: solidityGovernorDescriptions.crossChainExecution,
       },
       access: {
         type: 'boolean',

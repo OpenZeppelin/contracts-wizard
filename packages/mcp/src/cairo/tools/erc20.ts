@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC20Options } from '@openzeppelin/wizard-cairo';
 import { erc20 } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoERC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-erc20',
-    makeDetailedPrompt(cairoPrompts.ERC20),
-    cairoERC20Schema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.ERC20),
+      inputSchema: cairoERC20Schema,
+      title: 'Cairo ERC20',
+    },
     async ({
       name,
       symbol,
@@ -42,14 +47,7 @@ export function registerCairoERC20(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => erc20.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => erc20.print(opts), 'cairo');
     },
   );
 }
