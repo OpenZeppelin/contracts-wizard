@@ -9,6 +9,7 @@ declare global {
 export type DownloadAction =
   | 'download-file'
   | 'download-hardhat'
+  | 'download-hardhat-viem'
   | 'download-foundry'
   | 'download-scaffold'
   | 'download-rust-stellar';

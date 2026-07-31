@@ -10,6 +10,7 @@
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
   import ZipIcon from '../common/icons/ZipIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
+  import DownloadOption from '../common/DownloadOption.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
 
@@ -194,23 +195,15 @@
             Download
           </button>
 
-          <button class="download-option" on:click={downloadNpmHandler}>
-            <FileIcon />
-            <div class="download-option-content">
-              <p>Single file</p>
-              <p>Requires installation of npm packages.</p>
-              <p>Simple to receive updates.</p>
-            </div>
-          </button>
+          <DownloadOption title="Single file" on:click={downloadNpmHandler}>
+            <FileIcon slot="icon" />
+            <span slot="description">Requires installation of npm packages.</span>
+          </DownloadOption>
 
           {#if showButtons.downloadHardhat}
-            <button class="download-option" on:click={downloadHardhatHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Development Package (Hardhat)</p>
-                <p>Sample Hardhat project to get started with development and testing.</p>
-              </div>
-            </button>
+            <DownloadOption title="Hardhat project · ethers.js" on:click={downloadHardhatHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
         </Dropdown>
       </div>
@@ -319,49 +312,5 @@
   .controls {
     background-color: white;
     padding: var(--size-4);
-  }
-
-  .download-option {
-    display: flex;
-    padding: var(--size-2);
-    text-align: left;
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    cursor: pointer;
-
-    :global(.icon) {
-      margin-top: var(--icon-adjust);
-    }
-
-    :not(:hover) + & {
-      border-top: 1px solid var(--gray-2);
-    }
-
-    &:hover,
-    &:focus {
-      background-color: var(--gray-1);
-      border: 1px solid var(--gray-3);
-    }
-
-    & div {
-      display: block;
-    }
-  }
-
-  .download-option-content {
-    margin-left: var(--size-3);
-    font-size: var(--text-small);
-
-    & > :first-child {
-      margin-bottom: var(--size-2);
-      color: var(--gray-6);
-      font-weight: bold;
-    }
-
-    & > :not(:first-child) {
-      margin-top: var(--size-1);
-      color: var(--gray-5);
-    }
   }
 </style>

@@ -17,8 +17,9 @@
   import CheckIcon from '../common/icons/CheckIcon.svelte';
   import RemixIcon from '../common/icons/RemixIcon.svelte';
   import DownloadIcon from '../common/icons/DownloadIcon.svelte';
-  import ZipIcon from '../common/icons/ZipIcon.svelte';
   import FileIcon from '../common/icons/FileIcon.svelte';
+  import ZipIcon from '../common/icons/ZipIcon.svelte';
+  import DownloadOption from '../common/DownloadOption.svelte';
   import Dropdown from '../common/Dropdown.svelte';
   import OverflowMenu from '../common/OverflowMenu.svelte';
   import Tooltip from '../common/Tooltip.svelte';
@@ -129,6 +130,7 @@
   interface ButtonVisibilities {
     openInRemix: boolean;
     downloadHardhat: boolean;
+    downloadHardhatViem: boolean;
     downloadFoundry: boolean;
   }
 
@@ -136,22 +138,28 @@
     const result = {
       openInRemix: true,
       downloadHardhat: true,
+      downloadHardhatViem: true,
       downloadFoundry: true,
     };
     switch (opts?.kind) {
       case 'Governor':
         result.downloadHardhat = false;
+        result.downloadHardhatViem = false;
         result.downloadFoundry = false;
         break;
       case 'Stablecoin':
       case 'RealWorldAsset':
         result.openInRemix = false;
         result.downloadHardhat = false;
+        result.downloadHardhatViem = false;
         result.downloadFoundry = false;
         break;
     }
     if (overrides.omitZipHardhat(opts)) {
       result.downloadHardhat = false;
+    }
+    if (overrides.omitZipHardhatViem) {
+      result.downloadHardhatViem = false;
     }
     if (overrides.omitZipFoundry) {
       result.downloadFoundry = false;
@@ -210,6 +218,18 @@
     saveAs(blob, 'project.zip');
     if (opts) {
       await postConfig(opts, 'download-hardhat', language);
+    }
+  };
+
+  const zipHardhatViemModule = import('@openzeppelin/wizard/zip-env-hardhat-viem');
+
+  const downloadHardhatViemHandler = async () => {
+    const { zipHardhatViem } = await zipHardhatViemModule;
+    const zip = await zipHardhatViem(contract, opts);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    saveAs(blob, 'project.zip');
+    if (opts) {
+      await postConfig(opts, 'download-hardhat-viem', language);
     }
   };
 
@@ -308,33 +328,27 @@
             Download
           </button>
 
-          <button class="download-option" on:click={downloadNpmHandler}>
-            <FileIcon />
-            <div class="download-option-content">
-              <p>Single file</p>
-              <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
-              <p>Simple to receive updates.</p>
-            </div>
-          </button>
+          <DownloadOption title="Single file" on:click={downloadNpmHandler}>
+            <FileIcon slot="icon" />
+            <span slot="description">Requires <code>@openzeppelin/contracts</code></span>
+          </DownloadOption>
 
           {#if showButtons.downloadHardhat}
-            <button class="download-option" on:click={downloadHardhatHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Development Package (Hardhat)</p>
-                <p>Sample Hardhat project to get started with development and testing.</p>
-              </div>
-            </button>
+            <DownloadOption title="Hardhat project · ethers.js" on:click={downloadHardhatHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
+          {/if}
+
+          {#if showButtons.downloadHardhatViem}
+            <DownloadOption title="Hardhat project · viem" on:click={downloadHardhatViemHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
 
           {#if showButtons.downloadFoundry}
-            <button class="download-option" on:click={downloadFoundryHandler}>
-              <ZipIcon />
-              <div class="download-option-content">
-                <p>Development Package (Foundry)</p>
-                <p>Sample Foundry project to get started with development and testing.</p>
-              </div>
-            </button>
+            <DownloadOption title="Foundry project" on:click={downloadFoundryHandler}>
+              <ZipIcon slot="icon" />
+            </DownloadOption>
           {/if}
         </Dropdown>
       </div>
