@@ -1,10 +1,8 @@
 # Changelog
 
-## 0.1.4
+## 0.1.4 (2026-07-31)
 
-### Patch Changes
-
-- [#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825) [`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a) Thanks [@ericglau](https://github.com/ericglau)! - Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7.
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825)) ([`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a))
   - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
   - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
   - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
