@@ -31,7 +31,7 @@
     Signers
     <HelpTooltip placement="left">
       The kinds of key the account accepts. Ed25519 and WebAuthn keys are checked by a verifier contract whose address
-      you pass when deploying: pick one you trust from the OpenZeppelin registry
+      you pass when deploying: pick one you trust, for example from the Stellar Registry on
       <a href="https://testnet.rgstry.xyz/" target="_blank" rel="noopener noreferrer">testnet</a>
       or
       <a href="https://stellar.rgstry.xyz/" target="_blank" rel="noopener noreferrer">mainnet</a>. The address must be a
@@ -72,7 +72,7 @@
   label="Policy"
   bind:value={opts.policy}
   defaultValue="simple-threshold"
-  helpContent="How the account decides that an operation is authorized. Turned off, every signer must sign (n-of-n). Each threshold policy is a separate contract whose address you pass when deploying, along with the threshold itself; take one you trust from the OpenZeppelin registry at testnet.rgstry.xyz or stellar.rgstry.xyz."
+  helpContent="How the account decides that an operation is authorized. Turned off, every signer must sign (n-of-n). Each threshold policy is a separate contract whose address you pass when deploying, along with the threshold itself; take one you trust, for example from the Stellar Registry at testnet.rgstry.xyz or stellar.rgstry.xyz."
   helpLink="https://docs.openzeppelin.com/stellar-contracts/accounts/policies"
 >
   <div class="checkbox-group">

@@ -138,6 +138,6 @@ testAPIEquivalence('account API full', {
   upgradeable: true,
 });
 
-test('account API assert defaults', async t => {
+test('account API assert defaults', t => {
   t.is(account.print(account.defaults), account.print());
 });

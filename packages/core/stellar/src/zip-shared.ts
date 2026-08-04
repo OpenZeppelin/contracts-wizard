@@ -324,7 +324,7 @@ ${registerArgs}
     assert_eq!(client.get_context_rules_count(), 1);
 }
 
-// Add more tests bellow
+// Add more tests below
 `;
 };
 

@@ -12,11 +12,12 @@ export const policyOptions = [false, 'simple-threshold', 'weighted-threshold'] a
 export type Policy = (typeof policyOptions)[number];
 
 // Verifier and policy contracts are deployment arguments, not wizard inputs: one
-// wasm then works on both networks. The generated code points at OpenZeppelin's
-// registry so that whoever deploys knows where to find audited ones.
+// wasm then works on both networks. The generated code points at the Stellar
+// Registry, a third-party index of deployed contracts, so that whoever deploys
+// has somewhere to start looking. Vetting the contract is up to them.
 const REGISTRY_HINT = [
-  'Take one you trust from https://testnet.rgstry.xyz (testnet)',
-  'or https://stellar.rgstry.xyz (mainnet).',
+  'Take one you trust from the Stellar Registry:',
+  'https://testnet.rgstry.xyz (testnet) or https://stellar.rgstry.xyz (mainnet).',
 ];
 
 // Error code for the single runtime check the generated constructor performs.
