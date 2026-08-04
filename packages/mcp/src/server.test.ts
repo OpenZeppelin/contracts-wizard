@@ -15,20 +15,53 @@ function toPascalCase(value: string) {
     .join('');
 }
 
+function toKebabCase(value: string): string {
+  return value
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase();
+}
+
+/** Tool names that do not follow `<language>-<kebab kind>`, as documented in the README. */
+const MCP_TOOL_NAME_OVERRIDES: Record<string, string> = {
+  'solidity:RealWorldAsset': 'solidity-rwa',
+  'uniswap-hooks:Hooks': 'uniswap-hooks',
+};
+
+function coreKindToToolName(language: string, kind: string): string {
+  return MCP_TOOL_NAME_OVERRIDES[`${language}:${kind}`] ?? `${language}-${toKebabCase(kind)}`;
+}
+
+function kindsFromSource(source: string): string[] {
+  return [...source.matchAll(/case '([^']+)'/g)]
+    .map(match => match[1])
+    .filter((kind): kind is string => kind !== undefined);
+}
+
 // Languages that do not need MCP tools
 const MCP_EXCLUDED_LANGUAGES: string[] = ['cairo_alpha'];
 
-test('each core language has mcp tools folder', async t => {
-  // Get all directories in packages/core
-  const coreEntries = await readdir(PACKAGES_CORE_PATH, { withFileTypes: true });
-  const coreDirs = coreEntries
-    .filter(entry => entry.isDirectory())
-    .map(entry => entry.name)
-    .filter(name => !MCP_EXCLUDED_LANGUAGES.includes(name));
+async function listDirNames(path: string) {
+  const entries = await readdir(path, { withFileTypes: true });
+  return entries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+}
 
-  // Get all directories in packages/mcp/src
-  const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+/**
+ * Language folders under packages/mcp/src, identified by having a packages/core counterpart
+ * so that shared infrastructure folders (e.g. `apps`) need no hardcoded exclusion.
+ */
+async function listMcpLanguageDirs() {
+  const [coreDirs, mcpDirs] = await Promise.all([
+    listDirNames(PACKAGES_CORE_PATH),
+    listDirNames(PACKAGES_MCP_SRC_PATH),
+  ]);
+  const coreLanguages = new Set(coreDirs);
+  return mcpDirs.filter(name => coreLanguages.has(name));
+}
+
+test('each core language has mcp tools folder', async t => {
+  const coreDirs = (await listDirNames(PACKAGES_CORE_PATH)).filter(name => !MCP_EXCLUDED_LANGUAGES.includes(name));
+  const mcpDirs = await listMcpLanguageDirs();
 
   // Assert that each core directory has a corresponding mcp directory
   for (const coreDir of coreDirs) {
@@ -40,9 +73,7 @@ test('each core language has mcp tools folder', async t => {
 });
 
 test('each mcp tools folder is exported from index.ts', async t => {
-  // Get all directories in packages/mcp/src
-  const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+  const mcpDirs = await listMcpLanguageDirs();
 
   // Read index.ts content
   const indexContent = await readFile(INDEX_TS_PATH, 'utf-8');
@@ -58,10 +89,31 @@ test('each mcp tools folder is exported from index.ts', async t => {
   }
 });
 
+/**
+ * Kind-level counterpart to the language check above, mirroring `each core kind has cli registry
+ * entry` in packages/cli: a kind added to an existing core language must also get an MCP tool.
+ * Languages are the core∩mcp intersection; a core language with no MCP folder at all is the first
+ * test's job to report.
+ */
+test('each core kind has an mcp tool', async t => {
+  for (const language of await listMcpLanguageDirs()) {
+    const kindSource = await readFile(join(PACKAGES_CORE_PATH, language, 'src', 'kind.ts'), 'utf-8');
+    const toolsDir = join(PACKAGES_MCP_SRC_PATH, language, 'tools');
+    const toolFiles = (await readdir(toolsDir)).filter(name => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+    const toolSources = (await Promise.all(toolFiles.map(name => readFile(join(toolsDir, name), 'utf-8')))).join('\n');
+
+    for (const kind of kindsFromSource(kindSource)) {
+      const expectedTool = coreKindToToolName(language, kind);
+      t.true(
+        toolSources.includes(`'${expectedTool}'`),
+        `Expected MCP tool '${expectedTool}' registered in ${language}/tools for core kind '${kind}'`,
+      );
+    }
+  }
+});
+
 test('each mcp tools folder is registered in server.ts', async t => {
-  // Get all directories in packages/mcp/src
-  const mcpEntries = await readdir(PACKAGES_MCP_SRC_PATH, { withFileTypes: true });
-  const mcpDirs = mcpEntries.filter(entry => entry.isDirectory()).map(entry => entry.name);
+  const mcpDirs = await listMcpLanguageDirs();
 
   // Read server.ts content
   const serverContent = await readFile(SERVER_TS_PATH, 'utf-8');

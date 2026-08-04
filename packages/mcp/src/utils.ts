@@ -3,49 +3,26 @@ import { OptionsError as OptionsErrorCairo } from '@openzeppelin/wizard-cairo';
 import { OptionsError as OptionsErrorStylus } from '@openzeppelin/wizard-stylus';
 import { OptionsError as OptionsErrorStellar } from '@openzeppelin/wizard-stellar';
 
-function safePrintCodeBlock(printFn: () => string, syntaxHighlightingLanguage: string): string {
-  try {
-    return `\
+/** Wraps contract source code in a Markdown code block with the given syntax highlighting. */
+export function codeBlock(code: string, syntaxHighlightingLanguage: string): string {
+  return `\
 \`\`\`${syntaxHighlightingLanguage}
-${printFn()}
+${code}
 \`\`\`
 `;
-  } catch (e) {
-    if (
-      e instanceof OptionsErrorSolidity ||
-      e instanceof OptionsErrorCairo ||
-      e instanceof OptionsErrorStylus ||
-      e instanceof OptionsErrorStellar
-    ) {
-      return `${e.message}\n\n${JSON.stringify(e.messages, null, 2)}`;
-    } else {
-      return `Unexpected error: ${e}`;
-    }
+}
+
+/** Renders a failed contract print as Markdown, detailing per-field messages for Wizard options errors. */
+export function formatPrintError(e: unknown): string {
+  if (
+    e instanceof OptionsErrorSolidity ||
+    e instanceof OptionsErrorCairo ||
+    e instanceof OptionsErrorStylus ||
+    e instanceof OptionsErrorStellar
+  ) {
+    return `${e.message}\n\n${JSON.stringify(e.messages, null, 2)}`;
   }
-}
-
-/**
- * Prints the contract source code, wrapped in a Markdown code block with syntax highlighting as `solidity`.
- * Or prints the error message if an error occurs.
- */
-export function safePrintSolidityCodeBlock(printFn: () => string): string {
-  return safePrintCodeBlock(printFn, 'solidity');
-}
-
-/**
- * Prints the contract source code, wrapped in a Markdown code block with syntax highlighting as `cairo`.
- * Or prints the error message if an error occurs.
- */
-export function safePrintCairoCodeBlock(printFn: () => string): string {
-  return safePrintCodeBlock(printFn, 'cairo');
-}
-
-/**
- * Prints the contract source code, wrapped in a Markdown code block with syntax highlighting as `rust`.
- * Or prints the error message if an error occurs.
- */
-export function safePrintRustCodeBlock(printFn: () => string): string {
-  return safePrintCodeBlock(printFn, 'rust');
+  return `Unexpected error: ${e}`;
 }
 
 /**

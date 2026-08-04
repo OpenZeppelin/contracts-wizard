@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { MultisigOptions } from '@openzeppelin/wizard-cairo';
 import { multisig } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoMultisigSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoMultisig(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-multisig',
-    makeDetailedPrompt(cairoPrompts.Multisig),
-    cairoMultisigSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Multisig),
+      inputSchema: cairoMultisigSchema,
+      title: 'Cairo Multisig',
+    },
     async ({ name, quorum, upgradeable, info, macros }) => {
       const opts: MultisigOptions = {
         name,
@@ -18,14 +23,7 @@ export function registerCairoMultisig(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => multisig.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => multisig.print(opts), 'cairo');
     },
   );
 }

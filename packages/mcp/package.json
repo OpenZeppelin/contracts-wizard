@@ -1,6 +1,6 @@
 {
   "name": "@openzeppelin/contracts-mcp",
-  "version": "0.5.10",
+  "version": "0.6.0",
   "description": "OpenZeppelin Contracts MCP Server",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/OpenZeppelin/contracts-wizard",
@@ -13,10 +13,13 @@
     "NOTICE",
     "/dist",
     "/src",
+    "/apps",
     "!**/*.test.*"
   ],
   "scripts": {
+    "build:apps": "yarn --cwd ../ui build:mcp-apps",
     "prepare": "tsc",
+    "prepublishOnly": "yarn build:apps",
     "watch": "tsc --watch",
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
@@ -24,8 +27,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@openzeppelin/wizard-common": "^0.5.3",
-    "@openzeppelin/wizard": "^0.10.10",
+    "@openzeppelin/wizard-common": "^0.5.4",
+    "@openzeppelin/wizard": "^0.10.12",
     "@openzeppelin/wizard-stylus": "^0.3.0",
     "@openzeppelin/wizard-stellar": "^0.6.3",
     "@openzeppelin/wizard-cairo": "^3.0.0",

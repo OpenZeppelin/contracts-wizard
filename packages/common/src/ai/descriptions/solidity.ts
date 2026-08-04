@@ -13,6 +13,10 @@ export const solidityPrompts = {
   Custom: 'Make a custom smart contract.',
 };
 
+// Shared by every token kind that supports ERC-7786 native bridging.
+const crossChainLinkAllowOverrideDescription =
+  'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".';
+
 export const solidityCommonDescriptions = {
   access:
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts. Managed enables a central contract to define a policy that allows certain callers to access certain functions.',
@@ -33,8 +37,7 @@ export const solidityERC20Descriptions = {
     "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
   crossChainBridging:
     'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
-  crossChainLinkAllowOverride:
-    'Whether to allow replacing a crosschain link that has already been registered. Only used if crossChainBridging is set to "erc7786native".',
+  crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
   premintChainId: 'The chain ID of the network on which to premint tokens.',
   callback:
     'Whether to include support for code execution after transfers and approvals on recipient contracts in a single transaction.',
@@ -48,12 +51,18 @@ export const solidityERC721Descriptions = {
   incremental: 'Whether new tokens will be automatically assigned an incremental id',
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
+  crossChainBridging:
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the token on the source chain and mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
+  crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
 };
 
 export const solidityERC1155Descriptions = {
   uri: 'The location of the metadata for the token. Clients will replace any instance of {id} in this string with the tokenId.',
   supply: 'Whether to keep track of total supply of tokens',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types',
+  crossChainBridging:
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the tokens on the source chain and mint them on the destination chain.',
+  crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
 };
 
 export const solidityStablecoinDescriptions = {
@@ -99,4 +108,6 @@ export const solidityGovernorDescriptions = {
   timelock: 'The type of timelock to use',
   storage: 'Enable storage of proposal details and enumerability of proposals',
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
+  crossChainExecution:
+    'Whether passed proposals can relay execution to other chains through ERC-7786 gateways. Requires a CrosschainRemoteExecutor contract, controlled by this governor, deployed on each target chain. The gateway and executor are chosen per proposal as arguments to the relayCrosschain function.',
 };

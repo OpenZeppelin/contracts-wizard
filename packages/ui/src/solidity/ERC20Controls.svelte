@@ -51,10 +51,7 @@
     showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
   }
 
-  let showAllowOverride = false;
-  $: {
-    showAllowOverride = opts.crossChainBridging === 'erc7786native';
-  }
+  $: showAllowOverride = opts.crossChainBridging === 'erc7786native';
 </script>
 
 <section class="controls-section">

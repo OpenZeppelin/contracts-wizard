@@ -18,6 +18,7 @@ import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import { buildAccount } from './account';
+import { buildGovernor } from './governor';
 
 interface Context {
   tempFolder: string;
@@ -90,6 +91,29 @@ test.serial('erc1155 basic', async t => {
     uri: 'https://myuri/{id}',
   };
   const c = buildERC1155(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('erc721 crossChainBridging erc7786native', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC721',
+    name: 'My Token',
+    symbol: 'MTK',
+    access: 'ownable',
+    crossChainBridging: 'erc7786native',
+  };
+  const c = buildERC721(opts);
+  await runIgnitionTest(c, t, opts);
+});
+
+test.serial('governor', async t => {
+  const opts: GenericOptions = {
+    kind: 'Governor',
+    name: 'My Governor',
+    delay: '1 day',
+    period: '1 week',
+  };
+  const c = buildGovernor(opts);
   await runIgnitionTest(c, t, opts);
 });
 

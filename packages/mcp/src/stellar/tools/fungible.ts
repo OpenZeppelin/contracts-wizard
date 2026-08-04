@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { FungibleOptions } from '@openzeppelin/wizard-stellar';
 import { fungible } from '@openzeppelin/wizard-stellar';
-import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { stellarFungibleSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerStellarFungible(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stellar-fungible',
-    makeDetailedPrompt(stellarPrompts.Fungible),
-    stellarFungibleSchema,
+    {
+      description: makeDetailedPrompt(stellarPrompts.Fungible),
+      inputSchema: stellarFungibleSchema,
+      title: 'Stellar Fungible',
+    },
     async ({
       name,
       symbol,
@@ -38,14 +43,7 @@ export function registerStellarFungible(server: McpServer): RegisteredTool {
         info,
         explicitImplementations,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => fungible.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => fungible.print(opts), 'rust');
     },
   );
 }
