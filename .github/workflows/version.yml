@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+    # Skip pushes that only affect the Netlify UI deployment. If changes affect
+    # contract-specific controls which are part of the packaged HTML files for MCP Apps,
+    # those PRs also add a .changeset file, so this workflow still runs.
     paths-ignore:
       - 'packages/ui/**'
 
