@@ -98,6 +98,6 @@ As a contributor, we ask that you fork this repository, work on your own fork an
 ### Adding Changesets
 Published packages (`packages/core/*`, `packages/common`, `packages/cli`, `packages/mcp`) use [Changesets](https://github.com/changesets/changesets) for versioning. The PR's `Changeset` GitHub check fails when a changed publishable package has no changeset. Use the `ignore-changeset` label only when a bump is genuinely not needed.
 
-The `ui` package is private (Netlify + MCP App source) and is versioned in-repo but not published. MCP App HTML is built from `ui` when `@openzeppelin/contracts-mcp` is published. If your PR changes Wizard controls or other UI that ships in MCP Apps, add **one changeset that lists both** `ui` and `@openzeppelin/contracts-mcp`. Web-only UI (for example Cairo Alpha, Polkadot, `App.svelte` chrome) does not require a changeset.
+The `ui` package is private (Netlify + MCP App source) and is versioned in-repo but not published. MCP App HTML is built from `ui` when `@openzeppelin/contracts-mcp` is published. If your PR changes Wizard controls or other UI that ships in MCP Apps, add **one changeset that lists both** `ui` and `@openzeppelin/contracts-mcp`. Web-only UI (for example Cairo Alpha, Polkadot, or the web Wizard `App.svelte` shells) does not require a changeset.
 
 - To add a changeset: from the root directory, run `yarn changeset`
