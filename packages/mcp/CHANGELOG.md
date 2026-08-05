@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.6.1 (2026-08-05)
+
+- Fix Governor Cross-Chain Execution appearing as an empty dropdown in the MCP App UI. ([#836](https://github.com/OpenZeppelin/contracts-wizard/pull/836))
+
 ## 0.6.0 (2026-07-31)
 
 - **Breaking changes**: Renamed the `erc7984` tool to `confidential-erc7984`. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
