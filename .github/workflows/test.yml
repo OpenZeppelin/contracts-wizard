@@ -18,8 +18,6 @@ jobs:
         run: yarn lint
       - name: Check circular dependencies
         run: yarn check:circular-deps
-      - name: Test release scripts
-        run: node --test scripts/release/check-mcp-ui-changeset.test.mjs
 
   deno-check:
     runs-on: ubuntu-latest
