@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * MCP Apps HTML is built from the private `ui` package at publish time.
- * A `ui` release without `@openzeppelin/contracts-mcp` would version UI in-repo
- * and never publish the App bundles.
+ * Fail if a changeset lists `ui` but not `@openzeppelin/contracts-mcp`.
+ *
+ * `ui` is private (in-repo version only). App HTML is published only as part of
+ * contracts-mcp, so a ui-only changeset must not land.
  *
  * `changeset status` already requires a `ui` changeset when UI sources change.
- * This check only closes the gap Changesets will not: every changeset that
- * releases `ui` must also release `@openzeppelin/contracts-mcp`.
  */
 
 import getChangesets from '@changesets/read';
@@ -31,7 +30,7 @@ if (missing.length === 0) {
 }
 
 console.error(
-  `These changesets release \`${UI}\` without \`${MCP}\`:\n` +
+  `These changesets version \`${UI}\` without \`${MCP}\`:\n` +
     missing.map(id => `  - .changeset/${id}.md`).join('\n') +
     `\n\nList both packages so MCP App HTML is published with the UI change.\n` +
     `Example frontmatter:\n` +

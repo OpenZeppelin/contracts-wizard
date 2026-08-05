@@ -30,7 +30,7 @@ First line is a high-level summary without leading dash (PR number gets appended
 5. **Multiple packages**: Multiple packages can share a changeset file with different bump levels in the frontmatter. Use separate files only when packages need unrelated descriptions.
 6. **Bump levels**: Follow semver based on current package version. `x.y.z` (>=1.0.0): major for breaking, minor for features, patch for fixes. `0.x.y`: minor for breaking, patch for features/fixes. `0.0.x`: patch for everything.
 7. **New unpublished packages**: Still need a changeset to bump the initial version in package.json and for the changes to appear in the resulting changelog.
-8. **MCP-shipping UI**: `ui` is private (versioned, not published). MCP App HTML is built from `ui` at `@openzeppelin/contracts-mcp` publish. Changes to Wizard controls / MCP App UI need **one changeset listing both** `ui` and `@openzeppelin/contracts-mcp`. Web-only UI (Cairo Alpha, Polkadot, `App.svelte`) does not need a changeset. Never release `ui` without `contracts-mcp`.
+8. **MCP-shipping UI**: `ui` is private (versioned in-repo, not published to npm). MCP App HTML is built from `ui` when `@openzeppelin/contracts-mcp` is published. Changes to Wizard controls / MCP App UI need **one changeset listing both** `ui` and `@openzeppelin/contracts-mcp`. Web-only UI (Cairo Alpha, Polkadot, `App.svelte`) does not need a changeset. Never version `ui` in a changeset without also listing `@openzeppelin/contracts-mcp`.
 
 ## Steps
 
