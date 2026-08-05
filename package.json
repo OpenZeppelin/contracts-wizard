@@ -15,9 +15,7 @@
     "dev": "concurrently --kill-others-on-fail --names \"UI,API\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
     "run:core": "node ./scripts/run-command.mjs",
     "version": "bash scripts/release/version.sh",
-    "publish": "bash scripts/release/publish.sh",
-    "check:mcp-ui-changeset": "node scripts/release/check-mcp-ui-changeset.mjs",
-    "test:release-scripts": "node --test scripts/release/check-mcp-ui-changeset.test.mjs"
+    "publish": "bash scripts/release/publish.sh"
   },
   "workspaces": {
     "packages": [
