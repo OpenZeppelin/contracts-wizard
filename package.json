@@ -15,7 +15,8 @@
     "dev": "concurrently --kill-others-on-fail --names \"UI,API\" --prefix-colors \"magenta.bold,green.bold\" \"yarn dev:ui\" \"yarn dev:api\"",
     "run:core": "node ./scripts/run-command.mjs",
     "version": "bash scripts/release/version.sh",
-    "publish": "bash scripts/release/publish.sh"
+    "publish": "bash scripts/release/publish.sh",
+    "check:mcp-ui-changeset": "node scripts/release/check-mcp-ui-changeset.mjs"
   },
   "workspaces": {
     "packages": [
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.2",
+    "@changesets/read": "0.6.5",
     "@eslint/js": "^9.21.0",
     "concurrently": "^9.1.2",
     "eslint": "^9.33.0",
@@ -49,4 +51,3 @@
     "typescript-eslint": "^8.29.0"
   }
 }
-

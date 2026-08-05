@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    # Skip Netlify-only UI pushes. MCP-shipping UI PRs include a .changeset file,
+    # which still triggers this workflow (paths-ignore is skipped when any other path changes).
     paths-ignore:
       - 'packages/ui/**'
 
