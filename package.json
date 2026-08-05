@@ -16,7 +16,8 @@
     "run:core": "node ./scripts/run-command.mjs",
     "version": "bash scripts/release/version.sh",
     "publish": "bash scripts/release/publish.sh",
-    "check:mcp-ui-changeset": "node scripts/release/check-mcp-ui-changeset.mjs"
+    "check:mcp-ui-changeset": "node scripts/release/check-mcp-ui-changeset.mjs",
+    "test:release-scripts": "node --test scripts/release/check-mcp-ui-changeset.test.mjs"
   },
   "workspaces": {
     "packages": [
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.2",
+    "@changesets/read": "^0.6.5",
     "@eslint/js": "^9.21.0",
     "concurrently": "^9.1.2",
     "eslint": "^9.33.0",

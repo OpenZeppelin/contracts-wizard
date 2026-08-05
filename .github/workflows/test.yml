@@ -18,6 +18,8 @@ jobs:
         run: yarn lint
       - name: Check circular dependencies
         run: yarn check:circular-deps
+      - name: Test release scripts
+        run: yarn test:release-scripts
 
   deno-check:
     runs-on: ubuntu-latest
