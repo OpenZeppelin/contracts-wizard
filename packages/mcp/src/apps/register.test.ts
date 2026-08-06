@@ -21,7 +21,7 @@ test('solidity-erc20 registers UI metadata', t => {
   t.is(tool._meta?.['ui/resourceUri'], appResourceUri('solidity-erc20'));
 });
 
-test('TOOL_APP_SPECS covers every Wizard-backed tool with distinct per-tool URIs', t => {
+test('TOOL_APP_SPECS entries have distinct per-tool URIs and known overrides', t => {
   const tools = Object.keys(TOOL_APP_SPECS);
   t.true(tools.length >= 26, `expected at least 26 tools, got ${tools.length}`);
   for (const tool of tools) {

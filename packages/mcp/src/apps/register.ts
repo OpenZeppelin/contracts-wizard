@@ -25,9 +25,10 @@ export type ToolAppSpec = {
 };
 
 /**
- * Exhaustive tool → language template + kind map. New Wizard tools must be added here
- * (or registration fails closed). Overrides match packages/mcp/src/server.test.ts:
- * solidity-rwa ← RealWorldAsset, uniswap-hooks ← Hooks.
+ * Exhaustive tool → language template + kind map.
+ * Kept in lockstep with packages/core kinds by `TOOL_APP_SPECS matches every core kind and UI language entry`
+ * in server.test.ts — do not add tools here without that test (and the UI entries/<language>.ts) passing.
+ * Overrides match MCP_TOOL_NAME_OVERRIDES in server.test.ts: solidity-rwa ← RealWorldAsset, uniswap-hooks ← Hooks.
  */
 export const TOOL_APP_SPECS: Readonly<Record<string, ToolAppSpec>> = {
   'solidity-erc20': { template: 'solidity', kind: 'ERC20' },
