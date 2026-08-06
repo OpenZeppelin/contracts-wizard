@@ -76,6 +76,15 @@ test('RESOURCE_MIME_TYPE is the MCP Apps profile', t => {
   t.is(RESOURCE_MIME_TYPE, 'text/html;profile=mcp-app');
 });
 
+test('kind sentinel stays in sync across mcp, ui, and packaging script', async t => {
+  const { readFile } = await import('fs/promises');
+  const { join } = await import('path');
+  const uiSentinelSrc = await readFile(join(__dirname, '../../../ui/src/mcp-apps/kind-sentinel.ts'), 'utf-8');
+  const packageScript = await readFile(join(__dirname, '../../../ui/scripts/package-mcp-apps.mjs'), 'utf-8');
+  t.regex(uiSentinelSrc, new RegExp(`MCP_KIND_SENTINEL\\s*=\\s*'${MCP_KIND_SENTINEL}'`));
+  t.regex(packageScript, new RegExp(`MCP_KIND_SENTINEL\\s*=\\s*'${MCP_KIND_SENTINEL}'`));
+});
+
 test('missing App mapping fails closed with guidance', t => {
   const err = t.throws(() => readAppHtml('definitely-missing-tool-xyz'));
   t.true(err instanceof Error);
@@ -112,4 +121,28 @@ test('wizardAppResult sets top-level isError on failure', t => {
   t.is(fail.content[0]?.text, 'bad options');
   t.is(fail.structuredContent.code, undefined);
   t.is(fail.structuredContent.error, 'bad options');
+});
+
+/**
+ * Live registry check via compiled createServer (ava/ts-node cannot load server.ts .js imports).
+ * Ensures every mapped tool got registerWizardAppTool UI metadata and a registered UI resource
+ * (not a bare registerTool with hand-copied _meta).
+ */
+test('createServer wires MCP App UI metadata for every TOOL_APP_SPECS tool', t => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- ava/ts-node cannot load server.ts .js imports
+  const { createServer } = require('../../dist/server.js') as { createServer: () => McpServer };
+  const server = createServer();
+  const { _registeredTools: tools, _registeredResources: resources } = server as unknown as {
+    _registeredTools: Record<string, { _meta?: { ui?: { resourceUri?: string }; [key: string]: unknown } }>;
+    _registeredResources: Record<string, unknown>;
+  };
+
+  for (const toolName of Object.keys(TOOL_APP_SPECS)) {
+    const tool = tools[toolName];
+    const uri = appResourceUri(toolName);
+    t.truthy(tool, `createServer did not register '${toolName}'`);
+    t.is(tool!._meta?.ui?.resourceUri, uri, `${toolName} missing UI resourceUri`);
+    t.is(tool!._meta?.['ui/resourceUri'], uri, `${toolName} missing ui/resourceUri`);
+    t.true(uri in resources, `${toolName} advertises ${uri} but createServer did not registerResource that URI`);
+  }
 });

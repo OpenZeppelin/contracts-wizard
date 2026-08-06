@@ -1,20 +1,25 @@
+const fs = require('fs');
 const path = require('path');
 const fg = require('fast-glob');
 
 /**
  * Tailwind content for MCP App bundles: scan Controls and shared UI used by adapters,
  * but exclude web-only App shells that pull unused layout utilities into the CSS.
+ *
+ * Language globs are derived from mcp-apps/entries so a new language entry automatically
+ * includes `src/<language>/` — do not hardcode language folders here.
  */
-const root = __dirname;
+const root = path.dirname(require.resolve('./tailwind.mcp-apps.config.js'));
+const entriesDir = path.join(root, 'src', 'mcp-apps', 'entries');
+const languages = fs
+  .readdirSync(entriesDir)
+  .filter(f => f.endsWith('.ts'))
+  .map(f => path.basename(f, '.ts'));
+
 const contentGlobs = [
   'src/mcp-apps/**/*.{html,svelte,ts}',
   'src/common/**/*.{svelte,ts,css}',
-  'src/solidity/**/*.{svelte,ts}',
-  'src/cairo/**/*.{svelte,ts}',
-  'src/stellar/**/*.{svelte,ts}',
-  'src/stylus/**/*.{svelte,ts}',
-  'src/confidential/**/*.{svelte,ts}',
-  'src/uniswap-hooks/**/*.{svelte,ts}',
+  ...languages.map(lang => `src/${lang}/**/*.{svelte,ts}`),
 ];
 
 const content = fg

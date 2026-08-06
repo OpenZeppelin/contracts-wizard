@@ -12,7 +12,7 @@ import styles from 'rollup-plugin-styles';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
-const require = createRequire(import.meta.url);
+const nodeRequire = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.NODE_ENV = 'production';
 
@@ -32,10 +32,10 @@ if (entryFiles.length === 0) {
 }
 
 const svelteConfig = (await import('./svelte.config.js')).default;
-const nesting = require('tailwindcss/nesting');
-const tailwindcss = require('tailwindcss');
-const autoprefixer = require('autoprefixer');
-const mcpTailwindConfig = require('./tailwind.mcp-apps.config.js');
+const nesting = nodeRequire('tailwindcss/nesting');
+const tailwindcss = nodeRequire('tailwindcss');
+const autoprefixer = nodeRequire('autoprefixer');
+const mcpTailwindConfig = nodeRequire('./tailwind.mcp-apps.config.js');
 
 /** @type {import('rollup').RollupOptions[]} */
 export default entryFiles.map(file => {

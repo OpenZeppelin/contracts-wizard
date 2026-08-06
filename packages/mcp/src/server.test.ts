@@ -109,19 +109,33 @@ test('each mcp tools folder is exported from index.ts', async t => {
  * entry` in packages/cli: a kind added to an existing core language must also get an MCP tool.
  * Languages are the core∩mcp intersection; a core language with no MCP folder at all is the first
  * test's job to report.
+ *
+ * Also requires that tool to be registered via `registerWizardAppTool` (not a bare `registerTool`),
+ * so MCP App UI cannot be skipped while still satisfying name/map checks.
  */
 test('each core kind has an mcp tool', async t => {
   for (const language of await listMcpLanguageDirs()) {
     const kindSource = await readFile(join(PACKAGES_CORE_PATH, language, 'src', 'kind.ts'), 'utf-8');
     const toolsDir = join(PACKAGES_MCP_SRC_PATH, language, 'tools');
     const toolFiles = (await readdir(toolsDir)).filter(name => name.endsWith('.ts') && !name.endsWith('.test.ts'));
-    const toolSources = (await Promise.all(toolFiles.map(name => readFile(join(toolsDir, name), 'utf-8')))).join('\n');
+    const toolFileSources = await Promise.all(
+      toolFiles.map(async name => [name, await readFile(join(toolsDir, name), 'utf-8')] as const),
+    );
 
     for (const kind of kindsFromSource(kindSource)) {
       const expectedTool = coreKindToToolName(language, kind);
-      t.true(
-        toolSources.includes(`'${expectedTool}'`),
+      const definingFile = toolFileSources.find(([, src]) => src.includes(`'${expectedTool}'`));
+      t.truthy(
+        definingFile,
         `Expected MCP tool '${expectedTool}' registered in ${language}/tools for core kind '${kind}'`,
+      );
+      t.true(
+        definingFile![1].includes('registerWizardAppTool'),
+        `Expected '${expectedTool}' in ${language}/tools/${definingFile![0]} to use registerWizardAppTool so MCP App UI is wired`,
+      );
+      t.true(
+        new RegExp(String.raw`registerWizardAppTool\s*\(\s*\w+\s*,\s*'${expectedTool}'`).test(definingFile![1]),
+        `Expected registerWizardAppTool(..., '${expectedTool}', ...) in ${language}/tools/${definingFile![0]}`,
       );
     }
   }
@@ -145,8 +159,11 @@ test('TOOL_APP_SPECS matches every core kind and UI language entry', async t => 
 
   for (const { language, kind, toolName } of expectedTools) {
     const spec = TOOL_APP_SPECS[toolName];
-    t.truthy(spec, `TOOL_APP_SPECS missing '${toolName}'`);
-    t.is(spec.template, language, `${toolName} template must be language '${language}'`);
+    if (spec === undefined) {
+      t.fail(`TOOL_APP_SPECS missing '${toolName}'`);
+      continue;
+    }
+    t.is(String(spec.template), language, `${toolName} template must be language '${language}'`);
     t.is(spec.kind, kind, `${toolName} kind must be '${kind}'`);
   }
 
