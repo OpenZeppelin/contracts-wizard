@@ -40,7 +40,7 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   zip.file(`contracts/${contractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
   zip.file(
     `contracts/${contractName}/src/test.rs`,
-    opts?.kind === 'Vault' ? printVaultRustTest(c) : printRustNameTest(c),
+    opts?.kind === 'Vault' ? printVaultRustTest(c, opts.name) : printRustNameTest(c, opts.name),
   );
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName, requiredLibDeps));
