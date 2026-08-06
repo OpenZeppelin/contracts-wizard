@@ -677,6 +677,13 @@
     semver "^7.5.3"
     tar "^7.4.0"
 
+"@modelcontextprotocol/ext-apps@1.7.5":
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/ext-apps/-/ext-apps-1.7.5.tgz#53004fadf7bef79c533e28b10893199c7bf46693"
+  integrity sha512-TjPH2S2y5UEGKhmI6+XGFuqfqOV4ppe1x6DA3txnUaEWkgtA4G5vo14jGKFZmegdkZ1H4QMLyujLvoU1BEdnAg==
+  dependencies:
+    "@standard-schema/spec" "^1.1.0"
+
 "@modelcontextprotocol/sdk@^1.29.0":
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.29.0.tgz#79786d8b525e269de850ac82b1f1f757f3915f44"
@@ -893,8 +900,9 @@
   integrity sha512-eCYgWnLg6WO+X52I16TZt8uEjbtdkgLC0SUX/xnAksjjrQI4Xfn4iBRoI5j55dmlOhDv1Y7BoR3cU7e3WWhC6A==
 
 "@openzeppelin/contracts@^5.5.0":
-  version "5.5.0"
-  resolved "git+https://github.com/OpenZeppelin/openzeppelin-contracts.git#bacb570d143e637c6637a68727795f4e71aac891"
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.6.1.tgz#90c1cd427b3c1007ada4f42378ce84cc2a2145a5"
+  integrity sha512-Ly6SlsVJ3mj+b18W3R8gNufB7dTICT105fJhodGAGgyC2oqnBAhqSiNDJ8V8DLY05cCz81GLI0CU5vNYA1EC/w==
 
 "@openzeppelin/contracts@^5.6.0":
   version "5.6.0"
@@ -1208,6 +1216,11 @@
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-2.3.0.tgz#719df7fb41766bc143369eaa0dd56d8dc87c9958"
   integrity sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==
+
+"@standard-schema/spec@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.1.0.tgz#a79b55dbaf8604812f52d140b2c9ab41bc150bb8"
+  integrity sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"

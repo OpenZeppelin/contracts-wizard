@@ -5,6 +5,8 @@ import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { addUpgradeable } from './add-upgradeable';
 import { setInfo } from './set-info';
+import type { OptionsErrorMessages } from './error';
+import { OptionsError } from './error';
 import { toByteArray, toUint } from './utils/convert-strings';
 import { defineFunctions } from './utils/define-functions';
 
@@ -57,16 +59,72 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
 
 export function buildGovernor(opts: GovernorOptions): ContractBuilder {
   const allOpts = withDefaults(opts);
+  const errors: OptionsErrorMessages = {};
+
+  let votingDelay = 0n;
+  try {
+    votingDelay = toUint(allOpts.votingDelay, 'votingDelay', 'u32');
+    if (votingDelay < 1n) {
+      errors.votingDelay = 'Voting delay must be at least 1 ledger';
+    }
+  } catch (e: unknown) {
+    if (e instanceof OptionsError) {
+      Object.assign(errors, e.messages);
+    } else {
+      throw e;
+    }
+  }
+
+  let votingPeriod = 0n;
+  try {
+    votingPeriod = toUint(allOpts.votingPeriod, 'votingPeriod', 'u32');
+    if (votingDelay >= 1n && votingPeriod <= votingDelay) {
+      errors.votingPeriod = 'Voting period must be greater than voting delay';
+    }
+  } catch (e: unknown) {
+    if (e instanceof OptionsError) {
+      Object.assign(errors, e.messages);
+    } else {
+      throw e;
+    }
+  }
+
+  let proposalThreshold = 0n;
+  try {
+    proposalThreshold = toUint(allOpts.proposalThreshold, 'proposalThreshold', 'u128');
+  } catch (e: unknown) {
+    if (e instanceof OptionsError) {
+      Object.assign(errors, e.messages);
+    } else {
+      throw e;
+    }
+  }
+
+  let quorum = 0n;
+  try {
+    quorum = toUint(allOpts.quorum, 'quorum', 'u128');
+  } catch (e: unknown) {
+    if (e instanceof OptionsError) {
+      Object.assign(errors, e.messages);
+    } else {
+      throw e;
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    throw new OptionsError(errors);
+  }
+
   const c = new ContractBuilder(allOpts.name);
 
   addBase(
     c,
     toByteArray(allOpts.name),
     toByteArray(allOpts.version),
-    toUint(allOpts.votingDelay, 'votingDelay', 'u32'),
-    toUint(allOpts.votingPeriod, 'votingPeriod', 'u32'),
-    toUint(allOpts.proposalThreshold, 'proposalThreshold', 'u128'),
-    toUint(allOpts.quorum, 'quorum', 'u128'),
+    votingDelay,
+    votingPeriod,
+    proposalThreshold,
+    quorum,
     allOpts.timelock,
     allOpts.explicitImplementations,
   );

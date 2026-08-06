@@ -81,3 +81,30 @@ testAPIEquivalence('governor API custom', {
 test('governor API assert defaults', async t => {
   t.is(governor.print(governor.defaults), governor.print());
 });
+
+test('governor validation votingDelay < 1', t => {
+  const err = t.throws(() => {
+    buildGovernor({ name: 'MyGovernor', votingDelay: '0' });
+  });
+  t.is(err?.messages?.votingDelay, 'Voting delay must be at least 1 ledger');
+});
+
+test('governor validation votingPeriod <= votingDelay', t => {
+  const err = t.throws(() => {
+    buildGovernor({ name: 'MyGovernor', votingDelay: '100', votingPeriod: '50' });
+  });
+  t.is(err?.messages?.votingPeriod, 'Voting period must be greater than voting delay');
+
+  const errEqual = t.throws(() => {
+    buildGovernor({ name: 'MyGovernor', votingDelay: '100', votingPeriod: '100' });
+  });
+  t.is(errEqual?.messages?.votingPeriod, 'Voting period must be greater than voting delay');
+});
+
+test('governor validation invalid proposalThreshold', t => {
+  const err = t.throws(() => {
+    buildGovernor({ name: 'MyGovernor', proposalThreshold: '-10' });
+  });
+  t.is(err?.messages?.proposalThreshold, 'Not a valid number');
+});
+
