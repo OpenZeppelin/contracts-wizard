@@ -3,7 +3,11 @@
  * After Rollup builds IIFE bundles under public/build/mcp/*.js,
  * produce single-file HTML documents with inlined JS for MCP resources/read.
  *
- * Optional: SINGLE_APP=<entry-name> packages only that app (keeps other HTML).
+ * Language templates (solidity.html, …) contain the kind sentinel "__OZ_MCP_KIND__",
+ * which packages/mcp replaces with the tool's kind at serve time.
+ *
+ * Optional: MCP_APP_LANGUAGE=<language> packages only that language template (keeps other HTML).
+ * Example: MCP_APP_LANGUAGE=solidity
  */
 import fs from 'fs';
 import fsp from 'fs/promises';
@@ -14,7 +18,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mcpBuildDir = path.join(__dirname, '..', 'public', 'build', 'mcp');
 const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
-const only = process.env.SINGLE_APP?.trim();
+const only = process.env.MCP_APP_LANGUAGE?.trim();
+
+/** Keep in sync with MCP_KIND_SENTINEL in packages/mcp/src/apps/register.ts */
+const MCP_KIND_SENTINEL = '__OZ_MCP_KIND__';
 
 if (!fs.existsSync(mcpBuildDir)) {
   console.error(`Missing MCP build dir: ${mcpBuildDir}`);
@@ -34,7 +41,7 @@ if (allEntryNames.length === 0) {
 
 const expectedNames = only ? allEntryNames.filter(name => name === only) : allEntryNames;
 if (expectedNames.length === 0) {
-  console.error(`No MCP App entry matching SINGLE_APP="${only}"`);
+  console.error(`No MCP App entry matching MCP_APP_LANGUAGE="${only}" (expected a language name like solidity)`);
   process.exit(1);
 }
 
@@ -54,6 +61,16 @@ if (missingJs.length > 0) {
 // height to the host and sets it as --mcp-app-height once the bundle runs. This only
 // has to hold the iframe open until then.
 const INITIAL_HEIGHT_PX = 560;
+
+function assertExactlyOneSentinel(name, html) {
+  const matches = html.split(MCP_KIND_SENTINEL).length - 1;
+  if (matches !== 1) {
+    throw new Error(
+      `MCP App template "${name}" must contain exactly one ${MCP_KIND_SENTINEL} ` +
+        `sentinel for serve-time kind injection (found ${matches}).`,
+    );
+  }
+}
 
 // Each app is independent, so read/write them concurrently rather than one at a time.
 await Promise.all(
@@ -79,6 +96,18 @@ ${js}
 </body>
 </html>
 `;
+    assertExactlyOneSentinel(name, html);
+
+    // Light CSS sanity: Control layout class present; a known web-only utility absent.
+    if (!html.includes('controls-section')) {
+      throw new Error(`MCP App template "${name}" missing expected Control CSS class controls-section`);
+    }
+    for (const webOnly of ['100vh-84px', 'rounded-l-3xl']) {
+      if (html.includes(webOnly)) {
+        throw new Error(`MCP App template "${name}" unexpectedly contains web-only class ${webOnly}`);
+      }
+    }
+
     const outPath = path.join(outDir, `${name}.html`);
     await fsp.writeFile(outPath, html);
     console.log(`Wrote ${outPath} (${Math.round(html.length / 1024)} KiB)`);
@@ -88,5 +117,5 @@ ${js}
 if (only) {
   console.log(`Packaged MCP App "${only}" (other apps left unchanged).`);
 } else {
-  console.log(`Verified ${expectedNames.length} MCP App HTML artifacts match entries.`);
+  console.log(`Verified ${expectedNames.length} MCP App HTML language templates match entries.`);
 }

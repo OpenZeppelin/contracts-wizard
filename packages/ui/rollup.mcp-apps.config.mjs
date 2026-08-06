@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
@@ -11,20 +12,30 @@ import styles from 'rollup-plugin-styles';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
+const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.NODE_ENV = 'production';
 
 const entriesDir = path.join(__dirname, 'src/mcp-apps/entries');
-const only = process.env.SINGLE_APP?.trim();
+/** Optional: MCP_APP_LANGUAGE=<language> builds only that language entry (e.g. solidity, cairo). */
+const only = process.env.MCP_APP_LANGUAGE?.trim();
 const entryFiles = fs
   .readdirSync(entriesDir)
   .filter(f => f.endsWith('.ts'))
   .filter(f => !only || path.basename(f, '.ts') === only);
 if (entryFiles.length === 0) {
-  throw new Error(only ? `No MCP App entry matching SINGLE_APP="${only}"` : `No MCP App entries in ${entriesDir}`);
+  throw new Error(
+    only
+      ? `No MCP App entry matching MCP_APP_LANGUAGE="${only}" (expected a language name like solidity)`
+      : `No MCP App entries in ${entriesDir}`,
+  );
 }
 
 const svelteConfig = (await import('./svelte.config.js')).default;
+const nesting = require('tailwindcss/nesting');
+const tailwindcss = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
+const mcpTailwindConfig = require('./tailwind.mcp-apps.config.js');
 
 /** @type {import('rollup').RollupOptions[]} */
 export default entryFiles.map(file => {
@@ -47,6 +58,10 @@ export default entryFiles.map(file => {
       styles({
         mode: 'inject',
         sourceMap: false,
+        // Use MCP-scoped Tailwind content; do not load packages/ui/postcss.config.js
+        // (that config points at the full web Wizard content globs).
+        config: false,
+        plugins: [nesting, tailwindcss(mcpTailwindConfig), autoprefixer],
       }),
 
       alias({
