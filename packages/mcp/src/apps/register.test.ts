@@ -4,7 +4,7 @@ import { testMcpInfo } from '../helpers.test';
 import {
   appResourceUri,
   getToolAppSpec,
-  MCP_KIND_SENTINEL,
+  MCP_KIND_PLACEHOLDER,
   readAppHtml,
   registerWizardAppTool,
   RESOURCE_MIME_TYPE,
@@ -42,7 +42,7 @@ test('MCP App HTML artifacts exist and inject kind for Wizard-backed tools', asy
     t.true(html.includes('<!DOCTYPE html>'), `${tool} missing doctype`);
     t.true(html.includes('<script>'), `${tool} missing script`);
     t.true(html.length > 10_000, `${tool} HTML unexpectedly small`);
-    t.false(html.includes(MCP_KIND_SENTINEL), `${tool} still contains kind sentinel`);
+    t.false(html.includes(MCP_KIND_PLACEHOLDER), `${tool} still contains kind placeholder`);
     t.true(html.includes(spec.kind), `${tool} missing injected kind ${spec.kind}`);
   }
 });
@@ -51,8 +51,8 @@ test('kind injection differentiates tools that share a language template', async
   const erc20 = await readAppHtml('solidity-erc20');
   const erc721 = await readAppHtml('solidity-erc721');
   t.not(erc20, erc721, 'shared language template must produce distinct per-tool HTML after kind inject');
-  t.false(erc20.includes(MCP_KIND_SENTINEL));
-  t.false(erc721.includes(MCP_KIND_SENTINEL));
+  t.false(erc20.includes(MCP_KIND_PLACEHOLDER));
+  t.false(erc721.includes(MCP_KIND_PLACEHOLDER));
   // Kind names also appear as Controls keys in the full language bundle; the mount argument is what differs.
   t.true(Math.abs(erc20.length - erc721.length) < 32, 'injected HTML should only differ by kind string length');
 });
@@ -76,13 +76,13 @@ test('RESOURCE_MIME_TYPE is the MCP Apps profile', t => {
   t.is(RESOURCE_MIME_TYPE, 'text/html;profile=mcp-app');
 });
 
-test('kind sentinel stays in sync across mcp, ui, and packaging script', async t => {
+test('kind placeholder stays in sync across mcp, ui, and packaging script', async t => {
   const { readFile } = await import('fs/promises');
   const { join } = await import('path');
-  const uiSentinelSrc = await readFile(join(__dirname, '../../../ui/src/mcp-apps/kind-sentinel.ts'), 'utf-8');
+  const uiPlaceholderSrc = await readFile(join(__dirname, '../../../ui/src/mcp-apps/kind-placeholder.ts'), 'utf-8');
   const packageScript = await readFile(join(__dirname, '../../../ui/scripts/package-mcp-apps.mjs'), 'utf-8');
-  t.regex(uiSentinelSrc, new RegExp(`MCP_KIND_SENTINEL\\s*=\\s*'${MCP_KIND_SENTINEL}'`));
-  t.regex(packageScript, new RegExp(`MCP_KIND_SENTINEL\\s*=\\s*'${MCP_KIND_SENTINEL}'`));
+  t.regex(uiPlaceholderSrc, new RegExp(`MCP_KIND_PLACEHOLDER\\s*=\\s*'${MCP_KIND_PLACEHOLDER}'`));
+  t.regex(packageScript, new RegExp(`MCP_KIND_PLACEHOLDER\\s*=\\s*'${MCP_KIND_PLACEHOLDER}'`));
 });
 
 test('missing App mapping fails closed with guidance', t => {

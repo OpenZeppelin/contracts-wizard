@@ -12,11 +12,10 @@ const RESOURCE_URI_META_KEY = 'ui/resourceUri';
 const APPS_DIR = path.join(__dirname, '..', '..', 'apps');
 
 /**
- * Placeholder kind baked into language HTML templates by the UI build.
- * Keep in sync with packages/ui/src/mcp-apps/kind-sentinel.ts and package-mcp-apps.mjs.
+ * Kind placeholder baked into language HTML templates by the UI build.
+ * Keep in sync with packages/ui/src/mcp-apps/kind-placeholder.ts and package-mcp-apps.mjs.
  */
-export const MCP_KIND_SENTINEL = '__OZ_MCP_KIND__';
-
+export const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
 export type AppTemplate = 'solidity' | 'cairo' | 'stellar' | 'stylus' | 'confidential' | 'uniswap-hooks';
 
 export type ToolAppSpec = {
@@ -94,17 +93,17 @@ function resolveAppHtmlPath(template: AppTemplate, toolName: string): string {
 }
 
 function injectKind(templateHtml: string, kind: string, toolName: string): string {
-  // Replace the bare sentinel so either "__OZ_MCP_KIND__" or '__OZ_MCP_KIND__' becomes the kind.
-  const matches = templateHtml.split(MCP_KIND_SENTINEL).length - 1;
+  // Replace the bare placeholder so either "__OZ_MCP_KIND__" or '__OZ_MCP_KIND__' becomes the kind.
+  const matches = templateHtml.split(MCP_KIND_PLACEHOLDER).length - 1;
   if (matches !== 1) {
     throw new Error(
-      `MCP App template for ${toolName} must contain exactly one ${MCP_KIND_SENTINEL} ` +
-        `sentinel (found ${matches}). Rebuild with yarn --cwd packages/mcp build:apps.`,
+      `MCP App template for ${toolName} must contain exactly one ${MCP_KIND_PLACEHOLDER} ` +
+        `kind placeholder (found ${matches}). Rebuild with yarn --cwd packages/mcp build:apps.`,
     );
   }
-  const html = templateHtml.split(MCP_KIND_SENTINEL).join(kind);
-  if (html.includes(MCP_KIND_SENTINEL)) {
-    throw new Error(`MCP App kind injection left a sentinel in HTML for ${toolName}`);
+  const html = templateHtml.split(MCP_KIND_PLACEHOLDER).join(kind);
+  if (html.includes(MCP_KIND_PLACEHOLDER)) {
+    throw new Error(`MCP App kind injection left a kind placeholder in HTML for ${toolName}`);
   }
   if (!html.includes(kind)) {
     throw new Error(`MCP App kind injection failed to embed kind ${kind} for ${toolName}`);

@@ -3,7 +3,7 @@
  * After Rollup builds IIFE bundles under public/build/mcp/*.js,
  * produce single-file HTML documents with inlined JS for MCP resources/read.
  *
- * Language templates (solidity.html, …) contain the kind sentinel "__OZ_MCP_KIND__",
+ * Language templates (solidity.html, …) contain the kind placeholder "__OZ_MCP_KIND__",
  * which packages/mcp replaces with the tool's kind at serve time.
  *
  * Optional: MCP_APP_LANGUAGE=<language> packages only that language template (keeps other HTML).
@@ -20,8 +20,8 @@ const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
 const only = process.env.MCP_APP_LANGUAGE?.trim();
 
-/** Keep in sync with MCP_KIND_SENTINEL in packages/mcp/src/apps/register.ts */
-const MCP_KIND_SENTINEL = '__OZ_MCP_KIND__';
+/** Keep in sync with MCP_KIND_PLACEHOLDER in packages/mcp/src/apps/register.ts */
+const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
 
 if (!fs.existsSync(mcpBuildDir)) {
   console.error(`Missing MCP build dir: ${mcpBuildDir}`);
@@ -62,12 +62,12 @@ if (missingJs.length > 0) {
 // has to hold the iframe open until then.
 const INITIAL_HEIGHT_PX = 560;
 
-function assertExactlyOneSentinel(name, html) {
-  const matches = html.split(MCP_KIND_SENTINEL).length - 1;
+function assertExactlyOneKindPlaceholder(name, html) {
+  const matches = html.split(MCP_KIND_PLACEHOLDER).length - 1;
   if (matches !== 1) {
     throw new Error(
-      `MCP App template "${name}" must contain exactly one ${MCP_KIND_SENTINEL} ` +
-        `sentinel for serve-time kind injection (found ${matches}).`,
+      `MCP App template "${name}" must contain exactly one ${MCP_KIND_PLACEHOLDER} ` +
+        `kind placeholder for serve-time kind injection (found ${matches}).`,
     );
   }
 }
@@ -96,7 +96,7 @@ ${js}
 </body>
 </html>
 `;
-    assertExactlyOneSentinel(name, html);
+    assertExactlyOneKindPlaceholder(name, html);
 
     // Light CSS sanity: Control layout class present; a known web-only utility absent.
     if (!html.includes('controls-section')) {
