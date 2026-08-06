@@ -81,8 +81,9 @@ test('kind placeholder stays in sync across mcp, ui, and packaging script', asyn
   const { join } = await import('path');
   const uiPlaceholderSrc = await readFile(join(__dirname, '../../../ui/src/mcp-apps/kind-placeholder.ts'), 'utf-8');
   const packageScript = await readFile(join(__dirname, '../../../ui/scripts/package-mcp-apps.mjs'), 'utf-8');
-  t.regex(uiPlaceholderSrc, new RegExp(`MCP_KIND_PLACEHOLDER\\s*=\\s*'${MCP_KIND_PLACEHOLDER}'`));
-  t.regex(packageScript, new RegExp(`MCP_KIND_PLACEHOLDER\\s*=\\s*'${MCP_KIND_PLACEHOLDER}'`));
+  const assignment = new RegExp(`MCP_KIND_PLACEHOLDER\\s*=\\s*'${MCP_KIND_PLACEHOLDER}'`);
+  t.regex(uiPlaceholderSrc, assignment);
+  t.regex(packageScript, assignment);
 });
 
 test('missing App mapping fails closed with guidance', t => {

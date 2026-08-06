@@ -20,7 +20,7 @@ const entriesDir = path.join(__dirname, '..', 'src', 'mcp-apps', 'entries');
 const outDir = path.join(__dirname, '..', '..', 'mcp', 'apps');
 const only = process.env.MCP_APP_LANGUAGE?.trim();
 
-/** Keep in sync with MCP_KIND_PLACEHOLDER in packages/mcp/src/apps/register.ts */
+/** Same value as MCP_KIND_PLACEHOLDER in kind-placeholder.ts / packages/mcp (test-enforced). */
 const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
 
 if (!fs.existsSync(mcpBuildDir)) {

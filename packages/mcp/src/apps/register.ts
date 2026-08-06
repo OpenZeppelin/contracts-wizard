@@ -13,7 +13,8 @@ const APPS_DIR = path.join(__dirname, '..', '..', 'apps');
 
 /**
  * Kind placeholder baked into language HTML templates by the UI build.
- * Keep in sync with packages/ui/src/mcp-apps/kind-placeholder.ts and package-mcp-apps.mjs.
+ * Duplicated in packages/ui (kind-placeholder.ts, package-mcp-apps.mjs); kept aligned by
+ * `kind placeholder stays in sync` in register.test.ts.
  */
 export const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
 export type AppTemplate = 'solidity' | 'cairo' | 'stellar' | 'stylus' | 'confidential' | 'uniswap-hooks';
