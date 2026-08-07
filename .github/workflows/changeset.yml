@@ -26,3 +26,5 @@ jobs:
         uses: ./.github/actions/setup
       - name: Check changeset
         run: npx changeset status --since=origin/${{ github.base_ref }}
+      - name: Check UI changesets include contracts-mcp
+        run: node scripts/release/check-mcp-ui-changeset.mjs origin/${{ github.base_ref }}

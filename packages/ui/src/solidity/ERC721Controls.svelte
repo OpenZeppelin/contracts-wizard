@@ -39,7 +39,7 @@
 
   $: requireAccessControl = erc721.isAccessControlRequired(opts);
 
-  // Show notice when Auto Increment Ids is combined with Cross-Chain Bridging
+  // Show notice when Auto Increment Ids is combined with Crosschain Bridging
   let incrementalLabel: HTMLElement;
   let bridgingLabel: HTMLElement;
   let incrementalTooltip: TippyInstance | undefined;
@@ -160,10 +160,10 @@
 </ExpandableToggleRadio>
 
 <ExpandableToggleRadio
-  label="Cross-Chain Bridging"
+  label="Crosschain Bridging"
   bind:value={opts.crossChainBridging}
   defaultValue="erc7786native"
-  helpContent="Adds built-in support to mint and burn tokens for cross-chain transfers with registered counterparts."
+  helpContent="Adds built-in support to mint and burn tokens for crosschain transfers with registered counterparts."
   helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
 >
   <div class="checkbox-group">

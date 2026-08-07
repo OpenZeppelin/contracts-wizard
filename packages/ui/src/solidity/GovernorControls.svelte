@@ -154,7 +154,7 @@
 
     <label class:checked={opts.crossChainExecution}>
       <input type="checkbox" bind:checked={opts.crossChainExecution} />
-      Cross-Chain Execution
+      Crosschain Execution
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/governance#GovernorCrosschain">
         Lets passed proposals relay execution to other chains through ERC-7786 gateways. Requires a
         <code>CrosschainRemoteExecutor</code> contract, controlled by this governor, deployed on each target chain.

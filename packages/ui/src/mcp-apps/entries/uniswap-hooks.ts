@@ -1,4 +1,4 @@
-import { mountKindApp } from '../mount';
+import { mountLanguageApp } from '../mount';
 import { uniswapHooksAdapter } from '../uniswap-hooks/adapter';
 
-void mountKindApp(uniswapHooksAdapter, 'Hooks');
+void mountLanguageApp(uniswapHooksAdapter);
