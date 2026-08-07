@@ -11,21 +11,105 @@ const RESOURCE_URI_META_KEY = 'ui/resourceUri';
 
 const APPS_DIR = path.join(__dirname, '..', '..', 'apps');
 
+/**
+ * Kind placeholder baked into language HTML templates by the UI build.
+ * Duplicated in packages/ui (kind-placeholder.ts, package-mcp-apps.mjs); kept aligned by
+ * `kind placeholder stays in sync` in register.test.ts.
+ */
+export const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
+export type AppTemplate = 'solidity' | 'cairo' | 'stellar' | 'stylus' | 'confidential' | 'uniswap-hooks';
+
+export type ToolAppSpec = {
+  template: AppTemplate;
+  kind: string;
+};
+
+/**
+ * Exhaustive tool → language template + kind map.
+ * Kept in lockstep with packages/core kinds by `TOOL_APP_SPECS matches every core kind and UI language entry`
+ * in server.test.ts — do not add tools here without that test (and the UI entries/<language>.ts) passing.
+ * Overrides match MCP_TOOL_NAME_OVERRIDES in server.test.ts: solidity-rwa ← RealWorldAsset, uniswap-hooks ← Hooks.
+ */
+export const TOOL_APP_SPECS: Readonly<Record<string, ToolAppSpec>> = {
+  'solidity-erc20': { template: 'solidity', kind: 'ERC20' },
+  'solidity-erc721': { template: 'solidity', kind: 'ERC721' },
+  'solidity-erc1155': { template: 'solidity', kind: 'ERC1155' },
+  'solidity-stablecoin': { template: 'solidity', kind: 'Stablecoin' },
+  'solidity-rwa': { template: 'solidity', kind: 'RealWorldAsset' },
+  'solidity-account': { template: 'solidity', kind: 'Account' },
+  'solidity-governor': { template: 'solidity', kind: 'Governor' },
+  'solidity-custom': { template: 'solidity', kind: 'Custom' },
+
+  'cairo-erc20': { template: 'cairo', kind: 'ERC20' },
+  'cairo-erc721': { template: 'cairo', kind: 'ERC721' },
+  'cairo-erc1155': { template: 'cairo', kind: 'ERC1155' },
+  'cairo-account': { template: 'cairo', kind: 'Account' },
+  'cairo-multisig': { template: 'cairo', kind: 'Multisig' },
+  'cairo-governor': { template: 'cairo', kind: 'Governor' },
+  'cairo-vesting': { template: 'cairo', kind: 'Vesting' },
+  'cairo-custom': { template: 'cairo', kind: 'Custom' },
+
+  'stellar-fungible': { template: 'stellar', kind: 'Fungible' },
+  'stellar-non-fungible': { template: 'stellar', kind: 'NonFungible' },
+  'stellar-stablecoin': { template: 'stellar', kind: 'Stablecoin' },
+  'stellar-governor': { template: 'stellar', kind: 'Governor' },
+  'stellar-vault': { template: 'stellar', kind: 'Vault' },
+
+  'stylus-erc20': { template: 'stylus', kind: 'ERC20' },
+  'stylus-erc721': { template: 'stylus', kind: 'ERC721' },
+  'stylus-erc1155': { template: 'stylus', kind: 'ERC1155' },
+
+  'confidential-erc7984': { template: 'confidential', kind: 'ERC7984' },
+
+  'uniswap-hooks': { template: 'uniswap-hooks', kind: 'Hooks' },
+};
+
 export function appResourceUri(toolName: string): string {
   return `ui://openzeppelin/${toolName}.html`;
 }
 
-/** Resolve HTML for a tool, throwing build guidance when the artifact is missing. */
-function resolveAppHtmlPath(toolName: string): string {
-  const toolPath = path.join(APPS_DIR, `${toolName}.html`);
-  if (fs.existsSync(toolPath)) {
-    return toolPath;
+export function getToolAppSpec(toolName: string): ToolAppSpec {
+  const spec = TOOL_APP_SPECS[toolName];
+  if (spec === undefined) {
+    throw new Error(
+      `MCP App mapping missing for ${toolName}. ` +
+        `Add it to TOOL_APP_SPECS in packages/mcp/src/apps/register.ts, then run: ` +
+        `yarn --cwd packages/mcp build:apps`,
+    );
+  }
+  return spec;
+}
+
+/** Resolve language HTML template path, throwing build guidance when missing. */
+function resolveAppHtmlPath(template: AppTemplate, toolName: string): string {
+  const templatePath = path.join(APPS_DIR, `${template}.html`);
+  if (fs.existsSync(templatePath)) {
+    return templatePath;
   }
   throw new Error(
-    `MCP App HTML missing for ${toolName} (looked in ${APPS_DIR}). ` +
+    `MCP App HTML missing for ${toolName} (looked for template ${template}.html in ${APPS_DIR}). ` +
       `Run: yarn --cwd packages/mcp build:apps ` +
       `(npm consumers: reinstall the package or report a packaging bug).`,
   );
+}
+
+function injectKind(templateHtml: string, kind: string, toolName: string): string {
+  // Replace the bare placeholder so either "__OZ_MCP_KIND__" or '__OZ_MCP_KIND__' becomes the kind.
+  const matches = templateHtml.split(MCP_KIND_PLACEHOLDER).length - 1;
+  if (matches !== 1) {
+    throw new Error(
+      `MCP App template for ${toolName} must contain exactly one ${MCP_KIND_PLACEHOLDER} ` +
+        `kind placeholder (found ${matches}). Rebuild with yarn --cwd packages/mcp build:apps.`,
+    );
+  }
+  const html = templateHtml.split(MCP_KIND_PLACEHOLDER).join(kind);
+  if (html.includes(MCP_KIND_PLACEHOLDER)) {
+    throw new Error(`MCP App kind injection left a kind placeholder in HTML for ${toolName}`);
+  }
+  if (!html.includes(kind)) {
+    throw new Error(`MCP App kind injection failed to embed kind ${kind} for ${toolName}`);
+  }
+  return html;
 }
 
 /**
@@ -33,6 +117,8 @@ function resolveAppHtmlPath(toolName: string): string {
  * served from memory. Keyed by tool name rather than per request or per session, so the hosted
  * server holds one copy no matter how many sessions open the same app; memory is bounded by the
  * number of tools, not by traffic.
+ *
+ * Language templates are shared on disk; kind is injected once per tool on first read.
  *
  * The in-flight promise is cached so concurrent first reads share a single disk read, and a failed
  * read is evicted so a transient error cannot poison a tool for the process lifetime.
@@ -42,16 +128,37 @@ function resolveAppHtmlPath(toolName: string): string {
  * refactor. See that test for why the hosted server depends on them.
  */
 const htmlCache = new Map<string, Promise<string>>();
+const templateCache = new Map<AppTemplate, Promise<string>>();
+
+function readTemplateHtml(template: AppTemplate, toolName: string): Promise<string> {
+  const cached = templateCache.get(template);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const pending = fs.promises.readFile(resolveAppHtmlPath(template, toolName), 'utf-8').catch((e: unknown) => {
+    templateCache.delete(template);
+    throw e;
+  });
+  templateCache.set(template, pending);
+  return pending;
+}
 
 export function readAppHtml(toolName: string): Promise<string> {
   const cached = htmlCache.get(toolName);
   if (cached !== undefined) {
     return cached;
   }
-  const pending = fs.promises.readFile(resolveAppHtmlPath(toolName), 'utf-8').catch((e: unknown) => {
-    htmlCache.delete(toolName);
-    throw e;
-  });
+  // Resolve mapping synchronously so unknown tools fail before advertising UI.
+  const spec = getToolAppSpec(toolName);
+  // Fail closed on missing template before caching a doomed read.
+  resolveAppHtmlPath(spec.template, toolName);
+
+  const pending = readTemplateHtml(spec.template, toolName)
+    .then(templateHtml => injectKind(templateHtml, spec.kind, toolName))
+    .catch((e: unknown) => {
+      htmlCache.delete(toolName);
+      throw e;
+    });
   htmlCache.set(toolName, pending);
   return pending;
 }
@@ -60,7 +167,8 @@ export function readAppHtml(toolName: string): Promise<string> {
 function registerWizardAppResource(server: McpServer, toolName: string, options?: { title?: string }): void {
   const uri = appResourceUri(toolName);
   // Fail closed: do not register a UI resource that cannot be served.
-  resolveAppHtmlPath(toolName);
+  const spec = getToolAppSpec(toolName);
+  resolveAppHtmlPath(spec.template, toolName);
   server.registerResource(
     options?.title ?? `${toolName} UI`,
     uri,

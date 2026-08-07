@@ -4,9 +4,26 @@ import type { SvelteComponent } from 'svelte';
 import KindApp from './KindApp.svelte';
 import type { KindAdapter } from './adapter';
 import { readHostSendCaps } from './deliver-contract';
+import { MCP_KIND_PLACEHOLDER } from './kind-placeholder';
 
 /** Stable iframe height for hosts that size from ui/notifications/size-changed. */
 export const MCP_APP_HEIGHT_PX = 560;
+
+type AdapterKind<Adapter extends KindAdapter> = Extract<keyof Adapter['controls'], string>;
+
+/**
+ * Mount a language MCP App entry. Bundles every kind for the language; the kind argument is the
+ * build-time placeholder `__OZ_MCP_KIND__`, which packages/mcp replaces with the tool's real kind
+ * at serve time. Prefer this over `mountKindApp` in `entries/*.ts`.
+ */
+export function mountLanguageApp<Adapter extends KindAdapter>(
+  adapter: Adapter,
+  target: HTMLElement = document.body,
+): Promise<{ app: App; component: SvelteComponent }> {
+  // TypeScript needs a real AdapterKind here; any key is fine — only the runtime string matters,
+  // and that remains MCP_KIND_PLACEHOLDER until serve-time injection.
+  return mountKindApp(adapter, MCP_KIND_PLACEHOLDER as AdapterKind<Adapter>, target);
+}
 
 /**
  * Mount a fixed-kind Wizard MCP App.
@@ -23,7 +40,7 @@ export async function mountKindApp<Adapter extends KindAdapter>(
   adapter: Adapter,
   // Adapters are declared with `satisfies KindAdapter`, so their `controls` keys stay literal and
   // a kind this language does not have is a compile error rather than a blank controls pane.
-  kind: Extract<keyof Adapter['controls'], string>,
+  kind: AdapterKind<Adapter>,
   target: HTMLElement = document.body,
 ): Promise<{ app: App; component: SvelteComponent }> {
   const app = new App({ name: `OpenZeppelin ${kind}`, version: '1.0.0' }, {}, { autoResize: false });
