@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.6.3 (2026-08-07)
+
+- Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
+- Updated dependencies [[`2c2d516`](https://github.com/OpenZeppelin/contracts-wizard/commit/2c2d5165d9b6fda16a1415cedc0e9ac065adcfa9)]:
+  - @openzeppelin/wizard-common@0.5.5
+  - @openzeppelin/wizard@0.10.13
+
 ## 0.6.2 (2026-08-07)
 
 - Shrink MCP App package size by sharing one HTML template per language. ([#838](https://github.com/OpenZeppelin/contracts-wizard/pull/838))

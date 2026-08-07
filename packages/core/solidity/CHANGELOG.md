@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.13 (2026-08-07)
+
+- Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
+
 ## 0.10.12 (2026-07-31)
 
 - Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825))
