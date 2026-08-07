@@ -273,7 +273,7 @@ function addPremint(
   if (crossChainBridging) {
     if (premintChainId === '') {
       throw new OptionsError({
-        premintChainId: 'Chain ID is required when using Premint with Cross-Chain Bridging',
+        premintChainId: 'Chain ID is required when using Premint with Crosschain Bridging',
       });
     }
 

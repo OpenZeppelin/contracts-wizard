@@ -36,7 +36,7 @@ export const solidityERC20Descriptions = {
   flashmint:
     "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
   crossChainBridging:
-    'Whether to allow authorized bridge contracts to mint and burn tokens for cross-chain transfers. Options are to use custom bridges on any chain, to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
+    'Whether to allow authorized bridge contracts to mint and burn tokens for crosschain transfers. Options are to use custom bridges on any chain, to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
   crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
   premintChainId: 'The chain ID of the network on which to premint tokens.',
   callback:
@@ -52,7 +52,7 @@ export const solidityERC721Descriptions = {
   votes:
     'Whether to keep track of individual units for voting in on-chain governance. Voting durations can be expressed as block numbers or timestamps (defaulting to block number if not specified).',
   crossChainBridging:
-    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the token on the source chain and mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Crosschain transfers with registered counterparts burn the token on the source chain and mint it on the destination chain. If also using incremental token ids, mint only on a single chain and link counterparts without minting, otherwise colliding ids can strand bridged tokens.',
   crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
 };
 
@@ -61,7 +61,7 @@ export const solidityERC1155Descriptions = {
   supply: 'Whether to keep track of total supply of tokens',
   updatableUri: 'Whether privileged accounts will be able to set a new URI for all token types',
   crossChainBridging:
-    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Cross-chain transfers with registered counterparts burn the tokens on the source chain and mint them on the destination chain.',
+    'Whether to embed an ERC-7786 based bridge directly in the token contract, making it natively crosschain. Crosschain transfers with registered counterparts burn the tokens on the source chain and mint them on the destination chain.',
   crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
 };
 
