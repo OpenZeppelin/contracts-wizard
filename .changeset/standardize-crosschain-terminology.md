@@ -5,4 +5,4 @@
 "@openzeppelin/contracts-mcp": patch
 ---
 
-Standardize "crosschain" terminology in user-facing text (tooltips, help text, section labels, and AI descriptions). API option keys (`crossChainBridging`, `crossChainExecution`, `crossChainLinkAllowOverride`) remain unchanged.
+Standardize crosschain terminology in user-facing text.
