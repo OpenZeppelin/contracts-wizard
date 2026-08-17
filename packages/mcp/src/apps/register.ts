@@ -54,6 +54,7 @@ export const TOOL_APP_SPECS: Readonly<Record<string, ToolAppSpec>> = {
   'stellar-stablecoin': { template: 'stellar', kind: 'Stablecoin' },
   'stellar-governor': { template: 'stellar', kind: 'Governor' },
   'stellar-vault': { template: 'stellar', kind: 'Vault' },
+  'stellar-account': { template: 'stellar', kind: 'Account' },
 
   'stylus-erc20': { template: 'stylus', kind: 'ERC20' },
   'stylus-erc721': { template: 'stylus', kind: 'ERC721' },
