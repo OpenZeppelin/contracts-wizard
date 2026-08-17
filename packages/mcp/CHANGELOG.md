@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.6.4 (2026-08-17)
+
+- Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
+- Updated dependencies [[`db466bb`](https://github.com/OpenZeppelin/contracts-wizard/commit/db466bb1ca7e51d8b51eede0e832e18509c8c258)]:
+  - @openzeppelin/wizard-stellar@0.6.4
+  - @openzeppelin/wizard-common@0.5.6
+
 ## 0.6.3 (2026-08-07)
 
 - Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
