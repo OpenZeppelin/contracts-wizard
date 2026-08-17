@@ -81,10 +81,10 @@
 </section>
 
 <ExpandableToggleRadio
-  label="Cross-Chain Bridging"
+  label="Crosschain Bridging"
   bind:value={opts.crossChainBridging}
   defaultValue="erc7786native"
-  helpContent="Adds built-in support to mint and burn tokens for cross-chain transfers with registered counterparts."
+  helpContent="Adds built-in support to mint and burn tokens for crosschain transfers with registered counterparts."
   helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc1155#ERC1155Crosschain"
 >
   <div class="checkbox-group">

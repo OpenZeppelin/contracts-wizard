@@ -2,7 +2,7 @@
 
 // Adjusts the format of the changelog that changesets generates.
 
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { getSupportedLanguageInCoreSubfolder } from '../language-input.mjs';
 
@@ -10,6 +10,9 @@ function formatChangelog(dir) {
   console.log(`Formatting changelog for ${dir}...`);
 
   const changelogPath = join(dir, 'CHANGELOG.md');
+  if (!existsSync(changelogPath)) {
+    return;
+  }
 
   const changelog = readFileSync(changelogPath, 'utf8');
 
@@ -43,3 +46,4 @@ for (const languageFolder of languageFolders) {
 }
 formatChangelog('./packages/common');
 formatChangelog('./packages/mcp');
+formatChangelog('./packages/ui');
