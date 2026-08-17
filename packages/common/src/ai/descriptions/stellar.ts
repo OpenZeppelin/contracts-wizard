@@ -3,7 +3,7 @@
 
 export const stellarPrompts = {
   Account:
-    'Make a smart account (smart wallet) that authorizes operations through configurable signers and policies, for example a multisig with passkey, Ed25519 and delegated signers.',
+    'Make a smart account contract that authorizes operations through configurable signers and policies, for example a multisig with passkey, Ed25519 and delegated signers.',
   Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20.',
   Governor: 'Make a governor contract for on-chain governance using token-based voting.',
   NonFungible:

@@ -143,7 +143,8 @@ const testConstructorArgValues: Record<string, (signerCount: number) => string> 
 };
 
 const MOCK_ED25519_VERIFIER = `
-// Minimal Ed25519 verifier contract.
+// Minimal Ed25519 verifier contract, for testing purposes only: a real
+// deployment passes the address of a verifier contract it trusts.
 #[contract]
 pub struct MockEd25519Verifier;
 
@@ -172,7 +173,8 @@ impl Verifier for MockEd25519Verifier {
 `;
 
 const MOCK_WEBAUTHN_VERIFIER = `
-// Minimal WebAuthn (passkey) verifier contract.
+// Minimal WebAuthn (passkey) verifier contract, for testing purposes only: a
+// real deployment passes the address of a verifier contract it trusts.
 #[contract]
 pub struct MockWebauthnVerifier;
 
@@ -204,8 +206,9 @@ const printMockPolicyContract = (policy: keyof typeof accountPolicies) => {
   const { struct, module, params } = accountPolicies[policy];
 
   return `
-// Minimal policy contract, needed because the account installs its policies
-// during construction.
+// Minimal policy contract, for testing purposes only: the account installs its
+// policies during construction, so the test needs one deployed at that address.
+// A real deployment passes the address of a policy contract it trusts.
 #[contract]
 pub struct ${struct};
 

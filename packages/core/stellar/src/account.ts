@@ -113,21 +113,6 @@ function contextRuleName(policy: Policy): string {
   }
 }
 
-function policySummary(policy: Policy): string {
-  switch (policy) {
-    case false:
-      return 'Smart account requiring every configured signer to authorize an operation.';
-    case 'simple-threshold':
-      return 'Smart account authorizing operations through a simple threshold (m-of-n) policy.';
-    case 'weighted-threshold':
-      return 'Smart account authorizing operations through a weighted threshold policy.';
-    default: {
-      const _: never = policy;
-      throw new Error('Unknown value for `policy`');
-    }
-  }
-}
-
 function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
@@ -151,11 +136,13 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('stellar_accounts::smart_account', 'SmartAccount');
   c.addUseClause('stellar_accounts::smart_account', 'SmartAccountError');
 
-  const signerLabels: string[] = [];
+  // The arguments the signers are read from, in assembly order: what `weights`
+  // is positionally aligned with.
+  const signerArgs: string[] = [];
   const signerLines: string[] = ['let mut signers = Vec::new(e);'];
 
   if (opts.delegatedSigners) {
-    signerLabels.push('delegated');
+    signerArgs.push('delegated_signers');
     c.addConstructorArgument({ name: 'delegated_signers', type: 'Vec<Address>' });
     signerLines.push(
       'for account in delegated_signers.iter() {',
@@ -167,7 +154,7 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   for (const { option, prefix, label } of externalSigners) {
     if (!opts[option]) continue;
 
-    signerLabels.push(label);
+    signerArgs.push(`${prefix}_keys`);
     c.addUseClause('soroban_sdk', 'Bytes');
     // Verifier contracts are stateless, immutable and shareable, so one address
     // per signature type serves every key of that type.
@@ -184,11 +171,9 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
     );
   }
 
-  addDocumentation(c, opts, signerLabels);
-
-  // Adding the policy after the signers keeps the constructor arguments in the
-  // order the generated module docs describe.
-  const policyCode = addPolicy(c, opts);
+  // Adding the policy after the signers keeps the signer arguments first, which
+  // is the order `weights` is aligned with.
+  const policyCode = addPolicy(c, opts, signerArgs);
 
   c.addConstructorCodeBlock([...signerLines, '']);
   c.addConstructorCodeBlock([...policyCode, '']);
@@ -228,28 +213,11 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   });
 }
 
-function addDocumentation(c: ContractBuilder, opts: Required<AccountOptions>, signerLabels: string[]) {
-  c.addDocumentation(policySummary(opts.policy));
-
-  // The assembly order fixes the signer indices, which `weights` is aligned
-  // with, so whoever deploys the contract needs to know it.
-  if (signerLabels.length > 1 || opts.policy === 'weighted-threshold') {
-    c.addDocumentation('');
-    c.addDocumentation(
-      `Signers are assembled from the constructor arguments in this order: ${signerLabels.join(', ')}.`,
-    );
-  }
-
-  if (opts.policy === 'weighted-threshold') {
-    c.addDocumentation('`weights` is positionally aligned with that signer order.');
-  }
-}
-
 /**
  * Adds the policy constructor arguments and returns the code that builds the
  * policy map passed to `add_context_rule`.
  */
-function addPolicy(c: ContractBuilder, opts: Required<AccountOptions>): string[] {
+function addPolicy(c: ContractBuilder, opts: Required<AccountOptions>, signerArgs: string[]): string[] {
   if (opts.policy === false) {
     return ['let policies: Map<Address, Val> = Map::new(e);'];
   }
@@ -265,8 +233,19 @@ function addPolicy(c: ContractBuilder, opts: Required<AccountOptions>): string[]
     c.addError('WeightsLengthMismatch', WEIGHTS_LENGTH_MISMATCH_ERROR);
     // A flat vector rather than a `Map<Signer, u32>` so that callers never have
     // to spell out `Signer` values, which is the point of the typed
-    // per-signer-type arguments.
-    c.addConstructorArgument({ name: 'weights', type: 'Vec<u32>' });
+    // per-signer-type arguments. The assembly order fixes the signer indices,
+    // so whoever deploys the contract needs to know it.
+    c.addConstructorArgument({
+      name: 'weights',
+      type: 'Vec<u32>',
+      comment:
+        signerArgs.length === 1
+          ? [`One weight per signer, positionally aligned with \`${signerArgs[0]}\`.`]
+          : [
+              'One weight per signer, positionally aligned with the signers assembled',
+              `from ${signerArgs.join(', ')}, in that order.`,
+            ],
+    });
 
     lines.push(
       'if weights.len() != signers.len() {',
