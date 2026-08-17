@@ -1,5 +1,13 @@
 # Changelog
 
+
+## 0.1.5 (2026-08-17)
+
+- Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
+- Updated dependencies [[`db466bb`](https://github.com/OpenZeppelin/contracts-wizard/commit/db466bb1ca7e51d8b51eede0e832e18509c8c258)]:
+  - @openzeppelin/wizard-stellar@0.6.4
+  - @openzeppelin/wizard-common@0.5.6
+
 ## 0.1.4 (2026-07-31)
 
 - Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825)) ([`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a))
