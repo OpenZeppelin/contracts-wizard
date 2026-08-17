@@ -18,7 +18,7 @@ Provides tools to generate smart contract source code for the following language
 | solidity | erc20, erc721, erc1155, stablecoin, rwa, account, governor, custom |
 | cairo | erc20, erc721, erc1155, account, multisig, governor, vesting, custom |
 | confidential | erc7984 |
-| stellar | fungible, stablecoin, non-fungible, governor, vault |
+| stellar | fungible, stablecoin, non-fungible, governor, vault, account |
 | stylus | erc20, erc721, erc1155 |
 | uniswap-hooks | hooks (tool name is just `uniswap-hooks`) |
 

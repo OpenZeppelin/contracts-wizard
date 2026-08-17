@@ -12,6 +12,7 @@ import NonFungibleControls from '../../stellar/NonFungibleControls.svelte';
 import StablecoinControls from '../../stellar/StablecoinControls.svelte';
 import GovernorControls from '../../stellar/GovernorControls.svelte';
 import VaultControls from '../../stellar/VaultControls.svelte';
+import AccountControls from '../../stellar/AccountControls.svelte';
 
 const controls: Record<Kind, ComponentType> = {
   Fungible: FungibleControls,
@@ -19,6 +20,7 @@ const controls: Record<Kind, ComponentType> = {
   Stablecoin: StablecoinControls,
   Governor: GovernorControls,
   Vault: VaultControls,
+  Account: AccountControls,
 };
 
 export const stellarAdapter = {

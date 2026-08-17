@@ -26,6 +26,7 @@ import {
   cairoGovernorSchema,
   cairoVestingSchema,
   cairoCustomSchema,
+  stellarAccountSchema,
   stellarFungibleSchema,
   stellarGovernorSchema,
   stellarStablecoinSchema,
@@ -94,6 +95,7 @@ const allSchemas: [string, z.ZodRawShape][] = [
   ['cairoGovernor', cairoGovernorSchema],
   ['cairoVesting', cairoVestingSchema],
   ['cairoCustom', cairoCustomSchema],
+  ['stellarAccount', stellarAccountSchema],
   ['stellarFungible', stellarFungibleSchema],
   ['stellarStablecoin', stellarStablecoinSchema],
   ['stellarNonFungible', stellarNonFungibleSchema],
@@ -152,6 +154,7 @@ function _stellarTypeAssertions() {
   const _: {
     [K in keyof StellarKindedOptions]: Omit<StellarKindedOptions[K], 'kind'>;
   } = {
+    Account: z.object(stellarAccountSchema).parse({}),
     Fungible: z.object(stellarFungibleSchema).parse({}),
     Governor: z.object(stellarGovernorSchema).parse({}),
     Stablecoin: z.object(stellarStablecoinSchema).parse({}),

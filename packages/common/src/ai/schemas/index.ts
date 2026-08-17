@@ -24,6 +24,7 @@ export {
 } from './cairo';
 
 export {
+  stellarAccountSchema,
   stellarCommonSchema,
   stellarGovernorSchema,
   stellarFungibleSchema,

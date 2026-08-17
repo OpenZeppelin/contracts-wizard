@@ -44,6 +44,7 @@ for (const languageFolder of languageFolders) {
   const languageFolderPath = join('./packages/core', languageFolder);
   formatChangelog(languageFolderPath);
 }
+formatChangelog('./packages/cli');
 formatChangelog('./packages/common');
 formatChangelog('./packages/mcp');
 formatChangelog('./packages/ui');

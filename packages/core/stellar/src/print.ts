@@ -64,8 +64,17 @@ function printContractErrors(contract: Contract): Lines[] {
   ];
 }
 
+// Lines that open, close or continue a block or expression are not statements,
+// so they must not be terminated. Needed by multi-line code such as a `for` loop
+// or a call whose arguments are spread over several lines.
+const CONTINUATION_LINE_ENDINGS = ['{', '}', ';', ',', '('];
+
+function needsSemicolon(line: string): boolean {
+  return line.length > 0 && !CONTINUATION_LINE_ENDINGS.includes(line.at(-1)!);
+}
+
 function withSemicolons(lines: string[]): string[] {
-  return lines.map(line => (line.endsWith(';') ? line : line + ';'));
+  return lines.map(line => (needsSemicolon(line) ? line + ';' : line));
 }
 
 function printVariables(contract: Contract): string[] {
@@ -208,8 +217,11 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
 
   const head = `impl ${trait.traitName} for ${trait.structName}`;
 
-  const assocTypeLines =
-    trait.assocType !== undefined && trait.assocType.trim().length > 0 ? [TAB + trait.assocType.trim(), ''] : [];
+  const assocTypes = (Array.isArray(trait.assocType) ? trait.assocType : [trait.assocType ?? ''])
+    .map(assocType => assocType.trim())
+    .filter(assocType => assocType.length > 0);
+
+  const assocTypeLines = assocTypes.length > 0 ? [...assocTypes.map(assocType => TAB + assocType), ''] : [];
 
   const functionLines = trait.functions.map(fn => printFunction(fn));
 
@@ -234,14 +246,14 @@ function printImplementedTrait(trait: TraitImplBlock): Lines[] {
 
 function printFunction(fn: ContractFunction): Lines[] {
   const head = `fn ${fn.name}`;
-  const args = fn.args.map(a => printArgument(a));
+  const args = printArguments(fn.args);
 
   const codeLines = fn.codeBefore?.concat(fn.code) ?? fn.code;
   for (let i = 0; i < codeLines.length; i++) {
     const line = codeLines[i];
     const shouldEndWithSemicolon = i < codeLines.length - 1 || fn.returns === undefined;
     if (line !== undefined && line.length > 0) {
-      if (shouldEndWithSemicolon && !['{', '}', ';'].includes(line.charAt(line.length - 1))) {
+      if (shouldEndWithSemicolon && needsSemicolon(line)) {
         codeLines[i] += ';';
       } else if (!shouldEndWithSemicolon && line.endsWith(';')) {
         codeLines[i] = line.slice(0, line.length - 1);
@@ -284,17 +296,23 @@ function printConstructor(contract: Contract): Lines[] {
     const head = 'fn __constructor';
     const args = [getSelfArg(), ...contract.constructorArgs];
 
-    const body = spaceBetween(withSemicolons(contract.constructorCode));
-
-    const constructor = printFunction2(
-      true,
-      head,
-      args.map(a => printArgument(a)),
-      [],
-      undefined,
-      undefined,
-      body,
+    // Empty entries separate logical groups of statements. Routing them through
+    // `spaceBetween` yields blank lines with no trailing indentation.
+    const groups = contract.constructorCode.reduce<string[][]>(
+      (acc, line) => {
+        if (line.length === 0) {
+          acc.push([]);
+        } else {
+          acc[acc.length - 1]!.push(line);
+        }
+        return acc;
+      },
+      [[]],
     );
+
+    const body = spaceBetween(...groups.map(group => withSemicolons(group)));
+
+    const constructor = printFunction2(true, head, printArguments(args), [], undefined, undefined, body);
     return constructor;
   } else {
     return [];
@@ -328,11 +346,12 @@ function printFunction2(
 
   if (args.length > 0) {
     const formattedArgs = args.join(', ');
-    if (formattedArgs.length > 80) {
+    // Commented arguments cannot share a line, so they force the expanded form.
+    if (formattedArgs.length > 80 || args.some(isComment)) {
       fn.push(accum);
       accum = '';
       // print each arg in a separate line
-      fn.push(args.map(arg => `${arg},`));
+      fn.push(args.map(arg => (isComment(arg) ? arg : `${arg},`)));
     } else {
       accum += `${formattedArgs}`;
     }
@@ -364,13 +383,23 @@ function printArgument(arg: Argument): string {
   }
 }
 
+// Expands each argument into its comment lines followed by the argument itself.
+// `printFunction2` recognizes the comment entries and leaves them untouched.
+function printArguments(args: Argument[]): string[] {
+  return args.flatMap(arg => [...(arg.comment ?? []).map(line => `// ${line}`), printArgument(arg)]);
+}
+
+function isComment(line: string): boolean {
+  return line.startsWith('//');
+}
+
 function printTopLevelDeclarations(contract: Contract): Lines[] {
   if (contract.topLevelDeclarations.length === 0) return [];
   return spaceBetween(...contract.topLevelDeclarations);
 }
 
 function printDocumentations(documentations: string[]): string[] {
-  return documentations.map(documentation => `//! ${documentation}`);
+  return documentations.map(documentation => (documentation.length > 0 ? `//! ${documentation}` : '//!'));
 }
 
 function printMetadata(contract: Contract) {
