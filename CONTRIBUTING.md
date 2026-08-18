@@ -58,7 +58,7 @@ From the `packages/ui` directory:
   - Default port is 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
 
 ### Running the AI Assistant (Optional)
-Create a `.env` file at the root directory, set the environment variable `OPENAI_API_KEY` using your OpenAI API key, and configure your OpenAI project limits to allow the `gpt-4o-mini` model or set the environment variable `OPENAI_MODEL` to a specific model.
+Create a `.env` file at the root directory, set the environment variable `OPENAI_API_KEY` using your OpenAI API key, and configure your OpenAI project limits to allow the `gpt-5.6-luna` model or set the environment variable `OPENAI_MODEL` to a specific model.
 
 Then from the `packages/ui` directory:
 - In one terminal, start the UI according to the above section if the UI isn't already running.
