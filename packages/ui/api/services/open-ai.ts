@@ -86,8 +86,8 @@ export const createOpenAiCompletionStream = ({
   const openai = getOpenAiInstance();
 
   const openAiStream = openai.chat.completions.stream({
-    model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-4o-mini'),
-    temperature: 0.7,
+    model: getEnvironmentVariableOr('OPENAI_MODEL', 'gpt-5.6-luna'),
+    reasoning_effort: 'none',
     stream: true,
     ...streamParams,
   });
