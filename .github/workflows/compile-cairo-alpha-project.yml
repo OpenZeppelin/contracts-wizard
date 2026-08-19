@@ -56,6 +56,7 @@ jobs:
           declare -a all_access_options=("disabled" "ownable" "roles" "roles-dar-default" "roles-dar-custom")
           declare -a all_upgradeable_options=("true" "false")
           declare -a all_royalty_options=("disabled" "enabled-default" "enabled-custom")
+          declare -a all_flashmint_options=("disabled" "enabled-default" "enabled-percent-fee" "enabled-custom-fee")
 
           kind="$KIND"
 
@@ -78,18 +79,38 @@ jobs:
                 done
               done
 
-            elif [[ "$kind" == "ERC20" || "$kind" == "ERC6909" || "$kind" == "Custom" ]]; then
+            elif [[ "$kind" == "ERC20" ]]; then
               for access_option in "${all_access_options[@]}"; do
-                proj_name="'$kind, macros: $macros_option, access: $access_option' test project"
-                echo "Generating $proj_name..."
-                yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option
+                for upgradeable_option in "${all_upgradeable_options[@]}"; do
+                  for flashmint_option in "${all_flashmint_options[@]}"; do
+                    proj_name="'$kind, macros: $macros_option, access: $access_option, upgradeable: $upgradeable_option, flashmint: $flashmint_option' test project"
+                    echo "Generating $proj_name..."
+                    yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --upgradeable=$upgradeable_option --flashmint=$flashmint_option
 
-                echo "Compiling $proj_name..."
-                scarb clean
-                scarb build
+                    echo "Compiling $proj_name..."
+                    scarb clean
+                    scarb build
 
-                echo "✅ Compiled $proj_name!"
-                echo "---------------------------------"
+                    echo "✅ Compiled $proj_name!"
+                    echo "---------------------------------"
+                  done
+                done
+              done
+
+            elif [[ "$kind" == "ERC6909" || "$kind" == "Custom" ]]; then
+              for access_option in "${all_access_options[@]}"; do
+                for upgradeable_option in "${all_upgradeable_options[@]}"; do
+                  proj_name="'$kind, macros: $macros_option, access: $access_option, upgradeable: $upgradeable_option' test project"
+                  echo "Generating $proj_name..."
+                  yarn run update_scarb_project --kind=$kind --macros=$macros_option --access=$access_option --upgradeable=$upgradeable_option
+
+                  echo "Compiling $proj_name..."
+                  scarb clean
+                  scarb build
+
+                  echo "✅ Compiled $proj_name!"
+                  echo "---------------------------------"
+                done
               done
 
             else

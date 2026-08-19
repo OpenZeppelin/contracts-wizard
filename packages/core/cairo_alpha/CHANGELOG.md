@@ -12,6 +12,7 @@
 - Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
 - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
 - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
+- Add ERC20FlashMint extension ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
 
 - **Breaking changes**:
   - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
