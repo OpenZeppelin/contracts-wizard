@@ -15,17 +15,13 @@
 //      prefix swap.
 //
 // Non-standard identifiers (Ownable, AccessControl, etc.) stay verbatim. The
-// rename is case-sensitive and only touches symbols/imports, so lowercase
-// annotation strings are unaffected — notably the `erc7201:` storage-location
-// tag emitted for upgradeable contracts (see set-namespaced-storage.ts).
-//
-// TODO(tron): the `erc7201:` storage-location tag stays as-is rather than
-// TIP-7201's `trc7201:`. It's a build-time comment the symbol rename here
-// doesn't touch, and it's inert on TRON (nothing in the deploy flow reads it).
-// Revisit if `trc7201:` becomes the convention.
+// rename is case-sensitive and only touches symbols/imports. Namespaced storage
+// annotations keep `erc7201:` to match `@openzeppelin/tron-contracts-upgradeable`
+// (same slot formula as TIP-7201; the formula id is only the NatSpec label).
 
 import type { Options } from '../options';
 import type { ImportContract } from '../contract';
+import type { Kind } from '../kind';
 import SOLIDITY_VERSION from '../solidity-version.json';
 
 // The maximum 0.8.x patch level that tron-solc currently supports. The mainline
@@ -37,6 +33,9 @@ const TRON_SOLC_MAX_PATCH = 26;
 // compile with: the mainline Wizard version, capped at the tron-solc maximum.
 // Hardhat/TronBox configs source their compiler version from this same constant.
 export const TRON_SOLIDITY_VERSION = capTronSolidityVersion(SOLIDITY_VERSION);
+
+/** Published `@openzeppelin/tron-contracts` / `-upgradeable` version the Wizard targets. */
+export const TRON_CONTRACTS_VERSION = '5.6.0-rc.1';
 
 function capTronSolidityVersion(version: string): string {
   const [major, minor, patch] = version.split('.').map(part => parseInt(part, 10));
@@ -84,8 +83,13 @@ export const tronPrintProfile: Options = {
     path: rewriteTronImportPath(parent.path),
   }),
   solidityVersion: TRON_SOLIDITY_VERSION,
-  // trc7201 uses the same slot derivation as erc7201; only the annotation label differs.
-  formulaId: 'trc7201',
+  additionalCompatibleLibraries: [
+    {
+      name: 'OpenZeppelin TRON Contracts',
+      path: '@openzeppelin/tron-contracts',
+      version: TRON_CONTRACTS_VERSION,
+    },
+  ],
 };
 
 // `superchain` cross-chain bridging is OP Stack-specific: it pulls in
@@ -95,11 +99,24 @@ export const tronPrintProfile: Options = {
 // through this gate to downgrade `superchain` to `custom` before building.
 // Mutates in place (to match the UI's `sanitizeOmittedFeatures` override
 // contract) and returns the same object for ergonomic use at call sites.
-type TronSanitizableOptions = { crossChainBridging?: false | 'custom' | 'erc7786native' | 'superchain' };
+type TronSanitizableOptions = {
+  kind?: Kind;
+  crossChainBridging?: false | 'custom' | 'erc7786native' | 'superchain';
+  crossChainExecution?: boolean;
+};
 
 export function sanitizeTronOptions<T extends TronSanitizableOptions>(opts: T): T {
-  if (opts.crossChainBridging === 'superchain') {
+  // TRON Contracts 5.6 has TRC20Crosschain but not TRC721/TRC1155Crosschain.
+  if (opts.kind === 'ERC721' || opts.kind === 'ERC1155') {
+    if (opts.crossChainBridging) {
+      opts.crossChainBridging = false;
+    }
+  } else if (opts.crossChainBridging === 'superchain') {
     opts.crossChainBridging = 'custom';
+  }
+  // GovernorCrosschain is a Contracts 5.7 API not present in TRON 5.6.
+  if (opts.crossChainExecution) {
+    opts.crossChainExecution = false;
   }
   return opts;
 }

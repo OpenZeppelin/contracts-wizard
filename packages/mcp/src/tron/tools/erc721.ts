@@ -1,9 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC721Options } from '@openzeppelin/wizard';
-import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } from '@openzeppelin/wizard';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
+import { tronPrintResult } from '../print-result';
 
 export function registerTronTRC721(server: McpServer): RegisteredTool {
   return server.tool(
@@ -21,6 +22,8 @@ export function registerTronTRC721(server: McpServer): RegisteredTool {
       mintable,
       incremental,
       votes,
+      crossChainBridging,
+      crossChainLinkAllowOverride,
       access,
       upgradeable,
       namespacePrefix,
@@ -37,21 +40,16 @@ export function registerTronTRC721(server: McpServer): RegisteredTool {
         mintable,
         incremental,
         votes,
+        crossChainBridging,
+        crossChainLinkAllowOverride,
         access,
         upgradeable,
         namespacePrefix,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() =>
-              printContract(buildGeneric({ kind: 'ERC721', ...opts }), tronPrintProfile),
-            ),
-          },
-        ],
-      };
+      return tronPrintResult(() =>
+        printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC721', ...opts })), tronPrintProfile),
+      );
     },
   );
 }

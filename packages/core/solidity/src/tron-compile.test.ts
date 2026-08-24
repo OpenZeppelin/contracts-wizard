@@ -2,7 +2,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import test from 'ava';
 import type { ExecutionContext } from 'ava';
-import hre from 'hardhat';
+
+import hre from './hardhat-tron-compile';
 
 import { generateOptions } from './generate/sources';
 import { buildGeneric } from './build-generic';
@@ -27,16 +28,8 @@ const TRON_KINDS = [
 // the result compiles against `@openzeppelin/tron-contracts`. This is the test that
 // catches ERC->TRC mapping gaps (e.g. the Callback extension resolving to `ERC1363`
 // instead of `TRC1363`) — something the content-snapshot tests structurally cannot do.
-//
-// SKIPPED until `@openzeppelin/tron-contracts` (and `@openzeppelin/tron-contracts-upgradeable`)
-// are published to npm. To enable:
-//   1. add both packages as devDependencies of this package;
-//   2. compile these sources against the TRON library with tron-solc settings
-//      (0.8.26 + cancun + viaIR) — e.g. a dedicated Hardhat config / compile target that
-//      only picks up `generated-tron` and resolves `@openzeppelin/tron-contracts(-upgradeable)`;
-//   3. remove `.skip` below.
 for (const kind of TRON_KINDS) {
-  test.skip(`tron ${kind} result compiles`, async t => {
+  test.serial(`tron ${kind} result compiles`, async t => {
     await testCompileTron(t, kind);
   });
 }
@@ -49,7 +42,15 @@ async function testCompileTron(t: ExecutionContext, kind: keyof KindedOptions) {
   let index = 0;
   for (const options of generateOptions(kind)) {
     // Mirror the TRON surfaces: drop options TRON doesn't support (e.g. `superchain`).
-    const tronOptions = options.kind === 'ERC20' ? sanitizeTronOptions(options) : options;
+    const tronOptions = sanitizeTronOptions(options);
+
+    // Upgradeable sources import @openzeppelin/tron-contracts-upgradeable, which
+    // currently references the peer as `@openzeppelin/tron-contracts/contracts/...`
+    // while the npm package has no extra `contracts/` directory. Skip those
+    // combinations until the library import paths match the published layout.
+    if ('upgradeable' in tronOptions && tronOptions.upgradeable) {
+      continue;
+    }
 
     let source: string;
     try {

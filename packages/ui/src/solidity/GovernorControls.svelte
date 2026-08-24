@@ -17,6 +17,7 @@
   // assumed block time so the voting delay/period are computed against their
   // chain's cadence (TRON ~3s vs Ethereum ~12s).
   export let defaultBlockTime: number | undefined = undefined;
+  export let omitFeatures: string[] | undefined = undefined;
 
   const effectiveBlockTime = defaultBlockTime ?? defaults.blockTime;
 
@@ -160,6 +161,7 @@
       </HelpTooltip>
     </label>
 
+    {#if !omitFeatures?.includes('crossChainExecution')}
     <label class:checked={opts.crossChainExecution}>
       <input type="checkbox" bind:checked={opts.crossChainExecution} />
       Crosschain Execution
@@ -168,6 +170,7 @@
         <code>CrosschainRemoteExecutor</code> contract, controlled by this governor, deployed on each target chain.
       </HelpTooltip>
     </label>
+    {/if}
   </div>
 </section>
 

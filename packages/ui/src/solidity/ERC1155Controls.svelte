@@ -16,6 +16,7 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+  export let omitFeatures: string[] | undefined = undefined;
 
   $: requireAccessControl = erc1155.isAccessControlRequired(opts);
 
@@ -80,6 +81,7 @@
   </div>
 </section>
 
+{#if !omitFeatures?.includes('crossChainBridging')}
 <ExpandableToggleRadio
   label="Crosschain Bridging"
   bind:value={opts.crossChainBridging}
@@ -107,6 +109,7 @@
     {/if}
   </div>
 </ExpandableToggleRadio>
+{/if}
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

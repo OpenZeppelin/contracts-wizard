@@ -86,14 +86,34 @@ test('sanitizeTronOptions downgrades superchain bridging to custom', t => {
   t.deepEqual(sanitizeTronOptions({}), {});
 });
 
-test('uses the TRON formula id (trc7201) for namespaced storage annotations', t => {
-  // Upgradeable ERC721 with incremental ids uses namespaced storage, whose struct
-  // carries a `@custom:storage-location <formulaId>:<namespaceId>` annotation. On
-  // TRON the formula id is `trc7201` (TIP-7201) rather than `erc7201`.
+test('sanitizeTronOptions drops ERC721/ERC1155 native bridging and Governor crosschain execution', t => {
+  t.deepEqual(sanitizeTronOptions({ kind: 'ERC721', crossChainBridging: 'erc7786native' }), {
+    kind: 'ERC721',
+    crossChainBridging: false,
+  });
+  t.deepEqual(sanitizeTronOptions({ kind: 'ERC1155', crossChainBridging: 'erc7786native' }), {
+    kind: 'ERC1155',
+    crossChainBridging: false,
+  });
+  t.deepEqual(sanitizeTronOptions({ kind: 'Governor', crossChainExecution: true }), {
+    kind: 'Governor',
+    crossChainExecution: false,
+  });
+});
+
+test('uses erc7201 namespaced storage annotations to match tron-contracts-upgradeable', t => {
+  // Upgradeable ERC721 with incremental ids uses namespaced storage. The published
+  // library still annotates `erc7201:` (same slot formula as TIP-7201).
   const source = printContract(
     buildERC721({ name: 'My NFT', symbol: 'NFT', mintable: true, incremental: true, upgradeable: 'uups' }),
     tronPrintProfile,
   );
-  t.regex(source, /@custom:storage-location trc7201:/, 'uses the trc7201 formula id');
-  t.false(source.includes('erc7201:'), 'no erc7201 formula id leaks through');
+  t.regex(source, /@custom:storage-location erc7201:/, 'matches the library annotation');
+  t.false(source.includes('trc7201:'), 'does not emit trc7201 while the library still uses erc7201');
+});
+
+test('compatibility banner names TRON Contracts at the pinned version', t => {
+  const source = printContract(buildERC20({ name: 'T', symbol: 'T' }), tronPrintProfile);
+  t.regex(source, /\/\/ Compatible with OpenZeppelin TRON Contracts 5\.6\.0-rc\.1/);
+  t.false(source.includes('OpenZeppelin Contracts ^'));
 });

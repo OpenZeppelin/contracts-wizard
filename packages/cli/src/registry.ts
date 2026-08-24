@@ -181,17 +181,17 @@ export const registry = {
   // and the contract name untouched.
   'tron-trc20': createRegistryEntry(
     solidityERC20Schema,
-    opts => printContract(buildGeneric({ kind: 'ERC20', ...sanitizeTronOptions(opts) }), tronPrintProfile),
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC20', ...opts })), tronPrintProfile),
     tronPrompts.TRC20,
   ),
   'tron-trc721': createRegistryEntry(
     solidityERC721Schema,
-    opts => printContract(buildGeneric({ kind: 'ERC721', ...opts }), tronPrintProfile),
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC721', ...opts })), tronPrintProfile),
     tronPrompts.TRC721,
   ),
   'tron-trc1155': createRegistryEntry(
     solidityERC1155Schema,
-    opts => printContract(buildGeneric({ kind: 'ERC1155', ...opts }), tronPrintProfile),
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC1155', ...opts })), tronPrintProfile),
     tronPrompts.TRC1155,
   ),
   // Stablecoin and RealWorldAsset are intentionally not exposed on TRON — they
@@ -200,7 +200,13 @@ export const registry = {
     tronGovernorSchema,
     opts =>
       printContract(
-        buildGeneric({ kind: 'Governor', ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME }),
+        buildGeneric(
+          sanitizeTronOptions({
+            kind: 'Governor',
+            ...opts,
+            blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME,
+          }),
+        ),
         tronPrintProfile,
       ),
     tronPrompts.Governor,

@@ -1,9 +1,16 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard';
-import { buildGeneric, printContract, tronPrintProfile, TRON_DEFAULT_BLOCK_TIME } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import {
+  buildGeneric,
+  printContract,
+  tronPrintProfile,
+  TRON_DEFAULT_BLOCK_TIME,
+  sanitizeTronOptions,
+} from '@openzeppelin/wizard';
+import { makeDetailedPrompt } from '../../utils';
 import { tronGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
+import { tronPrintResult } from '../print-result';
 
 export function registerTronGovernor(server: McpServer): RegisteredTool {
   return server.tool(
@@ -25,6 +32,7 @@ export function registerTronGovernor(server: McpServer): RegisteredTool {
       quorumAbsolute,
       storage,
       settings,
+      crossChainExecution,
       upgradeable,
       info,
     }) => {
@@ -46,19 +54,13 @@ export function registerTronGovernor(server: McpServer): RegisteredTool {
         quorumAbsolute,
         storage,
         settings,
+        crossChainExecution,
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() =>
-              printContract(buildGeneric({ kind: 'Governor', ...opts }), tronPrintProfile),
-            ),
-          },
-        ],
-      };
+      return tronPrintResult(() =>
+        printContract(buildGeneric(sanitizeTronOptions({ kind: 'Governor', ...opts })), tronPrintProfile),
+      );
     },
   );
 }

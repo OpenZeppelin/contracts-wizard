@@ -1,9 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC20Options } from '@openzeppelin/wizard';
 import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
+import { tronPrintResult } from '../print-result';
 
 export function registerTronTRC20(server: McpServer): RegisteredTool {
   return server.tool(
@@ -48,16 +49,9 @@ export function registerTronTRC20(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() =>
-              printContract(buildGeneric({ kind: 'ERC20', ...sanitizeTronOptions(opts) }), tronPrintProfile),
-            ),
-          },
-        ],
-      };
+      return tronPrintResult(() =>
+        printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC20', ...opts })), tronPrintProfile),
+      );
     },
   );
 }

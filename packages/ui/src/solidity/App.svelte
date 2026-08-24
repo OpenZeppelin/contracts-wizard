@@ -380,10 +380,18 @@
         />
       </div>
       <div class:hidden={tab !== 'ERC721'}>
-        <ERC721Controls bind:opts={allOpts.ERC721} errors={errors.ERC721} />
+        <ERC721Controls
+          bind:opts={allOpts.ERC721}
+          errors={errors.ERC721}
+          omitFeatures={overrides.omitFeatures.get('ERC721')}
+        />
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
-        <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155} />
+        <ERC1155Controls
+          bind:opts={allOpts.ERC1155}
+          errors={errors.ERC1155}
+          omitFeatures={overrides.omitFeatures.get('ERC1155')}
+        />
       </div>
       <div class:hidden={tab !== 'Stablecoin'}>
         <StablecoinControls
@@ -407,6 +415,7 @@
           bind:opts={allOpts.Governor}
           errors={errors.Governor}
           defaultBlockTime={overrides.defaultBlockTime}
+          omitFeatures={overrides.omitFeatures.get('Governor')}
         />
       </div>
       <div class:hidden={tab !== 'Custom'}>

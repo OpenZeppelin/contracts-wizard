@@ -32,7 +32,7 @@ export function printContract(contract: Contract, opts?: Options): string {
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        printCompatibleLibraryVersions(contract, opts),
+        printCompatibleLibraryVersions(contract, helpers, opts),
         `pragma solidity ^${opts?.solidityVersion ?? SOLIDITY_VERSION};`,
       ],
 
@@ -80,12 +80,14 @@ type LibraryDescription = {
   alwaysKeepOzPrefix?: boolean;
 };
 
-function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
+function printCompatibleLibraryVersions(contract: Contract, helpers: Helpers, opts?: Options): string {
   const libraryDescriptions: LibraryDescription[] = [];
-  if (importsLibrary(contract, '@openzeppelin/contracts')) {
+  // Use printed import paths so a transform (e.g. TRON) is reflected in the banner.
+  const printed = { imports: contract.imports.map(i => helpers.transformImport(i)) };
+  if (importsLibrary(printed, '@openzeppelin/contracts')) {
     libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Contracts ${compatibleContractsSemver}` });
   }
-  if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
+  if (importsLibrary(printed, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
       libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Community Contracts commit ${commit}` });
@@ -95,7 +97,7 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   }
   if (opts?.additionalCompatibleLibraries) {
     for (const library of opts.additionalCompatibleLibraries) {
-      if (importsLibrary(contract, library.path)) {
+      if (importsLibrary(printed, library.path)) {
         libraryDescriptions.push({
           nameAndVersion: `${library.name} ${library.version}`,
           alwaysKeepOzPrefix: library.alwaysKeepOzPrefix,

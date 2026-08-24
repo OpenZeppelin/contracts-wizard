@@ -1,9 +1,10 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CustomOptions } from '@openzeppelin/wizard';
 import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
+import { tronPrintResult } from '../print-result';
 
 export function registerTronCustom(server: McpServer): RegisteredTool {
   return server.tool(
@@ -18,16 +19,7 @@ export function registerTronCustom(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() =>
-              printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile),
-            ),
-          },
-        ],
-      };
+      return tronPrintResult(() => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile));
     },
   );
 }

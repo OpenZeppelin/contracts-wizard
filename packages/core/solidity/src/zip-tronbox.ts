@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract } from './print';
-import { tronPrintProfile, TRON_SOLIDITY_VERSION } from './utils/transform-tron';
+import { tronPrintProfile, TRON_SOLIDITY_VERSION, TRON_CONTRACTS_VERSION } from './utils/transform-tron';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import { tronProxyFor, tronProxyHelperSource } from './utils/tron-upgradeable';
 
@@ -286,9 +286,9 @@ function packageJson(c: Contract): unknown {
   // Upgradeable contracts pull their transpiled `*Upgradeable` parents from
   // tron-contracts-upgradeable; tron-contracts stays on as its peer (it also
   // provides the proxy the migration deploys).
-  const dependencies: Record<string, string> = { '@openzeppelin/tron-contracts': '^0.0.1' };
+  const dependencies: Record<string, string> = { '@openzeppelin/tron-contracts': TRON_CONTRACTS_VERSION };
   if (c.upgradeable) {
-    dependencies['@openzeppelin/tron-contracts-upgradeable'] = '^0.0.1';
+    dependencies['@openzeppelin/tron-contracts-upgradeable'] = TRON_CONTRACTS_VERSION;
   }
   return {
     name: 'tronbox-sample',
@@ -327,8 +327,6 @@ This project demonstrates a basic TronBox use case. It comes with a contract gen
 - Install [TronBox](https://tronbox.io/docs/) globally: \`npm install -g tronbox\`
 
 ## Installing dependencies
-
-> :warning: Temporary limitation: this template depends on \`@openzeppelin/tron-contracts\`, which may not yet be available on the public npm registry. If \`npm install\` fails with a 404 for that package, retry after it is published, or install it from a local checkout / git URL in the meantime.
 
 \`\`\`
 npm install

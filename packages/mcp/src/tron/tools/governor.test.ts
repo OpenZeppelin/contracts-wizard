@@ -6,7 +6,13 @@ import { registerTronGovernor } from './governor';
 import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { GovernorOptions } from '@openzeppelin/wizard';
-import { buildGeneric, printContract, tronPrintProfile, TRON_DEFAULT_BLOCK_TIME } from '@openzeppelin/wizard';
+import {
+  buildGeneric,
+  printContract,
+  tronPrintProfile,
+  TRON_DEFAULT_BLOCK_TIME,
+  sanitizeTronOptions,
+} from '@openzeppelin/wizard';
 import { solidityGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
@@ -32,7 +38,13 @@ function assertHasAllSupportedFields(
 
 const tronPrint = (opts: GovernorOptions) =>
   printContract(
-    buildGeneric({ kind: 'Governor', ...opts, blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME }),
+    buildGeneric(
+      sanitizeTronOptions({
+        kind: 'Governor',
+        ...opts,
+        blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME,
+      }),
+    ),
     tronPrintProfile,
   );
 
@@ -61,6 +73,7 @@ test('all', async t => {
     quorumAbsolute: '5',
     storage: true,
     settings: true,
+    crossChainExecution: true,
     upgradeable: 'uups',
     info: {
       license: 'MIT',

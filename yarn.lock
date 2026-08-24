@@ -913,6 +913,16 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.7.0.tgz#3b13b3e6fe8d426c2af247975ddf6ab2a5bf148e"
   integrity sha512-IL2AZpI+7THMzt1u6Cxmc1zLwVnudtUGvrqXQ/HnbLKfQ/8dIWMMQPDwPIjRQzNrlAo4cxZaCGRB/XvwPo9ILA==
 
+"@openzeppelin/tron-contracts-upgradeable@5.6.0-rc.1":
+  version "5.6.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts-upgradeable/-/tron-contracts-upgradeable-5.6.0-rc.1.tgz#2b299ed8b4658828d7edd4b38882fa1605c721cd"
+  integrity sha512-xZfqPbzkQSm0dcyIOC0ogBhpU4IRb4GPa2VelD3kPp5vePV8HQn+wqjQ6u/OHjxwgUsMkZ22DkXmp7hYBuRvww==
+
+"@openzeppelin/tron-contracts@5.6.0-rc.1":
+  version "5.6.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts/-/tron-contracts-5.6.0-rc.1.tgz#ec15e7bfa2a3df0593ee280c57e37460fa2c0c5b"
+  integrity sha512-i/rGpnOhRrkkRVgJZ6OsttD/dRsWSC2xhauRRGKUEjIhCCANq7wqy3a0I01HUstM+WI0N/g8uwuap19aDJaoUw==
+
 "@openzeppelin/uniswap-hooks@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@openzeppelin/uniswap-hooks/-/uniswap-hooks-1.2.1.tgz#94d88aaaa06975a552104d98d632be863999e4f9"

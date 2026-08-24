@@ -1,5 +1,5 @@
-import type { ExecutionContext } from 'ava';
-import test from 'ava';
+import type { TestFn, ExecutionContext } from 'ava';
+import _test from 'ava';
 
 import { zipHardhatTron } from './zip-hardhat-tron';
 
@@ -7,15 +7,30 @@ import { buildERC20 } from './erc20';
 import { buildERC721 } from './erc721';
 import { buildERC1155 } from './erc1155';
 import { buildGovernor } from './governor';
+import { promises as fs } from 'fs';
+import path from 'path';
+import os from 'os';
+import util from 'util';
+import child from 'child_process';
 import type { Contract } from './contract';
+import { rimraf } from 'rimraf';
 import type { JSZipObject } from 'jszip';
 import type JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
 
-// The TRON download cannot run `npm install` end-to-end yet because
-// @openzeppelin/hardhat-tron and @openzeppelin/tron-contracts are not
-// published to npm at the time of this test. These tests therefore only
-// verify the file layout and snapshot the contents.
+interface Context {
+  tempFolder: string;
+}
+
+const test = _test as TestFn<Context>;
+
+test.beforeEach(async t => {
+  t.context.tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'openzeppelin-wizard-tron-'));
+});
+
+test.afterEach.always(async t => {
+  await rimraf(t.context.tempFolder);
+});
 
 test.serial('erc20 basic - layout & contents', async t => {
   const opts: GenericOptions = {
@@ -25,6 +40,17 @@ test.serial('erc20 basic - layout & contents', async t => {
   };
   const c = buildERC20(opts);
   await runSnapshotTest(c, t, opts);
+});
+
+test.serial('erc20 basic - npm install and compile', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+  };
+  const c = buildERC20(opts);
+  const zip = await zipHardhatTron(c, opts);
+  await extractAndCompile(zip, t, 'npx hardhat compile');
 });
 
 test.serial('erc20 full (mintable, pausable, permit, votes, flashmint)', async t => {
@@ -112,6 +138,23 @@ async function runSnapshotTest(c: Contract, t: ExecutionContext, opts: GenericOp
 
   assertLayout(zip, c, t);
   await assertContents(zip, c, t);
+}
+
+async function extractAndCompile(zip: JSZip, t: ExecutionContext<Context>, compileCommand: string) {
+  const tempFolder = t.context.tempFolder;
+  for (const item of Object.values(zip.files)) {
+    if (item.dir) {
+      await fs.mkdir(path.join(tempFolder, item.name));
+    } else {
+      await fs.writeFile(path.join(tempFolder, item.name), await asString(item));
+    }
+  }
+
+  const exec = util.promisify(child.exec);
+  const result = await exec(`cd "${tempFolder}" && npm install && ${compileCommand}`, {
+    env: { ...process.env, HOME: tempFolder },
+  });
+  t.regex(result.stdout, /Compiled \d+ Solidity file/i);
 }
 
 function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
