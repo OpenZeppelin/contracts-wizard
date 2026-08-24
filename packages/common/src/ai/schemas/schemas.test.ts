@@ -26,10 +26,12 @@ import {
   cairoGovernorSchema,
   cairoVestingSchema,
   cairoCustomSchema,
+  stellarAccountSchema,
   stellarFungibleSchema,
   stellarGovernorSchema,
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
+  stellarVaultSchema,
   stylusERC20Schema,
   stylusERC721Schema,
   stylusERC1155Schema,
@@ -93,9 +95,11 @@ const allSchemas: [string, z.ZodRawShape][] = [
   ['cairoGovernor', cairoGovernorSchema],
   ['cairoVesting', cairoVestingSchema],
   ['cairoCustom', cairoCustomSchema],
+  ['stellarAccount', stellarAccountSchema],
   ['stellarFungible', stellarFungibleSchema],
   ['stellarStablecoin', stellarStablecoinSchema],
   ['stellarNonFungible', stellarNonFungibleSchema],
+  ['stellarVault', stellarVaultSchema],
   ['stylusERC20', stylusERC20Schema],
   ['stylusERC721', stylusERC721Schema],
   ['stylusERC1155', stylusERC1155Schema],
@@ -150,10 +154,12 @@ function _stellarTypeAssertions() {
   const _: {
     [K in keyof StellarKindedOptions]: Omit<StellarKindedOptions[K], 'kind'>;
   } = {
+    Account: z.object(stellarAccountSchema).parse({}),
     Fungible: z.object(stellarFungibleSchema).parse({}),
     Governor: z.object(stellarGovernorSchema).parse({}),
     Stablecoin: z.object(stellarStablecoinSchema).parse({}),
     NonFungible: z.object(stellarNonFungibleSchema).parse({}),
+    Vault: z.object(stellarVaultSchema).parse({}),
   };
 }
 

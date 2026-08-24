@@ -1,5 +1,33 @@
 # Changelog
 
+
+## 0.1.5 (2026-08-17)
+
+- Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
+- Updated dependencies [[`db466bb`](https://github.com/OpenZeppelin/contracts-wizard/commit/db466bb1ca7e51d8b51eede0e832e18509c8c258)]:
+  - @openzeppelin/wizard-stellar@0.6.4
+  - @openzeppelin/wizard-common@0.5.6
+
+## 0.1.4 (2026-07-31)
+
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825)) ([`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a))
+  - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
+  - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
+  - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
+  - Fix compile errors in upgradeable ERC20 `crossChainBridging` variants.
+  - **Potentially breaking change**: Update to OpenZeppelin Contracts 5.7.0.
+- Updated dependencies [[`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a)]:
+  - @openzeppelin/wizard@0.10.12
+  - @openzeppelin/wizard-common@0.5.4
+
+## 0.1.3 (2026-06-26)
+
+- Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821)) ([`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379))
+
+- Updated dependencies [[`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379)]:
+  - @openzeppelin/wizard-stellar@0.6.3
+  - @openzeppelin/wizard-common@0.5.3
+
 ## 0.1.2 (2026-06-11)
 
 - Add `decimals` to the AI schemas, MCP tools, and CLI for Solidity `erc20`, `stablecoin`, `realWorldAsset`, Confidential `erc7984`, and Stellar `fungible`, `stablecoin`. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812)) ([`11ce6a2`](https://github.com/OpenZeppelin/contracts-wizard/commit/11ce6a2cb49dbef46a95368151ff73a4f7739fd9))

@@ -15,3 +15,7 @@ fi
 yarn install --frozen-lockfile
 changeset publish
 git push --follow-tags
+
+# Strip dates from changelog version headings (working tree only) so that the
+# changesets action can extract each version's section for GitHub release notes.
+node scripts/release/strip-changelog-dates.mjs || echo "Failed to strip changelog dates. GitHub release notes may contain the full changelog."

@@ -1,10 +1,11 @@
 import JSZip from 'jszip';
 import type { GenericOptions } from './build-generic';
-import type { Contract, FunctionArgument } from './contract';
+import type { Contract } from './contract';
 import { printContract } from './print';
 import SOLIDITY_VERSION from './solidity-version.json';
 import type { Lines } from './utils/format-lines';
 import { formatLinesWithSpaces, spaceBetween } from './utils/format-lines';
+import { addTodoAndCommentOut, hasNonAddressArgs, isAddressType } from './zip-shared';
 
 class TestGenerator {
   constructor(private parent: HardhatZipGenerator) {}
@@ -20,12 +21,8 @@ class TestGenerator {
         'it("Test contract", async function () {',
         spaceBetween(
           [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-          this.declareVariables(c.constructorArgs),
-          this.getDeployLines(
-            c,
-            c.constructorArgs.map(a => a.name),
-          ),
-          this.getExpects(opts),
+          ...getDeploymentSteps(c, this.parent),
+          this.getAssertions(c, opts),
         ),
         '});',
       ],
@@ -38,6 +35,15 @@ class TestGenerator {
       'import { expect } from "chai";',
       `import { ${this.parent.getHardhatPlugins(c).join(', ')} } from "hardhat";`,
     ];
+  }
+
+  private getAssertions(c: Contract, opts?: GenericOptions): Lines[] {
+    if (hasNonAddressArgs(c)) {
+      // The deployment is commented out until the user fills in the missing constructor arguments,
+      // so there is no `instance` to assert against yet.
+      return [];
+    }
+    return this.getExpects(opts);
   }
 
   private getExpects(opts?: GenericOptions): Lines[] {
@@ -58,31 +64,27 @@ class TestGenerator {
     }
     return [];
   }
+}
 
-  private declareVariables(args: FunctionArgument[]): Lines[] {
-    return args.flatMap((arg, i) => {
-      if (arg.type === 'address') {
-        return [`const ${arg.name} = (await ethers.getSigners())[${i}].address;`];
-      } else {
-        return [`// TODO: Set the following constructor argument`, `// const ${arg.name} = ...;`];
-      }
-    });
+/**
+ * Steps to declare the constructor arguments and deploy the contract, as groups of lines
+ * to be separated by blank lines. If any constructor argument cannot be given a default
+ * value (i.e. is not an address), the whole deployment is commented out behind a single
+ * TODO so that the user can fill in the values and uncomment the entire section at once.
+ */
+function getDeploymentSteps(c: Contract, generator: HardhatZipGenerator): Lines[][] {
+  const argNames = c.constructorArgs.map(a => a.name);
+  const declarations = c.constructorArgs.map((arg, i) =>
+    isAddressType(arg) ? `const ${arg.name} = (await ethers.getSigners())[${i}].address;` : `const ${arg.name} = ...;`,
+  );
+  const deployment = [
+    `const instance = await ${generator.getDeploymentCall(c, argNames)};`,
+    'await instance.waitForDeployment();',
+  ];
+  if (hasNonAddressArgs(c)) {
+    return [addTodoAndCommentOut(c, [...declarations, ...deployment])];
   }
-
-  private getDeployLines(c: Contract, argNames: string[]): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
-      return [
-        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
-        `// const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
-        `// await instance.waitForDeployment();`,
-      ];
-    } else {
-      return [
-        `const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
-        'await instance.waitForDeployment();',
-      ];
-    }
-  }
+  return [declarations, deployment];
 }
 
 /**
@@ -354,13 +356,11 @@ class Hardhat3TestGenerator {
   }
 
   private getTestCase(c: Contract, opts?: GenericOptions): Lines[] {
-    const argNames = c.constructorArgs.map(a => a.name);
     return [
       `test("${c.name}", async t => {`,
       spaceBetween(
         [`const ContractFactory = await ethers.getContractFactory("${c.name}");`],
-        this.declareVariables(c.constructorArgs),
-        this.getDeployLines(c, argNames),
+        ...getDeploymentSteps(c, this.parent),
         this.getAssertions(c, opts),
       ),
       '});',
@@ -368,7 +368,7 @@ class Hardhat3TestGenerator {
   }
 
   private getAssertions(c: Contract, opts?: GenericOptions): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
+    if (hasNonAddressArgs(c)) {
       // The deployment is commented out until the user fills in the missing constructor arguments,
       // so there is no `instance` to assert against yet. `t.pass()` keeps AVA happy in the meantime.
       return ['t.pass();'];
@@ -395,31 +395,6 @@ class Hardhat3TestGenerator {
       }
     }
     return [];
-  }
-
-  private declareVariables(args: FunctionArgument[]): Lines[] {
-    return args.flatMap((arg, i) => {
-      if (arg.type === 'address') {
-        return [`const ${arg.name} = (await ethers.getSigners())[${i}].address;`];
-      } else {
-        return [`// TODO: Set the following constructor argument`, `// const ${arg.name} = ...;`];
-      }
-    });
-  }
-
-  private getDeployLines(c: Contract, argNames: string[]): Lines[] {
-    if (c.constructorArgs.some(a => a.type !== 'address')) {
-      return [
-        `// TODO: Uncomment the below when the missing constructor arguments are set above`,
-        `// const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
-        `// await instance.waitForDeployment();`,
-      ];
-    } else {
-      return [
-        `const instance = await ${this.parent.getDeploymentCall(c, argNames)};`,
-        'await instance.waitForDeployment();',
-      ];
-    }
   }
 }
 

@@ -2,11 +2,14 @@
 // which have different requirements for file extensions in import statements.
 
 export const stellarPrompts = {
+  Account:
+    'Make a smart account contract that authorizes operations through configurable signers and policies, for example a multisig with passkey, Ed25519 and delegated signers.',
   Fungible: 'Make a fungible token per the Fungible Token Standard, compatible with SEP-41, similar to ERC-20.',
   Governor: 'Make a governor contract for on-chain governance using token-based voting.',
   NonFungible:
     'Make a non-fungible token per the Non-Fungible Token Standard, compatible with SEP-50, similar to ERC-721.',
   Stablecoin: 'Make a stablecoin that uses Fungible Token Standard, compatible with SEP-41.',
+  Vault: 'Make a tokenized vault that issues Fungible Token shares for an underlying asset, similar to ERC-4626.',
 };
 
 export const stellarCommonDescriptions = {
@@ -15,6 +18,21 @@ export const stellarCommonDescriptions = {
     'The type of access control to provision. Ownable is a simple mechanism with a single account authorized for all privileged actions. Roles is a flexible mechanism with a separate role for each privileged action. A role can have many authorized accounts.',
   explicitImplementations:
     'Whether the contract should use explicit trait implementations instead of using the default ones provided by the library.',
+};
+
+export const stellarAccountDescriptions = {
+  delegatedSigners:
+    'Whether the account accepts delegated signers, meaning Stellar addresses whose signatures the host verifies. Enabled by default.',
+  ed25519Signers:
+    'Whether the account accepts raw Ed25519 public keys, verified by an Ed25519 verifier contract supplied at deployment.',
+  webauthnSigners:
+    'Whether the account accepts WebAuthn (passkey) keys, verified by a WebAuthn verifier contract supplied at deployment.',
+  policy:
+    'How authorization is decided. False requires every configured signer to sign (n-of-n). Simple threshold requires any m of the n signers (a standard multisig). Weighted threshold gives each signer a weight and requires the authorized weights to reach a threshold. Both threshold policies need the address of a deployed policy contract at deployment.',
+  executionEntryPoint:
+    'Whether the account can call other contracts on its own behalf. Needed to manage contracts the account owns, such as its own policies, and enabled by default.',
+  upgradeable:
+    'Whether the account can be upgraded. The upgrade is authorized by the account itself through its context rules, not by an access control role.',
 };
 
 export const stellarFungibleDescriptions = {
@@ -36,6 +54,11 @@ export const stellarStablecoinDescriptions = {
   decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
+};
+
+export const stellarVaultDescriptions = {
+  decimalsOffset:
+    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals, used to mitigate inflation (donation) attacks via virtual shares. The default of 0 is already safe: it makes such attacks non-profitable. Higher values make attacks orders of magnitude more costly, at the cost of virtual shares absorbing a tiny portion of the value accrued to the vault. Must be between 0 and 10.',
 };
 
 export const stellarGovernorDescriptions = {

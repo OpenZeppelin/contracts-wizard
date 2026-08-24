@@ -1,4 +1,8 @@
-import { version as contractsVersion } from '@openzeppelin/contracts/package.json';
+// Use the version that the Wizard's output is generated against, rather than resolving
+// @openzeppelin/contracts from node_modules, which can be a different hoisted copy.
+import ozContractsVersion from '@openzeppelin/wizard/openzeppelin-contracts-version.json';
+
+const contractsVersion = ozContractsVersion.version;
 
 export function injectHyperlinks(code: string) {
   // We are modifying HTML, so use HTML escaped chars. The pattern excludes paths that include /../ in the URL.

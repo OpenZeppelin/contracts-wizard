@@ -55,6 +55,7 @@ test('all', async t => {
     quorumAbsolute: '5',
     storage: true,
     settings: true,
+    crossChainExecution: true,
     upgradeable: 'uups',
     info: {
       license: 'MIT',

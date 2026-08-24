@@ -50,6 +50,8 @@ test('all', async t => {
     mintable: true,
     incremental: true,
     votes: 'blocknumber',
+    crossChainBridging: 'erc7786native',
+    crossChainLinkAllowOverride: true,
     access: 'roles',
     upgradeable: 'uups',
     info: {

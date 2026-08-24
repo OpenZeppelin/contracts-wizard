@@ -159,6 +159,15 @@
         Enable storage of proposal details and enumerability of proposals.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.crossChainExecution}>
+      <input type="checkbox" bind:checked={opts.crossChainExecution} />
+      Crosschain Execution
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/governance#GovernorCrosschain">
+        Lets passed proposals relay execution to other chains through ERC-7786 gateways. Requires a
+        <code>CrosschainRemoteExecutor</code> contract, controlled by this governor, deployed on each target chain.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 

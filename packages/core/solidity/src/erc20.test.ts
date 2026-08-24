@@ -300,7 +300,7 @@ test('erc20 crossChainBridging superchain, premintChainId required', async t => 
   );
   t.is(
     (error as OptionsError).messages.premintChainId,
-    'Chain ID is required when using Premint with Cross-Chain Bridging',
+    'Chain ID is required when using Premint with Crosschain Bridging',
   );
 });
 

@@ -1,6 +1,56 @@
 # Changelog
 
 
+## 0.6.4 (2026-08-17)
+
+- Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
+- Updated dependencies [[`db466bb`](https://github.com/OpenZeppelin/contracts-wizard/commit/db466bb1ca7e51d8b51eede0e832e18509c8c258)]:
+  - @openzeppelin/wizard-stellar@0.6.4
+  - @openzeppelin/wizard-common@0.5.6
+
+## 0.6.3 (2026-08-07)
+
+- Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
+- Updated dependencies [[`2c2d516`](https://github.com/OpenZeppelin/contracts-wizard/commit/2c2d5165d9b6fda16a1415cedc0e9ac065adcfa9)]:
+  - @openzeppelin/wizard-common@0.5.5
+  - @openzeppelin/wizard@0.10.13
+
+## 0.6.2 (2026-08-07)
+
+- Shrink MCP App package size by sharing one HTML template per language. ([#838](https://github.com/OpenZeppelin/contracts-wizard/pull/838))
+  - Inject contract kind at serve time instead of shipping near-duplicate HTML per tool.
+  - Scope MCP App Tailwind content away from web-only Wizard shells.
+  - Bundle the Zama logo so it renders in self-contained MCP Apps.
+
+## 0.6.1 (2026-08-05)
+
+- Fix Governor Cross-Chain Execution appearing as an empty dropdown in the MCP App UI. ([#836](https://github.com/OpenZeppelin/contracts-wizard/pull/836))
+
+## 0.6.0 (2026-07-31)
+
+- **Breaking changes**: Renamed the `erc7984` tool to `confidential-erc7984`. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
+- Fix MCP App false "preview differs" when tool options imply other options. ([#832](https://github.com/OpenZeppelin/contracts-wizard/pull/832))
+- Add MCP Apps interactive UIs for Wizard-backed generation tools. ([#828](https://github.com/OpenZeppelin/contracts-wizard/pull/828))
+  - Each tool serves a fixed-kind Wizard controls + code preview App with Send Updates to Agent / Copy to Clipboard.
+  - Non-Apps clients still receive Markdown source from tools/call.
+
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825))
+  - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
+  - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
+  - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
+  - Fix compile errors in upgradeable ERC20 `crossChainBridging` variants.
+  - **Potentially breaking change**: Update to OpenZeppelin Contracts 5.7.0.
+- Updated dependencies [[`89e9fab`](https://github.com/OpenZeppelin/contracts-wizard/commit/89e9fabcd6e76128e2935f43a5f8c00ad8ed6e1a)]:
+  - @openzeppelin/wizard@0.10.12
+  - @openzeppelin/wizard-common@0.5.4
+
+## 0.5.10 (2026-06-26)
+
+- Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821))
+- Updated dependencies [[`c8a2962`](https://github.com/OpenZeppelin/contracts-wizard/commit/c8a29629c5c486fd5204b4b51e08c913b05f3379)]:
+  - @openzeppelin/wizard-stellar@0.6.3
+  - @openzeppelin/wizard-common@0.5.3
+
 ## 0.5.9 (2026-06-11)
 
 - Add `decimals` to the AI schemas, MCP tools, and CLI for Solidity `erc20`, `stablecoin`, `realWorldAsset`, Confidential `erc7984`, and Stellar `fungible`, `stablecoin`. ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))

@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import { defaults as accountDefaults } from './account';
 import type { GenericOptions } from './build-generic';
 import type { Contract } from './contract';
 import { printContract, removeCreateLevelAttributes } from './print';
@@ -6,8 +7,10 @@ import {
   contractOptionsToContractName,
   createRustLibFile,
   getRequiredLibDependencies,
+  printAccountRustTest,
   printContractCargo,
   printRustNameTest,
+  printVaultRustTest,
   workspaceCargo,
 } from './zip-shared';
 
@@ -30,6 +33,19 @@ const gitIgnore = `\
 target/
 `;
 
+// Most contracts get the generic name assertion; kinds whose constructor takes
+// more than plain addresses need a template that can satisfy it.
+const printTest = (c: Contract, opts: GenericOptions) => {
+  switch (opts?.kind) {
+    case 'Account':
+      return printAccountRustTest(c, opts.policy ?? accountDefaults.policy);
+    case 'Vault':
+      return printVaultRustTest(c);
+    default:
+      return printRustNameTest(c);
+  }
+};
+
 export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const zip = new JSZip();
 
@@ -37,7 +53,7 @@ export const createRustZipEnvironment = (c: Contract, opts: GenericOptions) => {
   const requiredLibDeps = getRequiredLibDependencies(c);
 
   zip.file(`contracts/${contractName}/src/contract.rs`, removeCreateLevelAttributes(printContract(c)));
-  zip.file(`contracts/${contractName}/src/test.rs`, printRustNameTest(c));
+  zip.file(`contracts/${contractName}/src/test.rs`, printTest(c, opts));
   zip.file(`contracts/${contractName}/src/lib.rs`, createRustLibFile);
   zip.file(`contracts/${contractName}/Cargo.toml`, printContractCargo(contractName, requiredLibDeps));
   zip.file('Cargo.toml', workspaceCargo(requiredLibDeps));

@@ -1,13 +1,20 @@
 import type { CommonContractOptions, CommonOptions } from './common-options';
+import type { AccountOptions } from './account';
 import type { FungibleOptions } from './fungible';
 import type { GovernorOptions } from './governor';
 import type { NonFungibleOptions } from './non-fungible';
 import type { StablecoinOptions } from './stablecoin';
+import type { VaultOptions } from './vault';
 import {
   printStablecoin,
   defaults as stablecoinDefaults,
   isAccessControlRequired as stablecoinIsAccessControlRequired,
 } from './stablecoin';
+import {
+  printVault,
+  defaults as vaultDefaults,
+  isAccessControlRequired as vaultIsAccessControlRequired,
+} from './vault';
 import {
   printFungible,
   defaults as fungibledefaults,
@@ -23,6 +30,7 @@ import {
   defaults as nonFungibledefaults,
   isAccessControlRequired as nonFungibleIsAccessControlRequired,
 } from './non-fungible';
+import { printAccount, defaults as accountDefaults } from './account';
 
 export interface WizardContractAPI<Options extends CommonOptions> {
   /**
@@ -44,10 +52,21 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }
 
+/**
+ * A smart account authorizes everything through `__check_auth` and its context
+ * rules, so it has no `access` option and therefore no `AccessControlAPI`.
+ */
+export type Account = WizardContractAPI<AccountOptions>;
 export type Fungible = WizardContractAPI<FungibleOptions> & AccessControlAPI<FungibleOptions>;
 export type Governor = WizardContractAPI<GovernorOptions> & AccessControlAPI<GovernorOptions>;
 export type NonFungible = WizardContractAPI<NonFungibleOptions> & AccessControlAPI<NonFungibleOptions>;
 export type Stablecoin = WizardContractAPI<StablecoinOptions> & AccessControlAPI<StablecoinOptions>;
+export type Vault = WizardContractAPI<VaultOptions> & AccessControlAPI<VaultOptions>;
+
+export const account: Account = {
+  print: printAccount,
+  defaults: accountDefaults,
+};
 
 export const fungible: Fungible = {
   print: printFungible,
@@ -71,4 +90,10 @@ export const stablecoin: Stablecoin = {
   print: printStablecoin,
   defaults: stablecoinDefaults,
   isAccessControlRequired: stablecoinIsAccessControlRequired,
+};
+
+export const vault: Vault = {
+  print: printVault,
+  defaults: vaultDefaults,
+  isAccessControlRequired: vaultIsAccessControlRequired,
 };

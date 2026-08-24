@@ -12,8 +12,18 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "@openzeppelin/wizard-cairo-alpha",
-    "ui"
-  ]
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  },
+  "changedFilePatterns": [
+    "**",
+    "!src/cairo_alpha/**",
+    "!src/polkadot/**",
+    "!api/**",
+    "!public/**",
+    "!scripts/deno/**",
+    "!src/**/App.svelte"
+  ],
+  "ignore": ["@openzeppelin/wizard-cairo-alpha"]
 }

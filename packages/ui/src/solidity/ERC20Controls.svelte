@@ -51,10 +51,7 @@
     showChainId = opts.premint !== '' && opts.premint !== '0' && opts.crossChainBridging !== false;
   }
 
-  let showAllowOverride = false;
-  $: {
-    showAllowOverride = opts.crossChainBridging === 'erc7786native';
-  }
+  $: showAllowOverride = opts.crossChainBridging === 'erc7786native';
 </script>
 
 <section class="controls-section">
@@ -187,10 +184,10 @@
 </ExpandableToggleRadio>
 
 <ExpandableToggleRadio
-  label="Cross-Chain Bridging"
+  label="Crosschain Bridging"
   bind:value={opts.crossChainBridging}
   defaultValue="custom"
-  helpContent="Allows authorized bridge contracts to mint and burn tokens for cross-chain transfers."
+  helpContent="Allows authorized bridge contracts to mint and burn tokens for crosschain transfers."
   helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Bridgeable"
 >
   <div class="checkbox-group">

@@ -100,6 +100,48 @@ testERC1155('full upgradeable transparent with managed', {
   upgradeable: 'uups',
 });
 
+testERC1155('erc1155 crossChainBridging erc7786native', {
+  crossChainBridging: 'erc7786native',
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native allowOverride', {
+  crossChainBridging: 'erc7786native',
+  crossChainLinkAllowOverride: true,
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native ownable', {
+  crossChainBridging: 'erc7786native',
+  access: 'ownable',
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native ownable mintable burnable', {
+  crossChainBridging: 'erc7786native',
+  access: 'ownable',
+  mintable: true,
+  burnable: true,
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native roles', {
+  crossChainBridging: 'erc7786native',
+  access: 'roles',
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native managed', {
+  crossChainBridging: 'erc7786native',
+  access: 'managed',
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native pausable supply', {
+  crossChainBridging: 'erc7786native',
+  pausable: true,
+  supply: true,
+});
+
+testERC1155('erc1155 crossChainBridging erc7786native upgradeable', {
+  crossChainBridging: 'erc7786native',
+  upgradeable: 'transparent',
+});
+
 testAPIEquivalence('API default');
 
 testAPIEquivalence('API basic', {
@@ -133,5 +175,12 @@ test('API isAccessControlRequired', async t => {
   );
   t.is(erc1155.isAccessControlRequired({ updatableUri: true }), true);
   t.is(erc1155.isAccessControlRequired({ updatableUri: false }), false);
+  t.is(
+    erc1155.isAccessControlRequired({
+      updatableUri: false,
+      crossChainBridging: 'erc7786native',
+    }),
+    true,
+  );
   t.is(erc1155.isAccessControlRequired({}), true); // updatableUri is true by default
 });

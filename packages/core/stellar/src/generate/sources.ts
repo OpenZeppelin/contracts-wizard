@@ -2,10 +2,12 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
+import { generateAccountOptions } from './account';
 import { generateFungibleOptions } from './fungible';
 import { generateGovernorOptions } from './governor';
 import { generateNonFungibleOptions } from './non-fungible';
 import { generateStablecoinOptions } from './stablecoin';
+import { generateVaultOptions } from './vault';
 import type { GenericOptions, KindedOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
@@ -15,6 +17,12 @@ import type { Contract } from '../contract';
 type Kind = keyof KindedOptions;
 
 export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
+  if (!kind || kind === 'Account') {
+    for (const kindOpts of generateAccountOptions()) {
+      yield { kind: 'Account', ...kindOpts };
+    }
+  }
+
   if (!kind || kind === 'Fungible') {
     for (const kindOpts of generateFungibleOptions()) {
       yield { kind: 'Fungible', ...kindOpts };
@@ -36,6 +44,12 @@ export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
   if (!kind || kind === 'Stablecoin') {
     for (const kindOpts of generateStablecoinOptions()) {
       yield { kind: 'Stablecoin', ...kindOpts };
+    }
+  }
+
+  if (!kind || kind === 'Vault') {
+    for (const kindOpts of generateVaultOptions()) {
+      yield { kind: 'Vault', ...kindOpts };
     }
   }
 }

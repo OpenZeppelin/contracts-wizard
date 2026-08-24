@@ -1,10 +1,11 @@
 {
   "name": "ui",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "prepare": "echo \"Nothing to prepare\"",
     "build": "node scripts/copy-versions.mjs && rollup -c",
+    "build:mcp-apps": "node scripts/copy-versions.mjs && rollup -c rollup.mcp-apps.config.mjs && node scripts/package-mcp-apps.mjs",
     "type:check:api": "deno task --config deno.json type:check",
     "dev": "node scripts/copy-versions.mjs && rollup -c -w",
     "dev:api": "ENV=dev deno task dev",
@@ -27,7 +28,7 @@
     "@upstash/redis": "1.35.6",
     "autoprefixer": "^10.4.21",
     "ava": "^6.4.1",
-    "openai": "5.23.2",
+    "openai": "7.5.0",
     "path-browserify": "^1.0.1",
     "postcss": "^8.5.6",
     "postcss-load-config": "^6.0.1",
@@ -45,6 +46,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@modelcontextprotocol/ext-apps": "1.7.5",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.11.1",
     "highlightjs-cairo": "^0.4.0",

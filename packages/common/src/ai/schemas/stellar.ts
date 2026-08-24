@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  stellarAccountDescriptions,
   commonDescriptions,
   stellarGovernorDescriptions,
   infoDescriptions,
@@ -7,6 +8,7 @@ import {
   stellarFungibleDescriptions,
   stellarNonFungibleDescriptions,
   stellarStablecoinDescriptions,
+  stellarVaultDescriptions,
 } from '../../index';
 
 export const stellarInfoSchema = z
@@ -21,6 +23,25 @@ export const stellarCommonSchema = {
   access: z.literal('ownable').or(z.literal('roles')).optional().describe(stellarCommonDescriptions.access),
   explicitImplementations: z.boolean().optional().describe(stellarCommonDescriptions.explicitImplementations),
   upgradeable: z.boolean().optional().describe(stellarCommonDescriptions.upgradeable),
+  info: stellarInfoSchema,
+} as const satisfies z.ZodRawShape;
+
+// A smart account authorizes everything through its own context rules, so it has
+// neither an `access` option nor explicit trait implementations, and cannot reuse
+// `stellarCommonSchema`.
+export const stellarAccountSchema = {
+  name: z.string().describe(commonDescriptions.name),
+  delegatedSigners: z.boolean().optional().describe(stellarAccountDescriptions.delegatedSigners),
+  ed25519Signers: z.boolean().optional().describe(stellarAccountDescriptions.ed25519Signers),
+  webauthnSigners: z.boolean().optional().describe(stellarAccountDescriptions.webauthnSigners),
+  policy: z
+    .literal(false)
+    .or(z.literal('simple-threshold'))
+    .or(z.literal('weighted-threshold'))
+    .optional()
+    .describe(stellarAccountDescriptions.policy),
+  executionEntryPoint: z.boolean().optional().describe(stellarAccountDescriptions.executionEntryPoint),
+  upgradeable: z.boolean().optional().describe(stellarAccountDescriptions.upgradeable),
   info: stellarInfoSchema,
 } as const satisfies z.ZodRawShape;
 
@@ -55,6 +76,14 @@ export const stellarStablecoinSchema = {
     .or(z.literal('blocklist'))
     .optional()
     .describe(stellarStablecoinDescriptions.limitations),
+} as const satisfies z.ZodRawShape;
+
+export const stellarVaultSchema = {
+  name: z.string().describe(commonDescriptions.name),
+  symbol: z.string().describe(commonDescriptions.symbol),
+  decimalsOffset: z.string().optional().describe(stellarVaultDescriptions.decimalsOffset),
+  pausable: z.boolean().optional().describe(commonDescriptions.pausable),
+  ...stellarCommonSchema,
 } as const satisfies z.ZodRawShape;
 
 export const stellarNonFungibleSchema = {

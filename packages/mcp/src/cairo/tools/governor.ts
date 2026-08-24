@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { GovernorOptions } from '@openzeppelin/wizard-cairo';
 import { governor } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoGovernor(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-governor',
-    makeDetailedPrompt(cairoPrompts.Governor),
-    cairoGovernorSchema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.Governor),
+      inputSchema: cairoGovernorSchema,
+      title: 'Cairo Governor',
+    },
     async ({
       name,
       delay,
@@ -48,14 +53,7 @@ export function registerCairoGovernor(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => governor.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => governor.print(opts), 'cairo');
     },
   );
 }

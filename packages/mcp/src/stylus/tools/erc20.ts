@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC20Options } from '@openzeppelin/wizard-stylus';
 import { erc20 } from '@openzeppelin/wizard-stylus';
-import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { stylusERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { stylusPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerStylusERC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stylus-erc20',
-    makeDetailedPrompt(stylusPrompts.ERC20),
-    stylusERC20Schema,
+    {
+      description: makeDetailedPrompt(stylusPrompts.ERC20),
+      inputSchema: stylusERC20Schema,
+      title: 'Stylus ERC20',
+    },
     async ({ name, burnable, permit, flashmint, info }) => {
       const opts: ERC20Options = {
         name,
@@ -18,14 +23,7 @@ export function registerStylusERC20(server: McpServer): RegisteredTool {
         flashmint,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => erc20.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => erc20.print(opts), 'rust');
     },
   );
 }
