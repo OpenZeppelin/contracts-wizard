@@ -5,9 +5,6 @@
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
-  // The TRON library profile renders TRC* token names + @openzeppelin/tron-contracts
-  // import paths structurally (via printContract), for the in-page display and
-  // single-file download. The zip generators apply the same profile internally.
   import { tronPrintProfile, TRON_DEFAULT_BLOCK_TIME, type Contract, type GenericOptions } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
@@ -20,8 +17,8 @@
   const zipTronboxModule = import('@openzeppelin/wizard/zip-env-tronbox');
 
   // Uses the Solidity Wizard with overrides specific to TRON:
-  //  - rewrite generated source to TRC token names + @openzeppelin/tron-contracts paths
-  //    (incl. @openzeppelin/tron-contracts-upgradeable for upgradeable contracts)
+  //  - print via tronPrintProfile (`transformName` / `transformImport` on library
+  //    symbols and paths only — not a pass over the finished source)
   //  - swap Hardhat download for the @openzeppelin/hardhat-tron-based one
   //  - replace the second download tab (originally Foundry) with TronBox
   //  - remap the @openzeppelin/tron-contracts packages when opening in Remix (TVM is EVM-compatible enough)
