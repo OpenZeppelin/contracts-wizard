@@ -4,13 +4,17 @@ import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } fr
 import { makeDetailedPrompt } from '../../utils';
 import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
-import { tronPrintResult } from '../print-result';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerTronTRC20(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'tron-trc20',
-    makeDetailedPrompt(tronPrompts.TRC20),
-    solidityERC20Schema,
+    {
+      description: makeDetailedPrompt(tronPrompts.TRC20),
+      inputSchema: solidityERC20Schema,
+      title: 'TRON TRC20',
+    },
     async ({
       name,
       symbol,
@@ -49,9 +53,8 @@ export function registerTronTRC20(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return tronPrintResult(() =>
-        printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC20', ...opts })), tronPrintProfile),
-      );
+      const tronOpts = sanitizeTronOptions({ kind: 'ERC20' as const, ...opts });
+      return wizardAppPrintResult(tronOpts, () => printContract(buildGeneric(tronOpts), tronPrintProfile), 'solidity');
     },
   );
 }

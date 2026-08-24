@@ -10,13 +10,17 @@ import {
 import { makeDetailedPrompt } from '../../utils';
 import { tronGovernorSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
-import { tronPrintResult } from '../print-result';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerTronGovernor(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'tron-governor',
-    makeDetailedPrompt(tronPrompts.Governor),
-    tronGovernorSchema,
+    {
+      description: makeDetailedPrompt(tronPrompts.Governor),
+      inputSchema: tronGovernorSchema,
+      title: 'TRON Governor',
+    },
     async ({
       name,
       delay,
@@ -58,9 +62,8 @@ export function registerTronGovernor(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return tronPrintResult(() =>
-        printContract(buildGeneric(sanitizeTronOptions({ kind: 'Governor', ...opts })), tronPrintProfile),
-      );
+      const tronOpts = sanitizeTronOptions({ kind: 'Governor' as const, ...opts });
+      return wizardAppPrintResult(tronOpts, () => printContract(buildGeneric(tronOpts), tronPrintProfile), 'solidity');
     },
   );
 }

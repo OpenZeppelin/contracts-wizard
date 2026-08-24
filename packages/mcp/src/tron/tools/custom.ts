@@ -4,13 +4,17 @@ import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wiz
 import { makeDetailedPrompt } from '../../utils';
 import { solidityCustomSchema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
-import { tronPrintResult } from '../print-result';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerTronCustom(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'tron-custom',
-    makeDetailedPrompt(tronPrompts.Custom),
-    solidityCustomSchema,
+    {
+      description: makeDetailedPrompt(tronPrompts.Custom),
+      inputSchema: solidityCustomSchema,
+      title: 'TRON Custom',
+    },
     async ({ name, pausable, access, upgradeable, info }) => {
       const opts: CustomOptions = {
         name,
@@ -19,7 +23,8 @@ export function registerTronCustom(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return tronPrintResult(() => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile));
+      const tronOpts = { kind: 'Custom' as const, ...opts };
+      return wizardAppPrintResult(tronOpts, () => printContract(buildGeneric(tronOpts), tronPrintProfile), 'solidity');
     },
   );
 }

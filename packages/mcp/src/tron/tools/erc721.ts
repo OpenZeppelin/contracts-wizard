@@ -4,13 +4,17 @@ import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } fr
 import { makeDetailedPrompt } from '../../utils';
 import { solidityERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
-import { tronPrintResult } from '../print-result';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerTronTRC721(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'tron-trc721',
-    makeDetailedPrompt(tronPrompts.TRC721),
-    solidityERC721Schema,
+    {
+      description: makeDetailedPrompt(tronPrompts.TRC721),
+      inputSchema: solidityERC721Schema,
+      title: 'TRON TRC721',
+    },
     async ({
       name,
       symbol,
@@ -47,9 +51,8 @@ export function registerTronTRC721(server: McpServer): RegisteredTool {
         namespacePrefix,
         info,
       };
-      return tronPrintResult(() =>
-        printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC721', ...opts })), tronPrintProfile),
-      );
+      const tronOpts = sanitizeTronOptions({ kind: 'ERC721' as const, ...opts });
+      return wizardAppPrintResult(tronOpts, () => printContract(buildGeneric(tronOpts), tronPrintProfile), 'solidity');
     },
   );
 }

@@ -4,13 +4,17 @@ import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } fr
 import { makeDetailedPrompt } from '../../utils';
 import { solidityERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
-import { tronPrintResult } from '../print-result';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerTronTRC1155(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'tron-trc1155',
-    makeDetailedPrompt(tronPrompts.TRC1155),
-    solidityERC1155Schema,
+    {
+      description: makeDetailedPrompt(tronPrompts.TRC1155),
+      inputSchema: solidityERC1155Schema,
+      title: 'TRON TRC1155',
+    },
     async ({
       name,
       uri,
@@ -39,9 +43,8 @@ export function registerTronTRC1155(server: McpServer): RegisteredTool {
         upgradeable,
         info,
       };
-      return tronPrintResult(() =>
-        printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC1155', ...opts })), tronPrintProfile),
-      );
+      const tronOpts = sanitizeTronOptions({ kind: 'ERC1155' as const, ...opts });
+      return wizardAppPrintResult(tronOpts, () => printContract(buildGeneric(tronOpts), tronPrintProfile), 'solidity');
     },
   );
 }

@@ -71,6 +71,15 @@ async function listExpectedWizardTools(): Promise<{ language: string; kind: stri
       expected.push({ language, kind, toolName: coreKindToToolName(language, kind) });
     }
   }
+  // TRON reuses the Solidity core builders rather than having a separate
+  // packages/core/tron package. Its MCP/UI surface intentionally exposes this subset.
+  expected.push(
+    { language: 'tron', kind: 'ERC20', toolName: 'tron-trc20' },
+    { language: 'tron', kind: 'ERC721', toolName: 'tron-trc721' },
+    { language: 'tron', kind: 'ERC1155', toolName: 'tron-trc1155' },
+    { language: 'tron', kind: 'Governor', toolName: 'tron-governor' },
+    { language: 'tron', kind: 'Custom', toolName: 'tron-custom' },
+  );
   return expected;
 }
 
