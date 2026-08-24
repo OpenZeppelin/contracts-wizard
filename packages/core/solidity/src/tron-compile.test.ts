@@ -44,14 +44,6 @@ async function testCompileTron(t: ExecutionContext, kind: keyof KindedOptions) {
     // Mirror the TRON surfaces: drop options TRON doesn't support (e.g. `superchain`).
     const tronOptions = sanitizeTronOptions(options);
 
-    // Upgradeable sources import @openzeppelin/tron-contracts-upgradeable, which
-    // currently references the peer as `@openzeppelin/tron-contracts/contracts/...`
-    // while the npm package has no extra `contracts/` directory. Skip those
-    // combinations until the library import paths match the published layout.
-    if ('upgradeable' in tronOptions && tronOptions.upgradeable) {
-      continue;
-    }
-
     let source: string;
     try {
       source = printContract(buildGeneric(tronOptions), tronPrintProfile);

@@ -53,6 +53,20 @@ test.serial('erc20 basic - npm install and compile', async t => {
   await extractAndCompile(zip, t, 'npx tronbox compile');
 });
 
+test.serial('erc20 uups upgradeable - npm install and compile', async t => {
+  const opts: GenericOptions = {
+    kind: 'ERC20',
+    name: 'My Token',
+    symbol: 'MTK',
+    mintable: true,
+    access: 'ownable',
+    upgradeable: 'uups',
+  };
+  const c = buildERC20(opts);
+  const zip = await zipTronbox(c, opts);
+  await extractAndCompile(zip, t, 'npx tronbox compile');
+});
+
 test.serial('erc20 mintable+burnable+ownable', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',

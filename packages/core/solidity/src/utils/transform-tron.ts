@@ -35,7 +35,7 @@ const TRON_SOLC_MAX_PATCH = 26;
 export const TRON_SOLIDITY_VERSION = capTronSolidityVersion(SOLIDITY_VERSION);
 
 /** Published `@openzeppelin/tron-contracts` / `-upgradeable` version the Wizard targets. */
-export const TRON_CONTRACTS_VERSION = '5.6.0-rc.1';
+export const TRON_CONTRACTS_VERSION = '5.6.0-rc.2';
 
 function capTronSolidityVersion(version: string): string {
   const [major, minor, patch] = version.split('.').map(part => parseInt(part, 10));
