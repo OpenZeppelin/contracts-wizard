@@ -114,8 +114,8 @@ function deployUpgradeableMigration(c: Contract): string {
   // only dereference it once the migration runs.
   const toHexHelper = c.constructorArgs.some(arg => arg.type === 'address')
     ? `
-// initialize() arguments are ABI-encoded, so addresses must be 0x-hex. Plugin
-// options such as initialOwner take base58 and are converted for you.
+// initialize() arguments are ABI-encoded, so addresses must be 0x-hex. Options
+// such as initialOwner stay base58: the plugin canonicalizes those itself.
 const toHex = base58 => tronWeb.address.toHex(base58).replace(/^41/, '0x');
 `
     : '';
