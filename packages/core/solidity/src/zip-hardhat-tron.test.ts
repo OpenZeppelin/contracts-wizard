@@ -105,8 +105,7 @@ test.serial('erc1155 basic', async t => {
   await runSnapshotTest(c, t, opts);
 });
 
-// Upgradeable contracts deploy behind a manually-deployed proxy (the OZ Upgrades
-// plugins don't target TRON), so the project also ships a `contracts/Proxy.sol`.
+// Upgradeable zips include contracts/Proxy.sol so the toolchain compiles the proxy.
 test.serial('erc20 uups upgradeable - proxy deploy scaffolding', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',

@@ -142,22 +142,20 @@ The default \`tre\` network in \`hardhat.config.ts\` points at a local TRON Runt
 ${
   c.upgradeable
     ? `
-> :information_source: This is an upgradeable contract. OpenZeppelin's Hardhat Upgrades plugin targets EVM chains and does not deploy to TRON, so \`scripts/deploy.ts\` deploys the proxy by hand: it deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address it prints, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
+> :information_source: This is an upgradeable contract. \`scripts/deploy.ts\` deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address it prints, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
 `
     : ''
 }`;
   }
 
-  // hardhat-tron does not bundle `@openzeppelin/hardhat-upgrades` (the Upgrades
-  // plugins don't support TRON), so the deploy script/test never reference an
-  // `upgrades` object. Override the base list to drop it even when upgradeable.
+  // This zip installs no upgrades plugin, so the deploy script and test import
+  // `ethers` only, even when upgradeable.
   public override getHardhatPlugins(_c: Contract): string[] {
     return ['ethers'];
   }
 
   protected override getScript(c: Contract): string {
-    // For upgradeable contracts we deploy the proxy by hand (see header note on
-    // `tron-upgradeable.ts`); the base `upgrades.deployProxy` flow is EVM-only.
+    // Upgradeable zips deploy implementation then proxy instead of upgrades.deployProxy.
     return c.upgradeable ? this.getUpgradeableScript(c) : super.getScript(c);
   }
 
@@ -194,9 +192,10 @@ ${
     return `\
 import { ethers } from "hardhat";
 
-// OpenZeppelin's Hardhat Upgrades plugin does not support TRON, so this script
-// deploys the proxy manually: deploy the implementation, then deploy a
-// ${proxy.contractName} that delegates to it and runs initialize() atomically.
+// Deploys the implementation, then a ${proxy.contractName} that delegates to it
+// and runs initialize() atomically. Interact with the proxy address,
+// never the implementation.
+// See https://github.com/OpenZeppelin/tron-contracts-upgradeable
 async function main() {
   // 1. Deploy the implementation. It is never called directly — all calls go
   //    through the proxy — and it cannot be initialized on its own because its

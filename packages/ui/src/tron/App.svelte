@@ -26,15 +26,14 @@
   //  - hide Stablecoin + RealWorldAsset tabs (they rely on @openzeppelin/community-contracts,
   //    which is not being ported to TRON)
   //
-  // Upgradeable contracts are fully supported: the generated source imports from
-  // @openzeppelin/tron-contracts-upgradeable, and the Hardhat/TronBox downloads
-  // deploy the proxy by hand (the OZ Upgrades plugins don't target TRON).
+  // Upgradeable is fully supported: source imports @openzeppelin/tron-contracts-upgradeable,
+  // and both downloads ship an implementation-then-proxy deploy for it.
   const overrides: Overrides = {
     omitTabs: ['Account', 'Stablecoin', 'RealWorldAsset'],
     tabLabels: { ERC20: 'TRC20', ERC721: 'TRC721', ERC1155: 'TRC1155' },
     omitFeatures: defineOmitFeatures(),
     // Both downloads are shown for every option, upgradeable included — the
-    // generators emit a manual proxy-deploy project for upgradeable contracts.
+    // generators emit an implementation-then-proxy deploy for upgradeable contracts.
     omitZipHardhat: () => false,
     overrideZipHardhat: async (c: Contract, opts?: GenericOptions) => {
       const { zipHardhatTron } = await zipHardhatTronModule;

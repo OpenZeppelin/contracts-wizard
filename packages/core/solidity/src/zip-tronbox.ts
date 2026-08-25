@@ -95,9 +95,7 @@ module.exports = function (deployer) {
 `;
 }
 
-// Deploys an upgradeable contract behind a proxy. OpenZeppelin's upgrades
-// tooling targets EVM chains and does not deploy to TRON, so the proxy is
-// deployed by hand per https://github.com/OpenZeppelin/tron-contracts-upgradeable.
+// Builds a TronBox migration that deploys the implementation, then the proxy.
 function deployUpgradeableMigration(c: Contract): string {
   const proxy = tronProxyFor(c);
   const gated = hasUnsetArgs(c);
@@ -119,10 +117,9 @@ function deployUpgradeableMigration(c: Contract): string {
 const ${c.name} = artifacts.require('./${c.name}.sol');
 const ${proxy.contractName} = artifacts.require('${proxy.contractName}');
 
-// OpenZeppelin's upgrades tooling targets EVM chains and does not deploy to
-// TRON, so this migration deploys the proxy by hand: deploy the implementation,
-// then a ${proxy.contractName} that delegates to it and runs initialize()
-// atomically. Interact with the proxy address, never the implementation.
+// Deploys the implementation, then a ${proxy.contractName} that delegates to it
+// and runs initialize() atomically. Interact with the proxy address,
+// never the implementation.
 // See https://github.com/OpenZeppelin/tron-contracts-upgradeable
 module.exports = async function (deployer, network, accounts) {
   // 1. Deploy the implementation. It is never called directly and cannot be
@@ -356,7 +353,7 @@ For Shasta/Nile/mainnet, set the corresponding \`PRIVATE_KEY_*\` env var in a \`
 ${
   c.upgradeable
     ? `
-> :information_source: This is an upgradeable contract. OpenZeppelin's upgrades tooling targets EVM chains and does not deploy to TRON, so \`migrations/2_deploy_${c.name}.js\` deploys the proxy by hand: it deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
+> :information_source: This is an upgradeable contract. \`migrations/2_deploy_${c.name}.js\` deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
 `
     : ''
 }

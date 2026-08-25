@@ -2,10 +2,8 @@ import type { Contract } from '../contract';
 
 // Helpers for generating upgradeable TRON deployment scaffolding.
 //
-// OpenZeppelin's Hardhat and Foundry Upgrades plugins target EVM chains and do
-// NOT deploy to the TRON network, so the upgradeable TRON projects can't reuse
-// the mainline `upgrades.deployProxy` flow. Instead they deploy the proxy by
-// hand, per the official guide:
+// Upgradeable TRON projects deploy the implementation and then the proxy
+// directly, per the official guide:
 // https://github.com/OpenZeppelin/tron-contracts-upgradeable -> "Using with Upgrades".
 //
 // UUPS contracts deploy behind a `TRC1967Proxy`; transparent contracts deploy
