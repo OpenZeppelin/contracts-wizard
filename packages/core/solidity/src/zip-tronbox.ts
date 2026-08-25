@@ -103,10 +103,7 @@ function deployUpgradeableMigration(c: Contract): string {
 
   const argDecls = c.constructorArgs.flatMap(arg => {
     if (arg.type === 'address') {
-      return [
-        `  // TODO: Set a TRON base58 address for this role.`,
-        `  const ${arg.name} = '<TRON address>';`,
-      ];
+      return [`  // TODO: Set a TRON base58 address for this role.`, `  const ${arg.name} = '<TRON address>';`];
     }
     return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
   });
