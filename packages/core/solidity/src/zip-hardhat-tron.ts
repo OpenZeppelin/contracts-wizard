@@ -263,6 +263,7 @@ ${assertion ? assertion + '\n' : ''}  });
 
     zip.file(`contracts/${c.name}.sol`, this.getPrintContract(c));
     if (c.upgradeable) {
+      // ProxyImports.sol is needed so the toolchain compiles the proxy contracts:
       // Hardhat only compiles node_modules sources the project imports, and the
       // plugin deploys the proxies by artifact name.
       zip.file(

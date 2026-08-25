@@ -358,6 +358,7 @@ export async function zipTronbox(c: Contract, opts?: GenericOptions): Promise<JS
   zip.file(`contracts/${c.name}.sol`, printContract(c, tronPrintProfile));
   zip.file('contracts/Migrations.sol', migrationsContract);
   if (c.upgradeable) {
+    // ProxyImports.sol is needed so the toolchain compiles the proxy contracts:
     // TronBox only compiles the import closure of contracts/, and the plugin
     // deploys the proxies by artifact name.
     zip.file(
