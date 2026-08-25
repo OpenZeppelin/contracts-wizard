@@ -33,7 +33,7 @@ function hasUnsetArgs(c: Contract): boolean {
 function declareArgPlaceholders(c: Contract): string[] {
   return c.constructorArgs.map(arg => {
     if (arg.type === 'address') {
-      return `// TODO: Replace with a real address (e.g. tronWeb.defaultAddress.base58).\n  const ${arg.name} = '<TRON address>';`;
+      return `// TODO: Set a TRON base58 address for this role.\n  const ${arg.name} = '<TRON address>';`;
     }
     // No safe default — emit a commented-out declaration so the migration can
     // never silently deploy an `undefined` value.
@@ -103,12 +103,17 @@ function deployUpgradeableMigration(c: Contract): string {
 
   const argDecls = c.constructorArgs.flatMap(arg => {
     if (arg.type === 'address') {
-      return [`  const ${arg.name} = tronWeb.defaultAddress.base58;`];
+      return [
+        `  // TODO: Set a TRON base58 address for this role.`,
+        `  const ${arg.name} = '<TRON address>';`,
+      ];
     }
     return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
   });
   const argList = c.constructorArgs.map(a => a.name).join(', ');
-  const adminDecl = proxy.isTransparent ? `  const proxyAdminOwner = tronWeb.defaultAddress.base58;\n\n` : '';
+  const adminDecl = proxy.isTransparent
+    ? `  // TODO: Set a TRON base58 address for this role.\n  const proxyAdminOwner = '<TRON address>';\n\n`
+    : '';
   const proxyArgs = proxy.isTransparent
     ? `implementation.address, proxyAdminOwner, initData`
     : `implementation.address, initData`;
