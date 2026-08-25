@@ -1,5 +1,10 @@
-process.env.HARDHAT_CONFIG = require('path').join(__dirname, '../hardhat.tron.config.js');
+import path from 'path';
+import type { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-const hre = require('hardhat');
+process.env.HARDHAT_CONFIG = path.join(__dirname, '../hardhat.tron.config.js');
 
-export default hre as typeof import('hardhat');
+// Hardhat reads HARDHAT_CONFIG while loading, so this cannot be a hoisted import.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const hre = require('hardhat') as HardhatRuntimeEnvironment;
+
+export default hre;
