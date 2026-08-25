@@ -22,7 +22,7 @@
   const overrides: Overrides = {
     omitTabs: ['Account'],
     omitFeatures: defineOmitFeatures(),
-    omitZipFoundry: true,
+    omitZipFoundry: () => true,
     omitZipHardhat: (opts?: GenericOptions) => {
       return !!opts?.upgradeable;
     },

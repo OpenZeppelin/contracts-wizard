@@ -4,6 +4,7 @@ import { registerCairoTools } from './cairo/tools.js';
 import { registerConfidentialTools } from './confidential/tools.js';
 import { registerStellarTools } from './stellar/tools.js';
 import { registerStylusTools } from './stylus/tools.js';
+import { registerTronTools } from './tron/tools.js';
 import { registerUniswapHooksTools } from './uniswap-hooks/tools.js';
 import { version } from '../package.json';
 
@@ -33,6 +34,7 @@ Hosts that support MCP Apps may also show an interactive Wizard UI for each tool
   registerConfidentialTools(server);
   registerStellarTools(server);
   registerStylusTools(server);
+  registerTronTools(server);
   registerUniswapHooksTools(server);
 
   return server;

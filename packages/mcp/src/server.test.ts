@@ -62,7 +62,10 @@ async function listMcpLanguageDirs() {
   return mcpDirs.filter(name => coreLanguages.has(name));
 }
 
-/** All contract kinds from each language that has both a packages/core and packages/mcp folder. */
+/**
+ * Expected MCP App tools: core kinds for languages that have packages/core/<lang>,
+ * plus TRON tools actually registered under packages/mcp/src/tron/tools.
+ */
 async function listExpectedWizardTools(): Promise<{ language: string; kind: string; toolName: string }[]> {
   const expected: { language: string; kind: string; toolName: string }[] = [];
   for (const language of await listMcpLanguageDirs()) {
@@ -71,7 +74,29 @@ async function listExpectedWizardTools(): Promise<{ language: string; kind: stri
       expected.push({ language, kind, toolName: coreKindToToolName(language, kind) });
     }
   }
+  // TRON has no packages/core/tron (it prints Solidity builders through
+  // tronPrintProfile), so its tools cannot be derived from kind.ts. Read them from
+  // the tool sources instead: a missing TOOL_APP_SPECS entry already throws at
+  // registration, but nothing else checks that the entry's `kind` matches the kind
+  // the tool actually builds — a mismatch silently ships an app UI for the wrong kind.
+  expected.push(...(await listRegisteredTronTools()));
   return expected;
+}
+
+async function listRegisteredTronTools(): Promise<{ language: string; kind: string; toolName: string }[]> {
+  const toolsDir = join(PACKAGES_MCP_SRC_PATH, 'tron', 'tools');
+  const files = (await readdir(toolsDir)).filter(name => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+  return Promise.all(
+    files.map(async name => {
+      const src = await readFile(join(toolsDir, name), 'utf-8');
+      const toolName = src.match(/registerWizardAppTool\s*\(\s*\w+\s*,\s*'([^']+)'/)?.[1];
+      const kind = src.match(/\bkind:\s*'([^']+)' as const/)?.[1];
+      if (toolName === undefined || kind === undefined) {
+        throw new Error(`Could not parse registerWizardAppTool name and kind from ${join(toolsDir, name)}`);
+      }
+      return { language: 'tron', kind, toolName };
+    }),
+  );
 }
 
 test('each core language has mcp tools folder', async t => {
