@@ -169,7 +169,7 @@ ${
   private declareInitArgs(c: Contract): string[] {
     return c.constructorArgs.flatMap((arg, i) => {
       if (arg.type === 'address') {
-        return [`  const ${arg.name} = (await ethers.getSigners())[${i}].address;`];
+        return [`  const ${arg.name} = signers[${i}].address;`];
       }
       return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
     });
@@ -183,7 +183,7 @@ ${
     const argDecls = this.declareInitArgs(c);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
     const adminDecl = proxy.isTransparent
-      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  const proxyAdminOwner = (await ethers.getSigners())[0].address;\n\n`
+      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  const proxyAdminOwner = signers[0].address;\n\n`
       : '';
     const proxyArgs = proxy.isTransparent
       ? 'implementationAddress, proxyAdminOwner, initData'
@@ -197,6 +197,9 @@ import { ethers } from "hardhat";
 // never the implementation.
 // See https://github.com/OpenZeppelin/tron-contracts-upgradeable
 async function main() {
+  // getSigners() also funds and activates the configured accounts in local TRE.
+  const signers = await ethers.getSigners();
+
   // 1. Deploy the implementation. It is never called directly — all calls go
   //    through the proxy — and it cannot be initialized on its own because its
   //    constructor runs _disableInitializers().
@@ -210,7 +213,7 @@ ${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}  // 2. AB
 ${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const initData = Implementation.interface.encodeFunctionData("initialize", [${argList}]);
 
   // 3. Deploy the proxy pointing at the implementation.
-  ${g}const Proxy = await ethers.getContractFactory("${proxy.contractName}");
+  ${g}const Proxy = await ethers.getContractFactory("${proxy.importPath}:${proxy.contractName}");
   ${g}const proxy = await Proxy.deploy(${proxyArgs});
   ${g}await proxy.waitForDeployment();
 
@@ -233,9 +236,7 @@ main().catch((error) => {
 
     const argDecls = this.declareInitArgs(c).map(line => '  ' + line);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
-    const adminDecl = proxy.isTransparent
-      ? `    const proxyAdminOwner = (await ethers.getSigners())[0].address;\n`
-      : '';
+    const adminDecl = proxy.isTransparent ? `    const proxyAdminOwner = signers[0].address;\n` : '';
     const proxyArgs = proxy.isTransparent
       ? 'implementationAddress, proxyAdminOwner, initData'
       : 'implementationAddress, initData';
@@ -261,6 +262,9 @@ import { ethers } from "hardhat";
 
 describe("${c.name}", function () {
   it("deploys behind a proxy and initializes", async function () {
+    // getSigners() also funds and activates the configured accounts in local TRE.
+    const signers = await ethers.getSigners();
+
     const Implementation = await ethers.getContractFactory("${c.name}");
     const implementation = await Implementation.deploy();
     await implementation.waitForDeployment();
@@ -268,7 +272,7 @@ describe("${c.name}", function () {
 
 ${argDecls.length > 0 ? argDecls.join('\n') + '\n' : ''}${adminDecl}${gated ? '    // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}    ${g}const initData = Implementation.interface.encodeFunctionData("initialize", [${argList}]);
 
-    ${g}const Proxy = await ethers.getContractFactory("${proxy.contractName}");
+    ${g}const Proxy = await ethers.getContractFactory("${proxy.importPath}:${proxy.contractName}");
     ${g}const proxy = await Proxy.deploy(${proxyArgs});
     ${g}await proxy.waitForDeployment();
 

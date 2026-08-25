@@ -101,14 +101,14 @@ function deployUpgradeableMigration(c: Contract): string {
   const gated = hasUnsetArgs(c);
   const g = gated ? '// ' : '';
 
-  const argDecls = c.constructorArgs.flatMap((arg, i) => {
+  const argDecls = c.constructorArgs.flatMap(arg => {
     if (arg.type === 'address') {
-      return [`  const ${arg.name} = accounts[${i}];`];
+      return [`  const ${arg.name} = tronWeb.defaultAddress.base58;`];
     }
     return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
   });
   const argList = c.constructorArgs.map(a => a.name).join(', ');
-  const adminDecl = proxy.isTransparent ? `  const proxyAdminOwner = accounts[0];\n\n` : '';
+  const adminDecl = proxy.isTransparent ? `  const proxyAdminOwner = tronWeb.defaultAddress.base58;\n\n` : '';
   const proxyArgs = proxy.isTransparent
     ? `implementation.address, proxyAdminOwner, initData`
     : `implementation.address, initData`;
@@ -127,10 +127,9 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(${c.name});
   const implementation = await ${c.name}.deployed();
 
-${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}  // 2. ABI-encode the initializer call. TronBox is Truffle-derived; if your
-  //    version doesn't expose \`.contract.methods\`, encode the initialize(...)
-  //    call with tronWeb's ABI utilities instead.
-${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const initData = implementation.contract.methods.initialize(${argList}).encodeABI();
+${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}  // 2. ABI-encode the initializer call with TronWeb.
+${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const initializer = ${c.name}.abi.find(item => item.type === 'function' && item.name === 'initialize');
+  ${g}const initData = '0x' + tronWeb.utils.abi.encodeFunctionData(initializer, [${argList}]);
 
   // 3. Deploy the proxy pointing at the implementation.
   ${g}await deployer.deploy(${proxy.contractName}, ${proxyArgs});
