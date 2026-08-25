@@ -179,6 +179,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
     `contracts/${c.name}.sol`,
     ...(c.upgradeable ? ['contracts/ProxyImports.sol'] : []),
     'hardhat.config.ts',
+    'package-lock.json',
     'package.json',
     'scripts/',
     'scripts/deploy.ts',

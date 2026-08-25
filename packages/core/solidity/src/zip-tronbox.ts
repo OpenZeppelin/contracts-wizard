@@ -278,6 +278,17 @@ module.exports = {
 };
 `;
 
+async function packageLock(c: Contract): Promise<unknown> {
+  const { default: packageLock } = c.upgradeable
+    ? await import('./environments/tronbox/upgradeable/package-lock.json')
+    : await import('./environments/tronbox/package-lock.json');
+  const lock = JSON.parse(JSON.stringify(packageLock)) as {
+    packages: Record<string, { license?: string }>;
+  };
+  lock.packages['']!.license = c.license;
+  return lock;
+}
+
 async function packageJson(c: Contract): Promise<unknown> {
   // The upgradeable manifest adds tron-contracts-upgradeable (the transpiled
   // `*Upgradeable` parents) and the upgrades plugin that validates the
@@ -381,6 +392,7 @@ import "@openzeppelin/tronbox-upgrades/contracts/Proxies.sol";
 
   zip.file('tronbox-config.js', tronboxConfig);
   zip.file('package.json', JSON.stringify(await packageJson(c), null, 2));
+  zip.file('package-lock.json', JSON.stringify(await packageLock(c), null, 2));
   zip.file('.gitignore', gitignore);
   zip.file('README.md', readme(c));
 

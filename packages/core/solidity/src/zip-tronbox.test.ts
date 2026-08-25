@@ -181,6 +181,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
     'migrations/',
     'migrations/1_initial_migration.js',
     `migrations/2_deploy_${c.name}.js`,
+    'package-lock.json',
     'package.json',
     'test/',
     `test/${c.name}.js`,

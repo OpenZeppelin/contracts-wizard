@@ -76,9 +76,15 @@ export default config;
     return { ...packageJson, license: c.license };
   }
 
-  protected override async getPackageLock(_c: Contract): Promise<unknown> {
-    // Omitted: the sample resolves dependencies on first `npm install`.
-    return undefined;
+  protected override async getPackageLock(c: Contract): Promise<unknown> {
+    const { default: packageLock } = c.upgradeable
+      ? await import('./environments/hardhat/tron/upgradeable/package-lock.json')
+      : await import('./environments/hardhat/tron/package-lock.json');
+    const lock = JSON.parse(JSON.stringify(packageLock)) as {
+      packages: Record<string, { license?: string }>;
+    };
+    lock.packages['']!.license = c.license;
+    return lock;
   }
 
   protected override getReadmePrerequisitesSection(): string {
@@ -286,6 +292,7 @@ import "@openzeppelin/hardhat-tron-upgrades/contracts/Proxies.sol";
     zip.file('.gitignore', this.getGitIgnore());
     zip.file('hardhat.config.ts', this.getHardhatConfig(c.upgradeable));
     zip.file('package.json', JSON.stringify(packageJson, null, 2));
+    zip.file('package-lock.json', JSON.stringify(await this.getPackageLock(c), null, 2));
     zip.file('README.md', this.getReadme(c));
     zip.file('tsconfig.json', this.getTsConfig());
 
