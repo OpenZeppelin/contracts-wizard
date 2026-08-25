@@ -105,7 +105,7 @@ test.serial('erc1155 basic', async t => {
   await runSnapshotTest(c, t, opts);
 });
 
-// Upgradeable zips include contracts/Proxy.sol so the toolchain compiles the proxy.
+// Upgradeable zips import the proxy artifacts bundled with the upgrades plugin.
 test.serial('erc20 uups upgradeable - proxy deploy scaffolding', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',
@@ -177,7 +177,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
     'README.md',
     'contracts/',
     `contracts/${c.name}.sol`,
-    ...(c.upgradeable ? ['contracts/Proxy.sol'] : []),
+    ...(c.upgradeable ? ['contracts/ProxyImports.sol'] : []),
     'hardhat.config.ts',
     'package.json',
     'scripts/',
@@ -192,7 +192,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
 async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
-    ...(c.upgradeable ? [await getItemString(zip, 'contracts/Proxy.sol')] : []),
+    ...(c.upgradeable ? [await getItemString(zip, 'contracts/ProxyImports.sol')] : []),
     await getItemString(zip, 'hardhat.config.ts'),
     await getItemString(zip, 'package.json'),
     await getItemString(zip, 'scripts/deploy.ts'),

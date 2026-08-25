@@ -4,7 +4,9 @@ import type { Contract } from './contract';
 import { printContract } from './print';
 import { tronPrintProfile, TRON_SOLIDITY_VERSION, TRON_CONTRACTS_VERSION } from './utils/transform-tron';
 import { stringifyUnicodeSafe } from './utils/sanitize';
-import { tronProxyFor, tronProxyHelperSource } from './utils/tron-upgradeable';
+import { isUUPS } from './utils/tron-upgradeable';
+
+const TRONBOX_UPGRADES_VERSION = '0.1.0';
 
 // TronBox is a Truffle-derived framework for the TRON Virtual Machine. The
 // download bundles:
@@ -95,49 +97,40 @@ module.exports = function (deployer) {
 `;
 }
 
-// Builds a TronBox migration that deploys the implementation, then the proxy.
+// Builds a TronBox migration that validates and deploys through the upgrades plugin.
 function deployUpgradeableMigration(c: Contract): string {
-  const proxy = tronProxyFor(c);
   const gated = hasUnsetArgs(c);
   const g = gated ? '// ' : '';
+  const uups = isUUPS(c);
 
   const argDecls = c.constructorArgs.flatMap(arg => {
     if (arg.type === 'address') {
       return [
         `  // TODO: Set a TRON base58 address for the initialize() argument "${arg.name}".`,
-        `  const ${arg.name} = '<TRON address>';`,
+        `  const ${arg.name} = tronWeb.address.toHex('<TRON address>').replace(/^41/, '0x');`,
       ];
     }
     return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
   });
   const argList = c.constructorArgs.map(a => a.name).join(', ');
-  const adminDecl = proxy.isTransparent
+  const adminDecl = !uups
     ? `  // TODO: Set a TRON base58 address for proxyAdminOwner.\n  const proxyAdminOwner = '<TRON address>';\n\n`
     : '';
-  const proxyArgs = proxy.isTransparent
-    ? `implementation.address, proxyAdminOwner, initData`
-    : `implementation.address, initData`;
+  const deployOptions = uups
+    ? `{ ...handles, kind: 'uups' }`
+    : `{ ...handles, kind: 'transparent', initialOwner: proxyAdminOwner }`;
 
   return `\
+const { deployProxy } = require('@openzeppelin/tronbox-upgrades');
 const ${c.name} = artifacts.require('./${c.name}.sol');
-const ${proxy.contractName} = artifacts.require('${proxy.contractName}');
 
-// Deploys the implementation, then a ${proxy.contractName} that delegates to it
-// and runs initialize() atomically. Interact with the proxy address,
-// never the implementation.
-// See https://github.com/OpenZeppelin/tron-contracts-upgradeable
-module.exports = async function (deployer, network, accounts) {
-  // 1. Deploy the implementation. It is never called directly and cannot be
-  //    initialized on its own (its constructor runs _disableInitializers()).
-  await deployer.deploy(${c.name});
-  const implementation = await ${c.name}.deployed();
+// Validates the implementation, deploys it behind a ${uups ? 'UUPS' : 'transparent'} proxy,
+// and runs initialize() atomically.
+module.exports = async function (deployer) {
+  const handles = { deployer, artifacts, tronWrap, waitForTransactionReceipt };
 
-${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}  // 2. ABI-encode the initializer call with TronWeb.
-${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const initializer = ${c.name}.abi.find(item => item.type === 'function' && item.name === 'initialize');
-  ${g}const initData = '0x' + tronWeb.utils.abi.encodeFunctionData(initializer, [${argList}]);
-
-  // 3. Deploy the proxy pointing at the implementation.
-  ${g}await deployer.deploy(${proxy.contractName}, ${proxyArgs});
+${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}${gated ? '  // TODO: Uncomment the line below once the initialize() arguments above are set.\n' : ''}  ${g}const instance = await deployProxy(${c.name}, [${argList}], ${deployOptions});
+  ${g}console.log('${c.name} (proxy) deployed to', instance.address);
 };
 `;
 }
@@ -165,27 +158,22 @@ function kindAssertion(opts?: GenericOptions): string {
   return '';
 }
 
-// For upgradeable contracts the deployed `${c.name}` artifact is the
-// implementation; the initialized state lives in the proxy, so the test reads
-// through the proxy address using the implementation's ABI.
+// deployProxy writes the proxy address back to the contract abstraction, so
+// `${c.name}.deployed()` returns the initialized proxy in later migrations/tests.
 function testFileUpgradeable(c: Contract, opts?: GenericOptions): string {
-  const proxy = tronProxyFor(c);
   const assertion = kindAssertion(opts);
 
   return `\
 const ${c.name} = artifacts.require('./${c.name}.sol');
-const ${proxy.contractName} = artifacts.require('${proxy.contractName}');
 
-// These tests require TronBox >= 4.1.x and the TronBox Runtime Environment
+// These tests require TronBox >= 4.8.x and the TronBox Runtime Environment
 // (https://hub.docker.com/r/tronbox/tre) as your private network. The migration
 // must have deployed the proxy (fill in any initialize() arguments first).
 contract('${c.name}', function (accounts) {
   let instance;
 
   before(async function () {
-    // Interact with the proxy address using the implementation's ABI.
-    const proxy = await ${proxy.contractName}.deployed();
-    instance = await ${c.name}.at(proxy.address);
+    instance = await ${c.name}.deployed();
   });
 
   it('is deployed behind a proxy', async function () {
@@ -285,8 +273,8 @@ module.exports = {
 
 function packageJson(c: Contract): unknown {
   // Upgradeable contracts pull their transpiled `*Upgradeable` parents from
-  // tron-contracts-upgradeable; tron-contracts stays on as its peer (it also
-  // provides the proxy the migration deploys).
+  // tron-contracts-upgradeable; the upgrades plugin validates and deploys the
+  // implementation and proxy.
   const dependencies: Record<string, string> = { '@openzeppelin/tron-contracts': TRON_CONTRACTS_VERSION };
   if (c.upgradeable) {
     dependencies['@openzeppelin/tron-contracts-upgradeable'] = TRON_CONTRACTS_VERSION;
@@ -303,7 +291,14 @@ function packageJson(c: Contract): unknown {
       console: 'tronbox console',
     },
     devDependencies: {
-      tronbox: '^4.1.0',
+      tronbox: c.upgradeable ? '^4.8.0' : '^4.1.0',
+      ...(c.upgradeable
+        ? {
+            '@openzeppelin/tronbox-upgrades': TRONBOX_UPGRADES_VERSION,
+            ethers: '^6.13.0',
+            tronweb: '^6.0.0',
+          }
+        : {}),
     },
     dependencies,
   };
@@ -325,7 +320,9 @@ This project demonstrates a basic TronBox use case. It comes with a contract gen
 
 - [Node.js 18+](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/get-docker/) — runs the local TRON Runtime Environment (\`tronbox/tre\`)
-- Install [TronBox](https://tronbox.io/docs/) globally: \`npm install -g tronbox\`
+- Install [TronBox](https://tronbox.io/docs/) globally${
+    c.upgradeable ? ' (version 4.8.0 or newer)' : ''
+  }: \`npm install -g tronbox\`
 
 ## Installing dependencies
 
@@ -357,7 +354,7 @@ For Shasta/Nile/mainnet, set the corresponding \`PRIVATE_KEY_*\` env var in a \`
 ${
   c.upgradeable
     ? `
-> :information_source: This is an upgradeable contract. \`migrations/2_deploy_${c.name}.js\` deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
+> :information_source: This is an upgradeable contract. \`migrations/2_deploy_${c.name}.js\` uses \`@openzeppelin/tronbox-upgrades\` to validate the contract, deploy its implementation and proxy, and run \`initialize()\` atomically. Interact with the **proxy** address. Keep the generated \`.openzeppelin\` network files for future upgrades.
 `
     : ''
 }
@@ -377,8 +374,11 @@ export async function zipTronbox(c: Contract, opts?: GenericOptions): Promise<JS
   zip.file(`contracts/${c.name}.sol`, printContract(c, tronPrintProfile));
   zip.file('contracts/Migrations.sol', migrationsContract);
   if (c.upgradeable) {
-    // Pull the proxy into the build so the migration can deploy ${c.name} behind it.
-    zip.file('contracts/Proxy.sol', tronProxyHelperSource(c, TRON_SOLIDITY_VERSION));
+    // The upgrades plugin deploys these proxy artifacts after validating the implementation.
+    zip.file(
+      'contracts/ProxyImports.sol',
+      `// SPDX-License-Identifier: MIT\npragma solidity ^${TRON_SOLIDITY_VERSION};\n\nimport "@openzeppelin/tronbox-upgrades/contracts/Proxies.sol";\n`,
+    );
   }
 
   zip.file('migrations/1_initial_migration.js', initialMigration);

@@ -4,7 +4,9 @@ import { HardhatZipGenerator } from './zip-hardhat';
 import type { GenericOptions } from './build-generic';
 import { printContract } from './print';
 import { tronPrintProfile, TRON_SOLIDITY_VERSION, TRON_CONTRACTS_VERSION } from './utils/transform-tron';
-import { tronProxyFor, tronProxyHelperSource, hasUnsetInitArgs } from './utils/tron-upgradeable';
+import { hasUnsetInitArgs, isUUPS } from './utils/tron-upgradeable';
+
+const HARDHAT_TRON_UPGRADES_VERSION = '0.1.0';
 
 // `tron-solc` (TRON_SOLIDITY_VERSION) + cancun + viaIR is what the TRON
 // Democritus hardfork (post-GreatVoyage 4.7) targets, and matches the README of
@@ -49,11 +51,11 @@ class HardhatTronZipGenerator extends HardhatZipGenerator {
   }
 
   protected override getHardhatConfig(_upgradeable: boolean): string {
-    // hardhat-tron-based projects use a non-upgradeable single config; the
-    // `@openzeppelin/hardhat-upgrades` plugin is not used here. The hardhat
-    // config is also emitted as a CommonJS .cjs file in the README sample,
-    // but the TypeScript .ts variant works just as well with hardhat-tron.
+    // The TypeScript config works with both hardhat-tron plugins.
     const additionalImports = this.getAdditionalHardhatImports();
+    if (_upgradeable) {
+      additionalImports.push('@openzeppelin/hardhat-tron-upgrades');
+    }
     const importsSection = additionalImports.map(imp => `import "${imp}";`).join('\n');
 
     return `\
@@ -73,8 +75,10 @@ export default config;
     if (c.upgradeable) {
       // Upgradeable contracts pull their transpiled `*Upgradeable` parents from
       // tron-contracts-upgradeable; tron-contracts (already present) stays on as
-      // its peer for the proxy utilities and interfaces.
+      // its peer for the proxy utilities and interfaces. The upgrades plugin
+      // validates and deploys the implementation and proxy.
       devDependencies['@openzeppelin/tron-contracts-upgradeable'] = TRON_CONTRACTS_VERSION;
+      devDependencies['@openzeppelin/hardhat-tron-upgrades'] = HARDHAT_TRON_UPGRADES_VERSION;
     }
     return { ...packageJson, license: c.license, devDependencies };
   }
@@ -142,20 +146,17 @@ The default \`tre\` network in \`hardhat.config.ts\` points at a local TRON Runt
 ${
   c.upgradeable
     ? `
-> :information_source: This is an upgradeable contract. \`scripts/deploy.ts\` deploys the \`${c.name}\` implementation, then a \`${tronProxyFor(c).contractName}\` that delegates to it and runs \`initialize()\` atomically. Interact with the **proxy** address it prints, never the implementation. See the [upgradeable contracts guide](https://github.com/OpenZeppelin/tron-contracts-upgradeable).
+> :information_source: This is an upgradeable contract. \`scripts/deploy.ts\` uses \`@openzeppelin/hardhat-tron-upgrades\` to validate the contract, deploy its implementation and proxy, and run \`initialize()\` atomically. Interact with the **proxy** address it prints. Keep the generated \`.openzeppelin\` network files for future upgrades.
 `
     : ''
 }`;
   }
 
-  // This zip installs no upgrades plugin, so the deploy script and test import
-  // `ethers` only, even when upgradeable.
-  public override getHardhatPlugins(_c: Contract): string[] {
-    return ['ethers'];
+  public override getHardhatPlugins(c: Contract): string[] {
+    return c.upgradeable ? ['ethers', 'upgrades'] : ['ethers'];
   }
 
   protected override getScript(c: Contract): string {
-    // Upgradeable zips deploy implementation then proxy instead of upgrades.deployProxy.
     return c.upgradeable ? this.getUpgradeableScript(c) : super.getScript(c);
   }
 
@@ -188,48 +189,29 @@ ${
   }
 
   private getUpgradeableScript(c: Contract): string {
-    const proxy = tronProxyFor(c);
     const gated = hasUnsetInitArgs(c);
     const g = gated ? '// ' : '';
+    const uups = isUUPS(c);
 
     const argDecls = this.declareScriptInitArgs(c);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
-    const adminDecl = proxy.isTransparent
+    const adminDecl = !uups
       ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  // TODO: Set an address for proxyAdminOwner.\n  const proxyAdminOwner = '<address>';\n\n`
       : '';
-    const proxyArgs = proxy.isTransparent
-      ? 'implementationAddress, proxyAdminOwner, initData'
-      : 'implementationAddress, initData';
+    const deployOptions = uups ? `{ kind: "uups" }` : `{ kind: "transparent", initialOwner: proxyAdminOwner }`;
 
     return `\
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
-// Deploys the implementation, then a ${proxy.contractName} that delegates to it
-// and runs initialize() atomically. Interact with the proxy address,
-// never the implementation.
-// See https://github.com/OpenZeppelin/tron-contracts-upgradeable
+// Validates the implementation, deploys it behind a ${uups ? 'UUPS' : 'transparent'} proxy,
+// and runs initialize() atomically.
 async function main() {
   // Funds and activates the configured accounts in local TRE.
   await ethers.getSigners();
 
-  // 1. Deploy the implementation. It is never called directly — all calls go
-  //    through the proxy — and it cannot be initialized on its own because its
-  //    constructor runs _disableInitializers().
-  const Implementation = await ethers.getContractFactory("${c.name}");
-  const implementation = await Implementation.deploy();
-  await implementation.waitForDeployment();
-  const implementationAddress = await implementation.getAddress();
-  console.log(\`Implementation deployed to \${implementationAddress}\`);
-
-${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}  // 2. ABI-encode the initializer so it runs in the proxy's storage on deploy.
-${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const initData = Implementation.interface.encodeFunctionData("initialize", [${argList}]);
-
-  // 3. Deploy the proxy pointing at the implementation.
-  ${g}const Proxy = await ethers.getContractFactory("${proxy.importPath}:${proxy.contractName}");
-  ${g}const proxy = await Proxy.deploy(${proxyArgs});
-  ${g}await proxy.waitForDeployment();
-
-  ${g}console.log(\`${c.name} (proxy) deployed to \${await proxy.getAddress()}\`);
+${argDecls.length > 0 ? argDecls.join('\n') + '\n\n' : ''}${adminDecl}${gated ? '  // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}  ${g}const instance = await upgrades.deployProxy("${c.name}", [${argList}], ${deployOptions});
+  ${g}await instance.waitForDeployment();
+  ${g}console.log(\`${c.name} (proxy) deployed to \${await instance.getAddress()}\`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -242,16 +224,13 @@ main().catch((error) => {
   }
 
   private getUpgradeableTest(c: Contract, opts?: GenericOptions): string {
-    const proxy = tronProxyFor(c);
     const gated = hasUnsetInitArgs(c);
     const g = gated ? '// ' : '';
+    const uups = isUUPS(c);
 
     const argDecls = this.declareInitArgs(c).map(line => '  ' + line);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
-    const adminDecl = proxy.isTransparent ? `    const proxyAdminOwner = signers[0].address;\n` : '';
-    const proxyArgs = proxy.isTransparent
-      ? 'implementationAddress, proxyAdminOwner, initData'
-      : 'implementationAddress, initData';
+    const deployOptions = uups ? `{ kind: "uups" }` : `{ kind: "transparent", initialOwner: signers[0].address }`;
 
     let assertion = '';
     if (opts !== undefined) {
@@ -270,26 +249,15 @@ main().catch((error) => {
 
     return `\
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 describe("${c.name}", function () {
   it("deploys behind a proxy and initializes", async function () {
     // getSigners() also funds and activates the configured accounts in local TRE.
     const signers = await ethers.getSigners();
 
-    const Implementation = await ethers.getContractFactory("${c.name}");
-    const implementation = await Implementation.deploy();
-    await implementation.waitForDeployment();
-    const implementationAddress = await implementation.getAddress();
-
-${argDecls.length > 0 ? argDecls.join('\n') + '\n' : ''}${adminDecl}${gated ? '    // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}    ${g}const initData = Implementation.interface.encodeFunctionData("initialize", [${argList}]);
-
-    ${g}const Proxy = await ethers.getContractFactory("${proxy.importPath}:${proxy.contractName}");
-    ${g}const proxy = await Proxy.deploy(${proxyArgs});
-    ${g}await proxy.waitForDeployment();
-
-    // Interact with the proxy through the implementation's ABI.
-    ${g}const instance = await ethers.getContractAt("${c.name}", await proxy.getAddress());
+${argDecls.length > 0 ? argDecls.join('\n') + '\n' : ''}${gated ? '    // TODO: Uncomment the lines below once the initialize() arguments above are set.\n' : ''}    ${g}const instance = await upgrades.deployProxy("${c.name}", [${argList}], ${deployOptions});
+    ${g}await instance.waitForDeployment();
 ${assertion ? assertion + '\n' : ''}  });
 });
 `;
@@ -302,8 +270,11 @@ ${assertion ? assertion + '\n' : ''}  });
 
     zip.file(`contracts/${c.name}.sol`, this.getPrintContract(c));
     if (c.upgradeable) {
-      // Pull the proxy into the build so the deploy script can load its artifact.
-      zip.file('contracts/Proxy.sol', tronProxyHelperSource(c, TRON_SOLIDITY_VERSION));
+      // The upgrades plugin deploys these proxy artifacts after validating the implementation.
+      zip.file(
+        'contracts/ProxyImports.sol',
+        `// SPDX-License-Identifier: MIT\npragma solidity ^${TRON_SOLIDITY_VERSION};\n\nimport "@openzeppelin/hardhat-tron-upgrades/contracts/Proxies.sol";\n`,
+      );
     }
     zip.file('test/test.ts', this.getTest(c, opts));
     // No hardhat-ignition: the TRON dev flow is a plain ethers deploy script,

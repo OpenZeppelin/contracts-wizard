@@ -101,7 +101,7 @@ test.serial('erc1155 basic', async t => {
   await runSnapshotTest(c, t, opts);
 });
 
-// Upgradeable zips include contracts/Proxy.sol so the toolchain compiles the proxy.
+// Upgradeable zips import the proxy artifacts bundled with the upgrades plugin.
 test.serial('erc20 uups upgradeable - proxy migration scaffolding', async t => {
   const opts: GenericOptions = {
     kind: 'ERC20',
@@ -177,7 +177,7 @@ function assertLayout(zip: JSZip, c: Contract, t: ExecutionContext) {
     'contracts/',
     'contracts/Migrations.sol',
     `contracts/${c.name}.sol`,
-    ...(c.upgradeable ? ['contracts/Proxy.sol'] : []),
+    ...(c.upgradeable ? ['contracts/ProxyImports.sol'] : []),
     'migrations/',
     'migrations/1_initial_migration.js',
     `migrations/2_deploy_${c.name}.js`,
@@ -193,7 +193,7 @@ async function assertContents(zip: JSZip, c: Contract, t: ExecutionContext) {
   const contentComparison = [
     await getItemString(zip, `contracts/${c.name}.sol`),
     await getItemString(zip, 'contracts/Migrations.sol'),
-    ...(c.upgradeable ? [await getItemString(zip, 'contracts/Proxy.sol')] : []),
+    ...(c.upgradeable ? [await getItemString(zip, 'contracts/ProxyImports.sol')] : []),
     await getItemString(zip, 'migrations/1_initial_migration.js'),
     await getItemString(zip, `migrations/2_deploy_${c.name}.js`),
     await getItemString(zip, `test/${c.name}.js`),
