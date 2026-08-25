@@ -366,8 +366,8 @@ export async function zipTronbox(c: Contract, opts?: GenericOptions): Promise<JS
 pragma solidity ^${TRON_SOLIDITY_VERSION};
 
 // This file is needed so the toolchain compiles the proxy contracts, which
-// @openzeppelin/tronbox-upgrades deploys by artifact name. ${c.name} does not
-// import it, and deploying the proxy fails without it.
+// @openzeppelin/tronbox-upgrades deploys by artifact name. Deploying a proxy
+// fails without it.
 import "@openzeppelin/tronbox-upgrades/contracts/Proxies.sol";
 `,
     );

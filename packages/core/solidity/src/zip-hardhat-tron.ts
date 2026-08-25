@@ -271,8 +271,8 @@ ${assertion ? assertion + '\n' : ''}  });
 pragma solidity ^${TRON_SOLIDITY_VERSION};
 
 // This file is needed so the toolchain compiles the proxy contracts, which
-// @openzeppelin/hardhat-tron-upgrades deploys by artifact name. ${c.name} does
-// not import it, and deploying the proxy fails without it.
+// @openzeppelin/hardhat-tron-upgrades deploys by artifact name. Deploying a
+// proxy fails without it.
 import "@openzeppelin/hardhat-tron-upgrades/contracts/Proxies.sol";
 `,
       );
