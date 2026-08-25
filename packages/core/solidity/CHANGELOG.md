@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.10.14 (2026-08-25)
+
+- Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
+  - Covers TRC20, TRC721, TRC1155, Governor, and Custom contracts.
+  - On TRON, the Governor's `blockTime` defaults to 3 seconds to match its block production.
+
 ## 0.10.13 (2026-08-07)
 
 - Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
