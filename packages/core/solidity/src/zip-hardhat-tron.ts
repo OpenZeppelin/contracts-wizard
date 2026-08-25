@@ -3,10 +3,8 @@ import type { Contract } from './contract';
 import { HardhatZipGenerator } from './zip-hardhat';
 import type { GenericOptions } from './build-generic';
 import { printContract } from './print';
-import { tronPrintProfile, TRON_SOLIDITY_VERSION, TRON_CONTRACTS_VERSION } from './utils/transform-tron';
+import { tronPrintProfile, TRON_SOLIDITY_VERSION } from './utils/transform-tron';
 import { hasUnsetInitArgs, isUUPS } from './utils/tron-upgradeable';
-
-const HARDHAT_TRON_UPGRADES_VERSION = '0.1.0';
 
 // `tron-solc` (TRON_SOLIDITY_VERSION) + cancun + viaIR is what the TRON
 // Democritus hardfork (post-GreatVoyage 4.7) targets, and matches the README of
@@ -69,18 +67,13 @@ export default config;
   }
 
   protected override async getPackageJson(c: Contract): Promise<unknown> {
-    const { default: packageJson } = await import('./environments/hardhat/tron/package.json');
-    // Build a fresh object so we never mutate the shared module-level import.
-    const devDependencies: Record<string, string> = { ...packageJson.devDependencies };
-    if (c.upgradeable) {
-      // Upgradeable contracts pull their transpiled `*Upgradeable` parents from
-      // tron-contracts-upgradeable; tron-contracts (already present) stays on as
-      // its peer for the proxy utilities and interfaces. The upgrades plugin
-      // validates and deploys the implementation and proxy.
-      devDependencies['@openzeppelin/tron-contracts-upgradeable'] = TRON_CONTRACTS_VERSION;
-      devDependencies['@openzeppelin/hardhat-tron-upgrades'] = HARDHAT_TRON_UPGRADES_VERSION;
-    }
-    return { ...packageJson, license: c.license, devDependencies };
+    // The upgradeable manifest adds tron-contracts-upgradeable (the transpiled
+    // `*Upgradeable` parents) and the upgrades plugin that validates the
+    // implementation and deploys the proxy.
+    const { default: packageJson } = c.upgradeable
+      ? await import('./environments/hardhat/tron/upgradeable/package.json')
+      : await import('./environments/hardhat/tron/package.json');
+    return { ...packageJson, license: c.license };
   }
 
   protected override async getPackageLock(_c: Contract): Promise<unknown> {
