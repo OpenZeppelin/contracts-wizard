@@ -163,13 +163,22 @@ ${
     return c.upgradeable ? this.getUpgradeableTest(c, opts) : super.getTest(c, opts);
   }
 
-  // Declares the `initialize(...)` arguments above the proxy deployment. Address
-  // args default to a local signer; non-address args are left as commented-out
-  // TODOs (there's no safe default), which also flips `hasUnsetInitArgs`.
+  // Tests: address args default to a local signer. Scripts must not — see
+  // `declareScriptInitArgs`. Non-address args are commented-out TODOs.
   private declareInitArgs(c: Contract): string[] {
     return c.constructorArgs.flatMap((arg, i) => {
       if (arg.type === 'address') {
         return [`  const ${arg.name} = signers[${i}].address;`];
+      }
+      return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
+    });
+  }
+
+  // Scripts: invalid sentinels so deploy throws until the user sets each role.
+  private declareScriptInitArgs(c: Contract): string[] {
+    return c.constructorArgs.flatMap(arg => {
+      if (arg.type === 'address') {
+        return [`  // TODO: Set an address for this role.`, `  const ${arg.name} = '<address>';`];
       }
       return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
     });
@@ -180,10 +189,10 @@ ${
     const gated = hasUnsetInitArgs(c);
     const g = gated ? '// ' : '';
 
-    const argDecls = this.declareInitArgs(c);
+    const argDecls = this.declareScriptInitArgs(c);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
     const adminDecl = proxy.isTransparent
-      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  const proxyAdminOwner = signers[0].address;\n\n`
+      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  // TODO: Set an address for this role.\n  const proxyAdminOwner = '<address>';\n\n`
       : '';
     const proxyArgs = proxy.isTransparent
       ? 'implementationAddress, proxyAdminOwner, initData'
@@ -197,8 +206,8 @@ import { ethers } from "hardhat";
 // never the implementation.
 // See https://github.com/OpenZeppelin/tron-contracts-upgradeable
 async function main() {
-  // getSigners() also funds and activates the configured accounts in local TRE.
-  const signers = await ethers.getSigners();
+  // Funds and activates the configured accounts in local TRE. Not used as a role.
+  await ethers.getSigners();
 
   // 1. Deploy the implementation. It is never called directly — all calls go
   //    through the proxy — and it cannot be initialized on its own because its
