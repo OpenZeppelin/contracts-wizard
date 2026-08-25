@@ -174,11 +174,14 @@ ${
     });
   }
 
-  // Scripts: invalid sentinels so deploy throws until the user sets each role.
+  // Scripts: invalid sentinels so deploy throws until the user sets each address.
   private declareScriptInitArgs(c: Contract): string[] {
     return c.constructorArgs.flatMap(arg => {
       if (arg.type === 'address') {
-        return [`  // TODO: Set an address for this role.`, `  const ${arg.name} = '<address>';`];
+        return [
+          `  // TODO: Set an address for the initialize() argument "${arg.name}".`,
+          `  const ${arg.name} = '<address>';`,
+        ];
       }
       return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
     });
@@ -192,7 +195,7 @@ ${
     const argDecls = this.declareScriptInitArgs(c);
     const argList = c.constructorArgs.map(a => a.name).join(', ');
     const adminDecl = proxy.isTransparent
-      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  // TODO: Set an address for this role.\n  const proxyAdminOwner = '<address>';\n\n`
+      ? `  // The transparent proxy's admin owner — it alone can upgrade the proxy.\n  // TODO: Set an address for proxyAdminOwner.\n  const proxyAdminOwner = '<address>';\n\n`
       : '';
     const proxyArgs = proxy.isTransparent
       ? 'implementationAddress, proxyAdminOwner, initData'
@@ -206,7 +209,7 @@ import { ethers } from "hardhat";
 // never the implementation.
 // See https://github.com/OpenZeppelin/tron-contracts-upgradeable
 async function main() {
-  // Funds and activates the configured accounts in local TRE. Not used as a role.
+  // Funds and activates the configured accounts in local TRE.
   await ethers.getSigners();
 
   // 1. Deploy the implementation. It is never called directly — all calls go
