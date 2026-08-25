@@ -20,7 +20,7 @@
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
-    "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable",
+    "update-env": "ts-node ./src/scripts/update-env.ts",
     "prepare": "tsc && node dist/scripts/prepare.js"
   },
   "dependencies": {
