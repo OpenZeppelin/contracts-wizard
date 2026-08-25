@@ -20,7 +20,7 @@
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
-    "update-env": "node ./scripts/update-env.cjs",
+    "update-env": "ts-node ./src/scripts/update-env.ts",
     "prepare": "tsc && node dist/scripts/prepare.js"
   },
   "dependencies": {

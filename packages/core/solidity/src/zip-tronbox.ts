@@ -237,7 +237,8 @@ const tronboxConfig = `\
 module.exports = {
   networks: {
     development: {
-      // For tronbox/tre docker image: https://hub.docker.com/r/tronbox/tre
+      // Well-known TRE genesis key. Funded only when TRE is started with
+      // -e useDefaultPrivateKey=true (see the README).
       privateKey: '0000000000000000000000000000000000000000000000000000000000000001',
       userFeePercentage: 0,
       feeLimit: 1000 * 1e6,
@@ -330,7 +331,7 @@ npm install
 In a separate terminal:
 
 \`\`\`
-docker run --rm -p 9090:9090 tronbox/tre
+docker run --rm -p 9090:9090 -e useDefaultPrivateKey=true tronbox/tre
 \`\`\`
 
 ## Compiling

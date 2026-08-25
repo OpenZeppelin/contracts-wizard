@@ -1,6 +1,6 @@
-const { rmSync } = require('fs');
-const { spawnSync } = require('child_process');
-const path = require('path');
+import { rmSync } from 'fs';
+import { spawnSync } from 'child_process';
+import path from 'path';
 
 const environments = [
   'src/environments/hardhat',
@@ -12,7 +12,7 @@ const environments = [
   'src/environments/tronbox/upgradeable',
 ];
 
-const root = path.join(__dirname, '..');
+const root = path.join(__dirname, '../..');
 
 for (const dir of environments) {
   const prefix = path.join(root, dir);
