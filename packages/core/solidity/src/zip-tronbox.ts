@@ -105,11 +105,20 @@ function deployUpgradeableMigration(c: Contract): string {
     if (arg.type === 'address') {
       return [
         `  // TODO: Set a TRON base58 address for the initialize() argument "${arg.name}".`,
-        `  const ${arg.name} = tronWeb.address.toHex('<TRON address>').replace(/^41/, '0x');`,
+        `  const ${arg.name} = toHex('<TRON address>');`,
       ];
     }
     return [`  // TODO: Set the initialize() argument "${arg.name}".`, `  // const ${arg.name} = ...;`];
   });
+  // `tronWeb` is a file-scope global of the migration sandbox, so the arrow can
+  // only dereference it once the migration runs.
+  const toHexHelper = c.constructorArgs.some(arg => arg.type === 'address')
+    ? `
+// initialize() arguments are ABI-encoded, so addresses must be 0x-hex. Plugin
+// options such as initialOwner take base58 and are converted for you.
+const toHex = base58 => tronWeb.address.toHex(base58).replace(/^41/, '0x');
+`
+    : '';
   const argList = c.constructorArgs.map(a => a.name).join(', ');
   const adminDecl = !uups
     ? `  // TODO: Set a TRON base58 address for proxyAdminOwner.\n  const proxyAdminOwner = '<TRON address>';\n\n`
@@ -121,7 +130,7 @@ function deployUpgradeableMigration(c: Contract): string {
   return `\
 const { deployProxy } = require('@openzeppelin/tronbox-upgrades');
 const ${c.name} = artifacts.require('./${c.name}.sol');
-
+${toHexHelper}
 // Validates the implementation, deploys it behind a ${uups ? 'UUPS' : 'transparent'} proxy,
 // and runs initialize() atomically.
 module.exports = async function (deployer) {
@@ -349,10 +358,18 @@ export async function zipTronbox(c: Contract, opts?: GenericOptions): Promise<JS
   zip.file(`contracts/${c.name}.sol`, printContract(c, tronPrintProfile));
   zip.file('contracts/Migrations.sol', migrationsContract);
   if (c.upgradeable) {
-    // The upgrades plugin deploys these proxy artifacts after validating the implementation.
+    // TronBox only compiles the import closure of contracts/, and the plugin
+    // deploys the proxies by artifact name.
     zip.file(
       'contracts/ProxyImports.sol',
-      `// SPDX-License-Identifier: MIT\npragma solidity ^${TRON_SOLIDITY_VERSION};\n\nimport "@openzeppelin/tronbox-upgrades/contracts/Proxies.sol";\n`,
+      `// SPDX-License-Identifier: MIT
+pragma solidity ^${TRON_SOLIDITY_VERSION};
+
+// This file is needed so the toolchain compiles the proxy contracts, which
+// @openzeppelin/tronbox-upgrades deploys by artifact name. ${c.name} does not
+// import it, and deploying the proxy fails without it.
+import "@openzeppelin/tronbox-upgrades/contracts/Proxies.sol";
+`,
     );
   }
 

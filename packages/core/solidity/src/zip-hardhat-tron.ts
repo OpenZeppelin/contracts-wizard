@@ -263,10 +263,18 @@ ${assertion ? assertion + '\n' : ''}  });
 
     zip.file(`contracts/${c.name}.sol`, this.getPrintContract(c));
     if (c.upgradeable) {
-      // The upgrades plugin deploys these proxy artifacts after validating the implementation.
+      // Hardhat only compiles node_modules sources the project imports, and the
+      // plugin deploys the proxies by artifact name.
       zip.file(
         'contracts/ProxyImports.sol',
-        `// SPDX-License-Identifier: MIT\npragma solidity ^${TRON_SOLIDITY_VERSION};\n\nimport "@openzeppelin/hardhat-tron-upgrades/contracts/Proxies.sol";\n`,
+        `// SPDX-License-Identifier: MIT
+pragma solidity ^${TRON_SOLIDITY_VERSION};
+
+// This file is needed so the toolchain compiles the proxy contracts, which
+// @openzeppelin/hardhat-tron-upgrades deploys by artifact name. ${c.name} does
+// not import it, and deploying the proxy fails without it.
+import "@openzeppelin/hardhat-tron-upgrades/contracts/Proxies.sol";
+`,
       );
     }
     zip.file('test/test.ts', this.getTest(c, opts));
