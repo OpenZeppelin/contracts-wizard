@@ -20,7 +20,7 @@
     "test": "ava",
     "test:update-snapshots": "ava --update-snapshots",
     "test:watch": "ava --watch",
-    "update-env": "rm ./src/environments/hardhat/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat && rm ./src/environments/hardhat/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/upgradeable && rm ./src/environments/hardhat/polkadot/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/polkadot && rm ./src/environments/hardhat/tron/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/tron && rm ./src/environments/hardhat/tron/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/hardhat/tron/upgradeable && rm ./src/environments/tronbox/package-lock.json && npm install --package-lock-only --prefix ./src/environments/tronbox && rm ./src/environments/tronbox/upgradeable/package-lock.json && npm install --package-lock-only --prefix ./src/environments/tronbox/upgradeable",
+    "update-env": "node ./scripts/update-env.cjs",
     "prepare": "tsc && node dist/scripts/prepare.js"
   },
   "dependencies": {
