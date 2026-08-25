@@ -20,6 +20,7 @@
   };
 
   export let errors: undefined | OptionsErrorMessages;
+  export let omitFeatures: string[] | undefined = undefined;
 
   let wasMintable = opts.mintable;
   let wasIncremental = opts.incremental;
@@ -159,33 +160,35 @@
   </div>
 </ExpandableToggleRadio>
 
-<ExpandableToggleRadio
-  label="Crosschain Bridging"
-  bind:value={opts.crossChainBridging}
-  defaultValue="erc7786native"
-  helpContent="Adds built-in support to mint and burn tokens for crosschain transfers with registered counterparts."
-  helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
->
-  <div class="checkbox-group">
-    <label class:checked={opts.crossChainBridging === 'erc7786native'} bind:this={bridgingLabel}>
-      <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
-      ERC-7786 Native
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
-        >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
-      >
-    </label>
+{#if !omitFeatures?.includes('crossChainBridging')}
+  <ExpandableToggleRadio
+    label="Crosschain Bridging"
+    bind:value={opts.crossChainBridging}
+    defaultValue="erc7786native"
+    helpContent="Adds built-in support to mint and burn tokens for crosschain transfers with registered counterparts."
+    helpLink="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
+  >
+    <div class="checkbox-group">
+      <label class:checked={opts.crossChainBridging === 'erc7786native'} bind:this={bridgingLabel}>
+        <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
+        ERC-7786 Native
+        <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc721#ERC721Crosschain"
+          >Embeds an ERC-7786 based bridge directly in the token contract, making it natively crosschain.</HelpTooltip
+        >
+      </label>
 
-    {#if showAllowOverride}
-      <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
-        <label class="text-sm flex-1">
-          <input type="checkbox" bind:checked={opts.crossChainLinkAllowOverride} />
-          Allow Link Overrides
-        </label>
-        <HelpTooltip>Whether to allow replacing a crosschain link that has already been registered.</HelpTooltip>
-      </p>
-    {/if}
-  </div>
-</ExpandableToggleRadio>
+      {#if showAllowOverride}
+        <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+          <label class="text-sm flex-1">
+            <input type="checkbox" bind:checked={opts.crossChainLinkAllowOverride} />
+            Allow Link Overrides
+          </label>
+          <HelpTooltip>Whether to allow replacing a crosschain link that has already been registered.</HelpTooltip>
+        </p>
+      {/if}
+    </div>
+  </ExpandableToggleRadio>
+{/if}
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 

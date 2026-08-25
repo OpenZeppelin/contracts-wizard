@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.5.7 (2026-08-25)
+
+- Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
+  - Covers TRC20, TRC721, TRC1155, Governor, and Custom contracts.
+  - On TRON, the Governor's `blockTime` defaults to 3 seconds to match its block production.
+
 ## 0.5.6 (2026-08-17)
 
 - Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
