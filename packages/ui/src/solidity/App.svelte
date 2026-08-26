@@ -206,7 +206,7 @@
       : remixURL(code, remappings, !!opts?.upgradeable);
     window.open(url.toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
-      await postConfig(opts, openInIde?.action ?? 'remix', language);
+      await postConfig(opts, 'remix', language);
     }
   };
 

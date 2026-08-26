@@ -70,7 +70,6 @@
       label: 'Open in TRON IDE',
       icon: TronIcon,
       url: tronIdeURL,
-      action: 'tronide',
       // TRON IDE's URL loader decodes with plain atob (no UTF-8 pass): a
       // non-ASCII source loads as mojibake that still compiles — e.g. a
       // corrupted token name baked into on-chain state — so opening is

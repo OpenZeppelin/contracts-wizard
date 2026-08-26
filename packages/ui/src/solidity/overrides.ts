@@ -2,7 +2,7 @@ import type { Contract, GenericOptions, Kind, Options as PrintOptions } from '@o
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
-import type { Action, DownloadAction } from '../common/post-config';
+import type { DownloadAction } from '../common/post-config';
 import type JSZip from 'jszip';
 
 /**
@@ -94,8 +94,6 @@ export interface Overrides {
     icon?: ComponentType;
     /** Builds the IDE deep link for the rendered source. */
     url: (code: string, remappings: string[], upgradeable: boolean) => URL;
-    /** Analytics action emitted when the button is used. */
-    action: Action;
     /**
      * Disables the button (showing this tooltip) when the rendered source
      * matches `test` — for IDEs whose URL loader cannot receive some sources
