@@ -192,6 +192,7 @@
   const ideUnsupportedSource = openInIde?.unsupportedSource;
 
   $: ideSourceUnsupported = ideUnsupportedSource !== undefined && ideUnsupportedSource.test(code);
+  $: ideUpgradeableWarning = opts?.upgradeable ? openInIde?.upgradeableWarning?.(opts) : undefined;
 
   const openInIdeHandler = async (e: MouseEvent) => {
     e.preventDefault();
@@ -320,14 +321,18 @@
                 <p>{ideUnsupportedSource?.tooltip}</p>
               </div>
             </Tooltip>
-          {:else if openInIde?.upgradeableNote !== undefined && opts?.upgradeable}
-            <Tooltip let:trigger theme="light border" interactive maxWidth="22em">
-              <button use:trigger class="action-button with-text" on:click={openInIdeHandler}>
+          {:else if ideUpgradeableWarning !== undefined}
+            <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+              <button use:trigger class="action-button with-text disabled" on:click={openInIdeHandler}>
                 <IdeIcon />
                 {ideLabel}
               </button>
               <div slot="content">
-                <p>{openInIde?.upgradeableNote}</p>
+                <p style="margin-bottom: 0.5rem;">{ideUpgradeableWarning}</p>
+                <p>
+                  <!-- svelte-ignore a11y-invalid-attribute -->
+                  <a href="#" on:click={openInIdeHandler}>{ideLabel} anyway</a>.
+                </p>
               </div>
             </Tooltip>
           {:else if openInIde === undefined && opts?.upgradeable === 'transparent'}
@@ -368,7 +373,11 @@
             <FileIcon />
             <div class="download-option-content">
               <p>Single file</p>
-              <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+              <p>
+                Requires installation of npm package (<code
+                  >{overrides.npmPackageName ?? '@openzeppelin/contracts'}</code
+                >).
+              </p>
               <p>Simple to receive updates.</p>
             </div>
           </button>

@@ -106,12 +106,21 @@ export interface Overrides {
       tooltip: string;
     };
     /**
-     * Hover note shown on the (enabled) button for upgradeable contracts —
-     * for IDEs without proxy deployment. Replaces the Remix-specific
-     * transparent-proxy warning, which does not apply to other IDEs.
+     * Greys out the button for upgradeable contracts, with this warning and an
+     * "open anyway" link in its tooltip — the same pattern as Remix's
+     * transparent-proxy warning, which this replaces (that warning is
+     * Remix-specific). Takes the current options so the message can vary by
+     * kind (e.g. Governor has no package downloads to point to).
      */
-    upgradeableNote?: string;
+    upgradeableWarning?: (opts?: GenericOptions) => string;
   };
+
+  /**
+   * npm package named in the "Single file" download description. Defaults to
+   * `@openzeppelin/contracts`; ecosystems with their own contracts library
+   * override it (e.g. `@openzeppelin/tron-contracts`).
+   */
+  npmPackageName?: string;
 
   /**
    * Print options passed to `printContract` when the UI renders the source for
@@ -162,6 +171,7 @@ export const defaultOverrides: Overrides = {
   omitOpenInRemix: false,
   overrideVersionedRemappings: undefined,
   openInIde: undefined,
+  npmPackageName: undefined,
   printOptions: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,

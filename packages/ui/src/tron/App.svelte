@@ -81,11 +81,18 @@
           "TRON IDE's URL loader corrupts non-ASCII characters, such as in the token name. Copy the code or download the file instead.",
       },
       // TRON IDE has no proxy deployment (unlike Remix), for UUPS and
-      // transparent alike, so upgradeable contracts get a pointer to the
-      // downloads, which deploy through the TRON upgrades plugins.
-      upgradeableNote:
-        'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself, or download the Hardhat or TronBox package to deploy through the TRON upgrades plugins.',
+      // transparent alike, so upgradeable contracts grey the button out and
+      // point at the downloads, which deploy through the TRON upgrades
+      // plugins. Governor has no Hardhat/TronBox downloads to point to (a
+      // Governor needs a token contract alongside it), so it gets the shorter
+      // message.
+      upgradeableWarning: (opts?: GenericOptions) =>
+        opts?.kind === 'Governor'
+          ? 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself.'
+          : 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself, or download the Hardhat or TronBox package to deploy through the TRON upgrades plugins.',
     },
+    // The "Single file" download names the package the imports come from.
+    npmPackageName: '@openzeppelin/tron-contracts',
     printOptions: tronPrintProfile,
     sanitizeOmittedFeatures,
     postConfigLanguage: 'tron-solidity',
