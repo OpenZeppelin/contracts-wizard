@@ -1,7 +1,4 @@
-// UTF-8-safe base64 without trailing padding, the same encoding `remixURL`
-// uses; TRON IDE's atob decode accepts unpadded input.
-const encodeUtf8Base64 = (str: string): string =>
-  btoa(String.fromCharCode(...new TextEncoder().encode(str))).replace(/=*$/, '');
+import { encodeUtf8Base64 } from './remix';
 
 // TRON IDE (https://tronide.io, a Remix fork) reads hash params raw — no
 // decodeURIComponent — and decodes `code`/`remaps` with plain atob. The base64
