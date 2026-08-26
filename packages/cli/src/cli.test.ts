@@ -72,6 +72,43 @@ test('each core kind has cli registry entry', async t => {
   }
 });
 
+// --- README completeness ---
+// The README is what npm renders for the package, so a language shipped without
+// a table row or example there is invisible to anyone browsing the npm page.
+
+/** `uniswap-hooks` is a whole command; every other command is `<language>-<contract>`. */
+function commandLanguage(command: string): string {
+  return command === 'uniswap-hooks' ? command : command.split('-')[0]!;
+}
+
+test('each registry command is listed in the README table', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+
+  for (const command of Object.keys(registry)) {
+    const language = commandLanguage(command);
+    const row = readme.split('\n').find(line => line.startsWith(`| ${language} |`));
+
+    t.truthy(row, `packages/cli/README.md 'Supported languages' table is missing a row for '${language}'`);
+    const contract = command.slice(language.length + 1);
+    if (row !== undefined && contract !== '') {
+      t.true(row.includes(contract), `README table row for '${language}' is missing '${contract}'`);
+    }
+  }
+});
+
+test('each registry language has a README example', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  const languages = new Set(Object.keys(registry).map(commandLanguage));
+
+  for (const language of languages) {
+    t.regex(
+      readme,
+      new RegExp(`contracts-cli ${language}[ -]`),
+      `packages/cli/README.md 'Examples' is missing an example command for '${language}'`,
+    );
+  }
+});
+
 // --- Help snapshots ---
 
 test('no args', t => {

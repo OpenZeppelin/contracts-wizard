@@ -20,6 +20,7 @@ Provides tools to generate smart contract source code for the following language
 | confidential | erc7984 |
 | stellar | fungible, stablecoin, non-fungible, governor, vault, account |
 | stylus | erc20, erc721, erc1155 |
+| tron | trc20, trc721, trc1155, governor, custom |
 | uniswap-hooks | hooks (tool name is just `uniswap-hooks`) |
 
 ### MCP Apps
