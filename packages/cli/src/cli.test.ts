@@ -98,11 +98,16 @@ test('each registry command is listed in the README table', async t => {
 
 test('each registry language has a README example', async t => {
   const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  // Match only within the Examples section, so commands mentioned elsewhere
+  // (e.g. the `--help` invocation under Usage) cannot satisfy the check.
+  const examplesStart = readme.indexOf('## Examples');
+  t.true(examplesStart >= 0, `packages/cli/README.md is missing the '## Examples' section`);
+  const examples = readme.slice(examplesStart);
   const languages = new Set(Object.keys(registry).map(commandLanguage));
 
   for (const language of languages) {
     t.regex(
-      readme,
+      examples,
       new RegExp(`contracts-cli ${language}[ -]`),
       `packages/cli/README.md 'Examples' is missing an example command for '${language}'`,
     );
