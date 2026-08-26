@@ -77,7 +77,7 @@
       unsupportedSource: {
         test: containsNonAscii,
         tooltip:
-          'Opening in TRON IDE is not supported for contracts with non-ASCII characters, such as in the token name. Copy the code or download the file instead.',
+          'Opening in TRON IDE is not supported for contracts with non-ASCII characters, such as in the token name. Use Copy to Clipboard or Download instead.',
       },
       // TRON IDE has no proxy deployment (unlike Remix), for UUPS and
       // transparent alike, so upgradeable contracts grey the button out and
