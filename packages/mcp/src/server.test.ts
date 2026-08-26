@@ -130,6 +130,32 @@ test('each mcp tools folder is exported from index.ts', async t => {
 });
 
 /**
+ * The README is what npm renders for the package, so a language shipped without
+ * a row in its table is invisible to anyone browsing the npm page (TRON was
+ * initially missed this way).
+ */
+test('each mcp language has a README table row listing its tools', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  const byLanguage = new Map<string, string[]>();
+
+  for (const { language, toolName } of await listExpectedWizardTools()) {
+    const suffix = toolName.startsWith(`${language}-`) ? toolName.slice(language.length + 1) : toolName;
+    byLanguage.set(language, [...(byLanguage.get(language) ?? []), suffix]);
+  }
+
+  for (const [language, suffixes] of byLanguage) {
+    const row = readme.split('\n').find(line => line.startsWith(`| ${language} |`));
+
+    t.truthy(row, `packages/mcp/README.md language table is missing a row for '${language}'`);
+    if (row === undefined) continue;
+
+    for (const suffix of suffixes) {
+      t.true(row.includes(suffix), `README table row for '${language}' is missing '${suffix}'`);
+    }
+  }
+});
+
+/**
  * Kind-level counterpart to the language check above, mirroring `each core kind has cli registry
  * entry` in packages/cli: a kind added to an existing core language must also get an MCP tool.
  * Languages are the core∩mcp intersection; a core language with no MCP folder at all is the first
