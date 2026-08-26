@@ -2,7 +2,7 @@ import type { Contract, GenericOptions, Kind, Options as PrintOptions } from '@o
 import type { ComponentType } from 'svelte';
 import type { SupportedLanguage } from '../../api/ai-assistant/types/languages';
 import type { Language } from '../common/languages-types';
-import type { DownloadAction } from '../common/post-config';
+import type { Action, DownloadAction } from '../common/post-config';
 import type JSZip from 'jszip';
 
 /**
@@ -75,12 +75,43 @@ export interface Overrides {
   omitOpenInRemix?: boolean;
 
   /**
-   * Override the remappings passed to Remix when "Open in Remix" is used.
-   * Defaults to `@openzeppelin/wizard`'s `getVersionedRemappings(opts)`.
-   * Set this when the generated source uses a non-default contracts
-   * library (e.g. `@openzeppelin/tron-contracts`).
+   * Override the remappings passed to the web IDE when the "Open in ..."
+   * action is used. Defaults to `@openzeppelin/wizard`'s
+   * `getVersionedRemappings(opts)`. Set this when the generated source uses a
+   * non-default contracts library (e.g. `@openzeppelin/tron-contracts`).
    */
   overrideVersionedRemappings?: (opts?: GenericOptions) => string[];
+
+  /**
+   * Retargets the "Open in Remix" action to a different web IDE. Used by
+   * ecosystems with their own Remix fork (e.g. TRON IDE). `omitOpenInRemix`
+   * still hides the action entirely when set.
+   */
+  openInIde?: {
+    /** Button label (e.g. "Open in TRON IDE"). */
+    label: string;
+    /** Button icon component. Defaults to the Remix logo. */
+    icon?: ComponentType;
+    /** Builds the IDE deep link for the rendered source. */
+    url: (code: string, remappings: string[], upgradeable: boolean) => URL;
+    /** Analytics action emitted when the button is used. */
+    action: Action;
+    /**
+     * Disables the button (showing this tooltip) when the rendered source
+     * matches `test` — for IDEs whose URL loader cannot receive some sources
+     * faithfully (e.g. TRON IDE corrupts non-ASCII characters).
+     */
+    unsupportedSource?: {
+      test: (code: string) => boolean;
+      tooltip: string;
+    };
+    /**
+     * Hover note shown on the (enabled) button for upgradeable contracts —
+     * for IDEs without proxy deployment. Replaces the Remix-specific
+     * transparent-proxy warning, which does not apply to other IDEs.
+     */
+    upgradeableNote?: string;
+  };
 
   /**
    * Print options passed to `printContract` when the UI renders the source for
@@ -130,6 +161,7 @@ export const defaultOverrides: Overrides = {
   secondaryDownloadAction: undefined,
   omitOpenInRemix: false,
   overrideVersionedRemappings: undefined,
+  openInIde: undefined,
   printOptions: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,

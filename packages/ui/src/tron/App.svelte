@@ -5,7 +5,15 @@
   import type { Overrides } from '../solidity/overrides';
   import { defineOmitFeatures, sanitizeOmittedFeatures } from './handle-unsupported-features';
   import { createWiz } from '../common/Wiz.svelte';
-  import { tronPrintProfile, TRON_DEFAULT_BLOCK_TIME, type Contract, type GenericOptions } from '@openzeppelin/wizard';
+  import { containsNonAscii, tronIdeURL } from '../solidity/tron-ide';
+  import TronIcon from '../common/icons/TronIcon.svelte';
+  import {
+    tronPrintProfile,
+    TRON_CONTRACTS_VERSION,
+    TRON_DEFAULT_BLOCK_TIME,
+    type Contract,
+    type GenericOptions,
+  } from '@openzeppelin/wizard';
 
   export let initialTab: string | undefined = 'ERC20';
   export let initialOpts: InitialOptions = {};
@@ -21,7 +29,7 @@
   //    symbols and paths only — not a pass over the finished source)
   //  - swap Hardhat download for the @openzeppelin/hardhat-tron-based one
   //  - replace the second download tab (originally Foundry) with TronBox
-  //  - remap the @openzeppelin/tron-contracts packages when opening in Remix (TVM is EVM-compatible enough)
+  //  - retarget "Open in Remix" to TRON IDE (tronide.io, a Remix fork with TRON deployment)
   //  - hide Account tab (ERC-4337 EntryPoint not deployed on TRON in scope here)
   //  - hide Stablecoin + RealWorldAsset tabs (they rely on @openzeppelin/community-contracts,
   //    which is not being ported to TRON)
@@ -48,14 +56,36 @@
       description: 'Sample TronBox project with migrations and tests, targeting the TRON Virtual Machine.',
     },
     secondaryDownloadAction: 'download-tronbox',
-    // Remix supports the TRON contracts source as-is (TVM is EVM-compatible),
-    // provided we point its npm resolver at the right packages. List the
-    // upgradeable package first so its longer prefix is matched ahead of the base.
+    // TRON IDE loads the source as-is. List the upgradeable package first so
+    // its longer prefix is matched ahead of the base. TRON IDE ignores the
+    // remaps param today (imports resolve through npm's `latest` tag); the
+    // versioned form makes existing links pin the library the day it adopts
+    // Remix's param.
     omitOpenInRemix: false,
     overrideVersionedRemappings: () => [
-      '@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable/',
-      '@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts/',
+      `@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable@${TRON_CONTRACTS_VERSION}/`,
+      `@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts@${TRON_CONTRACTS_VERSION}/`,
     ],
+    openInIde: {
+      label: 'Open in TRON IDE',
+      icon: TronIcon,
+      url: tronIdeURL,
+      action: 'tronide',
+      // TRON IDE's URL loader decodes with plain atob (no UTF-8 pass): a
+      // non-ASCII source loads as mojibake that still compiles — e.g. a
+      // corrupted token name baked into on-chain state — so opening is
+      // disabled for those sources instead of warned about.
+      unsupportedSource: {
+        test: containsNonAscii,
+        tooltip:
+          "TRON IDE's URL loader corrupts non-ASCII characters, such as in the token name. Copy the code or download the file instead.",
+      },
+      // TRON IDE has no proxy deployment (unlike Remix), for UUPS and
+      // transparent alike, so upgradeable contracts get a pointer to the
+      // downloads, which deploy through the TRON upgrades plugins.
+      upgradeableNote:
+        'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself, or download the Hardhat or TronBox package to deploy through the TRON upgrades plugins.',
+    },
     printOptions: tronPrintProfile,
     sanitizeOmittedFeatures,
     postConfigLanguage: 'tron-solidity',

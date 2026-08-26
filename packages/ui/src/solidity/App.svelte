@@ -186,16 +186,26 @@
     }, 1000);
   };
 
-  const remixHandler = async (e: MouseEvent) => {
+  const openInIde = overrides.openInIde;
+  const ideLabel = openInIde?.label ?? 'Open in Remix';
+  const IdeIcon = openInIde?.icon ?? RemixIcon;
+  const ideUnsupportedSource = openInIde?.unsupportedSource;
+
+  $: ideSourceUnsupported = ideUnsupportedSource !== undefined && ideUnsupportedSource.test(code);
+
+  const openInIdeHandler = async (e: MouseEvent) => {
     e.preventDefault();
     if ((e.target as Element)?.classList.contains('disabled')) return;
 
     const remappings = overrides.overrideVersionedRemappings
       ? overrides.overrideVersionedRemappings(opts)
       : getVersionedRemappings(opts);
-    window.open(remixURL(code, remappings, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    const url = openInIde
+      ? openInIde.url(code, remappings, !!opts?.upgradeable)
+      : remixURL(code, remappings, !!opts?.upgradeable);
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
-      await postConfig(opts, 'remix', language);
+      await postConfig(opts, openInIde?.action ?? 'remix', language);
     }
   };
 
@@ -298,9 +308,31 @@
         </button>
 
         {#if showButtons.openInRemix}
-          {#if opts?.upgradeable === 'transparent'}
+          {#if ideSourceUnsupported}
+            <!-- Hard block, no "open anyway": the IDE would receive a corrupted
+                 source, while Copy/Download right next to it stay lossless. -->
+            <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive maxWidth="22em">
+              <button use:trigger class="action-button with-text disabled">
+                <IdeIcon />
+                {ideLabel}
+              </button>
+              <div slot="content">
+                <p>{ideUnsupportedSource?.tooltip}</p>
+              </div>
+            </Tooltip>
+          {:else if openInIde?.upgradeableNote !== undefined && opts?.upgradeable}
+            <Tooltip let:trigger theme="light border" interactive maxWidth="22em">
+              <button use:trigger class="action-button with-text" on:click={openInIdeHandler}>
+                <IdeIcon />
+                {ideLabel}
+              </button>
+              <div slot="content">
+                <p>{openInIde?.upgradeableNote}</p>
+              </div>
+            </Tooltip>
+          {:else if openInIde === undefined && opts?.upgradeable === 'transparent'}
             <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
-              <button use:trigger class="action-button with-text disabled" on:click={remixHandler}>
+              <button use:trigger class="action-button with-text disabled" on:click={openInIdeHandler}>
                 <RemixIcon />
                 Open in Remix
               </button>
@@ -314,14 +346,14 @@
                 </p>
                 <p>
                   <!-- svelte-ignore a11y-invalid-attribute -->
-                  <a href="#" on:click={remixHandler}>Open in Remix anyway</a>.
+                  <a href="#" on:click={openInIdeHandler}>Open in Remix anyway</a>.
                 </p>
               </div>
             </Tooltip>
           {:else}
-            <button class="action-button with-text" on:click={remixHandler}>
-              <RemixIcon />
-              Open in Remix
+            <button class="action-button with-text" on:click={openInIdeHandler}>
+              <IdeIcon />
+              {ideLabel}
             </button>
           {/if}
         {/if}
