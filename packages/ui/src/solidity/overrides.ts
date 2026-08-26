@@ -75,12 +75,50 @@ export interface Overrides {
   omitOpenInRemix?: boolean;
 
   /**
-   * Override the remappings passed to Remix when "Open in Remix" is used.
-   * Defaults to `@openzeppelin/wizard`'s `getVersionedRemappings(opts)`.
-   * Set this when the generated source uses a non-default contracts
-   * library (e.g. `@openzeppelin/tron-contracts`).
+   * Override the remappings passed to the web IDE when the "Open in ..."
+   * action is used. Defaults to `@openzeppelin/wizard`'s
+   * `getVersionedRemappings(opts)`. Set this when the generated source uses a
+   * non-default contracts library (e.g. `@openzeppelin/tron-contracts`).
    */
   overrideVersionedRemappings?: (opts?: GenericOptions) => string[];
+
+  /**
+   * Retargets the "Open in Remix" action to a different web IDE. Used by
+   * ecosystems with their own Remix fork. `omitOpenInRemix`
+   * still hides the action entirely when set.
+   */
+  openInRemix?: {
+    /** Button label replacing "Open in Remix". */
+    label: string;
+    /** Button icon component. Defaults to the Remix logo. */
+    icon?: ComponentType;
+    /** Builds the IDE deep link for the rendered source. */
+    url: (code: string, remappings: string[], upgradeable: boolean) => URL;
+    /**
+     * Disables the button (showing this tooltip) when the rendered source
+     * matches `test` — for IDEs whose URL loader cannot receive some sources
+     * faithfully.
+     */
+    unsupportedSource?: {
+      test: (code: string) => boolean;
+      tooltip: string;
+    };
+    /**
+     * Greys out the button for upgradeable contracts, with this warning and an
+     * "open anyway" link in its tooltip — the same pattern as Remix's
+     * transparent-proxy warning, which this replaces (that warning is
+     * Remix-specific). Takes the current options so the message can vary by
+     * kind (e.g. Governor has no package downloads to point to).
+     */
+    upgradeableWarning?: (opts?: GenericOptions) => string;
+  };
+
+  /**
+   * npm package named in the "Single file" download description. Defaults to
+   * `@openzeppelin/contracts`; ecosystems with their own contracts library
+   * override it.
+   */
+  npmPackageName?: string;
 
   /**
    * Print options passed to `printContract` when the UI renders the source for
@@ -130,6 +168,8 @@ export const defaultOverrides: Overrides = {
   secondaryDownloadAction: undefined,
   omitOpenInRemix: false,
   overrideVersionedRemappings: undefined,
+  openInRemix: undefined,
+  npmPackageName: undefined,
   printOptions: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
   postConfigLanguage: undefined,

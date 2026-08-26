@@ -186,14 +186,21 @@
     }, 1000);
   };
 
+  $: remixUnsupportedTooltip = overrides.openInRemix?.unsupportedSource?.test(code)
+    ? overrides.openInRemix.unsupportedSource.tooltip
+    : undefined;
+  $: remixUpgradeableWarning = opts?.upgradeable ? overrides.openInRemix?.upgradeableWarning?.(opts) : undefined;
+
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
-    if ((e.target as Element)?.classList.contains('disabled')) return;
 
     const remappings = overrides.overrideVersionedRemappings
       ? overrides.overrideVersionedRemappings(opts)
       : getVersionedRemappings(opts);
-    window.open(remixURL(code, remappings, !!opts?.upgradeable).toString(), '_blank', 'noopener,noreferrer');
+    const url = overrides.openInRemix
+      ? overrides.openInRemix.url(code, remappings, !!opts?.upgradeable)
+      : remixURL(code, remappings, !!opts?.upgradeable);
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
     if (opts) {
       await postConfig(opts, 'remix', language);
     }
@@ -298,9 +305,35 @@
         </button>
 
         {#if showButtons.openInRemix}
-          {#if opts?.upgradeable === 'transparent'}
+          {#if remixUnsupportedTooltip !== undefined}
+            <!-- Hard block, no "open anyway": the IDE would receive a corrupted
+                 source, while Copy/Download right next to it stay lossless. -->
+            <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive maxWidth="22em">
+              <button use:trigger class="action-button with-text disabled">
+                <svelte:component this={overrides.openInRemix?.icon ?? RemixIcon} />
+                {overrides.openInRemix?.label ?? 'Open in Remix'}
+              </button>
+              <div slot="content">
+                <p>{remixUnsupportedTooltip}</p>
+              </div>
+            </Tooltip>
+          {:else if remixUpgradeableWarning !== undefined}
             <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
-              <button use:trigger class="action-button with-text disabled" on:click={remixHandler}>
+              <button use:trigger class="action-button with-text disabled">
+                <svelte:component this={overrides.openInRemix?.icon ?? RemixIcon} />
+                {overrides.openInRemix?.label ?? 'Open in Remix'}
+              </button>
+              <div slot="content">
+                <p style="margin-bottom: 0.5rem;">{remixUpgradeableWarning}</p>
+                <p>
+                  <!-- svelte-ignore a11y-invalid-attribute -->
+                  <a href="#" on:click={remixHandler}>{overrides.openInRemix?.label ?? 'Open in Remix'} anyway</a>.
+                </p>
+              </div>
+            </Tooltip>
+          {:else if overrides.openInRemix === undefined && opts?.upgradeable === 'transparent'}
+            <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
+              <button use:trigger class="action-button with-text disabled">
                 <RemixIcon />
                 Open in Remix
               </button>
@@ -320,8 +353,8 @@
             </Tooltip>
           {:else}
             <button class="action-button with-text" on:click={remixHandler}>
-              <RemixIcon />
-              Open in Remix
+              <svelte:component this={overrides.openInRemix?.icon ?? RemixIcon} />
+              {overrides.openInRemix?.label ?? 'Open in Remix'}
             </button>
           {/if}
         {/if}
@@ -336,7 +369,11 @@
             <FileIcon />
             <div class="download-option-content">
               <p>Single file</p>
-              <p>Requires installation of npm package (<code>@openzeppelin/contracts</code>).</p>
+              <p>
+                Requires installation of npm package (<code
+                  >{overrides.npmPackageName ?? '@openzeppelin/contracts'}</code
+                >).
+              </p>
               <p>Simple to receive updates.</p>
             </div>
           </button>
