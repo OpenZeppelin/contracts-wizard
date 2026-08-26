@@ -27,13 +27,12 @@
   //    which is not being ported to TRON)
   //
   // Upgradeable is fully supported: source imports @openzeppelin/tron-contracts-upgradeable,
-  // and both downloads ship an implementation-then-proxy deploy for it.
+  // and both downloads deploy through OpenZeppelin's TRON upgrades plugins.
   const overrides: Overrides = {
     omitTabs: ['Account', 'Stablecoin', 'RealWorldAsset'],
     tabLabels: { ERC20: 'TRC20', ERC721: 'TRC721', ERC1155: 'TRC1155' },
     omitFeatures: defineOmitFeatures(),
-    // Both downloads are shown for every option, upgradeable included — the
-    // generators emit an implementation-then-proxy deploy for upgradeable contracts.
+    // Both downloads are shown for every option, upgradeable included.
     omitZipHardhat: () => false,
     overrideZipHardhat: async (c: Contract, opts?: GenericOptions) => {
       const { zipHardhatTron } = await zipHardhatTronModule;
