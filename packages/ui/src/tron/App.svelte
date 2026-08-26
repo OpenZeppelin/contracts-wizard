@@ -87,8 +87,8 @@
       // message.
       upgradeableWarning: (opts?: GenericOptions) =>
         opts?.kind === 'Governor'
-          ? 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself.'
-          : 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself, or download the Hardhat or TronBox package to deploy through the TRON upgrades plugins.',
+          ? 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself after deploying the implementation.'
+          : 'TRON IDE deploys only the implementation contract. Deploy and initialize a proxy yourself after deploying the implementation, or download the Hardhat or TronBox package to deploy through the TRON upgrades plugins.',
     },
     // The "Single file" download names the package the imports come from.
     npmPackageName: '@openzeppelin/tron-contracts',
