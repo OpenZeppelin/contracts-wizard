@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.6.6 (2026-08-26)
+
+- Add TRON to the README's language table. No functional changes. ([#857](https://github.com/OpenZeppelin/contracts-wizard/pull/857))
+
 ## 0.6.5 (2026-08-25)
 
 - Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
