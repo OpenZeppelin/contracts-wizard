@@ -191,12 +191,11 @@
   const RemixButtonIcon = openInRemix?.icon ?? RemixIcon;
   const remixUnsupportedSource = openInRemix?.unsupportedSource;
 
-  $: remixSourceUnsupported = remixUnsupportedSource !== undefined && remixUnsupportedSource.test(code);
+  $: remixUnsupportedTooltip = remixUnsupportedSource?.test(code) ? remixUnsupportedSource.tooltip : undefined;
   $: remixUpgradeableWarning = opts?.upgradeable ? openInRemix?.upgradeableWarning?.(opts) : undefined;
 
   const remixHandler = async (e: MouseEvent) => {
     e.preventDefault();
-    if ((e.target as Element)?.classList.contains('disabled')) return;
 
     const remappings = overrides.overrideVersionedRemappings
       ? overrides.overrideVersionedRemappings(opts)
@@ -309,7 +308,7 @@
         </button>
 
         {#if showButtons.openInRemix}
-          {#if remixSourceUnsupported}
+          {#if remixUnsupportedTooltip !== undefined}
             <!-- Hard block, no "open anyway": the IDE would receive a corrupted
                  source, while Copy/Download right next to it stay lossless. -->
             <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive maxWidth="22em">
@@ -318,12 +317,12 @@
                 {remixLabel}
               </button>
               <div slot="content">
-                <p>{remixUnsupportedSource?.tooltip}</p>
+                <p>{remixUnsupportedTooltip}</p>
               </div>
             </Tooltip>
           {:else if remixUpgradeableWarning !== undefined}
             <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
-              <button use:trigger class="action-button with-text disabled" on:click={remixHandler}>
+              <button use:trigger class="action-button with-text disabled">
                 <RemixButtonIcon />
                 {remixLabel}
               </button>
@@ -337,7 +336,7 @@
             </Tooltip>
           {:else if openInRemix === undefined && opts?.upgradeable === 'transparent'}
             <Tooltip let:trigger theme="light-red border" hideOnClick={false} interactive>
-              <button use:trigger class="action-button with-text disabled" on:click={remixHandler}>
+              <button use:trigger class="action-button with-text disabled">
                 <RemixIcon />
                 Open in Remix
               </button>
