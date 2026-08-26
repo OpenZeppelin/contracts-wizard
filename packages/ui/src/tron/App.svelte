@@ -66,7 +66,7 @@
       `@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable@${TRON_CONTRACTS_VERSION}/`,
       `@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts@${TRON_CONTRACTS_VERSION}/`,
     ],
-    openInIde: {
+    openInRemix: {
       label: 'Open in TRON IDE',
       icon: TronIcon,
       url: tronIdeURL,

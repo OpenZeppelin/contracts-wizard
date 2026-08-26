@@ -87,7 +87,7 @@ export interface Overrides {
    * ecosystems with their own Remix fork (e.g. TRON IDE). `omitOpenInRemix`
    * still hides the action entirely when set.
    */
-  openInIde?: {
+  openInRemix?: {
     /** Button label (e.g. "Open in TRON IDE"). */
     label: string;
     /** Button icon component. Defaults to the Remix logo. */
@@ -168,7 +168,7 @@ export const defaultOverrides: Overrides = {
   secondaryDownloadAction: undefined,
   omitOpenInRemix: false,
   overrideVersionedRemappings: undefined,
-  openInIde: undefined,
+  openInRemix: undefined,
   npmPackageName: undefined,
   printOptions: undefined,
   sanitizeOmittedFeatures: (_: GenericOptions) => {},
