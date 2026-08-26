@@ -1,5 +1,5 @@
-// UTF-8-safe base64 without trailing padding, shared by the web-IDE deep links
-// (Remix and TRON IDE). Both IDEs decode with atob, which accepts unpadded input.
+// UTF-8-safe base64 without trailing padding for the web-IDE deep links; the
+// IDEs' atob decoding accepts unpadded input.
 export const encodeUtf8Base64 = (str: string): string =>
   btoa(String.fromCharCode(...new TextEncoder().encode(str))).replace(/=*$/, '');
 

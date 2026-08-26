@@ -84,11 +84,11 @@ export interface Overrides {
 
   /**
    * Retargets the "Open in Remix" action to a different web IDE. Used by
-   * ecosystems with their own Remix fork (e.g. TRON IDE). `omitOpenInRemix`
+   * ecosystems with their own Remix fork. `omitOpenInRemix`
    * still hides the action entirely when set.
    */
   openInRemix?: {
-    /** Button label (e.g. "Open in TRON IDE"). */
+    /** Button label replacing "Open in Remix". */
     label: string;
     /** Button icon component. Defaults to the Remix logo. */
     icon?: ComponentType;
@@ -97,7 +97,7 @@ export interface Overrides {
     /**
      * Disables the button (showing this tooltip) when the rendered source
      * matches `test` — for IDEs whose URL loader cannot receive some sources
-     * faithfully (e.g. TRON IDE corrupts non-ASCII characters).
+     * faithfully.
      */
     unsupportedSource?: {
       test: (code: string) => boolean;
@@ -116,7 +116,7 @@ export interface Overrides {
   /**
    * npm package named in the "Single file" download description. Defaults to
    * `@openzeppelin/contracts`; ecosystems with their own contracts library
-   * override it (e.g. `@openzeppelin/tron-contracts`).
+   * override it.
    */
   npmPackageName?: string;
 
