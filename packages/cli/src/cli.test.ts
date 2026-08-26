@@ -114,6 +114,24 @@ test('each registry language has a README example', async t => {
   }
 });
 
+test('each README example runs', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  const examplesStart = readme.indexOf('## Examples');
+  t.true(examplesStart >= 0, `packages/cli/README.md is missing the '## Examples' section`);
+  const blocks = [...readme.slice(examplesStart).matchAll(/```sh\n(.*?)```/gs)].map(match => match[1]!);
+  t.true(blocks.length > 0, 'Expected sh blocks in the Examples section');
+
+  for (const block of blocks) {
+    // Join backslash line continuations the way a shell would.
+    const command = block.replace(/\\\n/g, ' ').trim();
+    t.true(command.startsWith('npx @openzeppelin/contracts-cli '), `Unexpected example command: ${command}`);
+
+    const args = command.replace('npx @openzeppelin/contracts-cli ', '').split(/\s+/);
+    const output = run(...args);
+    t.true(output.length > 0, `Example printed no contract: ${command}`);
+  }
+});
+
 // --- Help snapshots ---
 
 test('no args', t => {
