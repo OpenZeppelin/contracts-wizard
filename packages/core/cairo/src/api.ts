@@ -17,6 +17,12 @@ import {
   defaults as erc1155defaults,
   isAccessControlRequired as erc1155IsAccessControlRequired,
 } from './erc1155';
+import type { ERC6909Options } from './erc6909';
+import {
+  printERC6909,
+  defaults as erc6909defaults,
+  isAccessControlRequired as erc6909IsAccessControlRequired,
+} from './erc6909';
 import type { AccountOptions } from './account';
 import { printAccount, defaults as accountDefaults } from './account';
 import type { GovernorOptions } from './governor';
@@ -67,6 +73,7 @@ export interface AccessControlAPI<Options extends CommonContractOptions> {
 export type ERC20 = WizardContractAPI<ERC20Options> & AccessControlAPI<ERC20Options>;
 export type ERC721 = WizardContractAPI<ERC721Options> & AccessControlAPI<ERC721Options>;
 export type ERC1155 = WizardContractAPI<ERC1155Options> & AccessControlAPI<ERC1155Options>;
+export type ERC6909 = WizardContractAPI<ERC6909Options> & AccessControlAPI<ERC6909Options>;
 export type Account = WizardAccountAPI<AccountOptions>;
 export type Multisig = WizardContractAPI<MultisigOptions>;
 export type Governor = WizardContractAPI<GovernorOptions>;
@@ -87,6 +94,11 @@ export const erc1155: ERC1155 = {
   print: printERC1155,
   defaults: erc1155defaults,
   isAccessControlRequired: erc1155IsAccessControlRequired,
+};
+export const erc6909: ERC6909 = {
+  print: printERC6909,
+  defaults: erc6909defaults,
+  isAccessControlRequired: erc6909IsAccessControlRequired,
 };
 export const account: Account = {
   print: printAccount,
