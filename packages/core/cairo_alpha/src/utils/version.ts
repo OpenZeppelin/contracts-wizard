@@ -16,4 +16,4 @@ export const scarbVersion = '2.18.0';
  * If this targets a stable version, it should use a range (e.g. ^2.0.0)
  * If this targets an alpha version, it should be pinned to the exact version (e.g. not using ^)
  */
-export const compatibleContractsSemver = '4.0.1';
+export const compatibleContractsSemver = '^4.0.1';
