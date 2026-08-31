@@ -18,4 +18,4 @@ Cairo: support OpenZeppelin Contracts for Cairo v4.0.1.
 - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
 - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v4.0.1.
+  - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))

@@ -14,7 +14,7 @@
 - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v4.0.1.
+  - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
 
 ## 3.0.0 (2026-01-10)
 
