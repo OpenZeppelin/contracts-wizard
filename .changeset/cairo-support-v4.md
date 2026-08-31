@@ -1,9 +1,9 @@
 ---
 '@openzeppelin/wizard-cairo': major
-'@openzeppelin/wizard-common': minor
+'@openzeppelin/wizard-common': patch
 '@openzeppelin/contracts-mcp': minor
 '@openzeppelin/contracts-cli': minor
-'ui': minor
+'ui': patch
 ---
 
 Cairo: support OpenZeppelin Contracts for Cairo v4.0.1.
