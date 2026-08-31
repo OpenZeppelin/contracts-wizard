@@ -2,7 +2,7 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-cairo';
-  import { custom, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo';
+  import { erc6909, infoDefaults, macrosDefaults } from '@openzeppelin/wizard-cairo';
 
   import AccessControlSection from './AccessControlSection.svelte';
   import UpgradeabilityField from './UpgradeabilityField.svelte';
@@ -10,17 +10,17 @@
   import MacrosSection from './MacrosSection.svelte';
   import { error } from '../common/error-tooltip';
 
-  export let opts: Required<KindedOptions['Custom']> = {
-    kind: 'Custom',
-    ...custom.defaults,
+  export let opts: Required<KindedOptions['ERC6909']> = {
+    kind: 'ERC6909',
+    ...erc6909.defaults,
     info: { ...infoDefaults }, // create new object since Info is nested
     macros: { ...macrosDefaults }, // create new object since MacrosOptions is nested
-    access: { ...custom.defaults.access }, // create new object since Access is nested
+    access: { ...erc6909.defaults.access }, // create new object since Access is nested
   };
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = custom.isAccessControlRequired(opts);
+  $: requireAccessControl = erc6909.isAccessControlRequired(opts);
 </script>
 
 <section class="controls-section">
@@ -36,6 +36,16 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
+    <label class:checked={opts.mintable}>
+      <input type="checkbox" bind:checked={opts.mintable} />
+      Mintable
+      <HelpTooltip>Privileged accounts will be able to create more supply.</HelpTooltip>
+    </label>
+    <label class:checked={opts.burnable}>
+      <input type="checkbox" bind:checked={opts.burnable} />
+      Burnable
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
+    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
@@ -45,7 +55,27 @@
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
-
+    <label class:checked={opts.contentUri}>
+      <input type="checkbox" bind:checked={opts.contentUri} />
+      Content URI
+      <HelpTooltip
+        >Provides contract-level and per-token URI metadata via <code>contract_uri()</code> and
+        <code>token_uri(id)</code>.</HelpTooltip
+      >
+    </label>
+    <label class:checked={opts.tokenSupply}>
+      <input type="checkbox" bind:checked={opts.tokenSupply} />
+      Supply Tracking
+      <HelpTooltip>Keeps track of total supply per token ID via <code>total_supply(id)</code>.</HelpTooltip>
+    </label>
+    <label class:checked={opts.metadata}>
+      <input type="checkbox" bind:checked={opts.metadata} />
+      Metadata
+      <HelpTooltip
+        >Provides per-token metadata including <code>name(id)</code>, <code>symbol(id)</code>, and
+        <code>decimals(id)</code>.</HelpTooltip
+      >
+    </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
   </div>
 </section>

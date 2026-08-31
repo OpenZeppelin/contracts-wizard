@@ -21,7 +21,7 @@
     <label class:checked={macros.withComponents}>
       <input type="checkbox" bind:checked={macros.withComponents} />
       with_components
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/macros/with_components">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/macros/with_components">
         Use the <code>with_components</code> macro for simplified contract structure.
       </HelpTooltip>
     </label>

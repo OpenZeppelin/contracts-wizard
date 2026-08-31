@@ -64,8 +64,17 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/erc20-supply">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/guides/erc20-supply">
         Privileged accounts will be able to create more supply.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.wrapper}>
+      <input type="checkbox" bind:checked={opts.wrapper} />
+      Wrapper
+      <HelpTooltip>
+        Wrap an existing ERC20 by depositing underlying tokens. The constructor requires the underlying token address
+        and matching decimals.
       </HelpTooltip>
     </label>
 
@@ -78,7 +87,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
@@ -93,13 +102,13 @@
   label="Votes"
   bind:checked={opts.votes}
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/3.x/governance/votes"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/4.x/governance/votes"
   error={errors?.appName || errors?.appVersion}
 >
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/guides/snip12">
         Name for domain separator. Prevents two applications from producing the same hash.
       </HelpTooltip>
     </span>
@@ -109,7 +118,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/guides/snip12">
         Version for domain separator. Prevents two versions of the same application from producing the same hash.
       </HelpTooltip>
     </span>
