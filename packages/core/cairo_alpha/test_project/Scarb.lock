@@ -3,8 +3,9 @@ version = 1
 
 [[package]]
 name = "openzeppelin_access"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:a543c537fffbaecf8a5110e7ccd442398279b01821cc336d13d755693a285458"
 dependencies = [
  "openzeppelin_interfaces",
  "openzeppelin_introspection",
@@ -12,8 +13,9 @@ dependencies = [
 
 [[package]]
 name = "openzeppelin_account"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:696c00da4fe4fb7e91f6d5c81157d7c10cd1125fdcce677a9557fb10cf2fa185"
 dependencies = [
  "openzeppelin_interfaces",
  "openzeppelin_introspection",
@@ -22,8 +24,9 @@ dependencies = [
 
 [[package]]
 name = "openzeppelin_finance"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:5040175af8e8c80a445fad9e048622bf19bea978062139a3347e476c02b7f53b"
 dependencies = [
  "openzeppelin_access",
  "openzeppelin_interfaces",
@@ -32,8 +35,9 @@ dependencies = [
 
 [[package]]
 name = "openzeppelin_governance"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:ab53954b1fb6c79a3c7a9e19db6b01a26166453677019aa929ef2ec407ecfe20"
 dependencies = [
  "openzeppelin_access",
  "openzeppelin_interfaces",
@@ -44,34 +48,39 @@ dependencies = [
 
 [[package]]
 name = "openzeppelin_interfaces"
-version = "2.1.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "2.2.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:200679b2fc9d477ad09fff53d86ba737a1e0595f583f8c3cf3dd14290cd05ef5"
 
 [[package]]
 name = "openzeppelin_introspection"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:087017ddb37b430704470a042c0d358a3e33098ac277b7f783dfb6cddbd4ad23"
 dependencies = [
  "openzeppelin_interfaces",
 ]
 
 [[package]]
 name = "openzeppelin_macros"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:9b5633ccb89b5577ec763a0f60b52171de6e2625a10c19e419700cf2fe532afd"
 
 [[package]]
 name = "openzeppelin_security"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:8d99442e02746bce798b02a72a6a8891bcabc11473471dfa003bce89bd3f5f5d"
 dependencies = [
  "openzeppelin_interfaces",
 ]
 
 [[package]]
 name = "openzeppelin_token"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:bb435fb6b252ee54ccd93b8c793a9f5699e0711828634ae489dd6342eaeb6302"
 dependencies = [
  "openzeppelin_access",
  "openzeppelin_interfaces",
@@ -81,13 +90,15 @@ dependencies = [
 
 [[package]]
 name = "openzeppelin_upgrades"
-version = "4.0.0-alpha.1"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "4.0.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:100d56866be37531a68b886b2d2df19dfcf3e1a9abc64efa1d5a49c9de9b4e37"
 
 [[package]]
 name = "openzeppelin_utils"
-version = "2.1.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v4.0.0-alpha.1#6e01cac66d6db6fa66c47bf1c50c15b00839ccf8"
+version = "2.2.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:a72fa07988980781999dde2fe3a9ffe2c7a537ed0590795718aeaae3054be95f"
 dependencies = [
  "openzeppelin_interfaces",
 ]

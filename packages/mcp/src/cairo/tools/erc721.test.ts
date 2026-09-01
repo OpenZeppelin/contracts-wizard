@@ -53,7 +53,10 @@ test('all', async t => {
     pausable: true,
     mintable: true,
     enumerable: true,
+    wrapper: true,
+    uriStorage: true,
     votes: true,
+    consecutive: false,
     royaltyInfo: {
       enabled: true,
       defaultRoyaltyFraction: '500',

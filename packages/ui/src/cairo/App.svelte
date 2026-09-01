@@ -6,6 +6,7 @@
   import ERC20Controls from './ERC20Controls.svelte';
   import ERC721Controls from './ERC721Controls.svelte';
   import ERC1155Controls from './ERC1155Controls.svelte';
+  import ERC6909Controls from './ERC6909Controls.svelte';
   import CustomControls from './CustomControls.svelte';
   import AccountControls from './AccountControls.svelte';
   import MultisigControls from './MultisigControls.svelte';
@@ -79,6 +80,7 @@
             opts.symbol = initialOpts.symbol ?? opts.symbol;
             break;
           case 'ERC1155':
+          case 'ERC6909':
           case 'Account':
           case 'Multisig':
           case 'Governor':
@@ -148,6 +150,7 @@
         <button class:selected={tab === 'ERC20'} on:click={() => (tab = 'ERC20')}> ERC20 </button>
         <button class:selected={tab === 'ERC721'} on:click={() => (tab = 'ERC721')}> ERC721 </button>
         <button class:selected={tab === 'ERC1155'} on:click={() => (tab = 'ERC1155')}> ERC1155 </button>
+        <button class:selected={tab === 'ERC6909'} on:click={() => (tab = 'ERC6909')}> ERC6909 </button>
         <button class:selected={tab === 'Account'} on:click={() => (tab = 'Account')}> Account </button>
         <button class:selected={tab === 'Multisig'} on:click={() => (tab = 'Multisig')}> Multisig </button>
         <button class:selected={tab === 'Governor'} on:click={() => (tab = 'Governor')}> Governor </button>
@@ -198,6 +201,9 @@
       </div>
       <div class:hidden={tab !== 'ERC1155'}>
         <ERC1155Controls bind:opts={allOpts.ERC1155} errors={errors.ERC1155} />
+      </div>
+      <div class:hidden={tab !== 'ERC6909'}>
+        <ERC6909Controls bind:opts={allOpts.ERC6909} errors={errors.ERC6909} />
       </div>
       <div class:hidden={tab !== 'Account'}>
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} accountType={allOpts.Account?.type} />

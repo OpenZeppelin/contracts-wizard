@@ -8,17 +8,17 @@ scarb-version = "2.18.0"
 [dependencies]
 assert_macros = "2.18.0"
 starknet = "2.18.0"
-openzeppelin_macros = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_account = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_finance = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_interfaces = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_governance = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_security = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_upgrades = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
-openzeppelin_utils = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v4.0.0-alpha.1" }
+openzeppelin_macros = "4.0.1"
+openzeppelin_access = "4.0.1"
+openzeppelin_account = "4.0.1"
+openzeppelin_finance = "4.0.1"
+openzeppelin_interfaces = "2.2.0"
+openzeppelin_governance = "4.0.1"
+openzeppelin_introspection = "4.0.1"
+openzeppelin_security = "4.0.1"
+openzeppelin_token = "4.0.1"
+openzeppelin_upgrades = "4.0.1"
+openzeppelin_utils = "2.2.0"
 
 [lib]
 

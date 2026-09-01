@@ -43,6 +43,7 @@ export const TOOL_APP_SPECS: Readonly<Record<string, ToolAppSpec>> = {
   'cairo-erc20': { template: 'cairo', kind: 'ERC20' },
   'cairo-erc721': { template: 'cairo', kind: 'ERC721' },
   'cairo-erc1155': { template: 'cairo', kind: 'ERC1155' },
+  'cairo-erc6909': { template: 'cairo', kind: 'ERC6909' },
   'cairo-account': { template: 'cairo', kind: 'Account' },
   'cairo-multisig': { template: 'cairo', kind: 'Multisig' },
   'cairo-governor': { template: 'cairo', kind: 'Governor' },

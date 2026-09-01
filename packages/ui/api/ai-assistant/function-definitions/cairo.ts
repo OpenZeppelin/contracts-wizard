@@ -6,13 +6,14 @@ import {
   cairoERC20Descriptions,
   cairoERC721Descriptions,
   cairoERC1155Descriptions,
+  cairoERC6909Descriptions,
   cairoAccountDescriptions,
   cairoGovernorDescriptions,
   cairoMultisigDescriptions,
   cairoVestingDescriptions,
 } from '../../../../common/src/ai/descriptions/cairo.ts';
-import type { ClockMode, QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/cairo/dist/governor';
 import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
+import type { ClockMode, QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/cairo/dist/governor';
 import type { VestingSchedule } from '../../../../core/cairo/dist/vesting';
 import type { Account } from '../../../../core/cairo/dist/account';
 
@@ -42,6 +43,10 @@ export const cairoERC20AIFunctionDefinition = {
       premint: {
         type: 'string',
         description: cairoERC20Descriptions.premint,
+      },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC20Descriptions.wrapper,
       },
       votes: {
         type: 'boolean',
@@ -78,9 +83,21 @@ export const cairoERC721AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC721Descriptions.enumerable,
       },
+      consecutive: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.consecutive,
+      },
+      wrapper: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.wrapper,
+      },
       votes: {
         type: 'boolean',
         description: cairoERC721Descriptions.votes,
+      },
+      uriStorage: {
+        type: 'boolean',
+        description: cairoERC721Descriptions.uriStorage,
       },
     },
     required: contractExactRequiredKeys<'cairo', 'ERC721'>()(['name', 'symbol']),
@@ -113,11 +130,53 @@ export const cairoERC1155AIFunctionDefinition = {
         type: 'boolean',
         description: cairoERC1155Descriptions.updatableUri,
       },
+      supply: {
+        type: 'boolean',
+        description: cairoERC1155Descriptions.supply,
+      },
+      uriStorage: {
+        type: 'boolean',
+        description: cairoERC1155Descriptions.uriStorage,
+      },
     },
     required: contractExactRequiredKeys<'cairo', 'ERC1155'>()(['name', 'baseUri']),
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'cairo', 'ERC1155'>;
+
+export const cairoERC6909AIFunctionDefinition = {
+  name: 'ERC6909',
+  description: cairoPrompts.ERC6909,
+  parameters: {
+    type: 'object',
+    properties: {
+      ...addFunctionPropertiesFrom(cairoSharedFunctionDefinition, [
+        'name',
+        'burnable',
+        'pausable',
+        'mintable',
+        'access',
+        'upgradeable',
+        'info',
+        'macros',
+      ]),
+      contentUri: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.contentUri,
+      },
+      tokenSupply: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.tokenSupply,
+      },
+      metadata: {
+        type: 'boolean',
+        description: cairoERC6909Descriptions.metadata,
+      },
+    },
+    required: contractExactRequiredKeys<'cairo', 'ERC6909'>()(['name']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'cairo', 'ERC6909'>;
 
 export const cairoGovernorAIFunctionDefinition = {
   name: 'Governor',

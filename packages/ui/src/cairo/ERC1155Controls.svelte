@@ -56,19 +56,29 @@
       Burnable
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
+    <label class:checked={opts.supply}>
+      <input type="checkbox" bind:checked={opts.supply} />
+      Supply Tracking
+      <HelpTooltip>Keeps track of total supply of tokens.</HelpTooltip>
+    </label>
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip>Allows updating token URIs for individual token IDs.</HelpTooltip>
+    </label>
     <label class:checked={opts.updatableUri}>
       <input type="checkbox" bind:checked={opts.updatableUri} />
       Updatable URI
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/erc1155#ERC1155Component-set_base_uri">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/api/erc1155#ERC1155Component-set_base_uri">
         Privileged accounts will be able to set a new URI for all token types. Clients will replace any instance of {'{id}'}
         in the URI with the tokenId.
       </HelpTooltip>

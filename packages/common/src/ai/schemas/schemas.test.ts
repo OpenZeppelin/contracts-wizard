@@ -142,6 +142,7 @@ function _cairoTypeAssertions() {
     ERC20: z.object(cairoERC20Schema).parse({}),
     ERC721: z.object(cairoERC721Schema).parse({}),
     ERC1155: z.object(cairoERC1155Schema).parse({}),
+    ERC6909: z.object(cairoERC6909Schema).parse({}),
     Account: z.object(cairoAccountSchema).parse({}),
     Multisig: z.object(cairoMultisigSchema).parse({}),
     Governor: z.object(cairoGovernorSchema).parse({}),
