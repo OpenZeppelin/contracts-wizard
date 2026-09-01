@@ -54,6 +54,7 @@ export const cairoERC20Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   premint: z.string().optional().describe(cairoERC20Descriptions.premint),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
+  wrapper: z.boolean().optional().describe(cairoERC20Descriptions.wrapper),
   votes: z.boolean().optional().describe(cairoERC20Descriptions.votes),
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
@@ -68,7 +69,10 @@ export const cairoERC721Schema = {
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
   enumerable: z.boolean().optional().describe(cairoERC721Descriptions.enumerable),
+  wrapper: z.boolean().optional().describe(cairoERC721Descriptions.wrapper),
+  uriStorage: z.boolean().optional().describe(cairoERC721Descriptions.uriStorage),
   votes: z.boolean().optional().describe(cairoERC721Descriptions.votes),
+  consecutive: z.boolean().optional().describe(cairoERC721Descriptions.consecutive),
   royaltyInfo: z
     .object({
       enabled: z.boolean().describe(cairoRoyaltyInfoDescriptions.enabled),
@@ -88,6 +92,8 @@ export const cairoERC1155Schema = {
   burnable: z.boolean().optional().describe(commonDescriptions.burnable),
   pausable: z.boolean().optional().describe(commonDescriptions.pausable),
   mintable: z.boolean().optional().describe(commonDescriptions.mintable),
+  supply: z.boolean().optional().describe(cairoERC1155Descriptions.supply),
+  uriStorage: z.boolean().optional().describe(cairoERC1155Descriptions.uriStorage),
   updatableUri: z.boolean().optional().describe(cairoERC1155Descriptions.updatableUri),
   royaltyInfo: z
     .object({

@@ -67,6 +67,10 @@ testERC20('erc20 burnable pausable', {
   pausable: true,
 });
 
+testERC20('erc20 wrapper', {
+  wrapper: true,
+});
+
 testERC20('erc20 preminted', {
   premint: '1000',
 });

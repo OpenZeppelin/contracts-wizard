@@ -10,6 +10,7 @@ import type { KindAdapter } from '../adapter';
 import ERC20Controls from '../../cairo/ERC20Controls.svelte';
 import ERC721Controls from '../../cairo/ERC721Controls.svelte';
 import ERC1155Controls from '../../cairo/ERC1155Controls.svelte';
+import ERC6909Controls from '../../cairo/ERC6909Controls.svelte';
 import AccountControls from '../../cairo/AccountControls.svelte';
 import MultisigControls from '../../cairo/MultisigControls.svelte';
 import GovernorControls from '../../cairo/GovernorControls.svelte';
@@ -20,6 +21,7 @@ const controls: Record<Kind, ComponentType> = {
   ERC20: ERC20Controls,
   ERC721: ERC721Controls,
   ERC1155: ERC1155Controls,
+  ERC6909: ERC6909Controls,
   Account: AccountControls,
   Multisig: MultisigControls,
   Governor: GovernorControls,

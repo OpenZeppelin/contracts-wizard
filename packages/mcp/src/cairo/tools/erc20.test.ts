@@ -53,6 +53,7 @@ test('all', async t => {
     pausable: true,
     premint: '1000000',
     mintable: true,
+    wrapper: true,
     votes: true,
     appName: 'MyToken',
     appVersion: 'v1',
