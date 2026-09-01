@@ -1,6 +1,26 @@
 # Changelog
 
 
+## 0.2.0 (2026-09-01)
+
+- Cairo: support OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+  - Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))
+  - Add ERC6909Metadata extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909ContentURI extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909TokenSupply extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC1155URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC1155Supply extension ([#765](https://github.com/OpenZeppelin/contracts-wizard/pull/765))
+  - Add ERC721URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
+  - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
+  - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
+  - **Breaking changes**:
+    - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+
+- Updated dependencies [[`3cd90c8`](https://github.com/OpenZeppelin/contracts-wizard/commit/3cd90c82cf6d1a0185e14754c9f1e6373fa8708c)]:
+  - @openzeppelin/wizard-cairo@4.0.0
+  - @openzeppelin/wizard-common@0.5.8
+
 ## 0.1.7 (2026-08-26)
 
 - Add a supported-languages table and an example command for each language to the README. No functional changes. ([#857](https://github.com/OpenZeppelin/contracts-wizard/pull/857))
