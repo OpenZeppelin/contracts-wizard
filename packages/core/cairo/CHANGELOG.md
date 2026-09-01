@@ -1,6 +1,22 @@
 # Changelog
 
 
+## 4.0.0 (2026-09-01)
+
+- Cairo: support OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+  - Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))
+  - Add ERC6909Metadata extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909ContentURI extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909TokenSupply extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC1155URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC1155Supply extension ([#765](https://github.com/OpenZeppelin/contracts-wizard/pull/765))
+  - Add ERC721URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
+  - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
+  - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
+  - **Breaking changes**:
+    - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+
 ## 3.0.1 (2026-06-18)
 
 - Reject line terminators in `info.securityContact` and `info.license` to prevent breaking out of the generated comment lines. Fixes [GHSA-9wxg-vf3r-56hc](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-9wxg-vf3r-56hc). ([#818](https://github.com/OpenZeppelin/contracts-wizard/pull/818))
