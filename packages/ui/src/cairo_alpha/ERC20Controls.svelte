@@ -166,11 +166,7 @@
   <div class="tooltip-container">
     <span class="flex justify-between items-center pr-2 mb-1">
       Max Flash Loan
-      <HelpTooltip>
-        Maximum amount of tokens that can be flash-loaned in a single call. <code>Max</code> inherits the default (the
-        maximum representable amount minus the current total supply). <code>Custom</code> lets you set a non-negative cap;
-        setting it to 0 effectively disables flash loans.
-      </HelpTooltip>
+      <HelpTooltip>Maximum amount of tokens that can be flash-loaned in a single call.</HelpTooltip>
     </span>
     <div class="checkbox-group">
       <label class:checked={opts.flashmint.maxAmount === 'max'}>
@@ -182,6 +178,9 @@
           disabled={!opts.flashmint.enabled}
         />
         Max
+        <HelpTooltip>
+          Inherits the default: the maximum representable amount minus the current total supply.
+        </HelpTooltip>
       </label>
       <label class:checked={opts.flashmint.maxAmount !== 'max'}>
         <input
@@ -192,6 +191,7 @@
           disabled={!opts.flashmint.enabled}
         />
         Custom
+        <HelpTooltip>A fixed non-negative cap. Setting it to 0 effectively disables flash loans.</HelpTooltip>
         {#if opts.flashmint.maxAmount !== 'max'}
           <input
             class="input-inline ml-auto"
@@ -209,15 +209,13 @@
   <div class="tooltip-container">
     <span class="flex justify-between items-center pr-2 mb-1">
       Flash Fee
-      <HelpTooltip>
-        Fee charged for each flash loan. Choose <code>Percent</code> to charge a percentage of the loan amount, or
-        <code>Custom</code> to emit a TODO stub you can fill in manually.
-      </HelpTooltip>
+      <HelpTooltip>Fee charged for each flash loan.</HelpTooltip>
     </span>
     <div class="checkbox-group">
       <label class:checked={opts.flashmint.feeMode === 'percent'}>
         <input type="radio" bind:group={opts.flashmint.feeMode} value="percent" disabled={!opts.flashmint.enabled} />
         Percent
+        <HelpTooltip>Charges a percentage of the loan amount.</HelpTooltip>
         {#if opts.flashmint.feeMode === 'percent'}
           <span class="ml-auto flex items-center">
             <input
@@ -237,6 +235,7 @@
       <label class:checked={opts.flashmint.feeMode === 'custom'}>
         <input type="radio" bind:group={opts.flashmint.feeMode} value="custom" disabled={!opts.flashmint.enabled} />
         Custom
+        <HelpTooltip>Emits a TODO stub for you to implement the fee logic manually.</HelpTooltip>
       </label>
     </div>
   </div>
@@ -245,9 +244,7 @@
     <div class="tooltip-container">
       <span class="flex justify-between items-center pr-2 mb-1">
         Flash Fee Destination
-        <HelpTooltip>
-          Where the flash loan fee goes. Burn it (default) or send it to a fee receiver address set at deploy time.
-        </HelpTooltip>
+        <HelpTooltip>Where the flash loan fee goes.</HelpTooltip>
       </span>
       <div class="checkbox-group">
         <label class:checked={opts.flashmint.feeDestination === 'burn'}>
