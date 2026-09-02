@@ -219,11 +219,16 @@ function printImpl(impl: Impl): Lines[] {
 }
 
 function printStorage(contract: Contract): (string | string[])[] {
+  const memberLines = contract.storageMembers.map(m => `${m.name}: ${m.type},`);
+
   if (contract.macros.withComponents || contract.components.length === 0) {
     // storage is required regardless of whether there are components
-    return ['#[storage]', 'struct Storage {}'];
+    if (memberLines.length === 0) {
+      return ['#[storage]', 'struct Storage {}'];
+    }
+    return ['#[storage]', 'struct Storage {', memberLines, '}'];
   }
-  const storageLines = [];
+  const storageLines = [...memberLines];
   for (const component of contract.components) {
     storageLines.push(`#[substorage(v0)]`);
     storageLines.push(`${component.substorage.name}: ${component.substorage.type},`);
