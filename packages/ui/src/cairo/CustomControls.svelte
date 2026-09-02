@@ -39,7 +39,7 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.

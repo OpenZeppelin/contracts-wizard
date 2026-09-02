@@ -145,6 +145,14 @@ body {
   --color-2: #e3126f;
 }
 
+.nav .switch.switch-tron.active {
+  --color-2: var(--tron-red);
+}
+/* Desaturate rather than recolor the TRON mark. */
+.nav .switch.switch-tron:not(.active) img {
+  filter: grayscale(1) brightness(1.3);
+}
+
 .nav .switch.switch-stellar.active {
   --color-2: #0f0f0f;
 }

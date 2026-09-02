@@ -3,6 +3,7 @@ import { addFunctionPropertiesFrom } from './shared.ts';
 import { stellarCommonFunctionDescription } from './stellar-shared.ts';
 import {
   stellarPrompts,
+  stellarAccountDescriptions,
   stellarCommonDescriptions,
   stellarFungibleDescriptions,
   stellarGovernorDescriptions,
@@ -12,6 +13,7 @@ import {
 } from '../../../../common/src/ai/descriptions/stellar.ts';
 import { extractStringEnumValues } from '../types/helpers.ts';
 import type { Limitations } from '../../../../core/stellar/dist/stablecoin';
+import type { Policy } from '../../../../core/stellar/dist/account';
 
 export const stellarFungibleAIFunctionDefinition = {
   name: 'Fungible',
@@ -207,3 +209,41 @@ export const stellarVaultAIFunctionDefinition = {
     additionalProperties: false,
   },
 } as const satisfies AiFunctionDefinition<'stellar', 'Vault'>;
+
+export const stellarAccountAIFunctionDefinition = {
+  name: 'Account',
+  description: stellarPrompts.Account,
+  parameters: {
+    type: 'object',
+    properties: {
+      // A smart account authorizes through its own context rules, so it has
+      // neither `access` nor explicit trait implementations.
+      ...addFunctionPropertiesFrom(stellarCommonFunctionDescription, ['name', 'upgradeable', 'info']),
+      delegatedSigners: {
+        type: 'boolean',
+        description: stellarAccountDescriptions.delegatedSigners,
+      },
+      ed25519Signers: {
+        type: 'boolean',
+        description: stellarAccountDescriptions.ed25519Signers,
+      },
+      webauthnSigners: {
+        type: 'boolean',
+        description: stellarAccountDescriptions.webauthnSigners,
+      },
+      policy: {
+        anyOf: [
+          { type: 'string', enum: extractStringEnumValues<Policy>()(['simple-threshold', 'weighted-threshold']) },
+          { type: 'boolean', enum: [false] },
+        ],
+        description: stellarAccountDescriptions.policy,
+      },
+      executionEntryPoint: {
+        type: 'boolean',
+        description: stellarAccountDescriptions.executionEntryPoint,
+      },
+    },
+    required: contractExactRequiredKeys<'stellar', 'Account'>()(['name']),
+    additionalProperties: false,
+  },
+} as const satisfies AiFunctionDefinition<'stellar', 'Account'>;

@@ -41,6 +41,9 @@
 
   --uniswap-pink: #f50eb4;
 
+  /* TRON Red, per the official brand palette (PANTONE 185C). */
+  --tron-red: #dc062b;
+
   /* Dimensions (scale taken from Tailwind) */
 
   --size-1: 0.25rem;

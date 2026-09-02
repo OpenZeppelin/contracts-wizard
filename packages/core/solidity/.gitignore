@@ -1,5 +1,8 @@
 /cache
 /artifacts
+/cache-tron
+/artifacts-tron
 /contracts/generated
+/contracts-tron
 /openzeppelin-contracts.json
 /openzeppelin-contracts-version.json

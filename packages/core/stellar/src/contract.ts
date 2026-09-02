@@ -35,7 +35,11 @@ export interface BaseTraitImplBlock {
   traitName: string;
   structName: string;
   tags: string[];
-  assocType?: string;
+  /**
+   * Associated type bindings for the impl block. An array declares several of
+   * them, one per line (e.g. `CustomAccountInterface`'s `Error` and `Signature`).
+   */
+  assocType?: string | string[];
   section?: string;
   /**
    * Priority for which trait to print first.
@@ -70,6 +74,12 @@ export interface Variable {
 export interface Argument {
   name: string;
   type?: string;
+  /**
+   * Comment lines printed above the argument. Forces one argument per line, so
+   * only worth using where the caller needs guidance that the type cannot carry,
+   * such as where to obtain an address.
+   */
+  comment?: string[];
 }
 
 export class ContractBuilder implements Contract {
@@ -215,7 +225,7 @@ export class ContractBuilder implements Contract {
     return contractFn;
   }
 
-  overrideAssocType(traitName: string, newAssocType: string): void {
+  overrideAssocType(traitName: string, newAssocType: string | string[]): void {
     const trait = this.implementedTraitsMap.get(traitName);
     if (trait) {
       trait.assocType = newAssocType;
@@ -272,6 +282,18 @@ export class ContractBuilder implements Contract {
       }
     }
     this.constructorCode.push(code);
+  }
+
+  /**
+   * Appends a block of constructor code verbatim, keeping duplicate lines.
+   *
+   * `addConstructorCode` deduplicates, which is right for the idempotent setup
+   * statements each generator contributes, but wrong for a multi-line block
+   * where lines such as `}` legitimately repeat. Empty entries separate groups
+   * and are printed as blank lines.
+   */
+  addConstructorCodeBlock(lines: string[]): void {
+    this.constructorCode.push(...lines);
   }
 
   addDerives(derive: string): void {

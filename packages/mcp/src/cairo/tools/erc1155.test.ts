@@ -51,6 +51,8 @@ test('all', async t => {
     burnable: true,
     pausable: true,
     mintable: true,
+    supply: true,
+    uriStorage: true,
     updatableUri: true,
     royaltyInfo: {
       enabled: true,

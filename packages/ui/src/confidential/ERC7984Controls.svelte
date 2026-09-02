@@ -1,5 +1,6 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
+  import ZamaIcon from '../common/icons/ZamaIcon.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-confidential';
   import { infoDefaults } from '@openzeppelin/wizard';
@@ -98,7 +99,7 @@
     <div class="checkbox-group">
       <label class:checked={opts.networkConfig === 'zama-ethereum'}>
         <input type="radio" bind:group={opts.networkConfig} value="zama-ethereum" />
-        Zama Ethereum &nbsp;<img src="icons/zama.png" height="16" alt="Zama" />
+        Zama Ethereum &nbsp;<ZamaIcon />
         <HelpTooltip
           >Uses the FHEVM contracts provided by Zama on the Ethereum (mainnet) and Sepolia networks.</HelpTooltip
         >

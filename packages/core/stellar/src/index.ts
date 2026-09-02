@@ -21,12 +21,14 @@ export { sanitizeKind } from './kind';
 
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
+export { account } from './api';
 export { fungible } from './api';
 export { governor } from './api';
 export { nonFungible } from './api';
 export { stablecoin } from './api';
 export { vault } from './api';
 
+export type { AccountOptions, Policy } from './account';
 export type { FungibleOptions } from './fungible';
 export type { GovernorOptions } from './governor';
 export type { NonFungibleOptions } from './non-fungible';

@@ -1,8 +1,22 @@
 import type { z } from 'zod';
 import { parseArgsFromSchema } from './cli-adapter';
 
-import { erc20, erc721, erc1155, stablecoin, realWorldAsset, account, governor, custom } from '@openzeppelin/wizard';
-import { solidityPrompts } from '@openzeppelin/wizard-common';
+import {
+  erc20,
+  erc721,
+  erc1155,
+  stablecoin,
+  realWorldAsset,
+  account,
+  governor,
+  custom,
+  buildGeneric,
+  printContract,
+  tronPrintProfile,
+  sanitizeTronOptions,
+  TRON_DEFAULT_BLOCK_TIME,
+} from '@openzeppelin/wizard';
+import { solidityPrompts, tronPrompts } from '@openzeppelin/wizard-common';
 import {
   solidityERC20Schema,
   solidityERC721Schema,
@@ -12,12 +26,14 @@ import {
   solidityAccountSchema,
   solidityGovernorSchema,
   solidityCustomSchema,
+  tronGovernorSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
 import {
   erc20 as cairoErc20,
   erc721 as cairoErc721,
   erc1155 as cairoErc1155,
+  erc6909 as cairoErc6909,
   account as cairoAccount,
   multisig as cairoMultisig,
   governor as cairoGovernor,
@@ -29,6 +45,7 @@ import {
   cairoERC20Schema,
   cairoERC721Schema,
   cairoERC1155Schema,
+  cairoERC6909Schema,
   cairoAccountSchema,
   cairoMultisigSchema,
   cairoGovernorSchema,
@@ -42,6 +59,7 @@ import {
   stablecoin as stellarStablecoin,
   nonFungible,
   vault as stellarVault,
+  account as stellarAccount,
 } from '@openzeppelin/wizard-stellar';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
 import {
@@ -50,6 +68,7 @@ import {
   stellarStablecoinSchema,
   stellarNonFungibleSchema,
   stellarVaultSchema,
+  stellarAccountSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
 import { erc20 as stylusErc20, erc721 as stylusErc721, erc1155 as stylusErc1155 } from '@openzeppelin/wizard-stylus';
@@ -112,6 +131,7 @@ export const registry = {
   'cairo-erc20': createRegistryEntry(cairoERC20Schema, opts => cairoErc20.print(opts), cairoPrompts.ERC20),
   'cairo-erc721': createRegistryEntry(cairoERC721Schema, opts => cairoErc721.print(opts), cairoPrompts.ERC721),
   'cairo-erc1155': createRegistryEntry(cairoERC1155Schema, opts => cairoErc1155.print(opts), cairoPrompts.ERC1155),
+  'cairo-erc6909': createRegistryEntry(cairoERC6909Schema, opts => cairoErc6909.print(opts), cairoPrompts.ERC6909),
   'cairo-account': createRegistryEntry(cairoAccountSchema, opts => cairoAccount.print(opts), cairoPrompts.Account),
   'cairo-multisig': createRegistryEntry(cairoMultisigSchema, opts => cairoMultisig.print(opts), cairoPrompts.Multisig),
   'cairo-governor': createRegistryEntry(cairoGovernorSchema, opts => cairoGovernor.print(opts), cairoPrompts.Governor),
@@ -136,6 +156,11 @@ export const registry = {
     stellarPrompts.NonFungible,
   ),
   'stellar-vault': createRegistryEntry(stellarVaultSchema, opts => stellarVault.print(opts), stellarPrompts.Vault),
+  'stellar-account': createRegistryEntry(
+    stellarAccountSchema,
+    opts => stellarAccount.print(opts),
+    stellarPrompts.Account,
+  ),
 
   // Stylus
   'stylus-erc20': createRegistryEntry(stylusERC20Schema, opts => stylusErc20.print(opts), stylusPrompts.ERC20),
@@ -151,4 +176,47 @@ export const registry = {
 
   // Uniswap Hooks
   'uniswap-hooks': createRegistryEntry(uniswapHooksHooksSchema, opts => hooks.print(opts), uniswapHooksPrompts.Hooks),
+
+  // TRON: build the structured contract, then render through the TRON library
+  // profile (TRC* token names + @openzeppelin/tron-contracts import paths). Going
+  // through printContract(buildGeneric(...), tronPrintProfile) — rather than
+  // post-processing rendered text — keeps user data (name/symbol/securityContact)
+  // and the contract name untouched.
+  'tron-trc20': createRegistryEntry(
+    solidityERC20Schema,
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC20', ...opts })), tronPrintProfile),
+    tronPrompts.TRC20,
+  ),
+  'tron-trc721': createRegistryEntry(
+    solidityERC721Schema,
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC721', ...opts })), tronPrintProfile),
+    tronPrompts.TRC721,
+  ),
+  'tron-trc1155': createRegistryEntry(
+    solidityERC1155Schema,
+    opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC1155', ...opts })), tronPrintProfile),
+    tronPrompts.TRC1155,
+  ),
+  // Stablecoin and RealWorldAsset are intentionally not exposed on TRON — they
+  // depend on @openzeppelin/community-contracts, which is not ported to TRON.
+  'tron-governor': createRegistryEntry(
+    tronGovernorSchema,
+    opts =>
+      printContract(
+        buildGeneric(
+          sanitizeTronOptions({
+            kind: 'Governor',
+            ...opts,
+            blockTime: opts.blockTime ?? TRON_DEFAULT_BLOCK_TIME,
+          }),
+        ),
+        tronPrintProfile,
+      ),
+    tronPrompts.Governor,
+  ),
+  'tron-custom': createRegistryEntry(
+    solidityCustomSchema,
+    opts => printContract(buildGeneric({ kind: 'Custom', ...opts }), tronPrintProfile),
+    tronPrompts.Custom,
+  ),
 } satisfies Record<string, RegistryEntry>;

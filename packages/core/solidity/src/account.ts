@@ -67,7 +67,7 @@ export function buildAccount(opts: AccountOptions): Contract {
   if (opts.ERC7579Modules) {
     c.addImportOnly({
       name: 'PackedUserOperation',
-      path: '@openzeppelin/contracts/interfaces/draft-IERC4337.sol',
+      path: '@openzeppelin/contracts/interfaces/IERC4337.sol',
       transpiled: false, // PackedUserOperation doesn't start with "I" so its not recognized as an "interface object"
     });
   }
@@ -247,7 +247,7 @@ function overrideRawSignatureValidation(c: ContractBuilder, opts: AccountOptions
     const signerBaseName = signers[opts.signer].name;
     const signerName = opts.upgradeable ? upgradeableName(signerBaseName) : signerBaseName;
 
-    // WebAuthnSigner depends inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
+    // WebAuthnSigner inherits from P256Signer, so the AbstractSigner override is handled by `addSigner`
     if (opts.signer !== 'WebAuthn') {
       c.addImportOnly({
         name: 'AbstractSigner',

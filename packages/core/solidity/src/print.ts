@@ -25,15 +25,15 @@ import { getCommunityContractsGitCommit } from './utils/community-contracts-git-
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
 
-  const structs = contract.structs.map(_struct => printStruct(_struct));
+  const structs = contract.structs.map(_struct => printStruct(_struct, helpers));
   const fns = mapValues(sortedFunctions(contract), fns => fns.map(fn => printFunction(fn, helpers)));
   const hasOverrides = fns.override.some(l => l.length > 0);
   return formatLines(
     ...spaceBetween(
       [
         `// SPDX-License-Identifier: ${contract.license}`,
-        printCompatibleLibraryVersions(contract, opts),
-        `pragma solidity ^${SOLIDITY_VERSION};`,
+        printCompatibleLibraryVersions(contract, helpers, opts),
+        `pragma solidity ^${opts?.solidityVersion ?? SOLIDITY_VERSION};`,
       ],
 
       printImports(contract.imports, helpers),
@@ -80,12 +80,14 @@ type LibraryDescription = {
   alwaysKeepOzPrefix?: boolean;
 };
 
-function printCompatibleLibraryVersions(contract: Contract, opts?: Options): string {
+function printCompatibleLibraryVersions(contract: Contract, helpers: Helpers, opts?: Options): string {
   const libraryDescriptions: LibraryDescription[] = [];
-  if (importsLibrary(contract, '@openzeppelin/contracts')) {
+  // Use printed import paths so a transform (e.g. TRON) is reflected in the banner.
+  const printed = { imports: contract.imports.map(i => helpers.transformImport(i)) };
+  if (importsLibrary(printed, '@openzeppelin/contracts')) {
     libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Contracts ${compatibleContractsSemver}` });
   }
-  if (importsLibrary(contract, '@openzeppelin/community-contracts')) {
+  if (importsLibrary(printed, '@openzeppelin/community-contracts')) {
     try {
       const commit = getCommunityContractsGitCommit();
       libraryDescriptions.push({ nameAndVersion: `OpenZeppelin Community Contracts commit ${commit}` });
@@ -95,7 +97,7 @@ function printCompatibleLibraryVersions(contract: Contract, opts?: Options): str
   }
   if (opts?.additionalCompatibleLibraries) {
     for (const library of opts.additionalCompatibleLibraries) {
-      if (importsLibrary(contract, library.path)) {
+      if (importsLibrary(printed, library.path)) {
         libraryDescriptions.push({
           nameAndVersion: `${library.name} ${library.version}`,
           alwaysKeepOzPrefix: library.alwaysKeepOzPrefix,
@@ -220,7 +222,10 @@ function sortedFunctions(contract: Contract): SortedFunctions {
 
 function printParentConstructor({ contract, params }: Parent, helpers: Helpers): [] | [string] {
   const useTranspiled = helpers.upgradeable && inferTranspiled(contract);
-  const fn = useTranspiled ? `__${contract.name}_init` : contract.name;
+  // The transpiled initializer keeps the base name (`__ERC20_init`), so it uses
+  // transformInitName (no `Upgradeable` suffix); a plain parent constructor call
+  // matches the inheritance list, so it uses the full transformName.
+  const fn = useTranspiled ? `__${helpers.transformInitName(contract)}_init` : helpers.transformName(contract);
   if (useTranspiled || params.length > 0) {
     return [fn + '(' + params.map(printValue).join(', ') + ')'];
   } else {
@@ -320,9 +325,11 @@ function printFunction2(
   return fn;
 }
 
-function printStruct(_struct: ContractStruct): Lines[] {
+function printStruct(_struct: ContractStruct, { formulaId }: Helpers): Lines[] {
   const [comments, kindedName, code] = [_struct.comments, _struct.name, _struct.variables];
-  const struct: Lines[] = [...comments];
+  const storageLocation =
+    _struct.namespaceId !== undefined ? [`/// @custom:storage-location ${formulaId}:${_struct.namespaceId}`] : [];
+  const struct: Lines[] = [...storageLocation, ...comments];
 
   const braces = code.length > 0 ? '{' : '{}';
   struct.push([`struct ${kindedName}`, braces].join(' '));

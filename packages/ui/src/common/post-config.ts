@@ -10,6 +10,7 @@ export type DownloadAction =
   | 'download-file'
   | 'download-hardhat'
   | 'download-foundry'
+  | 'download-tronbox'
   | 'download-scaffold'
   | 'download-rust-stellar';
 

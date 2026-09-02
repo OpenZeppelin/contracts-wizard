@@ -1,15 +1,20 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard';
 import { realWorldAsset } from '@openzeppelin/wizard';
-import { safePrintSolidityCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { solidityRWASchema } from '@openzeppelin/wizard-common/schemas';
 import { solidityPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
-export function registerSolidityRWA(server: McpServer) {
-  return server.tool(
+export function registerSolidityRWA(server: McpServer): RegisteredTool {
+  return registerWizardAppTool(
+    server,
     'solidity-rwa',
-    makeDetailedPrompt(solidityPrompts.RWA),
-    solidityRWASchema,
+    {
+      description: makeDetailedPrompt(solidityPrompts.RWA),
+      inputSchema: solidityRWASchema,
+      title: 'Solidity RWA',
+    },
     async ({
       name,
       symbol,
@@ -50,14 +55,7 @@ export function registerSolidityRWA(server: McpServer) {
         restrictions,
         freezable,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintSolidityCodeBlock(() => realWorldAsset.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => realWorldAsset.print(opts), 'solidity');
     },
   );
 }

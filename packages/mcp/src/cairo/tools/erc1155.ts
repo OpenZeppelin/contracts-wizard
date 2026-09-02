@@ -1,21 +1,28 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC1155Options } from '@openzeppelin/wizard-cairo';
 import { erc1155 } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoERC1155Schema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoERC1155(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-erc1155',
-    makeDetailedPrompt(cairoPrompts.ERC1155),
-    cairoERC1155Schema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.ERC1155),
+      inputSchema: cairoERC1155Schema,
+      title: 'Cairo ERC1155',
+    },
     async ({
       name,
       baseUri,
       burnable,
       pausable,
       mintable,
+      supply,
+      uriStorage,
       updatableUri,
       royaltyInfo,
       access,
@@ -29,6 +36,8 @@ export function registerCairoERC1155(server: McpServer): RegisteredTool {
         burnable,
         pausable,
         mintable,
+        supply,
+        uriStorage,
         updatableUri,
         royaltyInfo,
         access,
@@ -36,14 +45,7 @@ export function registerCairoERC1155(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => erc1155.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => erc1155.print(opts), 'cairo');
     },
   );
 }

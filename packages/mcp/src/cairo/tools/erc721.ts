@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ERC721Options } from '@openzeppelin/wizard-cairo';
 import { erc721 } from '@openzeppelin/wizard-cairo';
-import { safePrintCairoCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { cairoERC721Schema } from '@openzeppelin/wizard-common/schemas';
 import { cairoPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerCairoERC721(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'cairo-erc721',
-    makeDetailedPrompt(cairoPrompts.ERC721),
-    cairoERC721Schema,
+    {
+      description: makeDetailedPrompt(cairoPrompts.ERC721),
+      inputSchema: cairoERC721Schema,
+      title: 'Cairo ERC721',
+    },
     async ({
       name,
       symbol,
@@ -18,7 +23,10 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
       pausable,
       mintable,
       enumerable,
+      wrapper,
+      uriStorage,
       votes,
+      consecutive,
       royaltyInfo,
       appName,
       appVersion,
@@ -35,7 +43,10 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
         pausable,
         mintable,
         enumerable,
+        wrapper,
+        uriStorage,
         votes,
+        consecutive,
         royaltyInfo,
         appName,
         appVersion,
@@ -44,14 +55,7 @@ export function registerCairoERC721(server: McpServer): RegisteredTool {
         info,
         macros,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintCairoCodeBlock(() => erc721.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => erc721.print(opts), 'cairo');
     },
   );
 }

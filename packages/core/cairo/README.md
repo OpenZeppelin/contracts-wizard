@@ -16,6 +16,7 @@ The following contract types are supported:
 - `erc20`
 - `erc721`
 - `erc1155`
+- `erc6909`
 - `account`
 - `multisig`
 - `governor`
@@ -35,6 +36,9 @@ function print(opts?: ERC721Options): string
 ```
 ```js
 function print(opts?: ERC1155Options): string
+```
+```js
+function print(opts?: ERC6909Options): string
 ```
 ```js
 function print(opts?: AccountOptions): string
@@ -64,6 +68,9 @@ const defaults: Required<ERC721Options>
 const defaults: Required<ERC1155Options>
 ```
 ```js
+const defaults: Required<ERC6909Options>
+```
+```js
 const defaults: Required<AccountOptions>
 ```
 ```js
@@ -89,6 +96,9 @@ function isAccessControlRequired(opts: Partial<ERC721Options>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean
+```
+```js
+function isAccessControlRequired(opts: Partial<ERC6909Options>): boolean
 ```
 ```js
 function isAccessControlRequired(opts: Partial<CustomOptions>): boolean

@@ -26,6 +26,7 @@ import {
   cairoGovernorSchema,
   cairoVestingSchema,
   cairoCustomSchema,
+  stellarAccountSchema,
   stellarFungibleSchema,
   stellarGovernorSchema,
   stellarStablecoinSchema,
@@ -94,6 +95,7 @@ const allSchemas: [string, z.ZodRawShape][] = [
   ['cairoGovernor', cairoGovernorSchema],
   ['cairoVesting', cairoVestingSchema],
   ['cairoCustom', cairoCustomSchema],
+  ['stellarAccount', stellarAccountSchema],
   ['stellarFungible', stellarFungibleSchema],
   ['stellarStablecoin', stellarStablecoinSchema],
   ['stellarNonFungible', stellarNonFungibleSchema],
@@ -140,6 +142,7 @@ function _cairoTypeAssertions() {
     ERC20: z.object(cairoERC20Schema).parse({}),
     ERC721: z.object(cairoERC721Schema).parse({}),
     ERC1155: z.object(cairoERC1155Schema).parse({}),
+    ERC6909: z.object(cairoERC6909Schema).parse({}),
     Account: z.object(cairoAccountSchema).parse({}),
     Multisig: z.object(cairoMultisigSchema).parse({}),
     Governor: z.object(cairoGovernorSchema).parse({}),
@@ -152,6 +155,7 @@ function _stellarTypeAssertions() {
   const _: {
     [K in keyof StellarKindedOptions]: Omit<StellarKindedOptions[K], 'kind'>;
   } = {
+    Account: z.object(stellarAccountSchema).parse({}),
     Fungible: z.object(stellarFungibleSchema).parse({}),
     Governor: z.object(stellarGovernorSchema).parse({}),
     Stablecoin: z.object(stellarStablecoinSchema).parse({}),

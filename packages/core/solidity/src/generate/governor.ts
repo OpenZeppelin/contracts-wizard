@@ -23,11 +23,26 @@ const blueprint = {
   timelock: timelockOptions,
   storage: booleans,
   settings: booleans,
+  crossChainExecution: [false],
   upgradeable: upgradeableOptions,
   access: accessOptions,
   info: infoOptions,
 };
 
+// crossChainExecution adds a single extension with no interactions with other options,
+// so cross it against a reduced blueprint to avoid doubling the exhaustive matrix.
+const crossChainExecutionBlueprint = {
+  ...blueprint,
+  proposalThreshold: ['0'],
+  quorumMode: ['percent'] as const,
+  storage: [false],
+  settings: [true],
+  crossChainExecution: [true],
+  access: [false] as const,
+  info: [{}],
+};
+
 export function* generateGovernorOptions(): Generator<Required<GovernorOptions>> {
   yield* generateAlternatives(blueprint);
+  yield* generateAlternatives(crossChainExecutionBlueprint);
 }

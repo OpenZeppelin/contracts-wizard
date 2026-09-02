@@ -1,6 +1,45 @@
 # Changelog
 
 
+## 0.5.8 (2026-09-01)
+
+- Cairo: support OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+  - Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))
+  - Add ERC6909Metadata extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909ContentURI extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC6909TokenSupply extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
+  - Add ERC1155URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC1155Supply extension ([#765](https://github.com/OpenZeppelin/contracts-wizard/pull/765))
+  - Add ERC721URIStorage extension ([#772](https://github.com/OpenZeppelin/contracts-wizard/pull/772))
+  - Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
+  - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
+  - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
+  - **Breaking changes**:
+    - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
+
+## 0.5.7 (2026-08-25)
+
+- Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
+  - Covers TRC20, TRC721, TRC1155, Governor, and Custom contracts.
+  - On TRON, the Governor's `blockTime` defaults to 3 seconds to match its block production.
+
+## 0.5.6 (2026-08-17)
+
+- Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
+
+## 0.5.5 (2026-08-07)
+
+- Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
+
+## 0.5.4 (2026-07-31)
+
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825))
+  - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
+  - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
+  - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
+  - Fix compile errors in upgradeable ERC20 `crossChainBridging` variants.
+  - **Potentially breaking change**: Update to OpenZeppelin Contracts 5.7.0.
+
 ## 0.5.3 (2026-06-26)
 
 - Add Stellar tokenized `Vault` contract type, a Fungible Token that issues shares for an underlying asset (ERC-4626-style), with support for pausable, upgradeable, and access control options. ([#821](https://github.com/OpenZeppelin/contracts-wizard/pull/821))

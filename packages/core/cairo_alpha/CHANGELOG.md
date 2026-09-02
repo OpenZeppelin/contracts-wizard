@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add ERC20FlashMint extension ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
+
+## 4.0.1 (2026-08-31)
+
 - Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))
 - Add ERC6909Metadata extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
 - Add ERC6909ContentURI extension ([#793](https://github.com/OpenZeppelin/contracts-wizard/pull/793))
@@ -12,10 +16,9 @@
 - Add ERC721Wrapper extension ([#764](https://github.com/OpenZeppelin/contracts-wizard/pull/764))
 - Add ERC721Consecutive extension ([#800](https://github.com/OpenZeppelin/contracts-wizard/pull/800))
 - Add ERC20Wrapper extension ([#763](https://github.com/OpenZeppelin/contracts-wizard/pull/763))
-- Add ERC20FlashMint extension ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
 
 - **Breaking changes**:
-  - Use OpenZeppelin Contracts for Cairo v4.0.0-alpha.0.
+  - Use OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
 
 ## 3.0.0 (2026-01-10)
 

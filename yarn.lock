@@ -677,6 +677,13 @@
     semver "^7.5.3"
     tar "^7.4.0"
 
+"@modelcontextprotocol/ext-apps@1.7.5":
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/ext-apps/-/ext-apps-1.7.5.tgz#53004fadf7bef79c533e28b10893199c7bf46693"
+  integrity sha512-TjPH2S2y5UEGKhmI6+XGFuqfqOV4ppe1x6DA3txnUaEWkgtA4G5vo14jGKFZmegdkZ1H4QMLyujLvoU1BEdnAg==
+  dependencies:
+    "@standard-schema/spec" "^1.1.0"
+
 "@modelcontextprotocol/sdk@^1.29.0":
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.29.0.tgz#79786d8b525e269de850ac82b1f1f757f3915f44"
@@ -882,10 +889,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/confidential-contracts/-/confidential-contracts-0.3.1.tgz#db381e2c5c590c184acd5804bec9400aef607ab5"
   integrity sha512-QudxmMktqHE+oUuBKIR0vTceuQnQTtTT7s+iJqTP6c3DLiLNiTSHLrxIG0bd3fVyS1ZSjzhFhCVpcLZdQXsShg==
 
-"@openzeppelin/contracts-upgradeable@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.6.0.tgz#4165c73dba817fd0a5129fd84c4233cc6d892f0e"
-  integrity sha512-pJ4Qb4EGjemdvP/pbBZ+etXDB5PQJJf1tbIBDQqfQZMK3Lk8UuNCK+cWDluHZ28UfwH2WAwJLftyhJid4w63QA==
+"@openzeppelin/contracts-upgradeable@^5.7.0":
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.7.0.tgz#1735bbf6fc71565f8771d148dc2c376a4506b600"
+  integrity sha512-dHA/P3AFsnNXcv82Kge/v35kK0ByNe1EFv4vvOnl//lc8svwRcj5i/bdXd5mdMolD4rjSKy6EWOwc6+7h1gjaQ==
 
 "@openzeppelin/contracts@^5.4.0":
   version "5.4.0"
@@ -900,6 +907,21 @@
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.6.0.tgz#cfc0d605dcc1ddebac8e74bcb138eae61dfbaa28"
   integrity sha512-eZJSS8+RbWzX/7oDJPi+lYzfeuWwHXSsw336Yff35pTkmLEwRWKde2PQMW2objjMi1C1hNn9QiHjGktEJPSSWQ==
+
+"@openzeppelin/contracts@^5.7.0":
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.7.0.tgz#3b13b3e6fe8d426c2af247975ddf6ab2a5bf148e"
+  integrity sha512-IL2AZpI+7THMzt1u6Cxmc1zLwVnudtUGvrqXQ/HnbLKfQ/8dIWMMQPDwPIjRQzNrlAo4cxZaCGRB/XvwPo9ILA==
+
+"@openzeppelin/tron-contracts-upgradeable@5.6.0-rc.2":
+  version "5.6.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts-upgradeable/-/tron-contracts-upgradeable-5.6.0-rc.2.tgz#29070638d1f246e245eb8ec588e3dbc7b2f27218"
+  integrity sha512-znkpn2Veit8R+SDV4xOks36Kygfqexkxf/gu62fRB//tAxF5PDmqAuxe950iiwjOvaUen4ijddQreTgSS5M7Cg==
+
+"@openzeppelin/tron-contracts@5.6.0-rc.2":
+  version "5.6.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts/-/tron-contracts-5.6.0-rc.2.tgz#dc0703c436c051de0db3808c51f1dbfc8d3d243b"
+  integrity sha512-3cv6WH18Rl0+tRfKUHHzfURFJE18g8oqubwxj5MFnFVrL8TuM4Nx7qhfCuVxSX2AB1EPCgggrG1wMTMv8NfWjA==
 
 "@openzeppelin/uniswap-hooks@^1.2.1":
   version "1.2.1"
@@ -1203,6 +1225,11 @@
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-2.3.0.tgz#719df7fb41766bc143369eaa0dd56d8dc87c9958"
   integrity sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==
+
+"@standard-schema/spec@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.1.0.tgz#a79b55dbaf8604812f52d140b2c9ab41bc150bb8"
+  integrity sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
@@ -4386,10 +4413,10 @@ once@^1.3.0, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-openai@5.23.2:
-  version "5.23.2"
-  resolved "https://registry.yarnpkg.com/openai/-/openai-5.23.2.tgz#f13e2dc2ef6b88aab6a9b97cdc68d41a1d083c68"
-  integrity sha512-MQBzmTulj+MM5O8SKEk/gL8a7s5mktS9zUtAkU257WjvobGc9nKcBuVwjyEEcb9SI8a8Y2G/mzn3vm9n1Jlleg==
+openai@7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-7.5.0.tgz#adacc4ba3e325ffa9f71e0aeec834058e3d2e98b"
+  integrity sha512-ZbDBz8FSB8Mv8fFYIUvzTFMdV5vl93/octp1MdtK2lfYepSpfv/ewmeugpKz/cwGtFSx+YuUM4NwpZ2P55YiPA==
 
 optionator@^0.9.3:
   version "0.9.4"

@@ -1,6 +1,25 @@
 # Changelog
 
 
+## 0.10.14 (2026-08-25)
+
+- Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
+  - Covers TRC20, TRC721, TRC1155, Governor, and Custom contracts.
+  - On TRON, the Governor's `blockTime` defaults to 3 seconds to match its block production.
+
+## 0.10.13 (2026-08-07)
+
+- Standardize crosschain terminology in user-facing text. ([#840](https://github.com/OpenZeppelin/contracts-wizard/pull/840))
+
+## 0.10.12 (2026-07-31)
+
+- Add Solidity cross-chain options for ERC721, ERC1155, and Governor using OpenZeppelin Contracts 5.7. ([#825](https://github.com/OpenZeppelin/contracts-wizard/pull/825))
+  - ERC721/ERC1155: Add `crossChainBridging` and `crossChainLinkAllowOverride` options, using `ERC721Crosschain`/`ERC1155Crosschain`.
+  - Governor: Add `crossChainExecution` option, using `GovernorCrosschain`.
+  - Account: Update the `IERC4337` import path, which dropped its `draft-` prefix in Contracts 5.7.
+  - Fix compile errors in upgradeable ERC20 `crossChainBridging` variants.
+  - **Potentially breaking change**: Update to OpenZeppelin Contracts 5.7.0.
+
 ## 0.10.11 (2026-06-18)
 
 - Reject line terminators in `info.securityContact` and `info.license` to prevent breaking out of the generated comment lines. Fixes [GHSA-9wxg-vf3r-56hc](https://github.com/OpenZeppelin/contracts-wizard/security/advisories/GHSA-9wxg-vf3r-56hc). ([#818](https://github.com/OpenZeppelin/contracts-wizard/pull/818))

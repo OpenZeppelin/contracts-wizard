@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { erc20, stablecoin } from '@openzeppelin/wizard';
+import { erc20, stablecoin, buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
 import { registry } from './registry';
 
 const CLI = join(__dirname, '..', 'dist', 'index.js');
@@ -69,6 +69,66 @@ test('each core kind has cli registry entry', async t => {
         `Expected '${expectedCommand}' not found in registry for core language '${coreDir}' and kind '${kind}'`,
       );
     }
+  }
+});
+
+// --- README completeness ---
+// The README is what npm renders for the package, so a language shipped without
+// a table row or example there is invisible to anyone browsing the npm page.
+
+/** `uniswap-hooks` is a whole command; every other command is `<language>-<contract>`. */
+function commandLanguage(command: string): string {
+  return command === 'uniswap-hooks' ? command : command.split('-')[0]!;
+}
+
+test('each registry command is listed in the README table', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+
+  for (const command of Object.keys(registry)) {
+    const language = commandLanguage(command);
+    const row = readme.split('\n').find(line => line.startsWith(`| ${language} |`));
+
+    t.truthy(row, `packages/cli/README.md 'Supported languages' table is missing a row for '${language}'`);
+    const contract = command.slice(language.length + 1);
+    if (row !== undefined && contract !== '') {
+      t.true(row.includes(contract), `README table row for '${language}' is missing '${contract}'`);
+    }
+  }
+});
+
+test('each registry language has a README example', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  // Match only within the Examples section, so commands mentioned elsewhere
+  // (e.g. the `--help` invocation under Usage) cannot satisfy the check.
+  const examplesStart = readme.indexOf('## Examples');
+  t.true(examplesStart >= 0, `packages/cli/README.md is missing the '## Examples' section`);
+  const examples = readme.slice(examplesStart);
+  const languages = new Set(Object.keys(registry).map(commandLanguage));
+
+  for (const language of languages) {
+    t.regex(
+      examples,
+      new RegExp(`contracts-cli ${language}[ -]`),
+      `packages/cli/README.md 'Examples' is missing an example command for '${language}'`,
+    );
+  }
+});
+
+test('each README example runs', async t => {
+  const readme = await readFile(join(__dirname, '..', 'README.md'), 'utf-8');
+  const examplesStart = readme.indexOf('## Examples');
+  t.true(examplesStart >= 0, `packages/cli/README.md is missing the '## Examples' section`);
+  const blocks = [...readme.slice(examplesStart).matchAll(/```sh\n(.*?)```/gs)].map(match => match[1]!);
+  t.true(blocks.length > 0, 'Expected sh blocks in the Examples section');
+
+  for (const block of blocks) {
+    // Join backslash line continuations the way a shell would.
+    const command = block.replace(/\\\n/g, ' ').trim();
+    t.true(command.startsWith('npx @openzeppelin/contracts-cli '), `Unexpected example command: ${command}`);
+
+    const args = command.replace('npx @openzeppelin/contracts-cli ', '').split(/\s+/);
+    const output = run(...args);
+    t.true(output.length > 0, `Example printed no contract: ${command}`);
   }
 });
 
@@ -194,4 +254,45 @@ test('nested dot options with multiple fields', t => {
       info: { license: 'Apache-2.0', securityContact: 'test@test.com' },
     }),
   );
+});
+
+// --- TRON ---
+
+test('tron-trc20 rewrites ERC20 to TRC20', t => {
+  const output = run('tron-trc20', '--name', 'TestToken', '--symbol', 'TST');
+  t.is(output, printContract(buildGeneric({ kind: 'ERC20', name: 'TestToken', symbol: 'TST' }), tronPrintProfile));
+  t.true(output.includes('TRC20'), 'output should contain TRC20');
+  t.true(
+    output.includes('@openzeppelin/tron-contracts/token/TRC20/TRC20.sol'),
+    'output should import from @openzeppelin/tron-contracts',
+  );
+});
+
+test('tron-trc721 rewrites ERC721 to TRC721', t => {
+  const output = run('tron-trc721', '--name', 'TestNFT', '--symbol', 'TNFT');
+  t.is(output, printContract(buildGeneric({ kind: 'ERC721', name: 'TestNFT', symbol: 'TNFT' }), tronPrintProfile));
+  t.true(output.includes('TRC721'), 'output should contain TRC721');
+});
+
+test('tron-trc1155 rewrites ERC1155 to TRC1155', t => {
+  const output = run('tron-trc1155', '--name', 'TestMulti', '--uri', 'ipfs://example/{id}');
+  t.is(
+    output,
+    printContract(buildGeneric({ kind: 'ERC1155', name: 'TestMulti', uri: 'ipfs://example/{id}' }), tronPrintProfile),
+  );
+  t.true(output.includes('TRC1155'), 'output should contain TRC1155');
+});
+
+test('tron-trc20 caps pragma at 0.8.26', t => {
+  const output = run('tron-trc20', '--name', 'TestToken', '--symbol', 'TST');
+  t.true(output.includes('pragma solidity ^0.8.26;'), 'pragma should be capped at 0.8.26');
+  t.false(output.includes('pragma solidity ^0.8.27'), 'pragma should not be 0.8.27 (above tron-solc max)');
+});
+
+test('tron-trc20 renames the library but never user name/symbol literals', t => {
+  // A name and symbol that embed a token standard: only the inherited base is
+  // renamed to TRC20; the user's deployed name() and symbol() are untouched.
+  const output = run('tron-trc20', '--name', 'My ERC20 Token', '--symbol', 'ERC20');
+  t.true(output.includes('contract MyERC20Token is TRC20'), 'base renamed, contract name kept');
+  t.true(output.includes('TRC20("My ERC20 Token", "ERC20")'), 'name/symbol literals preserved');
 });

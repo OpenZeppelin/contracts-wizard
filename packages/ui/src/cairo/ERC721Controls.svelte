@@ -55,7 +55,7 @@
     <label class:checked={opts.mintable}>
       <input type="checkbox" bind:checked={opts.mintable} />
       Mintable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/erc721">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/erc721">
         Privileged accounts will be able to emit new tokens.
       </HelpTooltip>
     </label>
@@ -67,18 +67,41 @@
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/security#pausable">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/security#pausable">
         Privileged accounts will be able to pause the functionality marked with <code
           >self.pausable.assert_not_paused()</code
         >. Useful for emergency response.
       </HelpTooltip>
     </label>
     <label class:checked={opts.enumerable}>
-      <input type="checkbox" bind:checked={opts.enumerable} />
+      <input type="checkbox" bind:checked={opts.enumerable} use:error={errors?.enumerable} />
       Enumerable
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/api/erc721#ERC721EnumerableComponent">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/api/erc721#ERC721EnumerableComponent">
         Allows a contract to publish its entire list of NFTs and make them discoverable by keeping track of all token
         ids and all tokens owned by an address.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.consecutive}>
+      <input type="checkbox" bind:checked={opts.consecutive} use:error={errors?.consecutive} />
+      Consecutive
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/api/erc721#ERC721ConsecutiveComponent">
+        Enables gas-efficient batch minting of consecutive token IDs (ERC-2309). Call <code
+          >self.erc721_consecutive.mint_consecutive(recipient, batch_size)</code
+        > from the constructor to issue the initial batch. Cannot be combined with Enumerable.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.wrapper}>
+      <input type="checkbox" bind:checked={opts.wrapper} />
+      Wrapper
+      <HelpTooltip>
+        Wrap an existing ERC721 by depositing underlying token IDs and minting matching wrapped tokens.
+      </HelpTooltip>
+    </label>
+    <label class:checked={opts.uriStorage}>
+      <input type="checkbox" bind:checked={opts.uriStorage} />
+      URI Storage
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/api/erc721#ERC721URIStorageComponent">
+        Allows updating token URIs for individual token IDs.
       </HelpTooltip>
     </label>
     <UpgradeabilityField bind:upgradeable={opts.upgradeable} />
@@ -89,13 +112,13 @@
   label="Votes"
   bind:checked={opts.votes}
   helpContent="Keeps track of historical balances for voting in on-chain governance, with a way to delegate one's voting power to a trusted account."
-  helpLink="https://docs.openzeppelin.com/contracts-cairo/3.x/governance/votes"
+  helpLink="https://docs.openzeppelin.com/contracts-cairo/4.x/governance/votes"
   error={errors?.appName || errors?.appVersion}
 >
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Name
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/guides/snip12">
         Name for domain separator. Prevents two applications from producing the same hash.
       </HelpTooltip>
     </span>
@@ -105,7 +128,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Application Version
-      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/3.x/guides/snip12">
+      <HelpTooltip link="https://docs.openzeppelin.com/contracts-cairo/4.x/guides/snip12">
         Version for domain separator. Prevents two versions of the same application from producing the same hash.
       </HelpTooltip>
     </span>

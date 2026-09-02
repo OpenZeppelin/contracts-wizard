@@ -16,11 +16,31 @@ Provides tools to generate smart contract source code for the following language
 | Language | Contracts |
 | --- | --- |
 | solidity | erc20, erc721, erc1155, stablecoin, rwa, account, governor, custom |
-| cairo | erc20, erc721, erc1155, account, multisig, governor, vesting, custom |
+| cairo | erc20, erc721, erc1155, erc6909, account, multisig, governor, vesting, custom |
 | confidential | erc7984 |
-| stellar | fungible, stablecoin, non-fungible |
+| stellar | fungible, stablecoin, non-fungible, governor, vault, account |
 | stylus | erc20, erc721, erc1155 |
+| tron | trc20, trc721, trc1155, governor, custom |
 | uniswap-hooks | hooks (tool name is just `uniswap-hooks`) |
+
+### MCP Apps
+
+Hosts that support the [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) extension (for example Cursor and Claude) can render an interactive Wizard UI for each tool: the same options as the web Wizard for that contract kind, a live code preview, and a button to hand the current source back to the agent. Language and kind pickers are omitted because the tool name already selects them.
+
+**Send Updates to Agent** checks host MCP Apps capabilities:
+- `message` (e.g. Claude): sends a chat message that includes the full current source so the agent sees option changes. Also best-effort stages via `updateModelContext` when advertised (some hosts do not attach silent context to draft-injected messages, so the message itself must be self-contained).
+- No `message` capability (e.g. Cursor today, including hosts that only advertise `updateModelContext`): the button is **Copy to Clipboard** (same idea as the web Wizard copy action).
+- Outbound links (tooltip “Read more”, import hyperlinks in the preview) use the host `openLinks` capability via `openLink`. If the host does not advertise it, those links are hidden so nothing looks clickable that cannot open.
+
+Clients without Apps support continue to work — tools still return source code as Markdown text. The server always returns tool text; hosts that do not implement MCP Apps simply ignore the UI metadata.
+
+#### App HTML artifacts
+
+Interactive App HTML is **not** committed to git. It is generated into `packages/mcp/apps/` and included in the published npm tarball.
+
+- **Published package (`npm` / `npx`)**: Apps HTML is already in the package; no extra build step.
+- **Local checkout** (Cursor/Claude pointed at `packages/mcp/dist/cli.js`, or a `file:` dependency): run `yarn --cwd packages/mcp build:apps` after cloning or changing MCP App UI sources. If HTML is missing, the server fails closed at startup with a message to run that command (npm consumers should reinstall or report a packaging bug).
+- **CI / publish**: CI builds Apps before MCP tests; `prepublishOnly` builds Apps before npm publish.
 
 
 ## Installation

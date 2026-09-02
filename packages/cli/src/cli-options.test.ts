@@ -7,6 +7,7 @@ import {
   erc20 as cairoErc20,
   erc721 as cairoErc721,
   erc1155 as cairoErc1155,
+  erc6909 as cairoErc6909,
   account as cairoAccount,
   multisig as cairoMultisig,
   governor as cairoGovernor,
@@ -459,6 +460,32 @@ test('cairo-erc1155: most options', t => {
     '--upgradeable',
   );
   t.is(output, cairoErc1155.print(opts));
+});
+
+test('cairo-erc6909: most options', t => {
+  const opts = {
+    name: 'TestMultiToken',
+    burnable: true,
+    mintable: true,
+    pausable: true,
+    contentUri: true,
+    tokenSupply: true,
+    metadata: true,
+    upgradeable: true,
+  };
+  const output = run(
+    'cairo-erc6909',
+    '--name',
+    opts.name,
+    '--burnable',
+    '--mintable',
+    '--pausable',
+    '--contentUri',
+    '--tokenSupply',
+    '--metadata',
+    '--upgradeable',
+  );
+  t.is(output, cairoErc6909.print(opts));
 });
 
 test('cairo-account: most options', t => {

@@ -58,7 +58,7 @@ From the `packages/ui` directory:
   - Default port is 8080. To use another port, set the environment variable `PORT`, for example: `PORT=800 yarn dev`
 
 ### Running the AI Assistant (Optional)
-Create a `.env` file at the root directory, set the environment variable `OPENAI_API_KEY` using your OpenAI API key, and configure your OpenAI project limits to allow the `gpt-4o-mini` model or set the environment variable `OPENAI_MODEL` to a specific model.
+Create a `.env` file at the root directory, set the environment variable `OPENAI_API_KEY` using your OpenAI API key, and configure your OpenAI project limits to allow the `gpt-5.6-luna` model or set the environment variable `OPENAI_MODEL` to a specific model.
 
 Then from the `packages/ui` directory:
 - In one terminal, start the UI according to the above section if the UI isn't already running.
@@ -96,5 +96,8 @@ From the `packages/mcp` directory:
 As a contributor, we ask that you fork this repository, work on your own fork and then submit pull requests. The pull requests will be reviewed and eventually merged into the main repo. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo/) for how this works.
 
 ### Adding Changesets
-If your PR modifies code generation logic under `packages/core`, you will need to add changesets for the relevant packages to summarize the changes. The PR's `Changeset` GitHub check will give an error if this condition is not satisfied.
+Published packages (`packages/core/*`, `packages/common`, `packages/cli`, `packages/mcp`) use [Changesets](https://github.com/changesets/changesets) for versioning. The PR's `Changeset` GitHub check fails when a changed publishable package has no changeset. Use the `ignore-changeset` label only when a bump is genuinely not needed.
+
+The `ui` package is private (Netlify + MCP App source) and is versioned in-repo but not published. MCP App HTML is built from `ui` when `@openzeppelin/contracts-mcp` is published. If your PR changes Wizard controls or other UI that ships in MCP Apps, add **one changeset that lists both** `ui` and `@openzeppelin/contracts-mcp`. Web-only UI (for example Cairo Alpha, Polkadot, or the web Wizard `App.svelte` shells) does not require a changeset.
+
 - To add a changeset: from the root directory, run `yarn changeset`

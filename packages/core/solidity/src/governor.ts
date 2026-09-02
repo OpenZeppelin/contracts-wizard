@@ -28,6 +28,7 @@ export const defaults: Required<GovernorOptions> = {
   quorumAbsolute: '',
   storage: false,
   settings: true,
+  crossChainExecution: false,
 } as const;
 
 export const votesOptions = ['erc20votes', 'erc721votes'] as const;
@@ -57,6 +58,7 @@ export interface GovernorOptions extends CommonOptions {
   timelock?: TimelockOptions;
   storage?: boolean;
   settings?: boolean;
+  crossChainExecution?: boolean;
 }
 
 export function isAccessControlRequired(_: Partial<GovernorOptions>): boolean {
@@ -78,6 +80,7 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
     votes: opts.votes ?? defaults.votes,
     clockMode: opts.clockMode ?? defaults.clockMode,
     timelock: opts.timelock ?? defaults.timelock,
+    crossChainExecution: opts.crossChainExecution ?? defaults.crossChainExecution,
   };
 }
 
@@ -95,6 +98,7 @@ export function buildGovernor(opts: GovernorOptions): Contract {
   addVotes(c);
   addQuorum(c, allOpts);
   addTimelock(c, allOpts);
+  addCrossChainExecution(c, allOpts);
 
   setUpgradeableGovernor(c, allOpts.upgradeable);
   setInfo(c, allOpts.info);
@@ -381,6 +385,17 @@ function addTimelock(c: ContractBuilder, { timelock }: Required<GovernorOptions>
   c.addOverride(timelockParent, functions._executor);
   c.addOverride(timelockParent, functions.state);
   c.addOverride(timelockParent, functions.proposalNeedsQueuing);
+}
+
+function addCrossChainExecution(c: ContractBuilder, { crossChainExecution }: Required<GovernorOptions>) {
+  if (!crossChainExecution) {
+    return;
+  }
+
+  c.addParent({
+    name: 'GovernorCrosschain',
+    path: '@openzeppelin/contracts/governance/extensions/GovernorCrosschain.sol',
+  });
 }
 
 function addStorage(c: ContractBuilder, { storage }: GovernorOptions) {

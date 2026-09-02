@@ -1,15 +1,20 @@
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { StablecoinOptions } from '@openzeppelin/wizard-stellar';
 import { stablecoin } from '@openzeppelin/wizard-stellar';
-import { safePrintRustCodeBlock, makeDetailedPrompt } from '../../utils';
+import { makeDetailedPrompt } from '../../utils';
 import { stellarStablecoinSchema } from '@openzeppelin/wizard-common/schemas';
 import { stellarPrompts } from '@openzeppelin/wizard-common';
+import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
 export function registerStellarStablecoin(server: McpServer): RegisteredTool {
-  return server.tool(
+  return registerWizardAppTool(
+    server,
     'stellar-stablecoin',
-    makeDetailedPrompt(stellarPrompts.Stablecoin),
-    stellarStablecoinSchema,
+    {
+      description: makeDetailedPrompt(stellarPrompts.Stablecoin),
+      inputSchema: stellarStablecoinSchema,
+      title: 'Stellar Stablecoin',
+    },
     async ({
       name,
       symbol,
@@ -40,14 +45,7 @@ export function registerStellarStablecoin(server: McpServer): RegisteredTool {
         explicitImplementations,
         info,
       };
-      return {
-        content: [
-          {
-            type: 'text',
-            text: safePrintRustCodeBlock(() => stablecoin.print(opts)),
-          },
-        ],
-      };
+      return wizardAppPrintResult(opts, () => stablecoin.print(opts), 'rust');
     },
   );
 }

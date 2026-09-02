@@ -142,7 +142,7 @@ export function buildERC20(opts: ERC20Options): Contract {
   const c = new ContractBuilder(allOpts.name, allOpts.macros);
   const decimals = toUint(allOpts.decimals, 'decimals', 'u8');
 
-  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals, allOpts.wrapper);
+  addBase(c, toByteArray(allOpts.name), toByteArray(allOpts.symbol), decimals);
   addERC20Mixin(c);
 
   if (allOpts.premint) {
@@ -264,7 +264,7 @@ function addERC20Mixin(c: ContractBuilder) {
   });
 }
 
-function addBase(c: ContractBuilder, name: string, symbol: string, decimals: bigint, usesWrapper: boolean) {
+function addBase(c: ContractBuilder, name: string, symbol: string, decimals: bigint) {
   // Add ERC20 component
   c.addComponent(components.ERC20Component, [name, symbol], true);
 

@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
+import { generateAccountOptions } from './account';
 import { generateFungibleOptions } from './fungible';
 import { generateGovernorOptions } from './governor';
 import { generateNonFungibleOptions } from './non-fungible';
@@ -16,6 +17,12 @@ import type { Contract } from '../contract';
 type Kind = keyof KindedOptions;
 
 export function* generateOptions(kind?: Kind): Generator<GenericOptions> {
+  if (!kind || kind === 'Account') {
+    for (const kindOpts of generateAccountOptions()) {
+      yield { kind: 'Account', ...kindOpts };
+    }
+  }
+
   if (!kind || kind === 'Fungible') {
     for (const kindOpts of generateFungibleOptions()) {
       yield { kind: 'Fungible', ...kindOpts };
