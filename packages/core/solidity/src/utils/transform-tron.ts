@@ -36,6 +36,8 @@ export const TRON_SOLIDITY_VERSION = capTronSolidityVersion(SOLIDITY_VERSION);
 
 /** Published `@openzeppelin/tron-contracts` / `-upgradeable` version the Wizard targets. */
 export const TRON_CONTRACTS_VERSION = '5.6.0';
+/** Semver range shown in compatibility checks and generated contract banners. */
+export const compatibleTronContractsSemver = '^5.6.0';
 
 function capTronSolidityVersion(version: string): string {
   const [major, minor, patch] = version.split('.').map(part => parseInt(part, 10));
@@ -87,7 +89,7 @@ export const tronPrintProfile: Options = {
     {
       name: 'OpenZeppelin TRON Contracts',
       path: '@openzeppelin/tron-contracts',
-      version: TRON_CONTRACTS_VERSION,
+      version: compatibleTronContractsSemver,
     },
   ],
 };

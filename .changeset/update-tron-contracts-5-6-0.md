@@ -2,5 +2,5 @@
 '@openzeppelin/wizard': patch
 ---
 
-Update TRON Contracts references to 5.6.0.
-- Switch generated TRON dependency ranges and pins from the 5.6.0 release candidate to the final 5.6.0 release.
+Update `@openzeppelin/tron-contracts` and `@openzeppelin/tron-contracts-upgradeable` dependencies to 5.6.0.
+- Show OpenZeppelin TRON Contracts compatibility as `^5.6.0` in generated contract comments.
