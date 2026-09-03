@@ -13,7 +13,7 @@ import VersionedApp from './common/VersionedApp.svelte';
 import { postMessage } from './common/post-message';
 import UnsupportedVersion from './common/UnsupportedVersion.svelte';
 import semver from 'semver';
-import { compatibleContractsSemver as soliditySemver, TRON_CONTRACTS_VERSION } from '@openzeppelin/wizard';
+import { compatibleContractsSemver as soliditySemver, compatibleTronContractsSemver } from '@openzeppelin/wizard';
 import { compatibleContractsSemver as cairoSemver, contractsVersion as cairoVersion } from '@openzeppelin/wizard-cairo';
 import {
   compatibleContractsSemver as cairoAlphaSemver,
@@ -111,10 +111,10 @@ function evaluateSelection(
       }
     }
     case 'tron': {
-      if (requestedVersion === undefined || semver.satisfies(requestedVersion, TRON_CONTRACTS_VERSION)) {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, compatibleTronContractsSemver)) {
         return { compatible: true, appType: 'tron' };
       } else {
-        return { compatible: false, compatibleVersionsSemver: TRON_CONTRACTS_VERSION };
+        return { compatible: false, compatibleVersionsSemver: compatibleTronContractsSemver };
       }
     }
     case 'stellar': {
