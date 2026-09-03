@@ -63,8 +63,8 @@ test('tronIdeURL does not set remaps when remappings is empty', t => {
 
 test('tronIdeURL encodes remappings into remaps hash param', t => {
   const remappings = [
-    '@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable@5.6.0-rc.2/',
-    '@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts@5.6.0-rc.2/',
+    '@openzeppelin/tron-contracts-upgradeable/=@openzeppelin/tron-contracts-upgradeable@5.6.0/',
+    '@openzeppelin/tron-contracts/=@openzeppelin/tron-contracts@5.6.0/',
   ];
 
   const url = tronIdeURL('contract A{}', remappings, true);

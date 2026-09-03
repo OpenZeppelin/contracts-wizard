@@ -16,7 +16,7 @@
     "tronweb": "^6.0.0"
   },
   "dependencies": {
-    "@openzeppelin/tron-contracts": "5.6.0-rc.2",
-    "@openzeppelin/tron-contracts-upgradeable": "5.6.0-rc.2"
+    "@openzeppelin/tron-contracts": "^5.6.0",
+    "@openzeppelin/tron-contracts-upgradeable": "^5.6.0"
   }
 }

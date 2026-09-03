@@ -114,6 +114,6 @@ test('uses erc7201 namespaced storage annotations to match tron-contracts-upgrad
 
 test('compatibility banner names TRON Contracts at the pinned version', t => {
   const source = printContract(buildERC20({ name: 'T', symbol: 'T' }), tronPrintProfile);
-  t.regex(source, /\/\/ Compatible with OpenZeppelin TRON Contracts 5\.6\.0-rc\.2/);
+  t.regex(source, /\/\/ Compatible with OpenZeppelin TRON Contracts \^5\.6\.0/);
   t.false(source.includes('OpenZeppelin Contracts ^'));
 });

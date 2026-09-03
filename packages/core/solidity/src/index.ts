@@ -58,6 +58,7 @@ export { calculatePremint as calculateERC20Premint, scaleByPowerOfTen } from './
 export {
   tronPrintProfile,
   sanitizeTronOptions,
+  compatibleTronContractsSemver,
   TRON_DEFAULT_BLOCK_TIME,
   TRON_SOLIDITY_VERSION,
   TRON_CONTRACTS_VERSION,
