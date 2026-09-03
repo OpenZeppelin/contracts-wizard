@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.15 (2026-09-03)
+
+- Update `@openzeppelin/tron-contracts` and `@openzeppelin/tron-contracts-upgradeable` dependencies to 5.6.0. ([#865](https://github.com/OpenZeppelin/contracts-wizard/pull/865))
+
 ## 0.10.14 (2026-08-25)
 
 - Add support for TRON Contracts. ([#806](https://github.com/OpenZeppelin/contracts-wizard/pull/806))
