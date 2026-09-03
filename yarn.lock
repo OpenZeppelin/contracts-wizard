@@ -913,15 +913,15 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.7.0.tgz#3b13b3e6fe8d426c2af247975ddf6ab2a5bf148e"
   integrity sha512-IL2AZpI+7THMzt1u6Cxmc1zLwVnudtUGvrqXQ/HnbLKfQ/8dIWMMQPDwPIjRQzNrlAo4cxZaCGRB/XvwPo9ILA==
 
-"@openzeppelin/tron-contracts-upgradeable@5.6.0-rc.2":
-  version "5.6.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts-upgradeable/-/tron-contracts-upgradeable-5.6.0-rc.2.tgz#29070638d1f246e245eb8ec588e3dbc7b2f27218"
-  integrity sha512-znkpn2Veit8R+SDV4xOks36Kygfqexkxf/gu62fRB//tAxF5PDmqAuxe950iiwjOvaUen4ijddQreTgSS5M7Cg==
+"@openzeppelin/tron-contracts-upgradeable@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts-upgradeable/-/tron-contracts-upgradeable-5.6.0.tgz#a3b666e8c76d1045c6ff16d6455838ecb1422f2e"
+  integrity sha512-hzOaCx5Blju8zKv0P0c7ybBwbD/KM+LSeo3thEBitlp0DSC9bYCOE9ueJZt5SjBxmHKJoPaeBlQUakNOV1poQw==
 
-"@openzeppelin/tron-contracts@5.6.0-rc.2":
-  version "5.6.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts/-/tron-contracts-5.6.0-rc.2.tgz#dc0703c436c051de0db3808c51f1dbfc8d3d243b"
-  integrity sha512-3cv6WH18Rl0+tRfKUHHzfURFJE18g8oqubwxj5MFnFVrL8TuM4Nx7qhfCuVxSX2AB1EPCgggrG1wMTMv8NfWjA==
+"@openzeppelin/tron-contracts@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/tron-contracts/-/tron-contracts-5.6.0.tgz#d348d41285fd112e9e37f6a9e723f09ee2aba33c"
+  integrity sha512-hkgVIsvxn1qJDlg5spxRH9YYSupgk4EW9axTLu+xHjrJyVgnQ8GMztmn/lHVQYLiSFeJ7t8Mmvp1lCDUg9adsQ==
 
 "@openzeppelin/uniswap-hooks@^1.2.1":
   version "1.2.1"
