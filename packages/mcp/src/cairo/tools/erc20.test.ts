@@ -57,6 +57,13 @@ test('all', async t => {
     votes: true,
     appName: 'MyToken',
     appVersion: 'v1',
+    flashmint: {
+      enabled: true,
+      maxAmount: '1000000',
+      feeMode: 'percent',
+      feePercent: '0.5',
+      feeDestination: 'fee_receiver',
+    },
     access: {
       type: 'roles',
       darInitialDelay: '0',
