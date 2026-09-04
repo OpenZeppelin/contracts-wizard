@@ -178,9 +178,11 @@
           disabled={!opts.flashmint.enabled}
         />
         Max
-        <HelpTooltip>
-          Inherits the default: the maximum representable amount minus the current total supply.
-        </HelpTooltip>
+        <span class="ml-auto flex items-center">
+          <HelpTooltip>
+            Inherits the default: the maximum representable amount minus the current total supply.
+          </HelpTooltip>
+        </span>
       </label>
       <label class:checked={opts.flashmint.maxAmount !== 'max'}>
         <input
@@ -191,10 +193,10 @@
           disabled={!opts.flashmint.enabled}
         />
         Custom
-        <HelpTooltip>A fixed non-negative cap. Setting it to 0 effectively disables flash loans.</HelpTooltip>
         {#if opts.flashmint.maxAmount !== 'max'}
           <input
-            class="input-inline ml-auto"
+            class="input-inline ml-2"
+            style="max-width: 8rem"
             bind:value={opts.flashmint.maxAmount}
             use:error={errors?.flashMintMaxAmount}
             use:resizeToFit
@@ -202,6 +204,9 @@
             pattern={premintPattern.source}
           />
         {/if}
+        <span class="ml-auto flex items-center">
+          <HelpTooltip>A fixed non-negative cap. Setting it to 0 effectively disables flash loans.</HelpTooltip>
+        </span>
       </label>
     </div>
   </div>
@@ -215,11 +220,11 @@
       <label class:checked={opts.flashmint.feeMode === 'percent'}>
         <input type="radio" bind:group={opts.flashmint.feeMode} value="percent" disabled={!opts.flashmint.enabled} />
         Percent
-        <HelpTooltip>Charges a percentage of the loan amount.</HelpTooltip>
         {#if opts.flashmint.feeMode === 'percent'}
-          <span class="ml-auto flex items-center">
+          <span class="ml-2 flex items-center">
             <input
               class="input-inline"
+              style="max-width: 8rem"
               type="text"
               bind:value={opts.flashmint.feePercent}
               use:error={errors?.flashMintFeePercent}
@@ -231,11 +236,16 @@
             <span class="ml-1">%</span>
           </span>
         {/if}
+        <span class="ml-auto flex items-center">
+          <HelpTooltip>Charges a percentage of the loan amount.</HelpTooltip>
+        </span>
       </label>
       <label class:checked={opts.flashmint.feeMode === 'custom'}>
         <input type="radio" bind:group={opts.flashmint.feeMode} value="custom" disabled={!opts.flashmint.enabled} />
         Custom
-        <HelpTooltip>Emits a TODO stub for you to implement the fee logic manually.</HelpTooltip>
+        <span class="ml-auto flex items-center">
+          <HelpTooltip>Emits a TODO stub for you to implement the fee logic manually.</HelpTooltip>
+        </span>
       </label>
     </div>
   </div>
@@ -255,7 +265,9 @@
             disabled={!opts.flashmint.enabled}
           />
           Burn
-          <HelpTooltip>The flash loan fee is sent to the zero address and effectively burnt.</HelpTooltip>
+          <span class="ml-auto flex items-center">
+            <HelpTooltip>The flash loan fee is sent to the zero address and effectively burnt.</HelpTooltip>
+          </span>
         </label>
         <label class:checked={opts.flashmint.feeDestination === 'fee_receiver'}>
           <input
@@ -265,10 +277,12 @@
             disabled={!opts.flashmint.enabled}
           />
           Fee receiver
-          <HelpTooltip>
-            Adds a constructor argument for the fee receiver. The deployer provides the address at deployment, the
-            contract validates that it is non-zero and stores it on-chain.
-          </HelpTooltip>
+          <span class="ml-auto flex items-center">
+            <HelpTooltip>
+              Adds a constructor argument for the fee receiver. The deployer provides the address at deployment, the
+              contract validates that it is non-zero and stores it on-chain.
+            </HelpTooltip>
+          </span>
         </label>
       </div>
     </div>
