@@ -1,8 +1,8 @@
 {
   "imports": {
-    "@upstash/redis": "https://esm.sh/@upstash/redis@1.35.6",
-    "openai": "https://esm.sh/openai@7.5.0",
-    "jszip": "https://esm.sh/jszip@3.6.0",
+    "@upstash/redis": "https://esm.sh/@upstash/redis@1.38.4",
+    "openai": "https://esm.sh/openai@7.10.0",
+    "jszip": "https://esm.sh/jszip@3.10.1",
     "@openzeppelin/wizard": "../core/solidity/dist/index.js",
     "@openzeppelin/wizard/": "../core/solidity/dist/"
   }
