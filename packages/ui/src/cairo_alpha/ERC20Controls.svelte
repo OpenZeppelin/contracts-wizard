@@ -231,7 +231,7 @@
           <span class="ml-2 flex items-center">
             <input
               class="input-inline"
-              style="max-width: 8rem"
+              style="max-width: 6.5rem"
               type="text"
               bind:value={opts.flashmint.feePercent}
               on:input={clampFlashFeePercent}
