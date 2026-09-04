@@ -48,6 +48,13 @@
   function selectMaxAmountCustom() {
     opts.flashmint.maxAmount = lastCustomMax;
   }
+
+  // The fee is a percentage of the loan amount, so cap typed values at 100 instead of surfacing an error.
+  function clampFlashFeePercent(event: Event) {
+    if (parseFloat((event.currentTarget as HTMLInputElement).value) > 100) {
+      opts.flashmint.feePercent = '100';
+    }
+  }
 </script>
 
 <section class="controls-section">
@@ -221,6 +228,7 @@
               style="max-width: 8rem"
               type="text"
               bind:value={opts.flashmint.feePercent}
+              on:input={clampFlashFeePercent}
               use:error={errors?.flashMintFeePercent}
               use:resizeToFit
               disabled={!opts.flashmint.enabled}
