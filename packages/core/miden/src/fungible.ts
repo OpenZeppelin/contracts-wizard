@@ -39,8 +39,10 @@ export interface FungibleOptions extends CommonContractOptions {
   updatableMetadata?: boolean;
   updatableMaxSupply?: boolean;
   burnable?: boolean;
+  minBurnAmount?: string;
   pausable?: boolean;
   restrictions?: Restrictions;
+  switchablePolicies?: boolean;
 }
 
 export const defaults: Required<FungibleOptions> = {
@@ -54,8 +56,10 @@ export const defaults: Required<FungibleOptions> = {
   updatableMetadata: false,
   updatableMaxSupply: false,
   burnable: true,
+  minBurnAmount: '',
   pausable: false,
   restrictions: false,
+  switchablePolicies: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -76,8 +80,10 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     updatableMetadata: opts.updatableMetadata ?? defaults.updatableMetadata,
     updatableMaxSupply: opts.updatableMaxSupply ?? defaults.updatableMaxSupply,
     burnable: opts.burnable ?? defaults.burnable,
+    minBurnAmount: opts.minBurnAmount ?? defaults.minBurnAmount,
     pausable: opts.pausable ?? defaults.pausable,
     restrictions: opts.restrictions ?? defaults.restrictions,
+    switchablePolicies: opts.switchablePolicies ?? defaults.switchablePolicies,
   };
 }
 
@@ -100,10 +106,21 @@ export function buildFungible(opts: FungibleOptions): Contract {
   const decimals = collectErrors(errors, () => validateDecimals(allOpts.decimals));
   const maxSupply =
     decimals === undefined ? undefined : collectErrors(errors, () => validateMaxSupply(allOpts.maxSupply, decimals));
+  const minBurnAmount =
+    decimals === undefined || maxSupply === undefined
+      ? undefined
+      : collectErrors(errors, () =>
+          validateMinBurnAmount(allOpts.minBurnAmount, decimals, maxSupply, allOpts.burnable),
+        );
   validateMetadataField(allOpts.description, 'description', errors);
   validateMetadataField(allOpts.logoUri, 'logoUri', errors);
   validateMetadataField(allOpts.externalLink, 'externalLink', errors);
-  if (Object.keys(errors).length > 0 || decimals === undefined || maxSupply === undefined) {
+  if (
+    Object.keys(errors).length > 0 ||
+    decimals === undefined ||
+    maxSupply === undefined ||
+    minBurnAmount === undefined
+  ) {
     throw new OptionsError(errors);
   }
 
@@ -111,11 +128,26 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   addFaucetComponent(c, allOpts, decimals, maxSupply);
 
+  if (minBurnAmount !== null) {
+    c.addConstant({
+      name: 'MIN_BURN_AMOUNT',
+      type: 'u64',
+      value: toRustIntegerLiteral(minBurnAmount),
+      comments: paragraph(
+        `Minimum amount that can be burned at once, in base units (${allOpts.minBurnAmount.trim()} tokens with ` +
+          `${decimals} decimals).`,
+        1,
+      ),
+    });
+  }
+
   addFaucetAccount(c, access, {
     kind: 'Fungible',
     burnable: allOpts.burnable,
+    minBurnAmount: minBurnAmount === null ? undefined : allOpts.minBurnAmount.trim(),
     pausable: allOpts.pausable,
     restrictions: allOpts.restrictions,
+    switchablePolicies: allOpts.switchablePolicies,
     updatableMetadata: allOpts.updatableMetadata || allOpts.updatableMaxSupply,
   });
 
@@ -139,6 +171,34 @@ function validateMaxSupply(maxSupply: string, decimals: number): bigint {
   }
   if (baseUnits > MAX_ASSET_AMOUNT) {
     throw new OptionsError({ maxSupply: 'Exceeds the maximum fungible asset amount' });
+  }
+  return baseUnits;
+}
+
+/**
+ * Validates the minimum burn amount and converts it to base units. Returns `null` when no minimum is set.
+ */
+function validateMinBurnAmount(
+  minBurnAmount: string,
+  decimals: number,
+  maxSupply: bigint,
+  burnable: boolean,
+): bigint | null {
+  if (minBurnAmount.trim().length === 0) {
+    return null;
+  }
+  const baseUnits = BigInt(toBaseUnits(minBurnAmount, decimals, 'minBurnAmount'));
+  if (baseUnits === 0n) {
+    return null;
+  }
+  if (baseUnits > maxSupply) {
+    throw new OptionsError({ minBurnAmount: 'Must not exceed the max supply' });
+  }
+  if (!burnable) {
+    throw new OptionsError({
+      minBurnAmount: 'Requires the token to be burnable by its holders',
+      burnable: 'Owner-only burning cannot have a minimum burn amount',
+    });
   }
   return baseUnits;
 }

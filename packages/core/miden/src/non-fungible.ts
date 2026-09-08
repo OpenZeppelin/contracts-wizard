@@ -30,6 +30,7 @@ export interface NonFungibleOptions extends CommonContractOptions {
   burnable?: boolean;
   pausable?: boolean;
   restrictions?: Restrictions;
+  switchablePolicies?: boolean;
 }
 
 export const defaults: Required<NonFungibleOptions> = {
@@ -42,6 +43,7 @@ export const defaults: Required<NonFungibleOptions> = {
   burnable: true,
   pausable: false,
   restrictions: false,
+  switchablePolicies: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -61,6 +63,7 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     restrictions: opts.restrictions ?? defaults.restrictions,
+    switchablePolicies: opts.switchablePolicies ?? defaults.switchablePolicies,
   };
 }
 
@@ -96,6 +99,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     burnable: allOpts.burnable,
     pausable: allOpts.pausable,
     restrictions: allOpts.restrictions,
+    switchablePolicies: allOpts.switchablePolicies,
     updatableMetadata: allOpts.updatableMetadata,
   });
 

@@ -15,6 +15,7 @@ const blueprint = {
   burnable: booleans,
   pausable: booleans,
   restrictions: restrictionsOptions,
+  switchablePolicies: booleans,
   access: accessOptions,
   info: infoOptions,
 };

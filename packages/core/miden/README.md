@@ -59,6 +59,8 @@ The `access` option selects how the privileged procedures of the faucet account 
 - `burnable`: whether any holder can burn the asset by sending it back to the faucet in a BURN note. Otherwise only the owner can burn, which requires access control.
 - `pausable`: whether privileged accounts can pause minting, burning and transfers.
 - `restrictions`: transfer restrictions enforced through the send and receive policies of the faucet, either `'allowlist'`, `'blocklist'` or `false`.
+- `switchablePolicies`: whether the other standard mint, burn, send and receive policies are registered as allowed alternatives, so that privileged accounts can switch the active policies after deployment. Installs the allowlist and blocklist managers and enables asset callbacks.
+- `minBurnAmount` (fungible only): the minimum amount of tokens that must be burned at once, in whole tokens. Requires `burnable`. Privileged accounts can update the minimum after deployment.
 
 ### Examples
 

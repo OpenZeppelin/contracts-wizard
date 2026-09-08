@@ -105,7 +105,7 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.burnable}>
+    <label class:checked={opts.burnable} use:error={errors?.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
       <HelpTooltip>
@@ -121,7 +121,33 @@
         Privileged accounts will be able to pause minting, burning and transfers. Useful for emergency response.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.switchablePolicies}>
+      <input type="checkbox" bind:checked={opts.switchablePolicies} />
+      Switchable Policies
+      <HelpTooltip>
+        The other standard mint, burn, send and receive policies are registered as allowed alternatives, so privileged
+        accounts will be able to switch the active policies after deployment. Installs the allowlist and blocklist
+        managers and enables asset callbacks.
+      </HelpTooltip>
+    </label>
   </div>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Minimum Burn Amount
+      <HelpTooltip>
+        The minimum amount of tokens that must be burned at once, in whole tokens. Requires the token to be burnable by
+        its holders. Privileged accounts will be able to update the minimum after deployment.
+      </HelpTooltip>
+    </span>
+    <input
+      bind:value={opts.minBurnAmount}
+      use:error={errors?.minBurnAmount}
+      placeholder="No minimum"
+      pattern={amountPattern.source}
+    />
+  </label>
 </section>
 
 <RestrictionsSection bind:restrictions={opts.restrictions} />

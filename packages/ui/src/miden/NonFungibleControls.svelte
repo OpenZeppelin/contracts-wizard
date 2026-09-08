@@ -94,6 +94,16 @@
         Privileged accounts will be able to pause minting, burning and transfers. Useful for emergency response.
       </HelpTooltip>
     </label>
+
+    <label class:checked={opts.switchablePolicies}>
+      <input type="checkbox" bind:checked={opts.switchablePolicies} />
+      Switchable Policies
+      <HelpTooltip>
+        The other standard mint, burn, send and receive policies are registered as allowed alternatives, so privileged
+        accounts will be able to switch the active policies after deployment. Installs the allowlist and blocklist
+        managers and enables asset callbacks.
+      </HelpTooltip>
+    </label>
   </div>
 </section>
 

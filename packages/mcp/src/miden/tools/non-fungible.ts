@@ -25,6 +25,7 @@ export function registerMidenNonFungible(server: McpServer): RegisteredTool {
       burnable,
       pausable,
       restrictions,
+      switchablePolicies,
       access,
       info,
     }) => {
@@ -38,6 +39,7 @@ export function registerMidenNonFungible(server: McpServer): RegisteredTool {
         burnable,
         pausable,
         restrictions,
+        switchablePolicies,
         access,
         info,
       };

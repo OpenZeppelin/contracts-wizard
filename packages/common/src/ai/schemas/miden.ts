@@ -16,6 +16,7 @@ export const midenCommonSchema = {
     .or(z.literal('blocklist'))
     .optional()
     .describe(midenCommonDescriptions.restrictions),
+  switchablePolicies: z.boolean().optional().describe(midenCommonDescriptions.switchablePolicies),
   access: z
     .literal(false)
     .or(z.literal('ownable'))
@@ -41,7 +42,13 @@ export const midenFungibleSchema = {
   externalLink: z.string().optional().describe(midenFungibleDescriptions.externalLink),
   updatableMetadata: z.boolean().optional().describe(midenCommonDescriptions.updatableMetadata),
   updatableMaxSupply: z.boolean().optional().describe(midenFungibleDescriptions.updatableMaxSupply),
-  ...midenCommonSchema,
+  burnable: midenCommonSchema.burnable,
+  minBurnAmount: z.string().optional().describe(midenFungibleDescriptions.minBurnAmount),
+  pausable: midenCommonSchema.pausable,
+  restrictions: midenCommonSchema.restrictions,
+  switchablePolicies: midenCommonSchema.switchablePolicies,
+  access: midenCommonSchema.access,
+  info: midenCommonSchema.info,
 } as const satisfies z.ZodRawShape;
 
 export const midenNonFungibleSchema = {

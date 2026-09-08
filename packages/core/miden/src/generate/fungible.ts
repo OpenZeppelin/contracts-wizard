@@ -16,8 +16,10 @@ const blueprint = {
   updatableMetadata: booleans,
   updatableMaxSupply: booleans,
   burnable: booleans,
+  minBurnAmount: ['', '10'],
   pausable: booleans,
   restrictions: restrictionsOptions,
+  switchablePolicies: booleans,
   access: accessOptions,
   info: infoOptions,
 };

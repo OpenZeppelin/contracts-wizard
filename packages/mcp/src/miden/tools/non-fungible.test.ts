@@ -49,6 +49,7 @@ test('all', async t => {
     burnable: false,
     pausable: true,
     restrictions: 'allowlist',
+    switchablePolicies: true,
     access: 'ownable',
     info: {
       license: 'MIT',

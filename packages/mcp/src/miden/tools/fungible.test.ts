@@ -49,9 +49,11 @@ test('all', async t => {
     externalLink: 'https://example.com',
     updatableMetadata: true,
     updatableMaxSupply: true,
-    burnable: false,
+    burnable: true,
+    minBurnAmount: '10',
     pausable: true,
     restrictions: 'blocklist',
+    switchablePolicies: true,
     access: 'roles',
     info: {
       license: 'MIT',
@@ -59,6 +61,16 @@ test('all', async t => {
     },
   };
   assertHasAllSupportedFields(t, params);
+  await assertAPIEquivalence(t, params, fungible.print);
+});
+
+test('owner-only burning', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    burnable: false,
+    access: 'ownable',
+  };
   await assertAPIEquivalence(t, params, fungible.print);
 });
 

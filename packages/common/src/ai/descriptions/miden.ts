@@ -21,6 +21,8 @@ export const midenCommonDescriptions = {
   logoUri: 'An optional URI of the asset logo, at most 195 bytes.',
   updatableMetadata:
     'Whether privileged accounts can update the description, logo URI and link of the asset after deployment.',
+  switchablePolicies:
+    'Whether the other standard mint, burn, send and receive policies are registered as allowed alternatives, so that privileged accounts can switch the active policies after deployment. Installs the allowlist and blocklist managers and enables asset callbacks.',
 };
 
 export const midenFungibleDescriptions = {
@@ -28,6 +30,8 @@ export const midenFungibleDescriptions = {
   maxSupply: 'The maximum number of tokens that can ever be minted, in whole tokens. Defaults to 1000000000.',
   externalLink: 'An optional link to more information about the token, at most 195 bytes.',
   updatableMaxSupply: 'Whether privileged accounts can update the maximum supply after deployment.',
+  minBurnAmount:
+    'An optional minimum amount of tokens that must be burned at once, in whole tokens. Requires the token to be burnable by its holders. Privileged accounts can update the minimum after deployment.',
 };
 
 export const midenNonFungibleDescriptions = {

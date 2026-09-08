@@ -105,6 +105,38 @@ testFungible('fungible roles pausable allowlist', {
   restrictions: 'allowlist',
 });
 
+testFungible('fungible min burn amount', {
+  minBurnAmount: '10',
+});
+
+testFungible('fungible min burn amount ownable', {
+  decimals: '2',
+  minBurnAmount: '0.5',
+  access: 'ownable',
+});
+
+testFungible('fungible switchable policies', {
+  switchablePolicies: true,
+});
+
+testFungible('fungible switchable policies ownable blocklist', {
+  switchablePolicies: true,
+  access: 'ownable',
+  restrictions: 'blocklist',
+});
+
+testFungible('fungible switchable policies roles min burn amount pausable', {
+  switchablePolicies: true,
+  access: 'roles',
+  minBurnAmount: '1',
+  pausable: true,
+});
+
+testFungible('fungible switchable policies owner-only burning', {
+  switchablePolicies: true,
+  burnable: false,
+});
+
 testFungible('fungible full - complex name', {
   name: 'Custom  $ Token',
   symbol: 'CTK',
@@ -118,6 +150,7 @@ testFungible('fungible full - complex name', {
   burnable: false,
   pausable: true,
   restrictions: 'blocklist',
+  switchablePolicies: true,
   access: 'roles',
   info: {
     securityContact: 'security@example.com',
@@ -134,6 +167,17 @@ testFungibleError('fungible max supply zero', { maxSupply: '0' }, 'maxSupply');
 testFungibleError('fungible max supply too precise', { maxSupply: '1.123', decimals: '2' }, 'maxSupply');
 testFungibleError('fungible max supply too large', { maxSupply: '92233720368', decimals: '8' }, 'maxSupply');
 testFungibleError('fungible description too long', { description: 'x'.repeat(196) }, 'description');
+testFungibleError(
+  'fungible min burn amount exceeds max supply',
+  { maxSupply: '100', minBurnAmount: '101' },
+  'minBurnAmount',
+);
+testFungibleError('fungible min burn amount invalid', { minBurnAmount: 'ten' }, 'minBurnAmount');
+testFungibleError(
+  'fungible min burn amount with owner-only burning',
+  { minBurnAmount: '1', burnable: false },
+  'burnable',
+);
 testFungibleError('fungible multiple errors', { symbol: 'mtk', decimals: '99', logoUri: 'x'.repeat(196) }, 'symbol');
 
 testAPIEquivalence('fungible API default');
@@ -156,7 +200,15 @@ testAPIEquivalence('fungible API full', {
   burnable: false,
   pausable: true,
   restrictions: 'allowlist',
+  switchablePolicies: true,
   access: 'roles',
+});
+
+testAPIEquivalence('fungible API min burn amount', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  minBurnAmount: '25',
+  switchablePolicies: true,
 });
 
 test('fungible API assert defaults', async t => {
@@ -167,4 +219,10 @@ test('fungible API isAccessControlRequired', async t => {
   t.is(fungible.isAccessControlRequired({ burnable: false }), true);
   t.is(fungible.isAccessControlRequired({ burnable: true }), false);
   t.is(fungible.isAccessControlRequired({ pausable: true, restrictions: 'blocklist' }), false);
+  t.is(fungible.isAccessControlRequired({ minBurnAmount: '10', switchablePolicies: true }), false);
+});
+
+test('fungible zero or empty min burn amount means no minimum', async t => {
+  t.is(fungible.print({ name: 'MyToken', symbol: 'MTK', minBurnAmount: '0' }), fungible.print());
+  t.is(fungible.print({ name: 'MyToken', symbol: 'MTK', minBurnAmount: ' ' }), fungible.print());
 });

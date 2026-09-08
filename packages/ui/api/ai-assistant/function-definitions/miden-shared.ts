@@ -12,6 +12,7 @@ type MidenSharedOptions = MidenCommonContractOptions & {
   burnable?: boolean;
   pausable?: boolean;
   restrictions?: Restrictions;
+  switchablePolicies?: boolean;
   description?: string;
   logoUri?: string;
   updatableMetadata?: boolean;
@@ -42,6 +43,11 @@ export const midenCommonFunctionDescription = {
       { type: 'string', enum: extractStringEnumValues<Restrictions>()(['allowlist', 'blocklist']) },
     ],
     description: midenCommonDescriptions.restrictions,
+  },
+
+  switchablePolicies: {
+    type: 'boolean',
+    description: midenCommonDescriptions.switchablePolicies,
   },
 
   description: {

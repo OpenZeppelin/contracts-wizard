@@ -100,6 +100,23 @@ testNonFungible('non-fungible roles pausable blocklist', {
   burnable: false,
 });
 
+testNonFungible('non-fungible switchable policies', {
+  switchablePolicies: true,
+});
+
+testNonFungible('non-fungible switchable policies roles allowlist pausable', {
+  switchablePolicies: true,
+  access: 'roles',
+  restrictions: 'allowlist',
+  pausable: true,
+});
+
+testNonFungible('non-fungible switchable policies ownable owner-only burning', {
+  switchablePolicies: true,
+  access: 'ownable',
+  burnable: false,
+});
+
 testNonFungible('non-fungible full - complex name', {
   name: 'Custom  $ Collection',
   symbol: 'CC',
@@ -110,6 +127,7 @@ testNonFungible('non-fungible full - complex name', {
   burnable: false,
   pausable: true,
   restrictions: 'allowlist',
+  switchablePolicies: true,
   access: 'roles',
   info: {
     securityContact: 'security@example.com',
@@ -138,6 +156,7 @@ testAPIEquivalence('non-fungible API full', {
   burnable: false,
   pausable: true,
   restrictions: 'blocklist',
+  switchablePolicies: true,
   access: 'ownable',
 });
 

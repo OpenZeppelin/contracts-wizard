@@ -802,6 +802,26 @@ test('miden-fungible: basic', t => {
   t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST' }));
 });
 
+test('miden-fungible: min burn amount and switchable policies', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    minBurnAmount: '10',
+    switchablePolicies: true,
+  };
+  const output = run(
+    'miden-fungible',
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--minBurnAmount',
+    opts.minBurnAmount,
+    '--switchablePolicies',
+  );
+  t.is(output, midenFungible.print(opts));
+});
+
 test('miden-fungible: most options', t => {
   const opts = {
     name: 'TestToken',
@@ -816,6 +836,7 @@ test('miden-fungible: most options', t => {
     burnable: false,
     pausable: true,
     restrictions: 'blocklist' as const,
+    switchablePolicies: true,
     access: 'roles' as const,
   };
   const output = run(
@@ -841,6 +862,7 @@ test('miden-fungible: most options', t => {
     '--pausable',
     '--restrictions',
     opts.restrictions,
+    '--switchablePolicies',
     '--access',
     opts.access,
   );
@@ -858,6 +880,7 @@ test('miden-non-fungible: most options', t => {
     burnable: false,
     pausable: true,
     restrictions: 'allowlist' as const,
+    switchablePolicies: true,
     access: 'ownable' as const,
   };
   const output = run(
@@ -878,6 +901,7 @@ test('miden-non-fungible: most options', t => {
     '--pausable',
     '--restrictions',
     opts.restrictions,
+    '--switchablePolicies',
     '--access',
     opts.access,
   );

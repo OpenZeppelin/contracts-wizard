@@ -26,8 +26,10 @@ export function registerMidenFungible(server: McpServer): RegisteredTool {
       updatableMetadata,
       updatableMaxSupply,
       burnable,
+      minBurnAmount,
       pausable,
       restrictions,
+      switchablePolicies,
       access,
       info,
     }) => {
@@ -42,8 +44,10 @@ export function registerMidenFungible(server: McpServer): RegisteredTool {
         updatableMetadata,
         updatableMaxSupply,
         burnable,
+        minBurnAmount,
         pausable,
         restrictions,
+        switchablePolicies,
         access,
         info,
       };

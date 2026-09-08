@@ -9,8 +9,15 @@ export interface FaucetFeatures {
   kind: FaucetKind;
   /** Whether any holder can burn the asset by sending it back to the faucet. Otherwise only the owner can. */
   burnable: boolean;
+  /**
+   * Minimum amount that can be burned at once, in token units as displayed in the documentation. Only
+   * applies to fungible tokens; the `MIN_BURN_AMOUNT` constant must have been added when set.
+   */
+  minBurnAmount?: string;
   pausable: boolean;
   restrictions: Restrictions;
+  /** Whether the other standard policies are registered as alternatives that can be activated after deployment. */
+  switchablePolicies: boolean;
   /** Whether the faucet exposes authority-gated metadata setters that are usable after deployment. */
   updatableMetadata: boolean;
 }
@@ -91,46 +98,91 @@ function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFe
   }
 }
 
+/** Whether the allowlist manager component is installed, either for the active policy or as a reserved alternative. */
+function hasAllowlist(features: FaucetFeatures): boolean {
+  return features.restrictions === 'allowlist' || features.switchablePolicies;
+}
+
+/** Whether the blocklist manager component is installed, either for the active policy or as a reserved alternative. */
+function hasBlocklist(features: FaucetFeatures): boolean {
+  return features.restrictions === 'blocklist' || features.switchablePolicies;
+}
+
+/** Whether the minimum burn amount policy is installed, either as the active burn policy or as a reserved alternative. */
+function hasMinBurnAmount(features: FaucetFeatures): boolean {
+  return features.minBurnAmount !== undefined || (features.switchablePolicies && features.kind === 'Fungible');
+}
+
 function addTokenPolicyManager(c: ContractBuilder, access: Access, features: FaucetFeatures): void {
-  const { kind, burnable, restrictions } = features;
+  const { kind, burnable, minBurnAmount, restrictions, switchablePolicies } = features;
+  const network = access !== false;
   const nouns = assetNoun(kind);
 
   c.addUseClause('miden_standards::account::policies', 'TokenPolicyManager');
   c.addUseClause('miden_standards::account::policies', 'MintPolicy');
   c.addUseClause('miden_standards::account::policies', 'BurnPolicy');
 
-  const mintPolicy = access === false ? 'MintPolicy::allow_all()' : 'MintPolicy::owner_only()';
+  const setup: Lines[] = [];
+
+  // Mint policies. The owner-only policy checks the `Ownable2Step` owner, which user accounts do not have.
+  const activeMint = network ? 'MintPolicy::owner_only()' : 'MintPolicy::allow_all()';
+  const mintLines: string[] = [`.active_mint_policy(${activeMint})`];
+  if (switchablePolicies && network) {
+    mintLines.push('.allowed_mint_policy(MintPolicy::allow_all())');
+  }
   const mintDoc =
     access === false
       ? `Minting: every mint is accepted once the transaction is authenticated by the signature of the key holder.`
       : `Minting: only the owner can mint, by sending a MINT note to the faucet.`;
 
-  const burnPolicy = burnable ? 'BurnPolicy::allow_all()' : 'BurnPolicy::owner_only()';
-  const burnDoc = burnable
-    ? `Burning: any holder can burn ${nouns} by sending them back to the faucet in a BURN note.`
-    : `Burning: only the owner can burn ${nouns}, by sending them back to the faucet in a BURN note.`;
+  // Burn policies.
+  let activeBurn: string;
+  let burnDoc: string;
+  if (minBurnAmount !== undefined) {
+    c.addUseClause('miden_protocol::asset', 'AssetAmount');
+    setup.push('let min_burn_amount = AssetAmount::new(Self::MIN_BURN_AMOUNT).expect("valid amount");');
+    activeBurn = 'BurnPolicy::min_burn_amount(min_burn_amount)';
+    burnDoc =
+      `Burning: any holder can burn ${nouns} by sending them back to the faucet in a BURN note, ` +
+      `in amounts of at least ${minBurnAmount} ${nouns}.`;
+  } else if (burnable) {
+    activeBurn = 'BurnPolicy::allow_all()';
+    burnDoc = `Burning: any holder can burn ${nouns} by sending them back to the faucet in a BURN note.`;
+  } else {
+    activeBurn = 'BurnPolicy::owner_only()';
+    burnDoc = `Burning: only the owner can burn ${nouns}, by sending them back to the faucet in a BURN note.`;
+  }
+  const burnLines: string[] = [`.active_burn_policy(${activeBurn})`];
+  if (switchablePolicies) {
+    if (activeBurn !== 'BurnPolicy::allow_all()') {
+      burnLines.push('.allowed_burn_policy(BurnPolicy::allow_all())');
+    }
+    if (network && activeBurn !== 'BurnPolicy::owner_only()') {
+      burnLines.push('.allowed_burn_policy(BurnPolicy::owner_only())');
+    }
+    if (kind === 'Fungible' && minBurnAmount === undefined) {
+      c.addUseClause('miden_protocol::asset', 'AssetAmount');
+      burnLines.push('.allowed_burn_policy(BurnPolicy::min_burn_amount(AssetAmount::ZERO))');
+    }
+  }
 
-  const chain: Lines[] = [`.active_mint_policy(${mintPolicy})`, `.active_burn_policy(${burnPolicy})`];
-
+  // Transfer policies, registered for both the send and the receive side.
+  const transferLines: string[] = [];
+  let activeTransfer: string | undefined;
   let transferDoc: string;
   switch (restrictions) {
     case false:
-      transferDoc = 'Transfers: unrestricted, so asset callbacks are disabled for the faucet.';
+      transferDoc = switchablePolicies
+        ? 'Transfers: unrestricted; asset callbacks are enabled so that an allowlist or a blocklist can be ' +
+          'activated later.'
+        : 'Transfers: unrestricted, so asset callbacks are disabled for the faucet.';
       break;
     case 'allowlist':
-      c.addUseClause('miden_standards::account::policies', 'TransferPolicy');
-      chain.push(
-        '.active_send_policy(TransferPolicy::empty_basic_allowlist())',
-        '.active_receive_policy(TransferPolicy::empty_basic_allowlist())',
-      );
+      activeTransfer = 'empty_basic_allowlist';
       transferDoc = `Transfers: only accounts on the allowlist can send or receive the ${nouns}.`;
       break;
     case 'blocklist':
-      c.addUseClause('miden_standards::account::policies', 'TransferPolicy');
-      chain.push(
-        '.active_send_policy(TransferPolicy::empty_basic_blocklist())',
-        '.active_receive_policy(TransferPolicy::empty_basic_blocklist())',
-      );
+      activeTransfer = 'empty_basic_blocklist';
       transferDoc = `Transfers: accounts on the blocklist can neither send nor receive the ${nouns}.`;
       break;
     default: {
@@ -138,20 +190,64 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
       throw new Error('Unknown value for `restrictions`');
     }
   }
-  chain.push('.build()');
+  if (activeTransfer !== undefined) {
+    transferLines.push(
+      `.active_send_policy(TransferPolicy::${activeTransfer}())`,
+      `.active_receive_policy(TransferPolicy::${activeTransfer}())`,
+    );
+  }
+  if (switchablePolicies) {
+    for (const alternative of ['allow_all', 'empty_basic_allowlist', 'empty_basic_blocklist']) {
+      if (alternative !== activeTransfer) {
+        transferLines.push(
+          `.allowed_send_policy(TransferPolicy::${alternative}())`,
+          `.allowed_receive_policy(TransferPolicy::${alternative}())`,
+        );
+      }
+    }
+  }
+  if (transferLines.length > 0) {
+    c.addUseClause('miden_standards::account::policies', 'TransferPolicy');
+  }
+
+  const comments = [
+    ...paragraph('Returns the token policy manager gating minting, burning and transfers.', 1),
+    '',
+    ...bullet(mintDoc, 1),
+    ...bullet(burnDoc, 1),
+    ...bullet(transferDoc, 1),
+  ];
+  if (switchablePolicies) {
+    const switchable: string[] = [];
+    if (mintLines.length > 1) {
+      switchable.push('mint');
+    }
+    if (burnLines.length > 1) {
+      switchable.push('burn');
+    }
+    switchable.push('send', 'receive');
+    const kinds = `${switchable.slice(0, -1).join(', ')} and ${switchable[switchable.length - 1]}`;
+    comments.push(
+      '',
+      ...paragraph(
+        `The other standard policies are registered as allowed alternatives, so the active ${kinds} policies ` +
+          'can be switched after deployment' +
+          (network ? ' by sending a policy config note.' : ' by the key holder.'),
+        1,
+      ),
+    );
+  }
+
+  if (setup.length > 0) {
+    setup.push('');
+  }
 
   c.addFunction({
     name: 'token_policy_manager',
-    comments: [
-      ...paragraph('Returns the token policy manager gating minting, burning and transfers.', 1),
-      '',
-      ...bullet(mintDoc, 1),
-      ...bullet(burnDoc, 1),
-      ...bullet(transferDoc, 1),
-    ],
+    comments,
     args: [],
     returns: 'TokenPolicyManager',
-    code: ['TokenPolicyManager::builder()', chain],
+    code: [...setup, 'TokenPolicyManager::builder()', [...mintLines, ...burnLines, ...transferLines, '.build()']],
     pub: true,
   });
 }
@@ -163,21 +259,13 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
 function featureComponents(c: ContractBuilder, features: FaucetFeatures): string[] {
   const components: string[] = [];
 
-  switch (features.restrictions) {
-    case false:
-      break;
-    case 'allowlist':
-      c.addUseClause('miden_standards::account::policies', 'AllowlistManager');
-      components.push('.with_component(AllowlistManager)');
-      break;
-    case 'blocklist':
-      c.addUseClause('miden_standards::account::policies', 'BlocklistManager');
-      components.push('.with_component(BlocklistManager)');
-      break;
-    default: {
-      const _: never = features.restrictions;
-      throw new Error('Unknown value for `restrictions`');
-    }
+  if (hasAllowlist(features)) {
+    c.addUseClause('miden_standards::account::policies', 'AllowlistManager');
+    components.push('.with_component(AllowlistManager)');
+  }
+  if (hasBlocklist(features)) {
+    c.addUseClause('miden_standards::account::policies', 'BlocklistManager');
+    components.push('.with_component(BlocklistManager)');
   }
 
   if (features.pausable) {
@@ -250,31 +338,24 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
     });
   }
 
-  switch (features.restrictions) {
-    case false:
-      break;
-    case 'allowlist':
-      roles.push({
-        constant: 'ALLOWLISTER_ROLE',
-        symbol: 'ALLOWLISTER',
-        variable: 'allowlister',
-        comment: 'Role allowed to add accounts to and remove accounts from the allowlist.',
-        procedureRoots: ['AllowlistManager::allow_account_root()', 'AllowlistManager::disallow_account_root()'],
-      });
-      break;
-    case 'blocklist':
-      roles.push({
-        constant: 'BLOCKLISTER_ROLE',
-        symbol: 'BLOCKLISTER',
-        variable: 'blocklister',
-        comment: 'Role allowed to add accounts to and remove accounts from the blocklist.',
-        procedureRoots: ['BlocklistManager::block_account_root()', 'BlocklistManager::unblock_account_root()'],
-      });
-      break;
-    default: {
-      const _: never = features.restrictions;
-      throw new Error('Unknown value for `restrictions`');
-    }
+  if (hasAllowlist(features)) {
+    roles.push({
+      constant: 'ALLOWLISTER_ROLE',
+      symbol: 'ALLOWLISTER',
+      variable: 'allowlister',
+      comment: 'Role allowed to add accounts to and remove accounts from the allowlist.',
+      procedureRoots: ['AllowlistManager::allow_account_root()', 'AllowlistManager::disallow_account_root()'],
+    });
+  }
+
+  if (hasBlocklist(features)) {
+    roles.push({
+      constant: 'BLOCKLISTER_ROLE',
+      symbol: 'BLOCKLISTER',
+      variable: 'blocklister',
+      comment: 'Role allowed to add accounts to and remove accounts from the blocklist.',
+      procedureRoots: ['BlocklistManager::block_account_root()', 'BlocklistManager::unblock_account_root()'],
+    });
   }
 
   return roles;
@@ -338,19 +419,17 @@ function configNotes(access: Access, features: FaucetFeatures): string[] {
   if (features.pausable) {
     notes.push('PauseConfigNote');
   }
-  switch (features.restrictions) {
-    case false:
-      break;
-    case 'allowlist':
-      notes.push('AllowlistConfigNote');
-      break;
-    case 'blocklist':
-      notes.push('BlocklistConfigNote');
-      break;
-    default: {
-      const _: never = features.restrictions;
-      throw new Error('Unknown value for `restrictions`');
-    }
+  if (hasAllowlist(features)) {
+    notes.push('AllowlistConfigNote');
+  }
+  if (hasBlocklist(features)) {
+    notes.push('BlocklistConfigNote');
+  }
+  if (hasMinBurnAmount(features)) {
+    notes.push('MinBurnAmountConfigNote');
+  }
+  if (features.switchablePolicies) {
+    notes.push('FaucetPolicyConfigNote');
   }
   if (features.updatableMetadata) {
     notes.push('FaucetMetadataConfigNote');
