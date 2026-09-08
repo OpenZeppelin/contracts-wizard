@@ -219,6 +219,22 @@ export interface PremintCalculation {
   decimalPlace: number;
 }
 
+function stripLeadingZeros(value: string): string {
+  let start = 0;
+  while (start < value.length && value[start] === '0') {
+    start += 1;
+  }
+  return value.slice(start);
+}
+
+function stripTrailingZeros(value: string): string {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '0') {
+    end -= 1;
+  }
+  return value.slice(0, end);
+}
+
 export function calculatePremint(amount: string): PremintCalculation | undefined {
   const m = amount.match(premintPattern);
   if (!m) {
@@ -227,8 +243,8 @@ export function calculatePremint(amount: string): PremintCalculation | undefined
     });
   }
 
-  const integer = m[1]?.replace(/^0+/, '') ?? '';
-  const decimals = m[2]?.replace(/0+$/, '') ?? '';
+  const integer = m[1] !== undefined ? stripLeadingZeros(m[1]) : '';
+  const decimals = m[2] !== undefined ? stripTrailingZeros(m[2]) : '';
   const exponent = Number(m[3] ?? 0);
 
   if (Number(integer + decimals) > 0) {

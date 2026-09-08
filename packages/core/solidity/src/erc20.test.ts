@@ -3,7 +3,7 @@ import type { OptionsError } from '.';
 import { erc20 } from '.';
 
 import type { ERC20Options } from './erc20';
-import { buildERC20 } from './erc20';
+import { buildERC20, calculatePremint } from './erc20';
 import { printContract } from './print';
 
 function testERC20(title: string, opts: Partial<ERC20Options>) {
@@ -158,6 +158,12 @@ testPremint(
 );
 testPremint('e notation', '1e59');
 testPremint('e notation arithmetic overflow', '1e60', 'Amount would overflow uint256 after applying decimals');
+
+test('calculatePremint strips redundant zeros', t => {
+  t.deepEqual(calculatePremint('1.5000'), calculatePremint('1.5'));
+  t.deepEqual(calculatePremint('001.5'), calculatePremint('1.5'));
+  t.deepEqual(calculatePremint('0.0'), calculatePremint('0'));
+});
 
 testERC20('erc20 mintable', {
   mintable: true,

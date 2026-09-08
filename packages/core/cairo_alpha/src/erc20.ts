@@ -291,7 +291,7 @@ function addBurnable(c: ContractBuilder) {
   c.addFunction(externalTrait, functions.burn);
 }
 
-export const premintPattern = /^(\d*\.?\d*)$/;
+export const premintPattern = /^\d*(?:\.\d*)?$/;
 
 function addPremint(c: ContractBuilder, amount: string, decimals: bigint) {
   if (amount !== undefined && amount !== '0') {
