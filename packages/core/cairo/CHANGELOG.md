@@ -1,12 +1,6 @@
 # Changelog
 
 
-## 4.1.0 (2026-09-08)
-
-- Cairo: Add ERC20FlashMint extension for the ERC20 token kind. ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
-  - Configurable max flash loan (default or custom cap), flash fee (percent of the loan amount or custom stub), and fee destination (burn or fee receiver).
-  - Add `flashmint` options to the `cairo-erc20` MCP tool and CLI command.
-
 ## 4.0.0 (2026-09-01)
 
 - Cairo: support OpenZeppelin Contracts for Cairo v4.0.1. ([#861](https://github.com/OpenZeppelin/contracts-wizard/pull/861))
