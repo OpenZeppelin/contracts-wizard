@@ -384,14 +384,20 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
     });
   }
 
+  // Every network faucet installs the constant fee manager, so the fee schedule is always role-gated.
+  roles.push({
+    constant: 'FEE_MANAGER_ROLE',
+    symbol: 'FEE_MANAGER',
+    variable: 'fee_manager',
+    comment: 'Role allowed to change the fee charged for each note script the faucet consumes.',
+    procedureRoots: ['ConstantFeeManager::set_note_fee_root()'],
+  });
+
   return roles;
 }
 
 function addProcedureRoles(c: ContractBuilder, features: FaucetFeatures): void {
   const roles = roleAssignments(features);
-  if (roles.length === 0) {
-    return;
-  }
 
   c.addUseClause('std::collections', 'BTreeMap');
   c.addUseClause('miden_protocol::account', 'AccountProcedureRoot');
@@ -460,6 +466,8 @@ function configNotes(access: Access, features: FaucetFeatures): string[] {
   if (features.updatableMetadata) {
     notes.push('FaucetMetadataConfigNote');
   }
+  // The fee schedule starts at zero and is adjusted after deployment through this note.
+  notes.push('ConstantFeePolicyConfigNote');
   return notes;
 }
 
@@ -504,14 +512,15 @@ function addFeePolicyManager(c: ContractBuilder): void {
     name: 'fee_policy_manager',
     comments: [
       ...paragraph(
-        'Returns the fee policy manager charging network transaction fees in the asset issued by the faucet ' +
-          '`fee_faucet_id`.',
+        'Returns the fee policy manager pricing the notes the faucet consumes, in the asset issued by the ' +
+          'faucet `fee_faucet_id`.',
         1,
       ),
       '',
       ...paragraph(
-        'Every allowlisted note is scheduled with a zero fee, so consuming the notes of the faucet is free on ' +
-          'fee-free chains. Adjust the schedule to charge a fee per note script.',
+        'Every allowlisted note is scheduled with a zero fee: senders prepay nothing, and the faucet covers the ' +
+          'network fee of each note it consumes from its own vault (nothing on fee-free chains). Fees can be ' +
+          'scheduled per note script after deployment by sending ConstantFeePolicy config notes.',
         1,
       ),
     ],
@@ -542,6 +551,7 @@ function addNetworkAccountCreation(c: ContractBuilder, access: Exclude<Access, f
   c.addUseClause('miden_protocol::errors', 'AccountError');
   c.addUseClause('miden_standards::account::access', 'AccessControl');
   c.addUseClause('miden_standards::account::auth', 'NetworkAccount');
+  c.addUseClause('miden_standards::account::fees', 'ConstantFeeManager');
 
   const authority = access === 'ownable' ? 'owner' : 'admin';
 
@@ -564,17 +574,11 @@ function addNetworkAccountCreation(c: ContractBuilder, access: Exclude<Access, f
     case 'roles': {
       summary = 'Creates the faucet as a public network account administered by `admin`.';
       c.addUseClause('miden_standards::account::access', 'Ownable2Step');
-      const hasRoles = roleAssignments(features).length > 0;
-      if (hasRoles) {
-        setup.push(
-          'let access_control = AccessControl::Rbac {',
-          ['admin,', 'procedure_roles: Self::procedure_roles(),'],
-          '};',
-        );
-      } else {
-        c.addUseClause('std::collections', 'BTreeMap');
-        setup.push('let access_control = AccessControl::Rbac {', ['admin,', 'procedure_roles: BTreeMap::new(),'], '};');
-      }
+      setup.push(
+        'let access_control = AccessControl::Rbac {',
+        ['admin,', 'procedure_roles: Self::procedure_roles(),'],
+        '};',
+      );
       accessControlComponents.push('.with_components(access_control)', '.with_component(Ownable2Step::new(admin))');
       authorityDoc.push(
         ...bullet(
@@ -600,6 +604,7 @@ function addNetworkAccountCreation(c: ContractBuilder, access: Exclude<Access, f
     ...accessControlComponents,
     '.with_components(Self::token_policy_manager())',
     ...featureComponents(c, features),
+    '.with_component(ConstantFeeManager::for_basic_constant_fee_policy())',
     '.build()',
   ];
 
@@ -618,7 +623,12 @@ function addNetworkAccountCreation(c: ContractBuilder, access: Exclude<Access, f
       '',
       ...bullet(INIT_SEED_DOC, 1),
       ...authorityDoc,
-      ...bullet('`fee_faucet_id`: ID of the faucet issuing the asset in which network transaction fees are paid.', 1),
+      ...bullet(
+        '`fee_faucet_id`: ID of the faucet issuing the native fee asset of the chain (see ' +
+          '`ProtocolConfig::fee_asset_id`). The faucet prices the notes it consumes and pays its own network ' +
+          'transaction fees in this asset.',
+        1,
+      ),
     ],
     args: [
       { name: 'init_seed', type: '[u8; 32]' },
