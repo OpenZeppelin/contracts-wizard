@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Add ERC20FlashMint extension ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
-- Improve performance of premint amount parsing.
+- Improve performance of premint amount parsing ([#872](https://github.com/OpenZeppelin/contracts-wizard/pull/872))
 
 ## 4.0.1 (2026-08-31)
 
