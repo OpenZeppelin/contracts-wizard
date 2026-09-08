@@ -115,12 +115,15 @@ function printUseClauseGroup(containerPath: string, names: string[]): string[] {
     return [singleLine];
   }
 
-  // Mixed layout: fill each line with as many names as fit.
+  // Mixed layout: fill each line with as many names as fit. `rustfmt` gives the block-indented list one column less
+  // than the line width, and does not count the trailing comma of the last name when checking whether it fits.
   const lines = [`use ${containerPath}::{`];
   let current = '';
-  for (const name of names) {
+  for (const [i, name] of names.entries()) {
     const item = `${name},`;
-    if (current.length > 0 && INDENT.length + current.length + 1 + item.length > MAX_LINE_WIDTH) {
+    const trailingComma = i === names.length - 1 ? 1 : 0;
+    const width = INDENT.length + current.length + 1 + item.length - trailingComma;
+    if (current.length > 0 && width > MAX_LINE_WIDTH - 1) {
       lines.push(INDENT + current);
       current = item;
     } else {

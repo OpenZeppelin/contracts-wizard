@@ -422,6 +422,13 @@ function addProcedureRoles(c: ContractBuilder, features: FaucetFeatures): void {
       return `(${root}, ${value}),`;
     }),
   );
+  // `rustfmt` keeps a single entry on the same line as the call when it fits within the line width at
+  // the indentation of a function body (8 columns).
+  const [firstEntry] = entries;
+  const singleLine =
+    entries.length === 1 && firstEntry !== undefined ? `BTreeMap::from([${firstEntry.slice(0, -1)}])` : undefined;
+  const roleMap: Lines[] =
+    singleLine !== undefined && singleLine.length <= 92 ? [singleLine] : ['BTreeMap::from([', entries, '])'];
 
   c.addFunction({
     name: 'procedure_roles',
@@ -435,7 +442,7 @@ function addProcedureRoles(c: ContractBuilder, features: FaucetFeatures): void {
     ],
     args: [],
     returns: 'BTreeMap<AccountProcedureRoot, RoleSymbol>',
-    code: [...variables, '', 'BTreeMap::from([', entries, '])'],
+    code: [...variables, '', ...roleMap],
     pub: true,
   });
 }

@@ -89,8 +89,6 @@ jobs:
             variant: compile
           - package: confidential
             variant: compile
-          - package: miden
-            variant: compile
           - package: stylus
             variant: compile
           - package: uniswap-hooks
@@ -135,6 +133,28 @@ jobs:
           toolchain: stable, nightly
           components: clippy, rustfmt, llvm-tools-preview
           target: wasm32v1-none
+
+      # ----------------------------
+      # Miden compile setup
+
+      - name: Cache Rust dependencies
+        if: matrix.package == 'miden' && matrix.variant == 'compile'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            packages/core/miden/target/
+          key: cargo-${{ matrix.package }}-${{ hashFiles('packages/core/miden/src/utils/compile-test.ts') }}
+
+      - name: Set up rust toolchain
+        if: matrix.package == 'miden' && matrix.variant == 'compile'
+        uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c # v1.15.2
+        with:
+          toolchain: 1.98.1
+          components: rustfmt
+          cache: false
 
       # ----------------------------
       - name: Compile TypeScript
