@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.6.5 (2026-09-08)
+
+- Improve performance of premint amount parsing. ([#872](https://github.com/OpenZeppelin/contracts-wizard/pull/872))
+
 ## 0.6.4 (2026-08-17)
 
 - Add Stellar `Account` contract type, a smart account combining Delegated, Ed25519 and WebAuthn (passkey) signers with an optional simple or weighted threshold policy, and support for execution entry point and upgradeable options. ([#826](https://github.com/OpenZeppelin/contracts-wizard/pull/826))
