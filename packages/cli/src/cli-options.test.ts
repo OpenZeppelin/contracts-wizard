@@ -8,6 +8,7 @@ import {
   erc721 as cairoErc721,
   erc1155 as cairoErc1155,
   erc6909 as cairoErc6909,
+  flashMintDefaults as cairoFlashMintDefaults,
   account as cairoAccount,
   multisig as cairoMultisig,
   governor as cairoGovernor,
@@ -398,6 +399,47 @@ test('cairo-erc20: access ownable without dar delays', t => {
     },
   };
   const output = run('cairo-erc20', '--name', opts.name, '--symbol', opts.symbol, '--access.type', 'ownable');
+  t.is(output, cairoErc20.print(opts));
+});
+
+test('cairo-erc20: flash mint with defaults', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    flashmint: { ...cairoFlashMintDefaults, enabled: true },
+  };
+  const output = run('cairo-erc20', '--name', opts.name, '--symbol', opts.symbol, '--flashmint.enabled');
+  t.is(output, cairoErc20.print(opts));
+});
+
+test('cairo-erc20: flash mint with custom config', t => {
+  const opts = {
+    name: 'TestToken',
+    symbol: 'TST',
+    flashmint: {
+      enabled: true,
+      maxAmount: '1000000',
+      feeMode: 'percent' as const,
+      feePercent: '0.5',
+      feeDestination: 'fee_receiver' as const,
+    },
+  };
+  const output = run(
+    'cairo-erc20',
+    '--name',
+    opts.name,
+    '--symbol',
+    opts.symbol,
+    '--flashmint.enabled',
+    '--flashmint.maxAmount',
+    opts.flashmint.maxAmount,
+    '--flashmint.feeMode',
+    opts.flashmint.feeMode,
+    '--flashmint.feePercent',
+    opts.flashmint.feePercent,
+    '--flashmint.feeDestination',
+    opts.flashmint.feeDestination,
+  );
   t.is(output, cairoErc20.print(opts));
 });
 

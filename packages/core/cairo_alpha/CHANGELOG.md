@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add ERC20FlashMint extension ([#801](https://github.com/OpenZeppelin/contracts-wizard/pull/801))
+
 ## 4.0.1 (2026-08-31)
 
 - Add ERC6909 contract kind ([#771](https://github.com/OpenZeppelin/contracts-wizard/pull/771))

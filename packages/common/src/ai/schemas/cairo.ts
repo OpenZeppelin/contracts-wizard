@@ -58,6 +58,19 @@ export const cairoERC20Schema = {
   votes: z.boolean().optional().describe(cairoERC20Descriptions.votes),
   appName: z.string().optional().describe(cairoCommonDescriptions.appName),
   appVersion: z.string().optional().describe(cairoCommonDescriptions.appVersion),
+  flashmint: z
+    .object({
+      enabled: z.boolean().describe(cairoERC20Descriptions.flashMintEnabled),
+      maxAmount: z.string().default('max').describe(cairoERC20Descriptions.flashMintMaxAmount),
+      feeMode: z.enum(['percent', 'custom']).default('percent').describe(cairoERC20Descriptions.flashMintFeeMode),
+      feePercent: z.string().default('0').describe(cairoERC20Descriptions.flashMintFeePercent),
+      feeDestination: z
+        .enum(['burn', 'fee_receiver'])
+        .default('burn')
+        .describe(cairoERC20Descriptions.flashMintFeeDestination),
+    })
+    .optional()
+    .describe(cairoERC20Descriptions.flashmint),
   ...cairoCommonSchema,
 } as const satisfies z.ZodRawShape;
 

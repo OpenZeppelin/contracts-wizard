@@ -8,6 +8,7 @@ import type { KindSubset } from './generate/sources';
 import type { AccessSubset } from './set-access-control';
 import type { UpgradeableSubset } from './set-upgradeable';
 import type { RoyaltyInfoSubset } from './set-royalty-info';
+import type { FlashMintSubset } from './erc20';
 import type { GenericOptions } from './build-generic';
 import type { MacrosSubset } from './set-macros';
 import { generateSources, writeGeneratedSources } from './generate/sources';
@@ -20,7 +21,7 @@ interface Context {
 const test = _test as TestFn<Context>;
 
 test.serial('erc20 results generated', async ctx => {
-  await testGenerate({ ctx, kind: 'ERC20', access: 'all' });
+  await testGenerate({ ctx, kind: 'ERC20', access: 'all', flashmint: 'all' });
 });
 
 test.serial('erc721 results generated', async ctx => {
@@ -61,9 +62,10 @@ async function testGenerate(params: {
   access?: AccessSubset;
   upgradeable?: UpgradeableSubset;
   royaltyInfo?: RoyaltyInfoSubset;
+  flashmint?: FlashMintSubset;
   macros?: MacrosSubset;
 }) {
-  const { ctx, kind, access, upgradeable, royaltyInfo, macros } = params;
+  const { ctx, kind, access, upgradeable, royaltyInfo, flashmint, macros } = params;
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-cairo-alpha');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
   await writeGeneratedSources({
@@ -74,6 +76,7 @@ async function testGenerate(params: {
     access: access || 'all',
     upgradeable: upgradeable || 'all',
     royaltyInfo: royaltyInfo || 'all',
+    flashmint: flashmint || 'all',
     macros: macros || 'all',
     logsEnabled: false,
   });
@@ -114,6 +117,7 @@ test('is access control required', async t => {
     access: 'all',
     upgradeable: 'all',
     royaltyInfo: 'all',
+    flashmint: 'all',
     macros: 'none',
   });
   for (const contract of allSources) {

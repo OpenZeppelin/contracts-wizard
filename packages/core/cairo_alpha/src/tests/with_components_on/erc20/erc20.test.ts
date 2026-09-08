@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import type { ERC20Options } from '../../../erc20';
-import { buildERC20, getInitialSupply, defaults } from '../../../erc20';
+import { buildERC20, defaults, flashMintDefaults, getInitialSupply } from '../../../erc20';
 import { printContract } from '../../../print';
 import { AccessControl, darDefaultOpts, darCustomOpts } from '../../../set-access-control';
 
@@ -69,6 +69,128 @@ testERC20('erc20 burnable pausable', {
 
 testERC20('erc20 wrapper', {
   wrapper: true,
+});
+
+testERC20('erc20 flash mint', {
+  flashmint: { ...flashMintDefaults, enabled: true },
+});
+
+testERC20('erc20 flash mint with custom max', {
+  flashmint: { ...flashMintDefaults, enabled: true, maxAmount: '1000000' },
+});
+
+testERC20('erc20 flash mint with percent fee', {
+  flashmint: { ...flashMintDefaults, enabled: true, feeMode: 'percent', feePercent: '5' },
+});
+
+testERC20('erc20 flash mint with fractional percent fee', {
+  flashmint: { ...flashMintDefaults, enabled: true, feeMode: 'percent', feePercent: '0.0013725' },
+});
+
+testERC20('erc20 flash mint with percent fee and fee receiver', {
+  flashmint: {
+    ...flashMintDefaults,
+    enabled: true,
+    feeMode: 'percent',
+    feePercent: '5',
+    feeDestination: 'fee_receiver',
+  },
+});
+
+testERC20('erc20 flash mint with custom fee impl', {
+  flashmint: { ...flashMintDefaults, enabled: true, feeMode: 'custom' },
+});
+
+testERC20('erc20 flash mint with all custom config', {
+  flashmint: {
+    enabled: true,
+    maxAmount: '1000000',
+    feeMode: 'percent',
+    feePercent: '5',
+    feeDestination: 'fee_receiver',
+  },
+});
+
+testERC20('erc20 flash mint with max amount of zero', {
+  flashmint: { ...flashMintDefaults, enabled: true, maxAmount: '0' },
+});
+
+test('erc20 flash mint, max amount empty string', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: { ...flashMintDefaults, enabled: true, maxAmount: '' },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintMaxAmount, 'Must be "max" or a non-negative number');
+});
+
+test('erc20 flash mint, invalid max amount', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: { ...flashMintDefaults, enabled: true, maxAmount: 'abc' },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintMaxAmount, 'Must be "max" or a non-negative number');
+});
+
+test('erc20 flash mint, invalid percent fee', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: { ...flashMintDefaults, enabled: true, feeMode: 'percent', feePercent: 'abc' },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintFeePercent, 'Must be a number between 0 and 100');
+});
+
+test('erc20 flash mint, percent fee out of range', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: { ...flashMintDefaults, enabled: true, feeMode: 'percent', feePercent: '100.5' },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintFeePercent, 'Must be a number between 0 and 100');
+});
+
+test('erc20 flash mint, max amount overflows u256', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      decimals: '0',
+      flashmint: {
+        ...flashMintDefaults,
+        enabled: true,
+        // 2^256 — one past u256::MAX with decimals: '0' so getInitialSupply preserves the value.
+        maxAmount: '115792089237316195423570985008687907853269984665640564039457584007913129639936',
+      },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintMaxAmount, 'Value is greater than u256 max value');
+});
+
+test('erc20 flash mint, percent denominator overflows u256', async t => {
+  const error = t.throws(() =>
+    buildERC20({
+      name: 'MyToken',
+      symbol: 'MTK',
+      flashmint: {
+        ...flashMintDefaults,
+        enabled: true,
+        feeMode: 'percent',
+        // 77 fractional digits — 100 * 10^77 > u256::MAX.
+        feePercent: '0.' + '0'.repeat(76) + '1',
+      },
+    }),
+  );
+  t.is((error as OptionsError).messages.flashMintFeePercent, 'Value is greater than u256 max value');
 });
 
 testERC20('erc20 preminted', {

@@ -1,4 +1,5 @@
-import type { ERC20Options } from '../erc20';
+import type { ERC20Options, FlashMintSubset } from '../erc20';
+import { resolveFlashMintOptionsSubset } from '../erc20';
 import type { AccessSubset } from '../set-access-control';
 import { resolveAccessControlOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
@@ -13,6 +14,7 @@ const booleans = [true, false];
 type GeneratorOptions = {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 };
 
@@ -29,6 +31,7 @@ function prepareBlueprint(opts: GeneratorOptions) {
     votes: booleans,
     appName: ['MyApp'],
     appVersion: ['v1'],
+    flashmint: resolveFlashMintOptionsSubset(opts.flashmint),
     access: resolveAccessControlOptions(opts.access),
     upgradeable: resolveUpgradeableOptionsSubset(opts.upgradeable),
     info: infoOptions,
