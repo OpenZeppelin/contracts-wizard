@@ -91,7 +91,9 @@
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip>
-        Privileged accounts will be able to pause minting, burning and transfers. Useful for emergency response.
+        Privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when an
+        allowlist or blocklist is active. Unrestricted transfers are never checked against the faucet. Useful for
+        emergency response.
       </HelpTooltip>
     </label>
 

@@ -134,8 +134,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
       type: 'u64',
       value: toRustIntegerLiteral(minBurnAmount),
       comments: paragraph(
-        `Minimum amount that can be burned at once, in base units (${allOpts.minBurnAmount.trim()} tokens with ` +
-          `${decimals} decimals).`,
+        `Minimum amount that can be burned at once, in base units (${describeAmount(allOpts.minBurnAmount, decimals)}).`,
         1,
       ),
     });
@@ -154,6 +153,14 @@ export function buildFungible(opts: FungibleOptions): Contract {
   setInfo(c, allOpts.info);
 
   return c;
+}
+
+/** Describes a validated token amount for documentation, e.g. `1000 tokens with 8 decimals`. */
+function describeAmount(amount: string, decimals: number): string {
+  const trimmed = amount.trim();
+  const tokens = Number(trimmed) === 1 ? 'token' : 'tokens';
+  const places = decimals === 1 ? 'decimal' : 'decimals';
+  return `${trimmed} ${tokens} with ${decimals} ${places}`;
 }
 
 function validateDecimals(decimals: string): number {
@@ -221,10 +228,7 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
     name: 'MAX_SUPPLY',
     type: 'u64',
     value: toRustIntegerLiteral(maxSupply),
-    comments: paragraph(
-      `Maximum token supply in base units (${opts.maxSupply.trim()} tokens with ${decimals} decimals).`,
-      1,
-    ),
+    comments: paragraph(`Maximum token supply in base units (${describeAmount(opts.maxSupply, decimals)}).`, 1),
   });
 
   const chain: string[] = [

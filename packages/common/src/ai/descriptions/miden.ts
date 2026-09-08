@@ -14,7 +14,7 @@ export const midenCommonDescriptions = {
   burnable:
     'Whether any holder can burn the asset by sending it back to the faucet in a BURN note. Otherwise only the owner can burn, which requires access control.',
   pausable:
-    'Whether privileged accounts will be able to pause minting, burning and transfers of the asset. Useful for emergency response.',
+    'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers of the asset when an allowlist or blocklist is active. Unrestricted transfers are never checked against the faucet. Useful for emergency response.',
   restrictions:
     'Whether to restrict transfers of the asset through the send and receive policies of the faucet: an allowlist only lets accounts on the list send or receive the asset, and a blocklist prevents accounts on the list from sending or receiving it.',
   description: 'An optional description of the asset, at most 195 bytes.',

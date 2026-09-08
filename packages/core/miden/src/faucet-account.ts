@@ -62,6 +62,11 @@ function assetNoun(kind: FaucetKind, plural = true): string {
   }
 }
 
+/** Returns the asset noun agreeing in number with `amount`, a validated decimal string. */
+function assetNounFor(kind: FaucetKind, amount: string): string {
+  return assetNoun(kind, Number(amount) !== 1);
+}
+
 function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFeatures): void {
   const name = c.name.stringLiteral;
   const intro =
@@ -93,7 +98,28 @@ function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFe
     }
   }
 
-  for (const line of [...paragraph(intro, 0), '', ...paragraph(model, 0)]) {
+  const lines = [...paragraph(intro, 0), '', ...paragraph(model, 0)];
+
+  if (features.pausable) {
+    const nouns = assetNoun(features.kind);
+    let pausing: string;
+    if (features.restrictions !== false) {
+      pausing =
+        'The faucet can be paused. While paused, minting, burning, metadata updates and transfers of the ' +
+        `${nouns} are rejected.`;
+    } else if (features.switchablePolicies) {
+      pausing =
+        'The faucet can be paused. While paused, minting, burning and metadata updates are rejected, and so are ' +
+        `transfers of the ${nouns} once a transfer policy has been activated.`;
+    } else {
+      pausing =
+        'The faucet can be paused. While paused, minting, burning and metadata updates are rejected. Transfers ' +
+        `of the ${nouns} are not affected, since the faucet is not consulted on transfers of an unrestricted asset.`;
+    }
+    lines.push('', ...paragraph(pausing, 0));
+  }
+
+  for (const line of lines) {
     c.addDocumentation(line);
   }
 }
@@ -144,7 +170,7 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
     activeBurn = 'BurnPolicy::min_burn_amount(min_burn_amount)';
     burnDoc =
       `Burning: any holder can burn ${nouns} by sending them back to the faucet in a BURN note, ` +
-      `in amounts of at least ${minBurnAmount} ${nouns}.`;
+      `in amounts of at least ${minBurnAmount} ${assetNounFor(kind, minBurnAmount)}.`;
   } else if (burnable) {
     activeBurn = 'BurnPolicy::allow_all()';
     burnDoc = `Burning: any holder can burn ${nouns} by sending them back to the faucet in a BURN note.`;
