@@ -220,19 +220,19 @@ export interface PremintCalculation {
 }
 
 function stripLeadingZeros(value: string): string {
-  let start = 0;
-  while (start < value.length && value[start] === '0') {
-    start += 1;
+  let i = 0;
+  while (i < value.length && value[i] === '0') {
+    i++;
   }
-  return value.slice(start);
+  return value.slice(i);
 }
 
 function stripTrailingZeros(value: string): string {
-  let end = value.length;
-  while (end > 0 && value[end - 1] === '0') {
-    end -= 1;
+  let i = value.length;
+  while (i > 0 && value[i - 1] === '0') {
+    i--;
   }
-  return value.slice(0, end);
+  return value.slice(0, i);
 }
 
 export function calculatePremint(amount: string): PremintCalculation | undefined {
