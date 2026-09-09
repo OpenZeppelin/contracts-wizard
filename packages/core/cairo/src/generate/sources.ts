@@ -18,6 +18,7 @@ import { OptionsError } from '../error';
 import { findCover } from '../utils/find-cover';
 import type { Contract } from '../contract';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { FlashMintSubset } from '../erc20';
 import type { MacrosSubset } from '../set-macros';
 import type { AccessSubset } from '../set-access-control';
 import type { UpgradeableSubset } from '../set-upgradeable';
@@ -31,11 +32,12 @@ export function* generateOptions(params: {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 }): Generator<GenericOptions> {
-  const { kind, access, upgradeable, royaltyInfo, macros } = params;
+  const { kind, access, upgradeable, royaltyInfo, flashmint, macros } = params;
   if (kind === 'all' || kind === 'ERC20') {
-    for (const kindOpts of generateERC20Options({ access, upgradeable, macros })) {
+    for (const kindOpts of generateERC20Options({ access, upgradeable, flashmint, macros })) {
       yield { kind: 'ERC20', ...kindOpts };
     }
   }
@@ -105,12 +107,13 @@ function generateContractSubset(params: {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 }): GeneratedContract[] {
-  const { subset, kind, access, upgradeable, royaltyInfo, macros } = params;
+  const { subset, kind, access, upgradeable, royaltyInfo, flashmint, macros } = params;
   const contracts = [];
 
-  for (const options of generateOptions({ kind, access, upgradeable, royaltyInfo, macros })) {
+  for (const options of generateOptions({ kind, access, upgradeable, royaltyInfo, flashmint, macros })) {
     const id = crypto.createHash('sha1').update(JSON.stringify(options)).digest().toString('hex');
     try {
       const contract = buildGeneric(options);
@@ -163,11 +166,12 @@ export function* generateSources(params: {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 }): Generator<GeneratedSource> {
-  const { subset, uniqueName, kind, access, upgradeable, royaltyInfo, macros } = params;
+  const { subset, uniqueName, kind, access, upgradeable, royaltyInfo, flashmint, macros } = params;
   let counter = 1;
-  for (const c of generateContractSubset({ subset, kind, access, upgradeable, royaltyInfo, macros })) {
+  for (const c of generateContractSubset({ subset, kind, access, upgradeable, royaltyInfo, flashmint, macros })) {
     if (uniqueName) {
       c.contract.name = `Contract${counter++}`;
     }
@@ -184,10 +188,11 @@ export async function writeGeneratedSources(params: {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
   logsEnabled: boolean;
 }): Promise<string[]> {
-  const { dir, subset, uniqueName, kind, access, upgradeable, royaltyInfo, macros, logsEnabled } = params;
+  const { dir, subset, uniqueName, kind, access, upgradeable, royaltyInfo, flashmint, macros, logsEnabled } = params;
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
@@ -198,6 +203,7 @@ export async function writeGeneratedSources(params: {
     access,
     upgradeable,
     royaltyInfo,
+    flashmint,
     macros,
   })) {
     const name = uniqueName ? contract.name : id;
@@ -205,7 +211,7 @@ export async function writeGeneratedSources(params: {
     contractNames.push(name);
   }
   if (logsEnabled) {
-    const sourceLabel = resolveSourceLabel({ kind, access, upgradeable, royaltyInfo, macros });
+    const sourceLabel = resolveSourceLabel({ kind, access, upgradeable, royaltyInfo, flashmint, macros });
     console.log(`Generated ${contractNames.length} contracts for ${sourceLabel}`);
   }
 
@@ -217,15 +223,17 @@ function resolveSourceLabel(params: {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 }): string {
-  const { kind, access, upgradeable, royaltyInfo, macros } = params;
+  const { kind, access, upgradeable, royaltyInfo, flashmint, macros } = params;
   return [
     resolveKindLabel(kind),
     resolveMacrosLabel(macros),
     resolveAccessLabel(kind, access),
     resolveUpgradeableLabel(kind, upgradeable),
     resolveRoyaltyInfoLabel(kind, royaltyInfo),
+    resolveFlashMintLabel(kind, flashmint),
   ]
     .filter(elem => elem !== undefined)
     .join(', ');
@@ -305,6 +313,27 @@ function resolveRoyaltyInfoLabel(kind: KindSubset, royaltyInfo: RoyaltyInfoSubse
     case 'ERC1155':
       return `royalty: ${royaltyInfo}`;
     case 'ERC20':
+    case 'ERC6909':
+    case 'Account':
+    case 'Custom':
+    case 'Multisig':
+    case 'Governor':
+    case 'Vesting':
+      return undefined;
+    default: {
+      const _: never = kind;
+      throw new Error('Unknown kind');
+    }
+  }
+}
+
+function resolveFlashMintLabel(kind: KindSubset, flashmint: FlashMintSubset): string | undefined {
+  switch (kind) {
+    case 'all':
+    case 'ERC20':
+      return `flashmint: ${flashmint}`;
+    case 'ERC721':
+    case 'ERC1155':
     case 'ERC6909':
     case 'Account':
     case 'Custom':

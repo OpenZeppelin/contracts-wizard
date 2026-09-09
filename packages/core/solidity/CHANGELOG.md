@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.16 (2026-09-08)
+
+- Improve performance of premint amount parsing. ([#872](https://github.com/OpenZeppelin/contracts-wizard/pull/872))
+
 ## 0.10.15 (2026-09-03)
 
 - Update `@openzeppelin/tron-contracts` and `@openzeppelin/tron-contracts-upgradeable` dependencies to 5.6.0. ([#865](https://github.com/OpenZeppelin/contracts-wizard/pull/865))

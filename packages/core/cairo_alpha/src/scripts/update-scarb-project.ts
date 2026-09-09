@@ -5,6 +5,7 @@ import type { KindSubset } from '../generate/sources';
 import type { AccessSubset } from '../set-access-control';
 import type { UpgradeableSubset } from '../set-upgradeable';
 import type { RoyaltyInfoSubset } from '../set-royalty-info';
+import type { FlashMintSubset } from '../erc20';
 import type { MacrosSubset } from '../set-macros';
 import { writeGeneratedSources } from '../generate/sources';
 import { contractsVersion, edition, cairoVersion, scarbVersion } from '../utils/version';
@@ -14,6 +15,7 @@ type Arguments = {
   access: AccessSubset;
   upgradeable: UpgradeableSubset;
   royaltyInfo: RoyaltyInfoSubset;
+  flashmint: FlashMintSubset;
   macros: MacrosSubset;
 };
 
@@ -22,6 +24,7 @@ const defaults = {
   access: 'all',
   upgradeable: 'all',
   royaltyInfo: 'all',
+  flashmint: 'all',
   macros: 'all',
 } as const;
 
@@ -33,6 +36,7 @@ export function resolveArguments(): Arguments {
     access: parseAccessSubset(args.access ?? defaults.access),
     upgradeable: parseUpgradeableSubset(args.upgradeable ?? defaults.upgradeable),
     royaltyInfo: parseRoyaltyInfoSubset(args.royalty ?? defaults.royaltyInfo),
+    flashmint: parseFlashMintSubset(args.flashmint ?? defaults.flashmint),
     macros: parseMacrosSubset(args.macros ?? defaults.macros),
   };
 }
@@ -42,7 +46,7 @@ export async function updateScarbProject() {
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
 
   // Generate the contracts source code
-  const { kind, access, upgradeable, royaltyInfo, macros } = resolveArguments();
+  const { kind, access, upgradeable, royaltyInfo, flashmint, macros } = resolveArguments();
   const contractNames = await writeGeneratedSources({
     dir: generatedSourcesPath,
     subset: 'all',
@@ -51,6 +55,7 @@ export async function updateScarbProject() {
     access,
     upgradeable,
     royaltyInfo,
+    flashmint,
     macros,
     logsEnabled: true,
   });
@@ -186,6 +191,26 @@ function parseRoyaltyInfoSubset(value: string): RoyaltyInfoSubset {
       return 'enabled-custom';
     default:
       throw new Error(`Failed to resolve royalty info subset from '${value}' value.`);
+  }
+}
+
+function parseFlashMintSubset(value: string): FlashMintSubset {
+  switch (value.toLowerCase()) {
+    case 'all':
+      return 'all';
+    case 'disabled':
+      return 'disabled';
+    case 'enabled-default':
+    case 'enabled_default':
+      return 'enabled-default';
+    case 'enabled-percent-fee':
+    case 'enabled_percent_fee':
+      return 'enabled-percent-fee';
+    case 'enabled-custom-fee':
+    case 'enabled_custom_fee':
+      return 'enabled-custom-fee';
+    default:
+      throw new Error(`Failed to resolve flashmint subset from '${value}' value.`);
   }
 }
 
