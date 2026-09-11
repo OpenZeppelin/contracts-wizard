@@ -3,7 +3,7 @@
  * child is scrolled to the bottom (or cannot scroll). Used to hide the
  * bottom fade overlay so the last options are fully visible.
  */
-export function scrollFade(node: HTMLElement) {
+export function scrollFade(node: HTMLElement, _dep?: unknown) {
   const controls = node.querySelector<HTMLElement>('.controls');
   if (!controls) {
     return;
