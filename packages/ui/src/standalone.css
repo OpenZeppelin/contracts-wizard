@@ -186,7 +186,8 @@ body {
   /* 1500px content + 1rem padding each side, so the pills line up with .wizard */
   max-width: calc(1500px + 2rem);
   margin: auto;
-  gap: 0.75rem;
+  column-gap: 0.75rem;
+  row-gap: 0;
   flex-wrap: wrap;
 }
 
