@@ -61,25 +61,21 @@
     overflow: visible;
   }
 
-  .header {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .header .tab {
-    flex: 1 1 100%;
-  }
-
-  .header .action {
-    margin-left: auto;
-  }
-
+  /* Flatten wrappers so the stack is tabs → options → actions → code. */
+  .header,
   .wizard-panes {
-    flex-direction: column;
+    display: contents;
   }
 
   .wizard-panes::after {
     display: none;
+  }
+
+  .tab {
+    order: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
   }
 
   .wizard-panes .controls,
@@ -89,17 +85,48 @@
     max-width: 100%;
     height: auto;
     resize: none;
-    border-radius: 1.5rem;
   }
 
   .wizard-panes .controls {
-    max-height: none;
+    order: 1;
+    /* rem, not vh: the embed iframe is sized to content, so vh would recurse. */
+    max-height: 22rem;
+    border-radius: 1.5rem;
     box-shadow: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent);
+    mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  }
+
+  .wizard-panes.controls-at-end .controls {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .action {
+    order: 2;
+    z-index: 5;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    /* Collapse the container gap so this toolbar sits on the code card. */
+    margin-bottom: -1rem;
+    padding: 0.4rem 0.6rem;
+    background-color: white;
+    border-radius: 1.5rem 1.5rem 0 0;
+  }
+
+  .action .action-button {
+    padding: 6px 10px;
+    font-size: 13px;
   }
 
   .wizard-panes .output {
-    min-height: 24rem;
-    margin-top: 0.75rem;
+    order: 3;
+    min-height: 32rem;
+    margin-top: 0;
+    border-radius: 0 0 1.5rem 1.5rem;
   }
 }
 
