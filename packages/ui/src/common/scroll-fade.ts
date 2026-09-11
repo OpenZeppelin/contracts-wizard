@@ -12,6 +12,7 @@ export function scrollFade(node: HTMLElement, _dep?: unknown) {
   const update = () => {
     const remaining = controls.scrollHeight - controls.scrollTop - controls.clientHeight;
     node.classList.toggle('controls-at-end', remaining <= 2);
+    node.style.setProperty('--controls-fade-width', `${controls.offsetWidth}px`);
   };
 
   controls.addEventListener('scroll', update, { passive: true });

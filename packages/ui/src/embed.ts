@@ -16,11 +16,15 @@ const fallbackChromeHeight = 206;
 const mobileMediaQuery = window.matchMedia('(max-width: 720px)');
 
 function measureChromeHeight(): number {
+  // .nav-row is wizard-page chrome. Without it we are on a host page (docs)
+  // and must not pick up that page's .banner / .header.
+  const navRow = document.querySelector<HTMLElement>('.nav-row');
+  if (!navRow) {
+    return fallbackChromeHeight;
+  }
   const header = document.querySelector<HTMLElement>('.header.container');
   const banner = document.querySelector<HTMLElement>('.banner');
-  const navRow = document.querySelector<HTMLElement>('.nav-row');
-  const height = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0) + (navRow?.offsetHeight ?? 0);
-  return height > 0 ? height : fallbackChromeHeight;
+  return (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0) + navRow.offsetHeight;
 }
 
 function applyIframeHeight(iframe: HTMLIFrameElement, contentHeight?: number) {
@@ -28,7 +32,7 @@ function applyIframeHeight(iframe: HTMLIFrameElement, contentHeight?: number) {
     iframe.style.height = unsupportedVersionFrameHeight;
     return;
   }
-  if (mobileMediaQuery.matches && contentHeight !== undefined) {
+  if (mobileMediaQuery.matches && contentHeight !== undefined && Number.isFinite(contentHeight) && contentHeight > 0) {
     iframe.style.height = `${Math.ceil(contentHeight)}px`;
     return;
   }
