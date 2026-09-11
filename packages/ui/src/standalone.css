@@ -70,16 +70,13 @@ body {
   background: var(--gray-1);
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   border-radius: 5rem;
-  width: auto;
-  max-width: fit-content;
+  width: fit-content;
+  max-width: 100%;
   min-width: 0;
-  flex: 1 1 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
+  flex: 0 1 auto;
+  overflow: visible;
 }
 
 .nav img {
@@ -186,16 +183,19 @@ body {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  max-width: 1500px;
+  /* 1500px content + 1rem padding each side, so the pills line up with .wizard */
+  max-width: calc(1500px + 2rem);
   margin: auto;
   gap: 0.75rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .ui-builder-cta {
   flex: 0 0 auto;
   align-items: center;
   min-width: 0;
+  margin-left: auto;
+  margin-bottom: 0.5rem;
 }
 
 .ui-builder-copy {
@@ -205,15 +205,6 @@ body {
 .ui-builder-copy,
 .ui-builder-copy > div {
   white-space: nowrap;
-}
-
-.nav::-webkit-scrollbar {
-  height: 4px;
-}
-
-.nav::-webkit-scrollbar-thumb {
-  background: var(--gray-3);
-  border-radius: 4px;
 }
 
 .arrow-gray {
@@ -245,18 +236,8 @@ body {
    arrow, and button stay visible. */
 @media (max-width: 1440px) {
   .nav-row {
-    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
-  }
-
-  .nav {
-    flex: 1 1 100%;
-    flex-wrap: wrap;
-    overflow-x: visible;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 1.25rem;
   }
 
   .ui-builder-cta {
