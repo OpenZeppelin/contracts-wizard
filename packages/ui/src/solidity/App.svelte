@@ -43,6 +43,7 @@
   import ErrorDisabledActionButtons from '../common/ErrorDisabledActionButtons.svelte';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { Language } from '../common/languages-types';
+  import { scrollFade } from '../common/scroll-fade';
 
   const dispatch = createEventDispatcher();
 
@@ -405,9 +406,9 @@
     {/if}
   </div>
 
-  <div class="flex flex-row grow">
+  <div class="wizard-panes flex flex-row grow" use:scrollFade={tab}>
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'ERC20'}>
         <ERC20Controls
@@ -460,7 +461,7 @@
       </div>
     </div>
 
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto relative">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"

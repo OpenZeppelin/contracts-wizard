@@ -1,6 +1,106 @@
 .container {
   background-color: var(--gray-1);
-  min-width: 32rem;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wizard-panes {
+  position: relative;
+  min-width: 0;
+}
+
+.wizard-panes .controls,
+.wizard-panes .output {
+  height: calc(100vh - 84px);
+  min-width: 0;
+}
+
+.header .tab {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.wizard-panes::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 18rem;
+  max-width: 100%;
+  height: 4.5rem;
+  pointer-events: none;
+  background: linear-gradient(to top, rgb(255, 255, 255) 25%, rgba(255, 255, 255, 0.85) 55%, transparent);
+  border-bottom-left-radius: 1.5rem;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.wizard-panes.controls-at-end::after {
+  opacity: 0;
+}
+
+.wizard-panes .controls {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-3) transparent;
+}
+
+.wizard-panes .controls::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wizard-panes .controls::-webkit-scrollbar-thumb {
+  background: var(--gray-3);
+  border-radius: 8px;
+}
+
+@media (max-width: 720px) {
+  .container,
+  .page-container {
+    overflow: visible;
+  }
+
+  .header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .header .tab {
+    flex: 1 1 100%;
+  }
+
+  .header .action {
+    margin-left: auto;
+  }
+
+  .wizard-panes {
+    flex-direction: column;
+  }
+
+  .wizard-panes::after {
+    display: none;
+  }
+
+  .wizard-panes .controls,
+  .wizard-panes .output {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    resize: none;
+    border-radius: 1.5rem;
+  }
+
+  .wizard-panes .controls {
+    max-height: none;
+    box-shadow: none;
+  }
+
+  .wizard-panes .output {
+    min-height: 24rem;
+    margin-top: 0.75rem;
+  }
 }
 
 .header {
