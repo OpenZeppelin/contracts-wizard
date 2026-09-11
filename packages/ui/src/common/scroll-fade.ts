@@ -15,15 +15,18 @@ export function scrollFade(node: HTMLElement, _dep?: unknown) {
   };
 
   controls.addEventListener('scroll', update, { passive: true });
-  const observer = new ResizeObserver(update);
-  observer.observe(controls);
+  const resizeObserver = new ResizeObserver(update);
+  resizeObserver.observe(controls);
+  const mutationObserver = new MutationObserver(update);
+  mutationObserver.observe(controls, { childList: true, subtree: true });
   update();
 
   return {
     update,
     destroy() {
       controls.removeEventListener('scroll', update);
-      observer.disconnect();
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
     },
   };
 }

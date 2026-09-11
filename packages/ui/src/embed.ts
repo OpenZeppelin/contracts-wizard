@@ -9,8 +9,8 @@ const currentScript = new URL(document.currentScript.src);
 const iframes = new WeakMap<MessageEventSource, HTMLIFrameElement>();
 const mountedIframes = new Set<HTMLIFrameElement>();
 const contentHeights = new WeakMap<HTMLIFrameElement, number>();
+const unsupportedVersionIframes = new WeakSet<HTMLIFrameElement>();
 
-let unsupportedVersion: boolean = false;
 const unsupportedVersionFrameHeight = 'auto';
 const fallbackChromeHeight = 206;
 const mobileMediaQuery = window.matchMedia('(max-width: 720px)');
@@ -24,7 +24,7 @@ function measureChromeHeight(): number {
 }
 
 function applyIframeHeight(iframe: HTMLIFrameElement, contentHeight?: number) {
-  if (unsupportedVersion) {
+  if (unsupportedVersionIframes.has(iframe)) {
     iframe.style.height = unsupportedVersionFrameHeight;
     return;
   }
@@ -44,9 +44,9 @@ function syncIframeHeights() {
 window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source) {
     if (e.data.kind === 'oz-wizard-unsupported-version') {
-      unsupportedVersion = true;
       const iframe = iframes.get(e.source);
       if (iframe) {
+        unsupportedVersionIframes.add(iframe);
         applyIframeHeight(iframe);
       }
     } else if (e.data.kind === 'oz-wizard-resize') {
