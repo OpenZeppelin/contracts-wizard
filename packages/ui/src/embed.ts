@@ -7,28 +7,64 @@ if (!document.currentScript || !('src' in document.currentScript)) {
 const currentScript = new URL(document.currentScript.src);
 
 const iframes = new WeakMap<MessageEventSource, HTMLIFrameElement>();
+const mountedIframes = new Set<HTMLIFrameElement>();
+const contentHeights = new WeakMap<HTMLIFrameElement, number>();
+const unsupportedVersionIframes = new WeakSet<HTMLIFrameElement>();
 
-let unsupportedVersion: boolean = false;
 const unsupportedVersionFrameHeight = 'auto';
+const fallbackChromeHeight = 206;
+const mobileMediaQuery = window.matchMedia('(max-width: 720px)');
 
-const iframeHeightDiff = '206px';
+function measureChromeHeight(): number {
+  // .nav-row is wizard-page chrome. Without it we are on a host page (docs)
+  // and must not pick up that page's .banner / .header.
+  const navRow = document.querySelector<HTMLElement>('.nav-row');
+  if (!navRow) {
+    return fallbackChromeHeight;
+  }
+  const header = document.querySelector<HTMLElement>('.header.container');
+  const banner = document.querySelector<HTMLElement>('.banner');
+  return (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0) + navRow.offsetHeight;
+}
+
+function applyIframeHeight(iframe: HTMLIFrameElement, contentHeight?: number) {
+  if (unsupportedVersionIframes.has(iframe)) {
+    iframe.style.height = unsupportedVersionFrameHeight;
+    return;
+  }
+  if (mobileMediaQuery.matches && contentHeight !== undefined && Number.isFinite(contentHeight) && contentHeight > 0) {
+    iframe.style.height = `${Math.ceil(contentHeight)}px`;
+    return;
+  }
+  iframe.style.height = `calc(100vh - ${measureChromeHeight()}px)`;
+}
+
+function syncIframeHeights() {
+  for (const iframe of mountedIframes) {
+    applyIframeHeight(iframe, contentHeights.get(iframe));
+  }
+}
 
 window.addEventListener('message', function (e: MessageEvent<Message>) {
   if (e.source) {
     if (e.data.kind === 'oz-wizard-unsupported-version') {
-      unsupportedVersion = true;
       const iframe = iframes.get(e.source);
       if (iframe) {
-        iframe.style.height = unsupportedVersionFrameHeight;
+        unsupportedVersionIframes.add(iframe);
+        applyIframeHeight(iframe);
       }
     } else if (e.data.kind === 'oz-wizard-resize') {
       const iframe = iframes.get(e.source);
       if (iframe) {
-        iframe.style.height = unsupportedVersion ? unsupportedVersionFrameHeight : `calc(100vh - ${iframeHeightDiff})`;
+        contentHeights.set(iframe, e.data.height);
+        applyIframeHeight(iframe, e.data.height);
       }
     }
   }
 });
+
+window.addEventListener('resize', syncIframeHeights);
+mobileMediaQuery.addEventListener('change', syncIframeHeights);
 
 onDOMContentLoaded(function () {
   const wizards = document.querySelectorAll<HTMLElement>('oz-wizard');
@@ -62,10 +98,11 @@ onDOMContentLoaded(function () {
     iframe.style.display = 'block';
     iframe.style.border = '0';
     iframe.style.width = '100%';
-    iframe.style.height = `calc(100vh - ${iframeHeightDiff} )`;
     iframe.allow = 'clipboard-write';
+    applyIframeHeight(iframe);
 
     w.appendChild(iframe);
+    mountedIframes.add(iframe);
 
     if (iframe.contentWindow !== null) {
       iframes.set(iframe.contentWindow, iframe);
