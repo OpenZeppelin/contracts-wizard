@@ -27,6 +27,7 @@
   import { remixURL } from '../solidity/remix';
   import { createWiz, mergeAiAssistanceOptions } from '../common/Wiz.svelte';
   import type { AiFunctionCall } from '../../api/ai-assistant/types/assistant';
+  import { scrollFade } from '../common/scroll-fade';
 
   import { saveAs } from 'file-saver';
   import { injectHyperlinks } from './inject-hyperlinks';
@@ -226,16 +227,16 @@
     {/if}
   </div>
 
-  <div class="flex flex-row grow">
+  <div class="wizard-panes flex flex-row grow" use:scrollFade={tab}>
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'Hooks'}>
         <HooksControls bind:opts={allOpts.Hooks} errors={errors[tab]} />
       </div>
     </div>
 
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)] relative">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto relative">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -solidity grow overflow-auto p-4 {hasErrors ? 'no-select' : ''}"
@@ -250,7 +251,7 @@
 <style lang="postcss">
   .container {
     background-color: var(--gray-1);
-    min-width: 32rem;
+    min-width: 0;
   }
 
   .header {
