@@ -8,6 +8,9 @@ on:
     paths:
       - 'packages/core/cairo/**'
 
+permissions:
+  contents: read
+
 jobs:
   validate-cairo:
     runs-on: ubuntu-latest
