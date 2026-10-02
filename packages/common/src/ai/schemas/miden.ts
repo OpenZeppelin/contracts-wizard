@@ -8,17 +8,17 @@ import {
 } from '../../index';
 
 export const midenCommonSchema = {
-  burnable: z.boolean().optional().describe(midenCommonDescriptions.burnable),
   pausable: z.boolean().optional().describe(midenCommonDescriptions.pausable),
-  restrictions: z
+  pausableTransfers: z.boolean().optional().describe(midenCommonDescriptions.pausableTransfers),
+  transferPolicy: z
     .literal(false)
     .or(z.literal('allowlist'))
     .or(z.literal('blocklist'))
     .optional()
-    .describe(midenCommonDescriptions.restrictions),
-  switchablePolicies: z.boolean().optional().describe(midenCommonDescriptions.switchablePolicies),
+    .describe(midenCommonDescriptions.transferPolicy),
+  switchableTransferPolicy: z.boolean().optional().describe(midenCommonDescriptions.switchableTransferPolicy),
   access: z
-    .literal(false)
+    .literal('singleKey')
     .or(z.literal('ownable'))
     .or(z.literal('roles'))
     .optional()
@@ -40,15 +40,16 @@ export const midenFungibleSchema = {
   description: z.string().optional().describe(midenCommonDescriptions.description),
   logoUri: z.string().optional().describe(midenCommonDescriptions.logoUri),
   externalLink: z.string().optional().describe(midenFungibleDescriptions.externalLink),
-  updatableMetadata: z.boolean().optional().describe(midenCommonDescriptions.updatableMetadata),
+  updatableMetadata: z.boolean().optional().describe(midenFungibleDescriptions.updatableMetadata),
   updatableMaxSupply: z.boolean().optional().describe(midenFungibleDescriptions.updatableMaxSupply),
-  burnable: midenCommonSchema.burnable,
+  burnPolicy: z
+    .literal('anyHolder')
+    .or(z.literal('minimumAmount'))
+    .or(z.literal('ownerOnly'))
+    .optional()
+    .describe(midenFungibleDescriptions.burnPolicy),
   minBurnAmount: z.string().optional().describe(midenFungibleDescriptions.minBurnAmount),
-  pausable: midenCommonSchema.pausable,
-  restrictions: midenCommonSchema.restrictions,
-  switchablePolicies: midenCommonSchema.switchablePolicies,
-  access: midenCommonSchema.access,
-  info: midenCommonSchema.info,
+  ...midenCommonSchema,
 } as const satisfies z.ZodRawShape;
 
 export const midenNonFungibleSchema = {
@@ -57,6 +58,11 @@ export const midenNonFungibleSchema = {
   description: z.string().optional().describe(midenCommonDescriptions.description),
   logoUri: z.string().optional().describe(midenCommonDescriptions.logoUri),
   contractUri: z.string().optional().describe(midenNonFungibleDescriptions.contractUri),
-  updatableMetadata: z.boolean().optional().describe(midenCommonDescriptions.updatableMetadata),
+  updatableMetadata: z.boolean().optional().describe(midenNonFungibleDescriptions.updatableMetadata),
+  burnPolicy: z
+    .literal('anyHolder')
+    .or(z.literal('ownerOnly'))
+    .optional()
+    .describe(midenNonFungibleDescriptions.burnPolicy),
   ...midenCommonSchema,
 } as const satisfies z.ZodRawShape;

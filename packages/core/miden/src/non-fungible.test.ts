@@ -62,31 +62,35 @@ testNonFungible('non-fungible updatable metadata', {
   updatableMetadata: true,
 });
 
-testNonFungible('non-fungible not burnable defaults to ownable', {
-  burnable: false,
+testNonFungible('non-fungible single key', {
+  access: 'singleKey',
+});
+
+testNonFungible('non-fungible owner-only burning', {
+  burnPolicy: 'ownerOnly',
 });
 
 testNonFungible('non-fungible pausable', {
   pausable: true,
 });
 
+testNonFungible('non-fungible pausable including transfers', {
+  pausable: true,
+  pausableTransfers: true,
+});
+
 testNonFungible('non-fungible allowlist', {
-  restrictions: 'allowlist',
+  transferPolicy: 'allowlist',
 });
 
 testNonFungible('non-fungible blocklist', {
-  restrictions: 'blocklist',
+  transferPolicy: 'blocklist',
 });
 
-testNonFungible('non-fungible ownable', {
-  access: 'ownable',
-});
-
-testNonFungible('non-fungible ownable pausable allowlist', {
-  access: 'ownable',
+testNonFungible('non-fungible single key pausable allowlist', {
+  access: 'singleKey',
   pausable: true,
-  restrictions: 'allowlist',
-  updatableMetadata: true,
+  transferPolicy: 'allowlist',
 });
 
 testNonFungible('non-fungible roles', {
@@ -96,38 +100,36 @@ testNonFungible('non-fungible roles', {
 testNonFungible('non-fungible roles pausable blocklist', {
   access: 'roles',
   pausable: true,
-  restrictions: 'blocklist',
-  burnable: false,
+  transferPolicy: 'blocklist',
 });
 
-testNonFungible('non-fungible switchable policies', {
-  switchablePolicies: true,
+testNonFungible('non-fungible switchable transfer policy', {
+  switchableTransferPolicy: true,
 });
 
-testNonFungible('non-fungible switchable policies roles allowlist pausable', {
-  switchablePolicies: true,
+testNonFungible('non-fungible switchable transfer policy roles allowlist pausable', {
+  switchableTransferPolicy: true,
   access: 'roles',
-  restrictions: 'allowlist',
+  transferPolicy: 'allowlist',
   pausable: true,
 });
 
-testNonFungible('non-fungible switchable policies ownable owner-only burning', {
-  switchablePolicies: true,
-  access: 'ownable',
-  burnable: false,
+testNonFungible('non-fungible switchable transfer policy single key', {
+  switchableTransferPolicy: true,
+  access: 'singleKey',
 });
 
 testNonFungible('non-fungible full - complex name', {
   name: 'Custom  $ Collection',
   symbol: 'CC',
-  description: 'A collection',
+  description: 'A "quoted" description',
   logoUri: 'https://example.com/logo.png',
   contractUri: 'https://example.com/collection.json',
   updatableMetadata: true,
-  burnable: false,
+  burnPolicy: 'ownerOnly',
   pausable: true,
-  restrictions: 'allowlist',
-  switchablePolicies: true,
+  pausableTransfers: true,
+  switchableTransferPolicy: true,
   access: 'roles',
   info: {
     securityContact: 'security@example.com',
@@ -142,21 +144,21 @@ testNonFungibleError('non-fungible contract URI too long', { contractUri: 'x'.re
 testAPIEquivalence('non-fungible API default');
 
 testAPIEquivalence('non-fungible API basic', {
-  name: 'CustomToken',
-  symbol: 'CTK',
+  name: 'CustomCollection',
+  symbol: 'CC',
 });
 
 testAPIEquivalence('non-fungible API full', {
-  name: 'CustomToken',
-  symbol: 'CTK',
+  name: 'CustomCollection',
+  symbol: 'CC',
   description: 'A collection',
   logoUri: 'https://example.com/logo.png',
   contractUri: 'https://example.com/collection.json',
   updatableMetadata: true,
-  burnable: false,
+  burnPolicy: 'ownerOnly',
   pausable: true,
-  restrictions: 'blocklist',
-  switchablePolicies: true,
+  transferPolicy: 'blocklist',
+  switchableTransferPolicy: true,
   access: 'ownable',
 });
 
@@ -165,7 +167,14 @@ test('non-fungible API assert defaults', async t => {
 });
 
 test('non-fungible API isAccessControlRequired', async t => {
-  t.is(nonFungible.isAccessControlRequired({ burnable: false }), true);
-  t.is(nonFungible.isAccessControlRequired({ burnable: true }), false);
-  t.is(nonFungible.isAccessControlRequired({ pausable: true }), false);
+  t.is(nonFungible.isAccessControlRequired({ burnPolicy: 'ownerOnly' }), true);
+  t.is(nonFungible.isAccessControlRequired({ burnPolicy: 'anyHolder' }), false);
+  t.is(nonFungible.isAccessControlRequired({ pausable: true, transferPolicy: 'allowlist' }), false);
+});
+
+test('non-fungible owner-only burning with single key uses ownable', async t => {
+  t.is(
+    nonFungible.print({ name: 'MyToken', symbol: 'MTK', burnPolicy: 'ownerOnly', access: 'singleKey' }),
+    nonFungible.print({ name: 'MyToken', symbol: 'MTK', burnPolicy: 'ownerOnly', access: 'ownable' }),
+  );
 });

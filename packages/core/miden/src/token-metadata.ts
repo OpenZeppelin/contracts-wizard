@@ -49,12 +49,12 @@ export function collectErrors<T>(errors: OptionsErrorMessages, validate: () => T
   }
 }
 
-export function addStringConstant(c: ContractBuilder, name: string, value: string, comment: string): void {
+export function addStringConstant(c: ContractBuilder, name: string, value: string): void {
   c.addConstant({
     name,
     type: "&'static str",
     value: `"${escapeString(value)}"`,
-    comments: [comment],
+    comments: [],
   });
 }
 
@@ -73,26 +73,25 @@ export interface OptionalMetadata {
 export function addOptionalMetadata(
   c: ContractBuilder,
   metadata: OptionalMetadata,
-  link: { constant: string; method: string; mutabilityMethod: string; comment: string; expect: string },
-  subject: string,
+  link: { constant: string; method: string; mutabilityMethod: string; expect: string },
 ): string[] {
   const calls: string[] = [];
 
   if (metadata.description) {
     c.addUseClause('miden_standards::account::faucets', 'Description');
-    addStringConstant(c, 'DESCRIPTION', metadata.description, `${subject} description.`);
+    addStringConstant(c, 'DESCRIPTION', metadata.description);
     calls.push('.description(Description::new(Self::DESCRIPTION).expect("description is valid"))');
   }
 
   if (metadata.logoUri) {
     c.addUseClause('miden_standards::account::faucets', 'LogoURI');
-    addStringConstant(c, 'LOGO_URI', metadata.logoUri, `URI of the ${subject.toLowerCase()} logo.`);
+    addStringConstant(c, 'LOGO_URI', metadata.logoUri);
     calls.push('.logo_uri(LogoURI::new(Self::LOGO_URI).expect("logo URI is valid"))');
   }
 
   if (metadata.link) {
     c.addUseClause('miden_standards::account::faucets', 'ExternalLink');
-    addStringConstant(c, link.constant, metadata.link, link.comment);
+    addStringConstant(c, link.constant, metadata.link);
     calls.push(`.${link.method}(ExternalLink::new(Self::${link.constant}).expect("${link.expect}"))`);
   }
 

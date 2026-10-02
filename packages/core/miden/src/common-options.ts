@@ -1,27 +1,27 @@
 import type { Info } from './set-info';
 import { defaults as infoDefaults } from './set-info';
 
-export const accessOptions = [false, 'ownable', 'roles'] as const;
+export const accessOptions = ['singleKey', 'ownable', 'roles'] as const;
 
 /**
- * How privileged operations of the faucet account are authorized.
+ * Who controls the faucet.
  *
- * - `false`: the faucet is a user account authenticated by a single signature. The key holder is the sole
- *   authority over the faucet.
- * - `'ownable'`: the faucet is a network account whose privileged procedures are gated by an owner account,
- *   with two-step ownership transfer.
- * - `'roles'`: the faucet is a network account with role-based access control.
+ * - `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction.
+ * - `'ownable'`: the faucet is a network account managed by an owner account, with two-step ownership transfer.
+ * - `'roles'`: the faucet is a network account with role-based access control. Minting is done by the faucet
+ *   owner, initially the admin.
  */
 export type Access = (typeof accessOptions)[number];
 
+/** Access control used when the selected options need an owner but `'singleKey'` was requested. */
 export const DEFAULT_ACCESS_CONTROL = 'ownable';
 
-export const restrictionsOptions = [false, 'allowlist', 'blocklist'] as const;
+export const transferPolicyOptions = [false, 'allowlist', 'blocklist'] as const;
 
 /**
- * Transfer restrictions enforced through the faucet's send and receive policies.
+ * Transfer policy enforced on both the send and the receive side of every transfer.
  */
-export type Restrictions = (typeof restrictionsOptions)[number];
+export type TransferPolicy = (typeof transferPolicyOptions)[number];
 
 export const defaults: Required<CommonOptions> = {
   info: infoDefaults,
@@ -29,7 +29,7 @@ export const defaults: Required<CommonOptions> = {
 
 export const contractDefaults: Required<CommonContractOptions> = {
   ...defaults,
-  access: false,
+  access: 'ownable',
 } as const;
 
 export interface CommonOptions {

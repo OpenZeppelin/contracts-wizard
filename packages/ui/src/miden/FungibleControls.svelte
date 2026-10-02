@@ -6,8 +6,9 @@
 
   import AccessControlSection from './AccessControlSection.svelte';
   import InfoSection from './InfoSection.svelte';
-  import RestrictionsSection from './RestrictionsSection.svelte';
+  import TransferPolicySection from './TransferPolicySection.svelte';
   import { error } from '../common/error-tooltip';
+  import { resizeToFit } from '../common/resize-to-fit';
 
   export let opts: Required<KindedOptions['Fungible']> = {
     kind: 'Fungible',
@@ -17,7 +18,32 @@
 
   export let errors: undefined | OptionsErrorMessages;
 
-  $: requireAccessControl = fungible.isAccessControlRequired(opts);
+  $: ownerRequired = fungible.isAccessControlRequired(opts);
+
+  // A transfer policy makes pausing stop transfers in any case
+  $: pausesTransfers = opts.pausable && (opts.pausableTransfers || opts.transferPolicy !== false);
+  $: transfersAlwaysPaused = opts.pausable && opts.transferPolicy !== false;
+
+  let wasPausable = opts.pausable;
+  let wasBurnPolicy = opts.burnPolicy;
+  let otherBurnPolicyMinBurnAmount = '';
+
+  $: {
+    if (wasPausable && !opts.pausable) {
+      opts.pausableTransfers = false;
+    }
+
+    // The minimum only applies to the Minimum Amount burn policy, so keep it aside while another policy is selected
+    if (wasBurnPolicy === 'minimumAmount' && opts.burnPolicy !== 'minimumAmount') {
+      otherBurnPolicyMinBurnAmount = opts.minBurnAmount;
+      opts.minBurnAmount = '';
+    } else if (wasBurnPolicy !== 'minimumAmount' && opts.burnPolicy === 'minimumAmount' && opts.minBurnAmount === '') {
+      opts.minBurnAmount = otherBurnPolicyMinBurnAmount;
+    }
+
+    wasPausable = opts.pausable;
+    wasBurnPolicy = opts.burnPolicy;
+  }
 </script>
 
 <section class="controls-section">
@@ -46,7 +72,9 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Max Supply
-      <HelpTooltip>The maximum number of tokens that can ever be minted, in whole tokens.</HelpTooltip>
+      <HelpTooltip>
+        The maximum number of tokens in circulation at any time. Burning frees room to mint again.
+      </HelpTooltip>
     </span>
     <input
       bind:value={opts.maxSupply}
@@ -55,6 +83,14 @@
       pattern={amountPattern.source}
     />
   </label>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.updatableMaxSupply}>
+      <input type="checkbox" bind:checked={opts.updatableMaxSupply} />
+      Updatable Max Supply
+      <HelpTooltip>Privileged accounts will be able to update the maximum supply after deployment.</HelpTooltip>
+    </label>
+  </div>
 </section>
 
 <section class="controls-section">
@@ -87,16 +123,11 @@
   <div class="checkbox-group">
     <label class:checked={opts.updatableMetadata}>
       <input type="checkbox" bind:checked={opts.updatableMetadata} />
-      Updatable Metadata
+      Updatable Description and URIs
       <HelpTooltip>
-        Privileged accounts will be able to update the description, logo URI and external link after deployment.
+        Privileged accounts will be able to update the description, logo URI and external link after deployment. The
+        name, symbol and decimals can never change.
       </HelpTooltip>
-    </label>
-
-    <label class:checked={opts.updatableMaxSupply}>
-      <input type="checkbox" bind:checked={opts.updatableMaxSupply} />
-      Updatable Max Supply
-      <HelpTooltip>Privileged accounts will be able to update the maximum supply after deployment.</HelpTooltip>
     </label>
   </div>
 </section>
@@ -105,55 +136,91 @@
   <h1>Features</h1>
 
   <div class="checkbox-group">
-    <label class:checked={opts.burnable} use:error={errors?.burnable}>
-      <input type="checkbox" bind:checked={opts.burnable} />
-      Burnable
-      <HelpTooltip>
-        Any token holder will be able to burn their tokens by sending them back to the faucet in a BURN note. Otherwise
-        only the owner can burn, which requires access control.
-      </HelpTooltip>
-    </label>
-
     <label class:checked={opts.pausable}>
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip>
-        Privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when an
-        allowlist or blocklist is active. Unrestricted transfers are never checked against the faucet. Useful for
-        emergency response.
+        Privileged accounts will be able to pause minting, burning and metadata updates. Useful for emergency response.
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.switchablePolicies}>
-      <input type="checkbox" bind:checked={opts.switchablePolicies} />
-      Switchable Policies
+    <label class:checked={pausesTransfers} class="subcontrol">
+      <input
+        type="checkbox"
+        checked={pausesTransfers}
+        disabled={transfersAlwaysPaused}
+        on:change={e => {
+          opts.pausableTransfers = e.currentTarget.checked;
+          if (e.currentTarget.checked) opts.pausable = true;
+        }}
+      />
+      Include Transfers
       <HelpTooltip>
-        The other standard mint, burn, send and receive policies are registered as allowed alternatives, so privileged
-        accounts will be able to switch the active policies after deployment. Installs the allowlist and blocklist
-        managers and enables asset callbacks.
+        Pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must
+        reach the chain within about a minute. This extra cost is permanent. If unchecked, pausing stops only minting,
+        burning and metadata updates.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.switchableTransferPolicy}>
+      <input type="checkbox" bind:checked={opts.switchableTransferPolicy} />
+      Switchable Transfer Policy
+      <HelpTooltip>
+        Privileged accounts will be able to turn on an allowlist or blocklist after deployment, and switch between them,
+        which can freeze transfers. Every transfer then consults the faucet, so transfers cost more to prove. This extra
+        cost is permanent.
       </HelpTooltip>
     </label>
   </div>
-
-  <label class="labeled-input">
-    <span class="flex justify-between pr-2">
-      Minimum Burn Amount
-      <HelpTooltip>
-        The minimum amount of tokens that must be burned at once, in whole tokens. Requires the token to be burnable by
-        its holders. Privileged accounts will be able to update the minimum after deployment.
-      </HelpTooltip>
-    </span>
-    <input
-      bind:value={opts.minBurnAmount}
-      use:error={errors?.minBurnAmount}
-      placeholder="No minimum"
-      pattern={amountPattern.source}
-    />
-  </label>
 </section>
 
-<RestrictionsSection bind:restrictions={opts.restrictions} />
+<TransferPolicySection bind:transferPolicy={opts.transferPolicy} asset="the token" units="tokens" />
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<section class="controls-section">
+  <h1>Burn Policy</h1>
+
+  <div class="checkbox-group">
+    <label class:checked={opts.burnPolicy === 'anyHolder'}>
+      <input type="radio" bind:group={opts.burnPolicy} value="anyHolder" />
+      Any Holder
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
+    </label>
+
+    <label class:checked={opts.burnPolicy === 'minimumAmount'}>
+      <input type="radio" bind:group={opts.burnPolicy} value="minimumAmount" />
+      Minimum Amount
+      <HelpTooltip>
+        Token holders will be able to destroy their tokens, at least this many at a time. Privileged accounts can change
+        the minimum after deployment.
+      </HelpTooltip>
+    </label>
+
+    {#if opts.burnPolicy === 'minimumAmount'}
+      <p class="subcontrol tooltip-container flex justify-between items-center pr-2">
+        <label class="text-sm flex-1">
+          &nbsp;Amount:
+          <input
+            bind:value={opts.minBurnAmount}
+            pattern={amountPattern.source}
+            class="input-inline"
+            use:resizeToFit
+            use:error={errors?.minBurnAmount}
+          />
+        </label>
+      </p>
+    {/if}
+
+    <label class:checked={opts.burnPolicy === 'ownerOnly'}>
+      <input type="radio" bind:group={opts.burnPolicy} value="ownerOnly" />
+      Owner Only
+      <HelpTooltip>
+        Only the faucet owner can destroy the tokens it holds, and tokens that other holders try to destroy are
+        permanently locked instead.
+      </HelpTooltip>
+    </label>
+  </div>
+</section>
+
+<AccessControlSection bind:access={opts.access} {ownerRequired} />
 
 <InfoSection bind:info={opts.info} {errors} />

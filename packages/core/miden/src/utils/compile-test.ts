@@ -13,23 +13,17 @@ import { contractsVersion } from './version';
 
 const asyncExecFile = promisify(execFile);
 
-/**
- * Commit of https://github.com/0xMiden/protocol that the generated code is compiled against. It must be a
- * commit of the release named by `contractsVersion`; bump both together when the target release changes.
- */
-export const PROTOCOL_GIT_REV = '86f6f3cdbcc5dc2ee3b12cfc61932f780dd612ac';
-
-/** Rust toolchain pinned by the protocol repository at `PROTOCOL_GIT_REV`. */
+/** Rust toolchain pinned by the Miden protocol repository at the `contractsVersion` release. */
 export const RUST_TOOLCHAIN = '1.98.1';
 
 const RUST_EDITION = '2024';
 
 /** Fully featured configurations compiled in addition to the covering subset of the option matrix. */
 export const featuredOptions: Record<string, GenericOptions> = {
-  full_user_token: {
+  full_single_key_token: {
     kind: 'Fungible',
-    name: 'FullUserToken',
-    symbol: 'FUT',
+    name: 'FullSingleKeyToken',
+    symbol: 'FSKT',
     decimals: '6',
     maxSupply: '1000000',
     description: 'A token',
@@ -37,47 +31,51 @@ export const featuredOptions: Record<string, GenericOptions> = {
     externalLink: 'https://example.com',
     updatableMetadata: true,
     updatableMaxSupply: true,
+    burnPolicy: 'minimumAmount',
     minBurnAmount: '0.5',
     pausable: true,
-    restrictions: 'allowlist',
-    switchablePolicies: true,
+    transferPolicy: 'allowlist',
+    switchableTransferPolicy: true,
+    access: 'singleKey',
   },
   full_ownable_token: {
     kind: 'Fungible',
     name: 'FullOwnableToken',
     symbol: 'FOT',
-    burnable: false,
+    burnPolicy: 'ownerOnly',
     updatableMetadata: true,
     updatableMaxSupply: true,
     pausable: true,
-    restrictions: 'blocklist',
-    switchablePolicies: true,
+    pausableTransfers: true,
+    switchableTransferPolicy: true,
     access: 'ownable',
   },
   full_roles_token: {
     kind: 'Fungible',
     name: 'FullRolesToken',
     symbol: 'FRT',
+    burnPolicy: 'minimumAmount',
     minBurnAmount: '1',
     updatableMetadata: true,
     updatableMaxSupply: true,
     pausable: true,
-    restrictions: 'blocklist',
-    switchablePolicies: true,
+    transferPolicy: 'blocklist',
+    switchableTransferPolicy: true,
     access: 'roles',
     info: { license: 'MIT', securityContact: 'security@example.com' },
   },
-  full_user_collection: {
+  full_single_key_collection: {
     kind: 'NonFungible',
-    name: 'FullUserCollection',
-    symbol: 'FUC',
+    name: 'FullSingleKeyCollection',
+    symbol: 'FSKC',
     description: 'A collection',
     logoUri: 'https://example.com/logo.png',
     contractUri: 'https://example.com/collection.json',
     updatableMetadata: true,
     pausable: true,
-    restrictions: 'blocklist',
-    switchablePolicies: true,
+    pausableTransfers: true,
+    switchableTransferPolicy: true,
+    access: 'singleKey',
   },
   full_ownable_collection: {
     kind: 'NonFungible',
@@ -85,17 +83,18 @@ export const featuredOptions: Record<string, GenericOptions> = {
     symbol: 'FOC',
     updatableMetadata: true,
     pausable: true,
+    transferPolicy: 'blocklist',
     access: 'ownable',
   },
   full_roles_collection: {
     kind: 'NonFungible',
     name: 'FullRolesCollection',
     symbol: 'FRC',
-    burnable: false,
+    burnPolicy: 'ownerOnly',
     updatableMetadata: true,
     pausable: true,
-    restrictions: 'allowlist',
-    switchablePolicies: true,
+    transferPolicy: 'allowlist',
+    switchableTransferPolicy: true,
     access: 'roles',
   },
 };
@@ -115,12 +114,25 @@ export async function withTemporaryCrate(fn: (dir: string) => Promise<void>): Pr
   }
 }
 
+/** A generated source compiled as a module of the test crate. */
+export interface CompiledSource {
+  /** Module name, which is also the name of the test building the account. */
+  module: string;
+  /** Name of the generated struct. */
+  identifier: string;
+  /** Whether `create` builds a Single Key user account rather than a network account. */
+  singleKey: boolean;
+  source: string;
+}
+
 /**
- * Writes a crate depending on the pinned protocol commit, with one module per generated source. Every item of the
- * generated sources is public, so denying warnings turns unused imports into failures.
+ * Writes a crate depending on the published protocol crates of `contractsVersion`, with one module per generated
+ * source. Every item of the generated sources is public, so denying warnings turns unused imports into failures.
+ * The crate's test calls `create` on every faucet, which catches combinations of components that the library
+ * rejects when building the account. It runs no transaction and needs no node.
  */
-export async function writeCrate(dir: string, sources: Map<string, string>): Promise<void> {
-  const dependency = `{ git = "https://github.com/0xMiden/protocol", rev = "${PROTOCOL_GIT_REV}" }`;
+export async function writeCrate(dir: string, sources: CompiledSource[]): Promise<void> {
+  const version = `"=${contractsVersion}"`;
   await writeFile(
     path.join(dir, 'Cargo.toml'),
     [
@@ -131,8 +143,11 @@ export async function writeCrate(dir: string, sources: Map<string, string>): Pro
       'publish = false',
       '',
       '[dependencies]',
-      `miden-protocol = ${dependency}`,
-      `miden-standards = ${dependency}`,
+      `miden-protocol = ${version}`,
+      `miden-standards = ${version}`,
+      '',
+      '[dev-dependencies]',
+      `miden-protocol = { version = ${version}, features = ["testing"] }`,
       '',
       '[workspace]',
       '',
@@ -145,39 +160,95 @@ export async function writeCrate(dir: string, sources: Map<string, string>): Pro
 
   const src = path.join(dir, 'src');
   await mkdir(src, { recursive: true });
-  const modules = [...sources.keys()].sort();
+  const sorted = [...sources].sort((a, b) => a.module.localeCompare(b.module));
   await writeFile(
     path.join(src, 'lib.rs'),
-    ['#![deny(warnings)]', '', ...modules.map(name => `pub mod ${name};`), ''].join('\n'),
+    ['#![deny(warnings)]', '', ...sorted.map(({ module }) => `pub mod ${module};`), ''].join('\n'),
   );
-  for (const [name, source] of sources) {
-    await writeFile(path.join(src, `${name}.rs`), source);
+  for (const { module, source } of sorted) {
+    await writeFile(path.join(src, `${module}.rs`), source);
   }
+
+  const tests = path.join(dir, 'tests');
+  await mkdir(tests, { recursive: true });
+  await writeFile(path.join(tests, 'build_accounts.rs'), buildAccountsTest(sorted));
+}
+
+function buildAccountsTest(sources: CompiledSource[]): string {
+  const lines = [
+    '//! Builds every generated faucet account in memory. No node, no transactions.',
+    '',
+    'use miden_protocol::account::auth::{AuthSecretKey, PublicKey};',
+    'use miden_protocol::account::{AccountId, AccountIdVersion, AccountType, AssetCallbackFlag};',
+    'use wizard_miden_compile_test::*;',
+    '',
+    '#[allow(dead_code)]',
+    'fn id(byte: u8) -> AccountId {',
+    '    AccountId::dummy([byte; 15], AccountIdVersion::Version1, AccountType::Public, AssetCallbackFlag::Disabled)',
+    '}',
+    '',
+    '#[allow(dead_code)]',
+    'fn key() -> PublicKey {',
+    '    AuthSecretKey::new_falcon512_poseidon2().public_key()',
+    '}',
+  ];
+  for (const { module, identifier, singleKey } of sources) {
+    const args = singleKey ? 'key(), AccountType::Public' : 'id(1), id(2)';
+    lines.push(
+      '',
+      '#[test]',
+      `fn ${module}() {`,
+      `    ${module}::${identifier}::create([7; 32], ${args}).expect("account builds");`,
+      '}',
+    );
+  }
+  lines.push('');
+  return lines.join('\n');
 }
 
 /** The covering subset of the option matrix (every `use` item at least once) plus the featured configurations. */
-export function sourcesToCompile(): Map<string, string> {
-  const sources = new Map<string, string>();
-  for (const { contract, source } of generateSources('minimal-cover', true)) {
-    sources.set(contract.name.moduleName, source);
+export function sourcesToCompile(): CompiledSource[] {
+  const sources: CompiledSource[] = [];
+  for (const { contract, options, source } of generateSources('minimal-cover', true)) {
+    sources.push({
+      module: contract.name.moduleName,
+      identifier: contract.name.identifier,
+      singleKey: isSingleKey(options),
+      source,
+    });
   }
-  for (const [name, options] of Object.entries(featuredOptions)) {
-    sources.set(name, printContract(buildGeneric(options)));
+  for (const [module, options] of Object.entries(featuredOptions)) {
+    const contract = buildGeneric(options);
+    sources.push({
+      module,
+      identifier: contract.name.identifier,
+      singleKey: isSingleKey(options),
+      source: printContract(contract),
+    });
   }
   return sources;
 }
 
-export async function cargoCheck(t: ExecutionContext, dir: string): Promise<void> {
+/**
+ * Whether `create` builds a Single Key faucet. The owner-only burn policy turns a requested Single Key faucet into an
+ * Ownable one.
+ */
+function isSingleKey(options: GenericOptions): boolean {
+  return (options.access ?? 'ownable') === 'singleKey' && options.burnPolicy !== 'ownerOnly';
+}
+
+/** Compiles the crate and builds every account by running its test. */
+export async function cargoTest(t: ExecutionContext, dir: string): Promise<void> {
   try {
-    await asyncExecFile('cargo', ['check', '--quiet'], {
+    await asyncExecFile('cargo', ['test', '--quiet'], {
       cwd: dir,
       env: { ...process.env, CARGO_TARGET_DIR: cargoTargetDir() },
       maxBuffer: 64 * 1024 * 1024,
     });
     t.pass();
   } catch (e: unknown) {
-    const { stderr } = e as { stderr?: string };
-    t.fail(`cargo check failed:\n${stderr ?? String(e)}`);
+    const { stdout, stderr } = e as { stdout?: string; stderr?: string };
+    t.fail(`cargo test failed:\n${stderr ?? String(e)}\n${stdout ?? ''}`);
   }
 }
 

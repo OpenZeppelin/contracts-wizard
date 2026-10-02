@@ -1,4 +1,4 @@
-import type { CommonContractOptions, Restrictions } from './common-options';
+import type { CommonContractOptions, TransferPolicy } from './common-options';
 import {
   contractDefaults as commonDefaults,
   DEFAULT_ACCESS_CONTROL,
@@ -18,7 +18,16 @@ import {
   validateName,
   validateSymbol,
 } from './token-metadata';
-import { paragraph } from './utils/doc';
+
+export const nonFungibleBurnPolicyOptions = ['anyHolder', 'ownerOnly'] as const;
+
+/**
+ * Who can burn NFTs, named after the standard burn policies of `miden-standards`.
+ *
+ * - `'anyHolder'`: any holder can burn their NFTs (`BurnPolicy::allow_all`).
+ * - `'ownerOnly'`: only the faucet owner can burn the NFTs it holds (`BurnPolicy::owner_only`).
+ */
+export type NonFungibleBurnPolicy = (typeof nonFungibleBurnPolicyOptions)[number];
 
 export interface NonFungibleOptions extends CommonContractOptions {
   name: string;
@@ -27,10 +36,12 @@ export interface NonFungibleOptions extends CommonContractOptions {
   logoUri?: string;
   contractUri?: string;
   updatableMetadata?: boolean;
-  burnable?: boolean;
+  burnPolicy?: NonFungibleBurnPolicy;
   pausable?: boolean;
-  restrictions?: Restrictions;
-  switchablePolicies?: boolean;
+  /** Whether pausing also stops transfers. Only applies when `pausable` is set; implied by a transfer policy. */
+  pausableTransfers?: boolean;
+  transferPolicy?: TransferPolicy;
+  switchableTransferPolicy?: boolean;
 }
 
 export const defaults: Required<NonFungibleOptions> = {
@@ -40,10 +51,11 @@ export const defaults: Required<NonFungibleOptions> = {
   logoUri: '',
   contractUri: '',
   updatableMetadata: false,
-  burnable: true,
+  burnPolicy: 'anyHolder',
   pausable: false,
-  restrictions: false,
-  switchablePolicies: false,
+  pausableTransfers: false,
+  transferPolicy: false,
+  switchableTransferPolicy: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -60,19 +72,20 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     logoUri: opts.logoUri ?? defaults.logoUri,
     contractUri: opts.contractUri ?? defaults.contractUri,
     updatableMetadata: opts.updatableMetadata ?? defaults.updatableMetadata,
-    burnable: opts.burnable ?? defaults.burnable,
+    burnPolicy: opts.burnPolicy ?? defaults.burnPolicy,
     pausable: opts.pausable ?? defaults.pausable,
-    restrictions: opts.restrictions ?? defaults.restrictions,
-    switchablePolicies: opts.switchablePolicies ?? defaults.switchablePolicies,
+    pausableTransfers: opts.pausableTransfers ?? defaults.pausableTransfers,
+    transferPolicy: opts.transferPolicy ?? defaults.transferPolicy,
+    switchableTransferPolicy: opts.switchableTransferPolicy ?? defaults.switchableTransferPolicy,
   };
 }
 
 /**
- * Restricting burning to the owner requires an owner, so access control is required when the NFTs are not
- * burnable by their holders.
+ * The owner-only burn policy checks the faucet owner, which a Single Key faucet does not have, so it requires
+ * an owner-based access control.
  */
 export function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean {
-  return opts.burnable === false;
+  return opts.burnPolicy === 'ownerOnly';
 }
 
 export function buildNonFungible(opts: NonFungibleOptions): Contract {
@@ -90,16 +103,18 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     throw new OptionsError(errors);
   }
 
-  const access = allOpts.burnable ? allOpts.access : allOpts.access || DEFAULT_ACCESS_CONTROL;
+  const access =
+    isAccessControlRequired(allOpts) && allOpts.access === 'singleKey' ? DEFAULT_ACCESS_CONTROL : allOpts.access;
 
   addFaucetComponent(c, allOpts);
 
   addFaucetAccount(c, access, {
     kind: 'NonFungible',
-    burnable: allOpts.burnable,
+    burnPolicy: allOpts.burnPolicy,
     pausable: allOpts.pausable,
-    restrictions: allOpts.restrictions,
-    switchablePolicies: allOpts.switchablePolicies,
+    pausableTransfers: allOpts.pausable && allOpts.pausableTransfers,
+    transferPolicy: allOpts.transferPolicy,
+    switchableTransferPolicy: allOpts.switchableTransferPolicy,
     updatableMetadata: allOpts.updatableMetadata,
   });
 
@@ -113,8 +128,8 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<NonFungibleOption
   c.addUseClause('miden_standards::account::faucets', 'NonFungibleFaucet');
   c.addUseClause('miden_standards::account::faucets', 'TokenName');
 
-  addStringConstant(c, 'NAME', opts.name, 'Collection name.');
-  addStringConstant(c, 'SYMBOL', opts.symbol, 'Collection symbol.');
+  addStringConstant(c, 'NAME', opts.name);
+  addStringConstant(c, 'SYMBOL', opts.symbol);
 
   const chain: string[] = [
     '.name(TokenName::new(Self::NAME).expect("token name is valid"))',
@@ -131,17 +146,15 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<NonFungibleOption
         constant: 'CONTRACT_URI',
         method: 'contract_uri',
         mutabilityMethod: 'is_contract_uri_mutable',
-        comment: 'URI of the collection-level metadata.',
         expect: 'contract URI is valid',
       },
-      'Collection',
     ),
     '.build()',
   ];
 
   c.addFunction({
     name: 'faucet',
-    comments: paragraph('Returns the non-fungible faucet component holding the collection metadata.', 1),
+    comments: [],
     args: [],
     returns: 'NonFungibleFaucet',
     code: ['NonFungibleFaucet::builder()', chain],

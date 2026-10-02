@@ -43,24 +43,28 @@ function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean
 ```js
 function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean
 ```
-Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
+Whether any of the provided options require an owner-based access control. If this returns `true`, then calling `print` with the same options would use `'ownable'` instead of `'singleKey'` for the `access` option.
 
 ### Options
 
 #### Access control
 
-The `access` option selects how the privileged procedures of the faucet account are authorized:
-- `false` (default): the faucet is a user account authenticated by a single signature. The generated `create` function takes the public key of the key holder, who is the sole authority over the faucet.
-- `'ownable'`: the faucet is a network account whose privileged procedures are gated by an owner account, with two-step ownership transfer. The network consumes the MINT, BURN and config notes sent to the faucet.
-- `'roles'`: the faucet is a network account with role-based access control.
+The `access` option selects who controls the faucet:
+- `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction, including minting and processing burn requests. The generated `create` function takes the public key of the key holder. Control can never be handed over or renounced. It can't be combined with the `'ownerOnly'` burn policy, in which case `'ownable'` is used.
+- `'ownable'` (default): the faucet is a network account managed by an owner account, with two-step ownership transfer. The network consumes the notes sent to the faucet, and the owner manages it by sending config notes.
+- `'roles'`: the faucet is a network account with role-based access control. Minting is done by the faucet owner, initially the admin.
 
 #### Features
 
-- `burnable`: whether any holder can burn the asset by sending it back to the faucet in a BURN note. Otherwise only the owner can burn, which requires access control.
-- `pausable`: whether privileged accounts can pause minting, burning and metadata updates, and also transfers when an allowlist or blocklist is active. Unrestricted transfers are never checked against the faucet.
-- `restrictions`: transfer restrictions enforced through the send and receive policies of the faucet, either `'allowlist'`, `'blocklist'` or `false`.
-- `switchablePolicies`: whether the other standard mint, burn, send and receive policies are registered as allowed alternatives, so that privileged accounts can switch the active policies after deployment. Installs the allowlist and blocklist managers and enables asset callbacks.
-- `minBurnAmount` (fungible only): the minimum amount of tokens that must be burned at once, in whole tokens. Requires `burnable`. Privileged accounts can update the minimum after deployment.
+- `burnPolicy`: who can burn the asset:
+  - `'anyHolder'` (default): holders can burn their tokens by sending them back to the faucet in a BURN note.
+  - `'minimumAmount'` (fungible only): holders can burn at least `minBurnAmount` tokens at a time. Privileged accounts can change the minimum after deployment.
+  - `'ownerOnly'`: only the faucet owner can burn the tokens it holds. A burn request from any other holder is rejected, and the tokens in it stay locked, since BURN notes cannot be reclaimed.
+- `minBurnAmount` (fungible only): the minimum number of tokens per burn. Required by, and only allowed with, the `'minimumAmount'` burn policy.
+- `pausable`: whether privileged accounts can pause minting, burning and metadata updates, and also transfers when `pausableTransfers` is `true` or a transfer policy is set.
+- `pausableTransfers`: whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. Requires `pausable`, and is implied by a transfer policy.
+- `transferPolicy`: who can send and receive the asset, either `'allowlist'`, `'blocklist'` or `false` (default). The lists start empty and are managed by privileged accounts. Every transfer then consults the faucet, with the same permanent extra cost.
+- `switchableTransferPolicy`: whether privileged accounts can turn on an allowlist or blocklist after deployment, and switch between them. Every transfer then consults the faucet, so transfers cost more to prove. This extra cost is permanent.
 
 ### Examples
 
@@ -81,7 +85,7 @@ const contract = fungible.print({
   name: 'MyToken',
   symbol: 'MTK',
   pausable: true,
-  access: 'ownable',
+  access: 'roles',
 });
 ```
 or
@@ -89,6 +93,6 @@ or
 const contract = fungible.print({
   ...fungible.defaults,
   pausable: true,
-  access: 'ownable',
+  access: 'roles',
 });
 ```

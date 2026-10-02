@@ -68,31 +68,52 @@ testFungible('fungible updatable metadata and max supply', {
   updatableMaxSupply: true,
 });
 
-testFungible('fungible not burnable defaults to ownable', {
-  burnable: false,
+testFungible('fungible single key', {
+  access: 'singleKey',
+});
+
+testFungible('fungible owner-only burning', {
+  burnPolicy: 'ownerOnly',
+});
+
+testFungible('fungible owner-only burning with single key uses ownable', {
+  burnPolicy: 'ownerOnly',
+  access: 'singleKey',
 });
 
 testFungible('fungible pausable', {
   pausable: true,
 });
 
+testFungible('fungible pausable including transfers', {
+  pausable: true,
+  pausableTransfers: true,
+});
+
+testFungible('fungible single key pausable including transfers', {
+  access: 'singleKey',
+  pausable: true,
+  pausableTransfers: true,
+});
+
 testFungible('fungible allowlist', {
-  restrictions: 'allowlist',
+  transferPolicy: 'allowlist',
 });
 
 testFungible('fungible blocklist', {
-  restrictions: 'blocklist',
+  transferPolicy: 'blocklist',
 });
 
-testFungible('fungible ownable', {
-  access: 'ownable',
+testFungible('fungible single key blocklist', {
+  access: 'singleKey',
+  transferPolicy: 'blocklist',
 });
 
-testFungible('fungible ownable pausable blocklist', {
+testFungible('fungible ownable pausable blocklist owner-only burning', {
   access: 'ownable',
   pausable: true,
-  restrictions: 'blocklist',
-  burnable: false,
+  transferPolicy: 'blocklist',
+  burnPolicy: 'ownerOnly',
 });
 
 testFungible('fungible roles', {
@@ -102,39 +123,47 @@ testFungible('fungible roles', {
 testFungible('fungible roles pausable allowlist', {
   access: 'roles',
   pausable: true,
-  restrictions: 'allowlist',
+  transferPolicy: 'allowlist',
 });
 
-testFungible('fungible min burn amount', {
+testFungible('fungible minimum burn amount', {
+  burnPolicy: 'minimumAmount',
   minBurnAmount: '10',
 });
 
-testFungible('fungible min burn amount ownable', {
+testFungible('fungible minimum burn amount single key', {
   decimals: '2',
+  burnPolicy: 'minimumAmount',
   minBurnAmount: '0.5',
-  access: 'ownable',
+  access: 'singleKey',
 });
 
-testFungible('fungible switchable policies', {
-  switchablePolicies: true,
+testFungible('fungible switchable transfer policy', {
+  switchableTransferPolicy: true,
 });
 
-testFungible('fungible switchable policies ownable blocklist', {
-  switchablePolicies: true,
-  access: 'ownable',
-  restrictions: 'blocklist',
+testFungible('fungible switchable transfer policy single key', {
+  switchableTransferPolicy: true,
+  access: 'singleKey',
 });
 
-testFungible('fungible switchable policies roles min burn amount pausable', {
-  switchablePolicies: true,
+testFungible('fungible switchable transfer policy blocklist', {
+  switchableTransferPolicy: true,
+  transferPolicy: 'blocklist',
+});
+
+testFungible('fungible switchable transfer policy pausable including transfers', {
+  switchableTransferPolicy: true,
+  pausable: true,
+  pausableTransfers: true,
+});
+
+testFungible('fungible switchable transfer policy roles minimum burn amount pausable', {
+  switchableTransferPolicy: true,
   access: 'roles',
+  burnPolicy: 'minimumAmount',
   minBurnAmount: '1',
   pausable: true,
-});
-
-testFungible('fungible switchable policies owner-only burning', {
-  switchablePolicies: true,
-  burnable: false,
 });
 
 testFungible('fungible full - complex name', {
@@ -147,10 +176,10 @@ testFungible('fungible full - complex name', {
   externalLink: 'https://example.com',
   updatableMetadata: true,
   updatableMaxSupply: true,
-  burnable: false,
+  burnPolicy: 'ownerOnly',
   pausable: true,
-  restrictions: 'blocklist',
-  switchablePolicies: true,
+  transferPolicy: 'blocklist',
+  switchableTransferPolicy: true,
   access: 'roles',
   info: {
     securityContact: 'security@example.com',
@@ -169,14 +198,25 @@ testFungibleError('fungible max supply too large', { maxSupply: '92233720368', d
 testFungibleError('fungible description too long', { description: 'x'.repeat(196) }, 'description');
 testFungibleError(
   'fungible min burn amount exceeds max supply',
-  { maxSupply: '100', minBurnAmount: '101' },
+  { maxSupply: '100', burnPolicy: 'minimumAmount', minBurnAmount: '101' },
   'minBurnAmount',
 );
-testFungibleError('fungible min burn amount invalid', { minBurnAmount: 'ten' }, 'minBurnAmount');
+testFungibleError(
+  'fungible min burn amount invalid',
+  { burnPolicy: 'minimumAmount', minBurnAmount: 'ten' },
+  'minBurnAmount',
+);
+testFungibleError(
+  'fungible min burn amount zero',
+  { burnPolicy: 'minimumAmount', minBurnAmount: '0' },
+  'minBurnAmount',
+);
+testFungibleError('fungible minimum amount policy without amount', { burnPolicy: 'minimumAmount' }, 'minBurnAmount');
+testFungibleError('fungible min burn amount without minimum amount policy', { minBurnAmount: '1' }, 'minBurnAmount');
 testFungibleError(
   'fungible min burn amount with owner-only burning',
-  { minBurnAmount: '1', burnable: false },
-  'burnable',
+  { minBurnAmount: '1', burnPolicy: 'ownerOnly' },
+  'minBurnAmount',
 );
 testFungibleError('fungible multiple errors', { symbol: 'mtk', decimals: '99', logoUri: 'x'.repeat(196) }, 'symbol');
 
@@ -197,18 +237,20 @@ testAPIEquivalence('fungible API full', {
   externalLink: 'https://example.com',
   updatableMetadata: true,
   updatableMaxSupply: true,
-  burnable: false,
+  burnPolicy: 'ownerOnly',
   pausable: true,
-  restrictions: 'allowlist',
-  switchablePolicies: true,
+  pausableTransfers: true,
+  transferPolicy: 'allowlist',
+  switchableTransferPolicy: true,
   access: 'roles',
 });
 
-testAPIEquivalence('fungible API min burn amount', {
+testAPIEquivalence('fungible API minimum burn amount', {
   name: 'CustomToken',
   symbol: 'CTK',
+  burnPolicy: 'minimumAmount',
   minBurnAmount: '25',
-  switchablePolicies: true,
+  switchableTransferPolicy: true,
 });
 
 test('fungible API assert defaults', async t => {
@@ -216,13 +258,30 @@ test('fungible API assert defaults', async t => {
 });
 
 test('fungible API isAccessControlRequired', async t => {
-  t.is(fungible.isAccessControlRequired({ burnable: false }), true);
-  t.is(fungible.isAccessControlRequired({ burnable: true }), false);
-  t.is(fungible.isAccessControlRequired({ pausable: true, restrictions: 'blocklist' }), false);
-  t.is(fungible.isAccessControlRequired({ minBurnAmount: '10', switchablePolicies: true }), false);
+  t.is(fungible.isAccessControlRequired({ burnPolicy: 'ownerOnly' }), true);
+  t.is(fungible.isAccessControlRequired({ burnPolicy: 'anyHolder' }), false);
+  t.is(fungible.isAccessControlRequired({ burnPolicy: 'minimumAmount', minBurnAmount: '10' }), false);
+  t.is(fungible.isAccessControlRequired({ pausable: true, transferPolicy: 'blocklist' }), false);
+  t.is(fungible.isAccessControlRequired({ switchableTransferPolicy: true }), false);
 });
 
-test('fungible zero or empty min burn amount means no minimum', async t => {
-  t.is(fungible.print({ name: 'MyToken', symbol: 'MTK', minBurnAmount: '0' }), fungible.print());
+test('fungible blank min burn amount with any holder burning is no minimum', async t => {
   t.is(fungible.print({ name: 'MyToken', symbol: 'MTK', minBurnAmount: ' ' }), fungible.print());
+});
+
+test('fungible pausable transfers without pausable are ignored', async t => {
+  t.is(fungible.print({ name: 'MyToken', symbol: 'MTK', pausableTransfers: true }), fungible.print());
+});
+
+test('fungible pausable transfers are implied by a transfer policy', async t => {
+  t.is(
+    fungible.print({
+      name: 'MyToken',
+      symbol: 'MTK',
+      pausable: true,
+      transferPolicy: 'allowlist',
+      pausableTransfers: true,
+    }),
+    fungible.print({ name: 'MyToken', symbol: 'MTK', pausable: true, transferPolicy: 'allowlist' }),
+  );
 });

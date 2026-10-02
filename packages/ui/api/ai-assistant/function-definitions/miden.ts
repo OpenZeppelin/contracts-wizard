@@ -6,6 +6,8 @@ import {
   midenFungibleDescriptions,
   midenNonFungibleDescriptions,
 } from '../../../../common/src/ai/descriptions/miden.ts';
+import { extractStringEnumValues } from '../types/helpers.ts';
+import type { FungibleBurnPolicy, NonFungibleBurnPolicy } from '../../../../core/miden/dist';
 
 export const midenFungibleAIFunctionDefinition = {
   name: 'Fungible',
@@ -15,13 +17,21 @@ export const midenFungibleAIFunctionDefinition = {
     properties: {
       ...addFunctionPropertiesFrom(midenCommonFunctionDescription, ['name', 'symbol', 'access', 'info']),
       // The Miden-specific descriptions must take precedence over the generic ones of `addFunctionPropertiesFrom`.
-      burnable: midenCommonFunctionDescription.burnable,
       pausable: midenCommonFunctionDescription.pausable,
-      restrictions: midenCommonFunctionDescription.restrictions,
-      switchablePolicies: midenCommonFunctionDescription.switchablePolicies,
+      pausableTransfers: midenCommonFunctionDescription.pausableTransfers,
+      transferPolicy: midenCommonFunctionDescription.transferPolicy,
+      switchableTransferPolicy: midenCommonFunctionDescription.switchableTransferPolicy,
       description: midenCommonFunctionDescription.description,
       logoUri: midenCommonFunctionDescription.logoUri,
-      updatableMetadata: midenCommonFunctionDescription.updatableMetadata,
+      updatableMetadata: {
+        type: 'boolean',
+        description: midenFungibleDescriptions.updatableMetadata,
+      },
+      burnPolicy: {
+        type: 'string',
+        enum: extractStringEnumValues<FungibleBurnPolicy>()(['anyHolder', 'minimumAmount', 'ownerOnly']),
+        description: midenFungibleDescriptions.burnPolicy,
+      },
       decimals: {
         type: 'string',
         description: midenFungibleDescriptions.decimals,
@@ -55,13 +65,21 @@ export const midenNonFungibleAIFunctionDefinition = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(midenCommonFunctionDescription, ['name', 'symbol', 'access', 'info']),
-      burnable: midenCommonFunctionDescription.burnable,
       pausable: midenCommonFunctionDescription.pausable,
-      restrictions: midenCommonFunctionDescription.restrictions,
-      switchablePolicies: midenCommonFunctionDescription.switchablePolicies,
+      pausableTransfers: midenCommonFunctionDescription.pausableTransfers,
+      transferPolicy: midenCommonFunctionDescription.transferPolicy,
+      switchableTransferPolicy: midenCommonFunctionDescription.switchableTransferPolicy,
       description: midenCommonFunctionDescription.description,
       logoUri: midenCommonFunctionDescription.logoUri,
-      updatableMetadata: midenCommonFunctionDescription.updatableMetadata,
+      updatableMetadata: {
+        type: 'boolean',
+        description: midenNonFungibleDescriptions.updatableMetadata,
+      },
+      burnPolicy: {
+        type: 'string',
+        enum: extractStringEnumValues<NonFungibleBurnPolicy>()(['anyHolder', 'ownerOnly']),
+        description: midenNonFungibleDescriptions.burnPolicy,
+      },
       contractUri: {
         type: 'string',
         description: midenNonFungibleDescriptions.contractUri,

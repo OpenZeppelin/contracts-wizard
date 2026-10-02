@@ -1,4 +1,4 @@
-import type { CommonContractOptions, Restrictions } from './common-options';
+import type { CommonContractOptions, TransferPolicy } from './common-options';
 import {
   contractDefaults as commonDefaults,
   DEFAULT_ACCESS_CONTROL,
@@ -28,6 +28,18 @@ export const MAX_DECIMALS = 12;
 /** Maximum representable fungible asset amount in base units (`AssetAmount::MAX`). */
 export const MAX_ASSET_AMOUNT = 2n ** 63n - 2n ** 31n;
 
+export const fungibleBurnPolicyOptions = ['anyHolder', 'minimumAmount', 'ownerOnly'] as const;
+
+/**
+ * Who can burn tokens, named after the standard burn policies of `miden-standards`.
+ *
+ * - `'anyHolder'`: any holder can burn their tokens (`BurnPolicy::allow_all`).
+ * - `'minimumAmount'`: any holder can burn their tokens, at least `minBurnAmount` at a time
+ *   (`BurnPolicy::min_burn_amount`).
+ * - `'ownerOnly'`: only the faucet owner can burn the tokens it holds (`BurnPolicy::owner_only`).
+ */
+export type FungibleBurnPolicy = (typeof fungibleBurnPolicyOptions)[number];
+
 export interface FungibleOptions extends CommonContractOptions {
   name: string;
   symbol: string;
@@ -38,11 +50,14 @@ export interface FungibleOptions extends CommonContractOptions {
   externalLink?: string;
   updatableMetadata?: boolean;
   updatableMaxSupply?: boolean;
-  burnable?: boolean;
+  burnPolicy?: FungibleBurnPolicy;
+  /** Minimum amount of tokens per burn. Required by, and only allowed with, the `'minimumAmount'` burn policy. */
   minBurnAmount?: string;
   pausable?: boolean;
-  restrictions?: Restrictions;
-  switchablePolicies?: boolean;
+  /** Whether pausing also stops transfers. Only applies when `pausable` is set; implied by a transfer policy. */
+  pausableTransfers?: boolean;
+  transferPolicy?: TransferPolicy;
+  switchableTransferPolicy?: boolean;
 }
 
 export const defaults: Required<FungibleOptions> = {
@@ -55,11 +70,12 @@ export const defaults: Required<FungibleOptions> = {
   externalLink: '',
   updatableMetadata: false,
   updatableMaxSupply: false,
-  burnable: true,
+  burnPolicy: 'anyHolder',
   minBurnAmount: '',
   pausable: false,
-  restrictions: false,
-  switchablePolicies: false,
+  pausableTransfers: false,
+  transferPolicy: false,
+  switchableTransferPolicy: false,
   access: commonDefaults.access,
   info: commonDefaults.info,
 } as const;
@@ -79,20 +95,21 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     externalLink: opts.externalLink ?? defaults.externalLink,
     updatableMetadata: opts.updatableMetadata ?? defaults.updatableMetadata,
     updatableMaxSupply: opts.updatableMaxSupply ?? defaults.updatableMaxSupply,
-    burnable: opts.burnable ?? defaults.burnable,
+    burnPolicy: opts.burnPolicy ?? defaults.burnPolicy,
     minBurnAmount: opts.minBurnAmount ?? defaults.minBurnAmount,
     pausable: opts.pausable ?? defaults.pausable,
-    restrictions: opts.restrictions ?? defaults.restrictions,
-    switchablePolicies: opts.switchablePolicies ?? defaults.switchablePolicies,
+    pausableTransfers: opts.pausableTransfers ?? defaults.pausableTransfers,
+    transferPolicy: opts.transferPolicy ?? defaults.transferPolicy,
+    switchableTransferPolicy: opts.switchableTransferPolicy ?? defaults.switchableTransferPolicy,
   };
 }
 
 /**
- * Restricting burning to the owner requires an owner, so access control is required when the token is not
- * burnable by its holders.
+ * The owner-only burn policy checks the faucet owner, which a Single Key faucet does not have, so it requires
+ * an owner-based access control.
  */
 export function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean {
-  return opts.burnable === false;
+  return opts.burnPolicy === 'ownerOnly';
 }
 
 export function buildFungible(opts: FungibleOptions): Contract {
@@ -110,7 +127,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
     decimals === undefined || maxSupply === undefined
       ? undefined
       : collectErrors(errors, () =>
-          validateMinBurnAmount(allOpts.minBurnAmount, decimals, maxSupply, allOpts.burnable),
+          validateMinBurnAmount(allOpts.minBurnAmount, decimals, maxSupply, allOpts.burnPolicy),
         );
   validateMetadataField(allOpts.description, 'description', errors);
   validateMetadataField(allOpts.logoUri, 'logoUri', errors);
@@ -124,7 +141,8 @@ export function buildFungible(opts: FungibleOptions): Contract {
     throw new OptionsError(errors);
   }
 
-  const access = allOpts.burnable ? allOpts.access : allOpts.access || DEFAULT_ACCESS_CONTROL;
+  const access =
+    isAccessControlRequired(allOpts) && allOpts.access === 'singleKey' ? DEFAULT_ACCESS_CONTROL : allOpts.access;
 
   addFaucetComponent(c, allOpts, decimals, maxSupply);
 
@@ -142,11 +160,11 @@ export function buildFungible(opts: FungibleOptions): Contract {
 
   addFaucetAccount(c, access, {
     kind: 'Fungible',
-    burnable: allOpts.burnable,
-    minBurnAmount: minBurnAmount === null ? undefined : allOpts.minBurnAmount.trim(),
+    burnPolicy: allOpts.burnPolicy,
     pausable: allOpts.pausable,
-    restrictions: allOpts.restrictions,
-    switchablePolicies: allOpts.switchablePolicies,
+    pausableTransfers: allOpts.pausable && allOpts.pausableTransfers,
+    transferPolicy: allOpts.transferPolicy,
+    switchableTransferPolicy: allOpts.switchableTransferPolicy,
     updatableMetadata: allOpts.updatableMetadata || allOpts.updatableMaxSupply,
   });
 
@@ -183,29 +201,31 @@ function validateMaxSupply(maxSupply: string, decimals: number): bigint {
 }
 
 /**
- * Validates the minimum burn amount and converts it to base units. Returns `null` when no minimum is set.
+ * Validates the minimum burn amount of the `'minimumAmount'` burn policy and converts it to base units. Returns
+ * `null` for the other burn policies, which take no minimum.
  */
 function validateMinBurnAmount(
   minBurnAmount: string,
   decimals: number,
   maxSupply: bigint,
-  burnable: boolean,
+  burnPolicy: FungibleBurnPolicy,
 ): bigint | null {
-  if (minBurnAmount.trim().length === 0) {
+  const trimmed = minBurnAmount.trim();
+  if (burnPolicy !== 'minimumAmount') {
+    if (trimmed.length > 0) {
+      throw new OptionsError({ minBurnAmount: 'Requires the Minimum Amount burn policy' });
+    }
     return null;
   }
-  const baseUnits = BigInt(toBaseUnits(minBurnAmount, decimals, 'minBurnAmount'));
+  if (trimmed.length === 0) {
+    throw new OptionsError({ minBurnAmount: 'Required by the Minimum Amount burn policy' });
+  }
+  const baseUnits = BigInt(toBaseUnits(trimmed, decimals, 'minBurnAmount'));
   if (baseUnits === 0n) {
-    return null;
+    throw new OptionsError({ minBurnAmount: 'Must be greater than 0' });
   }
   if (baseUnits > maxSupply) {
     throw new OptionsError({ minBurnAmount: 'Must not exceed the max supply' });
-  }
-  if (!burnable) {
-    throw new OptionsError({
-      minBurnAmount: 'Requires the token to be burnable by its holders',
-      burnable: 'Owner-only burning cannot have a minimum burn amount',
-    });
   }
   return baseUnits;
 }
@@ -216,13 +236,13 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
   c.addUseClause('miden_standards::account::faucets', 'FungibleFaucet');
   c.addUseClause('miden_standards::account::faucets', 'TokenName');
 
-  addStringConstant(c, 'NAME', opts.name, 'Token name.');
-  addStringConstant(c, 'SYMBOL', opts.symbol, 'Token symbol.');
+  addStringConstant(c, 'NAME', opts.name);
+  addStringConstant(c, 'SYMBOL', opts.symbol);
   c.addConstant({
     name: 'DECIMALS',
     type: 'u8',
     value: decimals.toString(),
-    comments: ['Number of decimals used to represent token amounts.'],
+    comments: [],
   });
   c.addConstant({
     name: 'MAX_SUPPLY',
@@ -248,10 +268,8 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
         constant: 'EXTERNAL_LINK',
         method: 'external_link',
         mutabilityMethod: 'is_external_link_mutable',
-        comment: 'Link to more information about the token.',
         expect: 'external link is valid',
       },
-      'Token',
     ),
   ];
   if (opts.updatableMaxSupply) {
@@ -261,7 +279,7 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
 
   c.addFunction({
     name: 'faucet',
-    comments: paragraph('Returns the fungible faucet component holding the token configuration and metadata.', 1),
+    comments: [],
     args: [],
     returns: 'FungibleFaucet',
     code: ['FungibleFaucet::builder()', chain],

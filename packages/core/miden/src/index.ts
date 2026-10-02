@@ -6,8 +6,8 @@ export { ContractBuilder } from './contract';
 
 export { printContract } from './print';
 
-export type { Access, Restrictions } from './common-options';
-export { accessOptions, restrictionsOptions } from './common-options';
+export type { Access, TransferPolicy } from './common-options';
+export { accessOptions, transferPolicyOptions } from './common-options';
 export type { Info } from './set-info';
 
 export { defaults as infoDefaults } from './set-info';
@@ -26,5 +26,7 @@ export { MAX_DECIMALS } from './fungible';
 
 export { fungible, nonFungible } from './api';
 
-export type { FungibleOptions } from './fungible';
-export type { NonFungibleOptions } from './non-fungible';
+export type { FungibleOptions, FungibleBurnPolicy } from './fungible';
+export { fungibleBurnPolicyOptions } from './fungible';
+export type { NonFungibleOptions, NonFungibleBurnPolicy } from './non-fungible';
+export { nonFungibleBurnPolicyOptions } from './non-fungible';

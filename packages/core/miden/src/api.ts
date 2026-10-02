@@ -26,8 +26,8 @@ export interface WizardContractAPI<Options extends CommonContractOptions> {
 
 export interface AccessControlAPI<Options extends CommonContractOptions> {
   /**
-   * Whether any of the provided options require access control to be enabled. If this returns `true`, then calling `print` with the
-   * same options would cause the `access` option to default to `'ownable'` if it was `undefined` or `false`.
+   * Whether any of the provided options require an owner-based access control. If this returns `true`, then calling `print`
+   * with the same options would use `'ownable'` instead of `'singleKey'` for the `access` option.
    */
   isAccessControlRequired: (opts: Partial<Options>) => boolean;
 }

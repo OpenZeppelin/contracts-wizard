@@ -10,30 +10,37 @@ export const midenPrompts = {
 
 export const midenCommonDescriptions = {
   access:
-    'How privileged operations of the faucet account are authorized. Without access control, the faucet is a user account authenticated by a single signature, and the key holder is the sole authority. Ownable creates a network account whose privileged procedures are gated by an owner account, with two-step ownership transfer. Roles creates a network account with role-based access control, where each privileged procedure can be assigned its own role.',
-  burnable:
-    'Whether any holder can burn the asset by sending it back to the faucet in a BURN note. Otherwise only the owner can burn, which requires access control.',
+    "Who controls the faucet. 'singleKey': a user account run by one key holder, who signs every transaction; it can't be combined with burnPolicy 'ownerOnly', in which case 'ownable' is used. 'ownable': a network account managed by an owner account, with two-step ownership transfer. 'roles': a network account with a separate role for each privileged action, where a role can have many authorized accounts; minting is the exception: it is done by the faucet owner, initially the admin.",
   pausable:
-    'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers of the asset when an allowlist or blocklist is active. Unrestricted transfers are never checked against the faucet. Useful for emergency response.',
-  restrictions:
-    'Whether to restrict transfers of the asset through the send and receive policies of the faucet: an allowlist only lets accounts on the list send or receive the asset, and a blocklist prevents accounts on the list from sending or receiving it.',
+    'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when pausableTransfers is true or a transfer policy is set. Useful for emergency response.',
+  pausableTransfers:
+    'Whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. If false, pausing stops only minting, burning and metadata updates. Requires pausable; implied by a transfer policy.',
+  transferPolicy:
+    "Restricts who can send and receive the asset. 'allowlist': only accounts on the allowlist can send or receive the asset; the list starts empty, so privileged accounts must add an account before it can receive the asset, including newly minted ones. 'blocklist': accounts on the blocklist can neither send nor receive the asset; privileged accounts manage the blocklist. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent.",
+  switchableTransferPolicy:
+    'Whether privileged accounts will be able to turn on an allowlist or blocklist after deployment, and switch between them, which can freeze transfers. Every transfer then consults the faucet, so transfers cost more to prove. This extra cost is permanent.',
   description: 'An optional description of the asset, at most 195 bytes.',
   logoUri: 'An optional URI of the asset logo, at most 195 bytes.',
-  updatableMetadata:
-    'Whether privileged accounts can update the description, logo URI and link of the asset after deployment.',
-  switchablePolicies:
-    'Whether the other standard mint, burn, send and receive policies are registered as allowed alternatives, so that privileged accounts can switch the active policies after deployment. Installs the allowlist and blocklist managers and enables asset callbacks.',
 };
 
 export const midenFungibleDescriptions = {
   decimals: 'The number of decimals used to represent token amounts, at most 12. Defaults to 8.',
-  maxSupply: 'The maximum number of tokens that can ever be minted, in whole tokens. Defaults to 1000000000.',
+  maxSupply:
+    'The maximum number of tokens in circulation at any time. Burning frees room to mint again. Defaults to 1000000000.',
   externalLink: 'An optional link to more information about the token, at most 195 bytes.',
-  updatableMaxSupply: 'Whether privileged accounts can update the maximum supply after deployment.',
+  updatableMetadata:
+    'Whether privileged accounts will be able to update the description, logo URI and external link after deployment. The name, symbol and decimals can never change.',
+  updatableMaxSupply: 'Whether privileged accounts will be able to update the maximum supply after deployment.',
+  burnPolicy:
+    "Who can burn tokens. 'anyHolder' (default): token holders will be able to destroy their tokens. 'minimumAmount': token holders will be able to destroy their tokens, at least minBurnAmount at a time; privileged accounts can change the minimum after deployment. 'ownerOnly': only the faucet owner can destroy the tokens it holds, and tokens that other holders try to destroy are permanently locked instead.",
   minBurnAmount:
-    'An optional minimum amount of tokens that must be burned at once, in whole tokens. Requires the token to be burnable by its holders. Privileged accounts can update the minimum after deployment.',
+    "The minimum number of tokens per burn. Required by, and only allowed with, the 'minimumAmount' burn policy.",
 };
 
 export const midenNonFungibleDescriptions = {
   contractUri: 'An optional URI of the collection-level metadata, at most 195 bytes.',
+  updatableMetadata:
+    'Whether privileged accounts will be able to update the description, logo URI and contract URI after deployment. The name and symbol can never change.',
+  burnPolicy:
+    "Who can burn NFTs. 'anyHolder' (default): NFT holders will be able to destroy their NFTs. 'ownerOnly': only the faucet owner can destroy the NFTs it holds, and NFTs that other holders try to destroy are permanently locked instead.",
 };

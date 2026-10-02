@@ -48,7 +48,8 @@ test('is access control required', async t => {
     switch (contract.options.kind) {
       case 'Fungible':
       case 'NonFungible':
-        if (!contract.options.access) {
+        // A Single Key faucet has no access control component, unless the options need an owner.
+        if (contract.options.access === 'singleKey') {
           if (isAccessControlRequired(contract.options)) {
             t.regex(contract.source, regexOwnable, JSON.stringify(contract.options));
           } else {

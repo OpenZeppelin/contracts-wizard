@@ -49,11 +49,12 @@ test('all', async t => {
     externalLink: 'https://example.com',
     updatableMetadata: true,
     updatableMaxSupply: true,
-    burnable: true,
+    burnPolicy: 'minimumAmount',
     minBurnAmount: '10',
     pausable: true,
-    restrictions: 'blocklist',
-    switchablePolicies: true,
+    pausableTransfers: true,
+    transferPolicy: 'blocklist',
+    switchableTransferPolicy: true,
     access: 'roles',
     info: {
       license: 'MIT',
@@ -68,8 +69,17 @@ test('owner-only burning', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
-    burnable: false,
+    burnPolicy: 'ownerOnly',
     access: 'ownable',
+  };
+  await assertAPIEquivalence(t, params, fungible.print);
+});
+
+test('single key', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    access: 'singleKey',
   };
   await assertAPIEquivalence(t, params, fungible.print);
 });

@@ -802,12 +802,13 @@ test('miden-fungible: basic', t => {
   t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST' }));
 });
 
-test('miden-fungible: min burn amount and switchable policies', t => {
+test('miden-fungible: minimum burn amount and switchable transfer policy', t => {
   const opts = {
     name: 'TestToken',
     symbol: 'TST',
+    burnPolicy: 'minimumAmount' as const,
     minBurnAmount: '10',
-    switchablePolicies: true,
+    switchableTransferPolicy: true,
   };
   const output = run(
     'miden-fungible',
@@ -815,11 +816,18 @@ test('miden-fungible: min burn amount and switchable policies', t => {
     opts.name,
     '--symbol',
     opts.symbol,
+    '--burnPolicy',
+    opts.burnPolicy,
     '--minBurnAmount',
     opts.minBurnAmount,
-    '--switchablePolicies',
+    '--switchableTransferPolicy',
   );
   t.is(output, midenFungible.print(opts));
+});
+
+test('miden-fungible: single key', t => {
+  const output = run('miden-fungible', '--name', 'TestToken', '--symbol', 'TST', '--access', 'singleKey');
+  t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST', access: 'singleKey' }));
 });
 
 test('miden-fungible: most options', t => {
@@ -833,10 +841,11 @@ test('miden-fungible: most options', t => {
     externalLink: 'https://example.com',
     updatableMetadata: true,
     updatableMaxSupply: true,
-    burnable: false,
+    burnPolicy: 'ownerOnly' as const,
     pausable: true,
-    restrictions: 'blocklist' as const,
-    switchablePolicies: true,
+    pausableTransfers: true,
+    transferPolicy: 'blocklist' as const,
+    switchableTransferPolicy: true,
     access: 'roles' as const,
   };
   const output = run(
@@ -857,12 +866,13 @@ test('miden-fungible: most options', t => {
     opts.externalLink,
     '--updatableMetadata',
     '--updatableMaxSupply',
-    '--burnable',
-    'false',
+    '--burnPolicy',
+    opts.burnPolicy,
     '--pausable',
-    '--restrictions',
-    opts.restrictions,
-    '--switchablePolicies',
+    '--pausableTransfers',
+    '--transferPolicy',
+    opts.transferPolicy,
+    '--switchableTransferPolicy',
     '--access',
     opts.access,
   );
@@ -877,10 +887,10 @@ test('miden-non-fungible: most options', t => {
     logoUri: 'https://example.com/logo.png',
     contractUri: 'https://example.com/collection.json',
     updatableMetadata: true,
-    burnable: false,
+    burnPolicy: 'ownerOnly' as const,
     pausable: true,
-    restrictions: 'allowlist' as const,
-    switchablePolicies: true,
+    transferPolicy: 'allowlist' as const,
+    switchableTransferPolicy: true,
     access: 'ownable' as const,
   };
   const output = run(
@@ -896,12 +906,12 @@ test('miden-non-fungible: most options', t => {
     '--contractUri',
     opts.contractUri,
     '--updatableMetadata',
-    '--burnable',
-    'false',
+    '--burnPolicy',
+    opts.burnPolicy,
     '--pausable',
-    '--restrictions',
-    opts.restrictions,
-    '--switchablePolicies',
+    '--transferPolicy',
+    opts.transferPolicy,
+    '--switchableTransferPolicy',
     '--access',
     opts.access,
   );

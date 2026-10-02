@@ -1,5 +1,6 @@
 import type { NonFungibleOptions } from '../non-fungible';
-import { accessOptions, restrictionsOptions } from '../common-options';
+import { accessOptions, transferPolicyOptions } from '../common-options';
+import { nonFungibleBurnPolicyOptions } from '../non-fungible';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
 
@@ -12,10 +13,11 @@ const blueprint = {
   logoUri: ['', 'https://example.com/logo.png'],
   contractUri: ['', 'https://example.com/collection.json'],
   updatableMetadata: booleans,
-  burnable: booleans,
+  burnPolicy: nonFungibleBurnPolicyOptions,
   pausable: booleans,
-  restrictions: restrictionsOptions,
-  switchablePolicies: booleans,
+  pausableTransfers: booleans,
+  transferPolicy: transferPolicyOptions,
+  switchableTransferPolicy: booleans,
   access: accessOptions,
   info: infoOptions,
 };

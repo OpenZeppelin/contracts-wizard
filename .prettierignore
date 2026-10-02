@@ -18,3 +18,5 @@ remappings.txt
 *.sh
 # Generated single-file MCP App documents with an inlined bundle (yarn build:apps)
 packages/mcp/apps/
+# Cargo build output of the Miden compile test
+packages/core/miden/target/

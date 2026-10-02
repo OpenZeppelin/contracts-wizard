@@ -1,5 +1,6 @@
 import type { FungibleOptions } from '../fungible';
-import { accessOptions, restrictionsOptions } from '../common-options';
+import { accessOptions, transferPolicyOptions } from '../common-options';
+import { fungibleBurnPolicyOptions } from '../fungible';
 import { infoOptions } from '../set-info';
 import { generateAlternatives } from './alternatives';
 
@@ -15,11 +16,12 @@ const blueprint = {
   externalLink: ['', 'https://example.com'],
   updatableMetadata: booleans,
   updatableMaxSupply: booleans,
-  burnable: booleans,
+  burnPolicy: fungibleBurnPolicyOptions,
   minBurnAmount: ['', '10'],
   pausable: booleans,
-  restrictions: restrictionsOptions,
-  switchablePolicies: booleans,
+  pausableTransfers: booleans,
+  transferPolicy: transferPolicyOptions,
+  switchableTransferPolicy: booleans,
   access: accessOptions,
   info: infoOptions,
 };
