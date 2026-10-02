@@ -71,7 +71,9 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Decimals
-      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 8.</HelpTooltip>
+      <HelpTooltip
+        >The number of decimals used to represent token amounts. Defaults to 8, with a maximum of 12.</HelpTooltip
+      >
     </span>
     <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder={fungible.defaults.decimals} />
   </label>

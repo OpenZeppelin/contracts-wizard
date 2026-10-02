@@ -24,7 +24,7 @@ export const midenCommonDescriptions = {
 };
 
 export const midenFungibleDescriptions = {
-  decimals: 'The number of decimals used to represent token amounts. Defaults to 8.',
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 8, with a maximum of 12.',
   maxSupply: 'The maximum number of tokens in circulation at any time. Burning frees room to mint again.',
   externalLink: 'An optional link to more information about the token.',
   updatableMetadata:
