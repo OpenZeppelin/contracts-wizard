@@ -61,6 +61,25 @@ test('all', async t => {
   await assertAPIEquivalence(t, params, nonFungible.print);
 });
 
+test('owner-only burning', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    burnPolicy: 'ownerOnly',
+    access: 'ownable',
+  };
+  await assertAPIEquivalence(t, params, nonFungible.print);
+});
+
+test('single key', async t => {
+  const params: z.infer<typeof t.context.schema> = {
+    name: 'TestToken',
+    symbol: 'TST',
+    access: 'singleKey',
+  };
+  await assertAPIEquivalence(t, params, nonFungible.print);
+});
+
 test('invalid options', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',

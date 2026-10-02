@@ -192,6 +192,7 @@ testFungibleError('fungible lowercase symbol', { symbol: 'mtk' }, 'symbol');
 testFungibleError('fungible symbol too long', { symbol: 'ABCDEFGHIJKLM' }, 'symbol');
 testFungibleError('fungible too many decimals', { decimals: '13' }, 'decimals');
 testFungibleError('fungible invalid decimals', { decimals: 'abc' }, 'decimals');
+testFungibleError('fungible max supply empty', { maxSupply: '' }, 'maxSupply');
 testFungibleError('fungible max supply zero', { maxSupply: '0' }, 'maxSupply');
 testFungibleError('fungible max supply too precise', { maxSupply: '1.123', decimals: '2' }, 'maxSupply');
 testFungibleError('fungible max supply too large', { maxSupply: '92233720368', decimals: '8' }, 'maxSupply');

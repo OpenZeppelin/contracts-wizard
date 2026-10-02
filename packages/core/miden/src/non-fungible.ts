@@ -22,10 +22,10 @@ import {
 export const nonFungibleBurnPolicyOptions = ['anyHolder', 'ownerOnly'] as const;
 
 /**
- * Who can burn NFTs, named after the standard burn policies of `miden-standards`.
+ * Who can burn tokens, named after the standard burn policies of `miden-standards`.
  *
- * - `'anyHolder'`: any holder can burn their NFTs (`BurnPolicy::allow_all`).
- * - `'ownerOnly'`: only the faucet owner can burn the NFTs it holds (`BurnPolicy::owner_only`).
+ * - `'anyHolder'`: any holder can burn their tokens (`BurnPolicy::allow_all`).
+ * - `'ownerOnly'`: only the faucet owner can burn the tokens it holds (`BurnPolicy::owner_only`).
  */
 export type NonFungibleBurnPolicy = (typeof nonFungibleBurnPolicyOptions)[number];
 

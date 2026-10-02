@@ -89,7 +89,7 @@ function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     ...opts,
     ...withCommonContractDefaults(opts),
     decimals: opts.decimals || defaults.decimals,
-    maxSupply: opts.maxSupply || defaults.maxSupply,
+    maxSupply: opts.maxSupply ?? defaults.maxSupply,
     description: opts.description ?? defaults.description,
     logoUri: opts.logoUri ?? defaults.logoUri,
     externalLink: opts.externalLink ?? defaults.externalLink,
@@ -190,6 +190,10 @@ function validateDecimals(decimals: string): number {
 }
 
 function validateMaxSupply(maxSupply: string, decimals: number): bigint {
+  // The max supply caps minting for good unless it is updatable, so an empty value is an error rather than the default
+  if (maxSupply.trim() === '') {
+    throw new OptionsError({ maxSupply: 'Required' });
+  }
   const baseUnits = BigInt(toBaseUnits(maxSupply, decimals, 'maxSupply'));
   if (baseUnits === 0n) {
     throw new OptionsError({ maxSupply: 'Must be greater than 0' });

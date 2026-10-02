@@ -6,7 +6,7 @@ export const accessOptions = ['singleKey', 'ownable', 'roles'] as const;
 /**
  * Who controls the faucet.
  *
- * - `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction.
+ * - `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction of the faucet itself.
  * - `'ownable'`: the faucet is a network account managed by an owner account, with two-step ownership transfer.
  * - `'roles'`: the faucet is a network account with role-based access control. Minting is done by the faucet
  *   owner, initially the admin.

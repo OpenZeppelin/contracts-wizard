@@ -21,10 +21,12 @@
   $: ownerRequired = fungible.isAccessControlRequired(opts);
 
   // A transfer policy makes pausing stop transfers in any case
-  $: pausesTransfers = opts.pausable && (opts.pausableTransfers || opts.transferPolicy !== false);
-  $: transfersAlwaysPaused = opts.pausable && opts.transferPolicy !== false;
+  $: hasTransferPolicy = opts.transferPolicy === 'allowlist' || opts.transferPolicy === 'blocklist';
+  $: pausesTransfers = opts.pausable && (opts.pausableTransfers || hasTransferPolicy);
+  $: transfersAlwaysPaused = opts.pausable && hasTransferPolicy;
 
   let wasPausable = opts.pausable;
+  let wasPausableTransfers = opts.pausableTransfers;
   let wasBurnPolicy = opts.burnPolicy;
   let otherBurnPolicyMinBurnAmount = '';
 
@@ -33,8 +35,12 @@
       opts.pausableTransfers = false;
     }
 
+    if (opts.pausableTransfers && !wasPausableTransfers) {
+      opts.pausable = true;
+    }
+
     // The minimum only applies to the Minimum Amount burn policy, so keep it aside while another policy is selected
-    if (wasBurnPolicy === 'minimumAmount' && opts.burnPolicy !== 'minimumAmount') {
+    if (opts.burnPolicy !== 'minimumAmount' && opts.minBurnAmount !== '') {
       otherBurnPolicyMinBurnAmount = opts.minBurnAmount;
       opts.minBurnAmount = '';
     } else if (wasBurnPolicy !== 'minimumAmount' && opts.burnPolicy === 'minimumAmount' && opts.minBurnAmount === '') {
@@ -42,6 +48,7 @@
     }
 
     wasPausable = opts.pausable;
+    wasPausableTransfers = opts.pausableTransfers;
     wasBurnPolicy = opts.burnPolicy;
   }
 </script>
@@ -76,12 +83,7 @@
         The maximum number of tokens in circulation at any time. Burning frees room to mint again.
       </HelpTooltip>
     </span>
-    <input
-      bind:value={opts.maxSupply}
-      use:error={errors?.maxSupply}
-      placeholder={fungible.defaults.maxSupply}
-      pattern={amountPattern.source}
-    />
+    <input bind:value={opts.maxSupply} use:error={errors?.maxSupply} pattern={amountPattern.source} />
   </label>
 
   <div class="checkbox-group">
@@ -149,16 +151,13 @@
         type="checkbox"
         checked={pausesTransfers}
         disabled={transfersAlwaysPaused}
-        on:change={e => {
-          opts.pausableTransfers = e.currentTarget.checked;
-          if (e.currentTarget.checked) opts.pausable = true;
-        }}
+        on:change={e => (opts.pausableTransfers = e.currentTarget.checked)}
       />
       Include Transfers
       <HelpTooltip>
         Pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must
         reach the chain within about a minute. This extra cost is permanent. If unchecked, pausing stops only minting,
-        burning and metadata updates.
+        burning and metadata updates. Transfers are always included when a transfer policy is set.
       </HelpTooltip>
     </label>
 
@@ -174,7 +173,7 @@
   </div>
 </section>
 
-<TransferPolicySection bind:transferPolicy={opts.transferPolicy} asset="the token" units="tokens" />
+<TransferPolicySection bind:transferPolicy={opts.transferPolicy} asset="the token" />
 
 <section class="controls-section">
   <h1>Burn Policy</h1>
@@ -191,7 +190,7 @@
       Minimum Amount
       <HelpTooltip>
         Token holders will be able to destroy their tokens, at least this many at a time. Privileged accounts can change
-        the minimum after deployment.
+        the minimum after deployment. Tokens in a smaller burn request stay locked until the minimum is lowered.
       </HelpTooltip>
     </label>
 

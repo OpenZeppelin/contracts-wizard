@@ -27,8 +27,10 @@ interface RoleAssignment {
   constant: string;
   /** The role symbol. */
   symbol: string;
-  /** Local variable holding the parsed `RoleSymbol`. */
+  /** Local variable of `procedure_roles` holding the parsed `RoleSymbol`. */
   variable: string;
+  /** Argument of `create` holding the initial member of the role. */
+  member: string;
   /** Expressions evaluating to the procedure roots gated by the role. */
   procedureRoots: string[];
 }
@@ -56,10 +58,6 @@ export function addFaucetAccount(c: ContractBuilder, access: Access, features: F
     addFeePolicyManager(c);
     addNetworkAccountCreation(c, access, features);
   }
-}
-
-function assetNoun(kind: FaucetKind): string {
-  return kind === 'Fungible' ? 'tokens' : 'NFTs';
 }
 
 /**
@@ -90,7 +88,8 @@ function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFe
   let model: string;
   switch (access) {
     case 'singleKey':
-      model = 'The faucet is a user account: the key holder signs every transaction, including minting.';
+      model =
+        'The faucet is a user account: the key holder signs every transaction of the faucet itself, including minting.';
       break;
     case 'ownable':
       model =
@@ -111,20 +110,19 @@ function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFe
   const lines = [...paragraph(model, 0)];
 
   if (features.pausable) {
-    const nouns = assetNoun(features.kind);
     let pausing: string;
     if (activeTransferPolicy(features) !== undefined) {
       pausing =
-        'The faucet can be paused. While paused, minting, burning, metadata updates and transfers of the ' +
-        `${nouns} are rejected.`;
+        'The faucet can be paused. While paused, minting, burning, metadata updates and transfers of the tokens ' +
+        'are rejected.';
     } else if (features.switchableTransferPolicy) {
       pausing =
         'The faucet can be paused. While paused, minting, burning and metadata updates are rejected, and so are ' +
-        `transfers of the ${nouns} once a transfer policy has been activated.`;
+        'transfers of the tokens once a transfer policy has been activated.';
     } else {
       pausing =
         'The faucet can be paused. While paused, minting, burning and metadata updates are rejected. Transfers ' +
-        `of the ${nouns} are not affected, since they do not consult the faucet.`;
+        'of the tokens are not affected, since they do not consult the faucet.';
     }
     lines.push('', ...paragraph(pausing, 0));
   }
@@ -146,7 +144,6 @@ function hasBlocklist(features: FaucetFeatures): boolean {
 
 function addTokenPolicyManager(c: ContractBuilder, access: Access, features: FaucetFeatures): void {
   const network = access !== 'singleKey';
-  const nouns = assetNoun(features.kind);
 
   c.addUseClause('miden_standards::account::policies', 'TokenPolicyManager');
   c.addUseClause('miden_standards::account::policies', 'MintPolicy');
@@ -199,24 +196,25 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
     c.addUseClause('miden_standards::account::policies', 'TransferPolicy');
   }
 
-  const comments: string[] = [];
+  const burning: string[] = [];
   if (!network) {
-    comments.push(
-      ...paragraph(
-        `Any holder can request a burn by sending ${nouns} back to the faucet in a BURN note; the key holder must ` +
-          'process each request.',
-        1,
-      ),
+    burning.push(
+      'Any holder can request a burn by sending tokens back to the faucet in a BURN note; the key holder must process ' +
+        'each request.',
     );
   } else if (features.burnPolicy === 'ownerOnly') {
-    comments.push(
-      ...paragraph(
-        `Only the faucet owner can burn ${nouns}. A BURN note from any other holder is rejected, and the ${nouns} ` +
-          'in it stay locked, since BURN notes cannot be reclaimed.',
-        1,
-      ),
+    burning.push(
+      'Only the faucet owner can burn tokens. A BURN note from any other holder is rejected, and the tokens in it ' +
+        'stay locked, since BURN notes cannot be reclaimed.',
     );
   }
+  if (features.burnPolicy === 'minimumAmount') {
+    burning.push(
+      'A BURN note below the minimum is rejected, and the tokens in it stay locked until the minimum is lowered, ' +
+        'since BURN notes cannot be reclaimed.',
+    );
+  }
+  const comments: string[] = burning.length > 0 ? [...paragraph(burning.join(' '), 1)] : [];
   if (features.switchableTransferPolicy) {
     if (comments.length > 0) {
       comments.push('');
@@ -326,6 +324,7 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
       constant: 'PAUSER_ROLE',
       symbol: 'PAUSER',
       variable: 'pauser',
+      member: 'pauser',
       procedureRoots: ['PausableManager::pause_root()', 'PausableManager::unpause_root()'],
     });
   }
@@ -335,6 +334,7 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
       constant: 'ALLOWLISTER_ROLE',
       symbol: 'ALLOWLISTER',
       variable: 'allowlister',
+      member: 'allowlister',
       procedureRoots: ['AllowlistManager::allow_account_root()', 'AllowlistManager::disallow_account_root()'],
     });
   }
@@ -344,18 +344,13 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
       constant: 'BLOCKLISTER_ROLE',
       symbol: 'BLOCKLISTER',
       variable: 'blocklister',
+      member: 'blocklister',
       procedureRoots: ['BlocklistManager::block_account_root()', 'BlocklistManager::unblock_account_root()'],
     });
   }
 
-  // Every network faucet installs the constant fee manager, so the fee schedule is always role-gated.
-  roles.push({
-    constant: 'FEE_MANAGER_ROLE',
-    symbol: 'FEE_MANAGER',
-    variable: 'fee_manager',
-    procedureRoots: ['ConstantFeeManager::set_note_fee_root()'],
-  });
-
+  // The fee setter has no role of its own and falls back to `ADMIN`: whoever sets fees can make every note, including
+  // the config notes that would undo it, too expensive to send, so it must not be a power `ADMIN` cannot take back.
   return roles;
 }
 
@@ -375,31 +370,44 @@ function addProcedureRoles(c: ContractBuilder, features: FaucetFeatures): void {
     });
   }
 
-  const variables = roles.map(
-    role => `let ${role.variable} = RoleSymbol::new(Self::${role.constant}).expect("role symbol is valid");`,
-  );
-
+  // Local variables keep the map entries short enough for `rustfmt` to leave each one on a single line.
+  const variables = roles.map(role => `let ${role.variable} = ${roleSymbol(role)};`);
   const entries = roles.flatMap(role =>
     role.procedureRoots.map((root, i) => {
       const value = i < role.procedureRoots.length - 1 ? `${role.variable}.clone()` : role.variable;
       return `(${root}, ${value}),`;
     }),
   );
-  // `rustfmt` keeps a single entry on the same line as the call when it fits within the line width at
-  // the indentation of a function body (8 columns).
-  const [firstEntry] = entries;
-  const singleLine =
-    entries.length === 1 && firstEntry !== undefined ? `BTreeMap::from([${firstEntry.slice(0, -1)}])` : undefined;
-  const roleMap: Lines[] =
-    singleLine !== undefined && singleLine.length <= 92 ? [singleLine] : ['BTreeMap::from([', entries, '])'];
+  const code: Lines[] =
+    roles.length === 0 ? ['BTreeMap::new()'] : [...variables, '', 'BTreeMap::from([', entries, '])'];
 
   c.addFunction({
     name: 'procedure_roles',
-    comments: paragraph('Procedures without an entry, such as the metadata setters, fall back to the `ADMIN` role.', 1),
+    comments: paragraph(
+      'Procedures without an entry, such as the metadata and fee setters, fall back to the `ADMIN` role.',
+      1,
+    ),
     args: [],
     returns: 'BTreeMap<AccountProcedureRoot, RoleSymbol>',
-    code: [...variables, '', ...roleMap],
+    code,
     pub: true,
+  });
+}
+
+/** Expression parsing the role symbol constant of `role`, using the `role` helper added by `addRoleHelper`. */
+function roleSymbol(role: RoleAssignment): string {
+  return `Self::role(Self::${role.constant})`;
+}
+
+/** Adds the private helper parsing role symbol constants, used by `procedure_roles` and `create`. */
+function addRoleHelper(c: ContractBuilder): void {
+  c.addFunction({
+    name: 'role',
+    comments: [],
+    args: [{ name: 'symbol', type: '&str' }],
+    returns: 'RoleSymbol',
+    code: ['RoleSymbol::new(symbol).expect("role symbol is valid")'],
+    pub: false,
   });
 }
 
@@ -502,7 +510,6 @@ function addNetworkAccountCreation(
   c.addUseClause('miden_protocol::account', 'Account');
   c.addUseClause('miden_protocol::account', 'AccountId');
   c.addUseClause('miden_protocol::errors', 'AccountError');
-  c.addUseClause('miden_standards::account::access', 'AccessControl');
   c.addUseClause('miden_standards::account::auth', 'NetworkAccount');
   c.addUseClause('miden_standards::account::fees', 'ConstantFeeManager');
 
@@ -510,23 +517,40 @@ function addNetworkAccountCreation(
 
   const setup: Lines[] = [];
   const accessControlComponents: string[] = [];
+  const roleMembers: RoleAssignment[] = [];
   let summary: string;
   let authorityDoc: string;
   switch (access) {
     case 'ownable':
       summary = 'Creates the faucet as a public network account owned by `owner`.';
+      c.addUseClause('miden_standards::account::access', 'AccessControl');
       accessControlComponents.push('.with_components(AccessControl::Ownable2Step { owner })');
       authorityDoc = '`owner`: account owning the faucet. Ownership can be transferred in two steps.';
       break;
     case 'roles': {
       summary = 'Creates the faucet as a public network account administered by `admin`.';
+      c.addUseClause('miden_standards::account::access', 'Authority');
       c.addUseClause('miden_standards::account::access', 'Ownable2Step');
+      c.addUseClause('miden_standards::account::access', 'RoleBasedAccessControl');
+      c.addUseClause('miden_standards::account::access', 'RoleConfig');
+      roleMembers.push(...roleAssignments(features));
       setup.push(
-        'let access_control = AccessControl::Rbac {',
-        ['admin,', 'procedure_roles: Self::procedure_roles(),'],
+        'let roles = RoleBasedAccessControl::builder()',
+        [
+          '.role(RoleConfig::new(RoleBasedAccessControl::admin_role()).with_member(admin))',
+          ...roleMembers.map(role => `.role(RoleConfig::new(${roleSymbol(role)}).with_member(${role.member}))`),
+          '.build()',
+          '.expect("role configuration is valid");',
+        ],
+        'let authority = Authority::RbacControlled {',
+        ['procedure_roles: Self::procedure_roles(),'],
         '};',
       );
-      accessControlComponents.push('.with_components(access_control)', '.with_component(Ownable2Step::new(admin))');
+      accessControlComponents.push(
+        '.with_component(roles)',
+        '.with_component(authority)',
+        '.with_component(Ownable2Step::new(admin))',
+      );
       authorityDoc =
         '`admin`: initial member of the `ADMIN` role, which administers every other role, and initial faucet ' +
         'owner, which mints. Ownership is transferred separately from the `ADMIN` role, by sending owner config notes.';
@@ -559,6 +583,7 @@ function addNetworkAccountCreation(
       '',
       ...bullet(INIT_SEED_DOC, 1),
       ...bullet(authorityDoc, 1),
+      ...roleMembers.flatMap(role => bullet(`\`${role.member}\`: initial member of the \`${role.symbol}\` role.`, 1)),
       ...bullet(
         '`fee_faucet_id`: ID of the faucet issuing the fee token of the chain ' +
           '(`ProtocolConfig::fee_asset_id().faucet_id()`), in which the faucet prices notes and pays its network ' +
@@ -569,10 +594,15 @@ function addNetworkAccountCreation(
     args: [
       { name: 'init_seed', type: '[u8; 32]' },
       { name: authority, type: 'AccountId' },
+      ...roleMembers.map(role => ({ name: role.member, type: 'AccountId' })),
       { name: 'fee_faucet_id', type: 'AccountId' },
     ],
     returns: 'Result<Account, AccountError>',
     code: [...setup, 'NetworkAccount::builder(init_seed, Self::allowed_notes(), fee_policy_manager)', chain],
     pub: true,
   });
+
+  if (roleMembers.length > 0) {
+    addRoleHelper(c);
+  }
 }

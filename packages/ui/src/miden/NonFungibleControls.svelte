@@ -20,17 +20,24 @@
   $: ownerRequired = nonFungible.isAccessControlRequired(opts);
 
   // A transfer policy makes pausing stop transfers in any case
-  $: pausesTransfers = opts.pausable && (opts.pausableTransfers || opts.transferPolicy !== false);
-  $: transfersAlwaysPaused = opts.pausable && opts.transferPolicy !== false;
+  $: hasTransferPolicy = opts.transferPolicy === 'allowlist' || opts.transferPolicy === 'blocklist';
+  $: pausesTransfers = opts.pausable && (opts.pausableTransfers || hasTransferPolicy);
+  $: transfersAlwaysPaused = opts.pausable && hasTransferPolicy;
 
   let wasPausable = opts.pausable;
+  let wasPausableTransfers = opts.pausableTransfers;
 
   $: {
     if (wasPausable && !opts.pausable) {
       opts.pausableTransfers = false;
     }
 
+    if (opts.pausableTransfers && !wasPausableTransfers) {
+      opts.pausable = true;
+    }
+
     wasPausable = opts.pausable;
+    wasPausableTransfers = opts.pausableTransfers;
   }
 </script>
 
@@ -106,16 +113,13 @@
         type="checkbox"
         checked={pausesTransfers}
         disabled={transfersAlwaysPaused}
-        on:change={e => {
-          opts.pausableTransfers = e.currentTarget.checked;
-          if (e.currentTarget.checked) opts.pausable = true;
-        }}
+        on:change={e => (opts.pausableTransfers = e.currentTarget.checked)}
       />
       Include Transfers
       <HelpTooltip>
         Pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must
         reach the chain within about a minute. This extra cost is permanent. If unchecked, pausing stops only minting,
-        burning and metadata updates.
+        burning and metadata updates. Transfers are always included when a transfer policy is set.
       </HelpTooltip>
     </label>
 
@@ -131,7 +135,7 @@
   </div>
 </section>
 
-<TransferPolicySection bind:transferPolicy={opts.transferPolicy} asset="the NFTs" units="NFTs" />
+<TransferPolicySection bind:transferPolicy={opts.transferPolicy} asset="tokens" />
 
 <section class="controls-section">
   <h1>Burn Policy</h1>
@@ -140,15 +144,15 @@
     <label class:checked={opts.burnPolicy === 'anyHolder'}>
       <input type="radio" bind:group={opts.burnPolicy} value="anyHolder" />
       Any Holder
-      <HelpTooltip>NFT holders will be able to destroy their NFTs.</HelpTooltip>
+      <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
     <label class:checked={opts.burnPolicy === 'ownerOnly'}>
       <input type="radio" bind:group={opts.burnPolicy} value="ownerOnly" />
       Owner Only
       <HelpTooltip>
-        Only the faucet owner can destroy the NFTs it holds, and NFTs that other holders try to destroy are permanently
-        locked instead.
+        Only the faucet owner can destroy the tokens it holds, and tokens that other holders try to destroy are
+        permanently locked instead.
       </HelpTooltip>
     </label>
   </div>

@@ -120,8 +120,6 @@ export interface CompiledSource {
   module: string;
   /** Name of the generated struct. */
   identifier: string;
-  /** Whether `create` builds a Single Key user account rather than a network account. */
-  singleKey: boolean;
   source: string;
 }
 
@@ -192,13 +190,13 @@ function buildAccountsTest(sources: CompiledSource[]): string {
     '    AuthSecretKey::new_falcon512_poseidon2().public_key()',
     '}',
   ];
-  for (const { module, identifier, singleKey } of sources) {
-    const args = singleKey ? 'key(), AccountType::Public' : 'id(1), id(2)';
+  for (const { module, identifier, source } of sources) {
+    const args = createArguments(source).join(', ');
     lines.push(
       '',
       '#[test]',
       `fn ${module}() {`,
-      `    ${module}::${identifier}::create([7; 32], ${args}).expect("account builds");`,
+      `    ${module}::${identifier}::create(${args}).expect("account builds");`,
       '}',
     );
   }
@@ -209,11 +207,10 @@ function buildAccountsTest(sources: CompiledSource[]): string {
 /** The covering subset of the option matrix (every `use` item at least once) plus the featured configurations. */
 export function sourcesToCompile(): CompiledSource[] {
   const sources: CompiledSource[] = [];
-  for (const { contract, options, source } of generateSources('minimal-cover', true)) {
+  for (const { contract, source } of generateSources('minimal-cover', true)) {
     sources.push({
       module: contract.name.moduleName,
       identifier: contract.name.identifier,
-      singleKey: isSingleKey(options),
       source,
     });
   }
@@ -222,19 +219,38 @@ export function sourcesToCompile(): CompiledSource[] {
     sources.push({
       module,
       identifier: contract.name.identifier,
-      singleKey: isSingleKey(options),
       source: printContract(contract),
     });
   }
   return sources;
 }
 
-/**
- * Whether `create` builds a Single Key faucet. The owner-only burn policy turns a requested Single Key faucet into an
- * Ownable one.
- */
-function isSingleKey(options: GenericOptions): boolean {
-  return (options.access ?? 'ownable') === 'singleKey' && options.burnPolicy !== 'ownerOnly';
+/** Test values for the arguments of the generated `create` function, read from its signature. */
+function createArguments(source: string): string[] {
+  const signature = /pub fn create\(([^)]*)\)/.exec(source)?.[1];
+  if (signature === undefined) {
+    throw new Error('Generated source has no `create` function');
+  }
+  let accountIds = 0;
+  return signature
+    .split(',')
+    .map(param => param.split(':')[1]?.trim())
+    .filter(type => type !== undefined && type !== '')
+    .map(type => {
+      switch (type) {
+        case '[u8; 32]':
+          return '[7; 32]';
+        case 'AccountId':
+          accountIds += 1;
+          return `id(${accountIds})`;
+        case 'PublicKey':
+          return 'key()';
+        case 'AccountType':
+          return 'AccountType::Public';
+        default:
+          throw new Error(`Unexpected argument type of \`create\`: ${type}`);
+      }
+    });
 }
 
 /** Compiles the crate and builds every account by running its test. */

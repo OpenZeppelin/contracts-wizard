@@ -178,3 +178,20 @@ test('non-fungible owner-only burning with single key uses ownable', async t => 
     nonFungible.print({ name: 'MyToken', symbol: 'MTK', burnPolicy: 'ownerOnly', access: 'ownable' }),
   );
 });
+
+test('non-fungible pausable transfers without pausable are ignored', async t => {
+  t.is(nonFungible.print({ name: 'MyToken', symbol: 'MTK', pausableTransfers: true }), nonFungible.print());
+});
+
+test('non-fungible pausable transfers are implied by a transfer policy', async t => {
+  t.is(
+    nonFungible.print({
+      name: 'MyToken',
+      symbol: 'MTK',
+      pausable: true,
+      transferPolicy: 'blocklist',
+      pausableTransfers: true,
+    }),
+    nonFungible.print({ name: 'MyToken', symbol: 'MTK', pausable: true, transferPolicy: 'blocklist' }),
+  );
+});

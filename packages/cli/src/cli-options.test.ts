@@ -798,14 +798,21 @@ test('confidential-erc7984: most options', t => {
 // --- Miden ---
 
 test('miden-fungible: basic', t => {
-  const output = run('miden-fungible', '--name', 'TestToken', '--symbol', 'TST');
-  t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST' }));
+  const output = run('miden-fungible', '--name', 'TestToken', '--symbol', 'TST', '--maxSupply', '1000000');
+  t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST', maxSupply: '1000000' }));
+});
+
+test('miden-fungible: max supply is required', t => {
+  t.throws(() => run('miden-fungible', '--name', 'TestToken', '--symbol', 'TST'), {
+    message: /Missing required options/,
+  });
 });
 
 test('miden-fungible: minimum burn amount and switchable transfer policy', t => {
   const opts = {
     name: 'TestToken',
     symbol: 'TST',
+    maxSupply: '1000000',
     burnPolicy: 'minimumAmount' as const,
     minBurnAmount: '10',
     switchableTransferPolicy: true,
@@ -816,6 +823,8 @@ test('miden-fungible: minimum burn amount and switchable transfer policy', t => 
     opts.name,
     '--symbol',
     opts.symbol,
+    '--maxSupply',
+    opts.maxSupply,
     '--burnPolicy',
     opts.burnPolicy,
     '--minBurnAmount',
@@ -826,8 +835,18 @@ test('miden-fungible: minimum burn amount and switchable transfer policy', t => 
 });
 
 test('miden-fungible: single key', t => {
-  const output = run('miden-fungible', '--name', 'TestToken', '--symbol', 'TST', '--access', 'singleKey');
-  t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST', access: 'singleKey' }));
+  const output = run(
+    'miden-fungible',
+    '--name',
+    'TestToken',
+    '--symbol',
+    'TST',
+    '--maxSupply',
+    '1000000',
+    '--access',
+    'singleKey',
+  );
+  t.is(output, midenFungible.print({ name: 'TestToken', symbol: 'TST', maxSupply: '1000000', access: 'singleKey' }));
 });
 
 test('miden-fungible: most options', t => {

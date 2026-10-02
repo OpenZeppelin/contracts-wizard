@@ -34,6 +34,7 @@ test('basic', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
+    maxSupply: '1000000',
   };
   await assertAPIEquivalence(t, params, fungible.print);
 });
@@ -69,6 +70,7 @@ test('owner-only burning', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
+    maxSupply: '1000000',
     burnPolicy: 'ownerOnly',
     access: 'ownable',
   };
@@ -79,6 +81,7 @@ test('single key', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'TST',
+    maxSupply: '1000000',
     access: 'singleKey',
   };
   await assertAPIEquivalence(t, params, fungible.print);
@@ -88,6 +91,7 @@ test('invalid options', async t => {
   const params: z.infer<typeof t.context.schema> = {
     name: 'TestToken',
     symbol: 'tst',
+    maxSupply: '1000000',
     decimals: '13',
   };
   await assertAPIEquivalence(t, params, fungible.print, true);

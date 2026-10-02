@@ -5,10 +5,8 @@
   import HelpTooltip from '../common/HelpTooltip.svelte';
 
   export let transferPolicy: TransferPolicy;
-  // What the faucet issues, as used in the help text: "the token" or "the NFTs"
+  // What the faucet issues, as used in the help text: "the token" or "tokens"
   export let asset: string;
-  // The units the faucet mints, as used in the help text: "tokens" or "NFTs"
-  export let units: string;
 </script>
 
 <ExpandableToggleRadio
@@ -23,7 +21,7 @@
       Allowlist
       <HelpTooltip>
         Only accounts on the allowlist can send or receive {asset}. The list starts empty, so privileged accounts must
-        add an account before it can receive {asset}, including newly minted {units}.
+        add an account before it can receive {asset}, including newly minted tokens.
       </HelpTooltip>
     </label>
     <label class:checked={transferPolicy === 'blocklist'}>

@@ -36,7 +36,7 @@ export const midenFungibleSchema = {
   name: z.string().describe(commonDescriptions.name),
   symbol: z.string().describe(commonDescriptions.symbol),
   decimals: z.string().optional().describe(midenFungibleDescriptions.decimals),
-  maxSupply: z.string().optional().describe(midenFungibleDescriptions.maxSupply),
+  maxSupply: z.string().describe(midenFungibleDescriptions.maxSupply),
   description: z.string().optional().describe(midenCommonDescriptions.description),
   logoUri: z.string().optional().describe(midenCommonDescriptions.logoUri),
   externalLink: z.string().optional().describe(midenFungibleDescriptions.externalLink),

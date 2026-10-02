@@ -34,9 +34,7 @@
     <label class="flex justify-between items-center tooltip-container pr-2">
       <span>Access Control</span>
       <HelpTooltip link="https://docs.miden.xyz/protocol/account/components">
-        Who controls the faucet. Single Key makes it a user account, run by one key holder who signs every transaction.
-        Ownable and Roles make it a network account: the network processes the notes sent to it, and the owner or role
-        holders manage it by sending notes.
+        Restrict who can mint and manage the faucet.
       </HelpTooltip>
     </label>
   </h1>
@@ -46,9 +44,9 @@
       <input type="radio" bind:group={access} value="singleKey" disabled={ownerRequired} />
       Single Key
       <HelpTooltip>
-        One key holder runs the faucet and signs every transaction, including minting and processing burn requests.
-        Control can never be handed over or renounced, and losing the key freezes the faucet. Can't be combined with the
-        Owner Only burn policy.
+        One key holder signs every transaction of the faucet itself, such as minting and processing burn requests. This
+        control can never be handed over or renounced, and losing the key freezes the faucet. Token transfers don't need
+        the faucet's key. Can't be combined with the Owner Only burn policy.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'ownable'}>
