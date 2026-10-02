@@ -63,7 +63,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Description
-      <HelpTooltip>An optional description of the collection, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional description of the collection.</HelpTooltip>
     </span>
     <input bind:value={opts.description} use:error={errors?.description} />
   </label>
@@ -71,7 +71,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Logo URI
-      <HelpTooltip>An optional URI of the collection logo, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional URI of the collection logo.</HelpTooltip>
     </span>
     <input bind:value={opts.logoUri} placeholder="https://..." use:error={errors?.logoUri} />
   </label>
@@ -79,7 +79,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Contract URI
-      <HelpTooltip>An optional URI of the collection-level metadata, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional URI of the collection-level metadata.</HelpTooltip>
     </span>
     <input bind:value={opts.contractUri} placeholder="https://..." use:error={errors?.contractUri} />
   </label>

@@ -192,7 +192,7 @@ function validateDecimals(decimals: string): number {
 function validateMaxSupply(maxSupply: string, decimals: number): bigint {
   // The max supply caps minting for good unless it is updatable, so an empty value is an error rather than the default
   if (maxSupply.trim() === '') {
-    throw new OptionsError({ maxSupply: 'Required' });
+    throw new OptionsError({ maxSupply: 'Max supply is required' });
   }
   const baseUnits = BigInt(toBaseUnits(maxSupply, decimals, 'maxSupply'));
   if (baseUnits === 0n) {
@@ -222,7 +222,9 @@ function validateMinBurnAmount(
     return null;
   }
   if (trimmed.length === 0) {
-    throw new OptionsError({ minBurnAmount: 'Required by the Minimum Amount burn policy' });
+    throw new OptionsError({
+      minBurnAmount: 'Minimum burn amount is required when using the Minimum Amount burn policy',
+    });
   }
   const baseUnits = BigInt(toBaseUnits(trimmed, decimals, 'minBurnAmount'));
   if (baseUnits === 0n) {

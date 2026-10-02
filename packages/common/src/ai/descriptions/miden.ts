@@ -19,14 +19,14 @@ export const midenCommonDescriptions = {
     "Restricts who can send and receive the asset. 'allowlist': only accounts on the allowlist can send or receive the asset; the list starts empty, so privileged accounts must add an account before it can receive the asset, including newly minted ones. 'blocklist': accounts on the blocklist can neither send nor receive the asset; privileged accounts manage the blocklist. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent.",
   switchableTransferPolicy:
     'Whether privileged accounts will be able to turn on an allowlist or blocklist after deployment, and switch between them, which can freeze transfers. Every transfer then consults the faucet, so transfers cost more to prove. This extra cost is permanent.',
-  description: 'An optional description of the asset, at most 195 bytes.',
-  logoUri: 'An optional URI of the asset logo, at most 195 bytes.',
+  description: 'An optional description of the asset.',
+  logoUri: 'An optional URI of the asset logo.',
 };
 
 export const midenFungibleDescriptions = {
-  decimals: 'The number of decimals used to represent token amounts, at most 12. Defaults to 8.',
+  decimals: 'The number of decimals used to represent token amounts. Defaults to 8.',
   maxSupply: 'The maximum number of tokens in circulation at any time. Burning frees room to mint again.',
-  externalLink: 'An optional link to more information about the token, at most 195 bytes.',
+  externalLink: 'An optional link to more information about the token.',
   updatableMetadata:
     'Whether privileged accounts will be able to update the description, logo URI and external link after deployment. The name, symbol and decimals can never change.',
   updatableMaxSupply: 'Whether privileged accounts will be able to update the maximum supply after deployment.',
@@ -37,7 +37,7 @@ export const midenFungibleDescriptions = {
 };
 
 export const midenNonFungibleDescriptions = {
-  contractUri: 'An optional URI of the collection-level metadata, at most 195 bytes.',
+  contractUri: 'An optional URI of the collection-level metadata.',
   updatableMetadata:
     'Whether privileged accounts will be able to update the description, logo URI and contract URI after deployment. The name and symbol can never change.',
   burnPolicy:

@@ -71,7 +71,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Decimals
-      <HelpTooltip>The number of decimals used to represent token amounts, at most 12. Defaults to 8.</HelpTooltip>
+      <HelpTooltip>The number of decimals used to represent token amounts. Defaults to 8.</HelpTooltip>
     </span>
     <input bind:value={opts.decimals} use:error={errors?.decimals} placeholder={fungible.defaults.decimals} />
   </label>
@@ -101,7 +101,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Description
-      <HelpTooltip>An optional description of the token, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional description of the token.</HelpTooltip>
     </span>
     <input bind:value={opts.description} use:error={errors?.description} />
   </label>
@@ -109,7 +109,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       Logo URI
-      <HelpTooltip>An optional URI of the token logo, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional URI of the token logo.</HelpTooltip>
     </span>
     <input bind:value={opts.logoUri} placeholder="https://..." use:error={errors?.logoUri} />
   </label>
@@ -117,7 +117,7 @@
   <label class="labeled-input">
     <span class="flex justify-between pr-2">
       External Link
-      <HelpTooltip>An optional link to more information about the token, at most 195 bytes.</HelpTooltip>
+      <HelpTooltip>An optional link to more information about the token.</HelpTooltip>
     </span>
     <input bind:value={opts.externalLink} placeholder="https://..." use:error={errors?.externalLink} />
   </label>
