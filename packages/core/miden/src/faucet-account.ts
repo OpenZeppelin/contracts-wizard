@@ -161,7 +161,11 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
       break;
     case 'minimumAmount':
       c.addUseClause('miden_protocol::asset', 'AssetAmount');
-      setup.push('let min_burn_amount = AssetAmount::new(Self::MIN_BURN_AMOUNT).expect("valid amount");', '');
+      setup.push(
+        'let min_burn_amount =',
+        ['AssetAmount::new(Self::MIN_BURN_AMOUNT).expect("minimum burn amount should be valid");'],
+        '',
+      );
       lines.push('.active_burn_policy(BurnPolicy::min_burn_amount(min_burn_amount))');
       break;
     case 'ownerOnly':
@@ -406,7 +410,7 @@ function addRoleHelper(c: ContractBuilder): void {
     comments: [],
     args: [{ name: 'symbol', type: '&str' }],
     returns: 'RoleSymbol',
-    code: ['RoleSymbol::new(symbol).expect("role symbol is valid")'],
+    code: ['RoleSymbol::new(symbol).expect("role symbol should be valid")'],
     pub: false,
   });
 }
@@ -456,7 +460,11 @@ function addAllowedNotes(c: ContractBuilder, access: Exclude<Access, 'singleKey'
 
   c.addFunction({
     name: 'allowed_notes',
-    comments: paragraph('Returns the script roots of the notes the network may consume on behalf of the faucet.', 1),
+    comments: paragraph(
+      'Returns the script roots of the notes the network may consume on behalf of the faucet, in addition to the ' +
+        'defaults of every network account (see `AuthNetworkAccount::default_allowed_note_scripts`).',
+      1,
+    ),
     args: [],
     returns: 'BTreeSet<NoteScriptRoot>',
     code: ['BTreeSet::from([', notes.map(note => `${note}::script_root(),`), '])'],
@@ -540,7 +548,7 @@ function addNetworkAccountCreation(
           '.role(RoleConfig::new(RoleBasedAccessControl::admin_role()).with_member(admin))',
           ...roleMembers.map(role => `.role(RoleConfig::new(${roleSymbol(role)}).with_member(${role.member}))`),
           '.build()',
-          '.expect("role configuration is valid");',
+          '.expect("role configuration should be valid");',
         ],
         'let authority = Authority::RbacControlled {',
         ['procedure_roles: Self::procedure_roles(),'],
@@ -565,7 +573,7 @@ function addNetworkAccountCreation(
   setup.push('let fee_policy_manager = Self::fee_policy_manager(fee_faucet_id);', '');
 
   const chain: string[] = [
-    '.expect("note allowlist is not empty")',
+    '.expect("note allowlist should not be empty")',
     '.with_component(Self::faucet())',
     ...accessControlComponents,
     '.with_components(Self::token_policy_manager())',

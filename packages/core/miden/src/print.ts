@@ -144,7 +144,14 @@ function printImplBlock(contract: Contract): Lines[] {
 }
 
 function printConstant(constant: Constant): Lines[] {
-  return [...constant.comments.map(docLine), `pub const ${constant.name}: ${constant.type} = ${constant.value};`];
+  const declaration = `pub const ${constant.name}: ${constant.type} =`;
+  const singleLine = `${declaration} ${constant.value};`;
+  // Like `rustfmt`, move a value that does not fit on the declaration's line to the next line, unless it does not
+  // fit there either.
+  const valueLine = `${constant.value};`;
+  const breakLine =
+    INDENT.length + singleLine.length > MAX_LINE_WIDTH && 2 * INDENT.length + valueLine.length <= MAX_LINE_WIDTH;
+  return [...constant.comments.map(docLine), ...(breakLine ? [declaration, [valueLine]] : [singleLine])];
 }
 
 function printFunction(fn: ContractFunction): Lines[] {

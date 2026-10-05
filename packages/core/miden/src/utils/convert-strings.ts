@@ -33,17 +33,35 @@ export function toSnakeCase(str: string): string {
 }
 
 /**
- * Escapes a string so that it can be printed inside a double-quoted Rust string literal on a single line.
+ * Characters that a Rust string literal must escape, or that would not show in the source as what they are:
+ * control, format and invisible characters, line and paragraph separators, and spaces other than U+0020.
+ * Printing them as escapes keeps the source showing every character of the value. It also avoids the
+ * bidirectional-text characters that `rustc` rejects in literals.
+ */
+const ESCAPED_CHARACTERS = /[\\"\p{Cc}\p{Cf}\p{Zl}\p{Zp}\p{Zs}\p{Default_Ignorable_Code_Point}]/gu;
+
+/**
+ * Escapes a string so that it can be printed inside a double-quoted Rust string literal on a single line. The
+ * literal's value is exactly `str`: characters are printed as given, except those in `ESCAPED_CHARACTERS`.
  */
 export function escapeString(str: string): string {
-  return str
-    .normalize('NFD')
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\r/g, '\\r')
-    .replace(/\n/g, '\\n')
-    .replace(/\t/g, '\\t')
-    .replace(/[\u2028\u2029]/g, c => `\\u{${c.charCodeAt(0).toString(16)}}`);
+  return str.replace(ESCAPED_CHARACTERS, c => {
+    switch (c) {
+      case ' ':
+        return c;
+      case '\\':
+      case '"':
+        return `\\${c}`;
+      case '\n':
+        return '\\n';
+      case '\r':
+        return '\\r';
+      case '\t':
+        return '\\t';
+      default:
+        return `\\u{${c.codePointAt(0)!.toString(16)}}`;
+    }
+  });
 }
 
 /**
@@ -139,4 +157,21 @@ export function toBaseUnits(amount: string, decimals: number, field: string): st
 
   const result = (integerPart + fractionalPart.padEnd(decimals, '0')).replace(/^0+/, '');
   return result.length === 0 ? '0' : result;
+}
+
+/**
+ * Prints an amount given in token units as a Rust expression in base units that scales with `Self::DECIMALS`, like
+ * the Solidity Wizard's premint: `1000` becomes `1_000 * 10u64.pow(Self::DECIMALS as u32)`, and `1000.5` becomes
+ * `10_005 * 10u64.pow(Self::DECIMALS as u32 - 1)`. The compiler evaluates it to the same value as `toBaseUnits`.
+ *
+ * @param amount A positive amount in token units that `toBaseUnits` accepted for the token's decimals
+ */
+export function toBaseUnitsExpression(amount: string): string {
+  const [integerPart = '', fractionalPart = ''] = amount.trim().split('.');
+  const fraction = fractionalPart.replace(/0+$/, '');
+  const units = BigInt(integerPart + fraction);
+  const exponent = fraction.length === 0 ? 'Self::DECIMALS as u32' : `Self::DECIMALS as u32 - ${fraction.length}`;
+  const power = `10u64.pow(${exponent})`;
+  // Clippy flags multiplying by one.
+  return units === 1n ? power : `${toRustIntegerLiteral(units)} * ${power}`;
 }

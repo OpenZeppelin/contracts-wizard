@@ -19,8 +19,9 @@ import {
   validateName,
   validateSymbol,
 } from './token-metadata';
-import { toBaseUnits, toRustIntegerLiteral, toUint } from './utils/convert-strings';
+import { toBaseUnits, toBaseUnitsExpression, toUint } from './utils/convert-strings';
 import { paragraph } from './utils/doc';
+import type { Lines } from './utils/format-lines';
 
 /** Maximum number of decimals supported by fungible faucets (`FungibleFaucet::MAX_DECIMALS`). */
 export const MAX_DECIMALS = 12;
@@ -144,17 +145,14 @@ export function buildFungible(opts: FungibleOptions): Contract {
   const access =
     isAccessControlRequired(allOpts) && allOpts.access === 'singleKey' ? DEFAULT_ACCESS_CONTROL : allOpts.access;
 
-  addFaucetComponent(c, allOpts, decimals, maxSupply);
+  addFaucetComponent(c, allOpts, decimals);
 
   if (minBurnAmount !== null) {
     c.addConstant({
       name: 'MIN_BURN_AMOUNT',
       type: 'u64',
-      value: toRustIntegerLiteral(minBurnAmount),
-      comments: paragraph(
-        `Minimum amount that can be burned at once, in base units (${describeAmount(allOpts.minBurnAmount, decimals)}).`,
-        1,
-      ),
+      value: toBaseUnitsExpression(allOpts.minBurnAmount),
+      comments: paragraph('Minimum amount that can be burned at once.', 1),
     });
   }
 
@@ -171,14 +169,6 @@ export function buildFungible(opts: FungibleOptions): Contract {
   setInfo(c, allOpts.info);
 
   return c;
-}
-
-/** Describes a validated token amount for documentation, e.g. `1000 tokens with 8 decimals`. */
-function describeAmount(amount: string, decimals: number): string {
-  const trimmed = amount.trim();
-  const tokens = Number(trimmed) === 1 ? 'token' : 'tokens';
-  const places = decimals === 1 ? 'decimal' : 'decimals';
-  return `${trimmed} ${tokens} with ${decimals} ${places}`;
 }
 
 function validateDecimals(decimals: string): number {
@@ -236,7 +226,7 @@ function validateMinBurnAmount(
   return baseUnits;
 }
 
-function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>, decimals: number, maxSupply: bigint) {
+function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>, decimals: number) {
   c.addUseClause('miden_protocol::asset', 'AssetAmount');
   c.addUseClause('miden_protocol::asset', 'TokenSymbol');
   c.addUseClause('miden_standards::account::faucets', 'FungibleFaucet');
@@ -253,15 +243,15 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
   c.addConstant({
     name: 'MAX_SUPPLY',
     type: 'u64',
-    value: toRustIntegerLiteral(maxSupply),
-    comments: paragraph(`Maximum token supply in base units (${describeAmount(opts.maxSupply, decimals)}).`, 1),
+    value: toBaseUnitsExpression(opts.maxSupply),
+    comments: [],
   });
 
-  const chain: string[] = [
-    '.name(TokenName::new(Self::NAME).expect("token name is valid"))',
-    '.symbol(TokenSymbol::new(Self::SYMBOL).expect("token symbol is valid"))',
+  const chain: Lines[] = [
+    '.name(TokenName::new(Self::NAME).expect("token name should be valid"))',
+    '.symbol(TokenSymbol::new(Self::SYMBOL).expect("token symbol should be valid"))',
     '.decimals(Self::DECIMALS)',
-    '.max_supply(AssetAmount::new(Self::MAX_SUPPLY).expect("max supply is valid"))',
+    '.max_supply(AssetAmount::new(Self::MAX_SUPPLY).expect("max supply should be valid"))',
     ...addOptionalMetadata(
       c,
       {
@@ -274,14 +264,14 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<FungibleOptions>,
         constant: 'EXTERNAL_LINK',
         method: 'external_link',
         mutabilityMethod: 'is_external_link_mutable',
-        expect: 'external link is valid',
+        expect: 'external link should be valid',
       },
     ),
   ];
   if (opts.updatableMaxSupply) {
     chain.push('.is_max_supply_mutable(true)');
   }
-  chain.push('.build()', '.expect("faucet configuration is valid")');
+  chain.push('.build()', '.expect("faucet configuration should be valid")');
 
   c.addFunction({
     name: 'faucet',

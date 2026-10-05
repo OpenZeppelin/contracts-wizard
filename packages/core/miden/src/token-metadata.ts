@@ -2,6 +2,8 @@ import type { ContractBuilder } from './contract';
 import type { OptionsErrorMessages } from './error';
 import { OptionsError } from './error';
 import { escapeString, utf8ByteLength } from './utils/convert-strings';
+import { MAX_LINE_WIDTH } from './utils/doc';
+import type { Lines } from './utils/format-lines';
 
 /** Maximum length of a token name in bytes when encoded as UTF-8 (`TokenName::MAX_BYTES`). */
 export const MAX_TOKEN_NAME_BYTES = 32;
@@ -66,6 +68,18 @@ export interface OptionalMetadata {
   updatable: boolean;
 }
 
+/** Indentation of the faucet builder's method calls: the `impl` block, the function body and the call chain. */
+const BUILDER_CALL_INDENT = 12;
+
+/**
+ * Prints a builder method call with one argument, as lines of the call chain. Like `rustfmt`, a call that does not
+ * fit on one line puts its argument on a line of its own.
+ */
+function builderCall(method: string, argument: string): Lines[] {
+  const call = `.${method}(${argument})`;
+  return BUILDER_CALL_INDENT + call.length <= MAX_LINE_WIDTH ? [call] : [`.${method}(`, [`${argument},`], ')'];
+}
+
 /**
  * Adds the constants and builder calls for the optional token metadata fields shared by fungible and
  * non-fungible faucets. Returns the builder method calls to append to the faucet builder chain.
@@ -74,25 +88,27 @@ export function addOptionalMetadata(
   c: ContractBuilder,
   metadata: OptionalMetadata,
   link: { constant: string; method: string; mutabilityMethod: string; expect: string },
-): string[] {
-  const calls: string[] = [];
+): Lines[] {
+  const calls: Lines[] = [];
 
   if (metadata.description) {
     c.addUseClause('miden_standards::account::faucets', 'Description');
     addStringConstant(c, 'DESCRIPTION', metadata.description);
-    calls.push('.description(Description::new(Self::DESCRIPTION).expect("description is valid"))');
+    calls.push(
+      ...builderCall('description', 'Description::new(Self::DESCRIPTION).expect("description should be valid")'),
+    );
   }
 
   if (metadata.logoUri) {
     c.addUseClause('miden_standards::account::faucets', 'LogoURI');
     addStringConstant(c, 'LOGO_URI', metadata.logoUri);
-    calls.push('.logo_uri(LogoURI::new(Self::LOGO_URI).expect("logo URI is valid"))');
+    calls.push(...builderCall('logo_uri', 'LogoURI::new(Self::LOGO_URI).expect("logo URI should be valid")'));
   }
 
   if (metadata.link) {
     c.addUseClause('miden_standards::account::faucets', 'ExternalLink');
     addStringConstant(c, link.constant, metadata.link);
-    calls.push(`.${link.method}(ExternalLink::new(Self::${link.constant}).expect("${link.expect}"))`);
+    calls.push(...builderCall(link.method, `ExternalLink::new(Self::${link.constant}).expect("${link.expect}")`));
   }
 
   if (metadata.updatable) {

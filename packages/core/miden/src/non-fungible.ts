@@ -18,6 +18,7 @@ import {
   validateName,
   validateSymbol,
 } from './token-metadata';
+import type { Lines } from './utils/format-lines';
 
 export const nonFungibleBurnPolicyOptions = ['anyHolder', 'ownerOnly'] as const;
 
@@ -131,9 +132,9 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<NonFungibleOption
   addStringConstant(c, 'NAME', opts.name);
   addStringConstant(c, 'SYMBOL', opts.symbol);
 
-  const chain: string[] = [
-    '.name(TokenName::new(Self::NAME).expect("token name is valid"))',
-    '.symbol(TokenSymbol::new(Self::SYMBOL).expect("token symbol is valid"))',
+  const chain: Lines[] = [
+    '.name(TokenName::new(Self::NAME).expect("token name should be valid"))',
+    '.symbol(TokenSymbol::new(Self::SYMBOL).expect("token symbol should be valid"))',
     ...addOptionalMetadata(
       c,
       {
@@ -146,7 +147,7 @@ function addFaucetComponent(c: ContractBuilder, opts: Required<NonFungibleOption
         constant: 'CONTRACT_URI',
         method: 'contract_uri',
         mutabilityMethod: 'is_contract_uri_mutable',
-        expect: 'contract URI is valid',
+        expect: 'contract URI should be valid',
       },
     ),
     '.build()',
