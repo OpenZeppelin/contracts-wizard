@@ -31,7 +31,7 @@ export const midenFungibleDescriptions = {
     'Whether privileged accounts will be able to update the description, logo URI and external link after deployment. The name, symbol and decimals can never change.',
   updatableMaxSupply: 'Whether privileged accounts will be able to update the maximum supply after deployment.',
   burnPolicy:
-    "Who can burn tokens. 'anyHolder' (default): token holders will be able to destroy their tokens. 'minimumAmount': token holders will be able to destroy their tokens, at least minBurnAmount at a time; privileged accounts can change the minimum after deployment, and tokens in a smaller burn request stay locked until the minimum is lowered. 'ownerOnly': only the faucet owner can destroy the tokens it holds, and tokens that other holders try to destroy are permanently locked instead.",
+    "Who can burn tokens. 'anyHolder' (default): token holders will be able to destroy their tokens. 'minimumAmount': token holders will be able to destroy their tokens, at least minBurnAmount at a time; privileged accounts can change the minimum after deployment, and tokens in a smaller burn request stay locked until the faucet accepts the request, which requires lowering the minimum first. 'ownerOnly': only the faucet owner can destroy the tokens it holds, and tokens that other holders try to destroy are permanently locked instead.",
   minBurnAmount:
     "The minimum number of tokens per burn. Required by, and only allowed with, the 'minimumAmount' burn policy.",
 };

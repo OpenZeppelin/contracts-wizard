@@ -192,7 +192,8 @@
       Minimum Amount
       <HelpTooltip>
         Token holders will be able to destroy their tokens, at least this many at a time. Privileged accounts can change
-        the minimum after deployment. Tokens in a smaller burn request stay locked until the minimum is lowered.
+        the minimum after deployment. Tokens in a smaller burn request stay locked until the faucet accepts the request,
+        which requires lowering the minimum first.
       </HelpTooltip>
     </label>
 

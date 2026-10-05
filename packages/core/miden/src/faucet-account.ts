@@ -214,8 +214,8 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
   }
   if (features.burnPolicy === 'minimumAmount') {
     burning.push(
-      'A BURN note below the minimum is rejected, and the tokens in it stay locked until the minimum is lowered, ' +
-        'since BURN notes cannot be reclaimed.',
+      'A BURN note below the minimum is rejected. BURN notes cannot be reclaimed, so its tokens stay locked until the ' +
+        'faucet accepts the note, which requires lowering the minimum first.',
     );
   }
   const comments: string[] = burning.length > 0 ? [...paragraph(burning.join(' '), 1)] : [];
