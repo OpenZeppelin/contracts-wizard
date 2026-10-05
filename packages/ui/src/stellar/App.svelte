@@ -37,6 +37,7 @@
   import ZipIcon from '../common/icons/ZipIcon.svelte';
   import type { GenericOptions } from '@openzeppelin/wizard-stellar/src';
   import type { Language } from '../common/languages-types';
+  import { scrollFade } from '../common/scroll-fade';
 
   const WizStellar = createWiz<'stellar'>();
 
@@ -258,9 +259,9 @@
     {/if}
   </div>
 
-  <div class="flex flex-row grow">
+  <div class="wizard-panes flex flex-row grow" use:scrollFade={tab}>
     <div
-      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between h-[calc(100vh-84px)] overflow-auto resize-x"
+      class="controls rounded-l-3xl min-w-72 w-72 max-w-[calc(100vw-420px)] flex flex-col shrink-0 justify-between overflow-auto resize-x"
     >
       <div class:hidden={tab !== 'Fungible'}>
         <FungibleControls bind:opts={allOpts.Fungible} errors={errors.Fungible} />
@@ -281,7 +282,7 @@
         <AccountControls bind:opts={allOpts.Account} errors={errors.Account} />
       </div>
     </div>
-    <div class="output rounded-r-3xl flex flex-col grow overflow-auto h-[calc(100vh-84px)]">
+    <div class="output rounded-r-3xl flex flex-col grow overflow-auto">
       <pre class="flex flex-col grow basis-0 overflow-auto">
         {#if showCode}
           <code class="hljs -stellar grow overflow-auto p-4">{@html highlightedCode}</code>

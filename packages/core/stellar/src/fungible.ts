@@ -250,7 +250,7 @@ function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, expl
   }
 }
 
-export const premintPattern = /^(\d*\.?\d*)$/;
+export const premintPattern = /^\d*(?:\.\d*)?$/;
 
 function addPremint(c: ContractBuilder, amount: string, decimals: bigint, votes: boolean) {
   if (amount !== undefined && amount !== '0') {

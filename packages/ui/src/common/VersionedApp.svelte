@@ -25,8 +25,6 @@
   }
 </script>
 
-<div class="container overflow-hidden">
-  <div class="page-container flex flex-col justify-between overflow-hidden">
-    <svelte:component this={page} {initialTab} {initialOpts} bind:tab={contractTab} />
-  </div>
+<div class="page-container flex flex-col justify-between">
+  <svelte:component this={page} {initialTab} {initialOpts} bind:tab={contractTab} />
 </div>
