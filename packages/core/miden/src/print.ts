@@ -15,19 +15,17 @@ export function printContract(contract: Contract): string {
         `// Compatible with Miden Protocol ${compatibleContractsSemver}`,
       ],
       ...printUseClauses(contract),
-      [...printStructDocumentation(contract), `pub struct ${contract.name.identifier};`],
+      [...printSecurityContact(contract), `pub struct ${contract.name.identifier};`],
       printImplBlock(contract),
     ),
   );
 }
 
-function printStructDocumentation(contract: Contract): string[] {
-  const lines = contract.documentations.map(docLine);
-  if (contract.securityContact) {
-    const security = ['# Security', '', `For security issues, please contact: ${contract.securityContact}`];
-    lines.push(...(lines.length > 0 ? ['', ...security] : security).map(docLine));
+function printSecurityContact(contract: Contract): string[] {
+  if (!contract.securityContact) {
+    return [];
   }
-  return lines;
+  return ['# Security', '', `For security issues, please contact: ${contract.securityContact}`].map(docLine);
 }
 
 function docLine(line: string): string {

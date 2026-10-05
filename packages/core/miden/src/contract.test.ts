@@ -12,7 +12,6 @@ test('contract name conversions', t => {
   const c = new ContractBuilder('my "quoted" token');
   t.is(c.name.identifier, 'MyQuotedToken');
   t.is(c.name.moduleName, 'my_quoted_token');
-  t.is(c.name.stringLiteral, 'my \\"quoted\\" token');
 });
 
 test('contract with constant and function', t => {
@@ -37,7 +36,6 @@ test('contract with constant and function', t => {
     code: ['todo!()'],
     pub: false,
   });
-  Foo.addDocumentation('A contract.');
   t.snapshot(printContract(Foo));
 });
 
@@ -85,7 +83,6 @@ test('duplicate use clauses, constants and functions are ignored', t => {
 
 test('security contact is added to the documentation', t => {
   const Foo = new ContractBuilder('Foo');
-  Foo.addDocumentation('A contract.');
   Foo.addSecurityTag('security@example.com');
   Foo.license = 'WTFPL';
   t.snapshot(printContract(Foo));

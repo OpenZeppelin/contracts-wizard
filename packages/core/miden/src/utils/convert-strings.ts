@@ -71,17 +71,6 @@ export function utf8ByteLength(str: string): number {
   return new TextEncoder().encode(str).length;
 }
 
-/**
- * Checks that a string is at most `maxBytes` long when encoded as UTF-8.
- */
-export function validateMaxBytes(value: string, field: string, maxBytes: number): void {
-  if (utf8ByteLength(value) > maxBytes) {
-    throw new OptionsError({
-      [field]: `Must be at most ${maxBytes} bytes when encoded as UTF-8`,
-    });
-  }
-}
-
 function maxValueOfUint(bits: number): bigint {
   if (bits <= 0) {
     throw new Error(`Number of bits must be positive (actual '${bits}').`);

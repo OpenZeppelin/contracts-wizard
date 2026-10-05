@@ -1,4 +1,4 @@
-import { escapeString, toIdentifier, toSnakeCase } from './utils/convert-strings';
+import { toIdentifier, toSnakeCase } from './utils/convert-strings';
 import type { Lines } from './utils/format-lines';
 
 export interface Name {
@@ -6,16 +6,12 @@ export interface Name {
   identifier: string;
   /** snake_case identifier suitable as a module or file name. */
   moduleName: string;
-  /** Escaped contents of the name for use in a Rust string literal. */
-  stringLiteral: string;
 }
 
 export interface Contract {
   license: string;
   securityContact: string;
   name: Name;
-  /** Doc comment lines of the account struct, without the leading `///`. */
-  documentations: string[];
   useClauses: UseClause[];
   constants: Constant[];
   functions: ContractFunction[];
@@ -56,8 +52,6 @@ export class ContractBuilder implements Contract {
   license = 'MIT';
   securityContact = '';
 
-  readonly documentations: string[] = [];
-
   private useClausesMap: Map<string, UseClause> = new Map();
   private constantsMap: Map<string, Constant> = new Map();
   private functionsMap: Map<string, ContractFunction> = new Map();
@@ -66,7 +60,6 @@ export class ContractBuilder implements Contract {
     this.name = {
       identifier: toIdentifier(name, true),
       moduleName: toSnakeCase(name),
-      stringLiteral: escapeString(name),
     };
   }
 
@@ -112,10 +105,6 @@ export class ContractBuilder implements Contract {
     const added: ContractFunction = { ...fn, comments: [...fn.comments], args: [...fn.args], code: [...fn.code] };
     this.functionsMap.set(fn.name, added);
     return added;
-  }
-
-  addDocumentation(description: string): void {
-    this.documentations.push(description);
   }
 
   addSecurityTag(securityContact: string): void {
