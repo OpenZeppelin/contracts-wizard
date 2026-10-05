@@ -8,8 +8,6 @@ import {
 } from '../../index';
 
 export const midenCommonSchema = {
-  pausable: z.boolean().optional().describe(midenCommonDescriptions.pausable),
-  pausableTransfers: z.boolean().optional().describe(midenCommonDescriptions.pausableTransfers),
   transferPolicy: z
     .literal(false)
     .or(z.literal('allowlist'))
@@ -49,6 +47,8 @@ export const midenFungibleSchema = {
     .optional()
     .describe(midenFungibleDescriptions.burnPolicy),
   minBurnAmount: z.string().optional().describe(midenFungibleDescriptions.minBurnAmount),
+  pausable: z.boolean().optional().describe(midenFungibleDescriptions.pausable),
+  pausableTransfers: z.boolean().optional().describe(midenFungibleDescriptions.pausableTransfers),
   ...midenCommonSchema,
 } as const satisfies z.ZodRawShape;
 
@@ -64,5 +64,7 @@ export const midenNonFungibleSchema = {
     .or(z.literal('ownerOnly'))
     .optional()
     .describe(midenNonFungibleDescriptions.burnPolicy),
+  pausable: z.boolean().optional().describe(midenNonFungibleDescriptions.pausable),
+  pausableTransfers: z.boolean().optional().describe(midenNonFungibleDescriptions.pausableTransfers),
   ...midenCommonSchema,
 } as const satisfies z.ZodRawShape;

@@ -11,10 +11,6 @@ export const midenPrompts = {
 export const midenCommonDescriptions = {
   access:
     "Who controls the faucet. 'singleKey': a user account where one key holder signs every transaction of the faucet itself, such as minting and processing burn requests, while token transfers don't need the faucet's key. The key can never be changed, so control can never be handed over or renounced. 'singleKey' can't be combined with burnPolicy 'ownerOnly', in which case 'ownable' is used. 'ownable': a network account managed by an owner account, with two-step ownership transfer. 'roles': a network account with a separate role for each privileged action, where a role can have many authorized accounts; minting is the exception: it is done by the faucet owner, initially the admin.",
-  pausable:
-    'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when pausableTransfers is true or a transfer policy is active. Useful for emergency response.',
-  pausableTransfers:
-    'Whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. If false, pausing stops only minting, burning and metadata updates. Requires pausable; implied by a transfer policy.',
   transferPolicy:
     "Restricts who can send and receive the asset. 'allowlist': only accounts on the allowlist can send or receive the asset; the list starts empty, so privileged accounts must add an account before it can receive the asset, including newly minted ones. 'blocklist': accounts on the blocklist can neither send nor receive the asset; privileged accounts manage the blocklist. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent.",
   switchableTransferPolicy:
@@ -24,6 +20,10 @@ export const midenCommonDescriptions = {
 };
 
 export const midenFungibleDescriptions = {
+  pausable:
+    'Whether privileged accounts will be able to pause minting, burning, and updates to the metadata and max supply, and also transfers when pausableTransfers is true or a transfer policy is active. Useful for emergency response.',
+  pausableTransfers:
+    'Whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. If false, pausing stops only minting, burning, and updates to the metadata and max supply. Requires pausable; implied by a transfer policy.',
   decimals: 'The number of decimals used to represent token amounts. Defaults to 8, with a maximum of 12.',
   maxSupply: 'The maximum number of tokens in circulation at any time. Burning frees room to mint again.',
   externalLink: 'An optional link to more information about the token.',
@@ -37,6 +37,10 @@ export const midenFungibleDescriptions = {
 };
 
 export const midenNonFungibleDescriptions = {
+  pausable:
+    'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when pausableTransfers is true or a transfer policy is active. Useful for emergency response.',
+  pausableTransfers:
+    'Whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. If false, pausing stops only minting, burning and metadata updates. Requires pausable; implied by a transfer policy.',
   contractUri: 'An optional URI of the collection-level metadata.',
   updatableMetadata:
     'Whether privileged accounts will be able to update the description, logo URI and contract URI after deployment. The name and symbol can never change.',

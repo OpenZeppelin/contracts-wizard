@@ -41,11 +41,10 @@ const TRANSFER_POLICIES = ['allow_all', 'empty_basic_allowlist', 'empty_basic_bl
 type TransferPolicyConstructor = (typeof TRANSFER_POLICIES)[number];
 
 /**
- * Adds the documentation, token policy manager, access control and account creation function of a faucet
- * account to the contract. The kind-specific `faucet()` function and constants must be added beforehand.
+ * Adds the token policy manager, access control and account creation function of a faucet account to the
+ * contract. The kind-specific `faucet()` function and constants must be added beforehand.
  */
 export function addFaucetAccount(c: ContractBuilder, access: Access, features: FaucetFeatures): void {
-  addDocumentation(c, access, features);
   addTokenPolicyManager(c, access, features);
 
   if (access === 'singleKey') {
@@ -82,54 +81,6 @@ function activeTransferPolicy(features: FaucetFeatures): TransferPolicyConstruct
 /** Whether a transfer policy is registered, which enables asset callbacks: every transfer consults the faucet. */
 function hasAssetCallbacks(features: FaucetFeatures): boolean {
   return activeTransferPolicy(features) !== undefined || features.switchableTransferPolicy;
-}
-
-function addDocumentation(c: ContractBuilder, access: Access, features: FaucetFeatures): void {
-  let model: string;
-  switch (access) {
-    case 'singleKey':
-      model =
-        'The faucet is a user account: the key holder signs every transaction of the faucet itself, including minting.';
-      break;
-    case 'ownable':
-      model =
-        'The faucet is a network account: the network consumes the notes sent to it, and the owner manages the ' +
-        'faucet by sending config notes.';
-      break;
-    case 'roles':
-      model =
-        'The faucet is a network account: the network consumes the notes sent to it, and role holders manage the ' +
-        'faucet by sending config notes. Minting is done by the faucet owner, initially the admin.';
-      break;
-    default: {
-      const _: never = access;
-      throw new Error('Unknown value for `access`');
-    }
-  }
-
-  const lines = [...paragraph(model, 0)];
-
-  if (features.pausable) {
-    let pausing: string;
-    if (activeTransferPolicy(features) !== undefined) {
-      pausing =
-        'The faucet can be paused. While paused, minting, burning, metadata updates and transfers of the tokens ' +
-        'are rejected.';
-    } else if (features.switchableTransferPolicy) {
-      pausing =
-        'The faucet can be paused. While paused, minting, burning and metadata updates are rejected, and so are ' +
-        'transfers of the tokens once a transfer policy has been activated.';
-    } else {
-      pausing =
-        'The faucet can be paused. While paused, minting, burning and metadata updates are rejected. Transfers ' +
-        'of the tokens are not affected, since they do not consult the faucet.';
-    }
-    lines.push('', ...paragraph(pausing, 0));
-  }
-
-  for (const line of lines) {
-    c.addDocumentation(line);
-  }
 }
 
 /** Whether the allowlist manager component is installed, either for the active policy or as a reserved alternative. */
@@ -181,6 +132,10 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
   // registered as alternatives: no mint or burn policy can be switched after deployment.
   const active = activeTransferPolicy(features);
   if (active !== undefined) {
+    if (features.transferPolicy === false) {
+      // Without this comment, the allow-all policy reads as a no-op that could be deleted.
+      lines.push('// Makes every transfer consult the faucet, so pausing also stops transfers.');
+    }
     lines.push(
       `.active_send_policy(TransferPolicy::${active}())`,
       `.active_receive_policy(TransferPolicy::${active}())`,
@@ -200,42 +155,9 @@ function addTokenPolicyManager(c: ContractBuilder, access: Access, features: Fau
     c.addUseClause('miden_standards::account::policies', 'TransferPolicy');
   }
 
-  const burning: string[] = [];
-  if (!network) {
-    burning.push(
-      'Any holder can request a burn by sending tokens back to the faucet in a BURN note; the key holder must process ' +
-        'each request.',
-    );
-  } else if (features.burnPolicy === 'ownerOnly') {
-    burning.push(
-      'Only the faucet owner can burn tokens. A BURN note from any other holder is rejected, and the tokens in it ' +
-        'stay locked, since BURN notes cannot be reclaimed.',
-    );
-  }
-  if (features.burnPolicy === 'minimumAmount') {
-    burning.push(
-      'A BURN note below the minimum is rejected. BURN notes cannot be reclaimed, so its tokens stay locked until the ' +
-        'faucet accepts the note, which requires lowering the minimum first.',
-    );
-  }
-  const comments: string[] = burning.length > 0 ? [...paragraph(burning.join(' '), 1)] : [];
-  if (features.switchableTransferPolicy) {
-    if (comments.length > 0) {
-      comments.push('');
-    }
-    comments.push(
-      ...paragraph(
-        'The standard transfer policies are registered as allowed alternatives, so a transfer policy can be ' +
-          'activated or switched after deployment' +
-          (network ? ' by sending a policy config note.' : ' by the key holder.'),
-        1,
-      ),
-    );
-  }
-
   c.addFunction({
     name: 'token_policy_manager',
-    comments,
+    comments: [],
     args: [],
     returns: 'TokenPolicyManager',
     code: [...setup, 'TokenPolicyManager::builder()', [...lines, '.build()']],
@@ -293,10 +215,10 @@ function addUserAccountCreation(c: ContractBuilder, features: FaucetFeatures): v
     '.build()',
   ];
 
-  const accountTypeDoc = hasAssetCallbacks(features)
-    ? "`account_type`: whether the faucet is public or private. With a private faucet, holders must get the faucet's " +
-      'current state from the key holder for every transfer, because every transfer consults the faucet.'
-    : '`account_type`: whether the faucet is public or private.';
+  const accountTypeDoc =
+    "`account_type`: whether the faucet is public or private. With a private faucet, holders must get the faucet's " +
+    'current state from the key holder for every transfer while a transfer policy is active, because every transfer ' +
+    'then consults the faucet.';
 
   c.addFunction({
     name: 'create',

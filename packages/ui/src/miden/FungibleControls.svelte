@@ -144,7 +144,8 @@
       <input type="checkbox" bind:checked={opts.pausable} />
       Pausable
       <HelpTooltip>
-        Privileged accounts will be able to pause minting, burning and metadata updates. Useful for emergency response.
+        Privileged accounts will be able to pause minting, burning, and updates to the metadata and max supply. Useful
+        for emergency response.
       </HelpTooltip>
     </label>
 
@@ -159,7 +160,8 @@
       <HelpTooltip>
         Pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must
         reach the chain within about a minute. This extra cost is permanent. If unchecked, pausing stops only minting,
-        burning and metadata updates. Transfers are always included when a transfer policy is set.
+        burning, and updates to the metadata and max supply. Transfers are always included when a transfer policy is
+        set.
       </HelpTooltip>
     </label>
 

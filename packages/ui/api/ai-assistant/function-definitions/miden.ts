@@ -17,8 +17,14 @@ export const midenFungibleAIFunctionDefinition = {
     properties: {
       ...addFunctionPropertiesFrom(midenCommonFunctionDescription, ['name', 'symbol', 'access', 'info']),
       // The Miden-specific descriptions must take precedence over the generic ones of `addFunctionPropertiesFrom`.
-      pausable: midenCommonFunctionDescription.pausable,
-      pausableTransfers: midenCommonFunctionDescription.pausableTransfers,
+      pausable: {
+        type: 'boolean',
+        description: midenFungibleDescriptions.pausable,
+      },
+      pausableTransfers: {
+        type: 'boolean',
+        description: midenFungibleDescriptions.pausableTransfers,
+      },
       transferPolicy: midenCommonFunctionDescription.transferPolicy,
       switchableTransferPolicy: midenCommonFunctionDescription.switchableTransferPolicy,
       description: midenCommonFunctionDescription.description,
@@ -65,8 +71,14 @@ export const midenNonFungibleAIFunctionDefinition = {
     type: 'object',
     properties: {
       ...addFunctionPropertiesFrom(midenCommonFunctionDescription, ['name', 'symbol', 'access', 'info']),
-      pausable: midenCommonFunctionDescription.pausable,
-      pausableTransfers: midenCommonFunctionDescription.pausableTransfers,
+      pausable: {
+        type: 'boolean',
+        description: midenNonFungibleDescriptions.pausable,
+      },
+      pausableTransfers: {
+        type: 'boolean',
+        description: midenNonFungibleDescriptions.pausableTransfers,
+      },
       transferPolicy: midenCommonFunctionDescription.transferPolicy,
       switchableTransferPolicy: midenCommonFunctionDescription.switchableTransferPolicy,
       description: midenCommonFunctionDescription.description,

@@ -9,8 +9,6 @@ import type { Access, TransferPolicy } from '../../../../core/miden/dist/common-
  * Options shared by the Miden Fungible and NonFungible contracts, beyond the common contract options.
  */
 type MidenSharedOptions = MidenCommonContractOptions & {
-  pausable?: boolean;
-  pausableTransfers?: boolean;
   transferPolicy?: TransferPolicy;
   switchableTransferPolicy?: boolean;
   description?: string;
@@ -22,16 +20,6 @@ export const midenCommonFunctionDescription = {
     type: 'string',
     enum: extractStringEnumValues<Access>()(['singleKey', 'ownable', 'roles']),
     description: midenCommonDescriptions.access,
-  },
-
-  pausable: {
-    type: 'boolean',
-    description: midenCommonDescriptions.pausable,
-  },
-
-  pausableTransfers: {
-    type: 'boolean',
-    description: midenCommonDescriptions.pausableTransfers,
   },
 
   transferPolicy: {

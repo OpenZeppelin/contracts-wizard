@@ -24,9 +24,8 @@ export function printContract(contract: Contract): string {
 function printStructDocumentation(contract: Contract): string[] {
   const lines = contract.documentations.map(docLine);
   if (contract.securityContact) {
-    lines.push(
-      ...['', '# Security', '', `For security issues, please contact: ${contract.securityContact}`].map(docLine),
-    );
+    const security = ['# Security', '', `For security issues, please contact: ${contract.securityContact}`];
+    lines.push(...(lines.length > 0 ? ['', ...security] : security).map(docLine));
   }
   return lines;
 }

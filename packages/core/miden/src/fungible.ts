@@ -20,7 +20,6 @@ import {
   validateSymbol,
 } from './token-metadata';
 import { toBaseUnits, toBaseUnitsExpression, toUint } from './utils/convert-strings';
-import { paragraph } from './utils/doc';
 import type { Lines } from './utils/format-lines';
 
 /** Maximum number of decimals supported by fungible faucets (`FungibleFaucet::MAX_DECIMALS`). */
@@ -152,7 +151,7 @@ export function buildFungible(opts: FungibleOptions): Contract {
       name: 'MIN_BURN_AMOUNT',
       type: 'u64',
       value: toBaseUnitsExpression(allOpts.minBurnAmount),
-      comments: paragraph('Minimum amount that can be burned at once.', 1),
+      comments: [],
     });
   }
 
