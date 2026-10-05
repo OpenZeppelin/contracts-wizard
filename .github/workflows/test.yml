@@ -146,7 +146,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             packages/core/miden/target/
-          key: cargo-${{ matrix.package }}-${{ hashFiles('packages/core/miden/src/utils/compile-test.ts') }}
+          key: cargo-${{ matrix.package }}-${{ hashFiles('packages/core/miden/src/utils/compile-test.ts', 'packages/core/miden/src/utils/version.ts') }}
 
       - name: Set up rust toolchain
         if: matrix.package == 'miden' && matrix.variant == 'compile'

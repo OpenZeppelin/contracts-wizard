@@ -27,10 +27,11 @@ interface RoleAssignment {
   constant: string;
   /** The role symbol. */
   symbol: string;
-  /** Local variable of `procedure_roles` holding the parsed `RoleSymbol`. */
-  variable: string;
-  /** Argument of `create` holding the initial member of the role. */
-  member: string;
+  /**
+   * Name for a holder of the role, e.g. `pauser`: the argument of `create` holding the initial member of the role,
+   * and the local variable of `procedure_roles` holding the parsed `RoleSymbol`.
+   */
+  holder: string;
   /** Expressions evaluating to the procedure roots gated by the role. */
   procedureRoots: string[];
 }
@@ -253,8 +254,7 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
     roles.push({
       constant: 'PAUSER_ROLE',
       symbol: 'PAUSER',
-      variable: 'pauser',
-      member: 'pauser',
+      holder: 'pauser',
       procedureRoots: ['PausableManager::pause_root()', 'PausableManager::unpause_root()'],
     });
   }
@@ -263,8 +263,7 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
     roles.push({
       constant: 'ALLOWLISTER_ROLE',
       symbol: 'ALLOWLISTER',
-      variable: 'allowlister',
-      member: 'allowlister',
+      holder: 'allowlister',
       procedureRoots: ['AllowlistManager::allow_account_root()', 'AllowlistManager::disallow_account_root()'],
     });
   }
@@ -273,8 +272,7 @@ function roleAssignments(features: FaucetFeatures): RoleAssignment[] {
     roles.push({
       constant: 'BLOCKLISTER_ROLE',
       symbol: 'BLOCKLISTER',
-      variable: 'blocklister',
-      member: 'blocklister',
+      holder: 'blocklister',
       procedureRoots: ['BlocklistManager::block_account_root()', 'BlocklistManager::unblock_account_root()'],
     });
   }
@@ -301,10 +299,10 @@ function addProcedureRoles(c: ContractBuilder, features: FaucetFeatures): void {
   }
 
   // Local variables keep the map entries short enough for `rustfmt` to leave each one on a single line.
-  const variables = roles.map(role => `let ${role.variable} = ${roleSymbol(role)};`);
+  const variables = roles.map(role => `let ${role.holder} = ${roleSymbol(role)};`);
   const entries = roles.flatMap(role =>
     role.procedureRoots.map((root, i) => {
-      const value = i < role.procedureRoots.length - 1 ? `${role.variable}.clone()` : role.variable;
+      const value = i < role.procedureRoots.length - 1 ? `${role.holder}.clone()` : role.holder;
       return `(${root}, ${value}),`;
     }),
   );
@@ -478,7 +476,7 @@ function addNetworkAccountCreation(
         'let roles = RoleBasedAccessControl::builder()',
         [
           '.role(RoleConfig::new(RoleBasedAccessControl::admin_role()).with_member(admin))',
-          ...roleMembers.map(role => `.role(RoleConfig::new(${roleSymbol(role)}).with_member(${role.member}))`),
+          ...roleMembers.map(role => `.role(RoleConfig::new(${roleSymbol(role)}).with_member(${role.holder}))`),
           '.build()',
           '.expect("role configuration should be valid");',
         ],
@@ -523,7 +521,7 @@ function addNetworkAccountCreation(
       '',
       ...bullet(INIT_SEED_DOC, 1),
       ...bullet(authorityDoc, 1),
-      ...roleMembers.flatMap(role => bullet(`\`${role.member}\`: initial member of the \`${role.symbol}\` role.`, 1)),
+      ...roleMembers.flatMap(role => bullet(`\`${role.holder}\`: initial member of the \`${role.symbol}\` role.`, 1)),
       ...bullet(
         '`fee_faucet_id`: ID of the faucet issuing the fee token of the chain ' +
           '(`ProtocolConfig::fee_asset_id().faucet_id()`), in which the faucet prices notes and pays its network ' +
@@ -534,7 +532,7 @@ function addNetworkAccountCreation(
     args: [
       { name: 'init_seed', type: '[u8; 32]' },
       { name: authority, type: 'AccountId' },
-      ...roleMembers.map(role => ({ name: role.member, type: 'AccountId' })),
+      ...roleMembers.map(role => ({ name: role.holder, type: 'AccountId' })),
       { name: 'fee_faucet_id', type: 'AccountId' },
     ],
     returns: 'Result<Account, AccountError>',

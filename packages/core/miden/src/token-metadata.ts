@@ -6,16 +6,16 @@ import { MAX_LINE_WIDTH } from './utils/doc';
 import type { Lines } from './utils/format-lines';
 
 /** Maximum length of a token name in bytes when encoded as UTF-8 (`TokenName::MAX_BYTES`). */
-export const MAX_TOKEN_NAME_BYTES = 32;
+const MAX_TOKEN_NAME_BYTES = 32;
 
 /** Maximum number of characters of a token symbol (`TokenSymbol::MAX_SYMBOL_LENGTH`). */
-export const MAX_TOKEN_SYMBOL_LENGTH = 12;
+const MAX_TOKEN_SYMBOL_LENGTH = 12;
 
-/** Token symbols are 1 to 12 uppercase ASCII letters. */
-export const symbolPattern = /^[A-Z]{1,12}$/;
+/** Token symbols are 1 to `MAX_TOKEN_SYMBOL_LENGTH` uppercase ASCII letters. */
+export const symbolPattern = new RegExp(`^[A-Z]{1,${MAX_TOKEN_SYMBOL_LENGTH}}$`);
 
 /** Maximum length of the description, logo URI and external link in bytes when encoded as UTF-8. */
-export const MAX_METADATA_FIELD_BYTES = 195;
+const MAX_METADATA_FIELD_BYTES = 195;
 
 export function validateName(name: string, errors: OptionsErrorMessages): void {
   if (utf8ByteLength(name) > MAX_TOKEN_NAME_BYTES) {

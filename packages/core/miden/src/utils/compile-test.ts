@@ -7,7 +7,9 @@ import { promisify } from 'util';
 
 import type { GenericOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
+import { defaults as fungibleDefaults } from '../fungible';
 import { generateSources, writeGeneratedSources } from '../generate/sources';
+import { defaults as nonFungibleDefaults } from '../non-fungible';
 import { printContract } from '../print';
 import { contractsVersion } from './version';
 
@@ -18,8 +20,22 @@ export const RUST_TOOLCHAIN = '1.98.1';
 
 const RUST_EDITION = '2024';
 
-/** Fully featured configurations compiled in addition to the covering subset of the option matrix. */
+/**
+ * Text with characters that a Rust string literal must escape or that would not show in the source, and with a
+ * decomposed accent, which Unicode normalization would change.
+ */
+const SPECIAL_CHARACTERS =
+  'Quote " backslash \\ newline \n return \r tab \t null \u0000 line separator \u2028 no-break space \u00a0 ' +
+  'zero-width space \u200b override \u202e isolate \u2066 pop \u2069 joined \u{1f468}\u200d\u{1f469} ' +
+  'decomposed e\u0301 BOM \ufeff';
+
+/**
+ * Configurations compiled in addition to the covering subset of the option matrix. The cover only picks
+ * configurations with most options on, so these also include configurations that leave options out, which take
+ * other code paths.
+ */
 export const featuredOptions: Record<string, GenericOptions> = {
+  // Most options on, for each access control and kind.
   full_single_key_token: {
     kind: 'Fungible',
     name: 'FullSingleKeyToken',
@@ -97,6 +113,54 @@ export const featuredOptions: Record<string, GenericOptions> = {
     switchableTransferPolicy: true,
     access: 'roles',
   },
+
+  // Options left out.
+  default_token: { kind: 'Fungible', ...fungibleDefaults },
+  default_collection: { kind: 'NonFungible', ...nonFungibleDefaults },
+  single_key_token: { kind: 'Fungible', name: 'SingleKeyToken', symbol: 'SKT', access: 'singleKey' },
+  roles_token: { kind: 'Fungible', name: 'RolesToken', symbol: 'RT', access: 'roles' },
+  pauser_roles_token: { kind: 'Fungible', name: 'PauserRolesToken', symbol: 'PRT', pausable: true, access: 'roles' },
+  allowlister_roles_collection: {
+    kind: 'NonFungible',
+    name: 'AllowlisterRolesCollection',
+    symbol: 'ARC',
+    transferPolicy: 'allowlist',
+    access: 'roles',
+  },
+  blocklister_roles_token: {
+    kind: 'Fungible',
+    name: 'BlocklisterRolesToken',
+    symbol: 'BRT',
+    transferPolicy: 'blocklist',
+    access: 'roles',
+  },
+  switchable_ownable_token: {
+    kind: 'Fungible',
+    name: 'SwitchableOwnableToken',
+    symbol: 'SOT',
+    switchableTransferPolicy: true,
+  },
+  switchable_single_key_collection: {
+    kind: 'NonFungible',
+    name: 'SwitchableSingleKeyCollection',
+    symbol: 'SSKC',
+    switchableTransferPolicy: true,
+    access: 'singleKey',
+  },
+  updatable_max_supply_token: {
+    kind: 'Fungible',
+    name: 'UpdatableMaxSupplyToken',
+    symbol: 'UMST',
+    updatableMaxSupply: true,
+  },
+
+  // String constants with special characters.
+  special_characters_token: {
+    kind: 'Fungible',
+    name: 'Caf\u00e9 "Coin" \\ \u{1fa99}',
+    symbol: 'CAFE',
+    description: SPECIAL_CHARACTERS,
+  },
 };
 
 /** Target directory shared across runs, so that the protocol dependencies are compiled once and can be cached in CI. */
@@ -121,13 +185,16 @@ export interface CompiledSource {
   /** Name of the generated struct. */
   identifier: string;
   source: string;
+  /** Values of the string constants, by constant name, as given in the options. */
+  strings: Record<string, string>;
 }
 
 /**
  * Writes a crate depending on the published protocol crates of `contractsVersion`, with one module per generated
  * source. Every item of the generated sources is public, so denying warnings turns unused imports into failures.
  * The crate's test calls `create` on every faucet, which catches combinations of components that the library
- * rejects when building the account. It runs no transaction and needs no node.
+ * rejects when building the account. It runs no transaction and needs no node. It also checks that every string
+ * constant has the bytes of the option it was printed from.
  */
 export async function writeCrate(dir: string, sources: CompiledSource[]): Promise<void> {
   const version = `"=${contractsVersion}"`;
@@ -190,12 +257,17 @@ function buildAccountsTest(sources: CompiledSource[]): string {
     '    AuthSecretKey::new_falcon512_poseidon2().public_key()',
     '}',
   ];
-  for (const { module, identifier, source } of sources) {
+  for (const { module, identifier, source, strings } of sources) {
     const args = createArguments(source).join(', ');
+    const checks = Object.entries(strings).map(([constant, value]) => {
+      const bytes = [...new TextEncoder().encode(value)].join(', ');
+      return `    assert_eq!(${module}::${identifier}::${constant}.as_bytes(), [${bytes}]);`;
+    });
     lines.push(
       '',
       '#[test]',
       `fn ${module}() {`,
+      ...checks,
       `    ${module}::${identifier}::create(${args}).expect("account builds");`,
       '}',
     );
@@ -207,11 +279,12 @@ function buildAccountsTest(sources: CompiledSource[]): string {
 /** The covering subset of the option matrix (every `use` item at least once) plus the featured configurations. */
 export function sourcesToCompile(): CompiledSource[] {
   const sources: CompiledSource[] = [];
-  for (const { contract, source } of generateSources('minimal-cover', true)) {
+  for (const { options, contract, source } of generateSources('minimal-cover', true)) {
     sources.push({
       module: contract.name.moduleName,
       identifier: contract.name.identifier,
       source,
+      strings: stringConstants(options),
     });
   }
   for (const [module, options] of Object.entries(featuredOptions)) {
@@ -220,9 +293,26 @@ export function sourcesToCompile(): CompiledSource[] {
       module,
       identifier: contract.name.identifier,
       source: printContract(contract),
+      strings: stringConstants(options),
     });
   }
   return sources;
+}
+
+/** The string constants printed for the options, by constant name. An empty metadata field has no constant. */
+function stringConstants(options: GenericOptions): Record<string, string> {
+  const link =
+    options.kind === 'Fungible' ? { EXTERNAL_LINK: options.externalLink } : { CONTRACT_URI: options.contractUri };
+  const constants: Record<string, string | undefined> = {
+    NAME: options.name,
+    SYMBOL: options.symbol,
+    DESCRIPTION: options.description,
+    LOGO_URI: options.logoUri,
+    ...link,
+  };
+  return Object.fromEntries(
+    Object.entries(constants).filter((entry): entry is [string, string] => entry[1] !== undefined && entry[1] !== ''),
+  );
 }
 
 /** Test values for the arguments of the generated `create` function, read from its signature. */

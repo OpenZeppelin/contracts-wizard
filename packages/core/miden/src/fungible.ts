@@ -23,10 +23,10 @@ import { toBaseUnits, toBaseUnitsExpression, toUint } from './utils/convert-stri
 import type { Lines } from './utils/format-lines';
 
 /** Maximum number of decimals supported by fungible faucets (`FungibleFaucet::MAX_DECIMALS`). */
-export const MAX_DECIMALS = 12;
+const MAX_DECIMALS = 12;
 
 /** Maximum representable fungible asset amount in base units (`AssetAmount::MAX`). */
-export const MAX_ASSET_AMOUNT = 2n ** 63n - 2n ** 31n;
+const MAX_ASSET_AMOUNT = 2n ** 63n - 2n ** 31n;
 
 export const fungibleBurnPolicyOptions = ['anyHolder', 'minimumAmount', 'ownerOnly'] as const;
 

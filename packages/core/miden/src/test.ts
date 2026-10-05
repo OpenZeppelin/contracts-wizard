@@ -43,7 +43,7 @@ function isAccessControlRequired(opts: GenericOptions) {
 
 test('is access control required', async t => {
   for (const contract of generateSources('all')) {
-    const regexOwnable = /(use miden_standards::account::access::\{?[^;]*AccessControl)/gm;
+    const regexOwnable = /(use miden_standards::account::access::\{?[^;]*\bAccessControl\b)/gm;
 
     switch (contract.options.kind) {
       case 'Fungible':

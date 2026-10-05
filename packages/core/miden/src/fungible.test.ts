@@ -68,6 +68,15 @@ testFungible('fungible updatable metadata and max supply', {
   updatableMaxSupply: true,
 });
 
+testFungible('fungible updatable max supply', {
+  updatableMaxSupply: true,
+});
+
+testFungible('fungible with special characters', {
+  name: 'Caf\u00e9 "Coin" \\ \u{1fa99}',
+  description: 'Quote " backslash \\ newline \n tab \t override \u202e zero-width \u200b decomposed e\u0301',
+});
+
 testFungible('fungible single key', {
   access: 'singleKey',
 });

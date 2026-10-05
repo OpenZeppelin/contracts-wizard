@@ -21,8 +21,7 @@ export { sanitizeKind } from './kind';
 export { contractsVersion, contractsVersionTag, compatibleContractsSemver } from './utils/version';
 
 export { amountPattern } from './utils/convert-strings';
-export { symbolPattern, MAX_TOKEN_NAME_BYTES, MAX_METADATA_FIELD_BYTES } from './token-metadata';
-export { MAX_DECIMALS } from './fungible';
+export { symbolPattern } from './token-metadata';
 
 export { fungible, nonFungible } from './api';
 

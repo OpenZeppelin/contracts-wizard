@@ -1,10 +1,9 @@
 import type { Argument, Constant, Contract, ContractFunction, UseClause } from './contract';
+import { MAX_LINE_WIDTH } from './utils/doc';
 import type { Lines } from './utils/format-lines';
 import { formatLines, spaceBetween } from './utils/format-lines';
 import { compatibleContractsSemver } from './utils/version';
 
-/** Maximum line width used by `rustfmt` with its default configuration. */
-const MAX_LINE_WIDTH = 100;
 const INDENT = '    ';
 
 export function printContract(contract: Contract): string {
