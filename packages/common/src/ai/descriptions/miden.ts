@@ -10,7 +10,7 @@ export const midenPrompts = {
 
 export const midenCommonDescriptions = {
   access:
-    "Who controls the faucet. 'singleKey': a user account where one key holder signs every transaction of the faucet itself, such as minting and processing burn requests, while token transfers don't need the faucet's key; it can't be combined with burnPolicy 'ownerOnly', in which case 'ownable' is used. 'ownable': a network account managed by an owner account, with two-step ownership transfer. 'roles': a network account with a separate role for each privileged action, where a role can have many authorized accounts; minting is the exception: it is done by the faucet owner, initially the admin.",
+    "Who controls the faucet. 'singleKey': a user account where one key holder signs every transaction of the faucet itself, such as minting and processing burn requests, while token transfers don't need the faucet's key. The key can never be changed, so control can never be handed over or renounced. 'singleKey' can't be combined with burnPolicy 'ownerOnly', in which case 'ownable' is used. 'ownable': a network account managed by an owner account, with two-step ownership transfer. 'roles': a network account with a separate role for each privileged action, where a role can have many authorized accounts; minting is the exception: it is done by the faucet owner, initially the admin.",
   pausable:
     'Whether privileged accounts will be able to pause minting, burning and metadata updates, and also transfers when pausableTransfers is true or a transfer policy is active. Useful for emergency response.',
   pausableTransfers:

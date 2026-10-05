@@ -306,7 +306,11 @@ function addUserAccountCreation(c: ContractBuilder, features: FaucetFeatures): v
       '# Arguments',
       '',
       ...bullet(INIT_SEED_DOC, 1),
-      ...bullet('`public_key`: public key of the key holder, who signs every transaction of the faucet.', 1),
+      ...bullet(
+        '`public_key`: public key of the key holder, who signs every transaction of the faucet. The key can never be ' +
+          'changed, so control can never be handed over or renounced.',
+        1,
+      ),
       ...bullet(accountTypeDoc, 1),
     ],
     args: [

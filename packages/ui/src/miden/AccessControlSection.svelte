@@ -44,9 +44,9 @@
       <input type="radio" bind:group={access} value="singleKey" disabled={ownerRequired} />
       Single Key
       <HelpTooltip>
-        One key holder signs every transaction of the faucet itself, such as minting and processing burn requests. This
-        control can never be handed over or renounced, and losing the key freezes the faucet. Token transfers don't need
-        the faucet's key. Can't be combined with the Owner Only burn policy.
+        One key holder signs every transaction of the faucet itself, such as minting and processing burn requests. The
+        key can never be changed, so control can never be handed over or renounced. Token transfers don't need the
+        faucet's key. Can't be combined with the Owner Only burn policy.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'ownable'}>
