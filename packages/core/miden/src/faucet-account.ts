@@ -456,13 +456,19 @@ function addNetworkAccountCreation(
   let authorityDoc: string;
   switch (access) {
     case 'ownable':
-      summary = 'Creates the faucet as a public network account owned by `owner`.';
+      summary =
+        'Creates the faucet as a public network account owned by `owner`. The faucet trusts any note sent from ' +
+        '`owner`, so `owner` must be an account that requires signatures for its transactions, such as a ' +
+        'single-signature or multisig account.';
       c.addUseClause('miden_standards::account::access', 'AccessControl');
       accessControlComponents.push('.with_components(AccessControl::Ownable2Step { owner })');
       authorityDoc = '`owner`: account owning the faucet. Ownership can be transferred in two steps.';
       break;
     case 'roles': {
-      summary = 'Creates the faucet as a public network account administered by `admin`.';
+      summary =
+        'Creates the faucet as a public network account administered by `admin`. The faucet trusts notes sent from ' +
+        '`admin` and role members for their actions, so each must be an account that requires signatures for its ' +
+        'transactions, such as a single-signature or multisig account.';
       c.addUseClause('miden_standards::account::access', 'Authority');
       c.addUseClause('miden_standards::account::access', 'Ownable2Step');
       c.addUseClause('miden_standards::account::access', 'RoleBasedAccessControl');
@@ -486,8 +492,8 @@ function addNetworkAccountCreation(
         '.with_component(Ownable2Step::new(admin))',
       );
       authorityDoc =
-        '`admin`: initial member of the `ADMIN` role, which administers every other role, and initial faucet ' +
-        'owner, which mints. Ownership is transferred separately from the `ADMIN` role, by sending owner config notes.';
+        '`admin`: initial member of the `ADMIN` role, which administers every role, itself included, and initial ' +
+        'faucet owner, which mints. Ownership can be transferred in two steps, separately from the `ADMIN` role.';
       break;
     }
     default: {
