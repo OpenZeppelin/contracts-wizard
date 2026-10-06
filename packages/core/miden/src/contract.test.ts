@@ -81,7 +81,7 @@ test('duplicate use clauses, constants and functions are ignored', t => {
   t.is(Foo.functions.length, 1);
 });
 
-test('security contact is added to the documentation', t => {
+test('security contact is added as a comment', t => {
   const Foo = new ContractBuilder('Foo');
   Foo.addSecurityTag('security@example.com');
   Foo.license = 'WTFPL';

@@ -24,7 +24,7 @@ function printSecurityContact(contract: Contract): string[] {
   if (!contract.securityContact) {
     return [];
   }
-  return ['# Security', '', `For security issues, please contact: ${contract.securityContact}`].map(docLine);
+  return [`// Security contact: ${contract.securityContact}`];
 }
 
 function docLine(line: string): string {
