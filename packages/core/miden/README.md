@@ -45,27 +45,6 @@ function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean
 ```
 Whether any of the provided options require an owner-based access control. If this returns `true`, then calling `print` with the same options would use `'ownable'` instead of `'singleKey'` for the `access` option.
 
-### Options
-
-#### Access control
-
-The `access` option selects who controls the faucet:
-- `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction of the faucet itself, including minting and processing burn requests. Token transfers don't need the faucet's key. The generated `create` function takes the public key of the key holder. The key can never be changed, so control can never be handed over or renounced. It can't be combined with the `'ownerOnly'` burn policy, in which case `'ownable'` is used.
-- `'ownable'` (default): the faucet is a network account managed by an owner account authorized for all privileged actions, including minting. Ownership can be transferred in two steps. The network consumes the notes sent to the faucet, and the owner manages it by sending config notes.
-- `'roles'`: the faucet is a network account with role-based access control. Minting is done by the faucet owner, initially the admin. The generated `create` function takes the initial member of each role the options use.
-
-#### Features
-
-- `burnPolicy`: who can burn the asset:
-  - `'anyHolder'` (default): holders can burn their tokens by sending them back to the faucet in a BURN note.
-  - `'minimumAmount'` (fungible only): holders can burn at least `minBurnAmount` tokens at a time. Privileged accounts can change the minimum after deployment. Tokens in a smaller burn request stay locked until the faucet accepts the request, which requires lowering the minimum first.
-  - `'ownerOnly'`: only the faucet owner can burn the tokens it holds. A burn request from any other holder is rejected, and the tokens in it stay locked, since BURN notes cannot be reclaimed.
-- `minBurnAmount` (fungible only): the minimum number of tokens per burn. Required by, and only allowed with, the `'minimumAmount'` burn policy.
-- `pausable`: whether privileged accounts can pause minting, burning, and updates to the metadata and, for fungible faucets, the max supply, and also transfers when `pausableTransfers` is `true` or a transfer policy is active.
-- `pausableTransfers`: whether pausing also stops transfers. Every transfer then consults the faucet, so transfers cost more to prove and must reach the chain within about a minute. This extra cost is permanent. Requires `pausable`, and is implied by a transfer policy.
-- `transferPolicy`: who can send and receive the asset, either `'allowlist'`, `'blocklist'` or `false` (default). The lists start empty and are managed by privileged accounts. Every transfer then consults the faucet, with the same permanent extra cost.
-- `switchableTransferPolicy`: whether privileged accounts can turn on an allowlist or blocklist after deployment, and switch between them. Every transfer then consults the faucet, so transfers cost more to prove. This extra cost is permanent.
-
 ### Examples
 
 Import the contract type(s) (for example, `fungible`) that you want to use from the `@openzeppelin/wizard-miden` package:

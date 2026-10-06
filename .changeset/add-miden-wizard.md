@@ -1,5 +1,5 @@
 ---
-'@openzeppelin/wizard-miden': patch
+'@openzeppelin/wizard-miden': minor
 '@openzeppelin/wizard-common': patch
 '@openzeppelin/contracts-cli': patch
 '@openzeppelin/contracts-mcp': patch
