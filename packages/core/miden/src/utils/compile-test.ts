@@ -177,9 +177,9 @@ export function sourcesToCompile(): CompiledSource[] {
 }
 
 /**
- * Whether the compile test builds the variant. It leaves out variants that differ only in text: the metadata fields
- * are either all set or all empty, since each one only adds its own constant and builder call, and no info is set,
- * since the license and security contact are only printed in comments.
+ * Whether the compile test builds the variant. The metadata fields are either all set or all empty, since each one
+ * only adds its own constant and builder call. No info is set, since the license and security contact are only
+ * printed in comments.
  */
 function isCompiledVariant(options: GenericOptions): boolean {
   const link = options.kind === 'Fungible' ? options.externalLink : options.contractUri;
