@@ -21,7 +21,7 @@
     <span class="flex justify-between pr-2">
       Security Contact
       <HelpTooltip
-        >Where people can contact you to report security issues. Included in the documentation of the account.</HelpTooltip
+        >Where people can contact you to report security issues. Only included in source code comments.</HelpTooltip
       >
     </span>
     <input bind:value={info.securityContact} placeholder="security@example.com" use:error={errors?.securityContact} />

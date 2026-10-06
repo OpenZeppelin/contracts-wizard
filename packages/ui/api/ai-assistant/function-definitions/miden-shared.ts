@@ -51,7 +51,7 @@ export const midenCommonFunctionDescription = {
     properties: {
       securityContact: {
         type: 'string',
-        description: infoDescriptions.securityContact,
+        description: midenCommonDescriptions.securityContact,
       },
 
       license: {

@@ -23,7 +23,7 @@ export const midenCommonSchema = {
     .describe(midenCommonDescriptions.access),
   info: z
     .object({
-      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
+      securityContact: z.string().optional().describe(midenCommonDescriptions.securityContact),
       license: z.string().optional().describe(infoDescriptions.license),
     })
     .optional()

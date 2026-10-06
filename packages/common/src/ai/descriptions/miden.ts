@@ -17,6 +17,8 @@ export const midenCommonDescriptions = {
     'Whether privileged accounts will be able to turn on an allowlist or blocklist after deployment, and switch between them, which can freeze transfers. Every transfer then consults the faucet, so transfers cost more to prove. This extra cost is permanent.',
   description: 'An optional description of the asset.',
   logoUri: 'An optional URI of the asset logo.',
+  securityContact:
+    'Email where people can contact you to report security issues. Only included in source code comments.',
 };
 
 export const midenFungibleDescriptions = {
