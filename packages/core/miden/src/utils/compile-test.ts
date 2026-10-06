@@ -7,9 +7,7 @@ import { promisify } from 'util';
 
 import type { GenericOptions } from '../build-generic';
 import { buildGeneric } from '../build-generic';
-import { defaults as fungibleDefaults } from '../fungible';
 import { generateSources, writeGeneratedSources } from '../generate/sources';
-import { defaults as nonFungibleDefaults } from '../non-fungible';
 import { printContract } from '../print';
 import { contractsVersion } from './version';
 
@@ -21,146 +19,18 @@ export const RUST_TOOLCHAIN = '1.98.1';
 const RUST_EDITION = '2024';
 
 /**
- * Text with characters that a Rust string literal must escape or that would not show in the source, and with a
- * decomposed accent, which Unicode normalization would change.
+ * Options whose string constants have characters that a Rust string literal must escape or that would not show in
+ * the source, and a decomposed accent, which Unicode normalization would change. The option matrix only has plain
+ * text.
  */
-const SPECIAL_CHARACTERS =
-  'Quote " backslash \\ newline \n return \r tab \t null \u0000 line separator \u2028 no-break space \u00a0 ' +
-  'zero-width space \u200b override \u202e isolate \u2066 pop \u2069 joined \u{1f468}\u200d\u{1f469} ' +
-  'decomposed e\u0301 BOM \ufeff';
-
-/**
- * Configurations compiled in addition to the covering subset of the option matrix. The cover only picks
- * configurations with most options on, so these also include configurations that leave options out, which take
- * other code paths.
- */
-export const featuredOptions: Record<string, GenericOptions> = {
-  // Most options on, for each access control and kind.
-  full_single_key_token: {
-    kind: 'Fungible',
-    name: 'FullSingleKeyToken',
-    symbol: 'FSKT',
-    decimals: '6',
-    maxSupply: '1000000',
-    description: 'A token',
-    logoUri: 'https://example.com/logo.png',
-    externalLink: 'https://example.com',
-    updatableMetadata: true,
-    updatableMaxSupply: true,
-    burnPolicy: 'minimumAmount',
-    minBurnAmount: '0.5',
-    pausable: true,
-    transferPolicy: 'allowlist',
-    switchableTransferPolicy: true,
-    access: 'singleKey',
-  },
-  full_ownable_token: {
-    kind: 'Fungible',
-    name: 'FullOwnableToken',
-    symbol: 'FOT',
-    burnPolicy: 'ownerOnly',
-    updatableMetadata: true,
-    updatableMaxSupply: true,
-    pausable: true,
-    pausableTransfers: true,
-    switchableTransferPolicy: true,
-    access: 'ownable',
-  },
-  full_roles_token: {
-    kind: 'Fungible',
-    name: 'FullRolesToken',
-    symbol: 'FRT',
-    burnPolicy: 'minimumAmount',
-    minBurnAmount: '1',
-    updatableMetadata: true,
-    updatableMaxSupply: true,
-    pausable: true,
-    transferPolicy: 'blocklist',
-    switchableTransferPolicy: true,
-    access: 'roles',
-    info: { license: 'MIT', securityContact: 'security@example.com' },
-  },
-  full_single_key_collection: {
-    kind: 'NonFungible',
-    name: 'FullSingleKeyCollection',
-    symbol: 'FSKC',
-    description: 'A collection',
-    logoUri: 'https://example.com/logo.png',
-    contractUri: 'https://example.com/collection.json',
-    updatableMetadata: true,
-    pausable: true,
-    pausableTransfers: true,
-    switchableTransferPolicy: true,
-    access: 'singleKey',
-  },
-  full_ownable_collection: {
-    kind: 'NonFungible',
-    name: 'FullOwnableCollection',
-    symbol: 'FOC',
-    updatableMetadata: true,
-    pausable: true,
-    transferPolicy: 'blocklist',
-    access: 'ownable',
-  },
-  full_roles_collection: {
-    kind: 'NonFungible',
-    name: 'FullRolesCollection',
-    symbol: 'FRC',
-    burnPolicy: 'ownerOnly',
-    updatableMetadata: true,
-    pausable: true,
-    transferPolicy: 'allowlist',
-    switchableTransferPolicy: true,
-    access: 'roles',
-  },
-
-  // Options left out.
-  default_token: { kind: 'Fungible', ...fungibleDefaults },
-  default_collection: { kind: 'NonFungible', ...nonFungibleDefaults },
-  single_key_token: { kind: 'Fungible', name: 'SingleKeyToken', symbol: 'SKT', access: 'singleKey' },
-  roles_token: { kind: 'Fungible', name: 'RolesToken', symbol: 'RT', access: 'roles' },
-  pauser_roles_token: { kind: 'Fungible', name: 'PauserRolesToken', symbol: 'PRT', pausable: true, access: 'roles' },
-  allowlister_roles_collection: {
-    kind: 'NonFungible',
-    name: 'AllowlisterRolesCollection',
-    symbol: 'ARC',
-    transferPolicy: 'allowlist',
-    access: 'roles',
-  },
-  blocklister_roles_token: {
-    kind: 'Fungible',
-    name: 'BlocklisterRolesToken',
-    symbol: 'BRT',
-    transferPolicy: 'blocklist',
-    access: 'roles',
-  },
-  switchable_ownable_token: {
-    kind: 'Fungible',
-    name: 'SwitchableOwnableToken',
-    symbol: 'SOT',
-    switchableTransferPolicy: true,
-  },
-  switchable_single_key_collection: {
-    kind: 'NonFungible',
-    name: 'SwitchableSingleKeyCollection',
-    symbol: 'SSKC',
-    switchableTransferPolicy: true,
-    access: 'singleKey',
-  },
-  updatable_max_supply_token: {
-    kind: 'Fungible',
-    name: 'UpdatableMaxSupplyToken',
-    symbol: 'UMST',
-    updatableMaxSupply: true,
-  },
-
-  // String constants with special characters.
-  special_characters_token: {
-    kind: 'Fungible',
-    name: 'Caf\u00e9 "Coin" \\ \u{1fa99}',
-    symbol: 'CAFE',
-    description: SPECIAL_CHARACTERS,
-  },
+const SPECIAL_CHARACTERS_OPTIONS: GenericOptions = {
+  kind: 'Fungible',
+  name: 'Caf\u00e9 "Coin" \\ \u{1fa99}',
+  symbol: 'CAFE',
+  description:
+    'Quote " backslash \\ newline \n return \r tab \t null \u0000 line separator \u2028 no-break space \u00a0 ' +
+    'zero-width space \u200b override \u202e isolate \u2066 pop \u2069 joined \u{1f468}\u200d\u{1f469} ' +
+    'decomposed e\u0301 BOM \ufeff',
 };
 
 /** Target directory shared across runs, so that the protocol dependencies are compiled once and can be cached in CI. */
@@ -276,27 +146,46 @@ function buildAccountsTest(sources: CompiledSource[]): string {
   return lines.join('\n');
 }
 
-/** The covering subset of the option matrix (every `use` item at least once) plus the featured configurations. */
+/**
+ * Every variant of the option matrix that differs in code structure, once per distinct output, plus
+ * `SPECIAL_CHARACTERS_OPTIONS`.
+ */
 export function sourcesToCompile(): CompiledSource[] {
   const sources: CompiledSource[] = [];
-  for (const { options, contract, source } of generateSources('minimal-cover', true)) {
+  const printed = new Set<string>();
+  for (const { options, contract, source } of generateSources()) {
+    // Options that the builder ignores or overrides print the same source as other variants.
+    if (!isCompiledVariant(options) || printed.has(source)) {
+      continue;
+    }
+    printed.add(source);
     sources.push({
-      module: contract.name.moduleName,
+      module: `variant${sources.length + 1}`,
       identifier: contract.name.identifier,
       source,
       strings: stringConstants(options),
     });
   }
-  for (const [module, options] of Object.entries(featuredOptions)) {
-    const contract = buildGeneric(options);
-    sources.push({
-      module,
-      identifier: contract.name.identifier,
-      source: printContract(contract),
-      strings: stringConstants(options),
-    });
-  }
+  const contract = buildGeneric(SPECIAL_CHARACTERS_OPTIONS);
+  sources.push({
+    module: 'special_characters',
+    identifier: contract.name.identifier,
+    source: printContract(contract),
+    strings: stringConstants(SPECIAL_CHARACTERS_OPTIONS),
+  });
   return sources;
+}
+
+/**
+ * Whether the compile test builds the variant. It leaves out variants that differ only in text: the metadata fields
+ * are either all set or all empty, since each one only adds its own constant and builder call, and no info is set,
+ * since the license and security contact are only printed in comments.
+ */
+function isCompiledVariant(options: GenericOptions): boolean {
+  const link = options.kind === 'Fungible' ? options.externalLink : options.contractUri;
+  const metadata = [options.description, options.logoUri, link];
+  const allOrNone = metadata.every(field => field) || metadata.every(field => !field);
+  return allOrNone && Object.keys(options.info ?? {}).length === 0;
 }
 
 /** The string constants printed for the options, by constant name. An empty metadata field has no constant. */
@@ -348,7 +237,8 @@ export async function cargoTest(t: ExecutionContext, dir: string): Promise<void>
   try {
     await asyncExecFile('cargo', ['test', '--quiet'], {
       cwd: dir,
-      env: { ...process.env, CARGO_TARGET_DIR: cargoTargetDir() },
+      // The crate is in a new temporary directory every run, so its incremental compilation data is never reused.
+      env: { ...process.env, CARGO_TARGET_DIR: cargoTargetDir(), CARGO_INCREMENTAL: '0' },
       maxBuffer: 64 * 1024 * 1024,
     });
     t.pass();
@@ -390,6 +280,6 @@ export async function rustfmtCheck(t: ExecutionContext, dir: string, files: stri
 
 /** Writes every variant of the option matrix into `dir/all` and returns the file paths, relative to `dir`. */
 export async function writeAllVariants(dir: string): Promise<string[]> {
-  const names = await writeGeneratedSources(path.join(dir, 'all'), 'all', false);
+  const names = await writeGeneratedSources(path.join(dir, 'all'), false);
   return names.map(name => path.join('all', `${name}.rs`));
 }

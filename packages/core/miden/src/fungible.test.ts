@@ -196,6 +196,44 @@ testFungible('fungible full - complex name', {
   },
 });
 
+testFungible('fungible full single key', {
+  decimals: '6',
+  maxSupply: '1000000',
+  description: 'A token issued on Miden',
+  logoUri: 'https://example.com/logo.png',
+  externalLink: 'https://example.com',
+  updatableMetadata: true,
+  updatableMaxSupply: true,
+  burnPolicy: 'minimumAmount',
+  minBurnAmount: '0.5',
+  pausable: true,
+  transferPolicy: 'allowlist',
+  switchableTransferPolicy: true,
+  access: 'singleKey',
+  info: {
+    securityContact: 'security@example.com',
+    license: 'WTFPL',
+  },
+});
+
+testFungible('fungible full ownable', {
+  description: 'A token issued on Miden',
+  logoUri: 'https://example.com/logo.png',
+  externalLink: 'https://example.com',
+  updatableMetadata: true,
+  updatableMaxSupply: true,
+  burnPolicy: 'minimumAmount',
+  minBurnAmount: '10',
+  pausable: true,
+  transferPolicy: 'blocklist',
+  switchableTransferPolicy: true,
+  access: 'ownable',
+  info: {
+    securityContact: 'security@example.com',
+    license: 'WTFPL',
+  },
+});
+
 testFungibleError('fungible name too long', { name: 'A'.repeat(33) }, 'name');
 testFungibleError('fungible lowercase symbol', { symbol: 'mtk' }, 'symbol');
 testFungibleError('fungible symbol too long', { symbol: 'ABCDEFGHIJKLM' }, 'symbol');

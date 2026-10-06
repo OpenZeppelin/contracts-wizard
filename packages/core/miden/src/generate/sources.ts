@@ -9,9 +9,6 @@ import { buildGeneric } from '../build-generic';
 import { printContract } from '../print';
 import { OptionsError } from '../error';
 import type { Contract } from '../contract';
-import { findCover } from '../utils/find-cover';
-
-type Subset = 'all' | 'minimal-cover';
 
 type Kind = keyof KindedOptions;
 
@@ -39,7 +36,7 @@ interface GeneratedSource extends GeneratedContract {
   source: string;
 }
 
-function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[] {
+function generateContracts(kind?: Kind): GeneratedContract[] {
   const contracts = [];
 
   for (const options of generateOptions(kind)) {
@@ -57,17 +54,12 @@ function generateContractSubset(subset: Subset, kind?: Kind): GeneratedContract[
     }
   }
 
-  if (subset === 'all') {
-    return contracts;
-  } else {
-    const getParents = (c: GeneratedContract) => c.contract.useClauses.map(u => `${u.containerPath}::${u.name}`);
-    return [...findCover(contracts, getParents)];
-  }
+  return contracts;
 }
 
-export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
+export function* generateSources(uniqueName?: boolean, kind?: Kind): Generator<GeneratedSource> {
   let counter = 1;
-  for (const c of generateContractSubset(subset, kind)) {
+  for (const c of generateContracts(kind)) {
     if (uniqueName) {
       c.contract.name.identifier = `Contract${counter}`;
       c.contract.name.moduleName = `contract${counter}`;
@@ -78,16 +70,11 @@ export function* generateSources(subset: Subset, uniqueName?: boolean, kind?: Ki
   }
 }
 
-export async function writeGeneratedSources(
-  dir: string,
-  subset: Subset,
-  uniqueName?: boolean,
-  kind?: Kind,
-): Promise<string[]> {
+export async function writeGeneratedSources(dir: string, uniqueName?: boolean, kind?: Kind): Promise<string[]> {
   await fs.mkdir(dir, { recursive: true });
   const contractNames = [];
 
-  for (const { id, contract, source } of generateSources(subset, uniqueName, kind)) {
+  for (const { id, contract, source } of generateSources(uniqueName, kind)) {
     const name = uniqueName ? contract.name.moduleName : id;
     await fs.writeFile(path.format({ dir, name, ext: '.rs' }), source);
     contractNames.push(name);

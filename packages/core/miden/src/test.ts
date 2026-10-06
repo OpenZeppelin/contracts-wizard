@@ -25,7 +25,7 @@ test.serial('non-fungible result generated', async t => {
 async function testGenerate(t: ExecutionContext<Context>, kind: keyof KindedOptions) {
   const generatedSourcesPath = path.join(os.tmpdir(), 'oz-wizard-miden');
   await fs.rm(generatedSourcesPath, { force: true, recursive: true });
-  await writeGeneratedSources(generatedSourcesPath, 'all', true, kind);
+  await writeGeneratedSources(generatedSourcesPath, true, kind);
 
   t.pass();
 }
@@ -42,7 +42,7 @@ function isAccessControlRequired(opts: GenericOptions) {
 }
 
 test('is access control required', async t => {
-  for (const contract of generateSources('all')) {
+  for (const contract of generateSources()) {
     const regexOwnable = /(use miden_standards::account::access::\{?[^;]*\bAccessControl\b)/gm;
 
     switch (contract.options.kind) {
@@ -66,7 +66,7 @@ test('is access control required', async t => {
 });
 
 test('generated sources have unique use clauses and fit the line width', async t => {
-  for (const contract of generateSources('all')) {
+  for (const contract of generateSources()) {
     const lines = contract.source.split('\n');
     for (const line of lines) {
       t.true(line.length <= 100, `Line exceeds 100 characters in ${JSON.stringify(contract.options)}:\n${line}`);

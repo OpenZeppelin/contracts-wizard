@@ -137,6 +137,37 @@ testNonFungible('non-fungible full - complex name', {
   },
 });
 
+testNonFungible('non-fungible full single key', {
+  description: 'An NFT collection issued on Miden',
+  logoUri: 'https://example.com/logo.png',
+  contractUri: 'https://example.com/collection.json',
+  updatableMetadata: true,
+  pausable: true,
+  transferPolicy: 'allowlist',
+  switchableTransferPolicy: true,
+  access: 'singleKey',
+  info: {
+    securityContact: 'security@example.com',
+    license: 'WTFPL',
+  },
+});
+
+testNonFungible('non-fungible full ownable', {
+  description: 'An NFT collection issued on Miden',
+  logoUri: 'https://example.com/logo.png',
+  contractUri: 'https://example.com/collection.json',
+  updatableMetadata: true,
+  burnPolicy: 'ownerOnly',
+  pausable: true,
+  transferPolicy: 'blocklist',
+  switchableTransferPolicy: true,
+  access: 'ownable',
+  info: {
+    securityContact: 'security@example.com',
+    license: 'WTFPL',
+  },
+});
+
 testNonFungibleError('non-fungible name too long', { name: 'A'.repeat(33) }, 'name');
 testNonFungibleError('non-fungible invalid symbol', { symbol: 'MTK1' }, 'symbol');
 testNonFungibleError('non-fungible contract URI too long', { contractUri: 'x'.repeat(196) }, 'contractUri');
