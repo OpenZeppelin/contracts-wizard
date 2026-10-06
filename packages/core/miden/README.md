@@ -51,7 +51,7 @@ Whether any of the provided options require an owner-based access control. If th
 
 The `access` option selects who controls the faucet:
 - `'singleKey'`: the faucet is a user account run by one key holder, who signs every transaction of the faucet itself, including minting and processing burn requests. Token transfers don't need the faucet's key. The generated `create` function takes the public key of the key holder. The key can never be changed, so control can never be handed over or renounced. It can't be combined with the `'ownerOnly'` burn policy, in which case `'ownable'` is used.
-- `'ownable'` (default): the faucet is a network account managed by an owner account, with two-step ownership transfer. The network consumes the notes sent to the faucet, and the owner manages it by sending config notes.
+- `'ownable'` (default): the faucet is a network account managed by an owner account authorized for all privileged actions, including minting. Ownership can be transferred in two steps. The network consumes the notes sent to the faucet, and the owner manages it by sending config notes.
 - `'roles'`: the faucet is a network account with role-based access control. Minting is done by the faucet owner, initially the admin. The generated `create` function takes the initial member of each role the options use.
 
 #### Features

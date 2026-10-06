@@ -53,8 +53,8 @@
       <input type="radio" bind:group={access} value="ownable" />
       Ownable
       <HelpTooltip>
-        Simple mechanism with a single owner account authorized for all privileged actions, with two-step ownership
-        transfer.
+        Simple mechanism with a single owner account authorized for all privileged actions, including minting. Ownership
+        can be transferred in two steps.
       </HelpTooltip>
     </label>
     <label class:checked={access === 'roles'}>
