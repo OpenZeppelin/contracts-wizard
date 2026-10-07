@@ -43,7 +43,7 @@ function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean
 ```js
 function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean
 ```
-Whether any of the provided options require an owner-based access control. If this returns `true`, then calling `print` with the same options would use `'ownable'` instead of `'singleKey'` for the `access` option.
+Whether any of the provided options require an owner-based access control. If this returns `true`, then calling `print` with the same options would use `'ownable'` for the `access` option if it was `'singleKey'`.
 
 ### Examples
 
