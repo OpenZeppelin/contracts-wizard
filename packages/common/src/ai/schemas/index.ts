@@ -36,6 +36,8 @@ export {
 
 export { stylusCommonSchema, stylusERC20Schema, stylusERC721Schema, stylusERC1155Schema } from './stylus';
 
+export { midenCommonSchema, midenFungibleSchema, midenNonFungibleSchema } from './miden';
+
 export { tronGovernorSchema } from './tron';
 
 export { confidentialCommonSchema, confidentialERC7984Schema } from './confidential';

@@ -4,6 +4,7 @@ import SolidityApp from './solidity/App.svelte';
 import CairoApp from './cairo/App.svelte';
 import CairoAlphaApp from './cairo_alpha/App.svelte';
 import ConfidentialApp from './confidential/App.svelte';
+import MidenApp from './miden/App.svelte';
 import PolkadotApp from './polkadot/App.svelte';
 import StellarApp from './stellar/App.svelte';
 import StylusApp from './stylus/App.svelte';
@@ -20,6 +21,7 @@ import {
   contractsVersion as cairoAlphaVersion,
 } from '@openzeppelin/wizard-cairo-alpha';
 import { compatibleConfidentialContractsSemver as confidentialSemver } from '@openzeppelin/wizard-confidential';
+import { compatibleContractsSemver as midenSemver } from '@openzeppelin/wizard-miden';
 import { compatibleContractsSemver as stellarSemver } from '@openzeppelin/wizard-stellar';
 import { compatibleContractsSemver as stylusSemver } from '@openzeppelin/wizard-stylus';
 import { compatibleContractsSemver as uniswapHooksSemver } from '@openzeppelin/wizard-uniswap-hooks';
@@ -55,6 +57,7 @@ interface CompatibleSelection {
     | 'cairo'
     | 'cairo_alpha'
     | 'confidential'
+    | 'miden'
     | 'polkadot'
     | 'stellar'
     | 'stylus'
@@ -100,6 +103,13 @@ function evaluateSelection(
         return { compatible: true, appType: 'confidential' };
       } else {
         return { compatible: false, compatibleVersionsSemver: confidentialSemver };
+      }
+    }
+    case 'miden': {
+      if (requestedVersion === undefined || semver.satisfies(requestedVersion, midenSemver)) {
+        return { compatible: true, appType: 'miden' };
+      } else {
+        return { compatible: false, compatibleVersionsSemver: midenSemver };
       }
     }
     case 'polkadot': {
@@ -205,6 +215,9 @@ if (!selection.compatible) {
       break;
     case 'confidential':
       app = new ConfidentialApp({ target: document.body, props: { initialTab, initialOpts } });
+      break;
+    case 'miden':
+      app = new MidenApp({ target: document.body, props: { initialTab, initialOpts } });
       break;
     case 'uniswap-hooks':
       app = new UniswapHooksApp({ target: document.body, props: { initialTab, initialOpts } });

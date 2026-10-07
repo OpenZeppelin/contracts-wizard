@@ -17,7 +17,15 @@ const APPS_DIR = path.join(__dirname, '..', '..', 'apps');
  * `kind placeholder stays in sync` in register.test.ts.
  */
 export const MCP_KIND_PLACEHOLDER = '__OZ_MCP_KIND__';
-export type AppTemplate = 'solidity' | 'cairo' | 'stellar' | 'stylus' | 'tron' | 'confidential' | 'uniswap-hooks';
+export type AppTemplate =
+  | 'solidity'
+  | 'cairo'
+  | 'stellar'
+  | 'stylus'
+  | 'miden'
+  | 'tron'
+  | 'confidential'
+  | 'uniswap-hooks';
 
 export type ToolAppSpec = {
   template: AppTemplate;
@@ -60,6 +68,9 @@ export const TOOL_APP_SPECS: Readonly<Record<string, ToolAppSpec>> = {
   'stylus-erc20': { template: 'stylus', kind: 'ERC20' },
   'stylus-erc721': { template: 'stylus', kind: 'ERC721' },
   'stylus-erc1155': { template: 'stylus', kind: 'ERC1155' },
+
+  'miden-fungible': { template: 'miden', kind: 'Fungible' },
+  'miden-non-fungible': { template: 'miden', kind: 'NonFungible' },
 
   'tron-trc20': { template: 'tron', kind: 'ERC20' },
   'tron-trc721': { template: 'tron', kind: 'ERC721' },

@@ -151,6 +151,10 @@ body {
   --color-2: #e3126f;
 }
 
+.nav .switch.switch-miden.active {
+  --color-2: var(--miden-orange);
+}
+
 .nav .switch.switch-tron.active {
   --color-2: var(--tron-red);
 }

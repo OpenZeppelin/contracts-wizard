@@ -79,6 +79,10 @@ import { erc7984 } from '@openzeppelin/wizard-confidential';
 import { confidentialPrompts } from '@openzeppelin/wizard-common';
 import { confidentialERC7984Schema } from '@openzeppelin/wizard-common/schemas';
 
+import { fungible as midenFungible, nonFungible as midenNonFungible } from '@openzeppelin/wizard-miden';
+import { midenPrompts } from '@openzeppelin/wizard-common';
+import { midenFungibleSchema, midenNonFungibleSchema } from '@openzeppelin/wizard-common/schemas';
+
 import { hooks } from '@openzeppelin/wizard-uniswap-hooks';
 import { uniswapHooksPrompts } from '@openzeppelin/wizard-common';
 import { uniswapHooksHooksSchema } from '@openzeppelin/wizard-common/schemas';
@@ -172,6 +176,14 @@ export const registry = {
     confidentialERC7984Schema,
     opts => erc7984.print(opts),
     confidentialPrompts.ERC7984,
+  ),
+
+  // Miden
+  'miden-fungible': createRegistryEntry(midenFungibleSchema, opts => midenFungible.print(opts), midenPrompts.Fungible),
+  'miden-non-fungible': createRegistryEntry(
+    midenNonFungibleSchema,
+    opts => midenNonFungible.print(opts),
+    midenPrompts.NonFungible,
   ),
 
   // Uniswap Hooks

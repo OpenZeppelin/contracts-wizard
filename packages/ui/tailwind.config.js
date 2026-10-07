@@ -7,6 +7,7 @@ module.exports = {
     './public/cairo.html',
     './public/stylus.html',
     './public/stellar.html',
+    './public/miden.html',
     './public/embed.html',
   ],
 

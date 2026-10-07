@@ -5,6 +5,7 @@ import type { KindedOptions as SolidityKindedOptions } from '@openzeppelin/wizar
 import type { KindedOptions as CairoKindedOptions } from '@openzeppelin/wizard-cairo';
 import type { KindedOptions as StellarKindedOptions } from '@openzeppelin/wizard-stellar';
 import type { KindedOptions as StylusKindedOptions } from '@openzeppelin/wizard-stylus';
+import type { KindedOptions as MidenKindedOptions } from '@openzeppelin/wizard-miden';
 import type { KindedOptions as ConfidentialKindedOptions } from '@openzeppelin/wizard-confidential';
 import type { KindedOptions as UniswapHooksKindedOptions } from '@openzeppelin/wizard-uniswap-hooks';
 
@@ -35,6 +36,8 @@ import {
   stylusERC20Schema,
   stylusERC721Schema,
   stylusERC1155Schema,
+  midenFungibleSchema,
+  midenNonFungibleSchema,
   confidentialERC7984Schema,
   uniswapHooksHooksSchema,
 } from './index';
@@ -103,6 +106,8 @@ const allSchemas: [string, z.ZodRawShape][] = [
   ['stylusERC20', stylusERC20Schema],
   ['stylusERC721', stylusERC721Schema],
   ['stylusERC1155', stylusERC1155Schema],
+  ['midenFungible', midenFungibleSchema],
+  ['midenNonFungible', midenNonFungibleSchema],
   ['confidentialERC7984', confidentialERC7984Schema],
   ['uniswapHooksHooks', uniswapHooksHooksSchema],
 ];
@@ -174,6 +179,15 @@ function _stylusTypeAssertions() {
   };
 }
 
+function _midenTypeAssertions() {
+  const _: {
+    [K in keyof MidenKindedOptions]: Omit<MidenKindedOptions[K], 'kind'>;
+  } = {
+    Fungible: z.object(midenFungibleSchema).parse({}),
+    NonFungible: z.object(midenNonFungibleSchema).parse({}),
+  };
+}
+
 function _confidentialTypeAssertions() {
   const _: {
     [K in keyof ConfidentialKindedOptions]: Omit<ConfidentialKindedOptions[K], 'kind'>;
@@ -197,6 +211,7 @@ test('type assertions compile (schema-to-options type sync)', t => {
   void _cairoTypeAssertions;
   void _stellarTypeAssertions;
   void _stylusTypeAssertions;
+  void _midenTypeAssertions;
   void _confidentialTypeAssertions;
   void _uniswapHooksTypeAssertions;
   t.pass();

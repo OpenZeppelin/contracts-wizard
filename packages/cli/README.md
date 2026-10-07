@@ -28,6 +28,7 @@ Commands are named in the format `<language>-<contract>`.
 | confidential | erc7984 |
 | stellar | fungible, stablecoin, non-fungible, governor, vault, account |
 | stylus | erc20, erc721, erc1155 |
+| miden | fungible, non-fungible |
 | tron | trc20, trc721, trc1155, governor, custom |
 | uniswap-hooks | hooks (command is just `uniswap-hooks`) |
 
@@ -57,6 +58,10 @@ npx @openzeppelin/contracts-cli stylus-erc721 --name MyNFT --burnable --enumerab
 
 ```sh
 npx @openzeppelin/contracts-cli tron-trc20 --name MyToken --symbol MTK --mintable --upgradeable uups
+```
+
+```sh
+npx @openzeppelin/contracts-cli miden-fungible --name MyToken --symbol MTK --maxSupply 1000000 --pausable --access ownable
 ```
 
 ```sh

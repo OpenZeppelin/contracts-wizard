@@ -24,6 +24,9 @@ export type StylusCommonContractOptions = Omit<StylusCommonContractOptionsBase, 
 // Confidential
 import type { KindedOptions as ConfidentialKindedOptions } from '../../../../core/confidential/dist';
 export type { CommonOptions as ConfidentialCommonOptions } from '../../../../core/confidential/dist/common-options';
+// Miden
+import type { KindedOptions as MidenKindedOptions } from '../../../../core/miden/dist';
+export type { CommonContractOptions as MidenCommonContractOptions } from '../../../../core/miden/dist/common-options';
 
 type SolidityContractsOptions = Omit<
   SolidityKindedOptions,
@@ -41,6 +44,7 @@ export type LanguagesContractsOptions = {
   cairo: CairoKindedOptions;
   cairoAlpha: CairoAlphaKindedOptions;
   confidential: ConfidentialKindedOptions;
+  miden: MidenKindedOptions;
   polkadot: Omit<SolidityContractsOptions, 'Account'>;
   // Stablecoin + RealWorldAsset depend on @openzeppelin/community-contracts, which
   // is not ported to TRON; Account's ERC-4337 EntryPoint is out of TRON scope.

@@ -167,6 +167,10 @@ input.input-inline {
   background: linear-gradient(30deg, #181215, #360c1f);
 }
 
+.hljs.-miden {
+  background: linear-gradient(30deg, #1a1411, #3d1a06);
+}
+
 .light-link {
   color: white;
 }

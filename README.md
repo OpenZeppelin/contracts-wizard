@@ -4,6 +4,7 @@
 [![Cairo NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-cairo?color=%23e55233&label=%40openzeppelin%2Fwizard-cairo)](https://www.npmjs.com/package/@openzeppelin/wizard-cairo)
 [![Stellar NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stellar?color=%23e55233&label=%40openzeppelin%2Fwizard-stellar)](https://www.npmjs.com/package/@openzeppelin/wizard-stellar)
 [![Stylus NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-stylus?color=%23e55233&label=%40openzeppelin%2Fwizard-stylus)](https://www.npmjs.com/package/@openzeppelin/wizard-stylus)
+[![Miden NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-miden?color=%23e55233&label=%40openzeppelin%2Fwizard-miden)](https://www.npmjs.com/package/@openzeppelin/wizard-miden)
 [![Uniswap Hooks NPM Package](https://img.shields.io/npm/v/@openzeppelin/wizard-uniswap-hooks?color=%23e55233&label=%40openzeppelin%2Fwizard-uniswap-hooks)](https://www.npmjs.com/package/@openzeppelin/wizard-uniswap-hooks)
 [![Contracts CLI NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-cli?label=%40openzeppelin%2Fcontracts-cli)](https://www.npmjs.com/package/@openzeppelin/contracts-cli)
 [![Contracts MCP NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts-mcp?label=%40openzeppelin%2Fcontracts-mcp)](https://www.npmjs.com/package/@openzeppelin/contracts-mcp)
@@ -34,6 +35,7 @@ View the API documentation for each smart contract language:
 - [Cairo](packages/core/cairo/README.md)
 - [Stellar](packages/core/stellar/README.md)
 - [Stylus](packages/core/stylus/README.md)
+- [Miden](packages/core/miden/README.md)
 
 ## Embedding
 

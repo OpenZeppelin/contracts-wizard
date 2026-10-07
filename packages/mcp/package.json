@@ -31,6 +31,7 @@
     "@openzeppelin/wizard": "^0.10.16",
     "@openzeppelin/wizard-stylus": "^0.3.0",
     "@openzeppelin/wizard-stellar": "^0.6.5",
+    "@openzeppelin/wizard-miden": "^0.0.1",
     "@openzeppelin/wizard-cairo": "^4.1.0",
     "@openzeppelin/wizard-confidential": "^0.1.2",
     "@openzeppelin/wizard-uniswap-hooks": "^0.1.1"

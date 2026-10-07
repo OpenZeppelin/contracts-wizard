@@ -74,6 +74,7 @@ jobs:
           - solidity
           - cairo
           - confidential
+          - miden
           - stellar
           - stylus
           - uniswap-hooks
@@ -101,6 +102,14 @@ jobs:
             fetch-depth: 0
       - name: Set up environment
         uses: ./.github/actions/setup
+
+      # Before the compile setup steps, so that they can be skipped when the package has no changes.
+      - name: Get list of changed files
+        id: filter
+        if: matrix.variant == 'compile'
+        run: |
+          BASE=${{ github.event.pull_request.base.sha || github.event.before }}
+          echo "changes=$(git diff --name-only $BASE ${{ github.sha }} | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       # ----------------------------
       # Solidity and Uniswap Hooks setup
@@ -134,6 +143,28 @@ jobs:
           target: wasm32v1-none
 
       # ----------------------------
+      # Miden compile setup
+
+      - name: Cache Rust dependencies
+        if: matrix.package == 'miden' && matrix.variant == 'compile' && contains(steps.filter.outputs.changes, 'packages/core/miden/')
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            packages/core/miden/target/
+          key: cargo-${{ matrix.package }}-${{ hashFiles('packages/core/miden/src/utils/compile-test.ts', 'packages/core/miden/src/utils/version.ts') }}
+
+      - name: Set up rust toolchain
+        if: matrix.package == 'miden' && matrix.variant == 'compile' && contains(steps.filter.outputs.changes, 'packages/core/miden/')
+        uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c # v1.15.2
+        with:
+          toolchain: 1.98.1
+          components: rustfmt
+          cache: false
+
+      # ----------------------------
       - name: Compile TypeScript
         run: yarn tsc
         working-directory: packages/core/${{matrix.package}}
@@ -144,13 +175,6 @@ jobs:
         if: matrix.variant == 'default'
         run: yarn test '**/*.test.ts' '**/test.ts' '!**/*.compile.test.ts'
         working-directory: packages/core/${{matrix.package}}
-
-      - name: Get list of changed files
-        id: filter
-        if: matrix.variant == 'compile'
-        run: |
-          BASE=${{ github.event.pull_request.base.sha || github.event.before }}
-          echo "changes=$(git diff --name-only $BASE ${{ github.sha }} | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Run tests
         if: matrix.variant == 'compile' && contains(steps.filter.outputs.changes, format('packages/core/{0}/', matrix.package))

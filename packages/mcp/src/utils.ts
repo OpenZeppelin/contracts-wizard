@@ -2,6 +2,7 @@ import { OptionsError as OptionsErrorSolidity } from '@openzeppelin/wizard';
 import { OptionsError as OptionsErrorCairo } from '@openzeppelin/wizard-cairo';
 import { OptionsError as OptionsErrorStylus } from '@openzeppelin/wizard-stylus';
 import { OptionsError as OptionsErrorStellar } from '@openzeppelin/wizard-stellar';
+import { OptionsError as OptionsErrorMiden } from '@openzeppelin/wizard-miden';
 
 /** Wraps contract source code in a Markdown code block with the given syntax highlighting. */
 export function codeBlock(code: string, syntaxHighlightingLanguage: string): string {
@@ -18,7 +19,8 @@ export function formatPrintError(e: unknown): string {
     e instanceof OptionsErrorSolidity ||
     e instanceof OptionsErrorCairo ||
     e instanceof OptionsErrorStylus ||
-    e instanceof OptionsErrorStellar
+    e instanceof OptionsErrorStellar ||
+    e instanceof OptionsErrorMiden
   ) {
     return `${e.message}\n\n${JSON.stringify(e.messages, null, 2)}`;
   }

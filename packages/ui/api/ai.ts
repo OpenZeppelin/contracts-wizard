@@ -6,6 +6,7 @@ import * as stellarFunctions from './ai-assistant/function-definitions/stellar.t
 import * as stylusFunctions from './ai-assistant/function-definitions/stylus.ts';
 import * as tronFunctions from './ai-assistant/function-definitions/tron.ts';
 import * as confidentialFunctions from './ai-assistant/function-definitions/confidential.ts';
+import * as midenFunctions from './ai-assistant/function-definitions/miden.ts';
 import * as uniswapHooksFunctions from './ai-assistant/function-definitions/uniswap-hooks.ts';
 import { saveChatInRedisIfDoesNotExist } from './services/redis.ts';
 import type { ChatMessages } from './services/open-ai.ts';
@@ -30,6 +31,7 @@ const getFunctionsContext = <TLanguage extends SupportedLanguage = SupportedLang
     stylus: stylusFunctions,
     tron: tronFunctions,
     confidential: confidentialFunctions,
+    miden: midenFunctions,
     uniswapHooks: uniswapHooksFunctions,
   };
 
