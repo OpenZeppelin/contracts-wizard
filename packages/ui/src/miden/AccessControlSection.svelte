@@ -33,9 +33,7 @@
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="flex justify-between items-center tooltip-container pr-2">
       <span>Access Control</span>
-      <HelpTooltip link="https://docs.miden.xyz/protocol/account/components">
-        Restrict who can mint and manage the faucet.
-      </HelpTooltip>
+      <HelpTooltip>Restrict who can mint and manage the faucet.</HelpTooltip>
     </label>
   </h1>
 
