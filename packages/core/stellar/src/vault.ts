@@ -10,6 +10,7 @@ import { setInfo } from './set-info';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
+import { printComposedContractType } from './utils/compose';
 import { OptionsError } from './error';
 import { pickKeys } from '@openzeppelin/wizard-common';
 
@@ -119,7 +120,16 @@ function addBase(
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
+  c.addUseClause('stellar_tokens::fungible', 'Compose');
   c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
+  // `Vault` provides the total supply only through the `TotalSupplyOverrides` trait, which the
+  // explicitly implemented `total_supply` needs in scope.
+  c.addUseClause(
+    'stellar_tokens::fungible',
+    explicitImplementations
+      ? 'total_supply::{FungibleTotalSupply, TotalSupply, TotalSupplyOverrides}'
+      : 'total_supply::{FungibleTotalSupply, TotalSupply}',
+  );
   c.addUseClause('stellar_tokens::vault', 'FungibleVault');
   c.addUseClause('stellar_tokens::vault', 'Vault');
   // The base token functions we emit delegate to `Self::ContractType::...`,
@@ -138,7 +148,8 @@ function addBase(
     traitName: 'FungibleToken',
     structName: c.name,
     tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-    assocType: 'type ContractType = Vault;',
+    // The vault tracks the share supply, which the library requires to be stated with `TotalSupply`.
+    assocType: printComposedContractType(['Vault', 'TotalSupply']),
   };
 
   c.addTraitImplBlock(fungibleTokenTrait);
@@ -161,6 +172,19 @@ function addBase(
     c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
 
+  const fungibleTotalSupplyTrait = {
+    traitName: 'FungibleTotalSupply',
+    structName: c.name,
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+    section: 'Extensions',
+  };
+
+  if (explicitImplementations) {
+    c.addTraitFunction(fungibleTotalSupplyTrait, functions.total_supply);
+  } else {
+    c.addTraitImplBlock(fungibleTotalSupplyTrait);
+  }
+
   const fungibleVaultTrait = {
     traitName: 'FungibleVault',
     structName: c.name,
@@ -177,11 +201,6 @@ function addBase(
 
 export const functions = defineFunctions({
   // FungibleToken Trait
-  total_supply: {
-    args: [getSelfArg()],
-    returns: 'i128',
-    code: ['Self::ContractType::total_supply(e)'],
-  },
   balance: {
     args: [getSelfArg(), { name: 'account', type: 'Address' }],
     returns: 'i128',
@@ -237,6 +256,13 @@ export const functions = defineFunctions({
     args: [getSelfArg()],
     returns: 'String',
     code: ['Self::ContractType::symbol(e)'],
+  },
+
+  // FungibleTotalSupply Trait
+  total_supply: {
+    args: [getSelfArg()],
+    returns: 'i128',
+    code: ['Self::ContractType::total_supply(e)'],
   },
 
   // FungibleVault Trait
@@ -347,7 +373,6 @@ export const functions = defineFunctions({
 });
 
 const fungibleTokenTraitFunctions = pickKeys(functions, [
-  'total_supply',
   'balance',
   'allowance',
   'transfer',

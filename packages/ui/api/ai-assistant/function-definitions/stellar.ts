@@ -44,6 +44,14 @@ export const stellarFungibleAIFunctionDefinition = {
         type: 'boolean',
         description: stellarFungibleDescriptions.votes,
       },
+      totalSupply: {
+        type: 'boolean',
+        description: stellarFungibleDescriptions.totalSupply,
+      },
+      cap: {
+        type: 'string',
+        description: stellarFungibleDescriptions.cap,
+      },
     },
     required: contractExactRequiredKeys<'stellar', 'Fungible'>()(['name', 'symbol']),
     additionalProperties: false,
@@ -88,6 +96,14 @@ export const stellarStablecoinAIFunctionDefinition = {
       votes: {
         type: 'boolean',
         description: stellarStablecoinDescriptions.votes,
+      },
+      totalSupply: {
+        type: 'boolean',
+        description: stellarFungibleDescriptions.totalSupply,
+      },
+      cap: {
+        type: 'string',
+        description: stellarFungibleDescriptions.cap,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'Stablecoin'>()(['name', 'symbol']),
@@ -135,6 +151,14 @@ export const stellarNonFungibleAIFunctionDefinition = {
       votes: {
         type: 'boolean',
         description: stellarNonFungibleDescriptions.votes,
+      },
+      royalties: {
+        type: 'boolean',
+        description: stellarNonFungibleDescriptions.royalties,
+      },
+      defaultRoyaltyBasisPoints: {
+        type: 'string',
+        description: stellarNonFungibleDescriptions.defaultRoyaltyBasisPoints,
       },
     },
     required: contractExactRequiredKeys<'stellar', 'NonFungible'>()(['name', 'symbol']),

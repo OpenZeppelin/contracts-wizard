@@ -247,3 +247,60 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation stablecoin allowlist votes',
+  runRustCompilationTest(
+    buildStablecoin,
+    {
+      kind: 'Stablecoin',
+      name: 'MyStablecoin',
+      symbol: 'MST',
+      premint: '2000',
+      limitations: 'allowlist',
+      votes: true,
+      burnable: true,
+      mintable: true,
+      pausable: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation stablecoin blocklist total supply',
+  runRustCompilationTest(
+    buildStablecoin,
+    {
+      kind: 'Stablecoin',
+      name: 'MyStablecoin',
+      symbol: 'MST',
+      premint: '2000',
+      limitations: 'blocklist',
+      totalSupply: true,
+      burnable: true,
+      pausable: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation stablecoin capped full - roles, allowlist',
+  runRustCompilationTest(
+    buildStablecoin,
+    {
+      kind: 'Stablecoin',
+      name: 'MyStablecoin',
+      symbol: 'MST',
+      premint: '2000',
+      cap: '1000000',
+      access: 'roles',
+      limitations: 'allowlist',
+      burnable: true,
+      mintable: true,
+      pausable: true,
+    },
+    { snapshotResult: false },
+  ),
+);

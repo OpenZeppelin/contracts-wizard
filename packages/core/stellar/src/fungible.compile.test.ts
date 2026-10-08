@@ -349,3 +349,42 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation fungible total supply full',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      totalSupply: true,
+      burnable: true,
+      mintable: true,
+      pausable: true,
+      upgradeable: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation fungible capped full',
+  runRustCompilationTest(
+    buildFungible,
+    {
+      kind: 'Fungible',
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '2000',
+      cap: '1000000',
+      burnable: true,
+      mintable: true,
+      pausable: true,
+      upgradeable: true,
+      access: 'roles',
+    },
+    { snapshotResult: false },
+  ),
+);

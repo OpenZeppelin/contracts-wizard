@@ -3,6 +3,7 @@ import type { Access } from './set-access-control';
 import { requireAccessControl, setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
+import { addVotes } from './add-votes';
 import { defineFunctions } from './utils/define-functions';
 import type { CommonContractOptions } from './common-options';
 import { withCommonContractDefaults, getSelfArg } from './common-options';
@@ -11,6 +12,7 @@ import { OptionsError } from './error';
 import { contractDefaults as commonDefaults } from './common-options';
 import { printContract } from './print';
 import { toByteArray, toUint } from './utils/convert-strings';
+import { printComposedContractType } from './utils/compose';
 import { pickKeys } from '@openzeppelin/wizard-common';
 
 const DEFAULT_DECIMALS = 7;
@@ -21,6 +23,8 @@ export const defaults: Required<FungibleOptions> = {
   decimals: DEFAULT_DECIMALS.toString(),
   burnable: false,
   votes: false,
+  totalSupply: false,
+  cap: '',
   pausable: false,
   upgradeable: false,
   premint: '0',
@@ -40,11 +44,18 @@ export interface FungibleOptions extends CommonContractOptions {
   decimals?: string;
   burnable?: boolean;
   votes?: boolean;
+  totalSupply?: boolean;
+  cap?: string;
   pausable?: boolean;
   upgradeable?: boolean;
   premint?: string;
   mintable?: boolean;
 }
+
+/**
+ * Contract type restricting which accounts can use the token, selected by the Stablecoin limitations.
+ */
+export type TransferPolicy = 'AllowList' | 'BlockList';
 
 export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
   return {
@@ -53,6 +64,8 @@ export function withDefaults(opts: FungibleOptions): Required<FungibleOptions> {
     decimals: opts.decimals ?? defaults.decimals,
     burnable: opts.burnable ?? defaults.burnable,
     votes: opts.votes ?? defaults.votes,
+    totalSupply: opts.totalSupply ?? defaults.totalSupply,
+    cap: opts.cap ?? defaults.cap,
     pausable: opts.pausable ?? defaults.pausable,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     premint: opts.premint || defaults.premint,
@@ -65,24 +78,71 @@ export function isAccessControlRequired(opts: Partial<FungibleOptions>): boolean
 }
 
 export function buildFungible(opts: FungibleOptions): ContractBuilder {
+  return buildFungibleWithTransferPolicy(opts);
+}
+
+/**
+ * Builds a Fungible contract whose contract type also includes the given transfer policy.
+ */
+export function buildFungibleWithTransferPolicy(
+  opts: FungibleOptions,
+  transferPolicy?: TransferPolicy,
+): ContractBuilder {
   const c = new ContractBuilder(opts.name);
 
   const allOpts = withDefaults(opts);
 
   const decimals = toUint(allOpts.decimals, 'decimals', 'u32');
 
+  const capped = allOpts.cap !== '';
+  // The cap is checked against the total supply, so it requires the supply to be tracked.
+  const totalSupply = allOpts.totalSupply || capped;
+
+  if (allOpts.votes && capped) {
+    throw new OptionsError({
+      votes: 'Votes extension cannot be used with a cap',
+      cap: 'Cap cannot be used with Votes extension',
+    });
+  }
+
+  if (allOpts.votes && totalSupply) {
+    throw new OptionsError({
+      votes: 'Votes extension cannot be used with Total Supply extension',
+      totalSupply: 'Total Supply extension cannot be used with Votes extension',
+    });
+  }
+
+  // Order follows the library's documentation, e.g. `Compose<(AllowList, Capped, TotalSupply)>`.
+  const contractTypes = [
+    ...(transferPolicy ? [transferPolicy] : []),
+    ...(allOpts.votes ? ['FungibleVotes'] : []),
+    ...(capped ? ['Capped'] : []),
+    ...(totalSupply ? ['TotalSupply'] : []),
+  ];
+
   addBase(
     c,
     toByteArray(allOpts.name),
     toByteArray(allOpts.symbol),
     decimals,
-    allOpts.votes,
+    contractTypes,
     allOpts.pausable,
     allOpts.explicitImplementations,
   );
 
+  if (allOpts.votes) {
+    addVotes(c, allOpts.explicitImplementations);
+  }
+
+  if (totalSupply) {
+    addTotalSupply(c, allOpts.explicitImplementations);
+  }
+
+  // The cap has to be set before the premint, which is checked against it.
+  const capAbsolute = capped ? addCap(c, allOpts.cap, decimals, allOpts.explicitImplementations) : undefined;
+
   if (allOpts.premint) {
-    addPremint(c, allOpts.premint, decimals, allOpts.votes);
+    addPremint(c, allOpts.premint, decimals, capAbsolute);
   }
 
   if (allOpts.pausable) {
@@ -94,11 +154,11 @@ export function buildFungible(opts: FungibleOptions): ContractBuilder {
   }
 
   if (allOpts.burnable) {
-    addBurnable(c, allOpts.votes, allOpts.pausable, allOpts.explicitImplementations);
+    addBurnable(c, allOpts.pausable, allOpts.explicitImplementations);
   }
 
   if (allOpts.mintable) {
-    addMintable(c, allOpts.access, allOpts.votes, allOpts.pausable, allOpts.explicitImplementations);
+    addMintable(c, allOpts.access, allOpts.pausable, allOpts.explicitImplementations);
   }
 
   setAccessControl(c, allOpts.access, allOpts.explicitImplementations);
@@ -112,7 +172,7 @@ function addBase(
   name: string,
   symbol: string,
   decimals: bigint,
-  votes: boolean,
+  contractTypes: string[],
   pausable: boolean,
   explicitImplementations: boolean,
 ) {
@@ -123,10 +183,9 @@ function addBase(
 
   // Set token functions
   c.addUseClause('stellar_tokens::fungible', 'Base');
+  c.addUseClause('stellar_tokens::fungible', 'Compose');
   c.addUseClause('stellar_tokens::fungible', 'FungibleToken');
-  if (votes) {
-    c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
-    c.addUseClause('stellar_governance::votes', 'Votes');
+  if (contractTypes.includes('FungibleVotes')) {
     c.addUseClause('stellar_tokens::fungible', 'votes::FungibleVotes');
   }
   c.addUseClause('soroban_sdk', 'contract');
@@ -142,7 +201,7 @@ function addBase(
     traitName: 'FungibleToken',
     structName: c.name,
     tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-    assocType: `type ContractType = ${votes ? 'FungibleVotes' : 'Base'};`,
+    assocType: printComposedContractType(contractTypes.length > 0 ? contractTypes : ['Base']),
   };
 
   c.addTraitImplBlock(fungibleTokenTrait);
@@ -159,46 +218,80 @@ function addBase(
     c.addFunctionTag(functions.transfer_from, 'when_not_paused', fungibleTokenTrait);
   }
 
-  if (votes) {
-    c.addTraitImplBlock({
-      traitName: 'Votes',
-      structName: c.name,
-      tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-      section: 'Extensions',
-    });
+  // `Base` implements every `FungibleToken` method inherently, while the other contract types provide
+  // some of them only through the `ContractOverrides` trait, which then has to be in scope. The
+  // supply-tracking contract types provide transfers through it as well.
+  const tracksSupply = contractTypes.includes('TotalSupply');
+  if ((explicitImplementations && contractTypes.length > 0) || (pausable && tracksSupply)) {
+    c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
   }
 }
 
-function addMintable(
-  c: ContractBuilder,
-  access: Access,
-  votes: boolean,
-  pausable: boolean,
-  explicitImplementations: boolean,
-) {
-  const mintFn = votes ? votesFunctions.mint : functions.mint;
-  const mintWithCallerFn = votes ? votesFunctions.mint_with_caller : functions.mint_with_caller;
+function addTotalSupply(c: ContractBuilder, explicitImplementations: boolean) {
+  c.addUseClause('stellar_tokens::fungible', 'total_supply::{FungibleTotalSupply, TotalSupply}');
 
+  const fungibleTotalSupplyTrait = {
+    traitName: 'FungibleTotalSupply',
+    structName: c.name,
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+    section: 'Extensions',
+  };
+
+  if (explicitImplementations) c.addTraitFunction(fungibleTotalSupplyTrait, functions.total_supply);
+  else c.addTraitImplBlock(fungibleTotalSupplyTrait);
+}
+
+function addCap(c: ContractBuilder, cap: string, decimals: bigint, explicitImplementations: boolean): bigint {
+  if (!premintPattern.test(cap)) {
+    throw new OptionsError({
+      cap: 'Not a valid number',
+    });
+  }
+
+  const capAbsolute = toUint(getInitialSupply(cap, Number(decimals), 'cap'), 'cap', 'u128');
+  if (capAbsolute === 0n) {
+    throw new OptionsError({
+      cap: 'Cap must be greater than 0',
+    });
+  }
+
+  c.addUseClause('stellar_tokens::fungible', 'capped::{Capped, FungibleCapped}');
+  c.addConstructorCode(`Capped::set_cap(e, ${capAbsolute});`);
+
+  const fungibleCappedTrait = {
+    traitName: 'FungibleCapped',
+    structName: c.name,
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+    section: 'Extensions',
+  };
+
+  if (explicitImplementations) c.addTraitFunction(fungibleCappedTrait, functions.cap);
+  else c.addTraitImplBlock(fungibleCappedTrait);
+
+  return capAbsolute;
+}
+
+function addMintable(c: ContractBuilder, access: Access, pausable: boolean, explicitImplementations: boolean) {
   switch (access) {
     case false:
       break;
     case 'ownable': {
-      c.addFreeFunction(mintFn);
+      c.addFreeFunction(functions.mint);
 
-      requireAccessControl(c, undefined, mintFn, access, undefined, explicitImplementations);
+      requireAccessControl(c, undefined, functions.mint, access, undefined, explicitImplementations);
 
       if (pausable) {
-        c.addFunctionTag(mintFn, 'when_not_paused');
+        c.addFunctionTag(functions.mint, 'when_not_paused');
       }
       break;
     }
     case 'roles': {
-      c.addFreeFunction(mintWithCallerFn);
+      c.addFreeFunction(functions.mint_with_caller);
 
       requireAccessControl(
         c,
         undefined,
-        mintWithCallerFn,
+        functions.mint_with_caller,
         access,
         {
           useMacro: true,
@@ -209,7 +302,7 @@ function addMintable(
       );
 
       if (pausable) {
-        c.addFunctionTag(mintWithCallerFn, 'when_not_paused');
+        c.addFunctionTag(functions.mint_with_caller, 'when_not_paused');
       }
       break;
     }
@@ -220,7 +313,7 @@ function addMintable(
   }
 }
 
-function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, explicitImplementations: boolean) {
+function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementations: boolean) {
   c.addUseClause('stellar_tokens::fungible', 'burnable::FungibleBurnable');
 
   const fungibleBurnableTrait = {
@@ -230,20 +323,17 @@ function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, expl
     section: 'Extensions',
   };
 
-  const burnFn = votes ? votesFunctions.burn : functions.burn;
-  const burnFromFn = votes ? votesFunctions.burn_from : functions.burn_from;
-
-  if (pausable || votes || explicitImplementations) {
+  if (pausable || explicitImplementations) {
     if (pausable) {
       c.addUseClause('stellar_macros', 'when_not_paused');
     }
 
-    c.addTraitFunction(fungibleBurnableTrait, burnFn);
-    c.addTraitFunction(fungibleBurnableTrait, burnFromFn);
+    c.addTraitFunction(fungibleBurnableTrait, functions.burn);
+    c.addTraitFunction(fungibleBurnableTrait, functions.burn_from);
 
     if (pausable) {
-      c.addFunctionTag(burnFn, 'when_not_paused', fungibleBurnableTrait);
-      c.addFunctionTag(burnFromFn, 'when_not_paused', fungibleBurnableTrait);
+      c.addFunctionTag(functions.burn, 'when_not_paused', fungibleBurnableTrait);
+      c.addFunctionTag(functions.burn_from, 'when_not_paused', fungibleBurnableTrait);
     }
   } else {
     c.addTraitImplBlock(fungibleBurnableTrait);
@@ -252,7 +342,7 @@ function addBurnable(c: ContractBuilder, votes: boolean, pausable: boolean, expl
 
 export const premintPattern = /^\d*(?:\.\d*)?$/;
 
-function addPremint(c: ContractBuilder, amount: string, decimals: bigint, votes: boolean) {
+function addPremint(c: ContractBuilder, amount: string, decimals: bigint, capAbsolute?: bigint) {
   if (amount !== undefined && amount !== '0') {
     if (!premintPattern.test(amount)) {
       throw new OptionsError({
@@ -263,8 +353,15 @@ function addPremint(c: ContractBuilder, amount: string, decimals: bigint, votes:
     // TODO: handle signed int?
     const premintAbsolute = toUint(getInitialSupply(amount, Number(decimals)), 'premint', 'u128');
 
+    if (capAbsolute !== undefined && premintAbsolute > capAbsolute) {
+      throw new OptionsError({
+        premint: 'Premint exceeds the cap',
+        cap: 'Cap is lower than the premint',
+      });
+    }
+
     c.addConstructorArgument({ name: 'recipient', type: 'Address' });
-    c.addConstructorCode(`${votes ? 'FungibleVotes' : 'Base'}::mint(e, &recipient, ${premintAbsolute});`);
+    c.addConstructorCode(`<Self as FungibleToken>::ContractType::mint(e, &recipient, ${premintAbsolute});`);
   }
 }
 
@@ -273,15 +370,16 @@ function addPremint(c: ContractBuilder, amount: string, decimals: bigint, votes:
  *
  * @param premint Premint amount in token units, may be fractional
  * @param decimals The number of decimals in the token
+ * @param field The option reported in errors
  * @returns `premint` with zeros padded or removed based on `decimals`.
  * @throws OptionsError if `premint` has more than one decimal character or is more precise than allowed by the `decimals` argument.
  */
-export function getInitialSupply(premint: string, decimals: number): string {
+export function getInitialSupply(premint: string, decimals: number, field = 'premint'): string {
   let result;
   const premintSegments = premint.split('.');
   if (premintSegments.length > 2) {
     throw new OptionsError({
-      premint: 'Not a valid number',
+      [field]: 'Not a valid number',
     });
   } else {
     const firstSegment = premintSegments[0] ?? '';
@@ -292,12 +390,12 @@ export function getInitialSupply(premint: string, decimals: number): string {
       } catch {
         // .repeat gives an error if decimals number is too large
         throw new OptionsError({
-          premint: 'Decimals number too large',
+          [field]: 'Decimals number too large',
         });
       }
     } else if (decimals < lastSegment.length) {
       throw new OptionsError({
-        premint: 'Too many decimals',
+        [field]: 'Too many decimals',
       });
     }
     // concat segments without leading zeros
@@ -311,11 +409,6 @@ export function getInitialSupply(premint: string, decimals: number): string {
 
 export const functions = defineFunctions({
   // Token Functions
-  total_supply: {
-    args: [getSelfArg()],
-    returns: 'i128',
-    code: ['Self::ContractType::total_supply(e)'],
-  },
   balance: {
     args: [getSelfArg(), { name: 'account', type: 'Address' }],
     returns: 'i128',
@@ -372,9 +465,19 @@ export const functions = defineFunctions({
   },
 
   // Extensions
+  total_supply: {
+    args: [getSelfArg()],
+    returns: 'i128',
+    code: ['Self::ContractType::total_supply(e)'],
+  },
+  cap: {
+    args: [getSelfArg()],
+    returns: 'i128',
+    code: ['Capped::cap(e)'],
+  },
   burn: {
     args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'amount', type: 'i128' }],
-    code: ['Base::burn(e, &from, amount)'],
+    code: ['Self::ContractType::burn(e, &from, amount)'],
   },
   burn_from: {
     args: [
@@ -383,11 +486,12 @@ export const functions = defineFunctions({
       { name: 'from', type: 'Address' },
       { name: 'amount', type: 'i128' },
     ],
-    code: ['Base::burn_from(e, &spender, &from, amount)'],
+    code: ['Self::ContractType::burn_from(e, &spender, &from, amount)'],
   },
+  // Minting goes through the contract type, which keeps the total supply, the cap and the voting units up to date.
   mint: {
     args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
-    code: ['Base::mint(e, &account, amount);'],
+    code: ['<Self as FungibleToken>::ContractType::mint(e, &account, amount);'],
   },
   mint_with_caller: {
     name: 'mint',
@@ -397,42 +501,11 @@ export const functions = defineFunctions({
       { name: 'amount', type: 'i128' },
       { name: 'caller', type: 'Address' },
     ],
-    code: ['Base::mint(e, &account, amount);'],
-  },
-});
-
-const votesFunctions = defineFunctions({
-  burn: {
-    args: [getSelfArg(), { name: 'from', type: 'Address' }, { name: 'amount', type: 'i128' }],
-    code: ['FungibleVotes::burn(e, &from, amount)'],
-  },
-  burn_from: {
-    args: [
-      getSelfArg(),
-      { name: 'spender', type: 'Address' },
-      { name: 'from', type: 'Address' },
-      { name: 'amount', type: 'i128' },
-    ],
-    code: ['FungibleVotes::burn_from(e, &spender, &from, amount)'],
-  },
-  mint: {
-    args: [getSelfArg(), { name: 'account', type: 'Address' }, { name: 'amount', type: 'i128' }],
-    code: ['FungibleVotes::mint(e, &account, amount);'],
-  },
-  mint_with_caller: {
-    name: 'mint',
-    args: [
-      getSelfArg(),
-      { name: 'account', type: 'Address' },
-      { name: 'amount', type: 'i128' },
-      { name: 'caller', type: 'Address' },
-    ],
-    code: ['FungibleVotes::mint(e, &account, amount);'],
+    code: ['<Self as FungibleToken>::ContractType::mint(e, &account, amount);'],
   },
 });
 
 const fungibleTokenTraitFunctions = pickKeys(functions, [
-  'total_supply',
   'balance',
   'allowance',
   'transfer',
