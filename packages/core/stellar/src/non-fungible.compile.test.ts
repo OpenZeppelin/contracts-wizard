@@ -266,3 +266,80 @@ test.serial(
     { snapshotResult: false },
   ),
 );
+
+test.serial(
+  'compilation nonfungible votes enumerable',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      burnable: true,
+      votes: true,
+      enumerable: true,
+      consecutive: false,
+      pausable: true,
+      upgradeable: false,
+      mintable: true,
+      sequential: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation nonfungible votes consecutive',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      burnable: true,
+      votes: true,
+      enumerable: false,
+      consecutive: true,
+      pausable: true,
+      upgradeable: false,
+      mintable: false,
+      sequential: false,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation nonfungible royalties',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      royalties: true,
+      defaultRoyaltyBasisPoints: '500',
+      burnable: true,
+      mintable: true,
+      sequential: true,
+    },
+    { snapshotResult: false },
+  ),
+);
+
+test.serial(
+  'compilation nonfungible royalties consecutive roles',
+  runRustCompilationTest(
+    buildNonFungible,
+    {
+      kind: 'NonFungible',
+      name: 'MyNFT',
+      symbol: 'MNFT',
+      royalties: true,
+      access: 'roles',
+      consecutive: true,
+      burnable: true,
+    },
+    { snapshotResult: false },
+  ),
+);

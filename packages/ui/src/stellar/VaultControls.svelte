@@ -40,9 +40,10 @@
       Decimals offset
       <HelpTooltip>
         Virtual offset added to the underlying asset's decimals to derive the vault share decimals, mitigating inflation
-        (donation) attacks. The default of 0 is already safe (it makes such attacks non-profitable); higher values add
-        more margin, at the cost of virtual shares absorbing a tiny part of the vault's accrued value. Must be between 0
-        and 10.
+        (donation) attacks. With the default of 0, diluting a single deposit is never profitable, but an attacker
+        holding most of the shares can profit once enough deposits land at an inflated price. Higher values make attacks
+        orders of magnitude more costly, at the cost of virtual shares absorbing a tiny part of the vault's accrued
+        value. Must be between 0 and 10.
       </HelpTooltip>
     </span>
     <input bind:value={opts.decimalsOffset} use:error={errors?.decimalsOffset} />

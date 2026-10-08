@@ -57,7 +57,7 @@ extern crate std;
 use soroban_sdk::{
     contract, contractimpl, testutils::Address as _, Address, Env, MuxedAddress, String,
 };
-use stellar_tokens::fungible::{Base, FungibleToken};
+use stellar_tokens::fungible::{Base, Compose, FungibleToken};
 
 use crate::contract::{ ${c.name}, ${c.name}Client };
 
@@ -74,13 +74,13 @@ impl MockAssetContract {
             String::from_str(e, "Mock Asset Token"),
             String::from_str(e, "MAT"),
         );
-        Base::mint(e, &admin, initial_supply);
+        <Self as FungibleToken>::ContractType::mint(e, &admin, initial_supply);
     }
 }
 
 #[contractimpl(contracttrait)]
 impl FungibleToken for MockAssetContract {
-    type ContractType = Base;
+    type ContractType = Compose<(Base,)>;
 }
 
 #[test]
@@ -95,6 +95,7 @@ fn initial_state() {
 
     assert_eq!(client.query_asset(), asset_address);
     assert_eq!(client.name(), String::from_str(&env, "${c.name}"));
+    assert_eq!(client.total_supply(), 0);
 }
 
 // Add more tests bellow

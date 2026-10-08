@@ -1,6 +1,7 @@
 import type { CommonContractOptions } from './common-options';
 import { contractDefaults as commonDefaults, getSelfArg, withCommonContractDefaults } from './common-options';
 import { ContractBuilder } from './contract';
+import { OptionsError } from './error';
 import { printContract } from './print';
 import { setAccessControl } from './set-access-control';
 import { addUpgradeable } from './add-upgradeable';
@@ -59,12 +60,20 @@ export function buildGovernor(opts: GovernorOptions): ContractBuilder {
   const allOpts = withDefaults(opts);
   const c = new ContractBuilder(allOpts.name);
 
+  // The library rejects a zero voting period, which would make the constructor panic on deploy.
+  const votingPeriod = toUint(allOpts.votingPeriod, 'votingPeriod', 'u32');
+  if (votingPeriod === 0n) {
+    throw new OptionsError({
+      votingPeriod: 'Voting period must be greater than 0',
+    });
+  }
+
   addBase(
     c,
     toByteArray(allOpts.name),
     toByteArray(allOpts.version),
     toUint(allOpts.votingDelay, 'votingDelay', 'u32'),
-    toUint(allOpts.votingPeriod, 'votingPeriod', 'u32'),
+    votingPeriod,
     toUint(allOpts.proposalThreshold, 'proposalThreshold', 'u128'),
     toUint(allOpts.quorum, 'quorum', 'u128'),
     allOpts.timelock,

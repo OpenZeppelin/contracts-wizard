@@ -117,6 +117,7 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'BytesN');
   c.addUseClause('soroban_sdk', 'Env');
   c.addUseClause('soroban_sdk', 'Map');
   c.addUseClause('soroban_sdk', 'String');
@@ -126,10 +127,11 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('soroban_sdk::auth', 'CustomAccountInterface');
   c.addUseClause('soroban_sdk::crypto', 'Hash');
   c.addUseClause('stellar_accounts::smart_account', 'self', { alias: 'smart_account' });
+  // `ContextRule` and `AuthDigestPreimage`/`BytesN` appear in the signatures of
+  // `SmartAccount` methods (e.g. `auth_digest`), which the contracttrait macro
+  // needs in scope even though the generated code never names them.
+  c.addUseClause('stellar_accounts::smart_account', 'AuthDigestPreimage');
   c.addUseClause('stellar_accounts::smart_account', 'AuthPayload');
-  // `ContextRule` is the return type of several `SmartAccount` methods, which the
-  // contracttrait macro needs in scope even though the generated code never
-  // names it.
   c.addUseClause('stellar_accounts::smart_account', 'ContextRule');
   c.addUseClause('stellar_accounts::smart_account', 'ContextRuleType');
   c.addUseClause('stellar_accounts::smart_account', 'Signer');

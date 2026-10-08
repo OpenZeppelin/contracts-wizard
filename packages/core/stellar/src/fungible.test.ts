@@ -137,6 +137,78 @@ testFungible('fungible votes explicit trait implementations', {
   explicitImplementations: true,
 });
 
+testFungible('fungible total supply', {
+  totalSupply: true,
+});
+
+testFungible('fungible total supply burnable pausable mintable', {
+  totalSupply: true,
+  burnable: true,
+  pausable: true,
+  mintable: true,
+});
+
+testFungible('fungible total supply explicit trait implementations', {
+  totalSupply: true,
+  burnable: true,
+  explicitImplementations: true,
+});
+
+testFungible('fungible capped', {
+  cap: '1000',
+});
+
+testFungible('fungible capped with premint and custom decimals', {
+  cap: '1000.5',
+  premint: '1000',
+  decimals: '18',
+});
+
+testFungible('fungible capped full - roles', {
+  cap: '1000000',
+  premint: '2000',
+  access: 'roles',
+  burnable: true,
+  mintable: true,
+  pausable: true,
+  upgradeable: true,
+});
+
+testFungible('fungible capped explicit trait implementations', {
+  cap: '1000',
+  burnable: true,
+  explicitImplementations: true,
+});
+
+test('fungible votes with total supply', async t => {
+  const error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', votes: true, totalSupply: true }));
+  t.is((error as OptionsError).messages.votes, 'Votes extension cannot be used with Total Supply extension');
+  t.is((error as OptionsError).messages.totalSupply, 'Total Supply extension cannot be used with Votes extension');
+});
+
+test('fungible votes with cap', async t => {
+  const error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', votes: true, cap: '1000' }));
+  t.is((error as OptionsError).messages.votes, 'Votes extension cannot be used with a cap');
+  t.is((error as OptionsError).messages.cap, 'Cap cannot be used with Votes extension');
+});
+
+test('fungible premint exceeds cap', async t => {
+  const error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', premint: '1000.1', cap: '1000' }));
+  t.is((error as OptionsError).messages.premint, 'Premint exceeds the cap');
+  t.is((error as OptionsError).messages.cap, 'Cap is lower than the premint');
+});
+
+test('fungible invalid cap', async t => {
+  let error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', cap: '0' }));
+  t.is((error as OptionsError).messages.cap, 'Cap must be greater than 0');
+
+  error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', cap: 'abc' }));
+  t.is((error as OptionsError).messages.cap, 'Not a valid number');
+
+  error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', cap: '1.123', decimals: '2' }));
+  t.is((error as OptionsError).messages.cap, 'Too many decimals');
+});
+
 testAPIEquivalence('fungible API default');
 
 testAPIEquivalence('fungible API basic', { name: 'CustomToken', symbol: 'CTK' });
@@ -149,6 +221,15 @@ testAPIEquivalence('fungible API full', {
   votes: true,
   mintable: true,
   pausable: true,
+});
+
+testAPIEquivalence('fungible API capped', {
+  name: 'CustomToken',
+  symbol: 'CTK',
+  premint: '2000',
+  cap: '10000',
+  burnable: true,
+  mintable: true,
 });
 
 test('fungible API assert defaults', async t => {
