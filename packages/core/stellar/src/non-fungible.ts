@@ -1,17 +1,22 @@
 import { pickKeys } from '@openzeppelin/wizard-common';
 import { addPausable } from './add-pausable';
 import { addUpgradeable } from './add-upgradeable';
+import { addVotes } from './add-votes';
 import type { CommonContractOptions } from './common-options';
 import { contractDefaults as commonDefaults, getSelfArg, withCommonContractDefaults } from './common-options';
-import type { Contract } from './contract';
+import type { BaseFunction, Contract } from './contract';
 import { ContractBuilder } from './contract';
 import type { OptionsErrorMessages } from './error';
 import { OptionsError } from './error';
 import { printContract } from './print';
 import { type Access, DEFAULT_ACCESS_CONTROL, requireAccessControl, setAccessControl } from './set-access-control';
 import { setInfo } from './set-info';
-import { toByteArray } from './utils/convert-strings';
+import { printComposedContractType } from './utils/compose';
+import { toByteArray, toUint } from './utils/convert-strings';
 import { defineFunctions } from './utils/define-functions';
+
+// Upper bound enforced by the library's royalty setters (100% in basis points).
+const MAX_ROYALTY_BASIS_POINTS = 10_000n;
 
 export const defaults: Required<NonFungibleOptions> = {
   name: 'MyToken',
@@ -21,6 +26,8 @@ export const defaults: Required<NonFungibleOptions> = {
   votes: false,
   enumerable: false,
   consecutive: false,
+  royalties: false,
+  defaultRoyaltyBasisPoints: '0',
   pausable: false,
   upgradeable: false,
   mintable: false,
@@ -42,6 +49,8 @@ export interface NonFungibleOptions extends CommonContractOptions {
   votes?: boolean;
   enumerable?: boolean;
   consecutive?: boolean;
+  royalties?: boolean;
+  defaultRoyaltyBasisPoints?: string;
   pausable?: boolean;
   upgradeable?: boolean;
   mintable?: boolean;
@@ -57,6 +66,8 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
     votes: opts.votes ?? defaults.votes,
     consecutive: opts.consecutive ?? defaults.consecutive,
     enumerable: opts.enumerable ?? defaults.enumerable,
+    royalties: opts.royalties ?? defaults.royalties,
+    defaultRoyaltyBasisPoints: opts.defaultRoyaltyBasisPoints || defaults.defaultRoyaltyBasisPoints,
     pausable: opts.pausable ?? defaults.pausable,
     upgradeable: opts.upgradeable ?? defaults.upgradeable,
     mintable: opts.mintable ?? defaults.mintable,
@@ -65,7 +76,13 @@ function withDefaults(opts: NonFungibleOptions): Required<NonFungibleOptions> {
 }
 
 export function isAccessControlRequired(opts: Partial<NonFungibleOptions>): boolean {
-  return opts.mintable === true || opts.pausable === true || opts.upgradeable === true || opts.consecutive === true;
+  return (
+    opts.mintable === true ||
+    opts.pausable === true ||
+    opts.upgradeable === true ||
+    opts.consecutive === true ||
+    opts.royalties === true
+  );
 }
 
 export function buildNonFungible(opts: NonFungibleOptions): Contract {
@@ -90,29 +107,34 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
     errors.sequential = 'Sequential minting cannot be used with Consecutive extension';
   }
 
-  if (allOpts.votes && allOpts.enumerable) {
-    errors.votes = 'Votes extension cannot be used with Enumerable extension';
-    errors.enumerable = 'Enumerable extension cannot be used with Votes extension';
-  }
-
-  if (allOpts.votes && allOpts.consecutive) {
-    errors.votes = 'Votes extension cannot be used with Consecutive extension';
-    errors.consecutive = 'Consecutive extension cannot be used with Votes extension';
-  }
-
   if (Object.keys(errors).length > 0) {
     throw new OptionsError(errors);
   }
+
+  // Order follows the library's documentation, e.g. `Compose<(Enumerable, NonFungibleVotes)>`.
+  const contractTypes = [
+    ...(allOpts.enumerable ? ['Enumerable'] : []),
+    ...(allOpts.consecutive ? ['Consecutive'] : []),
+    ...(allOpts.votes ? ['NonFungibleVotes'] : []),
+  ];
 
   addBase(
     c,
     toByteArray(allOpts.name),
     toByteArray(allOpts.symbol),
     toByteArray(allOpts.tokenUri),
-    allOpts.votes,
+    contractTypes,
     allOpts.pausable,
     allOpts.explicitImplementations,
   );
+
+  if (allOpts.votes) {
+    addVotes(c, allOpts.explicitImplementations);
+  }
+
+  if (allOpts.royalties) {
+    addRoyalties(c, allOpts.defaultRoyaltyBasisPoints, allOpts.access, allOpts.explicitImplementations);
+  }
 
   if (allOpts.pausable) {
     addPausable(c, allOpts.access, allOpts.explicitImplementations);
@@ -135,15 +157,7 @@ export function buildNonFungible(opts: NonFungibleOptions): Contract {
   }
 
   if (allOpts.mintable) {
-    addMintable(
-      c,
-      allOpts.enumerable,
-      allOpts.votes,
-      allOpts.pausable,
-      allOpts.sequential,
-      allOpts.access,
-      allOpts.explicitImplementations,
-    );
+    addMintable(c, allOpts.pausable, allOpts.sequential, allOpts.access, allOpts.explicitImplementations);
   }
 
   setAccessControl(c, allOpts.access, allOpts.explicitImplementations);
@@ -157,7 +171,7 @@ function addBase(
   name: string,
   symbol: string,
   tokenUri: string,
-  votes: boolean,
+  contractTypes: string[],
   pausable: boolean,
   explicitImplementations: boolean,
 ) {
@@ -169,9 +183,9 @@ function addBase(
 
   // Set token functions
   c.addUseClause('stellar_tokens::non_fungible', 'Base');
+  c.addUseClause('stellar_tokens::non_fungible', 'Compose');
   c.addUseClause('stellar_tokens::non_fungible', 'NonFungibleToken');
-  if (votes) {
-    c.addUseClause('stellar_governance::votes', 'Votes');
+  if (contractTypes.includes('NonFungibleVotes')) {
     c.addUseClause('stellar_tokens::non_fungible', 'votes::NonFungibleVotes');
   }
   if (explicitImplementations) c.addUseClause('stellar_tokens::non_fungible', 'ContractOverrides');
@@ -185,7 +199,7 @@ function addBase(
     traitName: 'NonFungibleToken',
     structName: c.name,
     tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-    assocType: `type ContractType = ${votes ? 'NonFungibleVotes' : 'Base'};`,
+    assocType: printComposedContractType(contractTypes.length > 0 ? contractTypes : ['Base']),
   };
 
   c.addTraitImplBlock(nonFungibleTokenTrait);
@@ -200,15 +214,6 @@ function addBase(
 
     c.addFunctionTag(baseFunctions.transfer_from, 'when_not_paused', nonFungibleTokenTrait);
     c.addTraitFunction(nonFungibleTokenTrait, baseFunctions.transfer_from);
-  }
-
-  if (votes) {
-    c.addTraitImplBlock({
-      traitName: 'Votes',
-      structName: c.name,
-      tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
-      section: 'Extensions',
-    });
   }
 }
 
@@ -249,8 +254,6 @@ function addEnumerable(c: ContractBuilder, explicitImplementations: boolean) {
   if (explicitImplementations)
     c.addTraitForEachFunctions(nonFungibleEnumerableTrait, nonFungibleEnumerableTraitFunctions);
   else c.addTraitImplBlock(nonFungibleEnumerableTrait);
-
-  c.overrideAssocType('NonFungibleToken', 'type ContractType = Enumerable;');
 }
 
 function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, explicitImplementations: boolean) {
@@ -266,10 +269,8 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
 
   c.addTraitImplBlock(nonFungibleConsecutiveTrait);
 
-  c.overrideAssocType('NonFungibleToken', 'type ContractType = Consecutive;');
-
   const mintFn =
-    effectiveAccess === 'ownable' ? consecutiveFunctions.batch_mint : consecutiveFunctions.batch_mint_with_caller;
+    effectiveAccess === 'ownable' ? consecutiveFunctions.mint_range : consecutiveFunctions.mint_range_with_caller;
   c.addFreeFunction(mintFn);
   if (pausable) {
     c.addFunctionTag(mintFn, 'when_not_paused');
@@ -291,8 +292,6 @@ function addConsecutive(c: ContractBuilder, pausable: boolean, access: Access, e
 
 function addMintable(
   c: ContractBuilder,
-  enumerable: boolean,
-  votes: boolean,
   pausable: boolean,
   sequential: boolean,
   access: Access,
@@ -301,40 +300,11 @@ function addMintable(
   const accessProps = { useMacro: true, role: 'minter', caller: 'caller' };
   const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
 
-  let mintFn;
-
-  if (enumerable) {
-    if (sequential) {
-      mintFn =
-        effectiveAccess === 'ownable'
-          ? enumerableFunctions.sequential_mint
-          : enumerableFunctions.sequential_mint_with_caller;
-    } else {
-      mintFn =
-        effectiveAccess === 'ownable'
-          ? enumerableFunctions.non_sequential_mint
-          : enumerableFunctions.non_sequential_mint_with_caller;
-    }
+  let mintFn: BaseFunction;
+  if (sequential) {
+    mintFn = effectiveAccess === 'ownable' ? mintFunctions.mint : mintFunctions.mint_with_caller;
   } else {
-    if (sequential) {
-      mintFn =
-        effectiveAccess === 'ownable'
-          ? votes
-            ? votesMintFunctions.sequential_mint
-            : baseFunctions.sequential_mint
-          : votes
-            ? votesMintFunctions.sequential_mint_with_caller
-            : baseFunctions.sequential_mint_with_caller;
-    } else {
-      mintFn =
-        effectiveAccess === 'ownable'
-          ? votes
-            ? votesMintFunctions.mint
-            : baseFunctions.mint
-          : votes
-            ? votesMintFunctions.mint_with_caller
-            : baseFunctions.mint_with_caller;
-    }
+    mintFn = effectiveAccess === 'ownable' ? mintFunctions.mint_with_id : mintFunctions.mint_with_id_with_caller;
   }
 
   c.addFreeFunction(mintFn);
@@ -343,6 +313,67 @@ function addMintable(
   if (pausable) {
     c.addFunctionTag(mintFn, 'when_not_paused');
   }
+}
+
+function addRoyalties(
+  c: ContractBuilder,
+  defaultRoyaltyBasisPoints: string,
+  access: Access,
+  explicitImplementations: boolean,
+) {
+  const basisPoints = toUint(defaultRoyaltyBasisPoints, 'defaultRoyaltyBasisPoints', 'u32');
+  if (basisPoints > MAX_ROYALTY_BASIS_POINTS) {
+    throw new OptionsError({
+      defaultRoyaltyBasisPoints: `Maximum royalty is ${MAX_ROYALTY_BASIS_POINTS} basis points (100%)`,
+    });
+  }
+
+  c.addUseClause('stellar_tokens::non_fungible', 'royalties::{NonFungibleRoyalties, RoyaltySupport}');
+
+  if (basisPoints > 0n) {
+    c.addConstructorArgument({ name: 'royalty_receiver', type: 'Address' });
+    c.addConstructorCode(`Base::set_default_royalty(e, &royalty_receiver, ${basisPoints});`);
+  }
+
+  const nonFungibleRoyaltiesTrait = {
+    traitName: 'NonFungibleRoyalties',
+    structName: c.name,
+    tags: explicitImplementations ? ['contractimpl'] : ['contractimpl(contracttrait)'],
+    section: 'Extensions',
+  };
+
+  const effectiveAccess = access === false ? DEFAULT_ACCESS_CONTROL : access;
+  const settersFns =
+    effectiveAccess === 'ownable'
+      ? [
+          royaltiesFunctions.set_default_royalty_unused_operator,
+          royaltiesFunctions.set_token_royalty_unused_operator,
+          royaltiesFunctions.remove_token_royalty_unused_operator,
+        ]
+      : [
+          royaltiesFunctions.set_default_royalty,
+          royaltiesFunctions.set_token_royalty,
+          royaltiesFunctions.remove_token_royalty,
+        ];
+
+  // Setting royalties is privileged, so the library provides no default implementation for the setters.
+  for (const fn of settersFns) {
+    c.addTraitFunction(nonFungibleRoyaltiesTrait, fn);
+    requireAccessControl(
+      c,
+      nonFungibleRoyaltiesTrait,
+      fn,
+      effectiveAccess,
+      {
+        useMacro: true,
+        role: 'royalty_admin',
+        caller: 'operator',
+      },
+      explicitImplementations,
+    );
+  }
+
+  if (explicitImplementations) c.addTraitFunction(nonFungibleRoyaltiesTrait, royaltiesFunctions.royalty_info);
 }
 
 const baseFunctions = defineFunctions({
@@ -420,40 +451,27 @@ const baseFunctions = defineFunctions({
     returns: 'String',
     code: ['Self::ContractType::token_uri(e, token_id)'],
   },
-
-  // Mint
-  mint: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['Base::mint(e, &to, token_id);'],
-  },
-  mint_with_caller: {
-    name: 'mint',
-    args: [
-      getSelfArg(),
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'u32' },
-      { name: 'caller', type: 'Address' },
-    ],
-    code: ['Base::mint(e, &to, token_id);'],
-  },
-  sequential_mint: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['Base::sequential_mint(e, &to);'],
-  },
-  sequential_mint_with_caller: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
-    code: ['Base::sequential_mint(e, &to);'],
-  },
 });
 
-const votesMintFunctions = defineFunctions({
+// Minting goes through the contract type, which keeps the enumeration and the voting units up to date.
+const mintFunctions = defineFunctions({
   mint: {
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
+    args: [getSelfArg(), { name: 'to', type: 'Address' }],
+    returns: 'u32',
+    code: ['<Self as NonFungibleToken>::ContractType::mint(e, &to)'],
   },
   mint_with_caller: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
+    returns: 'u32',
+    code: ['<Self as NonFungibleToken>::ContractType::mint(e, &to)'],
+  },
+  mint_with_id: {
+    name: 'mint',
+    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
+    code: ['<Self as NonFungibleToken>::ContractType::mint_with_id(e, &to, token_id);'],
+  },
+  mint_with_id_with_caller: {
     name: 'mint',
     args: [
       getSelfArg(),
@@ -461,17 +479,7 @@ const votesMintFunctions = defineFunctions({
       { name: 'token_id', type: 'u32' },
       { name: 'caller', type: 'Address' },
     ],
-    code: ['NonFungibleVotes::mint(e, &to, token_id);'],
-  },
-  sequential_mint: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
-  },
-  sequential_mint_with_caller: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
-    code: ['NonFungibleVotes::sequential_mint(e, &to);'],
+    code: ['<Self as NonFungibleToken>::ContractType::mint_with_id(e, &to, token_id);'],
   },
 });
 
@@ -523,31 +531,6 @@ const enumerableFunctions = defineFunctions({
     returns: 'u32',
     code: ['Enumerable::get_token_id(e, index)'],
   },
-  non_sequential_mint: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'token_id', type: 'u32' }],
-    code: ['Enumerable::non_sequential_mint(e, &to, token_id);'],
-  },
-  non_sequential_mint_with_caller: {
-    name: 'mint',
-    args: [
-      getSelfArg(),
-      { name: 'to', type: 'Address' },
-      { name: 'token_id', type: 'u32' },
-      { name: 'caller', type: 'Address' },
-    ],
-    code: ['Enumerable::non_sequential_mint(e, &to, token_id);'],
-  },
-  sequential_mint: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }],
-    code: ['Enumerable::sequential_mint(e, &to);'],
-  },
-  sequential_mint_with_caller: {
-    name: 'mint',
-    args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'caller', type: 'Address' }],
-    code: ['Enumerable::sequential_mint(e, &to);'],
-  },
 });
 
 const nonFungibleEnumerableTraitFunctions = pickKeys(enumerableFunctions, [
@@ -557,14 +540,13 @@ const nonFungibleEnumerableTraitFunctions = pickKeys(enumerableFunctions, [
 ]);
 
 const consecutiveFunctions = defineFunctions({
-  batch_mint: {
-    name: 'batch_mint',
+  mint_range: {
     args: [getSelfArg(), { name: 'to', type: 'Address' }, { name: 'amount', type: 'u32' }],
     returns: 'u32',
-    code: ['Consecutive::batch_mint(e, &to, amount)'],
+    code: ['<Self as NonFungibleToken>::ContractType::mint_range(e, &to, amount)'],
   },
-  batch_mint_with_caller: {
-    name: 'batch_mint',
+  mint_range_with_caller: {
+    name: 'mint_range',
     args: [
       getSelfArg(),
       { name: 'to', type: 'Address' },
@@ -572,6 +554,63 @@ const consecutiveFunctions = defineFunctions({
       { name: 'caller', type: 'Address' },
     ],
     returns: 'u32',
-    code: ['Consecutive::batch_mint(e, &to, amount)'],
+    code: ['<Self as NonFungibleToken>::ContractType::mint_range(e, &to, amount)'],
+  },
+});
+
+const royaltiesFunctions = defineFunctions({
+  set_default_royalty: {
+    args: [
+      getSelfArg(),
+      { name: 'receiver', type: 'Address' },
+      { name: 'basis_points', type: 'u32' },
+      { name: 'operator', type: 'Address' },
+    ],
+    code: ['Base::set_default_royalty(e, &receiver, basis_points)'],
+  },
+  set_default_royalty_unused_operator: {
+    name: 'set_default_royalty',
+    args: [
+      getSelfArg(),
+      { name: 'receiver', type: 'Address' },
+      { name: 'basis_points', type: 'u32' },
+      { name: '_operator', type: 'Address' },
+    ],
+    code: ['Base::set_default_royalty(e, &receiver, basis_points)'],
+  },
+  set_token_royalty: {
+    args: [
+      getSelfArg(),
+      { name: 'token_id', type: 'u32' },
+      { name: 'receiver', type: 'Address' },
+      { name: 'basis_points', type: 'u32' },
+      { name: 'operator', type: 'Address' },
+    ],
+    code: ['Self::ContractType::set_token_royalty(e, token_id, &receiver, basis_points)'],
+  },
+  set_token_royalty_unused_operator: {
+    name: 'set_token_royalty',
+    args: [
+      getSelfArg(),
+      { name: 'token_id', type: 'u32' },
+      { name: 'receiver', type: 'Address' },
+      { name: 'basis_points', type: 'u32' },
+      { name: '_operator', type: 'Address' },
+    ],
+    code: ['Self::ContractType::set_token_royalty(e, token_id, &receiver, basis_points)'],
+  },
+  remove_token_royalty: {
+    args: [getSelfArg(), { name: 'token_id', type: 'u32' }, { name: 'operator', type: 'Address' }],
+    code: ['Self::ContractType::remove_token_royalty(e, token_id)'],
+  },
+  remove_token_royalty_unused_operator: {
+    name: 'remove_token_royalty',
+    args: [getSelfArg(), { name: 'token_id', type: 'u32' }, { name: '_operator', type: 'Address' }],
+    code: ['Self::ContractType::remove_token_royalty(e, token_id)'],
+  },
+  royalty_info: {
+    args: [getSelfArg(), { name: 'token_id', type: 'u32' }, { name: 'sale_price', type: 'i128' }],
+    returns: '(Address, i128)',
+    code: ['Self::ContractType::royalty_info(e, token_id, sale_price)'],
   },
 });

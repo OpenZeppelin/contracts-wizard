@@ -1,8 +1,8 @@
 import { getSelfArg } from './common-options';
 import type { Contract, ContractBuilder } from './contract';
-import type { FungibleOptions } from './fungible';
+import type { FungibleOptions, TransferPolicy } from './fungible';
 import {
-  buildFungible,
+  buildFungibleWithTransferPolicy,
   defaults as fungibleDefaults,
   functions as fungibleFunctions,
   isAccessControlRequired as fungibleIsAccessControlRequired,
@@ -11,7 +11,6 @@ import {
 import { printContract } from './print';
 import { requireAccessControl, type Access } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
-import { OptionsError } from './error';
 
 export const defaults: Required<StablecoinOptions> = {
   ...fungibleDefaults,
@@ -22,6 +21,11 @@ export const defaults: Required<StablecoinOptions> = {
 
 export const limitationsOptions = [false, 'allowlist', 'blocklist'] as const;
 export type Limitations = (typeof limitationsOptions)[number];
+
+const transferPolicies = {
+  allowlist: 'AllowList',
+  blocklist: 'BlockList',
+} as const satisfies Record<Exclude<Limitations, false>, TransferPolicy>;
 
 export function printStablecoin(opts: StablecoinOptions = defaults): string {
   return printContract(buildStablecoin(opts));
@@ -47,14 +51,8 @@ export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boole
 export function buildStablecoin(opts: StablecoinOptions): Contract {
   const allOpts = withDefaults(opts);
 
-  if (allOpts.votes && allOpts.limitations) {
-    throw new OptionsError({
-      votes: 'Votes extension cannot be used with stablecoin limitations',
-      limitations: 'Stablecoin limitations cannot be used with Votes extension',
-    });
-  }
-
-  const c = buildFungible(allOpts);
+  const transferPolicy = allOpts.limitations ? transferPolicies[allOpts.limitations] : undefined;
+  const c = buildFungibleWithTransferPolicy(allOpts, transferPolicy);
 
   if (allOpts.limitations) {
     addLimitations(c, allOpts.access, allOpts.limitations, allOpts.explicitImplementations);
@@ -80,13 +78,9 @@ function addLimitations(
 
   if (type) {
     c.addUseClause('stellar_tokens::fungible', 'allowlist::{AllowList, FungibleAllowList}');
-    c.overrideAssocType('FungibleToken', 'type ContractType = AllowList;');
   } else {
     c.addUseClause('stellar_tokens::fungible', 'blocklist::{BlockList, FungibleBlockList}');
-    c.overrideAssocType('FungibleToken', 'type ContractType = BlockList;');
   }
-
-  if (explicitImplementations) overrideFungibleReadonlyFunctionsWithBase(c);
 
   const [getterFn, addFn, removeFn] = type
     ? [functions.allowed, functions.allow_user, functions.disallow_user]
@@ -105,28 +99,6 @@ function addLimitations(
 
   c.addTraitFunction(limitationsTrait, removeFn);
   requireAccessControl(c, limitationsTrait, removeFn, access, accessProps, explicitImplementations);
-}
-
-function overrideFungibleReadonlyFunctionsWithBase(c: ContractBuilder) {
-  c.addUseClause('stellar_tokens::fungible', 'ContractOverrides');
-  const fungibleTokenTrait = {
-    traitName: 'FungibleToken',
-    structName: c.name,
-    tags: [],
-  };
-
-  const overrides: Array<[(typeof fungibleFunctions)[keyof typeof fungibleFunctions], string[]]> = [
-    [fungibleFunctions.total_supply, ['Self::ContractType::total_supply(e)']],
-    [fungibleFunctions.balance, ['Self::ContractType::balance(e, &account)']],
-    [fungibleFunctions.allowance, ['Self::ContractType::allowance(e, &owner, &spender)']],
-    [fungibleFunctions.decimals, ['Self::ContractType::decimals(e)']],
-    [fungibleFunctions.name, ['Self::ContractType::name(e)']],
-    [fungibleFunctions.symbol, ['Self::ContractType::symbol(e)']],
-  ];
-
-  for (const [fn, code] of overrides) {
-    c.setFunctionCode(fn, code, fungibleTokenTrait);
-  }
 }
 
 const functions = {

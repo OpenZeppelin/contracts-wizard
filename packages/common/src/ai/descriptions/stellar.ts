@@ -38,7 +38,11 @@ export const stellarAccountDescriptions = {
 export const stellarFungibleDescriptions = {
   decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
-  votes: 'Whether to enable vote checkpoints and delegation for governance.',
+  votes:
+    'Whether to enable vote checkpoints and delegation for governance. Cannot be used with total supply tracking or a cap.',
+  totalSupply:
+    'Whether to track the total supply and expose it through a total_supply function. Every mint and burn then writes the same storage entry, which prevents them from executing in parallel. Cannot be used with votes.',
+  cap: 'The maximum total supply of the token, in token units. Leave empty for an uncapped token. Requires total supply tracking, which is then enabled automatically. Cannot be used with votes.',
 };
 
 export const stellarNonFungibleDescriptions = {
@@ -47,24 +51,30 @@ export const stellarNonFungibleDescriptions = {
   sequential: 'Whether the IDs of the minted NFTs will be sequential.',
   tokenUri: 'The metadata URI returned by the token contract for every NFT.',
   votes: 'Whether to enable vote checkpoints and delegation for governance.',
+  royalties:
+    'Whether to provide royalty information for sales of the NFTs, following ERC-2981. Privileged accounts can set the default royalty and per-token royalties.',
+  defaultRoyaltyBasisPoints:
+    'The default royalty for the collection in basis points (100 = 1%, maximum 10000), paid to a receiver set at deployment. 0 sets no default royalty.',
 };
 
 export const stellarStablecoinDescriptions = {
   limitations: 'Whether to restrict certain users from transferring tokens, either via allowing or blocking them.',
   decimals: 'The number of decimals used to represent token amounts. Defaults to 7.',
   premint: 'The number of tokens to premint for the deployer.',
-  votes: 'Whether to enable vote checkpoints and delegation for governance.',
+  votes:
+    'Whether to enable vote checkpoints and delegation for governance. Cannot be used with total supply tracking or a cap.',
 };
 
 export const stellarVaultDescriptions = {
   decimalsOffset:
-    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals, used to mitigate inflation (donation) attacks via virtual shares. The default of 0 is already safe: it makes such attacks non-profitable. Higher values make attacks orders of magnitude more costly, at the cost of virtual shares absorbing a tiny portion of the value accrued to the vault. Must be between 0 and 10.',
+    'Virtual decimals offset added to the underlying asset decimals to derive the vault share decimals, used to mitigate inflation (donation) attacks via virtual shares. With the default of 0, diluting a single deposit is never profitable, but an attacker holding most of the shares can profit once enough deposits land at an inflated price. Higher values make attacks orders of magnitude more costly, at the cost of virtual shares absorbing a tiny portion of the value accrued to the vault. Must be between 0 and 10.',
 };
 
 export const stellarGovernorDescriptions = {
   version: 'The semantic version label returned by the governor contract.',
   votingDelay: 'Number of ledgers between proposal creation and voting start (17,000 ledgers are approx. 1 day).',
-  votingPeriod: 'Number of ledgers during which voting remains open (120,000 ledgers are approx. 1 week).',
+  votingPeriod:
+    'Number of ledgers during which voting remains open (120,000 ledgers are approx. 1 week). Must be greater than 0.',
   proposalThreshold: 'Minimum voting power required for creating a proposal, default is 100.',
   quorum: 'Minimum number of votes required for a proposal to pass, default is 500.',
   timelock: 'Whether to add a timelock mechanism that enforces a delay between proposal queuing and execution.',

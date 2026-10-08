@@ -15,6 +15,8 @@ const blueprint = {
   upgradeable: booleans,
   enumerable: booleans,
   consecutive: booleans,
+  royalties: booleans,
+  defaultRoyaltyBasisPoints: ['500'],
   sequential: booleans,
   mintable: booleans,
   access: accessOptions,

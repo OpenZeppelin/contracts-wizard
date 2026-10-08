@@ -85,36 +85,19 @@ test('throws error when consecutive and sequential are both enabled', t => {
   t.is(error?.messages.sequential, 'Sequential minting cannot be used with Consecutive extension');
 });
 
-test('throws error when votes and enumerable are both enabled', t => {
+test('throws error when default royalty exceeds 100%', t => {
   const error = t.throws(
     () =>
       buildNonFungible({
         name: 'MyToken',
         symbol: 'MTK',
-        votes: true,
-        enumerable: true,
+        royalties: true,
+        defaultRoyaltyBasisPoints: '10001',
       }),
     { instanceOf: OptionsError },
   );
 
-  t.is(error?.messages.votes, 'Votes extension cannot be used with Enumerable extension');
-  t.is(error?.messages.enumerable, 'Enumerable extension cannot be used with Votes extension');
-});
-
-test('throws error when votes and consecutive are both enabled', t => {
-  const error = t.throws(
-    () =>
-      buildNonFungible({
-        name: 'MyToken',
-        symbol: 'MTK',
-        votes: true,
-        consecutive: true,
-      }),
-    { instanceOf: OptionsError },
-  );
-
-  t.is(error?.messages.votes, 'Votes extension cannot be used with Consecutive extension');
-  t.is(error?.messages.consecutive, 'Consecutive extension cannot be used with Votes extension');
+  t.is(error?.messages.defaultRoyaltyBasisPoints, 'Maximum royalty is 10000 basis points (100%)');
 });
 
 testNonFungible('basic non-fungible', {});
@@ -207,6 +190,50 @@ testNonFungible('non-fungible votes explicit trait implementations', {
 
 testNonFungible('non-fungible custom token uri', {
   tokenUri: 'https://example.com/nfts/',
+});
+
+testNonFungible('non-fungible votes enumerable mintable', {
+  votes: true,
+  enumerable: true,
+  mintable: true,
+  sequential: true,
+});
+
+testNonFungible('non-fungible votes enumerable explicit trait implementations', {
+  votes: true,
+  enumerable: true,
+  burnable: true,
+  explicitImplementations: true,
+});
+
+testNonFungible('non-fungible votes consecutive', {
+  votes: true,
+  consecutive: true,
+  burnable: true,
+});
+
+testNonFungible('non-fungible royalties', {
+  royalties: true,
+});
+
+testNonFungible('non-fungible royalties with default royalty', {
+  royalties: true,
+  defaultRoyaltyBasisPoints: '500',
+  mintable: true,
+});
+
+testNonFungible('non-fungible royalties roles', {
+  royalties: true,
+  defaultRoyaltyBasisPoints: '1000',
+  access: 'roles',
+  consecutive: true,
+});
+
+testNonFungible('non-fungible royalties explicit trait implementations', {
+  royalties: true,
+  defaultRoyaltyBasisPoints: '250',
+  enumerable: true,
+  explicitImplementations: true,
 });
 
 testAPIEquivalence('non-fungible API default');

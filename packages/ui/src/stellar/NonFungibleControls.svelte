@@ -1,5 +1,6 @@
 <script lang="ts">
   import HelpTooltip from '../common/HelpTooltip.svelte';
+  import ExpandableCheckbox from '../common/ExpandableCheckbox.svelte';
 
   import type { KindedOptions, OptionsErrorMessages } from '@openzeppelin/wizard-stellar';
   import { nonFungible, infoDefaults } from '@openzeppelin/wizard-stellar';
@@ -25,23 +26,13 @@
     if (value) {
       opts.mintable = false;
       opts.enumerable = false;
-      opts.votes = false;
     }
     opts.consecutive = value;
-  }
-
-  function handleVotesChange(value: boolean) {
-    if (value) {
-      opts.enumerable = false;
-      opts.consecutive = false;
-    }
-    opts.votes = value;
   }
 
   function handleEnumerableChange(value: boolean) {
     if (value) {
       opts.consecutive = false;
-      opts.votes = false;
     }
     opts.enumerable = value;
   }
@@ -81,43 +72,28 @@
       <HelpTooltip>Token holders will be able to destroy their NFTs.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes} class:disabled={opts.enumerable || opts.consecutive} use:error={errors?.votes}>
-      <input
-        type="checkbox"
-        checked={opts.votes}
-        disabled={opts.enumerable || opts.consecutive}
-        on:change={e => handleVotesChange(e.currentTarget.checked)}
-      />
+    <label class:checked={opts.votes} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} />
       Votes
-      <HelpTooltip
-        >Adds vote checkpoints and delegation support. Incompatible with Enumerable and Consecutive.</HelpTooltip
-      >
+      <HelpTooltip>Adds vote checkpoints and delegation support for governance usage.</HelpTooltip>
     </label>
 
-    <label
-      class:checked={opts.enumerable}
-      class:disabled={opts.votes || opts.consecutive}
-      use:error={errors?.enumerable}
-    >
+    <label class:checked={opts.enumerable} class:disabled={opts.consecutive} use:error={errors?.enumerable}>
       <input
         type="checkbox"
         checked={opts.enumerable}
-        disabled={opts.votes || opts.consecutive}
+        disabled={opts.consecutive}
         on:change={e => handleEnumerableChange(e.currentTarget.checked)}
       />
       Enumerable
       <HelpTooltip>Enable on-chain enumeration of tokens. Cannot be used with Consecutive extensions.</HelpTooltip>
     </label>
 
-    <label
-      class:checked={opts.consecutive}
-      class:disabled={opts.votes || opts.enumerable}
-      use:error={errors?.consecutive}
-    >
+    <label class:checked={opts.consecutive} class:disabled={opts.enumerable} use:error={errors?.consecutive}>
       <input
         type="checkbox"
         checked={opts.consecutive}
-        disabled={opts.votes || opts.enumerable}
+        disabled={opts.enumerable}
         on:change={e => handleConsecutiveChange(e.currentTarget.checked)}
       />
       Consecutive
@@ -148,6 +124,28 @@
     sequential: errors?.sequential,
   }}
 />
+
+<ExpandableCheckbox
+  label="Royalties"
+  bind:checked={opts.royalties}
+  helpContent="Provides information for how much royalty is owed and to whom, based on a sale price. Follows the ERC-2981 standard. Privileged accounts can set the default royalty and token-specific royalties."
+  error={errors?.defaultRoyaltyBasisPoints}
+>
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Default Royalty (basis points)
+      <HelpTooltip>
+        Royalty for every token without a token-specific royalty, paid to a receiver set at deployment. 100 basis points
+        are 1%. Leave at 0 to not set a default royalty at deployment.
+      </HelpTooltip>
+    </span>
+    <input
+      bind:value={opts.defaultRoyaltyBasisPoints}
+      use:error={errors?.defaultRoyaltyBasisPoints}
+      disabled={!opts.royalties}
+    />
+  </label>
+</ExpandableCheckbox>
 
 <AccessControlSection bind:access={opts.access} required={requireAccessControl} />
 
