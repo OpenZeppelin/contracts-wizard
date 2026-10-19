@@ -6,3 +6,9 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+Third-party resources
+
+third-party-licenses/chainlink-ace/ contains verbatim copies of the LICENSE and chainlink-ace-License-grants files from @chainlink/ace 1.2.0 (https://github.com/smartcontractkit/chainlink-ace/tree/v1.2.0). They are separately licensed resources distributed with projects generated with Chainlink ACE enabled. They are not the license of this program.

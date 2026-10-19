@@ -18,3 +18,12 @@ export type McpExternalLinks = {
 };
 
 export type McpExternalLinksStore = Writable<McpExternalLinks>;
+
+/** Anchor attributes for an outbound link, following the policy above. */
+export function externalLinkAttrs(
+  inMcpApp: boolean,
+  canOpen: boolean,
+): { show: boolean; target: string | undefined; rel: string | undefined } {
+  if (!inMcpApp) return { show: true, target: '_blank', rel: 'noopener noreferrer' };
+  return { show: canOpen, target: undefined, rel: undefined };
+}

@@ -45,6 +45,13 @@ async function main() {
     }
   }
 
+  // ACE's Solidity is not bundled (exports and Remix get it from npm); only its legal texts are,
+  // so ACE exports can ship them. They are package resources, not Solidity dependencies.
+  for (const notice of ['LICENSE', 'chainlink-ace-License-grants']) {
+    const resource = `@chainlink/ace/${notice}`;
+    sources[resource] = await fs.readFile(require.resolve(resource), 'utf8');
+  }
+
   const contracts: OpenZeppelinContracts = {
     version,
     sources,

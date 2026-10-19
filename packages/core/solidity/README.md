@@ -90,3 +90,4 @@ const contract = erc20.print({
   ...erc20.defaults,
   upgradeable: 'uups',
 });
+```

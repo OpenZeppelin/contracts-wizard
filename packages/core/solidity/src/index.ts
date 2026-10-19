@@ -32,6 +32,7 @@ export type { Info } from './set-info';
 
 export { premintPattern, chainIdPattern } from './erc20';
 export { defaults as infoDefaults, setInfo, infoOptions } from './set-info';
+export { ACE_LICENSE, ACE_LICENSE_URL, ACE_GRANTS_URL } from './ace-licensing';
 export { supportsInterface } from './common-functions';
 
 export type { OptionsErrorMessages } from './error';

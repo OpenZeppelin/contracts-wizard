@@ -41,7 +41,20 @@ async function testCompileTron(t: ExecutionContext, kind: keyof KindedOptions) {
 
   let index = 0;
   for (const options of generateOptions(kind)) {
-    // Mirror the TRON surfaces: drop options TRON doesn't support (e.g. `superchain`).
+    // ACE is checked first, matching the sanitizer for combined ACE+CCIP rows.
+    if ('chainlinkAce' in options && options.chainlinkAce === true) {
+      const error = t.throws(() => sanitizeTronOptions(options), { instanceOf: OptionsError });
+      t.regex(error!.messages.chainlinkAce!, /ACE.*TRON/);
+      continue;
+    }
+    // CCIP is deliberately unavailable on TRON; verify rejection before omitting
+    // these rows from the compilation matrix.
+    if ('crossChainBridging' in options && options.crossChainBridging === 'chainlink-ccip') {
+      const error = t.throws(() => sanitizeTronOptions(options), { instanceOf: OptionsError });
+      t.regex(error!.messages.crossChainBridging!, /CCIP.*TRON/);
+      continue;
+    }
+    // Mirror the TRON surfaces: adapt options such as `superchain`.
     const tronOptions = sanitizeTronOptions(options);
 
     let source: string;

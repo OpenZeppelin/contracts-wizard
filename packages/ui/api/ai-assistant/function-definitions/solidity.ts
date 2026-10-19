@@ -10,6 +10,7 @@ import {
   solidityStablecoinDescriptions,
   solidityGovernorDescriptions,
   solidityCommonDescriptions,
+  solidityACEInfoDescriptions,
 } from '../../../../common/src/ai/descriptions/solidity.ts';
 import { enumValues, extractStringEnumValues } from '../types/helpers.ts';
 import type { QuorumMode, TimelockOptions, VotesOptions } from '../../../../core/solidity/dist/governor';
@@ -37,6 +38,13 @@ export const solidityERC20AIFunctionDefinition = {
         'upgradeable',
         'info',
       ]),
+      info: {
+        ...commonFunctionDescription.info,
+        properties: {
+          ...commonFunctionDescription.info.properties,
+          license: { type: 'string', description: solidityACEInfoDescriptions.license },
+        },
+      },
       decimals: {
         type: 'string',
         description: solidityERC20Descriptions.decimals,
@@ -65,10 +73,19 @@ export const solidityERC20AIFunctionDefinition = {
           { type: 'boolean', enum: [false] },
           {
             type: 'string',
-            enum: extractStringEnumValues<CrossChainBridging>()(['custom', 'erc7786native', 'superchain']),
+            enum: extractStringEnumValues<CrossChainBridging>()([
+              'custom',
+              'chainlink-ccip',
+              'erc7786native',
+              'superchain',
+            ]),
           },
         ],
         description: solidityERC20Descriptions.crossChainBridging,
+      },
+      chainlinkAce: {
+        type: 'boolean',
+        description: solidityERC20Descriptions.chainlinkAce,
       },
       crossChainLinkAllowOverride: {
         type: 'boolean',

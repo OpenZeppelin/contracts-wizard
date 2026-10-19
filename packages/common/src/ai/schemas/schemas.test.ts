@@ -201,3 +201,61 @@ test('type assertions compile (schema-to-options type sync)', t => {
   void _uniswapHooksTypeAssertions;
   t.pass();
 });
+
+for (const [name, shape] of allSchemas.filter(([name]) =>
+  ['solidityERC20', 'solidityStablecoin', 'solidityRWA'].includes(name),
+)) {
+  const schema = z.object(shape);
+  const base = { name: 'MyToken', symbol: 'MTK' };
+  for (const options of [
+    { crossChainBridging: 'chainlink-ccip' },
+    { chainlinkAce: true },
+    { crossChainBridging: 'chainlink-ccip', chainlinkAce: true },
+    { chainlinkAce: false },
+  ]) {
+    test(`${name} schema preserves ${JSON.stringify(options)}`, t => {
+      t.deepEqual(schema.parse({ ...base, ...options }), { ...base, ...options });
+    });
+  }
+  test(`${name} schema preserves prior defaults`, t => {
+    t.deepEqual(schema.parse(base), base);
+  });
+  for (const options of [
+    { chainlinkAce: 'ace' },
+    { chainlinkAce: 'unknown' },
+    { crossChainBridging: 'unknown' },
+    { crossChainBridging: 'ccip' },
+  ]) {
+    test(`${name} schema rejects ${JSON.stringify(options)}`, t => {
+      t.false(schema.safeParse({ ...base, ...options }).success);
+    });
+  }
+  if (name !== 'solidityERC20') {
+    for (const upgradeable of ['uups', 'transparent']) {
+      test(`${name} schema rejects explicit ${upgradeable} instead of stripping it`, t => {
+        t.false(schema.safeParse({ ...base, upgradeable }).success);
+      });
+    }
+  }
+}
+
+test('CCIP and ACE discovery descriptions name deployment prerequisites and documentation', t => {
+  const bridge = solidityERC20Schema.crossChainBridging.description ?? '';
+  const compliance = solidityERC20Schema.chainlinkAce.description ?? '';
+  t.true(bridge.indexOf('custom') < bridge.indexOf('CCIP'));
+  t.regex(bridge, /https:\/\/docs\.chain\.link\/ccip/);
+  t.regex(bridge, /pool/i);
+  t.regex(compliance, /ACE/);
+  t.regex(compliance, /https:\/\/docs\.chain\.link\/ace/);
+  t.regex(compliance, /engine/i);
+  t.regex(compliance, /default.*(false|disabled)/i);
+});
+
+test('CCIP and ACE are not advertised for NFT schemas', t => {
+  for (const shape of [solidityERC721Schema, solidityERC1155Schema]) {
+    t.false('chainlinkAce' in shape);
+    t.false(
+      z.object(shape).safeParse({ name: 'NFT', symbol: 'NFT', uri: '', crossChainBridging: 'chainlink-ccip' }).success,
+    );
+  }
+});

@@ -11,6 +11,7 @@
   import { error } from '../common/error-tooltip';
   import { resizeToFit } from '../common/resize-to-fit';
   import { superchainTooltipProps } from './superchain-tooltip';
+  import { aceNoticeTooltipProps } from './ace-notice-tooltip';
 
   export let opts: Required<KindedOptions['Stablecoin']> = {
     kind: 'Stablecoin',
@@ -31,10 +32,13 @@
 
   let superchainLabel: HTMLElement;
   let superchainTooltip: TippyInstance | undefined;
+  let aceLabel: HTMLElement;
+  let aceNoticeTooltip: TippyInstance | undefined;
   onMount(() => {
     superchainTooltip = !omitFeatures?.includes('superchain')
       ? tippy(superchainLabel, superchainTooltipProps)
       : undefined;
+    aceNoticeTooltip = !omitFeatures?.includes('chainlinkAce') ? tippy(aceLabel, aceNoticeTooltipProps) : undefined;
   });
 
   let wasSuperchain = false;
@@ -43,6 +47,50 @@
       superchainTooltip?.show();
     }
     wasSuperchain = opts.crossChainBridging === 'superchain';
+  }
+
+  let wasAce = false;
+  $: {
+    if (!wasAce && opts.chainlinkAce) {
+      aceNoticeTooltip?.show();
+    }
+    wasAce = opts.chainlinkAce;
+  }
+
+  // CCIP implies Mintable (the pool mints on this chain): force it on while
+  // CCIP is selected, and restore the user's own choice when CCIP is turned
+  // off, like Access Control does for required sections. A wholesale options
+  // replacement (MCP tool input, Restore original) adopts the incoming state
+  // instead of replaying a remembered transition over it.
+  let syncedOpts = opts;
+  let wasCCIP = opts.crossChainBridging === 'chainlink-ccip';
+  let mintableBeforeCCIP = opts.mintable;
+  // CCIP forces Roles; restore the earlier choice when CCIP is turned off. Access Control that is
+  // off, or no longer required, is restored by AccessControlSection itself.
+  let accessBeforeCCIP = opts.access;
+  $: {
+    const isCCIP = opts.crossChainBridging === 'chainlink-ccip';
+    if (opts !== syncedOpts) {
+      syncedOpts = opts;
+      mintableBeforeCCIP = opts.mintable;
+      accessBeforeCCIP = opts.access;
+      if (isCCIP && !opts.mintable) {
+        opts.mintable = true;
+      }
+    } else if (isCCIP && !wasCCIP) {
+      mintableBeforeCCIP = opts.mintable;
+      accessBeforeCCIP = opts.access;
+      opts.mintable = true;
+    } else if (!isCCIP && wasCCIP) {
+      if (!mintableBeforeCCIP) opts.mintable = false;
+      if (accessBeforeCCIP !== false && accessBeforeCCIP !== 'roles' && opts.access === 'roles') {
+        opts.access = accessBeforeCCIP;
+      }
+    }
+    if (isCCIP && (opts.access === 'ownable' || opts.access === 'managed')) {
+      opts.access = 'roles';
+    }
+    wasCCIP = isCCIP;
   }
 
   let showChainId = false;
@@ -118,12 +166,12 @@
 
   <div class="checkbox-group">
     <label class:checked={opts.mintable}>
-      <input type="checkbox" bind:checked={opts.mintable} />
+      <input type="checkbox" bind:checked={opts.mintable} disabled={opts.crossChainBridging === 'chainlink-ccip'} />
       Mintable
       <HelpTooltip>Privileged accounts will be able to create more supply.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.burnable}>
+    <label class:checked={opts.burnable} use:error={errors?.burnable}>
       <input type="checkbox" bind:checked={opts.burnable} />
       Burnable
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20Burnable">
@@ -140,7 +188,7 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.callback}>
+    <label class:checked={opts.callback} use:error={errors?.callback}>
       <input type="checkbox" bind:checked={opts.callback} />
       Callback
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC1363">
@@ -156,7 +204,7 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.flashmint}>
+    <label class:checked={opts.flashmint} use:error={errors?.flashmint}>
       <input type="checkbox" bind:checked={opts.flashmint} />
       Flash Minting
       <HelpTooltip link="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20#ERC20FlashMint">
@@ -174,6 +222,24 @@
     </label>
   </div>
 </section>
+
+{#if !omitFeatures?.includes('chainlinkAce')}
+  <section class="controls-section">
+    <h1>Policy Engine</h1>
+
+    <div class="checkbox-group">
+      <label class:checked={opts.chainlinkAce} bind:this={aceLabel} use:error={errors?.chainlinkAce}>
+        <input type="checkbox" bind:checked={opts.chainlinkAce} />
+        Chainlink ACE
+        <HelpTooltip link="https://docs.openzeppelin.com/chainlink-ccip-ace">
+          Chainlink Automated Compliance Engine (ACE) checks token operations against policies configured in a Policy
+          Engine contract. Provide a deployed Policy Engine and configure its policies before using the token. Engine
+          administration is separate from token permissions.
+        </HelpTooltip>
+      </label>
+    </div>
+  </section>
+{/if}
 
 <ExpandableToggleRadio
   label="Restrictions*"
@@ -222,6 +288,7 @@
 
 <ExpandableToggleRadio
   label="Crosschain Bridging"
+  error={errors?.crossChainBridging}
   bind:value={opts.crossChainBridging}
   defaultValue="custom"
   helpContent="Allows authorized bridge contracts to mint and burn tokens for crosschain transfers."
@@ -233,6 +300,16 @@
       Custom
       <HelpTooltip>Uses custom bridge contract(s) as authorized token bridge(s).</HelpTooltip>
     </label>
+
+    {#if !omitFeatures?.includes('ccip')}
+      <label class:checked={opts.crossChainBridging === 'chainlink-ccip'}>
+        <input type="radio" bind:group={opts.crossChainBridging} value="chainlink-ccip" />
+        Chainlink CCIP
+        <HelpTooltip link="https://docs.openzeppelin.com/chainlink-ccip-ace">
+          Chainlink Cross-Chain Interoperability Protocol (CCIP) connects the token to a Chainlink token pool.
+        </HelpTooltip>
+      </label>
+    {/if}
 
     <label class:checked={opts.crossChainBridging === 'erc7786native'}>
       <input type="radio" bind:group={opts.crossChainBridging} value="erc7786native" />
@@ -265,6 +342,13 @@
   </div>
 </ExpandableToggleRadio>
 
-<AccessControlSection bind:access={opts.access} required={requireAccessControl} />
+<AccessControlSection
+  bind:access={opts.access}
+  required={requireAccessControl}
+  error={errors?.access}
+  defaultValueWhenEnabled={opts.crossChainBridging === 'chainlink-ccip' ? 'roles' : 'ownable'}
+  disableOwnable={opts.crossChainBridging === 'chainlink-ccip'}
+  disableManaged={opts.crossChainBridging === 'chainlink-ccip'}
+/>
 
-<InfoSection bind:info={opts.info} {errors} />
+<InfoSection bind:info={opts.info} {errors} aceEnabled={opts.chainlinkAce === true} />

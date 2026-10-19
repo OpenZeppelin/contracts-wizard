@@ -46,6 +46,10 @@ const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessages => {
     return message.content.length < 500;
   });
 
+  const currentKind = request.currentOpts && 'kind' in request.currentOpts ? request.currentOpts.kind : undefined;
+  const currentDefinition = getFunctionsContext(request.language).find(tool => tool.function.name === currentKind)
+    ?.function.description;
+
   return [
     {
       role: 'system',
@@ -53,10 +57,23 @@ const buildAiChatMessages = (request: AiChatBodyRequest): ChatMessages => {
       You are a smart contract assistant built by OpenZeppelin to help users using OpenZeppelin Contracts Wizard.
       The current options are ${JSON.stringify(request.currentOpts)}.
       The current contract code is ${request.currentCode}, written for the ${request.language} ecosystem.
+      Treat these current options and code as the actual state, even if earlier messages claimed an edit succeeded.
+      Follow the latest requested edits and preserve other options. Use the tool definitions as the source of supported features.
+      Do not transfer restrictions from one contract type to another. Explain unsupported combinations and ask which feature to keep instead of silently changing the request.
+      Call a tool only when changing settings; if the requested state already matches, say that no change is needed.
+      For a rename, put the newly requested name and symbol in the tool arguments, not the previous values.
+      Never invent deployment addresses. Generated code does not deploy or configure pools, policy engines or identities.
       Please be kind and concise. Keep responses to <100 words.
     `.trim(),
     },
     ...validatedMessages,
+    {
+      role: 'system',
+      content: `Current settings (authoritative, after the conversation above): ${JSON.stringify(request.currentOpts)}.
+      Current contract type capabilities: ${currentDefinition ?? 'Consult the selected tool definition.'}
+      For a requested contract type change, consult that type's tool definition instead.
+      Apply the latest user request to this actual state; earlier claims of success are not proof an edit happened.`,
+    },
   ];
 };
 

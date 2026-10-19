@@ -7,7 +7,9 @@ import { sanitizeTronOptions } from '@openzeppelin/wizard';
  */
 export function defineOmitFeatures(): Map<Kind, string[]> {
   const omitFeatures: Map<Kind, string[]> = new Map();
-  omitFeatures.set('ERC20', ['superchain']);
+  omitFeatures.set('ERC20', ['superchain', 'ccip', 'chainlinkAce']);
+  omitFeatures.set('Stablecoin', ['ccip', 'chainlinkAce']);
+  omitFeatures.set('RealWorldAsset', ['ccip', 'chainlinkAce']);
   omitFeatures.set('ERC721', ['crossChainBridging']);
   omitFeatures.set('ERC1155', ['crossChainBridging']);
   omitFeatures.set('Governor', ['crossChainExecution']);

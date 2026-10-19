@@ -21,6 +21,7 @@ import { compatibleContractsSemver } from './utils/version';
 import { stringifyUnicodeSafe } from './utils/sanitize';
 import { importsLibrary } from './utils/imports-libraries';
 import { getCommunityContractsGitCommit } from './utils/community-contracts-git-commit';
+import { aceImportNotice, isACEImportPath } from './ace-licensing';
 
 export function printContract(contract: Contract, opts?: Options): string {
   const helpers = withHelpers(contract, opts);
@@ -368,15 +369,21 @@ function printNatspecTags(tags: NatspecTag[]): string[] {
 
 function printImports(imports: ImportContract[], helpers: Helpers): string[] {
   const itemByPath = new Map<string, Set<string>>();
+  // Keyed by printed path, but detected from the original path so transforms cannot drop the notice.
+  const acePaths = new Set<string>();
 
   for (const p of imports) {
     const { name, path } = helpers.transformImport(p);
     const _ = itemByPath.get(path)?.add(name) ?? itemByPath.set(path, new Set([name]));
+    if (isACEImportPath(p.path)) acePaths.add(path);
   }
 
   return Array.from(itemByPath.keys())
     .sort()
-    .map(path => `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`);
+    .flatMap(path => [
+      ...(acePaths.has(path) ? aceImportNotice : []),
+      `import {${Array.from(itemByPath.get(path)!).sort().join(', ')}} from "${path}";`,
+    ]);
 }
 
 function printLibraries(contract: Contract, { transformName }: Helpers): string[] {
