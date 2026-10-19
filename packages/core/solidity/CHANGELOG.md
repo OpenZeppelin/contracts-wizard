@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.10.17 (2026-10-19)
+
+- Add Chainlink CCIP bridging and ACE options for Solidity ERC20, Stablecoin, and RWA. Contracts generated with ACE use the BUSL-1.1 license. ([#880](https://github.com/OpenZeppelin/contracts-wizard/pull/880))
+
 ## 0.10.16 (2026-09-08)
 
 - Improve performance of premint amount parsing. ([#872](https://github.com/OpenZeppelin/contracts-wizard/pull/872))
