@@ -25,8 +25,7 @@
     "prepare": "tsc && node dist/scripts/prepare.js"
   },
   "dependencies": {
-    "ethereum-cryptography": "^3.2.0",
-    "jszip": "^3.6.0"
+    "ethereum-cryptography": "^3.2.0"
   },
   "devDependencies": {
     "@chainlink/ace": "1.2.0",
@@ -39,6 +38,7 @@
     "@types/semver": "^7.5.7",
     "ava": "^6.0.0",
     "hardhat": "^2.22.11",
+    "jszip": "^3.6.0",
     "rimraf": "^5.0.0",
     "semver": "^7.6.0",
     "solidity-ast": "^0.4.18",
