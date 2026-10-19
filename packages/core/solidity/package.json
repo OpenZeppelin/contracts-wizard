@@ -14,9 +14,7 @@
     "/src",
     "openzeppelin-contracts-version.json",
     "openzeppelin-contracts-version.json.d.ts",
-    "!**/*.test.*",
-    "openzeppelin-contracts.json",
-    "openzeppelin-contracts.d.ts"
+    "!**/*.test.*"
   ],
   "scripts": {
     "prepublish": "rimraf dist *.tsbuildinfo && hardhat clean",
