@@ -15,6 +15,7 @@
 
   export let highlightedCode: string;
   export let hasErrors = false;
+  export let errorMessages: string[] = [];
   export let highlightClass = '-solidity';
   export let code = '';
   /** Markdown fence language used when handing the contract to the agent. */
@@ -114,13 +115,20 @@
   }
 
   const handleCodeClick = anchorClickHandler('a[href]', 'code preview');
+  // Controls only render outbound anchors when the host can open them (see external-links.ts).
+  const handleControlsClick = anchorClickHandler('a[href]', 'controls');
+  let controlsElement: HTMLDivElement;
   // Tippy content mounts on document.body (outside .mcp-shell), so in-app click handlers never see it.
   // Capture outbound <a href> clicks from any tippy HTML content and route through host openLink.
   const handleTippyClick = anchorClickHandler('.tippy-box a[href]', 'tippy');
 
   onMount(() => {
     document.addEventListener('click', handleTippyClick, true);
-    return () => document.removeEventListener('click', handleTippyClick, true);
+    controlsElement.addEventListener('click', handleControlsClick);
+    return () => {
+      document.removeEventListener('click', handleTippyClick, true);
+      controlsElement.removeEventListener('click', handleControlsClick);
+    };
   });
 </script>
 
@@ -128,11 +136,22 @@
   <div class="flex flex-row grow min-h-0 overflow-hidden rounded-xl border border-[var(--gray-3)]">
     <div
       class="controls min-w-[14rem] w-60 max-w-[42%] flex flex-col shrink-0 overflow-auto border-r border-[var(--gray-3)]"
+      bind:this={controlsElement}
     >
       <slot name="controls" />
     </div>
 
     <div class="output flex flex-col grow min-w-0 overflow-hidden">
+      {#if hasErrors}
+        <div role="alert" class="p-2 overflow-auto shrink-0" style="color: var(--red-3)">
+          <p>Fix these options to generate your contract:</p>
+          <ul>
+            {#each errorMessages as message}
+              <li>{message}</li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
       <!-- Click delegation for import hyperlinks → host openLink (keyboard via real anchors when present). -->
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <pre class="flex flex-col grow basis-0 overflow-auto m-0" on:click={handleCodeClick}>

@@ -9,6 +9,7 @@ import {
   solidityGovernorDescriptions,
   solidityAccountDescriptions,
   solidityStablecoinDescriptions,
+  solidityACEInfoDescriptions,
 } from '../../index';
 
 export const solidityCommonSchema = {
@@ -47,13 +48,22 @@ export const solidityERC20Schema = {
   flashmint: z.boolean().optional().describe(solidityERC20Descriptions.flashmint),
   crossChainBridging: z
     .literal('custom')
+    .or(z.literal('chainlink-ccip'))
     .or(z.literal('erc7786native'))
     .or(z.literal('superchain'))
     .optional()
     .describe(solidityERC20Descriptions.crossChainBridging),
+  chainlinkAce: z.boolean().optional().describe(solidityERC20Descriptions.chainlinkAce),
   crossChainLinkAllowOverride: z.boolean().optional().describe(solidityERC20Descriptions.crossChainLinkAllowOverride),
   namespacePrefix: z.string().optional().describe(solidityCommonDescriptions.namespacePrefix),
   ...solidityCommonSchema,
+  info: z
+    .object({
+      securityContact: z.string().optional().describe(infoDescriptions.securityContact),
+      license: z.string().optional().describe(solidityACEInfoDescriptions.license),
+    })
+    .optional()
+    .describe(infoDescriptions.info),
 } as const satisfies z.ZodRawShape;
 
 export const solidityERC721Schema = {
@@ -90,6 +100,8 @@ const { upgradeable: _, ...solidityERC20SchemaOmitUpgradeable } = solidityERC20S
 
 export const solidityStablecoinSchema = {
   ...solidityERC20SchemaOmitUpgradeable,
+  // Recognize the unsupported field so the MCP SDK cannot silently strip a requested proxy.
+  upgradeable: z.literal(false).optional().describe('Upgradeability is not available for Stablecoin or RWA.'),
   restrictions: z
     .literal(false)
     .or(z.literal('allowlist'))

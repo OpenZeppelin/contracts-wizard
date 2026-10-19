@@ -91,8 +91,6 @@
 
   $: {
     if (opts) {
-      overrides.sanitizeOmittedFeatures(opts);
-
       if (!initialValuesSet) {
         opts.name = initialOpts.name ?? opts.name;
         switch (opts.kind) {
@@ -111,6 +109,7 @@
         initialValuesSet = true;
       }
       try {
+        overrides.sanitizeOmittedFeatures(opts);
         contract = buildGeneric(opts);
         errors[tab] = undefined;
       } catch (e: unknown) {
@@ -249,7 +248,18 @@
 
   const applyFunctionCall = ({ detail: aiFunctionCall }: CustomEvent<AiFunctionCall<'solidity'>>) => {
     tab = sanitizeKind(aiFunctionCall.name);
-    allOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+    const updatedOpts = mergeAiAssistanceOptions(allOpts, aiFunctionCall);
+    const updated = updatedOpts[tab];
+    // Apply the same selection rule as the controls before rendering imported options.
+    if (
+      updated &&
+      'crossChainBridging' in updated &&
+      updated.crossChainBridging === 'chainlink-ccip' &&
+      (updated.access === 'ownable' || updated.access === 'managed')
+    ) {
+      updated.access = 'roles';
+    }
+    allOpts = updatedOpts;
   };
 
   $: wizLanguage = (overrides.aiAssistant?.language ?? 'solidity') as 'solidity';

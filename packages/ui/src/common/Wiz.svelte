@@ -53,7 +53,7 @@
     AiFunctionCallResponse,
     Chat,
   } from '../../api/ai-assistant/types/assistant';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, tick } from 'svelte';
 
   const apiHost = process.env.API_HOST;
 
@@ -156,16 +156,22 @@
           try {
             const { function_call }: AiFunctionCallResponse = JSON.parse(result);
 
-            addMessage({
-              role: 'assistant',
-              content: `Updated Wizard using ${function_call.name}${
-                experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
-              }`,
-            });
-
+            const previousCode = currentCode;
             dispatch('function-call-response', {
               name: function_call.name,
               arguments: buildOptionsFromArguments(function_call.arguments),
+            });
+            // Controls and the generator update through Svelte bindings. A tool
+            // response alone is not evidence that the requested edit took effect.
+            await tick();
+            addMessage({
+              role: 'assistant',
+              content:
+                currentCode === previousCode
+                  ? 'No change was applied to the generated contract. Review the settings or clarify your request.'
+                  : `Updated Wizard using ${function_call.name}${
+                      experimentalContracts.includes(function_call.name) ? ' (Experimental).' : '.'
+                    }`,
             });
           } catch (e) {
             addMessage({

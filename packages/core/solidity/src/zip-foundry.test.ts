@@ -296,3 +296,29 @@ async function getItemString(zip: JSZip, key: string) {
 async function asString(item: JSZipObject) {
   return Buffer.from(await item.async('arraybuffer')).toString();
 }
+
+import { ContractBuilder } from './contract';
+
+test('ACE packaging Foundry exact source install and engine prerequisite', async t => {
+  const c = new ContractBuilder('ACEPackaging');
+  c.addImportOnly({
+    name: 'PolicyProtected',
+    path: '@chainlink/ace/packages/policy-management/src/core/PolicyProtected.sol',
+    transpiled: false,
+  });
+  c.addConstructorArgument({ name: 'policyEngine', type: 'address' });
+  const zip = await zipFoundry(c);
+  const pkg = JSON.parse(await getItemString(zip, 'package.json'));
+  const lock = JSON.parse(await getItemString(zip, 'package-lock.json'));
+  t.is(pkg.dependencies['@chainlink/ace'], '1.2.0');
+  t.is(lock.packages['node_modules/@chainlink/ace'].version, '1.2.0');
+  t.regex(await getItemString(zip, 'setup.sh'), /npm ci --ignore-scripts/);
+  t.regex(await getItemString(zip, 'setup.sh'), /@chainlink\/ace\/=node_modules\/@chainlink\/ace\//);
+  const source = await getItemString(zip, 'test/ACEPackaging.t.sol');
+  t.regex(source, /vm.envAddress\("POLICY_ENGINE"\)/);
+  t.regex(source, /policyEngine.code.length > 0/);
+  t.notRegex(source, /policyEngine = vm.addr/);
+  t.regex(await getItemString(zip, 'README.md'), /PolicyEngine proxy/);
+  t.regex(await getItemString(zip, 'third-party-licenses/chainlink-ace/LICENSE'), /^Business Source License 1\.1/);
+  t.truthy(zip.file('third-party-licenses/chainlink-ace/chainlink-ace-License-grants'));
+});

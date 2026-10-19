@@ -26,6 +26,7 @@ import {
   solidityAccountSchema,
   solidityGovernorSchema,
   solidityCustomSchema,
+  tronERC20Schema,
   tronGovernorSchema,
 } from '@openzeppelin/wizard-common/schemas';
 
@@ -183,7 +184,7 @@ export const registry = {
   // post-processing rendered text — keeps user data (name/symbol/securityContact)
   // and the contract name untouched.
   'tron-trc20': createRegistryEntry(
-    solidityERC20Schema,
+    tronERC20Schema,
     opts => printContract(buildGeneric(sanitizeTronOptions({ kind: 'ERC20', ...opts })), tronPrintProfile),
     tronPrompts.TRC20,
   ),

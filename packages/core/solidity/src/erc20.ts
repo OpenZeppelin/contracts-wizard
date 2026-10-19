@@ -1,4 +1,6 @@
 import { ContractBuilder } from './contract';
+import { addCCIP } from './add-ccip';
+import { addACE } from './add-ace';
 import type { Access } from './set-access-control';
 import { setAccessControl, requireAccessControl } from './set-access-control';
 import { addPauseFunctions } from './add-pausable';
@@ -8,6 +10,7 @@ import { withCommonDefaults, defaults as commonDefaults } from './common-options
 import { setUpgradeable } from './set-upgradeable';
 import type { Upgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
+import { ACE_LICENSE } from './ace-licensing';
 import { printContract } from './print';
 import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
@@ -17,7 +20,7 @@ import { toUint, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 import { addCrosschainLinked } from './set-crosschain-linked';
 
-export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain'] as const;
+export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain', 'chainlink-ccip'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
 
 export const DEFAULT_DECIMALS = 18;
@@ -40,6 +43,7 @@ export interface ERC20Options extends CommonOptions {
   votes?: boolean | ClockMode;
   flashmint?: boolean;
   crossChainBridging?: CrossChainBridging;
+  chainlinkAce?: boolean;
   crossChainLinkAllowOverride?: boolean;
   namespacePrefix?: string;
 }
@@ -59,25 +63,48 @@ export const defaults: Required<ERC20Options> = {
   votes: false,
   flashmint: false,
   crossChainBridging: false,
+  chainlinkAce: false,
   crossChainLinkAllowOverride: false,
   namespacePrefix: 'myProject',
 } as const;
 
 export function withDefaults(opts: ERC20Options): Required<ERC20Options> {
+  // JavaScript callers do not have the TypeScript union's protection. Reject
+  // unknown values before normalization so a typo cannot disable compliance.
+  if (opts.chainlinkAce !== undefined && typeof opts.chainlinkAce !== 'boolean') {
+    throw new OptionsError({ chainlinkAce: 'chainlinkAce must be a boolean' });
+  }
+  if (opts.crossChainBridging !== undefined && !crossChainBridgingOptions.includes(opts.crossChainBridging)) {
+    throw new OptionsError({ crossChainBridging: 'Unknown cross-chain bridging value' });
+  }
+
   return {
     ...opts,
     ...withCommonDefaults(opts),
+    // CCIP needs independently rotatable pool roles even when access was omitted.
+    access:
+      opts.crossChainBridging === 'chainlink-ccip' && !opts.access
+        ? 'roles'
+        : opts.chainlinkAce && !opts.access
+          ? 'ownable'
+          : (opts.access ?? defaults.access),
     decimals: opts.decimals ?? defaults.decimals,
     burnable: opts.burnable ?? defaults.burnable,
     pausable: opts.pausable ?? defaults.pausable,
     premint: opts.premint || defaults.premint,
     premintChainId: opts.premintChainId || defaults.premintChainId,
-    mintable: opts.mintable ?? defaults.mintable,
+    // CCIP implies Mintable: the pool mints on this chain. Auto-enable only when
+    // the caller did not decide; an explicit false is rejected in buildERC20.
+    mintable:
+      opts.crossChainBridging === 'chainlink-ccip' && opts.mintable === undefined
+        ? true
+        : (opts.mintable ?? defaults.mintable),
     callback: opts.callback ?? defaults.callback,
     permit: opts.permit ?? defaults.permit,
     votes: opts.votes ?? defaults.votes,
     flashmint: opts.flashmint ?? defaults.flashmint,
     crossChainBridging: opts.crossChainBridging ?? defaults.crossChainBridging,
+    chainlinkAce: opts.chainlinkAce ?? defaults.chainlinkAce,
     crossChainLinkAllowOverride: opts.crossChainLinkAllowOverride ?? defaults.crossChainLinkAllowOverride,
     namespacePrefix: opts.namespacePrefix ?? defaults.namespacePrefix,
   };
@@ -93,13 +120,64 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
     opts.pausable ||
     opts.upgradeable === 'uups' ||
     opts.crossChainBridging === 'custom' ||
-    opts.crossChainBridging === 'erc7786native'
+    opts.crossChainBridging === 'erc7786native' ||
+    opts.crossChainBridging === 'chainlink-ccip' ||
+    opts.chainlinkAce === true
   );
 }
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
   const allOpts = withDefaults(opts);
 
+  // ACE coverage in this integration. PolicyProtectedBase forwards msg.sig and
+  // msg.data[4:] to the Policy Engine, which resolves a calldata extractor and the
+  // policies per selector. Only transfer, transferFrom and the exposed mint/burn carry
+  // runPolicy. Options that add selectors (ERC-1363), mint or burn outside runPolicy
+  // (ERC-3156, ERC-7802, ERC20Crosschain, the generated premint) or move engine
+  // authorization to an external manager are rejected until each has a reviewed design.
+  // See https://docs.openzeppelin.com/chainlink-ccip-ace, section "Why some combinations are not covered yet".
+  if (allOpts.chainlinkAce) {
+    // Each conflict is keyed on both controls. Peer conflicts use inverse
+    // wording; bridge-mode conflicts share one sentence.
+    const aceConflict = (
+      key: 'access' | 'callback' | 'flashmint' | 'crossChainBridging' | 'premint',
+      siblingMessage: string,
+      aceMessage = siblingMessage,
+    ) => new OptionsError({ chainlinkAce: aceMessage, [key]: siblingMessage });
+    if (allOpts.access === 'managed')
+      throw aceConflict(
+        'access',
+        'This Wizard integration does not support Managed access with Chainlink ACE. Use Ownable or Roles.',
+        'This Wizard integration does not support Chainlink ACE with Managed access.',
+      );
+    if (allOpts.callback)
+      throw aceConflict(
+        'callback',
+        'This Wizard integration does not support Callback (ERC-1363) with Chainlink ACE.',
+        'This Wizard integration does not support Chainlink ACE with Callback (ERC-1363).',
+      );
+    if (allOpts.flashmint)
+      throw aceConflict(
+        'flashmint',
+        'This Wizard integration does not support Flash Minting with Chainlink ACE.',
+        'This Wizard integration does not support Chainlink ACE with Flash Minting.',
+      );
+    if (allOpts.crossChainBridging && allOpts.crossChainBridging !== 'chainlink-ccip')
+      throw aceConflict(
+        'crossChainBridging',
+        'This Wizard integration supports Chainlink ACE only with Chainlink CCIP as the bridge mode. Select CCIP, disable Crosschain Bridging, or disable Chainlink ACE.',
+      );
+    if (calculatePremint(allOpts.premint))
+      throw aceConflict(
+        'premint',
+        'This Wizard integration does not support a premint with Chainlink ACE.',
+        'This Wizard integration does not support Chainlink ACE with a premint.',
+      );
+  }
+
+  if (allOpts.crossChainBridging === 'chainlink-ccip' && !allOpts.mintable) {
+    throw new OptionsError({ mintable: 'Chainlink CCIP requires the Mintable feature' });
+  }
   const c = new ContractBuilder(allOpts.name);
 
   const { access, upgradeable, info } = allOpts;
@@ -119,6 +197,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
       access,
       upgradeable,
       allOpts.namespacePrefix,
+      allOpts.burnable,
     );
   }
 
@@ -134,7 +213,7 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
     addPausableExtension(c, access);
   }
 
-  if (allOpts.mintable) {
+  if (allOpts.mintable && allOpts.crossChainBridging !== 'chainlink-ccip') {
     addMintable(c, access);
   }
 
@@ -156,8 +235,13 @@ export function buildERC20(opts: ERC20Options): ContractBuilder {
   }
 
   setAccessControl(c, access);
+  if (allOpts.chainlinkAce) {
+    addACE(c, access, allOpts.mintable, allOpts.burnable, allOpts.crossChainBridging === 'chainlink-ccip');
+  }
   setUpgradeable(c, upgradeable, access);
   setInfo(c, info);
+  // ACE components are BUSL-1.1; validated metadata is kept but the effective license is fixed.
+  if (allOpts.chainlinkAce) c.license = ACE_LICENSE;
 
   return c;
 }
@@ -389,13 +473,16 @@ function addFlashMint(c: ContractBuilder) {
 
 function addCrossChainBridging(
   c: ContractBuilder,
-  crossChainBridging: 'custom' | 'erc7786native' | 'superchain',
+  crossChainBridging: Exclude<CrossChainBridging, false>,
   crossChainLinkAllowOverride: boolean,
   access: Access,
   upgradeable: Upgradeable,
   namespacePrefix: string,
+  burnable: boolean,
 ) {
-  if (crossChainBridging === 'erc7786native') {
+  if (crossChainBridging === 'chainlink-ccip') {
+    addCCIP(c, access, upgradeable, namespacePrefix, burnable);
+  } else if (crossChainBridging === 'erc7786native') {
     addERC20Crosschain(c, crossChainLinkAllowOverride, access);
   } else {
     addERC20Bridgeable(c, crossChainBridging, access, upgradeable, namespacePrefix);

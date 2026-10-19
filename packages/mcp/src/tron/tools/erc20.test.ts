@@ -7,19 +7,19 @@ import type { DeepRequired } from '../../helpers.test';
 import { testMcpInfo, assertAPIEquivalence } from '../../helpers.test';
 import type { ERC20Options } from '@openzeppelin/wizard';
 import { buildGeneric, printContract, tronPrintProfile } from '@openzeppelin/wizard';
-import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
+import { tronERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { z } from 'zod';
 
 interface Context {
   tool: RegisteredTool;
-  schema: z.ZodObject<typeof solidityERC20Schema>;
+  schema: z.ZodObject<typeof tronERC20Schema>;
 }
 
 const test = _test as TestFn<Context>;
 
 test.before(t => {
   t.context.tool = registerTronTRC20(new McpServer(testMcpInfo));
-  t.context.schema = z.object(solidityERC20Schema);
+  t.context.schema = z.object(tronERC20Schema);
 });
 
 function assertHasAllSupportedFields(
@@ -57,6 +57,7 @@ test('renames ERC20 to TRC20 and rewrites imports', async t => {
 
 test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    chainlinkAce: false,
     name: 'TestToken',
     symbol: 'TST',
     decimals: '6',

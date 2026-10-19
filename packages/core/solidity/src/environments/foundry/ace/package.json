@@ -1,0 +1,6 @@
+{
+  "name": "foundry-ace-sample",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": { "@chainlink/ace": "1.2.0" }
+}

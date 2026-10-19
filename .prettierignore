@@ -11,6 +11,8 @@
 **/.*
 **/LICENSE
 **/NOTICE
+# Verbatim third-party legal texts
+**/third-party-licenses/
 build/
 public/
 remappings.txt

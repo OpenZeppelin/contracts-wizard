@@ -14,6 +14,9 @@ export function injectHyperlinks(code: string) {
   const importTronContractsUpgradeableRegex =
     /&quot;(@openzeppelin\/)(tron-contracts-upgradeable\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
   const importTronContractsRegex = /&quot;(@openzeppelin\/)(tron-contracts\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
+  // Keep in sync with the @chainlink/ace pin in core's get-versioned-remappings.
+  const chainlinkAceVersion = '1.2.0';
+  const importChainlinkAceRegex = /&quot;(@chainlink\/)(ace\/)((?:(?!\.\.)[^/]+\/)*?[^/]*?)&quot;/g;
 
   const compatibleCommunityContractsRegexSingle = /Community Contracts commit ([a-fA-F0-9]{7,40})/;
   const compatibleCommunityContractsRegexGlobal = new RegExp(compatibleCommunityContractsRegexSingle.source, 'g');
@@ -32,6 +35,10 @@ export function injectHyperlinks(code: string) {
     .replace(
       importTronContractsRegex,
       `&quot;<a class="import-link" href="https://github.com/OpenZeppelin/tron-contracts/blob/v${TRON_CONTRACTS_VERSION}/contracts/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
+    )
+    .replace(
+      importChainlinkAceRegex,
+      `&quot;<a class="import-link" href="https://github.com/smartcontractkit/chainlink-ace/blob/v${chainlinkAceVersion}/$3" target="_blank" rel="noopener noreferrer">$1$2$3</a>&quot;`,
     );
 
   if (compatibleCommunityContractsGitCommit !== undefined) {

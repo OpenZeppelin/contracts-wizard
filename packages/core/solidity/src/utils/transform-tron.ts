@@ -22,6 +22,8 @@
 import type { Options } from '../options';
 import type { ImportContract } from '../contract';
 import type { Kind } from '../kind';
+import type { CrossChainBridging } from '../erc20';
+import { OptionsError } from '../error';
 import SOLIDITY_VERSION from '../solidity-version.json';
 
 // The maximum 0.8.x patch level that tron-solc currently supports. The mainline
@@ -103,11 +105,18 @@ export const tronPrintProfile: Options = {
 // contract) and returns the same object for ergonomic use at call sites.
 type TronSanitizableOptions = {
   kind?: Kind;
-  crossChainBridging?: false | 'custom' | 'erc7786native' | 'superchain';
+  crossChainBridging?: CrossChainBridging;
   crossChainExecution?: boolean;
+  chainlinkAce?: boolean;
 };
 
 export function sanitizeTronOptions<T extends TronSanitizableOptions>(opts: T): T {
+  if (opts.chainlinkAce) {
+    throw new OptionsError({ chainlinkAce: 'ACE is not supported for TRON' });
+  }
+  if (opts.crossChainBridging === 'chainlink-ccip') {
+    throw new OptionsError({ crossChainBridging: 'CCIP is not supported for TRON' });
+  }
   // TRON Contracts 5.6 has TRC20Crosschain but not TRC721/TRC1155Crosschain.
   if (opts.kind === 'ERC721' || opts.kind === 'ERC1155') {
     if (opts.crossChainBridging) {

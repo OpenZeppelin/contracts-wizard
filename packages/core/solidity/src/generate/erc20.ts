@@ -10,6 +10,7 @@ const booleans = [true, false];
 const blueprintWithoutBasicFeatures = {
   name: ['MyToken'],
   symbol: ['MTK'],
+  chainlinkAce: [false] as const,
   decimals: ['6', '18'],
   pausable: booleans,
   mintable: booleans,
@@ -48,16 +49,37 @@ const crossChainBridgingUpgradeableBlueprint = {
   ...basicFeatures.OFF,
   decimals: ['18'],
   pausable: [false],
-  mintable: [false],
+  // CCIP requires Mintable; keep the shared row valid for every bridge mode.
+  mintable: [true],
   votes: [false] as const,
-  crossChainBridging: ['custom', 'erc7786native', 'superchain'] as const,
+  crossChainBridging: ['custom', 'erc7786native', 'superchain', 'chainlink-ccip'] as const,
   upgradeable: ['transparent', 'uups'] as const,
   info: [{}],
 };
 
+// ACE cannot cover callback/flashloan/other bridge selectors or constructor premint.
+// Keep a bounded, valid matrix separate from those unsupported combinations.
+export const aceBlueprint = {
+  ...blueprintWithoutBasicFeatures,
+  ...basicFeatures.OFF,
+  chainlinkAce: [true] as const,
+  premint: ['0'],
+  access: ['ownable', 'roles'] as const,
+  crossChainBridging: [false, 'chainlink-ccip'] as const,
+  votes: [false, 'timestamp'] as const,
+  burnable: booleans,
+  info: [{}],
+};
+
 export function* generateERC20Options(): Generator<Required<ERC20Options>> {
+  for (const opts of generateAlternatives(aceBlueprint)) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
+    yield opts;
+  }
+
   // Separate generation steps with basic features OFF and ON to avoid having too many combinations
   for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.OFF })) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
     // crossChainBridging x upgradeable is covered by the reduced blueprint below
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
@@ -65,11 +87,15 @@ export function* generateERC20Options(): Generator<Required<ERC20Options>> {
   }
 
   for (const opts of generateAlternatives({ ...blueprintWithoutBasicFeatures, ...basicFeatures.ON })) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
     // crossChainBridging x upgradeable is covered by the reduced blueprint below
     if (!(opts.crossChainBridging && opts.upgradeable)) {
       yield opts;
     }
   }
 
-  yield* generateAlternatives(crossChainBridgingUpgradeableBlueprint);
+  for (const opts of generateAlternatives(crossChainBridgingUpgradeableBlueprint)) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
+    yield opts;
+  }
 }
