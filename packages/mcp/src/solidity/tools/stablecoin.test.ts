@@ -50,6 +50,8 @@ test('crosschain erc7786native allowOverrides', async t => {
 
 test('all', async t => {
   const params: DeepRequired<z.infer<typeof t.context.schema>> = {
+    chainlinkAce: false,
+    upgradeable: false,
     name: 'MyStablecoin',
     symbol: 'MST',
     decimals: '6',

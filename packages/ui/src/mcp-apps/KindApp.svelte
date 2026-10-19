@@ -36,11 +36,19 @@
     }
   }
 
+  // Controls bind the nested `info` object unconditionally, so options coming
+  // from a host tool run that omits it must never leave the field undefined.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function withInfo(candidate: any) {
+    candidate.info ??= {};
+    return candidate;
+  }
+
   function mergeHostOpts(incoming: Record<string, unknown> | undefined, source: 'input' | 'result') {
     if (!incoming) return;
     // Read before the merge, so an edit the user already made blocks a toolresult recapture.
     const captureBaseline = shouldCaptureBaseline(originalCode, drifted, source);
-    const merged = { ...(opts ?? {}), ...incoming, kind };
+    const merged = withInfo({ ...(opts ?? {}), ...incoming, kind });
     opts = merged;
     if (!captureBaseline) return;
 
@@ -52,7 +60,7 @@
     originalOpts = baseline.opts;
     originalCode = baseline.code;
     if (baseline.supersedesOpts) {
-      opts = cloneOpts(baseline.opts);
+      opts = withInfo(cloneOpts(baseline.opts));
     }
   }
 
@@ -81,19 +89,21 @@
   $: highlightedCode = hostSendCaps.openLinks
     ? adapter.injectHyperlinks(adapter.highlight(code))
     : adapter.highlight(code);
+  $: errorMessages = Object.values(errors ?? {}).filter((message): message is string => message !== undefined);
   $: hasErrors = errors !== undefined;
   /** True once the user edits away from the source the opening tool run asked for. */
   $: drifted = isDrifted({ originalCode, code, hasErrors });
 
   function restoreOriginal() {
     if (originalOpts == null) return;
-    opts = cloneOpts(originalOpts);
+    opts = withInfo(cloneOpts(originalOpts));
   }
 </script>
 
 <KindShell
   {highlightedCode}
   {hasErrors}
+  {errorMessages}
   {code}
   highlightClass={adapter.highlightClass}
   fence={adapter.fence}

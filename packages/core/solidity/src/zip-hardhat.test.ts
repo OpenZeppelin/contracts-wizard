@@ -289,3 +289,48 @@ async function getItemString(zip: JSZip, key: string) {
 async function asString(item: JSZipObject) {
   return Buffer.from(await item.async('arraybuffer')).toString();
 }
+
+import { ContractBuilder } from './contract';
+
+for (const upgradeable of [false, true]) {
+  test(`ACE packaging Hardhat exact dependency and engine prerequisite ${upgradeable}`, async t => {
+    const c = new ContractBuilder('ACEPackaging');
+    c.upgradeable = upgradeable;
+    c.addImportOnly({
+      name: 'PolicyProtected',
+      path: '@chainlink/ace/packages/policy-management/src/core/PolicyProtected.sol',
+      transpiled: false,
+    });
+    c.addConstructorArgument({ name: 'policyEngine', type: 'address' });
+    const zip = await zipHardhat(c);
+    const pkg = JSON.parse(await getItemString(zip, 'package.json'));
+    const lock = JSON.parse(await getItemString(zip, 'package-lock.json'));
+    t.is(pkg.devDependencies['@chainlink/ace'], '1.2.0');
+    t.is(lock.packages['node_modules/@chainlink/ace'].version, '1.2.0');
+    const testSource = await getItemString(zip, 'test/test.ts');
+    t.regex(testSource, /process.env.POLICY_ENGINE/);
+    t.regex(testSource, /getCode\(policyEngine\)/);
+    t.notRegex(testSource, /const policyEngine = \(await ethers.getSigners\(\)\)/);
+    t.regex(await getItemString(zip, 'README.md'), /PolicyEngine proxy/);
+    t.regex(await getItemString(zip, 'third-party-licenses/chainlink-ace/LICENSE'), /^Business Source License 1\.1/);
+    t.truthy(zip.file('third-party-licenses/chainlink-ace/chainlink-ace-License-grants'));
+  });
+}
+
+test('ACE deploy script works with a single configured signer', async t => {
+  const opts = {
+    kind: 'ERC20',
+    name: 'SingleSigner',
+    symbol: 'SS',
+    mintable: true,
+    access: 'roles',
+    crossChainBridging: 'chainlink-ccip',
+    chainlinkAce: true,
+    upgradeable: false,
+  } as const;
+  const c = buildERC20(opts);
+  const zip = await zipHardhat(c, opts);
+  const deployScript = await zip.files['scripts/deploy.ts']!.async('string');
+  t.notRegex(deployScript, /getSigners\(\)\)\[[1-9]/, 'must not index a second signer');
+  t.regex(deployScript, /process\.env\.CCIP_ADMIN/, 'admin addresses must be explicitly configurable');
+});

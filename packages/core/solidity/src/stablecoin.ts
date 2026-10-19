@@ -1,4 +1,5 @@
 import type { Contract, ContractBuilder } from './contract';
+import { OptionsError } from './error';
 import type { Access } from './set-access-control';
 import { requireAccessControl } from './set-access-control';
 import { defineFunctions } from './utils/define-functions';
@@ -47,6 +48,16 @@ export function isAccessControlRequired(opts: Partial<StablecoinOptions>): boole
 
 export function buildStablecoin(opts: StablecoinOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  if (allOpts.crossChainBridging === 'chainlink-ccip' && allOpts.upgradeable) {
+    throw new OptionsError({ upgradeable: 'CCIP stablecoins do not support upgrades' });
+  }
+
+  if (allOpts.chainlinkAce && allOpts.upgradeable) {
+    throw new OptionsError({
+      upgradeable: 'This Wizard integration does not support ACE with upgradeable Stablecoin or RWA.',
+    });
+  }
 
   // Upgradeability is not yet available for the community contracts
   allOpts.upgradeable = false;

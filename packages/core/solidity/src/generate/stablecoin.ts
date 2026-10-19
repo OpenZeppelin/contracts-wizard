@@ -2,6 +2,7 @@ import { crossChainBridgingOptions } from '../erc20';
 import { accessOptions } from '../set-access-control';
 import { infoOptions } from '../set-info';
 import type { StablecoinOptions } from '../stablecoin';
+import { aceBlueprint } from './erc20';
 import { generateAlternatives } from './alternatives';
 
 const booleans = [true, false];
@@ -9,6 +10,7 @@ const booleans = [true, false];
 const erc20Basic = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
+  chainlinkAce: [false] as const,
   decimals: ['6'],
   burnable: [false] as const,
   pausable: [false] as const,
@@ -29,6 +31,7 @@ const erc20Basic = {
 const erc20Full = {
   name: ['MyStablecoin'],
   symbol: ['MST'],
+  chainlinkAce: [false] as const,
   decimals: ['18'],
   burnable: [true] as const,
   pausable: [true] as const,
@@ -53,6 +56,13 @@ const stablecoinExtensions = {
 };
 
 export function* generateStablecoinOptions(): Generator<Required<StablecoinOptions>> {
+  for (const opts of generateAlternatives({ ...aceBlueprint, ...stablecoinExtensions })) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
+    yield opts;
+  }
   yield* generateAlternatives({ ...erc20Basic, ...stablecoinExtensions });
-  yield* generateAlternatives({ ...erc20Full, ...stablecoinExtensions });
+  for (const opts of generateAlternatives({ ...erc20Full, ...stablecoinExtensions })) {
+    if (opts.crossChainBridging === 'chainlink-ccip' && (opts.access !== 'roles' || !opts.mintable)) continue;
+    yield opts;
+  }
 }

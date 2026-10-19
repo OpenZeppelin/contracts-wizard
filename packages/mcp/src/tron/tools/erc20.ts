@@ -2,7 +2,7 @@ import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server
 import type { ERC20Options } from '@openzeppelin/wizard';
 import { buildGeneric, printContract, tronPrintProfile, sanitizeTronOptions } from '@openzeppelin/wizard';
 import { makeDetailedPrompt } from '../../utils';
-import { solidityERC20Schema } from '@openzeppelin/wizard-common/schemas';
+import { tronERC20Schema } from '@openzeppelin/wizard-common/schemas';
 import { tronPrompts } from '@openzeppelin/wizard-common';
 import { registerWizardAppTool, wizardAppPrintResult } from '../../apps/register';
 
@@ -12,7 +12,7 @@ export function registerTronTRC20(server: McpServer): RegisteredTool {
     'tron-trc20',
     {
       description: makeDetailedPrompt(tronPrompts.TRC20),
-      inputSchema: solidityERC20Schema,
+      inputSchema: tronERC20Schema,
       title: 'TRON TRC20',
     },
     async ({

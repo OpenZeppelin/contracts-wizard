@@ -6,8 +6,8 @@ export const solidityPrompts = {
   ERC721: 'Make a non-fungible token per the ERC-721 standard.',
   ERC1155: 'Make a non-fungible token per the ERC-1155 standard.',
   Stablecoin:
-    'Make a stablecoin token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
-  RWA: 'Make a real-world asset token that uses the ERC-20 standard. Experimental, some features are not audited and are subject to change.',
+    'Make a stablecoin token that uses the ERC-20 standard. This contract type does not support upgradeability. Experimental, some features are not audited and are subject to change.',
+  RWA: 'Make a real-world asset token that uses the ERC-20 standard. This contract type does not support upgradeability. Experimental, some features are not audited and are subject to change.',
   Account: 'Make an account contract that follows the ERC-4337 standard.',
   Governor: 'Make a contract to implement governance, such as for a DAO.',
   Custom: 'Make a custom smart contract.',
@@ -36,7 +36,9 @@ export const solidityERC20Descriptions = {
   flashmint:
     "Whether to include built-in flash loans to allow lending tokens without requiring collateral as long as they're returned in the same transaction.",
   crossChainBridging:
-    'Whether to allow authorized bridge contracts to mint and burn tokens for crosschain transfers. Options are to use custom bridges on any chain, to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
+    'Whether to allow authorized bridge contracts to mint and burn tokens for crosschain transfers. Options are custom bridges on any chain, Chainlink CCIP with a separately configured BurnMintTokenPool (integration guide: https://docs.openzeppelin.com/chainlink-ccip-ace; Chainlink docs: https://docs.chain.link/ccip), to embed an ERC-7786 based bridge directly in the token contract, or to use the SuperchainERC20 standard with the predeployed SuperchainTokenBridge. CCIP requires role-based access control, granting the configured pool MINTER_ROLE on each supported chain, and BURNER_ROLE when Burnable is disabled. With Burnable enabled, any holder can burn their own tokens, including the pool, and burnFrom requires an allowance. The SuperchainERC20 feature is only available on chains in the Superchain, and requires deploying your contract to the same address on every chain in the Superchain.',
+  chainlinkAce:
+    'Chainlink ACE (Automated Compliance Engine) adds token policy enforcement through a separately deployed and configured policy engine (integration guide: https://docs.openzeppelin.com/chainlink-ccip-ace; Chainlink docs: https://docs.chain.link/ace). Defaults to false (disabled). Requires ownable or roles access; combining ACE with CCIP requires roles. This integration does not support ACE together with managed access, Callback (ERC-1363), Flash Minting, a nonzero premint, or bridge modes other than CCIP. Configure policies and register the token with the engine before use; this does not establish legal compliance. Enabling ACE makes the generated contract use BUSL-1.1, overriding info.license. Review the ACE license (https://github.com/smartcontractkit/chainlink-ace/blob/v1.2.0/LICENSE) and additional use grants (https://github.com/smartcontractkit/chainlink-ace/blob/v1.2.0/chainlink-ace-License-grants) before production use.',
   crossChainLinkAllowOverride: crossChainLinkAllowOverrideDescription,
   premintChainId: 'The chain ID of the network on which to premint tokens.',
   callback:
@@ -110,4 +112,10 @@ export const solidityGovernorDescriptions = {
   settings: 'Allow governance to update voting settings (delay, period, proposal threshold)',
   crossChainExecution:
     'Whether passed proposals can relay execution to other chains through ERC-7786 gateways. Requires a CrosschainRemoteExecutor contract, controlled by this governor, deployed on each target chain. The gateway and executor are chosen per proposal as arguments to the relayCrosschain function.',
+};
+
+/** License description for Solidity tokens that offer Chainlink ACE; other platforms keep the common one. */
+export const solidityACEInfoDescriptions = {
+  license:
+    'The license used by the contract, default is "MIT". Ignored when chainlinkAce is enabled: contracts generated with ACE always use BUSL-1.1.',
 };

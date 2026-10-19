@@ -8,6 +8,7 @@
 
   import ToggleRadio from './inputs/ToggleRadio.svelte';
   import HelpTooltip from './HelpTooltip.svelte';
+  import { error as errorTooltip } from './error-tooltip';
 
   import ChevronRight from './icons/ChevronRight.svelte';
   import ChevronDown from './icons/ChevronDown.svelte';
@@ -58,7 +59,8 @@
 <section class="controls-section">
   <h1>
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="items-center tooltip-container pr-2 flex justify-between">
+    <!-- The message renders like use:error does for decimals/premint: a red tooltip on the control. -->
+    <label class="items-center tooltip-container pr-2 flex justify-between" use:errorTooltip={error}>
       <div class="flex items-center">
         {#if type !== 'section'}
           <span class="mr-2">

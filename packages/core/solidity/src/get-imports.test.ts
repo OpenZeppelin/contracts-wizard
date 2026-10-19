@@ -94,7 +94,40 @@ test('erc721 auto increment uups', t => {
 test('can get imports for all combinations', t => {
   for (const { options } of generateSources('all')) {
     const c = buildGeneric(options);
-    getImports(c);
+    // ACE's Solidity is not bundled; projects install it from npm instead.
+    if ('chainlinkAce' in options && options.chainlinkAce) {
+      t.throws(() => getImports(c), { message: /Source for @chainlink\/ace\/.* not found/ });
+    } else {
+      getImports(c);
+    }
   }
   t.pass();
+});
+
+// Use the baseline ContractBuilder API to test packaging independently of feature generation.
+import { ContractBuilder } from './contract';
+import { getVersionedRemappings } from './get-versioned-remappings';
+
+test('ACE remappings use the ACE package version independently of OpenZeppelin', t => {
+  t.true(getVersionedRemappings({ chainlinkAce: true }).includes('@chainlink/ace/=@chainlink/ace@1.2.0/'));
+  t.false(getVersionedRemappings({ chainlinkAce: true }).some(p => /@chainlink\/ace@5\./.test(p)));
+});
+
+import bundledContracts from '../openzeppelin-contracts';
+
+test('ACE packaging preserves full license and additional grants in the source bundle', t => {
+  t.regex(bundledContracts.sources['@chainlink/ace/LICENSE'] ?? '', /Business Source License/);
+  t.truthy(bundledContracts.sources['@chainlink/ace/chainlink-ace-License-grants']);
+});
+
+test('ACE Solidity sources are not bundled; only its legal texts are', t => {
+  const aceSources = Object.keys(bundledContracts.sources).filter(p => p.startsWith('@chainlink/ace/'));
+  t.deepEqual(aceSources.sort(), ['@chainlink/ace/LICENSE', '@chainlink/ace/chainlink-ace-License-grants']);
+  const c = new ContractBuilder('ACEPackaging');
+  c.addImportOnly({
+    name: 'PolicyProtectedBase',
+    path: '@chainlink/ace/packages/policy-management/src/core/PolicyProtectedBase.sol',
+    transpiled: false,
+  });
+  t.throws(() => getImports(c), { message: /Source for .*PolicyProtectedBase\.sol not found/ });
 });
