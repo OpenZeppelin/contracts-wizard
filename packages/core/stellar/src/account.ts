@@ -145,7 +145,19 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
 
   if (opts.delegatedSigners) {
     signerArgs.push('delegated_signers');
-    c.addConstructorArgument({ name: 'delegated_signers', type: 'Vec<Address>' });
+    // The library rejects a delegated signer that is the account itself or the
+    // contract of an authorized context, but cannot detect this case.
+    c.addConstructorArgument({
+      name: 'delegated_signers',
+      type: 'Vec<Address>',
+      comment: [
+        'A delegated signer must not delegate its own authentication back to this',
+        'account, through `delegate_auth` (CAP-71) or by calling `require_auth` on',
+        'this account from its `__check_auth`, unless it is another smart account',
+        'built on OpenZeppelin Stellar Contracts. Otherwise, one of the two',
+        'accounts can be authorized without any key.',
+      ],
+    });
     signerLines.push(
       'for account in delegated_signers.iter() {',
       '    signers.push_back(Signer::Delegated(account));',
