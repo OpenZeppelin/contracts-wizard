@@ -42,7 +42,7 @@ export const stellarFungibleDescriptions = {
     'Whether to enable vote checkpoints and delegation for governance. Cannot be used with total supply tracking or a cap.',
   totalSupply:
     'Whether to track the total supply and expose it through a total_supply function. Every mint and burn then writes the same storage entry, which prevents them from executing in parallel. Cannot be used with votes.',
-  cap: 'The maximum total supply of the token, in token units. Leave empty for an uncapped token. Requires total supply tracking, which is then enabled automatically. Cannot be used with votes.',
+  cap: 'The maximum total supply of the token, in number of tokens. Leave empty for an uncapped token. Requires total supply tracking, which is then enabled automatically. Cannot be used with votes.',
 };
 
 export const stellarNonFungibleDescriptions = {
