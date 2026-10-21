@@ -16,6 +16,7 @@ import { printComposedContractType } from './utils/compose';
 import { pickKeys } from '@openzeppelin/wizard-common';
 
 const DEFAULT_DECIMALS = 7;
+const I128_MAX = (1n << 127n) - 1n;
 
 export const defaults: Required<FungibleOptions> = {
   name: 'MyToken',
@@ -249,6 +250,8 @@ function addCap(c: ContractBuilder, cap: string, decimals: bigint, explicitImple
   }
 
   const capAbsolute = toUint(getInitialSupply(cap, Number(decimals), 'cap'), 'cap', 'u128');
+  // `Capped::set_cap` takes an `i128`.
+  validateI128(capAbsolute, 'cap');
   if (capAbsolute === 0n) {
     throw new OptionsError({
       cap: 'Cap must be greater than 0',
@@ -340,6 +343,14 @@ function addBurnable(c: ContractBuilder, pausable: boolean, explicitImplementati
   }
 }
 
+function validateI128(value: bigint, field: string) {
+  if (value > I128_MAX) {
+    throw new OptionsError({
+      [field]: 'Value is greater than i128 max value',
+    });
+  }
+}
+
 export const premintPattern = /^\d*(?:\.\d*)?$/;
 
 function addPremint(c: ContractBuilder, amount: string, decimals: bigint, capAbsolute?: bigint) {
@@ -350,8 +361,9 @@ function addPremint(c: ContractBuilder, amount: string, decimals: bigint, capAbs
       });
     }
 
-    // TODO: handle signed int?
     const premintAbsolute = toUint(getInitialSupply(amount, Number(decimals)), 'premint', 'u128');
+    // `mint` takes an `i128`.
+    validateI128(premintAbsolute, 'premint');
 
     if (capAbsolute !== undefined && premintAbsolute > capAbsolute) {
       throw new OptionsError({

@@ -207,6 +207,66 @@ test('fungible invalid cap', async t => {
 
   error = t.throws(() => buildFungible({ name: 'MyToken', symbol: 'MTK', cap: '1.123', decimals: '2' }));
   t.is((error as OptionsError).messages.cap, 'Too many decimals');
+
+  // i128::MAX + 1
+  error = t.throws(() =>
+    buildFungible({ name: 'MyToken', symbol: 'MTK', cap: '170141183460469231731687303715884105728', decimals: '0' }),
+  );
+  t.is((error as OptionsError).messages.cap, 'Value is greater than i128 max value');
+
+  // u128::MAX + 1
+  error = t.throws(() =>
+    buildFungible({ name: 'MyToken', symbol: 'MTK', cap: '340282366920938463463374607431768211456', decimals: '0' }),
+  );
+  t.is((error as OptionsError).messages.cap, 'Value is greater than u128 max value');
+});
+
+test('fungible cap at i128 max', async t => {
+  const c = buildFungible({
+    name: 'MyToken',
+    symbol: 'MTK',
+    cap: '170141183460469231731687303715884105727',
+    decimals: '0',
+  });
+  t.true(printContract(c).includes('Capped::set_cap(e, 170141183460469231731687303715884105727);'));
+});
+
+test('fungible premint too large', async t => {
+  // i128::MAX + 1
+  let error = t.throws(() =>
+    buildFungible({
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '170141183460469231731687303715884105728',
+      decimals: '0',
+    }),
+  );
+  t.is((error as OptionsError).messages.premint, 'Value is greater than i128 max value');
+
+  // u128::MAX + 1
+  error = t.throws(() =>
+    buildFungible({
+      name: 'MyToken',
+      symbol: 'MTK',
+      premint: '340282366920938463463374607431768211456',
+      decimals: '0',
+    }),
+  );
+  t.is((error as OptionsError).messages.premint, 'Value is greater than u128 max value');
+});
+
+test('fungible premint at i128 max', async t => {
+  const c = buildFungible({
+    name: 'MyToken',
+    symbol: 'MTK',
+    premint: '170141183460469231731687303715884105727',
+    decimals: '0',
+  });
+  t.true(
+    printContract(c).includes(
+      '<Self as FungibleToken>::ContractType::mint(e, &recipient, 170141183460469231731687303715884105727);',
+    ),
+  );
 });
 
 testAPIEquivalence('fungible API default');
