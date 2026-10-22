@@ -25,6 +25,12 @@
   // and `opts.totalSupply` keeps the user's own choice for when the cap is cleared.
   $: capped = !!opts.cap;
   $: totalSupplyShown = opts.totalSupply || capped;
+
+  // Votes conflicts with Total Supply and Cap. Each side is disabled while only the other is selected, but both stay
+  // enabled once both are selected (e.g. by the AI assistant), so the conflict can be resolved from the controls.
+  $: votesDisabled = totalSupplyShown && !opts.votes;
+  $: totalSupplyDisabled = capped || (opts.votes && !opts.totalSupply);
+  $: capDisabled = opts.votes && !capped;
 </script>
 
 <section class="controls-section">
@@ -66,7 +72,13 @@
         Votes.
       </HelpTooltip>
     </span>
-    <input bind:value={opts.cap} use:error={errors?.cap} placeholder="No cap" pattern={premintPattern.source} />
+    <input
+      bind:value={opts.cap}
+      use:error={errors?.cap}
+      placeholder="No cap"
+      pattern={premintPattern.source}
+      disabled={capDisabled}
+    />
   </label>
 </section>
 
@@ -86,11 +98,11 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
-    <label class:checked={totalSupplyShown} class:disabled={capped} use:error={errors?.totalSupply}>
+    <label class:checked={totalSupplyShown} class:disabled={totalSupplyDisabled} use:error={errors?.totalSupply}>
       <input
         type="checkbox"
         checked={totalSupplyShown}
-        disabled={capped}
+        disabled={totalSupplyDisabled}
         on:change={e => (opts.totalSupply = e.currentTarget.checked)}
       />
       Total Supply
@@ -101,8 +113,8 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes} use:error={errors?.votes}>
-      <input type="checkbox" bind:checked={opts.votes} />
+    <label class:checked={opts.votes} class:disabled={votesDisabled} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} disabled={votesDisabled} />
       Votes
       <HelpTooltip>Adds vote checkpoints and delegation support. Incompatible with Total Supply and Cap.</HelpTooltip>
     </label>
