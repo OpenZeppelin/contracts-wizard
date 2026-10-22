@@ -32,7 +32,11 @@
     ]
   },
   "resolutions": {
-    "ethereum-cryptography": "^3.2.0"
+    "ethereum-cryptography": "^3.2.0",
+    "**/hardhat/adm-zip": "^0.6.1",
+    "**/hardhat/undici": "^6.27.0",
+    "serialize-javascript": "^7.0.3",
+    "tmp": "^0.2.6"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
