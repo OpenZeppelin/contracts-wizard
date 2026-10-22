@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.2.3 (2026-10-22)
+
+- Updated dependencies [[`e422196`](https://github.com/OpenZeppelin/contracts-wizard/commit/e42219629fc0d82ad0f77bca0865a6ed16ca4f04)]:
+  - @openzeppelin/wizard-stellar@0.7.0
+  - @openzeppelin/wizard-common@0.5.11
+
 ## 0.2.2 (2026-10-19)
 
 - Add Chainlink CCIP bridging and ACE options for Solidity ERC20, Stablecoin, and RWA. Contracts generated with ACE use the BUSL-1.1 license. ([#880](https://github.com/OpenZeppelin/contracts-wizard/pull/880))
