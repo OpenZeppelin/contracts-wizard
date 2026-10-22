@@ -21,14 +21,27 @@
 
   $: requireAccessControl = stablecoin.isAccessControlRequired(opts);
 
-  // The generator tracks the total supply whenever a cap is set, so the checkbox only shows it as checked
-  // and `opts.totalSupply` keeps the user's own choice for when the cap is cleared.
+  // The cap is checked against the total supply, so Total Supply is turned on while a cap is set, and the
+  // earlier choice is restored when the cap is cleared.
+  let wasCapped = !!opts.cap;
+  let totalSupplyBeforeCap = opts.totalSupply;
+  $: {
+    const isCapped = !!opts.cap;
+    if (isCapped && !wasCapped) {
+      totalSupplyBeforeCap = opts.totalSupply;
+    } else if (!isCapped && wasCapped) {
+      opts.totalSupply = totalSupplyBeforeCap;
+    }
+    if (isCapped && !opts.totalSupply) {
+      opts.totalSupply = true;
+    }
+    wasCapped = isCapped;
+  }
   $: capped = !!opts.cap;
-  $: totalSupplyShown = opts.totalSupply || capped;
 
   // Votes conflicts with Total Supply and Cap. Each side is disabled while only the other is selected, but both stay
   // enabled once both are selected (e.g. by the AI assistant), so the conflict can be resolved from the controls.
-  $: votesDisabled = totalSupplyShown && !opts.votes;
+  $: votesDisabled = opts.totalSupply && !opts.votes;
   $: totalSupplyDisabled = capped || (opts.votes && !opts.totalSupply);
   $: capDisabled = opts.votes && !capped;
 </script>
@@ -98,13 +111,8 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
-    <label class:checked={totalSupplyShown} class:disabled={totalSupplyDisabled} use:error={errors?.totalSupply}>
-      <input
-        type="checkbox"
-        checked={totalSupplyShown}
-        disabled={totalSupplyDisabled}
-        on:change={e => (opts.totalSupply = e.currentTarget.checked)}
-      />
+    <label class:checked={opts.totalSupply} class:disabled={totalSupplyDisabled} use:error={errors?.totalSupply}>
+      <input type="checkbox" bind:checked={opts.totalSupply} disabled={totalSupplyDisabled} />
       Total Supply
       <HelpTooltip>
         Tracks the amount of tokens in circulation and exposes it through <code>total_supply</code>. Every mint and burn
