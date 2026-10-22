@@ -20,9 +20,10 @@
 
   $: requireAccessControl = fungible.isAccessControlRequired(opts);
 
-  // The cap is checked against the total supply, which then has to be tracked.
-  $: if (opts.cap) opts.totalSupply = true;
+  // The generator tracks the total supply whenever a cap is set, so the checkbox only shows it as checked
+  // and `opts.totalSupply` keeps the user's own choice for when the cap is cleared.
   $: capped = !!opts.cap;
+  $: totalSupplyShown = opts.totalSupply || capped;
 </script>
 
 <section class="controls-section">
@@ -64,13 +65,7 @@
         Votes.
       </HelpTooltip>
     </span>
-    <input
-      bind:value={opts.cap}
-      use:error={errors?.cap}
-      placeholder="No cap"
-      pattern={premintPattern.source}
-      disabled={opts.votes}
-    />
+    <input bind:value={opts.cap} use:error={errors?.cap} placeholder="No cap" pattern={premintPattern.source} />
   </label>
 </section>
 
@@ -90,8 +85,13 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.totalSupply} class:disabled={opts.votes || capped} use:error={errors?.totalSupply}>
-      <input type="checkbox" bind:checked={opts.totalSupply} disabled={opts.votes || capped} />
+    <label class:checked={totalSupplyShown} class:disabled={capped} use:error={errors?.totalSupply}>
+      <input
+        type="checkbox"
+        checked={totalSupplyShown}
+        disabled={capped}
+        on:change={e => (opts.totalSupply = e.currentTarget.checked)}
+      />
       Total Supply
       <HelpTooltip>
         Tracks the amount of tokens in circulation and exposes it through <code>total_supply</code>. Every mint and burn
@@ -100,8 +100,8 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes} class:disabled={opts.totalSupply} use:error={errors?.votes}>
-      <input type="checkbox" bind:checked={opts.votes} disabled={opts.totalSupply} />
+    <label class:checked={opts.votes} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} />
       Votes
       <HelpTooltip>
         Adds vote checkpoints and delegation support for governance usage. Incompatible with Total Supply and Cap.
