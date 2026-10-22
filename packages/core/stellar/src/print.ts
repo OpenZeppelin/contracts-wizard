@@ -139,7 +139,7 @@ function splitLongLineInner(line: string): Lines[] {
   const lines = [];
   if (line.length > MAX_USE_CLAUSE_LINE_LENGTH) {
     const max_accessible_string = line.slice(0, MAX_USE_CLAUSE_LINE_LENGTH);
-    const lastCommaIndex = max_accessible_string.lastIndexOf(',');
+    const lastCommaIndex = lastTopLevelCommaIndex(max_accessible_string);
     if (lastCommaIndex !== -1) {
       lines.push(TAB + max_accessible_string.slice(0, lastCommaIndex + 1));
       lines.push(...splitLongLineInner(line.slice(lastCommaIndex + 2)));
@@ -150,6 +150,19 @@ function splitLongLineInner(line: string): Lines[] {
     lines.push(TAB + line);
   }
   return lines;
+}
+
+// Prefers breaking between imports over breaking inside a nested group like `total_supply::{A, B}`.
+function lastTopLevelCommaIndex(line: string): number {
+  let depth = 0;
+  let lastIndex = -1;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '{') depth++;
+    else if (char === '}') depth--;
+    else if (char === ',' && depth === 0) lastIndex = i;
+  }
+  return lastIndex !== -1 ? lastIndex : line.lastIndexOf(',');
 }
 
 function sortUseClauses(contract: Contract): UseClause[] {
