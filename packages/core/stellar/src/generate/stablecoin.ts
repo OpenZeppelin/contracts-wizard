@@ -11,6 +11,8 @@ const blueprint = {
   decimals: ['7', '18'],
   burnable: booleans,
   votes: booleans,
+  totalSupply: booleans,
+  cap: ['', '1000'],
   pausable: booleans,
   upgradeable: booleans,
   mintable: booleans,

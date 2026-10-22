@@ -147,20 +147,56 @@ testStablecoin('stablecoin explicit trait implementations', {
   explicitImplementations: true,
 });
 
-test('throws error when votes and limitations are both enabled', t => {
+testStablecoin('stablecoin allowlist votes', {
+  limitations: 'allowlist',
+  votes: true,
+  burnable: true,
+  mintable: true,
+});
+
+testStablecoin('stablecoin blocklist votes explicit trait implementations', {
+  limitations: 'blocklist',
+  votes: true,
+  burnable: true,
+  explicitImplementations: true,
+});
+
+testStablecoin('stablecoin allowlist total supply', {
+  limitations: 'allowlist',
+  totalSupply: true,
+  burnable: true,
+  pausable: true,
+});
+
+testStablecoin('stablecoin blocklist capped', {
+  limitations: 'blocklist',
+  cap: '1000000',
+  premint: '2000',
+  mintable: true,
+});
+
+testStablecoin('stablecoin allowlist capped explicit trait implementations', {
+  limitations: 'allowlist',
+  cap: '1000000',
+  burnable: true,
+  explicitImplementations: true,
+});
+
+test('throws error when votes and total supply are both enabled', t => {
   const error = t.throws(
     () =>
       buildStablecoin({
         name: 'MyStablecoin',
         symbol: 'MST',
         votes: true,
+        totalSupply: true,
         limitations: 'allowlist',
       }),
     { instanceOf: OptionsError },
   );
 
-  t.is(error?.messages.votes, 'Votes extension cannot be used with stablecoin limitations');
-  t.is(error?.messages.limitations, 'Stablecoin limitations cannot be used with Votes extension');
+  t.is(error?.messages.votes, 'Votes extension cannot be used with Total Supply extension');
+  t.is(error?.messages.totalSupply, 'Total Supply extension cannot be used with Votes extension');
 });
 
 testAPIEquivalence('stablecoin API default');

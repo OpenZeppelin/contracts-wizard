@@ -117,6 +117,7 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('soroban_sdk', 'contract');
   c.addUseClause('soroban_sdk', 'contractimpl');
   c.addUseClause('soroban_sdk', 'Address');
+  c.addUseClause('soroban_sdk', 'BytesN');
   c.addUseClause('soroban_sdk', 'Env');
   c.addUseClause('soroban_sdk', 'Map');
   c.addUseClause('soroban_sdk', 'String');
@@ -126,10 +127,11 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
   c.addUseClause('soroban_sdk::auth', 'CustomAccountInterface');
   c.addUseClause('soroban_sdk::crypto', 'Hash');
   c.addUseClause('stellar_accounts::smart_account', 'self', { alias: 'smart_account' });
+  // `ContextRule` and `AuthDigestPreimage`/`BytesN` appear in the signatures of
+  // `SmartAccount` methods (e.g. `auth_digest`), which the contracttrait macro
+  // needs in scope even though the generated code never names them.
+  c.addUseClause('stellar_accounts::smart_account', 'AuthDigestPreimage');
   c.addUseClause('stellar_accounts::smart_account', 'AuthPayload');
-  // `ContextRule` is the return type of several `SmartAccount` methods, which the
-  // contracttrait macro needs in scope even though the generated code never
-  // names it.
   c.addUseClause('stellar_accounts::smart_account', 'ContextRule');
   c.addUseClause('stellar_accounts::smart_account', 'ContextRuleType');
   c.addUseClause('stellar_accounts::smart_account', 'Signer');
@@ -143,7 +145,19 @@ function addBase(c: ContractBuilder, opts: Required<AccountOptions>) {
 
   if (opts.delegatedSigners) {
     signerArgs.push('delegated_signers');
-    c.addConstructorArgument({ name: 'delegated_signers', type: 'Vec<Address>' });
+    // The library rejects a delegated signer that is the account itself or the
+    // contract of an authorized context, but cannot detect this case.
+    c.addConstructorArgument({
+      name: 'delegated_signers',
+      type: 'Vec<Address>',
+      comment: [
+        'A delegated signer must not delegate its own authentication back to this',
+        'account, through `delegate_auth` (CAP-71) or by calling `require_auth` on',
+        'this account from its `__check_auth`, unless it is another smart account',
+        'built on OpenZeppelin Stellar Contracts. Otherwise, one of the two',
+        'accounts can be authorized without any key.',
+      ],
+    });
     signerLines.push(
       'for account in delegated_signers.iter() {',
       '    signers.push_back(Signer::Delegated(account));',

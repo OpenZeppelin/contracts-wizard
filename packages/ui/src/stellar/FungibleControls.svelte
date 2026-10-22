@@ -19,6 +19,10 @@
   export let errors: undefined | OptionsErrorMessages;
 
   $: requireAccessControl = fungible.isAccessControlRequired(opts);
+
+  // The cap is checked against the total supply, which then has to be tracked.
+  $: if (opts.cap) opts.totalSupply = true;
+  $: capped = !!opts.cap;
 </script>
 
 <section class="controls-section">
@@ -51,6 +55,23 @@
     </span>
     <input bind:value={opts.premint} use:error={errors?.premint} placeholder="0" pattern={premintPattern.source} />
   </label>
+
+  <label class="labeled-input">
+    <span class="flex justify-between pr-2">
+      Cap
+      <HelpTooltip>
+        Maximum total supply of the token. Leave empty for an uncapped token. Requires Total Supply. Incompatible with
+        Votes.
+      </HelpTooltip>
+    </span>
+    <input
+      bind:value={opts.cap}
+      use:error={errors?.cap}
+      placeholder="No cap"
+      pattern={premintPattern.source}
+      disabled={opts.votes}
+    />
+  </label>
 </section>
 
 <section class="controls-section">
@@ -69,10 +90,22 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes}>
-      <input type="checkbox" bind:checked={opts.votes} />
+    <label class:checked={opts.totalSupply} class:disabled={opts.votes || capped} use:error={errors?.totalSupply}>
+      <input type="checkbox" bind:checked={opts.totalSupply} disabled={opts.votes || capped} />
+      Total Supply
+      <HelpTooltip>
+        Tracks the amount of tokens in circulation and exposes it through <code>total_supply</code>. Every mint and burn
+        then writes the same storage entry, so they cannot execute in parallel. Required by Cap. Incompatible with
+        Votes.
+      </HelpTooltip>
+    </label>
+
+    <label class:checked={opts.votes} class:disabled={opts.totalSupply} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} disabled={opts.totalSupply} />
       Votes
-      <HelpTooltip>Adds vote checkpoints and delegation support for governance usage.</HelpTooltip>
+      <HelpTooltip>
+        Adds vote checkpoints and delegation support for governance usage. Incompatible with Total Supply and Cap.
+      </HelpTooltip>
     </label>
 
     <label class:checked={opts.pausable}>
