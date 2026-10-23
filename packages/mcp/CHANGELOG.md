@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 0.8.1 (2026-10-23)
+
+- Update `@openzeppelin/confidential-contracts` dependency to 0.3.2. ([#889](https://github.com/OpenZeppelin/contracts-wizard/pull/889))
+- Update `@modelcontextprotocol/sdk` dependency to `^1.32.1`. ([#889](https://github.com/OpenZeppelin/contracts-wizard/pull/889))
+- Stellar: Enable the Votes, Total Supply and Cap controls when conflicting options are set together, so the conflict can be resolved from the controls. Clearing the Cap restores the previous Total Supply selection. ([#886](https://github.com/OpenZeppelin/contracts-wizard/pull/886))
+- Updated dependencies [[`3bbeddb`](https://github.com/OpenZeppelin/contracts-wizard/commit/3bbeddbe0c90d20fd943e2de04284b59aada1dd3)]:
+  - @openzeppelin/wizard-confidential@0.1.3
+
 ## 0.8.0 (2026-10-22)
 
 - Stellar: Update Stellar Contracts to v0.8.0 and Soroban SDK to v28.0.0. ([#878](https://github.com/OpenZeppelin/contracts-wizard/pull/878))

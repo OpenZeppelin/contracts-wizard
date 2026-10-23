@@ -17,5 +17,12 @@
     "hardhat": "^2.26.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.0.0"
+  },
+  "overrides": {
+    "adm-zip": "^0.6.1",
+    "axios": "^1.20.0",
+    "serialize-javascript": "^7.0.3",
+    "tmp": "^0.2.6",
+    "undici": "^6.28.1"
   }
 }

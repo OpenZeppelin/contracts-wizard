@@ -1,6 +1,6 @@
 {
   "name": "ui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "scripts": {
     "prepare": "echo \"Nothing to prepare\"",
@@ -14,7 +14,7 @@
     "test": "ava"
   },
   "devDependencies": {
-    "@openzeppelin/confidential-contracts": "^0.3.1",
+    "@openzeppelin/confidential-contracts": "^0.3.2",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.8",
     "@rollup/plugin-json": "^6.1.0",

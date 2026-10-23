@@ -18,5 +18,10 @@
   "dependencies": {
     "@openzeppelin/tron-contracts": "^5.6.0",
     "@openzeppelin/tron-contracts-upgradeable": "^5.6.0"
+  },
+  "overrides": {
+    "axios": "^1.20.0",
+    "serialize-javascript": "^7.0.3",
+    "ws": "^8.21.0"
   }
 }

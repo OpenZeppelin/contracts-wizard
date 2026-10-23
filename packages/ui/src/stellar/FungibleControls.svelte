@@ -20,9 +20,29 @@
 
   $: requireAccessControl = fungible.isAccessControlRequired(opts);
 
-  // The cap is checked against the total supply, which then has to be tracked.
-  $: if (opts.cap) opts.totalSupply = true;
+  // The cap is checked against the total supply, so Total Supply is turned on while a cap is set, and the
+  // earlier choice is restored when the cap is cleared.
+  let wasCapped = !!opts.cap;
+  let totalSupplyBeforeCap = opts.totalSupply;
+  $: {
+    const isCapped = !!opts.cap;
+    if (isCapped && !wasCapped) {
+      totalSupplyBeforeCap = opts.totalSupply;
+    } else if (!isCapped && wasCapped) {
+      opts.totalSupply = totalSupplyBeforeCap;
+    }
+    if (isCapped && !opts.totalSupply) {
+      opts.totalSupply = true;
+    }
+    wasCapped = isCapped;
+  }
   $: capped = !!opts.cap;
+
+  // Votes conflicts with Total Supply and Cap. Each side is disabled while only the other is selected, but both stay
+  // enabled once both are selected (e.g. by the AI assistant), so the conflict can be resolved from the controls.
+  $: votesDisabled = opts.totalSupply && !opts.votes;
+  $: totalSupplyDisabled = capped || (opts.votes && !opts.totalSupply);
+  $: capDisabled = opts.votes && !capped;
 </script>
 
 <section class="controls-section">
@@ -69,7 +89,7 @@
       use:error={errors?.cap}
       placeholder="No cap"
       pattern={premintPattern.source}
-      disabled={opts.votes}
+      disabled={capDisabled}
     />
   </label>
 </section>
@@ -90,8 +110,8 @@
       <HelpTooltip>Token holders will be able to destroy their tokens.</HelpTooltip>
     </label>
 
-    <label class:checked={opts.totalSupply} class:disabled={opts.votes || capped} use:error={errors?.totalSupply}>
-      <input type="checkbox" bind:checked={opts.totalSupply} disabled={opts.votes || capped} />
+    <label class:checked={opts.totalSupply} class:disabled={totalSupplyDisabled} use:error={errors?.totalSupply}>
+      <input type="checkbox" bind:checked={opts.totalSupply} disabled={totalSupplyDisabled} />
       Total Supply
       <HelpTooltip>
         Tracks the amount of tokens in circulation and exposes it through <code>total_supply</code>. Every mint and burn
@@ -100,8 +120,8 @@
       </HelpTooltip>
     </label>
 
-    <label class:checked={opts.votes} class:disabled={opts.totalSupply} use:error={errors?.votes}>
-      <input type="checkbox" bind:checked={opts.votes} disabled={opts.totalSupply} />
+    <label class:checked={opts.votes} class:disabled={votesDisabled} use:error={errors?.votes}>
+      <input type="checkbox" bind:checked={opts.votes} disabled={votesDisabled} />
       Votes
       <HelpTooltip>
         Adds vote checkpoints and delegation support for governance usage. Incompatible with Total Supply and Cap.
