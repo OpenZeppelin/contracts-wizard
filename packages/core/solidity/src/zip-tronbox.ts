@@ -314,7 +314,7 @@ This project demonstrates a basic TronBox use case. It comes with a contract gen
 
 ## Prerequisites
 
-- [Node.js 18+](https://nodejs.org/en/download/)
+- [Node.js 20+](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/get-docker/) — runs the local TRON Runtime Environment (\`tronbox/tre\`)
 - Install [TronBox](https://tronbox.io/docs/) globally${
     c.upgradeable ? ' (version 4.8.0 or newer)' : ''
