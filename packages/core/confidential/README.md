@@ -35,7 +35,7 @@ Returns an array of remappings that map unversioned import prefixes to versioned
 ```js
 [
   "@openzeppelin/contracts/=@openzeppelin/contracts@5.6.0/",
-  "@openzeppelin/confidential-contracts/=@openzeppelin/confidential-contracts@0.3.1/",
+  "@openzeppelin/confidential-contracts/=@openzeppelin/confidential-contracts@0.3.2/",
   "@fhevm/solidity/=@fhevm/solidity@0.9.1/"
 ]
 ```
