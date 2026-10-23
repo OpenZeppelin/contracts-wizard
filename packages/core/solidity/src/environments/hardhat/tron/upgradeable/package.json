@@ -24,6 +24,7 @@
     "adm-zip": "^0.6.1",
     "axios": "^1.20.0",
     "serialize-javascript": "^7.0.3",
-    "tmp": "^0.2.6"
+    "tmp": "^0.2.6",
+    "undici": "^6.28.1"
   }
 }
