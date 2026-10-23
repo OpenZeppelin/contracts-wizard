@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.1.3 (2026-10-23)
+
+- Update `@openzeppelin/confidential-contracts` dependency to 0.3.2. ([#889](https://github.com/OpenZeppelin/contracts-wizard/pull/889))
+
 ## 0.1.2 (2026-06-11)
 
 - Add optional `decimals` to `erc7984`, which overrides `decimals()` when set to a non-default value. Defaults to 6 as before, with a maximum of 10 since confidential token amounts are represented as uint64. Incompatible with `wrappable`, which derives its decimals from the underlying token (capped at 6). ([#812](https://github.com/OpenZeppelin/contracts-wizard/pull/812))
