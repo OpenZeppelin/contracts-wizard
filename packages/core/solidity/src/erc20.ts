@@ -334,7 +334,8 @@ export function calculatePremint(amount: string): PremintCalculation | undefined
   if (Number(integer + decimals) > 0) {
     const decimalPlace = decimals.length - exponent;
     const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
-    const units = integer + decimals + zeroes;
+    // Solidity rejects number literals with leading zeros, such as `05` from `0.05`
+    const units = stripLeadingZeros(integer + decimals) + zeroes;
     const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
 
     return { units, exp, decimalPlace };
