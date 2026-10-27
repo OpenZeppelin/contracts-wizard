@@ -4,6 +4,7 @@ import { governor } from '.';
 import type { GovernorOptions } from './governor';
 import { buildGovernor } from './governor';
 import { printContract } from './print';
+import type { OptionsError } from './error';
 
 function testGovernor(title: string, opts: Partial<GovernorOptions>) {
   test(title, t => {
@@ -184,4 +185,35 @@ test('API assert defaults', async t => {
 test('API isAccessControlRequired', async t => {
   t.is(governor.isAccessControlRequired({ upgradeable: 'uups' }), false);
   t.is(governor.isAccessControlRequired({}), false);
+});
+
+function printQuorum(opts: Partial<GovernorOptions>): string {
+  const c = buildGovernor({
+    name: 'MyGovernor',
+    delay: '1 week',
+    period: '1 week',
+    quorumMode: 'absolute',
+    ...opts,
+  });
+  return printContract(c);
+}
+
+test('governor absolute quorum generates valid number literals', t => {
+  t.true(printQuorum({ quorumAbsolute: '1e3' }).includes('return 1e21;'));
+  t.true(printQuorum({ quorumAbsolute: '1.5e3', decimals: 0 }).includes('return 1.5e3;'));
+  t.true(printQuorum({ quorumAbsolute: '2e2', votes: 'erc721votes' }).includes('return 2e2;'));
+  t.true(printQuorum({ quorumAbsolute: '010' }).includes('return 10e18;'));
+  t.true(printQuorum({ quorumAbsolute: '0.5' }).includes('return 0.5e18;'));
+  t.true(printQuorum({ quorumAbsolute: '5', decimals: 0 }).includes('return 5;'));
+});
+
+test('governor absolute quorum rejects fractional votes', t => {
+  for (const opts of [
+    { quorumAbsolute: '1.5', votes: 'erc721votes' as const },
+    { quorumAbsolute: '1.5', decimals: 0 },
+    { quorumAbsolute: '0.0000001', decimals: 6 },
+  ]) {
+    const error = t.throws(() => printQuorum(opts));
+    t.is((error as OptionsError).messages.quorumAbsolute, 'Too many decimals');
+  }
 });

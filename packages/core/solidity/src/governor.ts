@@ -297,20 +297,35 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
     c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
     c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
   } else if (opts.quorumMode === 'absolute') {
-    if (!numberPattern.test(opts.quorumAbsolute)) {
-      throw new OptionsError({
-        quorumAbsolute: 'Not a valid number',
-      });
-    }
-
-    const returnStatement =
-      opts.decimals === 0 || opts.votes === 'erc721votes'
-        ? `return ${opts.quorumAbsolute};`
-        : `return ${opts.quorumAbsolute}e${opts.decimals};`;
+    const returnStatement = `return ${getQuorumAbsolute(opts)};`;
 
     c.setFunctionBody([returnStatement], functions.quorum, 'pure');
     c.addOverride(Governor, functions.quorum);
   }
+}
+
+function getQuorumAbsolute({ quorumAbsolute, decimals, votes }: Required<GovernorOptions>): string {
+  const m = quorumAbsolute.match(numberPattern);
+  if (!m) {
+    throw new OptionsError({
+      quorumAbsolute: 'Not a valid number',
+    });
+  }
+
+  // Solidity rejects number literals with leading zeros and allows only one exponent.
+  const integer = (m[1] ?? '').replace(/^0+(?=\d)/, '');
+  const fraction = m[2] ?? '';
+  const exponent = Number(m[3] ?? 0) + (decimals === 0 || votes === 'erc721votes' ? 0 : decimals);
+
+  // The quorum is a whole number of votes.
+  if (fraction.replace(/0+$/, '').length > exponent) {
+    throw new OptionsError({
+      quorumAbsolute: 'Too many decimals',
+    });
+  }
+
+  const mantissa = fraction === '' ? integer : `${integer}.${fraction}`;
+  return exponent === 0 ? mantissa : `${mantissa}e${exponent}`;
 }
 
 const timelockModules = {
