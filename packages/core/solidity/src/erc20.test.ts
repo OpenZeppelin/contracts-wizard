@@ -165,6 +165,13 @@ test('calculatePremint strips redundant zeros', t => {
   t.deepEqual(calculatePremint('0.0'), calculatePremint('0'));
 });
 
+test('calculatePremint strips leading fractional zeros (no octal literals)', t => {
+  t.deepEqual(calculatePremint('0.05'), { units: '5', exp: '(decimals() - 2)', decimalPlace: 2 });
+  t.deepEqual(calculatePremint('0.001'), { units: '1', exp: '(decimals() - 3)', decimalPlace: 3 });
+  t.deepEqual(calculatePremint('0.001e1'), { units: '1', exp: '(decimals() - 2)', decimalPlace: 2 });
+  t.deepEqual(calculatePremint('0.010'), { units: '1', exp: '(decimals() - 2)', decimalPlace: 2 });
+});
+
 testERC20('erc20 mintable', {
   mintable: true,
   access: 'ownable',

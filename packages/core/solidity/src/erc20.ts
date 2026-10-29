@@ -334,7 +334,9 @@ export function calculatePremint(amount: string): PremintCalculation | undefined
   if (Number(integer + decimals) > 0) {
     const decimalPlace = decimals.length - exponent;
     const zeroes = new Array(Math.max(0, -decimalPlace)).fill('0').join('');
-    const units = integer + decimals + zeroes;
+    // Strip leading zeros so fractional values like 0.05 become `5`, not `05`
+    // (Solidity rejects leading-zero decimals as octal).
+    const units = stripLeadingZeros(integer + decimals + zeroes);
     const exp = decimalPlace <= 0 ? 'decimals()' : `(decimals() - ${decimalPlace})`;
 
     return { units, exp, decimalPlace };
