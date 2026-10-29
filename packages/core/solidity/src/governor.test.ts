@@ -2,7 +2,8 @@ import test from 'ava';
 import { governor } from '.';
 
 import type { GovernorOptions } from './governor';
-import { buildGovernor } from './governor';
+import { buildGovernor, formatQuorumAbsolute } from './governor';
+import { OptionsError } from './error';
 import { printContract } from './print';
 
 function testGovernor(title: string, opts: Partial<GovernorOptions>) {
@@ -184,4 +185,34 @@ test('API assert defaults', async t => {
 test('API isAccessControlRequired', async t => {
   t.is(governor.isAccessControlRequired({ upgradeable: 'uups' }), false);
   t.is(governor.isAccessControlRequired({}), false);
+});
+
+
+test('formatQuorumAbsolute folds scientific notation into token decimals', t => {
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '1e3', decimals: 18, votes: 'erc20votes' }), '1e21');
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '1', decimals: 18, votes: 'erc20votes' }), '1e18');
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '010', decimals: 18, votes: 'erc20votes' }), '10e18');
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '0.5', decimals: 18, votes: 'erc20votes' }), '5e17');
+});
+
+test('formatQuorumAbsolute strips leading zeros for whole-vote quorums', t => {
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '010', decimals: 0, votes: 'erc20votes' }), '10');
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '1e3', decimals: 0, votes: 'erc20votes' }), '1000');
+  t.is(formatQuorumAbsolute({ quorumAbsolute: '5', decimals: 0, votes: 'erc721votes' }), '5');
+});
+
+test('formatQuorumAbsolute rejects fractional whole-vote quorums', t => {
+  const error = t.throws(
+    () => formatQuorumAbsolute({ quorumAbsolute: '1.5', decimals: 0, votes: 'erc721votes' }),
+    { instanceOf: OptionsError },
+  );
+  t.is((error as OptionsError).messages.quorumAbsolute, 'Too many decimals');
+});
+
+test('formatQuorumAbsolute rejects invalid numbers', t => {
+  const error = t.throws(
+    () => formatQuorumAbsolute({ quorumAbsolute: 'abc', decimals: 18, votes: 'erc20votes' }),
+    { instanceOf: OptionsError },
+  );
+  t.is((error as OptionsError).messages.quorumAbsolute, 'Not a valid number');
 });

@@ -297,20 +297,78 @@ function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
     c.addParent(GovernorVotesQuorumFraction, [quorumFractionNumerator]);
     c.addOverride(GovernorVotesQuorumFraction, functions.quorum);
   } else if (opts.quorumMode === 'absolute') {
-    if (!numberPattern.test(opts.quorumAbsolute)) {
-      throw new OptionsError({
-        quorumAbsolute: 'Not a valid number',
-      });
-    }
-
-    const returnStatement =
-      opts.decimals === 0 || opts.votes === 'erc721votes'
-        ? `return ${opts.quorumAbsolute};`
-        : `return ${opts.quorumAbsolute}e${opts.decimals};`;
+    const returnStatement = `return ${formatQuorumAbsolute(opts)};`;
 
     c.setFunctionBody([returnStatement], functions.quorum, 'pure');
     c.addOverride(Governor, functions.quorum);
   }
+}
+
+/**
+ * Normalize a Governor absolute quorum into a Solidity uint256 literal.
+ *
+ * - Folds a trailing scientific `eN` into the token-decimals exponent so
+ *   `1e3` with 18 decimals becomes `1e21` instead of the invalid `1e3e18`.
+ * - Strips leading zeros so `010` becomes `10e18` (Solidity rejects octals).
+ * - Rejects a fractional quorum when votes have no decimals (`erc721votes`
+ *   or `decimals === 0`), matching premint's "Too many decimals" check.
+ */
+export function formatQuorumAbsolute(
+  opts: Pick<Required<GovernorOptions>, 'quorumAbsolute' | 'decimals' | 'votes'>,
+): string {
+  const m = opts.quorumAbsolute.match(numberPattern);
+  if (!m) {
+    throw new OptionsError({
+      quorumAbsolute: 'Not a valid number',
+    });
+  }
+
+  const integerDigits = m[1] ?? '';
+  const fractionDigits = m[2] ?? '';
+  const sciExp = Number(m[3] ?? 0);
+  const wholeVotes = opts.decimals === 0 || opts.votes === 'erc721votes';
+
+  // Combine integer + fraction digits, then shift by sciExp - fractionLength.
+  const digits = integerDigits + fractionDigits;
+  const shift = sciExp - fractionDigits.length;
+
+  let significand: string;
+  let exp: number;
+
+  if (wholeVotes) {
+    // Must resolve to a whole number of votes with no leftover fraction.
+    if (shift >= 0) {
+      significand = stripLeadingZeros(digits + '0'.repeat(shift)) || '0';
+      exp = 0;
+    } else {
+      const cut = digits.length + shift;
+      if (cut < 0 || /[1-9]/.test(digits.slice(Math.max(0, cut)))) {
+        throw new OptionsError({
+          quorumAbsolute: 'Too many decimals',
+        });
+      }
+      significand = stripLeadingZeros(digits.slice(0, cut)) || '0';
+      exp = 0;
+    }
+  } else {
+    // Token decimals absorb the fractional part: final exp = decimals + shift.
+    exp = opts.decimals + shift;
+    if (exp < 0) {
+      throw new OptionsError({
+        quorumAbsolute: 'Too many decimals',
+      });
+    }
+    significand = stripLeadingZeros(digits) || '0';
+  }
+
+  if (exp === 0) {
+    return significand;
+  }
+  return `${significand}e${exp}`;
+}
+
+function stripLeadingZeros(value: string): string {
+  return value.replace(/^0+/, '');
 }
 
 const timelockModules = {
