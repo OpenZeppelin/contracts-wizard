@@ -7,6 +7,7 @@ import { upgradeableName } from './options';
 import { setInfo } from './set-info';
 import { addSigner, signerFunctions, signers, type SignerOptions } from './signer';
 import { setUpgradeableAccount } from './set-upgradeable';
+import { validateSolidityString } from './utils/sanitize';
 
 export const defaults: Required<AccountOptions> = {
   ...commonDefaults,
@@ -54,6 +55,8 @@ export function printAccount(opts: AccountOptions = defaults): string {
 
 export function buildAccount(opts: AccountOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
 
   allOpts.access = false; // Access control options are not used for Account
 

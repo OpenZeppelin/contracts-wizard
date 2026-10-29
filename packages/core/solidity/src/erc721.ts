@@ -15,6 +15,7 @@ import type { ClockMode } from './set-clock-mode';
 import { clockModeDefault, setClockMode } from './set-clock-mode';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 import { addCrosschainLinked } from './set-crosschain-linked';
+import { validateSolidityString } from './utils/sanitize';
 
 export const crossChainBridgingOptions = [false, 'erc7786native'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -84,6 +85,9 @@ export function isAccessControlRequired(opts: Partial<ERC721Options>): boolean {
 
 export function buildERC721(opts: ERC721Options): Contract {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
+  validateSolidityString(allOpts.symbol, 'symbol');
 
   const c = new ContractBuilder(allOpts.name);
 

@@ -8,6 +8,7 @@ import {
   ContractBuilder,
   OptionsError,
   requireAccessControl,
+  validateSolidityString,
 } from '@openzeppelin/wizard';
 import type { BaseFunction, Contract, CommonOptions, ReferencedContract } from '@openzeppelin/wizard';
 import { printContract } from './print';
@@ -114,6 +115,12 @@ export function buildHooks(opts: HooksOptions): Contract {
 
   // Validate inputs
   validateInputs(allOpts);
+  validateSolidityString(allOpts.name, 'name');
+  if (allOpts.shares) {
+    validateSolidityString(allOpts.shares.name ?? '', 'shares.name');
+    validateSolidityString(allOpts.shares.symbol ?? '', 'shares.symbol');
+    validateSolidityString(allOpts.shares.uri ?? '', 'shares.uri');
+  }
 
   const c = new ContractBuilder(allOpts.name);
 

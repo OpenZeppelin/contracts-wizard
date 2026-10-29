@@ -1,5 +1,6 @@
 import test from 'ava';
-import { stringifyUnicodeSafe } from './sanitize';
+import { stringifyUnicodeSafe, validateSolidityString } from './sanitize';
+import { OptionsError } from '../error';
 
 test('stringifyUnicodeSafe', t => {
   const cases = [
@@ -87,5 +88,36 @@ test('stringifyUnicodeSafe', t => {
 
   for (const { input, expected, description } of cases) {
     t.is(stringifyUnicodeSafe(input), expected, description);
+  }
+});
+
+test('validateSolidityString rejects characters that cannot round-trip', t => {
+  const cases = [
+    { input: '\x00', description: 'NUL' },
+    { input: '\x08', description: 'backspace' },
+    { input: '\t', description: 'tab' },
+    { input: '\n', description: 'LF' },
+    { input: '\x0b', description: 'VT' },
+    { input: '\x0c', description: 'FF' },
+    { input: '\r', description: 'CR' },
+    { input: '\x1f', description: 'unit separator (last ASCII control)' },
+    { input: '\x7f', description: 'DEL' },
+    { input: '\u0085', description: 'NEL (Solidity line terminator)' },
+    { input: '\u2028', description: 'LS' },
+    { input: '\u2029', description: 'PS' },
+    { input: String.fromCharCode(0xd800), description: 'lone high surrogate' },
+    { input: String.fromCharCode(0xdfff), description: 'lone low surrogate' },
+  ];
+  for (const { input, description } of cases) {
+    const error = t.throws(() => validateSolidityString(input, 'name'), {
+      instanceOf: OptionsError,
+    }, description);
+    t.truthy(error?.messages.name, description);
+  }
+});
+
+test('validateSolidityString accepts printable and ordinary unicode', t => {
+  for (const input of ['My Token', 'MTK', 'https://example.com', 'é', '😀', '']) {
+    t.notThrows(() => validateSolidityString(input, 'name'), input || '(empty)');
   }
 });

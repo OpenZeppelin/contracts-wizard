@@ -64,3 +64,4 @@ export {
   TRON_SOLIDITY_VERSION,
   TRON_CONTRACTS_VERSION,
 } from './utils/transform-tron';
+export { stringifyUnicodeSafe, validateSolidityString } from './utils/sanitize';

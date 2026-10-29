@@ -7,6 +7,7 @@ import { setInfo } from './set-info';
 import { setAccessControl } from './set-access-control';
 import { addPausable } from './add-pausable';
 import { printContract } from './print';
+import { validateSolidityString } from './utils/sanitize';
 
 export interface CustomOptions extends CommonOptions {
   name: string;
@@ -39,6 +40,8 @@ export function isAccessControlRequired(opts: Partial<CustomOptions>): boolean {
 
 export function buildCustom(opts: CustomOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
 
   const c = new ContractBuilder(allOpts.name);
 

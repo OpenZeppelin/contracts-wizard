@@ -11,6 +11,7 @@ import {
   calculateERC20Premint,
   scaleByPowerOfTen,
   toUint,
+  validateSolidityString,
   type ClockMode,
   supportsInterface,
 } from '@openzeppelin/wizard';
@@ -67,6 +68,10 @@ export function printERC7984(opts: ERC7984Options = defaults): string {
 
 export function buildERC7984(opts: ERC7984Options): ContractBuilder {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
+  validateSolidityString(allOpts.symbol, 'symbol');
+  validateSolidityString(allOpts.contractURI, 'contractURI');
 
   const c = new ContractBuilder(allOpts.name);
 

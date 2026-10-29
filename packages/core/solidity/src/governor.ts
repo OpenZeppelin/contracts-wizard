@@ -10,6 +10,7 @@ import { setUpgradeableGovernor } from './set-upgradeable';
 import { defineFunctions } from './utils/define-functions';
 import { durationToBlocks, durationToTimestamp } from './utils/duration';
 import { clockModeDefault, type ClockMode } from './set-clock-mode';
+import { validateSolidityString } from './utils/sanitize';
 
 export const defaults: Required<GovernorOptions> = {
   ...commonDefaults,
@@ -86,6 +87,8 @@ function withDefaults(opts: GovernorOptions): Required<GovernorOptions> {
 
 export function buildGovernor(opts: GovernorOptions): Contract {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
 
   const c = new ContractBuilder(allOpts.name);
 

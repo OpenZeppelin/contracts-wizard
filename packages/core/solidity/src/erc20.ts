@@ -19,6 +19,7 @@ import { OptionsError } from './error';
 import { toUint, UINT256_MAX } from './utils/convert-strings';
 import { setNamespacedStorage, toStorageStructInstantiation } from './set-namespaced-storage';
 import { addCrosschainLinked } from './set-crosschain-linked';
+import { validateSolidityString } from './utils/sanitize';
 
 export const crossChainBridgingOptions = [false, 'custom', 'erc7786native', 'superchain', 'chainlink-ccip'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -128,6 +129,9 @@ export function isAccessControlRequired(opts: Partial<ERC20Options>): boolean {
 
 export function buildERC20(opts: ERC20Options): ContractBuilder {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
+  validateSolidityString(allOpts.symbol, 'symbol');
 
   // ACE coverage in this integration. PolicyProtectedBase forwards msg.sig and
   // msg.data[4:] to the Policy Engine, which resolves a calldata extractor and the

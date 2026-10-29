@@ -11,6 +11,7 @@ import { setUpgradeable } from './set-upgradeable';
 import { setInfo } from './set-info';
 import { printContract } from './print';
 import { addCrosschainLinked } from './set-crosschain-linked';
+import { validateSolidityString } from './utils/sanitize';
 
 export const crossChainBridgingOptions = [false, 'erc7786native'] as const;
 export type CrossChainBridging = (typeof crossChainBridgingOptions)[number];
@@ -70,6 +71,9 @@ export function isAccessControlRequired(opts: Partial<ERC1155Options>): boolean 
 
 export function buildERC1155(opts: ERC1155Options): Contract {
   const allOpts = withDefaults(opts);
+
+  validateSolidityString(allOpts.name, 'name');
+  validateSolidityString(allOpts.uri, 'uri');
 
   const c = new ContractBuilder(allOpts.name);
 
