@@ -207,6 +207,13 @@ test('governor absolute quorum generates valid number literals', t => {
   t.true(printQuorum({ quorumAbsolute: '5', decimals: 0 }).includes('return 5;'));
 });
 
+test('governor absolute quorum rejects an exponent without digits before it', t => {
+  for (const quorumAbsolute of ['e3', '.e3']) {
+    const error = t.throws(() => printQuorum({ quorumAbsolute }));
+    t.is((error as OptionsError).messages.quorumAbsolute, 'Not a valid number');
+  }
+});
+
 test('governor absolute quorum rejects fractional votes', t => {
   for (const opts of [
     { quorumAbsolute: '1.5', votes: 'erc721votes' as const },

@@ -272,7 +272,7 @@ function addVotes(c: ContractBuilder) {
   );
 }
 
-export const numberPattern = /^(?!$)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
+export const numberPattern = /^(?=\.?\d)(\d*)(?:\.(\d+))?(?:e(\d+))?$/;
 
 function addQuorum(c: ContractBuilder, opts: Required<GovernorOptions>) {
   if (opts.quorumMode === 'percent') {
