@@ -41,11 +41,11 @@ Update the builders' `defineFunctions()` calls (see Key files), using `stellar-c
 ```bash
 yarn lint && yarn type:check:api                                    # repo root
 cd packages/core/stellar
-npx ava --update-snapshots                                         # unit + compile tests, run together
-STELLAR_CONTRACTS_PATH=<checkout> npx ava --match='*compilation*'   # before the crates are published
+npx ava --update-snapshots                                   # after the crates are on crates.io
+STELLAR_CONTRACTS_PATH=<checkout> npx ava --update-snapshots # before: compile tests use the local checkout
 ```
 
-Compile tests take minutes. Running `--update-snapshots` with a `--match` that excludes them deletes their snapshots; restore those with `git checkout`. If the UI reports stale types, run `npm run prepare` in `packages/core/stellar` first.
+The compile tests pin the crates at `=<version>`, so without `STELLAR_CONTRACTS_PATH` they fail until the release is published. They take minutes. Running `--update-snapshots` with a `--match` that excludes them deletes their snapshots; restore those with `git checkout`. If the UI reports stale types, run `npm run prepare` in `packages/core/stellar` first.
 
 ## 5. Add a changeset
 
