@@ -26,7 +26,7 @@ Grep `packages/core/stellar/src/` for each affected name. Present this analysis 
 
 ## 2. Bump versions
 
-In `packages/core/stellar/src/utils/version.ts`, set `contractsVersion`, `compatibleContractsSemver` and `compatibleSorobanVersion` (take the soroban-sdk version from the stellar-contracts root `Cargo.toml`).
+In `packages/core/stellar/src/utils/version.ts`, set `contractsVersion` and `compatibleSorobanVersion` (take the soroban-sdk version from the stellar-contracts root `Cargo.toml`). Change `compatibleContractsSemver` only if the new release is outside its range or the generated code needs something added in this release.
 
 ## 3. Update code generation
 
@@ -38,18 +38,17 @@ Update the builders' `defineFunctions()` calls (see Key files), using `stellar-c
 
 ## 4. Check
 
+From the repo root, run `yarn type:check:api` and the lint and format checks in `CONTRIBUTING.md`. Then, from `packages/core/stellar`:
+
 ```bash
-yarn lint && yarn type:check:api                                    # repo root
-cd packages/core/stellar
-npx ava --update-snapshots                                   # after the crates are on crates.io
-STELLAR_CONTRACTS_PATH=<checkout> npx ava --update-snapshots # before: compile tests use the local checkout
+yarn test:update-snapshots
 ```
 
-The compile tests pin the crates at `=<version>`, so without `STELLAR_CONTRACTS_PATH` they fail until the release is published. They take minutes. Running `--update-snapshots` with a `--match` that excludes them deletes their snapshots; restore those with `git checkout`. If the UI reports stale types, run `npm run prepare` in `packages/core/stellar` first.
+If the crates are not on crates.io yet, prefix the command with `STELLAR_CONTRACTS_PATH=<stellar-contracts checkout>` so the compile tests build against the local checkout. Without it they fail, because they pin the crates at `=<version>`. They take minutes. If the UI reports stale types, run `yarn prepare` in `packages/core/stellar` first.
 
 ## 5. Add a changeset
 
-`.changeset/<name>.md` with `'@openzeppelin/wizard-stellar': minor` and "Update Stellar contracts to vX.Y.Z and soroban-sdk to A.B.C". Check with `npx changeset status --since=origin/master`.
+Add a changeset following `.claude/skills/changeset/SKILL.md`. Use "Update Stellar Contracts to vX.Y.Z and Soroban SDK to vA.B.C." as the first line.
 
 ## Key files
 
