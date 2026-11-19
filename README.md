@@ -53,6 +53,8 @@ For languages other than Solidity, use the `data-lang` attribute, for example: `
 
 We welcome contributions from the community! Here's how you can get involved:
 
+> **Prerequisites:** This project requires [Node.js](https://nodejs.org/) and Yarn Classic (v1.x). Run `npm install --global yarn@1` before setup.
+
 1. Fork the repository
 2. Create your feature branch
 3. Commit your changes
